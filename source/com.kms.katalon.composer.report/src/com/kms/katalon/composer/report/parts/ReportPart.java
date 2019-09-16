@@ -101,7 +101,6 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.dialog.AuthenticationDialog;
 import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDialog;
-import com.kms.katalon.composer.report.addons.ReportInjectionManagerAddon;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
@@ -373,14 +372,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 testCaseTableFilter.showIncomplete(btnFilterTestCaseIncomplete.getSelection());
                 testCaseTableViewer.refresh();
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
-            }
-        });
-
-        btnShowHideTestCaseDetails.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                setTestCaseDetailsVisible(BTN_SHOW_TEST_CASE_DETAILS.equals(btnShowHideTestCaseDetails.getText()));
             }
         });
 
@@ -656,15 +647,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         Label spacer = new Label(compositeTestCaseFilterSelection, SWT.NONE);
         spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
-        tbShowHideDetails.setForeground(ColorUtil.getToolBarForegroundColor());
-
-        createExportReportMenu(tbShowHideDetails);
-        createKatalonAnalyticsMenu(tbShowHideDetails);
-
-        btnShowHideTestCaseDetails = new ToolItem(tbShowHideDetails, SWT.NONE);
-        btnShowHideTestCaseDetails.setText(BTN_SHOW_TEST_CASE_DETAILS);
-        btnShowHideTestCaseDetails.setImage(ImageManager.getImage(IImageKeys.MOVE_LEFT_16));
+        createShowAndHideDetailsToolbar();
 
         Composite compositeTableTestCaseSearch = new Composite(compositeTestCaseFilter, SWT.BORDER);
         compositeTableTestCaseSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -692,6 +675,30 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         updateStatusSearchLabel();
     }
 
+    private void createShowAndHideDetailsToolbar() {
+        if (tbShowHideDetails != null) {
+            tbShowHideDetails.dispose();
+        }
+        tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
+        tbShowHideDetails.setForeground(ColorUtil.getToolBarForegroundColor());
+
+        createExportReportMenu(tbShowHideDetails);
+        createKatalonAnalyticsMenu(tbShowHideDetails);
+
+        btnShowHideTestCaseDetails = new ToolItem(tbShowHideDetails, SWT.NONE);
+        btnShowHideTestCaseDetails.setText(BTN_SHOW_TEST_CASE_DETAILS);
+        btnShowHideTestCaseDetails.setImage(ImageManager.getImage(IImageKeys.MOVE_LEFT_16));
+        btnShowHideTestCaseDetails.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setTestCaseDetailsVisible(BTN_SHOW_TEST_CASE_DETAILS.equals(btnShowHideTestCaseDetails.getText()));
+            }
+        });
+        
+        compositeTestCaseFilterSelection.requestLayout();
+    }
+
     public Display getDisplay() {
         return parent.getDisplay();
     }
@@ -703,24 +710,13 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private void createExportReportMenu(ToolBar toolBar) {
         List<ExportReportProviderPlugin> exportReportPluginProviders = ReportComposerIntegrationFactory.getInstance()
                 .getExportReportPluginProviders();
-        
         if (exportReportPluginProviders.isEmpty()) {
-            ToolItem btnExportReport = (ToolItem) toolBar.getData("btnExportReport");
-            Menu exportReportMenu = (Menu) toolBar.getData("exportReportMenu");
-            if (btnExportReport != null && exportReportMenu != null) {
-                btnExportReport.dispose();
-                exportReportMenu.dispose();
-            }
             return;
         }
-
         ToolItem btnExportReport = new ToolItem(toolBar, SWT.DROP_DOWN);
         btnExportReport.setText(ComposerReportMessageConstants.BTN_EXPORT_REPORT);
-        toolBar.setData("btnExportReport", btnExportReport);
-
+        
         Menu exportReportMenu = new Menu(btnExportReport.getParent().getShell());
-        toolBar.setData("exportReportMenu", exportReportMenu);
-
         for (ExportReportProviderPlugin provider : exportReportPluginProviders) {
             ExportReportProviderReflection reflection = new ExportReportProviderReflection(provider);
             try {
@@ -731,7 +727,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 LoggerSingleton.logError(e);
             }
         }
-
+        
         btnExportReport.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -1502,7 +1498,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         eventBroker.subscribe(EventConstants.REPORT_UPDATED, this);
         eventBroker.subscribe(EventConstants.REPORT_RENAMED, this);
         eventBroker.subscribe(EventConstants.IS_INTEGRATED, this);
-        eventBroker.subscribe(EventConstants.RELOAD_PLUGINS, this);
+        eventBroker.subscribe(EventConstants.REPORT_EXPORT_PROVIDERS_COLLECTED, this);
     }
 
     public MPart getMPart() {
@@ -1566,10 +1562,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         if (EventConstants.IS_INTEGRATED.equals(event.getTopic())) {
             uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
         }
-        if(EventConstants.RELOAD_PLUGINS.equals(event.getTopic())) {
-            // Reload Report Export providers since plug-ins may be installed or uninstalled
-            ReportInjectionManagerAddon.collectReportExportProviders();
-            createExportReportMenu(tbShowHideDetails);            
+        if (EventConstants.REPORT_EXPORT_PROVIDERS_COLLECTED.equals(event.getTopic())) {
+            createShowAndHideDetailsToolbar();
         }
     }
 
@@ -1630,6 +1624,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         btnShowHideTestCaseDetails.setText(isVisible ? BTN_HIDE_TEST_CASE_DETAILS : BTN_SHOW_TEST_CASE_DETAILS);
         btnShowHideTestCaseDetails
                 .setImage(ImageManager.getImage(isVisible ? IImageKeys.MOVE_RIGHT_16 : IImageKeys.MOVE_LEFT_16));
-        compositeTestCaseFilterSelection.layout();
+        compositeTestCaseFilterSelection.requestLayout();
     }
 }

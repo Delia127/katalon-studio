@@ -73,7 +73,7 @@ public class ReportInjectionManagerAddon {
         });
     }
 
-    public static void collectReportExportProviders() {
+    private void collectReportExportProviders() {
         ReportComposerIntegrationFactory.getInstance().onProjectChanged();
         List<CustomKeywordPlugin> plugins = CustomKeywordPluginFactory.getInstance().getPlugins();
         for (CustomKeywordPlugin plugin : plugins) {
@@ -82,9 +82,10 @@ public class ReportInjectionManagerAddon {
                 loadExportReportProvider(plugin, plugin.getKeywordsManifest().getReport().getExportProviderClassName());
             }
         }
+        eventBroker.post(EventConstants.REPORT_EXPORT_PROVIDERS_COLLECTED, null);
     }
 
-    private static void loadExportReportProvider(CustomKeywordPlugin plugin, String exportReportProviderClassName) {
+    private void loadExportReportProvider(CustomKeywordPlugin plugin, String exportReportProviderClassName) {
         try {
             URLClassLoader classLoader = ProjectController.getInstance()
                     .getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
