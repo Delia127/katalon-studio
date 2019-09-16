@@ -93,7 +93,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button chckEncrypt;
 
-    private String email, password,serverUrl;
+    private String email, password, serverUrl;
 
     private AnalyticsOrganization organization;
 
@@ -107,7 +107,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             password = analyticsSettingStore.getPassword(encryptionEnabled);
             organization = analyticsSettingStore.getOrganization();
         } catch (Exception e) {
-            //ignore this
+            //ignore
         }
     }
 
@@ -255,7 +255,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     @Override
     protected void initialize() {
         super.initialize();
-        if (checkInfo()) {
+        if (isNoInfo()) {
             katalonLogin();
         } else {
             fillData();
@@ -533,7 +533,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         }
     }
 
-    private boolean checkInfo() {
+    private boolean isNoInfo() {
         if (email.isEmpty() || password.isEmpty() || organization.getId() == null) {
             return true;
         }
@@ -566,7 +566,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         enableAnalyticsIntegration.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (checkInfo()) {
+                if (isNoInfo()) {
                     boolean result = katalonLogin();
                     enableAnalyticsIntegration.setSelection(result);
                 } else {
