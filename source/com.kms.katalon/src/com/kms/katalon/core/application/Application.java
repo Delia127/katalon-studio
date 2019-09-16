@@ -51,8 +51,8 @@ public class Application implements IApplication {
     public Object start(IApplicationContext context) {
 
         LocalDate now = LocalDate.now();
-        LocalDate deathDate = LocalDate.of(2019, 11, 1);
-        if (now.isAfter(deathDate)) {
+        LocalDate expiredDate = LocalDate.of(2019, 11, 1);
+        if (now.isAfter(expiredDate)) {
             LogUtil.logInfo("This beta build has expired");
             return IApplication.EXIT_OK;
         }
