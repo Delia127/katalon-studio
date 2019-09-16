@@ -7,6 +7,9 @@ import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * https://github.com/sarxos/secure-tokens/blob/master/src/main/java/com/github/sarxos/securetoken/impl/Hardware4Win.java
+ */
 public class Hardware4Win {
 
     private static String sn = StringUtils.EMPTY;

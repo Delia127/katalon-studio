@@ -8,6 +8,10 @@ import java.io.OutputStream;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * https://github.com/sarxos/secure-tokens/blob/master/src/main/java/com/github/sarxos/securetoken/impl/Hardware4Nix.java
+ *
+ */
 public class Hardware4Nix {
 
     private static String sn = StringUtils.EMPTY;
