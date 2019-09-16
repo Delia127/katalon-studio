@@ -35,6 +35,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.application.utils.RequestException;
 import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
@@ -352,7 +353,8 @@ public class SignupDialog extends AbstractDialog {
 
         setSyncMessage(MessageConstants.SignupDialog_MSG_ACTIVATING_NEW_ACCOUNT, false);
         StringBuilder errorMessageBuilder = new StringBuilder();
-        ActivationInfoCollector.activate(authenticationInfo.getEmail(), authenticationInfo.getPassword(),
+        String machineId = MachineUtil.getMachineId();
+        ActivationInfoCollector.activate(authenticationInfo.getEmail(), authenticationInfo.getPassword(), machineId,
                 errorMessageBuilder);
         if (errorMessageBuilder.length() > 0) {
             throw new ActivationErrorException(errorMessageBuilder.toString());

@@ -53,10 +53,6 @@ public class ComposerWebuiMessageConstants extends NLS {
 
     public static String LBL_SAFARI_EXECUTION_MENU_ITEM;
 
-    public static String DIA_CONFIRM_INSTALL_WEBDRIVER;
-
-    public static String DIA_CONFIRM_INSTALL_WEBDRIVER_TITLE;
-
     public static String MSG_PROPERTY_NAME_IS_EXISTED;
 
     public static String GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT;

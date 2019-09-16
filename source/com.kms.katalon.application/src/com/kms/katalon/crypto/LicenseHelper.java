@@ -48,10 +48,10 @@ public class LicenseHelper {
         return verifier.verify(jws).getClaims();
     }
     
-    public Map<String, Claim> parseJwsFromFile(String filename) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
-        String jws = new String(Files.readAllBytes(Paths.get(filename)));
-        return parseJws(jws);
-    }
+//    public Map<String, Claim> parseJwsFromFile(String filename) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
+//        String jws = new String(Files.readAllBytes(Paths.get(filename)));
+//        return parseJws(jws);
+//    }
     
     public PublicKey getPublicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException  {
         PublicKey publicKey = null;

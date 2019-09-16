@@ -60,6 +60,19 @@ public class DatabaseController {
 
         return new DatabaseConnection(connectionUrl);
     }
+    
+    public DatabaseConnection getDatabaseConnection(boolean isUsingGlobalDBSetting, boolean isSecureUserAccount,
+            String user, String password, String connectionUrl, String driverClassName) throws IOException {
+        if (isUsingGlobalDBSetting) {
+            return getGlobalDatabaseConnection();
+        }
+
+        if (isSecureUserAccount) {
+            return new DatabaseConnection(connectionUrl, user, Base64.decode(password), driverClassName);
+        }
+
+        return new DatabaseConnection(connectionUrl, driverClassName);
+    }
 
     public ResultSet query(DatabaseConnection dbConnection, String sqlQuery) throws SQLException {
         return query(dbConnection, sqlQuery, (Object[]) null);

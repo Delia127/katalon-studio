@@ -264,9 +264,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             // setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
             // ReportUtil.writeJsonReport(suiteLog, reportFolder);
 
-//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
-//            ReportUtil.writeJUnitReport(suiteLog, reportFolder);
-//            LogUtil.logInfo("Reports were generated at folder: " + reportFolder.getAbsolutePath());
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
+            LogUtil.logInfo("Start generating JUnit report folder at: " + reportFolder.getAbsolutePath() + "...");
+            ReportUtil.writeJUnitReport(suiteLog, reportFolder);
+            LogUtil.logInfo("JUnit report were generated at folder: " + reportFolder.getAbsolutePath());
 
             copyReport();
             return suiteLog;

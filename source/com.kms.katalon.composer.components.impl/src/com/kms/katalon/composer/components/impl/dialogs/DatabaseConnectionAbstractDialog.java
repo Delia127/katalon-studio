@@ -1,10 +1,13 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -31,6 +34,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.controller.DatabaseController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 
 public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
@@ -52,6 +56,8 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
     protected Text txtConnectionURL;
 
     protected Text txtQuery;
+    
+    protected Text txtDriverClassName;
 
     protected boolean isChanged;
 
@@ -109,6 +115,13 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
         txtPassword = new Text(grpDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        
+        Label lblOptionsDB = new Label(grpDatabase, SWT.NONE);
+        lblOptionsDB.setText("JDBC driver");
+        lblOptionsDB.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
+        
+        txtDriverClassName = new Text(grpDatabase, SWT.BORDER);
+        txtDriverClassName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblConnectionURL = new Label(grpDatabase, SWT.NONE);
         lblConnectionURL.setLayoutData(new GridData(SWT.LEAD, SWT.TOP, false, false, 1, 1));
@@ -227,38 +240,50 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
         txtConnectionURL.addModifyListener(textModifyListener);
 
         txtQuery.addModifyListener(textModifyListener);
+        
+        txtDriverClassName.addModifyListener(textModifyListener);
 
         btnTestConnection.addSelectionListener(new SelectionAdapter() {
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                DatabaseConnection dbConn = getDatabaseConnection();
-                try {
-                    if (chkGlobalDBSetting.getSelection()) {
-                        dbConn = DatabaseController.getInstance().getGlobalDatabaseConnection();
-                    }
-                    if (dbConn == null) {
-                        setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL,
-                                StringConstants.DIA_MSG_CONNECTION_EMPTY), ColorUtil.getTextErrorColor());
-                        return;
-                    }
-                    dbConn.getConnection();
-                    if (!dbConn.isAlive()) {
-                        setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL,
-                                StringConstants.DIA_LBL_CONNECTION_CLOSED), ColorUtil.getTextErrorColor());
-                        return;
-                    }
-                    setStatusLabel(StringConstants.DIA_LBL_TEST_STATUS_SUCCESS, ColorUtil.getTextSuccessfulColor());
-                } catch (SQLException | IOException ex) {
-                    setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL, ex.getMessage()),
-                            ColorUtil.getTextErrorColor());
-                } finally {
-                    if (dbConn != null) {
-                        dbConn.close();
-                    }
-                }
-            }
-        });
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ClassLoader oldClassLoader = null;
+				DatabaseConnection dbConn = getDatabaseConnection();
+
+				try {
+					oldClassLoader = Thread.currentThread().getContextClassLoader();
+					// fetch data and load into table
+					URLClassLoader projectClassLoader = ProjectController.getInstance()
+							.getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+					Thread.currentThread().setContextClassLoader(projectClassLoader);
+					if (chkGlobalDBSetting.getSelection()) {
+						dbConn = DatabaseController.getInstance().getGlobalDatabaseConnection();
+					}
+					if (dbConn == null) {
+						setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL,
+								StringConstants.DIA_MSG_CONNECTION_EMPTY), ColorUtil.getTextErrorColor());
+						return;
+					}
+					dbConn.getConnection();
+					if (!dbConn.isAlive()) {
+						setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL,
+								StringConstants.DIA_LBL_CONNECTION_CLOSED), ColorUtil.getTextErrorColor());
+						return;
+					}
+					setStatusLabel(StringConstants.DIA_LBL_TEST_STATUS_SUCCESS, ColorUtil.getTextSuccessfulColor());
+				} catch (SQLException | IOException | CoreException ex) {
+					setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL, ex.getMessage()),
+							ColorUtil.getTextErrorColor());
+				} finally {
+					if (dbConn != null) {
+						dbConn.close();
+					}
+					if (oldClassLoader != null) {
+						Thread.currentThread().setContextClassLoader(oldClassLoader);
+					}
+				}
+			}
+		});
 
         lblStatus.addMouseListener(new MouseAdapter() {
 
@@ -276,14 +301,16 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
     private DatabaseConnection getDatabaseConnection() {
         String user = null;
         String password = null;
+        String driverClassName = null;
         if (chkSecureUserPassword.getSelection()) {
             user = txtUser.getText();
             password = txtPassword.getText();
+            driverClassName = txtDriverClassName.getText();
         }
         if (!StringUtils.startsWithIgnoreCase(txtConnectionURL.getText(), JDBC_PROTOCOL)) {
             return null;
         }
-        return new DatabaseConnection(txtConnectionURL.getText(), user, password);
+        return new DatabaseConnection(txtConnectionURL.getText(), user, password,driverClassName);
     }
 
     @Override

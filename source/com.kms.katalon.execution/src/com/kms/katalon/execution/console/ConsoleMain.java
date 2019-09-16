@@ -40,11 +40,12 @@ import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
-import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.LocalInformationUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -79,6 +80,8 @@ public class ConsoleMain {
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
     public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_VAR = "TESTOPS_LICENSE_FILE";
     
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
 
@@ -122,18 +125,6 @@ public class ConsoleMain {
             if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
             }
-            
-            String orgIdValue = null;
-
-            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
-                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
-                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
-            }
-
-            if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
-                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
-                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
-            }
 
             LogUtil.logInfo("Activating...");
             
@@ -141,13 +132,12 @@ public class ConsoleMain {
                 //read license file and activate
                 boolean isActivated = false;
                 String licenseFile = null;
-                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
+                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
                 if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
                     licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
                 } else if (environmentVariable != null) {
                     licenseFile = environmentVariable;
                 }
-    
                 if (!StringUtils.isBlank(licenseFile)) {
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
                     StringBuilder errorMessage = new StringBuilder();
@@ -157,9 +147,7 @@ public class ConsoleMain {
                         throw new InvalidLicenseException("Invalid license");
                     }
                 } else {
-                    if (!StringUtils.isBlank(orgIdValue)) {
-                        isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, Long.valueOf(orgIdValue));
-                    }
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue);
                 }
                 
                 
@@ -183,7 +171,13 @@ public class ConsoleMain {
                     applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
                 }
             }
-            
+
+            boolean isCliEnabled = FeatureServiceConsumer.getServiceInstance().canUse(TestOpsFeatureKey.CLI);
+            if (!isCliEnabled) {
+                LogUtil.printErrorLine("You don't have permission to use Katalon Studio in console mode.");
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+            } 
+
             ProjectEntity project = findProject(options);
 //          Trackings.trackOpenApplication(project,
 //                  !ActivationInfoCollector.isActivated(), "console");
