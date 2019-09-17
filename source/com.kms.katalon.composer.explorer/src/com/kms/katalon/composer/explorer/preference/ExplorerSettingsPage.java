@@ -47,11 +47,11 @@ public class ExplorerSettingsPage extends PreferencePageWithHelp {
         buttons = new ArrayList<>();
     }
 
-	private List<ITreeEntity> getFolderEntities() {
+    private List<ITreeEntity> getFolderEntities() {
         List<ITreeEntity> folderTreeEntities = new ArrayList<>();
         try {
-            List<ITreeEntity> treeEntities = TreeEntityUtil.getAllTreeEntity(ProjectController.getInstance()
-                    .getCurrentProject());
+            List<ITreeEntity> treeEntities = TreeEntityUtil
+                    .getAllTreeEntity(ProjectController.getInstance().getCurrentProject());
             if (treeEntities == null) {
                 treeEntities = new ArrayList<ITreeEntity>();
             }
@@ -61,10 +61,10 @@ public class ExplorerSettingsPage extends PreferencePageWithHelp {
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS,
-	                  e.getMessage());
-		}
+                    e.getMessage());
+        }
         return folderTreeEntities;
-	}
+    }
 
     @Override
     protected Control createContents(Composite parent) {
@@ -73,17 +73,17 @@ public class ExplorerSettingsPage extends PreferencePageWithHelp {
         container.setLayout(new GridLayout(1, false));
 
         try {
-            for (ITreeEntity folderEntity : folderTreeEntities) {   
+            for (ITreeEntity folderEntity : folderTreeEntities) {
                 String entityName = folderEntity.getText();
                 Button button = new Button(container, SWT.CHECK);
                 button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
                 button.setText(entityName);
-                buttons.add(button);   
+                buttons.add(button);
             }
         } catch (Exception e) {
-                MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS, 
-                        e.getMessage());
-                LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS,
+                    e.getMessage());
+            LoggerSingleton.logError(e);
         }
 
         updateInput();
@@ -95,13 +95,13 @@ public class ExplorerSettingsPage extends PreferencePageWithHelp {
         try {
             for (Button button : buttons) {
                 String entityName = button.getText();
-                boolean isShow = store.isItemShow(entityName);	
+                boolean isShow = store.isItemShow(entityName);
                 button.setSelection(isShow);
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS,
-	                  e.getMessage());
+                    e.getMessage());
         }
     }
 
@@ -115,7 +115,7 @@ public class ExplorerSettingsPage extends PreferencePageWithHelp {
                 String entityName = button.getText();
                 boolean isShow = button.getSelection();
                 store.setItemShow(entityName, isShow);
-	    	}
+            }
 
             refreshExplorer();
             return true;
@@ -134,13 +134,13 @@ public class ExplorerSettingsPage extends PreferencePageWithHelp {
 
     private void refreshExplorer() {
         try {
-            List<ITreeEntity> treeEntities = TreeEntityUtil.getAllTreeEntity(ProjectController.getInstance()
-                    .getCurrentProject());
+            List<ITreeEntity> treeEntities = TreeEntityUtil
+                    .getAllTreeEntity(ProjectController.getInstance().getCurrentProject());
             eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PAGE_ERROR_MSG_UNABLE_TO_REFESH_EXPLORER,
                     e.getMessage());
-        }	
+        }
     }
 }

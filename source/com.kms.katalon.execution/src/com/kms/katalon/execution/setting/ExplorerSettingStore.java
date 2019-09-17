@@ -16,11 +16,11 @@ public class ExplorerSettingStore extends BundleSettingStore {
         super(projectEntity.getFolderLocation(), FrameworkUtil.getBundle(ExplorerSettingStore.class).getSymbolicName(),
                 false);
     }
-    
+
     public void setItemShow(String itemName, boolean isShow) throws IOException, GeneralSecurityException {
-    	setProperty(ITEM_PREFIX + itemName, isShow);
+        setProperty(ITEM_PREFIX + itemName, isShow);
     }
-    
+
     public boolean isItemShow(String itemName) throws IOException {
         return getBoolean(ITEM_PREFIX + itemName, true);
     }

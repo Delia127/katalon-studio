@@ -41,7 +41,7 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
         if (store == null) {
             try {
                 store = new ExplorerSettingStore(ProjectController.getInstance().getCurrentProject());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 LoggerSingleton.getInstance().getLogger().error(e);
             }
         }
@@ -51,11 +51,11 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                 String entityName = ((ITreeEntity) element).getText();
                 boolean isShow = store.isItemShow(entityName);
                 if (!isShow) {
-                   return false;
+                    return false;
                 }
             } catch (Exception e) {
                 LoggerSingleton.getInstance().getLogger().error(e);
-            }		
+            }
         }
 
         if (searchString == null || searchString.equals(StringUtils.EMPTY)) {
