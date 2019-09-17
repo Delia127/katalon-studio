@@ -73,8 +73,6 @@ public class TestCaseEntityUtil {
             VariableEntity newVariable = new VariableEntity();
             newVariable.setName(variable.getName());
             newVariable.setDefaultValue(variable.getDefaultValue());
-            newVariable.setId(variable.getId());
-            newVariable.setDescription(variable.getDescription());
             des.getVariables().add(newVariable);
         }
 
