@@ -211,7 +211,7 @@ public class TestDataController extends EntityController {
 
         return DatabaseController.getInstance()
                 .getDatabaseConnection(testData.isUsingGlobalDBSetting(), testData.isSecureUserAccount(),
-                        testData.getUser(), testData.getPassword(), testData.getDataSourceUrl());
+                        testData.getUser(), testData.getPassword(), testData.getDataSourceUrl(), testData.getDriverClassName());
     }
 
 }

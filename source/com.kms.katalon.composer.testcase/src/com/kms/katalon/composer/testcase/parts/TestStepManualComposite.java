@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
@@ -124,6 +125,7 @@ import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.session.ExecutionSession;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
@@ -263,11 +265,12 @@ public class TestStepManualComposite {
 					try {
 						if (analyticsReportService.isIntegrationEnabled()
 								&& analyticsSettingStore.getProject() != null) {
-							Program.launch(createPath(analyticsSettingStore.getTeam(),
+							Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()), 
+									analyticsSettingStore.getTeam(),
 									analyticsSettingStore.getProject(), parentPart.getTestCase().getIdForDisplay(),
 									analyticsSettingStore.getToken(true)));
 						} else {
-							Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
+							Program.launch(ApplicationInfo.getTestOpsServer());
 						}
 						Trackings.trackOpenKAIntegration("testCase");
 					} catch (IOException | GeneralSecurityException e1) {
@@ -397,9 +400,9 @@ public class TestStepManualComposite {
 		}
 	}
 
-	private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
+	private String createPath(String server, AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
 		String result = "";
-		result = ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId=" + team.getId() + "&projectId="
+		result = ApplicationInfo.getTestOpsServer() + AnalyticsStringConstants.ANALYTICS_API_FROM_KS + "teamId=" + team.getId() + "&projectId="
 				+ project.getId() + "&type=TEST_CASE" + "&path=" + UrlEncoder.encode(path) + "&token=" + tokenInfo;
 		return result;
 
@@ -833,7 +836,7 @@ public class TestStepManualComposite {
 
 	private void openRecentKeywordItems() {
 		List<StoredKeyword> recentKeywords = TestCasePreferenceDefaultValueInitializer.getRecentKeywords()
-		        .stream().filter(k -> k.getKeywordClass() != null && 
+		        .stream().filter(k -> k.getKeywordClass() != null || 
 		        KeywordContributorCollection.getContributor(k.getKeywordClass()) != null).collect(Collectors.toList());
 		if (recentKeywords.isEmpty()) {
 			return;

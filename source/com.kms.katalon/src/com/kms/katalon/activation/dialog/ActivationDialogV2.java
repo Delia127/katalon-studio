@@ -1,9 +1,13 @@
 package com.kms.katalon.activation.dialog;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import org.eclipse.jface.window.Window;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -15,19 +19,32 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.KatalonApplicationActivator;
+import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.MachineUtil;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.license.models.License;
+import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialogV2 extends AbstractDialog {
 
@@ -48,14 +65,36 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Button btnActivate;
 
+    private Button btnSave;
+
+    private Combo cbbOrganization;
+
+    private Label lblMachineKeyDetail;
+
     private Link lnkConfigProxy;
 
     private Link lnkOfflineActivation;
 
     private Link lnkForgotPassword;
 
+    private Link lblHelpOrganization;
+
+    private List<AnalyticsOrganization> organizations = new ArrayList<>();
+
+    private String machineId;
+
+    private License license;
+
+    private Link lnkAgreeTerm;
+
+    private Composite organizationComposite;
+    
+    private boolean isExpanded;
+    
     public ActivationDialogV2(Shell parentShell) {
         super(parentShell, false);
+        machineId = MachineUtil.getMachineId();
+        isExpanded = false;
     }
 
     private boolean validateInput() {
@@ -78,8 +117,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         lnkSwitchToSignupDialog.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setReturnCode(REQUEST_SIGNUP_CODE);
-                close();
+                Program.launch(MessageConstants.ActivationDialogV2_LNK_SIGNUP);
             }
         });
 
@@ -96,6 +134,13 @@ public class ActivationDialogV2 extends AbstractDialog {
                 Program.launch(StringConstants.FORGOT_PASS_LINK);
             }
         });
+        
+        lnkAgreeTerm.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(StringConstants.AGREE_TERM_URL);
+            }
+        });
 
         lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -105,30 +150,138 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
 
+        lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATE);
+            }
+        });
+
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
-                btnActivate.setEnabled(false);
                 Executors.newFixedThreadPool(1).submit(() -> {
-                    UISynchronizeService.syncExec(
-                            () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_ACTIVATING, false));
-                    StringBuilder errorMessage = new StringBuilder();
-                    boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
-
                     UISynchronizeService.syncExec(() -> {
-                        btnActivate.setEnabled(true);
-                        if (result) {
-                            setReturnCode(Window.OK);
-                            close();
+                        btnActivate.setEnabled(false);
+                        txtEmail.setEnabled(false);
+                        txtPassword.setEnabled(false);
+                        setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false);
+                    });
+                    UISynchronizeService.syncExec(() -> {
+                        StringBuilder errorMessage = new StringBuilder();
+                        license = ActivationInfoCollector.activate(username, password, machineId, errorMessage);
+                        if (license != null) {
+                            getOrganizations();
+                            setProgressMessage("", false);
                         } else {
+                            btnActivate.setEnabled(true);
+                            txtEmail.setEnabled(true);
+                            txtPassword.setEnabled(true);
                             setProgressMessage(errorMessage.toString(), true);
                         }
                     });
                 });
             }
         });
+        
+        btnSave.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = cbbOrganization.getSelectionIndex();
+                save(index);
+            }
+        });
+
+        lblHelpOrganization.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+    }
+
+    private void save(int index) {
+        AnalyticsOrganization organization = organizations.get(index);
+        String email = txtEmail.getText();
+        String password = txtPassword.getText();
+
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService
+                    .syncExec(() -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_FEATURE, false));
+            UISynchronizeService.syncExec(() -> {
+                try {
+                    ActivationInfoCollector.markActivated(email, password, JsonUtil.toJson(organization), license);
+                    close();
+                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+                } catch (Exception e) {
+                	txtEmail.setEnabled(true);
+                    txtPassword.setEnabled(true);
+                    btnActivate.setEnabled(true);
+                    btnSave.setEnabled(false);
+                    LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                }
+            });
+        });
+    }
+
+    private static List<String> getOrganizationNames(List<AnalyticsOrganization> organizations) {
+        List<String> names = organizations.stream().map(organization -> organization.getName()).collect(Collectors.toList());
+        return names;
+    }
+    
+    private void getOrganizations() {
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService.syncExec(
+                    () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_ORGANIZATION, false));
+            UISynchronizeService.syncExec(() -> {
+                try {
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    String email = txtEmail.getText();
+                    String password = txtPassword.getText();
+
+                    String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
+                    organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token);
+
+                    if (organizations.size() == 1) {
+                        save(0);
+                    } else {
+                        layoutExecutionCompositeListener();
+                        cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
+                        cbbOrganization.select(getDefaultOrganizationIndex()); 
+                        setProgressMessage("", false);
+                        cbbOrganization.setEnabled(true);
+                        btnSave.setEnabled(true);
+                    }
+                } catch (Exception e) {
+                    LogUtil.logError(e);
+                    setProgressMessage("", false);
+                    MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),
+                            MessageConstants.ActivationDialogV2_LBL_ERROR, null,
+                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR,
+                            new String[] { "OK" }, 0);
+                    if (dialog.open() == Dialog.OK) {
+                        txtEmail.setEnabled(true);
+                        txtPassword.setEnabled(true);
+                        btnActivate.setEnabled(true);
+                        btnSave.setEnabled(false);
+                    }
+                }
+            });
+        });
+    }
+    
+    private int getDefaultOrganizationIndex() {
+        int selectionIndex = 0;
+        for (int i = 0; i < organizations.size(); i++) {
+            AnalyticsOrganization organization = organizations.get(i);
+            if (organization.getRole().equals(AnalyticsOrganizationRole.USER)) {
+                selectionIndex = i;
+                return selectionIndex;
+            }
+        }
+    	return selectionIndex;
     }
 
     private void setProgressMessage(String message, boolean isError) {
@@ -136,7 +289,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
         } else {
-            lblProgressMessage.setForeground(ColorUtil.getDefaultTextColor());
+            lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
         lblProgressMessage.getParent().layout();
     }
@@ -164,27 +317,111 @@ public class ActivationDialogV2 extends AbstractDialog {
         glContent.verticalSpacing = 10;
         contentComposite.setLayout(glContent);
 
+        GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLabel.widthHint = 100;
+
         GridData gdText = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gdText.heightHint = 22;
 
+        GridData gdBtn = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+        gdBtn.widthHint = 100;
+
         Label lblEmail = new Label(contentComposite, SWT.NONE);
-        GridData gdEmail = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-        lblEmail.setLayoutData(gdEmail);
+        lblEmail.setLayoutData(gdLabel);
         lblEmail.setText(StringConstants.EMAIL);
 
         txtEmail = new Text(contentComposite, SWT.BORDER);
         txtEmail.setLayoutData(gdText);
 
         Label lblPassword = new Label(contentComposite, SWT.NONE);
-        GridData gdPassword = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-        lblPassword.setLayoutData(gdPassword);
+        lblPassword.setLayoutData(gdLabel);
         lblPassword.setText(StringConstants.PASSSWORD_TITLE);
 
         txtPassword = new Text(contentComposite, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(gdText);
 
-        lblProgressMessage = new Label(contentComposite, SWT.NONE);
-        lblProgressMessage.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2, 1));
+        Label lblMachineKey = new Label(contentComposite, SWT.NONE);
+        lblMachineKey.setLayoutData(gdLabel);
+        lblMachineKey.setText(MessageConstants.ActivationOfflineDialogV2_LBL_MACHINE_KEY);
+
+        lblMachineKeyDetail = new Label(contentComposite, SWT.NONE);
+        lblMachineKeyDetail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        lblMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
+        lblMachineKeyDetail.setText(machineId);
+
+        Composite activateComposite = new Composite(contentComposite, SWT.NONE);
+        activateComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        GridLayout gdLogInComposite = new GridLayout(2, false);
+        gdLogInComposite.marginHeight = 0;
+        gdLogInComposite.marginWidth = 0;
+        activateComposite.setLayout(gdLogInComposite);
+
+        lblProgressMessage = new Label(activateComposite, SWT.NONE);
+        lblProgressMessage.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+
+        Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
+        activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
+        GridLayout gdActivateRight = new GridLayout(1, false);
+        gdActivateRight.marginHeight = 0;
+        gdActivateRight.marginWidth = 0;
+        activateRightComposite.setLayout(gdActivateRight);
+
+        btnActivate = new Button(activateRightComposite, SWT.NONE);
+        btnActivate.setLayoutData(gdBtn);
+        btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
+        getShell().setDefaultButton(btnActivate);
+
+        organizationComposite = new Composite(contentComposite, SWT.NONE);
+
+        GridLayout glCompositeOrganization = new GridLayout(2, false);
+        glCompositeOrganization.verticalSpacing = 10;
+        glCompositeOrganization.horizontalSpacing = 0;
+        glCompositeOrganization.marginHeight = 0;
+        glCompositeOrganization.marginWidth = 0;
+        organizationComposite.setLayout(glCompositeOrganization);
+        organizationComposite.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
+
+        Label lblOrganization = new Label(organizationComposite, SWT.NONE);
+        GridData gdOrganization = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdOrganization.widthHint = 150;
+        lblOrganization.setLayoutData(gdOrganization);
+        lblOrganization.setText(MessageConstants.ActivationDialogV2_LBL_SELECT_ORGANIZATION);
+
+        cbbOrganization = new Combo(organizationComposite, SWT.READ_ONLY);
+        cbbOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        cbbOrganization.setEnabled(false);
+
+        Composite saveComposite = new Composite(organizationComposite, SWT.NONE);
+        saveComposite.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
+        GridLayout gdTemp = new GridLayout(2, false);
+        gdTemp.marginHeight = 0;
+        gdTemp.marginWidth = 0;
+        saveComposite.setLayout(gdTemp);
+
+        Composite saveLeftComposite = new Composite(saveComposite, SWT.NONE);
+        GridLayout glSaveLeftComposite = new GridLayout(1, false);
+        glSaveLeftComposite.marginHeight = 0;
+        glSaveLeftComposite.marginWidth = 0;
+        saveLeftComposite.setLayoutData(new GridData(SWT.LEFT, SWT.NONE, true, false));
+        saveLeftComposite.setLayout(glSaveLeftComposite);
+
+        lblHelpOrganization = new Link(saveLeftComposite, SWT.NONE);
+        lblHelpOrganization.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+        lblHelpOrganization.setText(String.format(MessageConstants.ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION, ApplicationInfo.getTestOpsServer()));
+
+        Composite saveRightComposite = new Composite(saveComposite, SWT.NONE);
+        saveRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
+        GridLayout gdActivateComposite = new GridLayout(1, false);
+        gdActivateComposite.marginHeight = 0;
+        gdActivateComposite.marginWidth = 0;
+        saveRightComposite.setLayout(gdActivateComposite);
+
+        btnSave = new Button(saveRightComposite, SWT.NONE);
+        btnSave.setLayoutData(gdBtn);
+        btnSave.setText(StringConstants.BTN_SAVE);
+        btnSave.setEnabled(false);
+
+        layoutOrganization();
 
         return container;
     }
@@ -198,6 +435,16 @@ public class ActivationDialogV2 extends AbstractDialog {
         buttonBar.setLayout(glButtonBar);
         buttonBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
+        Composite bottomTerm = new Composite(buttonBar, SWT.NONE);
+        bottomTerm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout gdBottomBarTerm = new GridLayout(2, false);
+        gdBottomBarTerm.marginWidth = 10;
+        gdBottomBarTerm.marginHeight = 0;
+        bottomTerm.setLayout(gdBottomBarTerm);
+        
+        lnkAgreeTerm = new Link(bottomTerm, SWT.WRAP);
+        lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);
+        
         Composite bottomBar = new Composite(buttonBar, SWT.NONE);
         bottomBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         GridLayout gdBottomBar = new GridLayout(2, false);
@@ -215,20 +462,10 @@ public class ActivationDialogV2 extends AbstractDialog {
         lnkSwitchToSignupDialog = new Link(bottomLeftComposite, SWT.NONE);
         lnkSwitchToSignupDialog.setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_REGISTER));
 
-        Composite bottomRightComposite = new Composite(bottomBar, SWT.NONE);
-        bottomRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-        GridLayout gridLayout = glButtonBar;
-        gridLayout.marginWidth = 0;
-        bottomRightComposite.setLayout(gridLayout);
-
-        btnActivate = new Button(bottomRightComposite, SWT.PUSH);
-        btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
-        getShell().setDefaultButton(btnActivate);
-
         Composite linkBar = new Composite(buttonBar, SWT.NONE);
         linkBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         linkBar.setLayout(new GridLayout(5, false));
-
+        
         lnkForgotPassword = new Link(linkBar, SWT.NONE);
         lnkForgotPassword.setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_RESET_PASSWORD));
         lnkForgotPassword.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
@@ -240,7 +477,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         lnkOfflineActivation = new Link(linkBar, SWT.NONE);
         lnkOfflineActivation
-                .setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATION));
+                .setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_KSE_ACTIVATION));
         lnkOfflineActivation.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 
         Label label2 = new Label(linkBar, SWT.SEPARATOR);
@@ -251,6 +488,33 @@ public class ActivationDialogV2 extends AbstractDialog {
         lnkConfigProxy.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 
         return buttonBar;
+    }
+    
+    private void layoutExecutionCompositeListener() {
+        isExpanded = !isExpanded;
+        layoutOrganization();
+    };
+    
+    private void layoutOrganization() {
+    	Display.getDefault().timerExec(10, new Runnable() {
+            @Override
+            public void run() {
+                organizationComposite.setVisible(isExpanded);
+                Point currentSize = getShell().getSize();
+                int detailsHeight = organizationComposite.getSize().y;
+                int newY;
+                if (!isExpanded) {
+                    ((GridData) organizationComposite.getLayoutData()).exclude = true;
+                    newY = currentSize.y - detailsHeight;
+                } else {
+                    ((GridData) organizationComposite.getLayoutData()).exclude = false;
+                    newY = currentSize.y + detailsHeight;
+                }
+                getShell().setSize(currentSize.x, newY);
+                organizationComposite.layout(true, true);
+                organizationComposite.getParent().layout();
+            }
+        });
     }
 
     @Override

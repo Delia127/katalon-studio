@@ -4,7 +4,8 @@ Bundle-Name: Objectrepository
 Bundle-SymbolicName: com.kms.katalon.composer.objectrepository;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.composer.objectrepository.provider
+Export-Package: com.kms.katalon.composer.objectrepository.dialog,
+ com.kms.katalon.composer.objectrepository.provider
 Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.composer.components,
  com.kms.katalon.entity,

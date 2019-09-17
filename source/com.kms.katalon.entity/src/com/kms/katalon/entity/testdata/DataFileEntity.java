@@ -26,6 +26,8 @@ public class DataFileEntity extends FileEntity {
     private DataFileDriverType driver;
 
     private String dataSourceUrl;
+    
+    private String driverClassName;
 
     private String sheetName;
 
@@ -75,6 +77,10 @@ public class DataFileEntity extends FileEntity {
 
     public void setDriver(DataFileDriverType driver) {
         this.driver = driver;
+    }
+    
+    public String getDriverClassName() {
+        return this.driverClassName;
     }
 
     public String getDataSourceUrl() {
@@ -274,6 +280,10 @@ public class DataFileEntity extends FileEntity {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+    
+    public void setDriverClassName(String driverClassName) {
+        this.driverClassName = driverClassName;
     }
     
     public void setProperties(Map<String, String> properties) {

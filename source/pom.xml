@@ -26,9 +26,6 @@
 		<module>com.kms.katalon.composer.import</module>
 		<module>com.kms.katalon.composer.integration.analytics</module>
 		<module>com.kms.katalon.composer.integration.qtest</module>
-		<module>com.kms.katalon.composer.integration.qtest.activation</module>
-		<module>com.kms.katalon.composer.integration.jira</module>
-		<module>com.kms.katalon.composer.integration.slack</module>
 		<module>com.kms.katalon.composer.integration.git</module>
 		<module>com.kms.katalon.composer.integration.kobiton</module>
 		<module>com.kms.katalon.composer.integration.cucumber</module>
@@ -53,6 +50,7 @@
 		<module>com.kms.katalon.composer.webui.objectspy</module>
 		<module>com.kms.katalon.composer.webui.recorder</module>
 		<module>com.kms.katalon.composer.webui</module>
+		<module>com.kms.katalon.composer.windows</module>
 		<module>com.kms.katalon.console</module>
 		<module>com.kms.katalon.constant</module>
 		<module>com.kms.katalon.controller</module>
@@ -61,6 +59,7 @@
 		<module>com.kms.katalon.core.webservice</module>
 		<module>com.kms.katalon.core.webui</module>
 		<module>com.kms.katalon.core.cucumber</module>
+		<module>com.kms.katalon.core.windows</module>
 		<module>com.kms.katalon.core</module>
 		<module>com.kms.katalon.custom</module>
 		<module>com.kms.katalon.dal.file</module>
@@ -69,6 +68,7 @@
 		<module>com.kms.katalon.execution.mobile</module>
 		<module>com.kms.katalon.execution.webui</module>
 		<module>com.kms.katalon.execution.webservice</module>
+		<module>com.kms.katalon.execution.windows</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
 		<module>com.kms.katalon.feature.qtest_edition</module>
@@ -76,8 +76,6 @@
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
 		<module>com.kms.katalon.integration.kobiton</module>
-		<module>com.kms.katalon.integration.jira</module>
-		<module>com.kms.katalon.jasper</module>
 		<module>com.kms.katalon.logging</module>
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.util</module>
@@ -93,7 +91,7 @@
 		<module>com.kms.katalon.tracking.service</module>
 		<module>com.kms.katalon.ansiconsole</module>
 		<module>com.kms.katalon.netlightbody</module>
-
+        <module>com.kms.katalon.poi</module>
 		<module>com.kms.katalon.platform.internal</module>
 	</modules>
 
@@ -102,12 +100,12 @@
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<platform.version>1.0.11</platform.version>
+		<platform.version>1.0.13</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>
 		<eclipse_repo_url>${eclipse_update_site}/eclipse/updates/4.6/</eclipse_repo_url>
-		<egit_repo_url>${eclipse_update_site}/egit/updates-4.4.1/</egit_repo_url>
+		<egit_repo_url>${eclipse_update_site}/egit/updates-4.6.1/</egit_repo_url>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

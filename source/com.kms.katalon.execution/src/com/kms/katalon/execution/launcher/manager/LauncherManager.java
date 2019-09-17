@@ -24,9 +24,9 @@ public class LauncherManager {
     private List<ILauncher> terminatedLaunchers;
 
     protected LauncherManager() {
-        runningLaunchers = new ArrayList<ILauncher>();
-        waitingLaunchers = new ArrayList<ILauncher>();
-        terminatedLaunchers = new ArrayList<ILauncher>();
+        runningLaunchers = Collections.synchronizedList(new ArrayList<ILauncher>());
+        waitingLaunchers = Collections.synchronizedList(new ArrayList<ILauncher>());
+        terminatedLaunchers = Collections.synchronizedList(new ArrayList<ILauncher>());
     }
 
     public static LauncherManager getInstance() {

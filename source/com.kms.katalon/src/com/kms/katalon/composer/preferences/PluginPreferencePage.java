@@ -32,8 +32,13 @@ public class PluginPreferencePage extends PreferencePage {
 
     @Override
     protected Control createContents(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout());
+        container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
+        
+        Composite composite = new Composite(container, SWT.NONE);
         composite.setLayout(new GridLayout(3, false));
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         Label lblPluginDirectory = new Label(composite, SWT.NONE);
         lblPluginDirectory.setText(StringConstants.PAGE_LBL_PLUGIN_DIRECTORY);

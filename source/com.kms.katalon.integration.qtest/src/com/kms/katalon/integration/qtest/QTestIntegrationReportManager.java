@@ -1,6 +1,7 @@
 package com.kms.katalon.integration.qtest;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -61,8 +62,6 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.util.DateUtil;
 import com.kms.katalon.integration.qtest.util.ZipUtil;
-import com.kms.katalon.jasper.pdf.TestCasePdfGenerator;
-import com.kms.katalon.jasper.pdf.exception.JasperReportException;
 import com.kms.katalon.logging.LogUtil;
 
 /**
@@ -154,12 +153,11 @@ public class QTestIntegrationReportManager {
      * @return
      * @throws QTestException
      * @throws IOException
-     * @throws JasperReportException
      * @throws URISyntaxException
      */
     public static QTestLog uploadTestLog(String projectDir, QTestLogUploadedPreview preparedTestCaseResult,
             String tempDir, TestSuiteLogRecord testSuiteLogRecord)
-            throws QTestException, IOException, JasperReportException, URISyntaxException {
+            throws QTestException, IOException, URISyntaxException {
 
         QTestProject qTestProject = preparedTestCaseResult.getQTestProject();
         QTestTestCase qTestCase = preparedTestCaseResult.getQTestCase();
@@ -236,7 +234,7 @@ public class QTestIntegrationReportManager {
                 } else {
                     File newReportFile = new File(logTempFolder, FilenameUtils.getBaseName(logFolder.getAbsolutePath())
                             + "." + formatType.getFileExtension());
-                    generateReportFile(formatType, newReportFile, testCaseLogRecord, testSuiteLogRecord);
+                    generateReportFile(formatType, newReportFile, testCaseLogRecord, testSuiteLogRecord, logFolder);
                 }
             }
 
@@ -280,8 +278,8 @@ public class QTestIntegrationReportManager {
     }
 
     private static void generateReportFile(ReportFormatType format, File destReportFile,
-            TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR)
-            throws IOException, JasperReportException, URISyntaxException {
+            TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR, File logFolder)
+            throws IOException, URISyntaxException {
         switch (format) {
             case CSV:
                 ReportUtil.writeLogRecordToCSVFile(testSuiteLR, destReportFile,
@@ -292,14 +290,30 @@ public class QTestIntegrationReportManager {
                         Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
                 break;
             case PDF:
-                TestCasePdfGenerator generator = new TestCasePdfGenerator(testCaseLogRecord,
-                        testSuiteLR.getLogFolder());
-                generator.exportToPDF(destReportFile.getAbsolutePath());
-                break;
+                checkPDFReportInProject(format, logFolder, destReportFile);
             default:
                 break;
         }
-
+    }
+    
+    private static void checkPDFReportInProject(ReportFormatType formatType, File logFolder, File destReportFile) {
+        try {
+            if(logFolder.exists()) {
+                File[] pdfReportFiles = getPDFReport(logFolder);
+                if (pdfReportFiles != null && pdfReportFiles.length > 0) {
+                    FileUtils.copyFile(pdfReportFiles[0], destReportFile);
+                }
+            }
+        } catch (IOException e) {
+            LogUtil.logError(e);
+        }
+    }
+    
+    private static File[] getPDFReport(File folder) {
+        return folder.listFiles(new FilenameFilter() { 
+            public boolean accept(File dir, String filename)
+                 { return filename.endsWith(".pdf"); }
+        } );
     }
 
     private static boolean isValidFileToAttach(File file, String projectDir) {

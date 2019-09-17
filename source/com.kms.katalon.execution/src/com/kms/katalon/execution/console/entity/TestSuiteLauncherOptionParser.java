@@ -77,10 +77,10 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         }
     };
 
-    private StringConsoleOption katalonStoreApiKeyOption = new StringConsoleOption() {
+    private StringConsoleOption katalonApiKeyOption = new StringConsoleOption() {
         @Override
         public String getOption() {
-            return ConsoleMain.KATALON_STORE_API_KEY_OPTION;
+            return ConsoleMain.KATALON_API_KEY_OPTION;
         };
 
         public boolean isRequired() {
@@ -98,7 +98,19 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return false;
         };
     };
+    
+    private StringConsoleOption katalonAnalyticsLicenseFile = new StringConsoleOption() {
 
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_ANALYTICS_LICENSE_FILE_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        }
+    };
+    
     protected StringConsoleOption installPluginOption = new StringConsoleOption() {
 
         @Override
@@ -109,6 +121,17 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         public boolean isRequired() {
             return false;
         }
+    };
+        
+    private StringConsoleOption katalonAnalyticsProjectId = new StringConsoleOption() {
+    	@Override
+    	public String getOption() {
+    		return ConsoleMain.KATALON_ANALYTICS_PROJECT_ID;
+    	};
+    	
+    	public boolean isRequired() {
+    		return false;
+    	};
     };
 
     protected StringConsoleOption testSuiteQuery = new StringConsoleOption() {
@@ -129,9 +152,11 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(testSuitePathOption);
         allOptions.add(browserTypeOption);
         allOptions.add(executionProfileOption);
-        allOptions.add(katalonStoreApiKeyOption);
+        allOptions.add(katalonApiKeyOption);
         allOptions.add(katalonStoreApiKeySecondOption);
+        allOptions.add(katalonAnalyticsLicenseFile);
         allOptions.add(installPluginOption);
+        allOptions.add(katalonAnalyticsProjectId);
         allOptions.add(testSuiteQuery);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null && overridingOptions.isEmpty()) {
@@ -210,6 +235,10 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         runConfig.setExecutionProfile(executionProfile);
         runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
         runConfig.setExecutionUUID(executionUUIDOption.getValue());
+        
+        Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
+        runConfig.setAdditionalInfo(additionalInfo);
+        
         runConfig.build(testSuite, executedEntity);
         GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
         return runConfig;

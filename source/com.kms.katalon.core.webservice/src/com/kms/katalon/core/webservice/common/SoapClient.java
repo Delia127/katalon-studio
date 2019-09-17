@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -160,7 +161,8 @@ public class SoapClient extends BasicRequestor {
         }
 
         URL oURL = new URL(endPoint);
-        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
+        Proxy proxy = request.getProxy() != null ? request.getProxy() : getProxy();
+        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
         if (con instanceof HttpsURLConnection) {
             ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
         }
@@ -308,7 +310,8 @@ public class SoapClient extends BasicRequestor {
             }
 
             URL oURL = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
+            Proxy proxy = request.getProxy() != null ? request.getProxy() : getProxy();
+            HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
             if (con instanceof HttpsURLConnection) {
                 ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
             }

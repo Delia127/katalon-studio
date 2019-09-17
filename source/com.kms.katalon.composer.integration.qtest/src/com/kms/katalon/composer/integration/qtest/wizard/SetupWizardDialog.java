@@ -562,4 +562,14 @@ public class SetupWizardDialog extends SimpleWizardDialog {
             }
         };
     }
+
+    @Override
+    public String getStepIndexAsString() {
+        return null;
+    }
+
+    @Override
+    public boolean isChild() {
+        return false;
+    }
 }

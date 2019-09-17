@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang.StringUtils
 
 import com.kms.katalon.core.exception.KatalonRuntimeException
+import com.kms.katalon.core.util.internal.GroovyConstants
 import com.kms.katalon.custom.parser.GlobalVariableParser
 import com.kms.katalon.entity.global.ExecutionProfileEntity
 import com.kms.katalon.entity.global.GlobalVariableEntity
@@ -72,6 +73,12 @@ public class GlobalVariable {
         profiles.each { p ->
             p.getGlobalVariableEntities().each {
                 String variableName = it.getName()
+				
+                boolean isValidVariableName = GroovyConstants.isValidVariableName(variableName)
+                if (!isValidVariableName) {
+                    return;	
+                }
+				
                 GlobalVariableEntity variable
                 if (declaredGlobalVariables.containsKey(variableName)) {
                     variable = declaredGlobalVariables.get(variableName)

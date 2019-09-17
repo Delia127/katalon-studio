@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -24,25 +24,31 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.NewProjectDialog;
-import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.CryptoUtil;
@@ -61,9 +67,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button cbxAutoSubmit, cbxAttachScreenshot, cbxAttachCaptureVideo;
 
-    private Text txtServerUrl, txtEmail, txtPassword;
+    private Text txtServerUrl, txtEmail, txtOrganization;
 
     private Label lblStatus;
+    
+    private Label lblStatusAccessProject;
 
     private Combo cbbProjects;
 
@@ -72,6 +80,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private List<AnalyticsProject> projects = new ArrayList<>();
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
+    
+    private AnalyticsProject selectProjectFromConfig;
+    
+    private AnalyticsTeam selectTeamFromConfig;
+    
+    private boolean canAccessProject = true;
 
     private Button btnCreate;
 
@@ -79,9 +93,22 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button chckEncrypt;
 
+    private String email, password, serverUrl;
+
+    private AnalyticsOrganization organization;
+
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        try {
+            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
+            serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+            email = analyticsSettingStore.getEmail(encryptionEnabled);
+            password = analyticsSettingStore.getPassword(encryptionEnabled);
+            organization = analyticsSettingStore.getOrganization();
+        } catch (Exception e) {
+            //ignore
+        }
     }
 
     @Override
@@ -128,43 +155,26 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         txtServerUrl = new Text(grpAuthentication, SWT.BORDER);
         txtServerUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtServerUrl.setEnabled(false);
+
+        Label lblOrganization = new Label(grpAuthentication, SWT.NONE);
+        lblOrganization.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ORGANIZATION);
+        
+        txtOrganization = new Text(grpAuthentication, SWT.BORDER);
+        txtOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtOrganization.setEnabled(false);
 
         Label lblEmail = new Label(grpAuthentication, SWT.NONE);
         lblEmail.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_EMAIL);
 
         txtEmail = new Text(grpAuthentication, SWT.BORDER);
         txtEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        Label lblPassword = new Label(grpAuthentication, SWT.NONE);
-        lblPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PASSWORD);
-
-        Composite passwordComposite = new Composite(grpAuthentication, SWT.NONE);
-        passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glPassword = new GridLayout(2, false);
-        glPassword.marginWidth = 0;
-        glPassword.marginHeight = 0;
-        passwordComposite.setLayout(glPassword);
-
-        txtPassword = new Text(passwordComposite, SWT.BORDER);
-        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtEmail.setEnabled(false);
 
         chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
         chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true, 2, 1));
         chckEncrypt.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_ANTHENTICATION_ENCRYPTION);
-
-        Composite compConnect = new Composite(grpAuthentication, SWT.NONE);
-        compConnect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        GridLayout glConnect = new GridLayout(2, false);
-        glConnect.marginHeight = 0;
-        glConnect.marginWidth = 0;
-        compConnect.setLayout(glConnect);
-
-        btnConnect = new Button(compConnect, SWT.NONE);
-        btnConnect.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
-
-        lblStatus = new Label(compConnect, SWT.NONE);
-        lblStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        chckEncrypt.setEnabled(false);
     }
 
     private void createSelectGroup() {
@@ -179,16 +189,39 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         cbbTeams = new Combo(grpSelect, SWT.READ_ONLY);
         cbbTeams.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        cbbTeams.setEnabled(false);
 
         Label lblProject = new Label(grpSelect, SWT.NONE);
         lblProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PROJECT);
 
         cbbProjects = new Combo(grpSelect, SWT.READ_ONLY);
         cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        cbbProjects.setEnabled(false);
 
         btnCreate = new Button(grpSelect, SWT.NONE);
         btnCreate.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         btnCreate.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_NEW_PROJECT);
+        btnCreate.setEnabled(false);
+
+        Composite compConnect = new Composite(grpSelect, SWT.NONE);
+        compConnect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
+        GridLayout glConnect = new GridLayout(4, false);
+        compConnect.setLayout(glConnect);
+
+        GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gdBtn.widthHint = 100;
+        
+        btnConnect = new Button(compConnect, SWT.NONE);
+        btnConnect.setLayoutData(gdBtn);
+        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
+        btnConnect.setEnabled(false);
+
+        lblStatus = new Label(compConnect, SWT.NONE);
+        lblStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+        lblStatusAccessProject = new Label(compConnect, SWT.NONE);
+        lblStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        lblStatusAccessProject.setForeground(ColorUtil.getTextErrorColor());
     }
 
     private void createTestResultGroup() {
@@ -202,29 +235,31 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAutoSubmit = new Button(grpTestResult, SWT.CHECK);
         cbxAutoSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAutoSubmit.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_AUTO_SUBMIT);
+        cbxAutoSubmit.setEnabled(false);
 
-        Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
-        GridLayout glGrpAttach = new GridLayout(1, false);
-        glGrpAttach.marginLeft = 15;
-        attachComposite.setLayout(glGrpAttach);
-        attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
-        cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
-
-        cbxAttachCaptureVideo = new Button(attachComposite, SWT.CHECK);
-        cbxAttachCaptureVideo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbxAttachCaptureVideo
-                .setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_CAPTURED_VIDEO);
-        cbxAttachCaptureVideo.setVisible(false);
+//        Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
+//        GridLayout glGrpAttach = new GridLayout(1, false);
+//        glGrpAttach.marginLeft = 15;
+//        attachComposite.setLayout(glGrpAttach);
+//        attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+//        cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
+//        cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+//        cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
+//
+//        cbxAttachCaptureVideo = new Button(attachComposite, SWT.CHECK);
+//        cbxAttachCaptureVideo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+//        cbxAttachCaptureVideo
+//                .setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_CAPTURED_VIDEO);
     }
 
     @Override
     protected void initialize() {
         super.initialize();
-        fillData();
-        changeEnabled();
+        if (isNoInfo()) {
+            katalonLogin();
+        } else {
+            fillData();
+        }
     }
 
     @Override
@@ -243,7 +278,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     @Override
     public boolean performOk() {
-
+        
         if (!isInitialized()) {
             return true;
         }
@@ -257,26 +292,42 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         if (cbbTeams.getSelectionIndex() == -1) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_CONNECT_SUCCESSFULLY);
+                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_SET_TEAM);
+            return false;
+        }
+        
+        if (cbbProjects.getSelectionIndex() == -1) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_SET_PROJECT);
             return false;
         }
 
-        if (StringUtils.isEmpty(txtEmail.getText()) || StringUtils.isEmpty(txtPassword.getText())
+        if (cbbProjects.getSelectionIndex() == -1) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_SET_PROJECT);
+            return false;
+        }
+
+        if (StringUtils.isEmpty(txtEmail.getText())
                 || StringUtils.isEmpty(txtServerUrl.getText())) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
                     ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION);
             return false;
         }
 
-        changeEnabled();
         updateDataStore();
         return super.performOk();
     }
 
     @Override
     public boolean performCancel() {
-        IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-        eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
+        try {
+            analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
+            IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+            eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
         return super.performCancel();
     }
 
@@ -297,53 +348,77 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private void fillData() {
         try {
             boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
+            enableAnalyticsIntegration.setSelection(encryptionEnabled);
 
             cbbTeams.setItems();
             cbbProjects.setItems();
 
-            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
-            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-            String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
-
-            if (enableAnalyticsIntegration.getSelection()) {
-                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
-                        analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                        analyticsSettingStore.getEmail(encryptionEnabled), 
-                        password, 
-                        analyticsSettingStore);
-                if (tokenInfo == null){
-                    txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
-                    txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
-                    maskPasswordField();
-                    return;
-                }
-                teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                        analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
-                        new ProgressMonitorDialog(getShell()));
-                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                        teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
-                        new ProgressMonitorDialog(getShell()));
-
-                if (teams != null && !teams.isEmpty()) {
-                    cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-                    cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
-                }
-
-                if (teams != null && teams.size() > 0) {
-                    setProjectsBasedOnTeam(teams, projects, analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                            analyticsSettingStore.getEmail(encryptionEnabled), password);
+            chckEncrypt.setSelection(encryptionEnabled);
+            txtEmail.setText(email);
+            txtServerUrl.setText(serverUrl);
+            txtOrganization.setText(analyticsSettingStore.getOrganization().getName());
+            cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
+//            cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
+//            cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
+            
+            selectProjectFromConfig = analyticsSettingStore.getProject();
+            selectTeamFromConfig = analyticsSettingStore.getTeam();
+            
+            teams.clear();
+            projects.clear();
+            
+            if (selectTeamFromConfig != null) {
+                teams.add(selectTeamFromConfig);
+                cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                cbbTeams.select(indexSelectTeam);
+                setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+                if (selectProjectFromConfig != null) {
+                    projects.add(selectProjectFromConfig);
                 }
             }
 
-            txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
-            txtPassword.setText(password);
-            chckEncrypt.setSelection(analyticsSettingStore.isEncryptionEnabled());
-            maskPasswordField();
-            txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
-            cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
-            cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
-            cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
+            if (enableAnalyticsIntegration.getSelection()) {
+                Executors.newFixedThreadPool(1).submit(() -> {
+                    UISynchronizeService.syncExec(
+                            () -> {
+                                cbbTeams.setEnabled(false);
+                                cbbProjects.setEnabled(false);
+                                btnConnect.setEnabled(false);
+                                setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
+                            });
+                    UISynchronizeService.syncExec(() -> {
+                        try {
+                            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+                            if (tokenInfo == null) {
+                                return;
+                            }
+                            getTeam(serverUrl, organization.getId(), tokenInfo);
+                            if (teams != null && !teams.isEmpty()) {
+                                if (!checkUserCanAccessProject()) {
+                                    canAccessProject = false;
+                                    projects.clear();
+                                    teams.add(selectTeamFromConfig);
+                                    projects.add(selectProjectFromConfig);
+                                    lblStatusAccessProject.setText(ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
+                                } else {
+                                    getProject(serverUrl, teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo);
+                                }
+                                cbbTeams.setItems(
+                                        AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                                int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                                cbbTeams.select(indexSelectTeam);
+                                setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+                            }
+                        } catch (Exception e) {
+                            LoggerSingleton.logError(e);
+                        }
+                        cbbTeams.setEnabled(true);
+                        cbbProjects.setEnabled(true);
+                        btnConnect.setEnabled(true);
+                    });
+                });
+            }
 
             ScopedPreferenceStore preferenceStore = PreferenceStoreManager
                     .getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
@@ -353,33 +428,76 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             if (!StringUtils.isEmpty(preferenceEmail) && !StringUtils.isEmpty(preferencePassword)) {
                 txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
-                txtPassword.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword)));
+                password = CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword));
                 // empty preference store password
                 preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
             }
-
+            changeEnabled();
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
     }
 
-    private void maskPasswordField() {
-        txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
+    private void getTeam(String serverUrl, Long orgId, AnalyticsTokenInfo tokenInfo) {
+        try {
+            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
+            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled), orgId, tokenInfo);
+            setProgressMessage("", false);
+        } catch (Exception e) {
+            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+        }
+    }
+    
+    private void getProject(final String serverUrl, final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
+        try {
+            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo);
+            setProgressMessage("", false);
+        } catch (Exception e) {
+            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+        }
+    }
+    
+    private void setProgressMessage(String message, boolean isError) {
+        lblStatus.setText(message);
+        if (isError) {
+            lblStatus.setForeground(ColorUtil.getTextErrorColor());
+        } else {
+            lblStatus.setForeground(ColorUtil.getTextRunningColor());
+        }
+        lblStatus.getParent().layout();
+    }
+
+    private boolean checkUserCanAccessProject() throws IOException {
+        AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
+
+        if (currentTeam.getId() != null) {
+            long currentTeamId = currentTeam.getId();
+            for (AnalyticsTeam team : teams) {
+                long teamId = team.getId();
+                if (teamId == currentTeamId) {
+                    return true;
+                }
+            }
+            return false;
+        } 
+        return true;
     }
 
     private void changeEnabled() {
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
         btnConnect.setEnabled(isAnalyticsIntegrated);
-        txtPassword.setEnabled(isAnalyticsIntegrated);
-        txtEmail.setEnabled(isAnalyticsIntegrated);
-        txtServerUrl.setEnabled(isAnalyticsIntegrated);
-        cbbProjects.setEnabled(isAnalyticsIntegrated);
-        btnCreate.setEnabled(isAnalyticsIntegrated);
-        cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
-        cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
-        cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
         chckEncrypt.setEnabled(isAnalyticsIntegrated);
+        cbbProjects.setEnabled(isAnalyticsIntegrated);
+        cbbTeams.setEnabled(isAnalyticsIntegrated);
+        if (canAccessProject && isAnalyticsIntegrated) {
+            btnCreate.setEnabled(true);
+        } else {
+            btnCreate.setEnabled(false);
+        }
+        cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
+//        cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
+//        cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
     }
 
     private boolean isIntegratedSuccessfully() {
@@ -393,94 +511,121 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void updateDataStore() {
         try {
-            boolean encryptionEnabled = chckEncrypt.getSelection();
+            boolean encryptionEnabled = enableAnalyticsIntegration.getSelection();
             analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
-            analyticsSettingStore.setServerEndPoint(txtServerUrl.getText(), encryptionEnabled);
-            analyticsSettingStore.setEmail(txtEmail.getText(), encryptionEnabled);
-            analyticsSettingStore.setPassword(txtPassword.getText(), encryptionEnabled);
             analyticsSettingStore.enableEncryption(encryptionEnabled);
             if (!teams.isEmpty()) {
                 analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
+                if (!projects.isEmpty()) {
+                    analyticsSettingStore.setProject(projects.get(cbbProjects.getSelectionIndex()));
+                }
             }
-            analyticsSettingStore.setProject(
-                    cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
-            analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
+//            analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
             analyticsSettingStore.setAttachLog(enableAnalyticsIntegration.getSelection());
-            analyticsSettingStore.setAttachCapturedVideos(cbxAttachCaptureVideo.getSelection());
+//            analyticsSettingStore.setAttachCapturedVideos(cbxAttachCaptureVideo.getSelection());
 
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
             eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (IOException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
+    }
+
+    private boolean isNoInfo() {
+        if (email.isEmpty() || password.isEmpty() || organization.getId() == null) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean katalonLogin() {
+        try {
+            Shell shell = Display.getCurrent().getActiveShell();
+            KStoreLoginDialog dialog = new KStoreLoginDialog(shell);
+            if (dialog.open() == Dialog.OK) {
+                email = dialog.getUsername();
+                password = dialog.getPassword();
+                organization = analyticsSettingStore.getOrganization();
+
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, email, true);
+                String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
+                dialog.close();
+                fillData();
+                return true;
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return false;
     }
 
     private void addListeners() {
         enableAnalyticsIntegration.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                changeEnabled();
+                if (isNoInfo()) {
+                    boolean result = katalonLogin();
+                    enableAnalyticsIntegration.setSelection(result);
+                } else {
+                    changeEnabled();
+                    if (enableAnalyticsIntegration.getSelection()) {
+                       connect();
+                    }
+                }
             }
         });
 
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String serverUrl = txtServerUrl.getText();
-                String email = txtEmail.getText();
-                String password = txtPassword.getText();
-                if (StringUtils.isEmpty(serverUrl) || StringUtils.isEmpty(email) || StringUtils.isEmpty(password)) {
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                            ComposerAnalyticsStringConstants.ERROR,
-                            ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION);
-                    return;
-                }
-                cbbTeams.setItems();
-                cbbProjects.setItems();
-                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-                if (tokenInfo == null) {
-                    return;
-                }
-                teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(getShell()));
-                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                        teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-                        tokenInfo,
-                        new ProgressMonitorDialog(getShell()));
-
-                if (teams != null && !teams.isEmpty()) {
-                    cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-                    cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
-                }
-
-                setProjectsBasedOnTeam(teams, projects, serverUrl, email, password);
+                connect();
             }
         });
 
         cbbTeams.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String serverUrl = txtServerUrl.getText();
-                String email = txtEmail.getText();
-                String password = txtPassword.getText();
-                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                        teams.get(cbbTeams.getSelectionIndex()), tokenInfo, new ProgressMonitorDialog(getShell()));
-                setProjectsBasedOnTeam(teams, projects, serverUrl, email, password);
+                cbbProjects.setEnabled(false);
+                Executors.newFixedThreadPool(1).submit(() -> {
+                    UISynchronizeService.syncExec(() -> setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false));
+                    UISynchronizeService.syncExec(() -> {
+                        AnalyticsTeam selectTeamFromUser = teams.get(cbbTeams.getSelectionIndex());
+                        if (!canAccessProject) {
+                            if (selectTeamFromUser.equals(selectTeamFromConfig)) {
+                                setProgressMessage("", false);
+                                cbbProjects.setEnabled(true);
+                                return;
+                            } else {
+                                teams.remove(selectTeamFromConfig);
+                                cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                                int indexSelectTeam = teams.indexOf(selectTeamFromUser);
+                                cbbTeams.select(indexSelectTeam);
+                                lblStatusAccessProject.setText("");
+                                canAccessProject = true;
+                            }
+                        }
+
+                        AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+
+                        getProject(serverUrl, selectTeamFromUser, tokenInfo);
+
+                        setProjectsBasedOnTeam(selectTeamFromUser, projects);
+                        cbbProjects.setEnabled(true);
+                        setProgressMessage("", false);
+                    });
+                });
             }
         });
 
         btnCreate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String serverUrl = txtServerUrl.getText();
-                String email = txtEmail.getText();
-                String password = txtPassword.getText();
-
                 AnalyticsTeam team = null;
                 if (teams != null && teams.size() > 0) {
-                    team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    team = teams.get(cbbTeams.getSelectionIndex());
                 }
 
                 NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(), serverUrl,
@@ -488,17 +633,25 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 if (dialog.open() == Dialog.OK) {
                     AnalyticsProject createdProject = dialog.getAnalyticsProject();
                     if (createdProject != null) {
-                        AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
-                                password, analyticsSettingStore);
-                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, team,
-                                tokenInfo, new ProgressMonitorDialog(getShell()));
-                        if (projects == null) {
-                            return;
-                        }
-                        cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects)
-                                .toArray(new String[projects.size()]));
-                        cbbProjects.select(
-                                AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+                        cbbProjects.setEnabled(false);
+                        Executors.newFixedThreadPool(1).submit(() -> {
+                            UISynchronizeService.syncExec(() -> setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false));
+                            UISynchronizeService.syncExec(() -> {
+                                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+                                getProject(serverUrl, teams.get(cbbTeams.getSelectionIndex()), tokenInfo);
+                                if (projects == null) {
+                                    cbbProjects.setEnabled(true);
+                                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+                                    return;
+                                }
+                                cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects)
+                                        .toArray(new String[projects.size()]));
+                                cbbProjects.select(
+                                        AnalyticsAuthorizationHandler.getProjectIndex(createdProject, projects));
+                                cbbProjects.setEnabled(true);
+                                setProgressMessage("", false);
+                            });
+                        });
                     }
                 }
             }
@@ -507,26 +660,79 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAutoSubmit.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
+//                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
+//                cbxAttachCaptureVideo.setSelection(cbxAutoSubmit.getSelection());
             }
         });
-        
-        cbxAttachScreenshot.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (cbxAttachScreenshot.getSelection() == true) {
-                    cbxAutoSubmit.setSelection(true);  
+
+//        cbxAttachScreenshot.addSelectionListener(new SelectionAdapter() {
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                if (cbxAttachScreenshot.getSelection()) {
+//                    cbxAutoSubmit.setSelection(true);
+//                }
+//            }
+//        });
+//
+//        cbxAttachCaptureVideo.addSelectionListener(new SelectionAdapter() {
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                if (cbxAttachCaptureVideo.getSelection()) {
+//                    cbxAutoSubmit.setSelection(true);
+//                }
+//            }
+//        });
+
+    }
+    
+    private void connect() {
+        cbbTeams.setEnabled(false);
+        cbbProjects.setEnabled(false);
+        btnCreate.setEnabled(false);
+
+        cbbTeams.setItems();
+        cbbProjects.setItems();
+
+        lblStatusAccessProject.setText("");
+
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService.syncExec(
+                    () ->  setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
+            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
+                    analyticsSettingStore);
+            if (tokenInfo == null) {
+                return;
+            }
+            UISynchronizeService.syncExec(() -> {
+                getTeam(serverUrl, organization.getId(), tokenInfo);
+                if (!teams.isEmpty()) {
+                    getProject(serverUrl,
+                            teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+                            tokenInfo);
+
+                    cbbTeams.setItems(
+                            AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                    int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                    cbbTeams.select(indexSelectTeam);
+
+                    setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+                    lblStatusAccessProject.setText("");
+                } else {
+                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
+                            ComposerAnalyticsStringConstants.WARN,
+                            ComposerIntegrationAnalyticsMessageConstants.REPORT_WARNING_MSG_NO_TEAM);
                 }
-            }
-        });
+                cbbTeams.setEnabled(true);
+                cbbProjects.setEnabled(true);
+                btnCreate.setEnabled(true);
+            });
+         });
     }
 
-    private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects, String serverUrl,
-            String email, String password) {
-        AnalyticsTeam team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
-
+    private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
         if (projects != null && !projects.isEmpty()) {
-            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.setItems(
+                    AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
         } else {
             cbbProjects.clearSelection();

@@ -6,12 +6,14 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 
 public class ImageConstants {
-
+   
     public static final Image IMG_BRANDING = ImageManager.getImage(IImageKeys.KATALON_LOGO_202);
 
     public static final Image IMG_FAQ = ImageManager.getImage(IImageKeys.FAQ_34);
 
     public static final Image IMG_USER_GUIDE = ImageManager.getImage(IImageKeys.USER_GUIDE_34);
+    
+    public static final Image IMG_KATALON_ACCOUNT_24 = ImageManager.getImage(IImageKeys.KATALON_ACCOUNT_24);
     
     public static final Image IMG_KATALON_STORE = ImageManager.getImage(IImageKeys.KATALON_STORE_34);
     
@@ -109,6 +111,23 @@ public class ImageConstants {
     public static final Image IMG_INTRO_SCREEN_WELCOME = ImageManager.getImage(IImageKeys.INTRO_SCREEN_WELCOME);
     
     public static final Image IMG_INTRO_SCREEN_WELCOME_SMALL = ImageManager.getImage(IImageKeys.INTRO_SCREEN_WELCOME_SMALL);
+    
+    public static final Image IMG_INTRO_SCREEN_TITLE = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_TITLE);
+    
+    public static final Image IMG_INTRO_SCREEN_WEB_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_WEB_TESTING);
+    
+    public static final Image IMG_INTRO_SCREEN_API_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_API_TESTING);    
+    
+    public static final Image IMG_INTRO_SCREEN_MOBILE_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_MOBILE_TESTING);   
+    
+    public static final Image IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING);   
+    
+    public static final Image IMG_INTRO_SCREEN_PLUGIN_STORE = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_PLUGIN_STORE);  
+    
+    public static final Image IMG_INTRO_SCREEN_ADVANCED_REPORT = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_ADVANCED_REPORT); 
+    
+    public static final Image IMG_INTRO_SCREEN_DESKTOP_APPS_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_DESKTOP_APPS_TESTING);
+
 
     // Activation
     public static final Image KATALON_IMAGE = ImageManager.getImage(IImageKeys.LOGO_16);
@@ -126,4 +145,8 @@ public class ImageConstants {
     public static final Image FORUM_SEARCH_BOX = ImageManager.getImage(IImageKeys.FORUM_SEARCH_BOX);
     
     public static final Image FORUM_SEARCH_ICON = ImageManager.getImage(IImageKeys.FORUM_SEARCH_ICON);
+
+    public static final Image IMG_INTRO_SCREEN_SDLC_INTEGRATION = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_SDLC_INTEGRATION);
+
+    public static final Image IMG_INTRO_SCREEN_BDD_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_BDD_TESTING);
 }

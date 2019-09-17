@@ -14,6 +14,7 @@ Export-Package: com.kms.katalon.about.dialog,
  com.kms.katalon.composer.parts,
  com.kms.katalon.constants,
  com.kms.katalon.core.application,
+ com.kms.katalon.plugin.dialog,
  com.kms.katalon.util
 Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.constant,
@@ -82,10 +83,11 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.groovy,
  com.kms.katalon.custom,
  org.eclipse.ui.workbench,
- org.eclipse.e4.ui.css.swt.theme,
  org.codehaus.groovy.eclipse.ui,
  cucumber.eclipse.editor,
- com.kms.katalon.execution.webui
+ com.kms.katalon.execution.webui,
+ com.kms.katalon.integration.analytics,
+ org.eclipse.e4.ui.css.swt.theme
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: 

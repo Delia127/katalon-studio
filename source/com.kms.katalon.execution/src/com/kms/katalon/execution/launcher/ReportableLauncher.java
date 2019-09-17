@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -19,6 +21,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -33,6 +36,7 @@ import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
@@ -40,6 +44,7 @@ import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.IExecutedEntity;
+import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunable;
@@ -48,6 +53,7 @@ import com.kms.katalon.execution.entity.TestCaseExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutionEvent;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -56,7 +62,6 @@ import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
@@ -71,22 +76,43 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
+    
+    private void sendTrackingActivity() {
+        ReportIntegrationContribution analyticsProvider = ReportIntegrationFactory.getInstance().getAnalyticsProvider();
+        String machineId = getMachineId();
+        String sessionId = getExecutionUUID();
+        Date startTime = getStartTime(); 
+        Date endTime = getEndTime(); 
+        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+        Long organizationId = OrganizationHandler.getOrganizationId();
+        ExecutorService executors = Executors.newFixedThreadPool(2);
+        executors.submit(() -> {
+            analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
+        });
+     }
 
     @Override
     protected void onStartExecution() {
         super.onStartExecution();
 
         startTime = new Date();
+        if (parentLauncher == null && (getExecutedEntity() instanceof Reportable)) {
+            sendTrackingActivity();
+        }
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
 
     @Override
-    protected void preExecutionComplete() {
+    protected void preExecutionComplete(boolean runTestSuite) {
+        this.endTime = new Date();
+        if (parentLauncher == null && (getExecutedEntity() instanceof Reportable)) {
+            sendTrackingActivity();
+        }
+
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
-
-        this.endTime = new Date();
+        
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -95,8 +121,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT);
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
-
-            uploadReportToIntegratingProduct(suiteLogRecord);
+            
+            if (runTestSuite) {
+            	ReportFolder reportFolder = new ReportFolder(suiteLogRecord.getLogFolder());
+            	uploadReportToIntegratingProduct(reportFolder);
+            }
 
             sendReport(suiteLogRecord);
 
@@ -141,6 +170,18 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 LogUtil.logError(e);
             }
         }
+    }
+    
+    protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {
+    	String projectFolder = reportEntity.getProject().getFolderLocation();
+    	List<String> paths = new ArrayList<>();
+    	for (ReportItemDescription reportItemDescription : reports) {
+            String path = projectFolder + File.separator + reportItemDescription.getReportLocation();
+            paths.add(path);
+        }
+    	paths.add(reportCollectionFile);
+    	ReportFolder reportFolder = new ReportFolder(paths);
+    	uploadReportToIntegratingProduct(reportFolder);
     }
 
     private boolean needToRerun() {
@@ -223,9 +264,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             // setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
             // ReportUtil.writeJsonReport(suiteLog, reportFolder);
 
-//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
-//            ReportUtil.writeJUnitReport(suiteLog, reportFolder);
-//            LogUtil.logInfo("Reports were generated at folder: " + reportFolder.getAbsolutePath());
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
+            LogUtil.logInfo("Start generating JUnit report folder at: " + reportFolder.getAbsolutePath() + "...");
+            ReportUtil.writeJUnitReport(suiteLog, reportFolder);
+            LogUtil.logInfo("JUnit report were generated at folder: " + reportFolder.getAbsolutePath());
 
             copyReport();
             return suiteLog;
@@ -282,7 +324,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    protected void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLog) {
+    protected void uploadReportToIntegratingProduct(ReportFolder reportFolder) {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -300,9 +342,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
-
-                reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), suiteLog);
-
+                if (reportFolder.isRunTestSuite()) {
+                    reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), reportFolder);
+                } else {
+                    reportContributorEntry.getValue().uploadTestSuiteCollectionResult(reportFolder);
+                }
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
@@ -454,9 +498,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     .get(index);
             for (int loopTime = 0; loopTime < testCaseExecutedEntity.getLoopTimes(); loopTime++) {
                 TestStatus testStatus = getResult().getStatuses()[iterationIndex];
+                Date tcStartTime = testStatus.getStartTime();
+                Date tcEndTime = testStatus.getEndTime();
                 testCaseContexts.add(TestCaseExecutionContextImpl.Builder
                         .create(testCaseExecutedEntity.getSourceId(), testCaseExecutedEntity.getSourceId())
                         .withTestCaseStatus(testStatus.getStatusValue().name())
+                        .withStartTime(tcStartTime != null ? tcStartTime.getTime() : 0L)
+                        .withEndTime(tcEndTime != null ? tcEndTime.getTime() : 0L)
                         .withMessage(testStatus.getStackTrace())
                         .build());
                 iterationIndex++;

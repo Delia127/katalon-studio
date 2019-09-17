@@ -53,6 +53,8 @@ public class ColorUtil {
     private static final String COMPOSITE_HEADER_BACKGROUND_COLOR = "#43515a";
     
     private static final String DISABLED_TEXT_COLOR = "#bdbdbd";
+    
+    private static final String SELECTED_ITEM_BLUE_COLOR = "#007AFF";
 
     private static Display display = Display.getCurrent();
 
@@ -79,7 +81,7 @@ public class ColorUtil {
     }
 
     public static Color getSelectedTableItemBackgroundColor() {
-        return display.getSystemColor(SWT.COLOR_LIST_SELECTION);
+        return getColor(SELECTED_ITEM_BLUE_COLOR);
     }
 
     public static Color getEvenTableItemBackgroundColor() {
@@ -98,11 +100,27 @@ public class ColorUtil {
         }
     }
     
+    public static Color getPartBackgroundColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME);
+        } else {
+            return getWhiteBackgroundColor();
+        }
+    }
+    
     public static Color getCompositeBackgroundColorForDialog() {
         if (ComponentBundleActivator.isDarkTheme(display)) {
             return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG);
         } else {
             return ColorUtil.getWhiteBackgroundColor();
+        }
+    }
+    
+    public static Color getCompositeBackgroundColorForSashform() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG);
+        } else {
+            return ColorUtil.getDefaultBackgroundColor();
         }
     }
 
@@ -203,6 +221,11 @@ public class ColorUtil {
     public static Color getTextSuccessfulColor() {
         return display.getSystemColor(SWT.COLOR_DARK_GREEN);
     }
+    
+    public static Color getTextRunningColor() {
+        return display.getSystemColor(SWT.COLOR_DARK_GREEN);
+    }
+
 
     public static Color getTooltipPlaceHolderForegroundColor() {
         return getColor(TOOLTIP_TEXT_COLOR);

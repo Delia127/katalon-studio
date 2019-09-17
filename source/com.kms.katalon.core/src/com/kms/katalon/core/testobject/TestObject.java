@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.WebElement;
 
-public class TestObject implements SelectorCollector {
+public class TestObject implements SelectorCollector, ITestObject {
 
     private TestObject parentObject; // Typically is parent Frame
 
@@ -25,7 +25,7 @@ public class TestObject implements SelectorCollector {
     private boolean useRelativeImagePath;
 
     private SelectorMethod selectorMethod = SelectorMethod.BASIC;
-    
+
     private Map<SelectorMethod, String> selectorCollection;
 
     private WebElement cachedWebElement;
@@ -288,6 +288,7 @@ public class TestObject implements SelectorCollector {
      * 
      * @return the id of this test object
      */
+    @Override
     public String getObjectId() {
         return objectId;
     }

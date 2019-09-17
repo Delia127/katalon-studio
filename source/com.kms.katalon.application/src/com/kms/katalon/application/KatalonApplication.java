@@ -45,6 +45,13 @@ public class KatalonApplication {
         }
     }
 
+    /**
+     * TODO: Implement to get the unique Machine ID. The USER_KEY is the temporary ID.
+     */
+    public static String getMachineId() {
+        return USER_KEY;
+    }
+
     private static String getDefaultLocalName() {
         String hostName;
         try {
@@ -55,7 +62,7 @@ public class KatalonApplication {
         return hostName;
     }
 
-    private static String getMacAddress() {
+    public static String getMacAddress() {
         String macAdress = "";
         try {
             macAdress = NetworkUtil.getMacAddress(NetworkUtil.getLocalHostAddress());

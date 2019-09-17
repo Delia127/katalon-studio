@@ -56,7 +56,7 @@ public class RecentProjectHandler {
      */
     @Inject
     @Optional
-    private void openLastRecentProject(@UIEventTopic(EventConstants.WORKSPACE_PLUGIN_LOADED) Object object) {
+    private void openLastRecentProject(@UIEventTopic(EventConstants.ACTIVATION_CHECKED) Object object) {
         if (ProjectController.getInstance().getCurrentProject() != null) {
             return;
         }
@@ -76,7 +76,7 @@ public class RecentProjectHandler {
 
                 IPreferenceStore store = PreferenceStoreManager.getPreferenceStore(getClass());
                 String latestOpenedProject = store.getString(ProjectPreferenceConstants.LATEST_OPENED_PROJECT);
-                if (StringUtils.isNotEmpty(latestOpenedProject)) {
+                if (StringUtils.isNotEmpty(latestOpenedProject) && ProjectController.getInstance().getProject(latestOpenedProject) != null) {
                     // Open project
                     eventBroker.send(EventConstants.PROJECT_OPEN_LATEST, latestOpenedProject);
                 }

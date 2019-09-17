@@ -87,6 +87,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT;
     
+    public static String PREF_LBL_LOG_TEST_STEPS;
+    
     public static String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT;
     
     public static String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT;
@@ -272,6 +274,16 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PREF_FAILED_APACHE_MAIL_PREFIX_ERROR_MSG;
 
     public static String PREF_REPLACEMENT_APACHE_MAIL_ERROR_MSG;
+    
+    public static String DIA_API_KEY;
+    
+    public static String DIA_ANALYTICS_PROJECT;
+    
+    public static String DIA_TITLE_TEAM;
+    
+    public static String DIA_TITLE_PROJECT;
+    
+    public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
 
     // LogViewerPart
     public static String DIA_WARN_TEST_CASE_NOT_FOUND;
@@ -316,7 +328,7 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_MSG_CONFIGURATION_IS_REQUIRED;
     
-    public static String KSTORE_API_KEY_USAGE;
+    public static String API_KEY_USAGE;
 
     // MobileDeviceUIProvider
     public static String DIA_MSG_ANDROID_SDK_MISSING;
@@ -346,6 +358,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE;
     
     public static String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
+    
+    public static String REPORT_MSG_MUST_ENTER_API_KEY;
 
     static {
         // initialize resource bundle

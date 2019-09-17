@@ -29,11 +29,14 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.activation.dialog.SignupDialog.AuthenticationInfo;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.license.LicenseService;
+import com.kms.katalon.license.models.License;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -242,10 +245,11 @@ public class ActivationDialog extends Dialog {
             @Override
             public void run() {
                 StringBuilder errorMessage = new StringBuilder();
-                boolean result = ActivationInfoCollector.activate(username, password,
+                String machineId = MachineUtil.getMachineId();
+                License license = ActivationInfoCollector.activate(username, password, machineId,
                         errorMessage);
                 lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
-                if (result == true) {
+                if (license != null) {
                     setReturnCode(Window.OK);
                     close();
                 } else {

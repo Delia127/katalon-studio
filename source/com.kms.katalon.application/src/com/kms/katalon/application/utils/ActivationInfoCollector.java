@@ -3,7 +3,11 @@ package com.kms.katalon.application.utils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.List;
+import java.security.GeneralSecurityException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,9 +15,20 @@ import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.TestOpsFeatureActivator;
+import com.kms.katalon.feature.TestOpsFeatureKey;
+import com.kms.katalon.license.LicenseService;
+import com.kms.katalon.license.models.Feature;
+import com.kms.katalon.license.models.License;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -21,35 +36,102 @@ public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
+    private static boolean activated = false;
+
     protected ActivationInfoCollector() {
     }
 
-    public static boolean isActivated() {
-        String activatedVal = ApplicationInfo.getAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME);
-        if (activatedVal == null) {
-            return false;
-        }
-        try {
-            String updatedVersion = ApplicationInfo
-                    .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
-            if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
-                setActivatedVal();
-                return true;
-            }
+    public static void setActivated(boolean activated) {
+        ActivationInfoCollector.activated = activated;
+    }
 
-            String[] activateParts = activatedVal.split("_");
-            String oldVersion = new StringBuilder(activateParts[0]).reverse().toString();
-            String curVersion = ApplicationInfo.versionNo().replaceAll("\\.", "");
-            if (oldVersion.equals(curVersion) == false) {
+    public static boolean isActivated() {
+        return activated;
+    }
+    
+    public static boolean checkAndMarkActivatedForGUIMode() {
+        try {
+            String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+            License license = parseLicense(jwsCode, null);
+            
+            if (license != null) {
+                boolean isOffline = license.getFeatures()
+                        .stream().anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
+                
+                if (!isOffline) {
+                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    String machineId = MachineUtil.getMachineId();
+                    license = activate(email, password, machineId, null);
+                }
+                
+                if (license != null) {
+                    enableFeatures(license);
+                    markActivatedLicenseCode(license.getJwtCode());
+                    activated = true;
+                }
+            }
+        } catch (Exception ex) {
+            activated = false;
+            LogUtil.logError(ex);
+        }
+        
+        return activated;
+    }
+
+    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey) {
+        try {
+            String machineId = MachineUtil.getMachineId();
+            License license = activate(null, apiKey, machineId, null);
+            
+            if (license != null) {
+                enableFeatures(license);
+                markActivatedLicenseCode(license.getJwtCode());
+                activated = true;
+            }
+        } catch (Exception ex) {
+            activated = false;
+            LogUtil.logError(ex);
+        }
+        
+        return activated;
+    }
+
+    private static boolean isActivatedByApiKey(String apiKey) {
+        try {
+            String serverUrl = ApplicationInfo.getTestOpsServer();
+            if (StringUtils.isEmpty(apiKey)) {
+                return false;
+            }
+            KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
+            return true;
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+        }
+        
+        return false;
+    }
+
+    private static boolean isActivatedByAccount() {
+        String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+
+        StringBuilder errorMessage = new StringBuilder();
+        try {
+            if (StringUtils.isBlank(username)) {
                 return false;
             }
 
-            int activatedHashVal = Integer.parseInt(activateParts[1]);
-            return activatedHashVal == getHostNameHashValue();
+            String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+            String machineId = MachineUtil.getMachineId();
+            License license = ActivationInfoCollector.activate(username, password, machineId, errorMessage);
+            return license != null;
         } catch (Exception ex) {
             LogUtil.logError(ex);
-            return false;
         }
+        
+        return false;
     }
 
     private static int getHostNameHashValue() throws Exception {
@@ -95,41 +177,65 @@ public class ActivationInfoCollector {
         return traits;
     }
 
-    public static boolean activate(String userName, String pass, StringBuilder errorMessage) {
-        boolean activatedResult = false;
+    public static License activate(String userName, String password, String machineId, StringBuilder errorMessage) {
         try {
-            String userInfo = collectActivationInfo(userName, pass);
-            String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
-            if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
-                markActivated(userName, pass);
-                activatedResult = true;
-            } else if (errorMessage != null) {
+            String userInfo = collectActivationInfo(userName, password);
+            ServerAPICommunicationUtil.post("/segment/identify", userInfo);
+            if (errorMessage != null) {
                 errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
             }
-
-        } catch (IOException ex) {
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        
+        
+        License license = null;
+        try {
+            String jwtCode = getLicenseFromTestOps(userName, password, machineId);
+            license = parseLicense(jwtCode, errorMessage);
+        } catch (Exception ex) {
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
                 errorMessage.delete(0, errorMessage.length());
                 errorMessage.append(ApplicationMessageConstants.NETWORK_ERROR);
             }
-        } catch (Exception e) {
-            LogUtil.logError(e);
         }
-
-        return activatedResult;
+        return license;
     }
     
-    public static boolean activate(String activationCode, StringBuilder errorMessage) {
+    private static License parseLicense(String jwtCode, StringBuilder errorMessage) {
         try {
-            String checkCode = activationCode.substring(0, 2);
-            activationCode = new StringBuilder(activationCode.substring(2)).reverse().toString();
-            int idx = Integer.parseInt(checkCode.charAt(0) + "");
-            if (activationCode.charAt(idx) == checkCode.charAt(1)) {
-                markActivated(activationCode);
-                return true;
-            } else if (errorMessage != null) {
-                errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
+            if (jwtCode != null && !jwtCode.isEmpty()) {
+                License license = LicenseService.getInstance().parseJws(jwtCode);
+                if (isValidLicense(license)) {
+                    return license;
+                }
+            }
+        } catch (Exception ex) {
+            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+            ex.printStackTrace();
+        }
+        if (errorMessage != null) {
+            errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+        }
+        return null;
+    }
+    
+    private static String getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
+        String serverUrl = ApplicationInfo.getTestOpsServer();
+        String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
+        String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, machineId);
+        return license;
+    }
+    
+    public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
+        try {
+            License license = parseLicense(activationCode, errorMessage);
+            if (license != null) {
+                markActivatedLicenseCode(activationCode);
+                enableFeatures(license);
+                activated = true;
+                return activated;
             }
         } catch (Exception ex) {
             LogUtil.logError(ex);
@@ -138,22 +244,54 @@ public class ActivationInfoCollector {
             }
         }
 
-        return false;
+        activated = false;
+        return activated;
+    }
+    
+    private static boolean isValidLicense(License license) {
+        return hasValidMachineId(license) && !isExpired(license);
+    }
+    
+    private static boolean hasValidMachineId(License license) {
+        try {
+            String machineId = MachineUtil.getMachineId();
+            return machineId.equals(license.getMachineId());
+        } catch (Exception e) {
+            LogUtil.logError(e);
+            return false;
+        }
+    }
+    
+    private static boolean isExpired(License license) {
+        Date currentDate = new Date();
+        return currentDate.after(license.getExpirationDate());
+    }
+    
+    private static void enableFeatures(License license) {
+        List<Feature> features = license.getFeatures();
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        for (Feature feature : features) {
+            featureService.enable(feature.getKey());
+        }
     }
 
-    private static void markActivated(String userName, String password) throws Exception {
-        setActivatedVal();
+
+    public static void markActivated(String userName, String password, String organization, License license) throws Exception {
+        activated = true;
+        enableFeatures(license);
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, userName, true);
         String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, organization, true);
+        markActivatedLicenseCode(license.getJwtCode());
     }
-    
-    private static void markActivated(String activationCode) throws Exception {
+
+    private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
-        ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
     }
+    
 
     private static void setActivatedVal() throws Exception {
         String activatedVal = Integer.toString(getHostNameHashValue());
@@ -163,10 +301,10 @@ public class ActivationInfoCollector {
     }
 
     public static void markActivatedViaUpgradation(String versionNumber) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME, 
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME,
                 getVersionNo(versionNumber), true);
     }
-    
+
     private static String getVersionNo(String versionNumber) {
         if (versionNumber == null) {
             return versionNumber;

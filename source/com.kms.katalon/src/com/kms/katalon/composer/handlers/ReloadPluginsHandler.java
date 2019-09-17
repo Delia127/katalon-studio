@@ -18,14 +18,18 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.plugin.dialog.KStorePluginsDialog;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.plugin.dialog.ReloadPluginsHelpDialog;
+import com.kms.katalon.plugin.dialog.ReloadPluginsResultDialog;
+import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
+import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.PluginService;
-import com.kms.katalon.plugin.store.PluginPreferenceStore;
+import com.kms.katalon.plugin.util.KStoreCredentialsHelper;
 
 public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
@@ -42,30 +46,34 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     }
 
     public void reloadPlugins(boolean silenceMode) {
-        PluginPreferenceStore store = new PluginPreferenceStore();
+    	ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+    	if (currentProject == null) {
+    		openHelpDialog();
+    		return;
+    	}
+    	
         List<ReloadItem>[] resultHolder = new List[1];
         Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    KStoreUsernamePasswordCredentials[] credentials = new KStoreUsernamePasswordCredentials[1];
-                    UISynchronizeService.syncExec(() -> {
-                        try {
-                            credentials[0] = getUsernamePasswordCredentials();
-                        } catch (KStoreClientAuthException e) {
-                            LoggerSingleton.logError(e);
-                        }
-                    });
-                    if (credentials[0] != null) {
-                        LoggerSingleton.logInfo("Credentials found. Reloading plugins.");
-                        resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
-                        if (!store.hasReloadedPluginsBefore()) {
-                            store.markFirstTimeReloadPlugins();
-                        }
-                    } else {
-                        LoggerSingleton.logError("Credentials not found.");
+                    KStoreBasicCredentials[] credentials = new KStoreBasicCredentials[1];
+                    if (PluginService.getInstance().shouldReloadPluginsOnline()) {
+                        UISynchronizeService.syncExec(() -> {
+                            try {
+                                credentials[0] = getBasicCredentials();
+                            } catch (KStoreClientAuthException e) {
+                                LoggerSingleton.logError(e);
+                            }
+                        });
+                    }
+                    if (PluginService.getInstance().shouldReloadPluginsOnlineOnly()
+                            && !KStoreCredentialsHelper.isValidCredential(credentials[0])) {
+                        LoggerSingleton.logError("Invalid Credential.");
                         return Status.CANCEL_STATUS;
                     }
+                    LoggerSingleton.logInfo("Reloading plugins.");
+                    resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
                 } catch (InterruptedException e) {
                     return Status.CANCEL_STATUS;
                 } catch (Exception e) {
@@ -82,11 +90,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             @Override
             public void done(IJobChangeEvent event) {
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
-
+                
                 if (!reloadPluginsJob.getResult().isOK()) {
                     LoggerSingleton.logError("Failed to reload plugins.");
                     return;
                 }
+                
 
                 List<ReloadItem> results = resultHolder[0];
 
@@ -99,7 +108,9 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                         // wait for Reloading Plugins dialog to close
                         TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
                     } catch (InterruptedException ignored) {}
-                    UISynchronizeService.syncExec(() -> openResultDialog(resultHolder[0]));
+                    UISynchronizeService.syncExec(() -> {
+                        openResultDialog(resultHolder[0]);
+                    });
                 });
             }
         });
@@ -110,13 +121,22 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     private boolean checkExpire(List<ReloadItem> reloadItems) {
         return reloadItems.stream().filter(i -> {
-            KStorePlugin plugin = i.getPlugin();
-            return plugin.isExpired() || (plugin.isTrial() && plugin.getRemainingDay() <= 14);
+            Plugin plugin = i.getPlugin();
+            if (plugin.isOnline()) {
+                KStorePlugin onlinePlugin = plugin.getOnlinePlugin();
+                return onlinePlugin.isExpired() || (onlinePlugin.isTrial() && onlinePlugin.getRemainingDay() <= 14);
+            }
+            return false;
         }).findAny().isPresent();
     }
 
     private void openResultDialog(List<ReloadItem> result) {
-        KStorePluginsDialog dialog = new KStorePluginsDialog(Display.getCurrent().getActiveShell(), result);
+        ReloadPluginsResultDialog dialog = new ReloadPluginsResultDialog(Display.getCurrent().getActiveShell(), result);
+        dialog.open();
+    }
+
+    private void openHelpDialog() {
+        ReloadPluginsHelpDialog dialog = new ReloadPluginsHelpDialog(Display.getCurrent().getActiveShell());
         dialog.open();
     }
 }

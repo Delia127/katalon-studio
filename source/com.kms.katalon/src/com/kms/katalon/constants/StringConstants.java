@@ -24,6 +24,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // WelcomePart
     public static final String PA_WELCOME = MessageConstants.PA_WELCOME;
+    
+    public static final String PA_QUICKSTART = MessageConstants.PA_QUICKSTART;
 
     public static final String PA_LBL_NEW_PROJECT = MessageConstants.PA_LBL_NEW_PROJECT;
 
@@ -77,6 +79,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_QUICK_GUIDE = MessageConstants.DIA_TITLE_QUICK_GUIDE;
 
     // Activation
+    public static final String AGREE_TERM_URL = MessageConstants.AGREE_TERM_URL;
+    
     public static final String FORGOT_PASS_LINK = MessageConstants.FORGOT_PASS_LINK;
 
     public static final String LINK_LABEL_FORGOT_PASS_TEXT = MessageConstants.LINK_LABEL_FORGOT_PASS_TEXT;
@@ -96,6 +100,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_CLEAR_TILE = MessageConstants.BTN_CLEAR_TILE;
 
     public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;
+    
+    public static final String BTN_LOG_IN_TITLE = MessageConstants.BTN_LOG_IN_TITLE;
+    
+    public static final String BTN_SAVE = MessageConstants.BTN_SAVE;
 
     public static final String WAITTING_MESSAGE = MessageConstants.WAITTING_MESSAGE;
 
@@ -121,8 +129,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String NETWORK_ERROR = MessageConstants.NETWORK_ERROR;
     
-    public static final String MSG_FORUM_SEARCH = MessageConstants.MSG_FORUM_SEARCH;
-    
     //KStoreCredentialsDialog
     public static final String KStoreLoginDialog_DIA_TITLE = MessageConstants.KStoreLoginDialog_DIA_TITLE;
     
@@ -133,12 +139,18 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStoreLoginDialog_LBL_INSTRUCTION = MessageConstants.KStoreLoginDialog_LBL_INSTRUCTION;
     
     public static final String KStoreLoginDialog_BTN_CONNECT = MessageConstants.KStoreLoginDialog_BTN_CONNECT;
+    
+    public static final String KStoreLoginDialog_BTN_SKIP = MessageConstants.KStoreLoginDialog_BTN_SKIP;
+    
+    public static final String KStoreLoginDialog_BTN_OK = MessageConstants.KStoreLoginDialog_BTN_OK;
 
     public static final String KStoreLoginDialog_INVALID_ACCOUNT_ERROR = MessageConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
     
     public static final String KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG = MessageConstants.KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG;
 
     public static final String KStoreLoginDialog_LICENSE_AGREEMENT_MSG = MessageConstants.KStoreLoginDialog_LICENSE_AGREEMENT_MSG;
+
+    public static final String LINK_KS_PLUGINS_DOCS_LINK = MessageConstants.LINK_KS_PLUGINS_DOCS_LINK;
     
     //ReloadPluginsResultDialog
     public static final String KStorePluginsDialog_COL_PLUGIN = MessageConstants.KStorePluginsDialog_COL_PLUGIN;
@@ -176,6 +188,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStorePluginsDialog_LNK_ERROR = MessageConstants.KStorePluginsDialog_LNK_ERROR;
     
     public static final String KStorePluginsDialog_LBL_WARNING = MessageConstants.KStorePluginsDialog_LBL_WARNING;
+    
+    public static final String KStorePluginsDialog_LBL_HELP = MessageConstants.KStorePluginsDialog_LBL_HELP;
 
     public static final String HAND_INFO_NO_PLUGINS_FOUND = MessageConstants.HAND_INFO_NO_PLUGINS_FOUND;
     
@@ -187,10 +201,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_LBL_PLUGIN_DIRECTORY = MessageConstants.PAGE_LBL_PLUGIN_DIRECTORY;
     
     public static final String PAGE_BTN_BROWSE_FOLDER = MessageConstants.PAGE_BTN_BROWSE_FOLDER;
-
+    
     public static final String MSG_UPDATING_WEB_DRIVER = MessageConstants.MSG_UPDATING_WEB_DRIVER;
     
     public static final String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static final String MSG_FAIL_TO_UPDATE_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    public static final String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
+    
+    public static final String MSG_FAIL_TO_KILL_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_KILL_WEB_DRIVER;
+
+    public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
 }

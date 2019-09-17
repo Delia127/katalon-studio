@@ -39,19 +39,23 @@ public class EditTestDataQueryDialog extends DatabaseConnectionAbstractDialog {
 
         txtConnectionURL.setText(testData.getDataSourceUrl());
         txtQuery.setText(testData.getQuery());
+        if(testData.getDriverClassName() != null){
+        	txtDriverClassName.setText(testData.getDriverClassName());
+        }  
     }
 
     @Override
-    protected void updateChanges() {
-        if (!isChanged()) {
-            return;
-        }
-        testData.setUsingGlobalDBSetting(chkGlobalDBSetting.getSelection());
-        testData.setSecureUserAccount(chkSecureUserPassword.getSelection());
-        testData.setUser(StringUtils.trimToEmpty(txtUser.getText()));
-        testData.setPassword(Base64.encode(txtPassword.getText())); // encrypt
-        testData.setDataSourceUrl(StringUtils.trimToEmpty(txtConnectionURL.getText()));
-        testData.setQuery(StringUtils.trimToEmpty(txtQuery.getText()));
-    }
+	protected void updateChanges() {
+		if (!isChanged()) {
+			return;
+		}
+		testData.setUsingGlobalDBSetting(chkGlobalDBSetting.getSelection());
+		testData.setSecureUserAccount(chkSecureUserPassword.getSelection());
+		testData.setUser(StringUtils.trimToEmpty(txtUser.getText()));
+		testData.setPassword(Base64.encode(txtPassword.getText())); // encrypt
+		testData.setDataSourceUrl(StringUtils.trimToEmpty(txtConnectionURL.getText()));
+		testData.setQuery(StringUtils.trimToEmpty(txtQuery.getText()));
+		testData.setDriverClassName(StringUtils.trimToEmpty(txtDriverClassName.getText()));
+	}
 
 }

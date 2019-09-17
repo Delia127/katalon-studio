@@ -310,13 +310,17 @@ public class GlobalStringConstants {
 
     public static final String WZ_SETUP_BTN_BACK = GlobalMessageConstants.WZ_SETUP_BTN_BACK;
 
+    public static final String WZ_SETUP_BTN_INSTALL = GlobalMessageConstants.WZ_SETUP_BTN_INSTALL;
+
     public static final String WZ_SETUP_BTN_NEXT = GlobalMessageConstants.WZ_SETUP_BTN_NEXT;
 
     public static final String DIA_FINISH = GlobalMessageConstants.DIA_FINISH;
+    
+    public static final String DIA_CANCEL = GlobalMessageConstants.DIA_CANCEL;
 
     public static final String DIA_OK = GlobalMessageConstants.DIA_OK;
     
-    public static final String DIA_CANCEL = GlobalMessageConstants.DIA_CANCEL;
+    public static final String DIA_SKIP = GlobalMessageConstants.DIA_SKIP;
 
     public static final String DIA_CLOSE = GlobalMessageConstants.DIA_CLOSE;
 
@@ -329,6 +333,8 @@ public class GlobalStringConstants {
     public static final String DIA_NEW_PROJECT = GlobalMessageConstants.DIA_NEW_PROJECT;
     
     public static final String DIA_OPEN_PROJECT = GlobalMessageConstants.DIA_OPEN_PROJECT;
+    
+    public static final String DIA_INTRO_PROJECT = GlobalMessageConstants.DIA_INTRO_PROJECT;
 
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 

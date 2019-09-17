@@ -46,7 +46,7 @@ public class RecentProjectsMenuContribution implements EventHandler {
             // Add a separator at top of items
             menuItems.add(newMenuSeparator());
             
-            ProjectParameterizedCommandBuilder commandBuilder = new ProjectParameterizedCommandBuilder();
+            SampleProjectParameterizedCommandBuilder commandBuilder = new SampleProjectParameterizedCommandBuilder();
             for (ProjectEntity project : recentProjects) {
                 // Add temp command to avoid warning message
                 MCommand command = MCommandsFactory.INSTANCE.createCommand();

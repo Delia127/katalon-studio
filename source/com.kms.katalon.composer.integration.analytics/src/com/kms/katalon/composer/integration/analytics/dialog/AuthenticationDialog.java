@@ -28,13 +28,13 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
-import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class AuthenticationDialog extends Dialog {
@@ -158,7 +158,7 @@ public class AuthenticationDialog extends Dialog {
             boolean encryptionEnabled = true;
             analyticsSettingStore.enableIntegration(true);
             analyticsSettingStore.enableEncryption(encryptionEnabled);
-            analyticsSettingStore.setServerEndPoint(serverUrl.getText(), encryptionEnabled);
+//            analyticsSettingStore.setServerEndPoint(serverUrl.getText(), encryptionEnabled);
             analyticsSettingStore.setEmail(email, encryptionEnabled);
             analyticsSettingStore.setPassword(password, encryptionEnabled);
         } catch (IOException | GeneralSecurityException e) {

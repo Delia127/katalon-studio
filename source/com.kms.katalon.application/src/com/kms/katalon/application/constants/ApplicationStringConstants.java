@@ -9,6 +9,8 @@ public class ApplicationStringConstants extends GlobalStringConstants {
 
     public static final String ARG_PASSWORD = "password";
     
+    public static final String ARG_ORGANIZATION = "organization";
+    
     public static final String STORE_TOKEN = "kstoreToken";
 
     public static final String REQUEST_CODE_PROP_NAME = "activatedRequestCode";
@@ -16,6 +18,8 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     public static final String UPDATED_VERSION_PROP_NAME = "updatedVersion";
     
     public static final String ARG_ACTIVATION_CODE = "activationCode";
+    
+    public static final String ARG_OFFLINE_ACTIVATION = "offlineActivation";
 
     // Proxy Configuration
     public static final String PROXY_OPTION = "proxy.option";
@@ -35,4 +39,7 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     public static final String HTTP_PROXY_TYPE = "HTTP";
 
     public static final String SOCKS_PROXY_TYPE = "SOCKS";
+    
+    // Server
+    public static final String KA_SERVER_PRODUCTION = "https://analytics.katalon.com";
 }

@@ -34,6 +34,7 @@ import com.kms.katalon.composer.testcase.ast.editors.TestDataValueCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ThrowableInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.VariableComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.WindowsTestObjectCellEditor;
 import com.kms.katalon.composer.testcase.editors.TypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.FieldNodeWrapper;
@@ -232,6 +233,11 @@ public class AstValueUtil {
     public static CellEditor getCellEditorForTestObject(Composite parent,
             MethodCallExpressionWrapper methodCallExpressionWrapper) {
         return new TestObjectCellEditor(parent, methodCallExpressionWrapper.getText(), false);
+    }
+
+    public static CellEditor getCellEditorForWindowsTestObject(Composite parent,
+            MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        return new WindowsTestObjectCellEditor(parent, methodCallExpressionWrapper.getText(), false);
     }
 
     public static CellEditor getCellEditorForGlobalVariableExpression(Composite parent) {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.kms.katalon.custom.keyword">
+      <client
+            class="com.kms.katalon.core.windows.keyword.contribution.WindowsBuiltinKeywordContributor">
+      </client>
+   </extension>
+
+</plugin>
