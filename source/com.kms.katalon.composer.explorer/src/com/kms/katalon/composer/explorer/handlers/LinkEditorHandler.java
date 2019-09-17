@@ -9,6 +9,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -21,13 +23,17 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.SystemFileTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -36,8 +42,12 @@ import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
+import com.kms.katalon.entity.file.SystemFileEntity;
+import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -57,7 +67,7 @@ public class LinkEditorHandler implements EventHandler {
     private IEventBroker eventBroker;
 
     private ScopedPreferenceStore store;
-
+    private Boolean isGroovyFile = false;
     @PostConstruct
     public void initListener() {
         store = getPreferenceStore(LinkEditorHandler.class);
@@ -121,16 +131,31 @@ public class LinkEditorHandler implements EventHandler {
                 } else if (entity instanceof DataFileEntity) {
                     treeEntity = TreeEntityUtil.getTestDataTreeEntity((DataFileEntity) entity, projectEntity);
                 } else if (entity instanceof ReportCollectionEntity) {
-                    treeEntity = TreeEntityUtil.getReportCollectionTreeEntity((ReportCollectionEntity) entity, projectEntity);
+                    treeEntity = TreeEntityUtil.getReportCollectionTreeEntity((ReportCollectionEntity) entity,
+                            projectEntity);
                 } else if (entity instanceof ReportEntity) {
                     treeEntity = TreeEntityUtil.getReportTreeEntity((ReportEntity) entity, projectEntity);
                 } else if (entity instanceof TestSuiteCollectionEntity) {
-                    treeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity((TestSuiteCollectionEntity) entity, projectEntity);
+                    treeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity((TestSuiteCollectionEntity) entity,
+                            projectEntity);
                 } else if (entity instanceof CheckpointEntity) {
                     treeEntity = TreeEntityUtil.getCheckpointTreeEntity((CheckpointEntity) entity);
+                } else if (entity instanceof ExecutionProfileEntity) {
+                    FolderEntity folderEntity = FolderController.getInstance().getProfileRoot(projectEntity);
+                    ITreeEntity profileRootFolder = new FolderTreeEntity(folderEntity, null);
+                    treeEntity = TreeEntityUtil.getProfileTreeEntity((ExecutionProfileEntity) entity,
+                            (FolderEntity) profileRootFolder.getObject());
+                } else if (entity instanceof ExecutionProfileEntity) {
+                    FolderEntity folderEntity = FolderController.getInstance().getProfileRoot(projectEntity);
+                    ITreeEntity profileRootFolder = new FolderTreeEntity(folderEntity, null);
+                    treeEntity = TreeEntityUtil.getProfileTreeEntity((ExecutionProfileEntity) entity,
+                            (FolderEntity) profileRootFolder.getObject());
                 }
             } else {
-                treeEntity = getKeywordTreeEntity(mpart);
+                treeEntity = getEditorTreeRootEntity(mpart);
+                if (isGroovyFile){
+                    treeEntity = getKeywordTreeEntity(mpart);
+                }
             }
             if (treeEntity == null) {
                 return;
@@ -146,14 +171,37 @@ public class LinkEditorHandler implements EventHandler {
         if (editorPart != null) {
             IJavaElement elem = JavaUI.getEditorInputJavaElement(editorPart.getEditorInput());
             if (elem instanceof GroovyCompilationUnit && elem.getParent() instanceof IPackageFragment) {
-                ITreeEntity keywordRootFolder = new FolderTreeEntity(FolderController.getInstance().getKeywordRoot(
-                        ProjectController.getInstance().getCurrentProject()), null);
+                ITreeEntity keywordRootFolder = new FolderTreeEntity(FolderController.getInstance()
+                        .getKeywordRoot(ProjectController.getInstance().getCurrentProject()), null);
 
                 ITreeEntity newPackageTreeEntity = new PackageTreeEntity((IPackageFragment) elem.getParent(),
                         keywordRootFolder);
 
                 return new KeywordTreeEntity((ICompilationUnit) elem, newPackageTreeEntity);
             }
+        }
+        return null;
+    }
+
+    private SystemFileTreeEntity getEditorTreeRootEntity(MPart mpart) throws Exception {
+        IEditorPart editorPart = editor.getEditor(mpart);
+        IEditorInput editorInput = editorPart.getEditorInput();
+        String filePath;
+
+        if (editorPart != null) {
+            if (editorInput instanceof FileStoreEditorInput) {
+                IPath path = Path.fromOSString(((FileStoreEditorInput) editorInput).getURI().getPath().toString());
+                filePath = path.toOSString();
+            } else filePath = ((FileEditorInput) editorInput).getPath().toOSString();
+         
+                SystemFileEntity systemFileEntity = SystemFileController.getInstance().getSystemFile(filePath,
+                        ProjectController.getInstance().getCurrentProject());
+                if (systemFileEntity.getFileExtension().equals(".groovy")){
+                    isGroovyFile = true;
+                }else{
+                    isGroovyFile = false;
+                }
+                return TreeEntityUtil.getSystemFileTreeEntity(systemFileEntity, null);
         }
         return null;
     }
