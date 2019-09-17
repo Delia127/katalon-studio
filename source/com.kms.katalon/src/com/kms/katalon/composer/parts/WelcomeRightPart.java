@@ -366,7 +366,9 @@ public class WelcomeRightPart extends Composite implements EventHandler {
 
         Label stepDetails = new Label(parent, SWT.NONE);
         stepDetails.setImage(stepDetailsImage);
-        stepDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        GridData ldStepDetails = new GridData(SWT.FILL, SWT.FILL, true, false);
+        ldStepDetails.verticalIndent = 10;
+        stepDetails.setLayoutData(ldStepDetails);
     }
 
     @Override
