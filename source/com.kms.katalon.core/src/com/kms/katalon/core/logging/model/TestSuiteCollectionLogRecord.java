@@ -9,6 +9,16 @@ public class TestSuiteCollectionLogRecord {
     private String reportLocation;
     
     private List<TestSuiteLogRecord> testSuiteRecords;
+    
+    private long startTime;
+    
+    private long endTime;
+
+    private String totalPassedTestCases;
+
+    private String totalErrorTestCases;
+
+    private String totalFailedTestCases;
 
     public String getTestSuiteCollectionId() {
         return testSuiteCollectionId;
@@ -32,5 +42,45 @@ public class TestSuiteCollectionLogRecord {
 
     public void setTestSuiteRecords(List<TestSuiteLogRecord> testSuiteRecords) {
         this.testSuiteRecords = testSuiteRecords;
+    }
+    
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+    
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getTotalPassedTestCases() {
+        return totalPassedTestCases;
+    }
+
+    public void setTotalPassedTestCases(String totalPassedTestCases) {
+        this.totalPassedTestCases = totalPassedTestCases;
+    }
+
+    public String getTotalErrorTestCases() {
+        return totalErrorTestCases;
+    }
+
+    public void setTotalErrorTestCases(String totalErrorTestCases) {
+        this.totalErrorTestCases = totalErrorTestCases;
+    }
+
+    public String getTotalFailedTestCases() {
+        return totalFailedTestCases;
+    }
+
+    public void setTotalFailedTestCases(String totalFailedTestCases) {
+        this.totalFailedTestCases = totalFailedTestCases;
     }
 }
