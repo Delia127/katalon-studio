@@ -114,6 +114,10 @@ public class CsvWriter {
             tag = StringUtils.defaultString(((TestCaseLogRecord) logRecord).getTag());
         }
         TestStatus status = logRecord.getStatus();
+        if (logRecord instanceof TestSuiteLogRecord) {
+            status = new TestStatus();
+            status.setStatusValue(((TestSuiteLogRecord) logRecord).getSummaryStatus());
+        }
         List<Object> writtenObjects =
                 Arrays.asList(new Object[] {
                         logRecord.getName(),
@@ -123,7 +127,7 @@ public class CsvWriter {
                         DateUtil.getDateTimeFormatted(logRecord.getStartTime()),
                         DateUtil.getDateTimeFormatted(logRecord.getEndTime()),
                         DateUtil.getElapsedTime(logRecord.getStartTime(), logRecord.getEndTime()),
-                        status != null ? status.getStatusValue().name() : TestStatusValue.INCOMPLETE.name() });
+                        status != null ? status.getStatusValue().name() : "" });
         csvWriter.write(writtenObjects, DETAILS_PROCESSORS);
     }
 
