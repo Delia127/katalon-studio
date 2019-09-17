@@ -40,7 +40,6 @@ import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
-import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -80,7 +79,9 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
-    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "license";
+    
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_VAR = "KATALON_LICENSE";
     
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
 
@@ -124,18 +125,6 @@ public class ConsoleMain {
             if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
             }
-            
-            String orgIdValue = null;
-
-            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
-                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
-                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
-            }
-
-            if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
-                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
-                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
-            }
 
             LogUtil.logInfo("Activating...");
             
@@ -143,13 +132,12 @@ public class ConsoleMain {
                 //read license file and activate
                 boolean isActivated = false;
                 String licenseFile = null;
-                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
+                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
                 if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
                     licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
                 } else if (environmentVariable != null) {
                     licenseFile = environmentVariable;
                 }
-    
                 if (!StringUtils.isBlank(licenseFile)) {
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
                     StringBuilder errorMessage = new StringBuilder();
@@ -159,9 +147,7 @@ public class ConsoleMain {
                         throw new InvalidLicenseException("Invalid license");
                     }
                 } else {
-                    if (!StringUtils.isBlank(orgIdValue)) {
-                        isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, Long.valueOf(orgIdValue));
-                    }
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue);
                 }
                 
                 
@@ -199,11 +185,12 @@ public class ConsoleMain {
             
             if (apiKeyValue != null) {
                 ApiKeyHandler.setApiKeyToProject(apiKeyValue);
-                reloadPlugins(apiKeyValue);
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
-                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
+            
+            reloadPlugins(apiKeyValue);
+            consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                    .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+            acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
 
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if (options.has(INSTALL_PLUGIN_OPTION)){

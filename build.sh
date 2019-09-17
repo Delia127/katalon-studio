@@ -57,38 +57,49 @@ building() {
         sleep 5
     done
 
-    if [ "$isQtest" = "true" ]
-    then
-        echo "Building: qTest Prod"
-        cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} -pl '!com.kms.katalon.product' clean verify -P prod
-    else
-        echo "Building: Standard Prod"
-        cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
-    fi
+    echo "Building: Standard Prod"
+    cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+
+    # if [ "$isQtest" = "true" ]
+    # then
+    #     echo "Building: qTest Prod"
+    #     cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} -pl '!com.kms.katalon.product' clean verify -P prod
+    # else
+    #     echo "Building: Standard Prod"
+    #     cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+    # fi
 
     cd $katalonDir/source/com.kms.katalon.apidocs && $katalonDir/source/mvnw ${mavenOpts} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}
 }
 
 copy_build() {
-    if [ "$isQtest" = "false" ]
-    then
-        cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
-        python3 $katalonDir/generate_commit_file.py $tmpDir/commit.txt ${commitId}
-        cd $katalonDir/source/com.kms.katalon.product/target/products
-        find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
-        find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
-        find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
-    fi
 
-    if [ "$isQtest" = "true" ]
-    then
-        cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
-        python3 $katalonDir/generate_commit_file.py $tmpDir/commit.txt ${commitId}
-        cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products
-        find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
-        find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
-        find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
-    fi
+    cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+    python3 $katalonDir/generate_commit_file.py $tmpDir/commit.txt ${commitId}
+    cd $katalonDir/source/com.kms.katalon.product/target/products
+    find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
+    find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
+    find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
+
+    # if [ "$isQtest" = "false" ]
+    # then
+    #     cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+    #     python3 $katalonDir/generate_commit_file.py $tmpDir/commit.txt ${commitId}
+    #     cd $katalonDir/source/com.kms.katalon.product/target/products
+    #     find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
+    #     find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
+    #     find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
+    # fi
+
+    # if [ "$isQtest" = "true" ]
+    # then
+    #     cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+    #     python3 $katalonDir/generate_commit_file.py $tmpDir/commit.txt ${commitId}
+    #     cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products
+    #     find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
+    #     find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
+    #     find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
+    # fi
 }
 
 sign_file() {

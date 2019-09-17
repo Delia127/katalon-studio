@@ -1,17 +1,23 @@
 package com.kms.katalon.plugin.dialog;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -20,13 +26,22 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.KatalonApplicationActivator;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.service.KStoreRestClient.AuthenticationResult;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 
 public class KStoreLoginDialog extends Dialog {
 
@@ -40,16 +55,23 @@ public class KStoreLoginDialog extends Dialog {
 
     private String token;
 
-    private Label lblError;
+    private Label lblProgressMessage;
     
-    private Composite body;
+    private Combo cbbOrganization;
+    
+    private Composite body, organizationComposite;
     
     private Button btnConnect;
     
     private Button btnSkip;
 
+    private List<AnalyticsOrganization> organizations = new ArrayList<>();
+
+    private boolean isExpanded;
+
     public KStoreLoginDialog(Shell parentShell) {
         super(parentShell);
+        isExpanded = false;
     }
 
     @Override
@@ -61,21 +83,41 @@ public class KStoreLoginDialog extends Dialog {
         gdBody.minimumWidth = 400;
         body.setLayoutData(gdBody);
         
-        Label lblInstruction = new Label(body, SWT.WRAP);
-        lblInstruction.setText(StringConstants.KStoreLoginDialog_LBL_INSTRUCTION);
+        Link lblInstruction = new Link(body, SWT.WRAP);
         lblInstruction.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        lblInstruction.setText(StringConstants.KStoreLoginDialog_LBL_INSTRUCTION);
+        lblInstruction.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    Program.launch(StringConstants.LINK_KS_PLUGINS_DOCS_LINK);
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
+        });
 
         Composite inputComposite = new Composite(body, SWT.NONE);
         inputComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         GridLayout glInput = new GridLayout(2, false);
-        glInput.marginWidth = 0;
+        glInput.verticalSpacing = 10;
         inputComposite.setLayout(glInput);
+        
+        GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLabel.widthHint = 75;
+
+        GridData gdText = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gdText.heightHint = 22;
+        
+        GridData gdBtn = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+        gdBtn.widthHint = 100;
         
         Label lblUsername = new Label(inputComposite, SWT.NONE);
         lblUsername.setText(StringConstants.KStoreLoginDialog_LBL_USERNAME);
+        lblUsername.setLayoutData(gdLabel);
 
         txtUsername = new Text(inputComposite, SWT.BORDER);
-        txtUsername.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        txtUsername.setLayoutData(gdText);
         
         username = ApplicationInfo.getAppProperty("email");
         if (!StringUtils.isBlank(username)) {
@@ -85,30 +127,43 @@ public class KStoreLoginDialog extends Dialog {
 
         Label lblPassword = new Label(inputComposite, SWT.NONE);
         lblPassword.setText(StringConstants.KStoreLoginDialog_LBL_PASSWORD);
+        lblPassword.setLayoutData(gdLabel);
 
         txtPassword = new Text(inputComposite, SWT.BORDER | SWT.PASSWORD);
-        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        
-        Composite licenseComposite = new Composite(body, SWT.NONE);
-        licenseComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        licenseComposite.setLayout(new GridLayout(2, false));
+        txtPassword.setLayoutData(gdText);
 
-        lblError = new Label(body, SWT.NONE);
-        lblError.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-        lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
-        ((GridData) lblError.getLayoutData()).exclude = true;
-        lblError.setVisible(false);
+        lblProgressMessage = new Label(body, SWT.NONE);
+        lblProgressMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
         
+        organizationComposite = new Composite(body, SWT.NONE);
+        organizationComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        organizationComposite.setLayout(new GridLayout(2, false));
+        
+        Label lblOrganization = new Label(organizationComposite, SWT.NONE);
+        GridData gdOrganization = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdOrganization.widthHint = 150;
+        lblOrganization.setLayoutData(gdOrganization);
+        lblOrganization.setText(MessageConstants.ActivationDialogV2_LBL_SELECT_ORGANIZATION);
+        
+        cbbOrganization = new Combo(organizationComposite, SWT.READ_ONLY);
+        cbbOrganization.setLayoutData(gdText);
+        cbbOrganization.setEnabled(false);
+
         Composite buttonComposite = new Composite(body, SWT.NONE);
         buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
         buttonComposite.setLayout(new GridLayout(2, false));
-        
+
         btnSkip = new Button(buttonComposite, SWT.FLAT);
         btnSkip.setText(StringConstants.KStoreLoginDialog_BTN_SKIP);
+        btnSkip.setLayoutData(gdBtn);
         
         btnConnect = new Button(buttonComposite, SWT.FLAT);
         btnConnect.setText(StringConstants.KStoreLoginDialog_BTN_CONNECT);
         btnConnect.setEnabled(false);
+        btnConnect.setLayoutData(gdBtn);
+        getShell().setDefaultButton(btnConnect);
+
+        layoutOrganization();
 
         registerControlListeners();
 
@@ -119,7 +174,6 @@ public class KStoreLoginDialog extends Dialog {
         txtUsername.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                hideError();
                 username = txtUsername.getText();
                 validate();
             }
@@ -128,7 +182,6 @@ public class KStoreLoginDialog extends Dialog {
         txtPassword.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                hideError();
                 password = txtPassword.getText();
                 validate();
             }
@@ -137,7 +190,15 @@ public class KStoreLoginDialog extends Dialog {
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                authenticate();
+                if (!btnConnect.getText().equals(StringConstants.KStoreLoginDialog_BTN_OK)) {
+                    enableObject(false);
+                    Executors.newFixedThreadPool(1).submit(() -> {
+                        UISynchronizeService.syncExec(() -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_ACTIVATING, false));
+                        UISynchronizeService.syncExec(() -> authenticate());
+                    });
+                } else {
+                    save(cbbOrganization.getSelectionIndex());
+                }
             }
         });
         
@@ -146,6 +207,33 @@ public class KStoreLoginDialog extends Dialog {
             public void widgetSelected(SelectionEvent e) {
                 setReturnCode(Dialog.CANCEL);
                 close();
+            }
+        });
+    }
+
+    private void layoutExecutionCompositeListener() {
+        isExpanded = !isExpanded;
+        layoutOrganization();
+    };
+
+    private void layoutOrganization() {
+        Display.getDefault().timerExec(10, new Runnable() {
+            @Override
+            public void run() {
+                organizationComposite.setVisible(isExpanded);
+                Point currentSize = getShell().getSize();
+                int detailsHeight = organizationComposite.getSize().y;
+                int newY;
+                if (!isExpanded) {
+                    ((GridData) organizationComposite.getLayoutData()).exclude = true;
+                    newY = currentSize.y - detailsHeight;
+                } else {
+                    ((GridData) organizationComposite.getLayoutData()).exclude = false;
+                    newY = currentSize.y + detailsHeight;
+                }
+                getShell().setSize(currentSize.x, newY);
+                organizationComposite.layout(true, true);
+                organizationComposite.getParent().layout();
             }
         });
     }
@@ -183,17 +271,77 @@ public class KStoreLoginDialog extends Dialog {
             KStoreRestClient restClient = new KStoreRestClient(credentials);
             AuthenticationResult authenticateResult = restClient.authenticate();
             if (authenticateResult.isAuthenticated()) {
+                getOrganizations();
                 token = authenticateResult.getToken();
-                super.okPressed();
             } else {
-                showError(StringConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR);
+                enableObject(true);
+                setProgressMessage(StringConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR, true);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            showError(StringConstants.KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG);
-        } finally {
-            btnConnect.setEnabled(true);
+            setProgressMessage(StringConstants.KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG, true);
+            enableObject(true);
         }
+    }
+
+    private void getOrganizations() {
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService.syncExec(() -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_ORGANIZATION, false));
+            UISynchronizeService.syncExec(() -> {
+                try {
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    String email = txtUsername.getText();
+                    String password = txtPassword.getText();
+
+                    String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
+                    organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token);
+
+                    if (organizations.size() == 1) {
+                        save(0);
+                    } else {
+                        layoutExecutionCompositeListener();
+                        cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
+                        cbbOrganization.select(getDefaultOrganizationIndex()); 
+                        cbbOrganization.setEnabled(true);
+                        btnConnect.setEnabled(true);
+                        btnConnect.setText(StringConstants.KStoreLoginDialog_BTN_OK);
+                        setProgressMessage(StringUtils.EMPTY, false);
+                    }
+                } catch (Exception e) {
+                    setProgressMessage(StringConstants.KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG, true);
+                    enableObject(false);
+                }
+            });
+        });
+    }
+
+    private void enableObject(boolean isEnable) {
+        txtUsername.setEnabled(isEnable);
+        txtPassword.setEnabled(isEnable);
+        btnConnect.setEnabled(isEnable);
+        btnSkip.setEnabled(isEnable);
+    }
+
+    private void save(int index) {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(organizations.get(index)) , true);
+        super.okPressed();
+    }
+
+    private int getDefaultOrganizationIndex() {
+        int selectionIndex = 0;
+        for (int i = 0; i < organizations.size(); i++) {
+            AnalyticsOrganization organization = organizations.get(i);
+            if (organization.getRole().equals(AnalyticsOrganizationRole.USER)) {
+                selectionIndex = i;
+                return selectionIndex;
+            }
+        }
+    	return selectionIndex;
+    }
+
+    private static List<String> getOrganizationNames(List<AnalyticsOrganization> organizations) {
+        List<String> names = organizations.stream().map(organization -> organization.getName()).collect(Collectors.toList());
+        return names;
     }
 
     public String getUsername() {
@@ -208,21 +356,14 @@ public class KStoreLoginDialog extends Dialog {
         return token;
     }
 
-    private void showError(String errorMsg) {
-        lblError.setText(errorMsg);
-        lblError.setForeground(ColorUtil.getTextErrorColor());
-        setErrorMessageVisible(true);
+    private void setProgressMessage(String message, boolean isError) {
+        lblProgressMessage.setText(message);
+        if (isError) {
+            lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
+        } else {
+            lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
+        }
+        lblProgressMessage.getParent().layout();
     }
 
-    private void hideError() {
-        lblError.setText(StringUtils.EMPTY);
-        setErrorMessageVisible(false);
-    }
-    
-    private void setErrorMessageVisible(boolean visible) {
-        GridData gridData = (GridData) lblError.getLayoutData();
-        gridData.exclude = !visible;
-        lblError.setVisible(visible);
-        getShell().pack();
-    }
 }

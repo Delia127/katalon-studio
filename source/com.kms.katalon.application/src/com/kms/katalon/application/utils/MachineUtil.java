@@ -1,12 +1,15 @@
 package com.kms.katalon.application.utils;
 
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
+import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.hardware.Hardware;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.logging.LogUtil;
 
@@ -35,23 +38,49 @@ public class MachineUtil {
     private static String machineId = StringUtils.EMPTY;
 
     public static String getMachineId() {
-        // Only load machine id once if not loaded
-        if (!machineId.equals(StringUtils.EMPTY)) {
+        // Only load machine id if not loaded or previous attempt failed
+        if (!machineId.equals(StringUtils.EMPTY) && !machineId.equals(hash(UNAVAILABLE))) {
             return machineId;
         }
 
         if (SystemUtils.IS_OS_MAC) {
             machineId = parseMachineIdForMac();
-            return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
+            machineId = hash(machineId.matches(UUID_REGEX) ? appendMachineSerial(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_LINUX) {
             machineId = parseMachineIdForLinux();
             // machine id on a linux is not a UUID
-            return machineId.length() != 32 ? UNAVAILABLE : machineId;
+            machineId = hash(machineId.length() == 32 ? appendMachineSerial(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_WINDOWS) {
             machineId = parseMachineIdForWindows();
-            return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
+            machineId = hash(machineId.matches(UUID_REGEX) ? appendMachineSerial(machineId) : UNAVAILABLE);
         }
-        return UNAVAILABLE;
+        return machineId;
+    }
+
+    private static String appendMachineSerial(String str) {
+        return str + "_" + Hardware.getSerialNumber().toLowerCase();
+    }
+
+    private static String hash(String str) {
+        MessageDigest md1;
+        try {
+            md1 = MessageDigest.getInstance("MD5");
+            md1.update(str.getBytes());
+            byte[] bd1 = md1.digest();
+
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < bd1.length; i++) {
+                String hex = Integer.toHexString(0xff & bd1[i]);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString().substring(0, 32);
+        } catch (Exception e) {
+            LogUtil.logError(" Cannot hash the Machine ID because: " + e.getMessage());
+        }
+        return str;
     }
 
     private static String parseMachineIdForWindows() {
@@ -60,12 +89,9 @@ public class MachineUtil {
                     .runConsoleCommandAndCollectResults(WINDOWS_GET_MACHINE_ID_COMMAND);
 
             // Example: MachineGuid REG_SZ efc790ec-91b4-4e8d-aaa1-5c3e815669bc
-            String commandLineResult = commandLineResults.stream()
-            .filter(item -> {
+            String commandLineResult = commandLineResults.stream().filter(item -> {
                 return item.indexOf(WINDOWS_GET_MACHINE_ID_DELIMITER) > 0;
-            })
-            .findFirst()
-            .orElse(UNAVAILABLE);
+            }).findFirst().orElse(UNAVAILABLE);
             String parsedResult = Arrays.asList(commandLineResult.split(WINDOWS_GET_MACHINE_ID_DELIMITER))
                     .stream()
                     .map(result -> result.trim())

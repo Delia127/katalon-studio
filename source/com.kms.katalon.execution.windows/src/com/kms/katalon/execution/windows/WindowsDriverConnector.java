@@ -9,6 +9,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.core.windows.constants.StringConstants;
+import com.kms.katalon.core.windows.constants.WindowsDriverConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverType;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;
 import com.kms.katalon.logging.LogUtil;
@@ -55,7 +56,7 @@ public class WindowsDriverConnector extends AbstractDriverConnector {
     public String getWinAppDriverUrl() {
         Map<String, Object> userProperties = getUserConfigProperties();
         return (String) userProperties.getOrDefault(WindowsDriverFactory.WIN_APP_DRIVER_PROPERTY,
-                "http://127.0.0.1:4723");
+                WindowsDriverConstants.DEFAULT_WIN_APP_DRIVER_URL);
     }
 
     public static WindowsDriverConnector getInstance(String projectDir) throws IOException {

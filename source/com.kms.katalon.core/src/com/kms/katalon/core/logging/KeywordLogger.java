@@ -3,6 +3,7 @@ package com.kms.katalon.core.logging;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,6 +37,8 @@ public class KeywordLogger {
     
     private final XmlKeywordLogger xmlKeywordLogger;
     
+    private boolean shouldLogTestSteps;
+    
     public static KeywordLogger getInstance(Class<?> clazz) {
         if (clazz == null) { // just in case
             selfLogger.error("Logger name is null. This should be a bug of Katalon Studio.");
@@ -62,6 +65,22 @@ public class KeywordLogger {
     private KeywordLogger(String className, String dummy) {
         logger = LoggerFactory.getLogger(className);
         xmlKeywordLogger = XmlKeywordLogger.getInstance();
+        initShouldLogTestSteps();
+    }
+
+	private void initShouldLogTestSteps() {
+		Map<String, Object> executionProperties = RunConfiguration.getExecutionProperties();
+		if (executionProperties == null) {
+			shouldLogTestSteps = true;
+		} else {
+			shouldLogTestSteps = (boolean) Optional
+	                .ofNullable(executionProperties.get(RunConfiguration.LOG_TEST_STEPS))
+	                .orElse(false);
+		}
+	}
+    
+    private boolean shouldLogTestSteps() {
+    	return shouldLogTestSteps;
     }
 
     public KeywordLogger(String className) {
@@ -73,6 +92,7 @@ public class KeywordLogger {
         }
         logger = LoggerFactory.getLogger(className);
         xmlKeywordLogger = XmlKeywordLogger.getInstance();
+        initShouldLogTestSteps();
     }
     
     public KeywordLogger() {
@@ -154,11 +174,14 @@ public class KeywordLogger {
             String actionType, 
             Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        logStartKeyword(name, attributes);
-        xmlKeywordLogger.startKeyword(name, actionType, attributes, keywordStack);
+    	
+    	if (shouldLogTestSteps()) {
+    		logStartKeyword(name, attributes);
+    		xmlKeywordLogger.startKeyword(name, actionType, attributes, keywordStack);
+    	}
     }
 
-    private void logStartKeyword(String name, Map<String, String> attributes) {
+    private void logStartKeyword(String name, Map<String, String> attributes) {   	
         String stepIndex = getStepIndex(attributes);
         if (stepIndex == null) {
             logger.debug("STEP {}", name);
@@ -177,20 +200,29 @@ public class KeywordLogger {
 
 
     public void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        logStartKeyword(name, attributes);
-        xmlKeywordLogger.startKeyword(name, attributes, keywordStack);
+    	
+    	if (shouldLogTestSteps()) {
+	        logStartKeyword(name, attributes);
+	        xmlKeywordLogger.startKeyword(name, attributes, keywordStack);
+    	}
     }
 
 
     public void startKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-        logStartKeyword(name, attributes);
-        xmlKeywordLogger.startKeyword(name, attributes, nestedLevel);
+    	
+    	if (shouldLogTestSteps()) {
+	        logStartKeyword(name, attributes);
+	        xmlKeywordLogger.startKeyword(name, attributes, nestedLevel);
+    	}
     }
 
 
     public void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-        logEndKeyword(name, attributes);
-        xmlKeywordLogger.endKeyword(name, attributes, nestedLevel);
+    	
+    	if (shouldLogTestSteps()) {
+	        logEndKeyword(name, attributes);
+	        xmlKeywordLogger.endKeyword(name, attributes, nestedLevel);
+    	}
     }
 
     private void logEndKeyword(String name, Map<String, String> attributes) {
@@ -217,14 +249,20 @@ public class KeywordLogger {
             String keywordType, 
             Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        logEndKeyword(name, attributes);
-        xmlKeywordLogger.endKeyword(name, keywordType, attributes, keywordStack);
+    	
+    	if (shouldLogTestSteps()) {
+	        logEndKeyword(name, attributes);
+	        xmlKeywordLogger.endKeyword(name, keywordType, attributes, keywordStack);
+    	}
     }
 
 
     public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        logEndKeyword(name, attributes);
-        xmlKeywordLogger.endKeyword(name, attributes, keywordStack);
+    	
+    	if (shouldLogTestSteps()) {
+	        logEndKeyword(name, attributes);
+	        xmlKeywordLogger.endKeyword(name, attributes, keywordStack);
+    	}
     }
     
     public void logFailed(String message) {

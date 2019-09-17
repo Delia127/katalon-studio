@@ -9,7 +9,7 @@ public class ApplicationStringConstants extends GlobalStringConstants {
 
     public static final String ARG_PASSWORD = "password";
     
-    public static final String KA_ORGANIZATION = "organization";
+    public static final String ARG_ORGANIZATION = "organization";
     
     public static final String STORE_TOKEN = "kstoreToken";
 

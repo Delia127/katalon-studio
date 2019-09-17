@@ -13,7 +13,6 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.preference.ProjectSettingPreference;
-import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -40,8 +39,6 @@ public class KatalonApplicationActivator implements BundleActivator {
                 }
             }
         });
-        
-        LogUtil.logInfo("machine-id=" + MachineUtil.getMachineId());
         
         context.addServiceListener(new ServiceListener() {
 

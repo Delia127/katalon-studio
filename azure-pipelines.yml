@@ -7,12 +7,14 @@ trigger:
 - staging-*
 - release-*
 
-pr: none
+pr:
+- staging-*
+- release-*
 
 variables:
   BRANCH: $(Build.SourceBranchName)
   COMMIT_ID: $(Build.SourceVersion)
-  # BRANCH: $(System.PullRequest.TargetBranch)
+  PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
   # COMMIT_ID: $(System.PullRequest.SourceCommitId)
   KATALON_DIR: $(Build.Repository.LocalPath)
   TMP_DIR: $(Build.ArtifactStagingDirectory)
@@ -89,7 +91,7 @@ steps:
     bucketName: 'katalon'
     sourceFolder: '$(TMP_DIR)'
     globExpressions: '**'
-    targetFolder: 'azure-$(COMMIT_ID)'
+    targetFolder: 'azure-$(BRANCH)-$(PR_SOURCE_BRANCH)-$(COMMIT_ID)'
     filesAcl: 'public-read'
   displayName: Upload Build Package
   condition: eq(variables.IS_RELEASE, 'false')

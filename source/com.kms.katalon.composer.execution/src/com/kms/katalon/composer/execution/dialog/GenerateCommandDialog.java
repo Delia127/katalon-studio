@@ -42,6 +42,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.google.common.base.Strings;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -62,7 +65,6 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
-import com.kms.katalon.composer.handlers.OrganizationHandler;
 import com.kms.katalon.composer.resources.util.ImageUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.FolderController;
@@ -88,10 +90,15 @@ import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.util.CryptoUtil;
 
 public class GenerateCommandDialog extends AbstractDialog {
 
@@ -156,8 +163,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
     
     private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
-
-    private static final String KATALON_ORGANIZATION_ID_OPTION = ConsoleMain.KATALON_ORGANIZATION_ID_OPTION;
 
     private Group grpPlatform;
 
@@ -900,9 +905,6 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         }
 
-        Long orgId = OrganizationHandler.getAnalyticsOrganizationId();
-        args.put(KATALON_ORGANIZATION_ID_OPTION, orgId.toString());
-
         args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
 
         if (!StringUtils.equals(txtStatusDelay.getText(), defaultStatusDelay)) {
@@ -1091,9 +1093,27 @@ public class GenerateCommandDialog extends AbstractDialog {
         try {
             boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled() && analyticsSettingStore.isAutoSubmit();
             chkAPIKey.setSelection(enableApiKey);
-
+            getApiKey();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
+        }
+    }
+    
+    private void getApiKey() {
+        try {
+            boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
+            String serverUrl = analyticsSettingStore.getServerEndpoint(isEncryptionEnabled);
+            String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+            if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
+                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                List<AnalyticsApiKey> apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token.getAccess_token());
+                if (!apiKeys.isEmpty()) {
+                    txtAPIKey.setText(apiKeys.get(0).getKey());
+                }
+            }
+        } catch (Exception ex) {
         }
     }
     

@@ -233,11 +233,9 @@ public class AnalyticsReportService implements AnalyticsComponent {
             AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
             if (token != null) {
                 AnalyticsApiProvider.sendTrackingActivity(serverUrl, token.getAccess_token(), trackingInfo);
-            } else {
-                LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
             }
         } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
-            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
+//            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
         }
     }
 
