@@ -54,6 +54,8 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
         predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
         predefinedOrder.add(StringConstants.ANDROID_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
+        
+        predefinedOrder.add(StringConstants.EXPLORER_SETTING_PAGE_ID);
     }
     
     @Override
