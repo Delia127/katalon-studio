@@ -3818,15 +3818,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Convert a WebElement to a TestObject. Note that since WebElement 
-     * itself does not contain XPaths, the resulting TestObject will
-     * also not contain any XPath value either. The default name of the 
-     * test object will be the tag name of this WebElement
+     * Convert a WebElement to a TestObject. It will create
+     * a Test Object with no name that wraps around the given WebElement.
+     * When the Test Object is used by built-in keywords, it is unwrapped
+     * and the given WebElement will be used
      *
      * @since 6.2.0
-     * @param webElement the WebElement
+     * @param webElement the WebElement retrieved by Selenium or other APIs
      * @param flowControl failureHandling
-     * @return a TestObject with properties from WebElement and name being the WebElement's tag name
+     * @return a TestObject that wraps around the given WebElement
      * @throws StepFailedException
      */
     @CompileStatic
@@ -3836,14 +3836,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Convert a WebElement to a TestObject. Note that since WebElement
-     * itself does not contain XPaths, the resulting TestObject will
-     * also not contain any XPath value either. The default name of the
-     * test object will be the tag name of this WebElement
+     * Convert a WebElement to a TestObject. It will create
+     * a Test Object with no name that wraps around the given WebElement.
+     * When the Test Object is used by built-in keywords, it is unwrapped
+     * and the given WebElement will be used
      *
      * @since 6.2.0
-     * @param webElement the WebElement
-     * @return a TestObject with properties from WebElement and name being the WebElement's tag name
+     * @param webElement the WebElement retrieved by Selenium or other APIs
+     * @return a TestObject that wraps around the given WebElement
      * @throws StepFailedException
      */
     @CompileStatic
