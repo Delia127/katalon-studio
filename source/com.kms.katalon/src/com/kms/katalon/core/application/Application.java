@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
@@ -48,6 +49,14 @@ public class Application implements IApplication {
      */
     @Override
     public Object start(IApplicationContext context) {
+
+        LocalDate now = LocalDate.now();
+        LocalDate expiredDate = LocalDate.of(2019, 11, 1);
+        if (now.isAfter(expiredDate)) {
+            LogUtil.logInfo("This beta build has expired");
+            return IApplication.EXIT_OK;
+        }
+
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
         }
