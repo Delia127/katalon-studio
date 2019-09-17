@@ -322,6 +322,8 @@ public class MessageConstants extends NLS {
     // ActivationDialogV2
     public static String AGREE_TERM_URL;
     
+    public static String OFFLINE_ACTIVATION;
+    
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
     
     public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
@@ -343,6 +345,8 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
     
     public static String ActivationDialogV2_LBL_AGREE_TERM;
+    
+    public static String ActivationDialogV2_LBL_LEARN_ABOUT_KS;
    
     public static String ActivationDialogV2_LBL_ERROR;
 
@@ -372,6 +376,8 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATE;
 
     public static String ActivationDialogV2_LNK_SIGNUP;
+    
+    public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATION;
 
     // SignupDialog
     public static String SignupDialog_LBL_FULL_NAME;
