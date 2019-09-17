@@ -32,6 +32,7 @@ public class LogoutHandler {
             }
             
             ActivationInfoCollector.setActivated(false);
+            ActivationInfoCollector.clearFeatures();
             
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             
