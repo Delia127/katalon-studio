@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.swt.widgets.Shell;
@@ -29,6 +30,7 @@ import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialog.RecordActio
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElementConverter;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.WindowsElementController;
 import com.kms.katalon.controller.exception.ControllerException;
@@ -37,6 +39,11 @@ import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class RecordWindowsObjectHandler {
+    
+   @CanExecute
+   public boolean canExecute() {
+       return ProjectController.getInstance().getCurrentProject() != null;
+   }
 
     private TestCaseEntity getTestCase(ExportReportToTestCaseSelectionDialog.ExportTestCaseSelectionResult result)
             throws ControllerException {
