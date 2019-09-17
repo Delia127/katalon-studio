@@ -160,13 +160,6 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
 
-        lnkOfflineActivation2.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Program.launch(MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATE);
-            }
-        });
-
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
