@@ -170,7 +170,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             suiteCollectionLogRecord.setTestSuiteCollectionId(executedEntity.getEntity().getName());
             suiteCollectionLogRecord.setTestSuiteRecords(suiteLogRecords);
             suiteCollectionLogRecord.setStartTime(startTime != null ? startTime.getTime() : 0L);
-            suiteCollectionLogRecord.setEndTime(endTime != null ? endTime.getTime() : 0L);
+            suiteCollectionLogRecord.setEndTime(new Date().getTime());
             suiteCollectionLogRecord.setTotalPassedTestCases(String.valueOf(result.getNumPasses()));
             suiteCollectionLogRecord.setTotalFailedTestCases(String.valueOf(result.getNumFailures()));
             suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
