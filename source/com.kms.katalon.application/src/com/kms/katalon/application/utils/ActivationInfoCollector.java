@@ -275,6 +275,10 @@ public class ActivationInfoCollector {
         }
     }
 
+    public static void clearFeatures() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        featureService.clear();
+    }
 
     public static void markActivated(String userName, String password, String organization, License license) throws Exception {
         activated = true;
