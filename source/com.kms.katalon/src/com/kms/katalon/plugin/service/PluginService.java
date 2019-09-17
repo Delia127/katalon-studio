@@ -208,7 +208,7 @@ public class PluginService {
                 installWork++;
                 markWork(installWork, totalInstallWork, installPluginMonitor);
             }
-
+            
             installPluginMonitor.done();
 
             SubMonitor refreshClasspathMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
