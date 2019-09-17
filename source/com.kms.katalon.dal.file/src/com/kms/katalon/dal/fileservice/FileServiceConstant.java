@@ -99,12 +99,4 @@ public class FileServiceConstant {
     public static String getProfileFolderLocation(String projectFolder) {
         return projectFolder + File.separator + "Profiles";
     }
-    
-    public static String getLocation(String projectFolder) {
-        return projectFolder + File.separator + GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE;
-    }
-    
-    public static String getPluginFolderLocation(String projectFolder) {
-        return projectFolder + File.separator + GlobalMessageConstants.SYSTEM_FOLDER_NAME_PLUGIN;
-    }
 }

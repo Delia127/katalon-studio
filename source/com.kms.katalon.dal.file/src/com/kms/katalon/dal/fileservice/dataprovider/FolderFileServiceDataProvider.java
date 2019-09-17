@@ -160,10 +160,4 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
 	public List<FileEntity> getRootUserFilesOrFolders(ProjectEntity project) throws DALException {
 	    return FolderFileServiceManager.getRootUserFilesOrFolders(project);
 	}
-
-    @Override
-    public FolderEntity getPluginsRoot(ProjectEntity project) throws DALException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

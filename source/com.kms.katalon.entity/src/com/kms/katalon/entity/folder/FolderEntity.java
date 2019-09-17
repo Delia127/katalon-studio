@@ -52,8 +52,7 @@ public class FolderEntity extends IntegratedFileEntity {
         PROFILE("Profiles"),
         FEATURE("Feature"),
         INCLUDE("Source"),
-        USER("User"),
-        PLUGIN("Plugins");
+        USER("User");
 
         private final String text;
 
