@@ -143,6 +143,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                     }
                 }
                 
+                endTime = new Date();
+                
                 prepareReport();
                 
                 setStatus(LauncherStatus.UPLOAD_REPORT);
@@ -190,8 +192,6 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     protected void postExecution() {
         schedule();
-
-        endTime = new Date();
         
         sendTrackingActivity();
         
