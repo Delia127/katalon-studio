@@ -89,6 +89,7 @@ public class ProjectController extends EntityController {
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
+                    updateProjectClassLoader(project);
                 } catch (JavaModelException e) {
                     monitor.beginTask("Trying cleaning up Groovy project...", 10);
                     cleanupGroovyProject(project);
