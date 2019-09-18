@@ -589,7 +589,8 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
-        String projectLocation = getProjectLocation();
+        String projectParentLocation = getProjectLocation();
+        String projectLocation = new File(projectParentLocation, projectName).getAbsolutePath();
         String projectDescription = getProjectDescription();
         ProjectType projectType = getSelectedProjectType();
 
