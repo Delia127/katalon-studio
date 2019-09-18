@@ -82,6 +82,7 @@ public class ReportInjectionManagerAddon {
                 loadExportReportProvider(plugin, plugin.getKeywordsManifest().getReport().getExportProviderClassName());
             }
         }
+        eventBroker.post(EventConstants.REPORT_EXPORT_PROVIDERS_COLLECTED, null);
     }
 
     private void loadExportReportProvider(CustomKeywordPlugin plugin, String exportReportProviderClassName) {
