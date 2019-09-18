@@ -44,6 +44,8 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     public static final int REQUEST_SIGNUP_CODE = 1002;
 
     private Label lblProgressMessage;
+    
+    private Link lnkOfflineActivation;
 
     private Link lnkOnlineRequest;
     
@@ -102,6 +104,13 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                 Program.launch(StringConstants.AGREE_TERM_URL);
             }
         });
+        
+        lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(StringConstants.OFFLINE_ACTIVATION);
+            }
+        });
 
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -137,7 +146,6 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
             } 
         });
     }
-
     @Override
     protected void setInput() {
         btnActivate.setEnabled(validateInput());
@@ -184,7 +192,15 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         
         btnChooseFile = new Button(composite, SWT.PUSH);
         btnChooseFile.setText(MessageConstants.ActivationOfflineDialogV2_BTN_CHOOSE_FILE);
-
+        
+        Composite offlineComposite = new Composite(container, SWT.NONE);
+        GridLayout glOfflineComposite = new GridLayout();
+        glOfflineComposite.verticalSpacing = 10;
+        offlineComposite.setLayout(glOfflineComposite);
+        offlineComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        lnkOfflineActivation = new Link(offlineComposite, SWT.WRAP);
+        lnkOfflineActivation.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KS);
+        
         Composite messageComposite = new Composite(container, SWT.NONE);
         GridLayout glMessageComposite = new GridLayout();
         glMessageComposite.verticalSpacing = 10;

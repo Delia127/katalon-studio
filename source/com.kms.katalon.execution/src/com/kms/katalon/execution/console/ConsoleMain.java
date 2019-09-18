@@ -79,9 +79,9 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
-    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "license";
     
-    public static final String KATALON_ANALYTICS_LICENSE_FILE_VAR = "TESTOPS_LICENSE_FILE";
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_VAR = "KATALON_LICENSE";
     
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
 
@@ -185,11 +185,12 @@ public class ConsoleMain {
             
             if (apiKeyValue != null) {
                 ApiKeyHandler.setApiKeyToProject(apiKeyValue);
-                reloadPlugins(apiKeyValue);
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
-                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
+            
+            reloadPlugins(apiKeyValue);
+            consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                    .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+            acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
 
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if (options.has(INSTALL_PLUGIN_OPTION)){

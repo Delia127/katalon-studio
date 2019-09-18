@@ -9,6 +9,7 @@ import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
+import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 import com.kms.katalon.logging.LogUtil;
 
 public class IosRunConfiguration extends MobileRunConfiguration {
@@ -17,9 +18,13 @@ public class IosRunConfiguration extends MobileRunConfiguration {
                 + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
     
+    public IosRunConfiguration(String projectDir, MobileDriverConnector mobileDriverConnector) throws IOException {
+        super(projectDir, mobileDriverConnector);
+    }
+    
     @Override
     public IRunConfiguration cloneConfig() throws IOException {
-        return new IosRunConfiguration(projectDir);
+        return new IosRunConfiguration(projectDir, mobileDriverConnector);
     }
     
     @Override

@@ -15,20 +15,20 @@ import com.kms.katalon.logging.LogUtil;
 public class OrganizationHandler {
 
     public static Long getOrganizationId() {
-        RunningMode mode = ApplicationRunningMode.get();
-        if (mode == RunningMode.CONSOLE) {
-            return Long.parseLong(Organization.getId());
-        } else {
-            AnalyticsOrganization org = new AnalyticsOrganization();
-            String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
-            if (StringUtils.isNotBlank(jsonObject)) {
-                try {
-                     org = JsonUtil.fromJson(jsonObject, AnalyticsOrganization.class);
-                } catch (IllegalArgumentException e) {
-                     LogUtil.logError(e);
+        try {
+            RunningMode mode = ApplicationRunningMode.get();
+            if (mode == RunningMode.CONSOLE) {
+                return Long.parseLong(Organization.getId());
+            } else {
+                AnalyticsOrganization org = new AnalyticsOrganization();
+                String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
+                if (StringUtils.isNotBlank(jsonObject)) {
+                    org = JsonUtil.fromJson(jsonObject, AnalyticsOrganization.class);
                 }
+                return org.getId();
             }
-            return org.getId();
+        } catch (Exception ex) {
+            return null;
         }
     }
 	

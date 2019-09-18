@@ -20,6 +20,7 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.ProxyUtil;
+import com.kms.katalon.core.windows.constants.WindowsDriverConstants;
 import com.thoughtworks.selenium.SeleniumException;
 
 import io.appium.java_client.MobileCommand;
@@ -52,15 +53,16 @@ public class WindowsDriverFactory {
             userConfigProperties = new HashMap<>();
         }
 
-        String remoteAddressURLAsString = (String) userConfigProperties.getOrDefault(WIN_APP_DRIVER_PROPERTY, "");
-        URL remoteAddressURL = StringUtils.isNotEmpty(remoteAddressURLAsString) ? new URL(remoteAddressURLAsString)
-                : null;
-        if (remoteAddressURL != null) {
+        String remoteAddressURLAsString = (String) userConfigProperties.getOrDefault(WIN_APP_DRIVER_PROPERTY,
+                WindowsDriverConstants.DEFAULT_WIN_APP_DRIVER_URL);
+        URL remoteAddressURL = new URL(remoteAddressURLAsString);
+        if (!remoteAddressURLAsString.equals(WindowsDriverConstants.DEFAULT_WIN_APP_DRIVER_URL)) {
             logger.logInfo(String.format("Starting application %s on the test machine at address %s", appFile,
                     remoteAddressURL.toString()));
             logger.logRunData(WIN_APP_DRIVER_PROPERTY, remoteAddressURL.toString());
         } else {
-            logger.logInfo(String.format("Starting application %s on local machine", appFile));
+            logger.logInfo(String.format("Starting application %s on the local machine at address %s", appFile,
+                    remoteAddressURL.toString()));
         }
 
         Object desiredCapabilitiesAsObject = userConfigProperties.getOrDefault(DESIRED_CAPABILITIES_PROPERTY, null);

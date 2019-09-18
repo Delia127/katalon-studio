@@ -53,4 +53,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String TOOLTIP_MESSAGE_PROPERTIES_ENTITY = ComposerExplorerMessageConstants.TOOLTIP_MESSAGE_PROPERTIES_ENTITY;
     
     public static final String CONTR_MENU_CONTEXT_IMPORT_OBJECTS = ComposerExplorerMessageConstants.CONTR_MENU_CONTEXT_IMPORT_OBJECTS;
+    
+    public static final String PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS = ComposerExplorerMessageConstants.PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS;
+    
+    public static final String PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS = ComposerExplorerMessageConstants.PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS;
+    
+    public static final String PAGE_ERROR_MSG_UNABLE_TO_REFESH_EXPLORER = ComposerExplorerMessageConstants.PAGE_ERROR_MSG_UNABLE_TO_REFESH_EXPLORER;
 }

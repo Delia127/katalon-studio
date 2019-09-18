@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.hardware.Hardware;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.logging.LogUtil;
 
@@ -44,20 +45,20 @@ public class MachineUtil {
 
         if (SystemUtils.IS_OS_MAC) {
             machineId = parseMachineIdForMac();
-            machineId = hash(machineId.matches(UUID_REGEX) ? appendMacAddress(machineId) : UNAVAILABLE);
+            machineId = hash(machineId.matches(UUID_REGEX) ? appendMachineSerial(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_LINUX) {
             machineId = parseMachineIdForLinux();
             // machine id on a linux is not a UUID
-            machineId = hash(machineId.length() != 32 ? UNAVAILABLE : appendMacAddress(machineId));
+            machineId = hash(machineId.length() == 32 ? appendMachineSerial(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_WINDOWS) {
             machineId = parseMachineIdForWindows();
-            machineId = hash(machineId.matches(UUID_REGEX) ? appendMacAddress(machineId) : UNAVAILABLE);
+            machineId = hash(machineId.matches(UUID_REGEX) ? appendMachineSerial(machineId) : UNAVAILABLE);
         }
         return machineId;
     }
 
-    private static String appendMacAddress(String str) {
-        return str + "_" + KatalonApplication.getMacAddress().toLowerCase();
+    private static String appendMachineSerial(String str) {
+        return str + "_" + Hardware.getSerialNumber().toLowerCase();
     }
 
     private static String hash(String str) {
