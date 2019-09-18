@@ -83,6 +83,8 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String OFFLINE_ACTIVATION = MessageConstants.OFFLINE_ACTIVATION;
     
+    public static final String ENTERPRISE_TRIAL_LICENSE = MessageConstants.ENTERPRISE_TRIAL_LICENSE;
+    
     public static final String FORGOT_PASS_LINK = MessageConstants.FORGOT_PASS_LINK;
 
     public static final String LINK_LABEL_FORGOT_PASS_TEXT = MessageConstants.LINK_LABEL_FORGOT_PASS_TEXT;
