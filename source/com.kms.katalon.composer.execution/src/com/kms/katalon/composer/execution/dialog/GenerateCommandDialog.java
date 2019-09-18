@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.UISynchronizer;
 
 import com.google.common.base.Strings;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
@@ -51,6 +52,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.execution.collection.dialog.ExecutionProfileSelectionDialog;
@@ -430,7 +432,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private void changeEnabled() {
-    	txtAPIKey.setEnabled(chkAPIKey.getSelection());
+        UISynchronizeService.asyncExec(() -> {
+            txtAPIKey.setEnabled(chkAPIKey.getSelection());
+        });
     }
 
     @Override
@@ -928,8 +932,11 @@ public class GenerateCommandDialog extends AbstractDialog {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
         }
         
+
         if (chkAPIKey.getSelection()) {
-        	args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
+            UISynchronizeService.asyncExec(() -> {
+                args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
+            });
         }
 
         return args;
@@ -1100,21 +1107,25 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private void getApiKey() {
-        try {
-            boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            String serverUrl = analyticsSettingStore.getServerEndpoint(isEncryptionEnabled);
-            String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-            if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
-                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                List<AnalyticsApiKey> apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token.getAccess_token());
-                if (!apiKeys.isEmpty()) {
-                    txtAPIKey.setText(apiKeys.get(0).getKey());
+        Thread getApiKey = new Thread(() -> {
+            try {
+                boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
+                String serverUrl = analyticsSettingStore.getServerEndpoint(isEncryptionEnabled);
+                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                    List<AnalyticsApiKey> apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token.getAccess_token());
+                    UISynchronizeService.asyncExec(() -> {
+                        if (!apiKeys.isEmpty() && !txtAPIKey.isDisposed()) {
+                            txtAPIKey.setText(apiKeys.get(0).getKey());
+                        }
+                    });
                 }
-            }
-        } catch (Exception ex) {
-        }
+            } catch (Exception ex) {}
+        });
+        getApiKey.start();
     }
     
     private RunConfigurationDescription getStoredConfigurationDescription() {
