@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -41,6 +42,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.katalon.platform.api.exception.PlatformException;
+import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.model.ExecutionProfileEntity;
 import com.katalon.platform.api.model.TestCaseEntity;
 import com.katalon.platform.api.model.TestObjectEntity;
@@ -48,6 +50,15 @@ import com.katalon.platform.api.ui.DialogActionService;
 import com.kms.katalon.composer.artifact.constant.ImageConstants;
 import com.kms.katalon.composer.artifact.constant.StringConstants;
 import com.kms.katalon.composer.artifact.core.util.PlatformUtil;
+import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
+import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
+import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.keyword.dialogs.KeywordSelectionDialog;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 
 public class ExportTestArtifactDialog extends Dialog {
 
@@ -56,6 +67,8 @@ public class ExportTestArtifactDialog extends Dialog {
     private List<TestObjectEntity> selectedTestObjects = new ArrayList<>();
     
     private List<ExecutionProfileEntity> selectedProfiles = new ArrayList<>();
+
+    private List<File> selectedKeywords = new ArrayList<>();
 
     private TableViewer testCaseTableViewer;
 
@@ -74,6 +87,12 @@ public class ExportTestArtifactDialog extends Dialog {
     private ToolItem btnAddProfile;
     
     private ToolItem btnDeleteProfile;
+    
+    private ToolItem btnAddKeyword;
+    
+    private ToolItem btnDeleteKeyword;
+    
+    private TableViewer keywordTableViewer;
     
     private Text txtExportLocation;
     
@@ -99,6 +118,8 @@ public class ExportTestArtifactDialog extends Dialog {
         createTestObjectSelectionSection(body);
         
         createProfileSelectionSection(body);
+        
+        createKeywordSelectionSection(body);
         
         createExportLocationSection(body);
 
@@ -246,6 +267,55 @@ public class ExportTestArtifactDialog extends Dialog {
 
         profileTableViewer.setInput(selectedProfiles);
         profileTableViewer.refresh();
+    }
+    
+    private void createKeywordSelectionSection(Composite parent) {
+        Label lblKeyword = new Label(parent, SWT.NONE);
+        lblKeyword.setText(StringConstants.LBL_KEYWORD);
+
+        ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
+        toolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        btnAddKeyword = new ToolItem(toolBar, SWT.FLAT);
+        btnAddKeyword.setText(StringConstants.TOOL_ITEM_ADD);
+        btnAddKeyword.setImage(ImageConstants.IMG_16_ADD);
+
+        btnDeleteKeyword = new ToolItem(toolBar, SWT.FLAT);
+        btnDeleteKeyword.setText(StringConstants.TOOL_ITEM_DELETE);
+        btnDeleteKeyword.setImage(ImageConstants.IMG_16_DELETE);
+        btnDeleteKeyword.setEnabled(false);
+
+        Composite keywordTableComposite = new Composite(parent, SWT.NONE);
+        GridData gdKeywordTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gdKeywordTableComposite.heightHint = 200;
+        keywordTableComposite.setLayoutData(gdKeywordTableComposite);
+        keywordTableComposite.setLayout(new FillLayout());
+
+        keywordTableViewer = new TableViewer(keywordTableComposite, SWT.BORDER | SWT.MULTI);
+        keywordTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        Table keywordTable = keywordTableViewer.getTable();
+        keywordTable.setHeaderVisible(true);
+        keywordTable.setLinesVisible(true);
+
+        TableViewerColumn tableViewerColumnKeywordId = new TableViewerColumn(keywordTableViewer, SWT.LEFT);
+        TableColumn tableColumnId = tableViewerColumnKeywordId.getColumn();
+        tableColumnId.setText(StringConstants.COL_KEYWORD_ID);
+        tableViewerColumnKeywordId.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                File keyword = (File) element;
+                String keywordFilePath = keyword.getAbsolutePath();
+                String keywordRelativeId = keywordFilePath.substring(keywordFilePath.indexOf("Keywords"));
+                return FilenameUtils.removeExtension(keywordRelativeId);
+            }
+        });
+
+        TableColumnLayout keywordTableLayout = new TableColumnLayout();
+        keywordTableLayout.setColumnData(tableColumnId, new ColumnWeightData(100, 30));
+        keywordTableComposite.setLayout(keywordTableLayout);
+
+        keywordTableViewer.setInput(selectedKeywords);
+        keywordTableViewer.refresh();
     }
     
     private void createExportLocationSection(Composite parent) {
@@ -408,6 +478,48 @@ public class ExportTestArtifactDialog extends Dialog {
             }
         });
         
+        btnAddKeyword.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Shell activeShell = e.widget.getDisplay().getActiveShell();
+                try {
+                    List<File> keywords = showKeywordSelectionDialog(activeShell);
+                    selectedKeywords.addAll(keywords);
+                    keywordTableViewer.refresh();
+                } catch (Exception ex) {
+                    MessageDialog.openError(activeShell, StringConstants.ERROR, ex.getMessage());
+                }
+                validateInput();
+            }
+        });
+        
+        btnDeleteKeyword.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Object[] selections = keywordTableViewer.getStructuredSelection().toArray();
+                for (Object keyword : selections) {
+                    selectedKeywords.remove((File) keyword);
+                }
+                keywordTableViewer.refresh();
+                if (selectedKeywords.isEmpty()) {
+                    btnDeleteKeyword.setEnabled(false);
+                }
+                validateInput();
+            }
+        });
+        
+        keywordTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                Object[] selections = keywordTableViewer.getStructuredSelection().toArray();
+                if (selections != null && selections.length > 0) {
+                    btnDeleteKeyword.setEnabled(true);
+                } else {
+                    btnDeleteKeyword.setEnabled(false);
+                }
+            }
+        });
+        
         btnChooseExportFolder.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -427,9 +539,38 @@ public class ExportTestArtifactDialog extends Dialog {
         });
     }
     
+    private List<File> showKeywordSelectionDialog(Shell parentShell) throws Exception {
+        EntityLabelProvider labelProvider = new EntityLabelProvider();
+        EntityProvider contentProvider = new EntityProvider();
+        KeywordSelectionDialog selectionDialog = new KeywordSelectionDialog(
+                parentShell, labelProvider, contentProvider, new EntityViewerFilter(contentProvider));
+        selectionDialog.setTitle("Select keywords");
+        selectionDialog.setAllowMultiple(false);
+        FolderTreeEntity keywordFolderRoot;
+        try {
+            keywordFolderRoot = new FolderTreeEntity(FolderController.getInstance()
+                    .getKeywordRoot(ProjectController.getInstance().getCurrentProject()), null);
+        } catch (Exception e) {
+            throw new ResourceException("Could not initialize profile folder", e);
+        }
+        selectionDialog.setInput(Arrays.asList(keywordFolderRoot));
+        if (selectionDialog.open() != TreeEntitySelectionDialog.OK || selectionDialog.getResult() == null) {
+            return null;
+        }
+        KeywordTreeEntity[] selectedTreeEntities = selectionDialog.getSelectedKeywords();
+        List<File> selectedKeywords = new ArrayList<>();
+        for (KeywordTreeEntity selectedTreeEntity : selectedTreeEntities) {
+            ICompilationUnit compilationUnit = ((ICompilationUnit) selectedTreeEntity.getObject());
+            String location = compilationUnit.getResource().getLocation().toString();
+            File keyword = new File(location);
+            selectedKeywords.add(keyword);
+        }
+        return selectedKeywords;
+    }
+    
     private void validateInput() {
-        boolean isValid = (!selectedTestCases.isEmpty() || !selectedTestObjects.isEmpty()
-                || !selectedProfiles.isEmpty()) && StringUtils.isNotBlank(txtExportLocation.getText());
+        boolean isValid = (!selectedTestCases.isEmpty() || !selectedTestObjects.isEmpty() || !selectedProfiles.isEmpty()
+                || !selectedKeywords.isEmpty()) && StringUtils.isNotBlank(txtExportLocation.getText());
         getButton(IDialogConstants.OK_ID).setEnabled(isValid);
     }
 
@@ -439,6 +580,7 @@ public class ExportTestArtifactDialog extends Dialog {
         dialogResult.setSelectedTestCases(filterDuplicatedTestCases(selectedTestCases));
         dialogResult.setSelectedTestObjects(filterDuplicatedTestObjects(selectedTestObjects));
         dialogResult.setSelectedProfiles(filterDuplicatedProfiles(selectedProfiles));
+        dialogResult.setSelectedKeywords(filterDuplicatedKeywords(selectedKeywords));
         dialogResult.setExportLocation(txtExportLocation.getText());
         super.okPressed();
     }
@@ -479,6 +621,18 @@ public class ExportTestArtifactDialog extends Dialog {
         return filteredResult;
     }
     
+    private List<File> filterDuplicatedKeywords(List<File> keywords) {
+        Set<String> keywordIds = new HashSet<>();
+        List<File> filteredResult = new ArrayList<>();
+        for (File keyword : keywords) {
+            if (!keywordIds.contains(keyword.getAbsolutePath())) {
+                filteredResult.add(keyword);
+                keywordIds.add(keyword.getAbsolutePath());
+            }
+        }
+        return filteredResult;
+    }
+    
     public ExportTestArtifactDialogResult getResult() {
         return dialogResult;
     }
@@ -500,6 +654,8 @@ public class ExportTestArtifactDialog extends Dialog {
         private List<TestObjectEntity> selectedTestObjects;
         
         private List<ExecutionProfileEntity> selectedProfiles;
+        
+        private List<File> selectedKeywords;
         
         private String exportLocation;
 
@@ -525,6 +681,14 @@ public class ExportTestArtifactDialog extends Dialog {
 
         public void setSelectedProfiles(List<ExecutionProfileEntity> selectedProfiles) {
             this.selectedProfiles = selectedProfiles;
+        }
+        
+        public List<File> getSelectedKeywords() {
+            return selectedKeywords;
+        }
+
+        public void setSelectedKeywords(List<File> selectedKeywords) {
+            this.selectedKeywords = selectedKeywords;
         }
 
         public String getExportLocation() {

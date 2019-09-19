@@ -81,9 +81,6 @@ public class ImportTestArtifactDialog extends Dialog {
         btnBrowseTestObjectImportLocation = new Button(body, SWT.NONE);
         btnBrowseTestObjectImportLocation.setText(StringConstants.BTN_BROWSE);
         
-        Label lblChooseKeywordImportLocation = new Label(body, SWT.NONE);
-        lblChooseKeywordImportLocation.setText(StringConstants.LBL_CHOOSE_KEYWORD_IMPORT_LOCATION);
-        
         registerControlListeners();
         
         return body;

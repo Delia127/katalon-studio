@@ -27,6 +27,7 @@ import com.katalon.platform.api.model.TestObjectEntity;
 import com.katalon.platform.api.ui.UISynchronizeService;
 import com.kms.katalon.composer.artifact.constant.StringConstants;
 import com.kms.katalon.composer.artifact.core.FileCompressionException;
+import com.kms.katalon.composer.artifact.core.util.KeywordUtil;
 import com.kms.katalon.composer.artifact.core.util.PlatformUtil;
 import com.kms.katalon.composer.artifact.core.util.TestCaseUtil;
 import com.kms.katalon.composer.artifact.core.util.TestObjectUtil;
@@ -52,12 +53,14 @@ public class ExportTestArtifactHandler {
             List<TestCaseEntity> exportedTestCases = result.getSelectedTestCases();
             List<TestObjectEntity> exportedTestObjects = result.getSelectedTestObjects();
             List<ExecutionProfileEntity> exportedProfiles = result.getSelectedProfiles();
+            List<File> exportedKeywords = result.getSelectedKeywords();
             String exportLocation = result.getExportLocation();
             try {
                 exportTestArtifacts(
                         exportedTestCases,
                         exportedTestObjects,
                         exportedProfiles,
+                        exportedKeywords,
                         exportLocation);
             } catch (Exception e) {
                 MessageDialog.openError(activeShell, StringConstants.ERROR,
@@ -71,6 +74,7 @@ public class ExportTestArtifactHandler {
             List<TestCaseEntity> testCases, 
             List<TestObjectEntity> testObjects,
             List<ExecutionProfileEntity> profiles,
+            List<File> keywords,
             String exportLocation) throws IOException, FileCompressionException {
 
         File exportFolder = new File(exportLocation);
@@ -90,7 +94,11 @@ public class ExportTestArtifactHandler {
                     
                     int numberOfTestScripts = testCases.size();
                     
-                    int totalWork = testCases.size() + numberOfTestScripts + testObjects.size() + profiles.size();
+                    int totalWork = testCases.size() 
+                            + numberOfTestScripts 
+                            + testObjects.size() 
+                            + profiles.size() 
+                            + keywords.size();
                     
                     int exportTestCaseWork = Math.round((float) testCases.size() * 90 / totalWork);
                     SubMonitor exportTestCaseMonitor = subMonitor.split(exportTestCaseWork, SubMonitor.SUPPRESS_NONE);
@@ -123,6 +131,14 @@ public class ExportTestArtifactHandler {
                     exportProfiles(profiles, exportTempFolder, exportProfileMonitor);
                     
                     exportProfileMonitor.done();
+                    
+                    int exportKeywordWork = Math.round((float) keywords.size() * 90 / totalWork);
+                    SubMonitor exportKeywordMonitor = subMonitor.split(exportKeywordWork, SubMonitor.SUPPRESS_NONE);
+                    exportKeywordMonitor.beginTask("Exporting keywords...", 100);
+                    
+                    exportKeywords(keywords, exportTempFolder, exportKeywordMonitor);
+                    
+                    exportKeywordMonitor.done();
 
                     SubMonitor zipMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
                     zipMonitor.beginTask("Compressing files...",  100);
@@ -259,6 +275,30 @@ public class ExportTestArtifactHandler {
             
             progress++;
             monitor.worked(Math.round((float) progress * 100 / profiles.size()));
+        }
+    }
+    
+    private void exportKeywords(List<File> keywords, File exportFolder, SubMonitor monitor) throws IOException {
+        ProjectEntity project = PlatformUtil.getCurrentProject();
+
+        File sharedKeywordFolder = new File(exportFolder, "Shared-Keywords");
+        sharedKeywordFolder.mkdirs();
+
+        int progress = 0;
+        for (File keyword : keywords) {
+            String parentRelativePath = KeywordUtil.getKeywordParentRelativePath(project, keyword);
+
+            String copyToFolderLocation = sharedKeywordFolder.getAbsolutePath() + File.separator
+                    + parentRelativePath;
+            Files.createDirectories(Paths.get(copyToFolderLocation));
+            File copyToFolder = new File(copyToFolderLocation);
+
+            if (keyword.exists()) {
+                FileUtils.copyFileToDirectory(keyword, copyToFolder);
+            }
+            
+            progress++;
+            monitor.worked(Math.round((float) progress * 100 / keywords.size()));
         }
     }
 }

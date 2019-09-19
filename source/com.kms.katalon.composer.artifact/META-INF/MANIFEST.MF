@@ -19,7 +19,11 @@ Require-Bundle: org.eclipse.jface,
  net.lingala.zip4j,
  com.kms.katalon.composer.resources,
  org.eclipse.core.jobs,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ com.kms.katalon.composer.keyword,
+ org.eclipse.jdt.core,
+ org.eclipse.ui.workbench,
+ org.eclipse.core.resources
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: resources/,
  .

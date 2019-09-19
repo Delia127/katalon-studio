@@ -34,6 +34,7 @@ import com.kms.katalon.composer.artifact.core.FileCompressionException;
 import com.kms.katalon.composer.artifact.core.TestArtifactScriptRefactor;
 import com.kms.katalon.composer.artifact.core.util.EntityUtil;
 import com.kms.katalon.composer.artifact.core.util.FileUtil;
+import com.kms.katalon.composer.artifact.core.util.KeywordUtil;
 import com.kms.katalon.composer.artifact.core.util.PlatformUtil;
 import com.kms.katalon.composer.artifact.core.util.ProfileUtil;
 import com.kms.katalon.composer.artifact.core.util.TestCaseUtil;
@@ -117,6 +118,8 @@ public class ImportTestArtifactHandler {
                             testObjectImportFolder = importTestObjects(sourceFolder, testObjectImportLocation);
 
                             importProfiles(sourceFolder);
+                            
+                            importKeywords(sourceFolder);
 
                             if (testObjectImportFolder != null && testScriptImportFolder != null) {
                                 Map<String, String> testObjectIdLookup = collectTestObjectIds(testObjectImportFolder);
@@ -253,6 +256,22 @@ public class ImportTestArtifactHandler {
                     .getFolder(project, "Profiles");
             TestExplorerActionService explorerActionService = PlatformUtil
                     .getUIService(TestExplorerActionService.class);
+            explorerActionService.refreshFolder(project, importFolderEntity);
+        }
+    }
+    
+    private void importKeywords(File sourceFolder) throws IOException, ResourceException {
+        File sharedKeywordFolder = new File(sourceFolder, "shared-keywords");
+        if (!FileUtil.isEmptyFolder(sharedKeywordFolder)) {
+            ProjectEntity project = PlatformUtil.getCurrentProject();
+            
+            File keywordRootFolder = new File(KeywordUtil.getKeywordRootFolder(project));
+            
+            FileUtils.copyDirectory(sharedKeywordFolder, keywordRootFolder);
+            
+            FolderEntity importFolderEntity = PlatformUtil.getPlatformController(FolderController.class)
+                    .getFolder(project, "Keywords");
+            TestExplorerActionService explorerActionService = PlatformUtil.getUIService(TestExplorerActionService.class);
             explorerActionService.refreshFolder(project, importFolderEntity);
         }
     }
