@@ -73,4 +73,13 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_HEADER_TEST_OBJECT_REFERENCES = ComposerObjectRepositoryMessageConstants.DIA_MSG_HEADER_TEST_OBJECT_REFERENCES;
     public static final String DIA_FIELD_TEST_OBJECT_ID = ComposerObjectRepositoryMessageConstants.DIA_FIELD_TEST_OBJECT_ID;
     public static final String DIA_TITLE_TEST_OBJECT_REFERENCES = ComposerObjectRepositoryMessageConstants.DIA_TITLE_TEST_OBJECT_REFERENCES;
+
+    // UnusedTestObjectTable
+    public static final String UNUSED_TEST_OBJECT_TABLE_COL_NAME = NAME;
+    public static final String UNUSED_TEST_OBJECT_TABLE_COL_ORDER = NO_;
+    public static final String UNUSED_TEST_OBJECT_TOOLBAR_DELETE_ALL = ComposerObjectRepositoryMessageConstants.UNUSED_TEST_OBJECT_TOOLBAR_DELETE_ALL;
+    public static final String UNUSED_TEST_OBJECT_TOOLBAR_EXPORT_CSV = ComposerObjectRepositoryMessageConstants.UNUSED_TEST_OBJECT_TOOLBAR_EXPORT_CSV;
+    public static final String DIA_TITLE_FIND_UNUSED_TEST_OBJECT = ComposerObjectRepositoryMessageConstants.DIA_TITLE_FIND_UNUSED_TEST_OBJECT;
+    public static final String UNUSED_TEST_OBJECT_LABEL = ComposerObjectRepositoryMessageConstants.UNUSED_TEST_OBJECT_LABEL;
+
 }

@@ -82,6 +82,14 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
     public static String RDO_SHADOW_ROOT_PARENT;
 
     public static String VIEW_HELP_SELECTION_METHOD_DOC_URL;
+
+    public static String DIA_TITLE_FIND_UNUSED_TEST_OBJECT;
+    
+    public static String UNUSED_TEST_OBJECT_LABEL;
+
+    public static String UNUSED_TEST_OBJECT_TOOLBAR_DELETE_ALL;
+
+    public static String UNUSED_TEST_OBJECT_TOOLBAR_EXPORT_CSV;
     
     // ObjectPropertyView
     public static String VIEW_ITEM_TIP_ADD_NEW_PROPERTY;

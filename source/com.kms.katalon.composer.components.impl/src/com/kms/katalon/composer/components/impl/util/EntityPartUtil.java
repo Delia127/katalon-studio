@@ -59,6 +59,10 @@ public class EntityPartUtil {
         return IdConstants.DRAFT_REQUEST_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";
     }
 
+    public static String getUnusedTestObjectsPartId() {
+        return IdConstants.UNUSED_TESTOBJECTS_CONTENT_PART_ID;
+    }
+
     public static String getTestSuiteCompositePartId(String testSuitePk) {
         return IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX + "(" + testSuitePk + ")";
     }

@@ -180,6 +180,10 @@ public class TestArtifactScriptRefactor {
         return referrers;
     }
 
+    public List<IFile> findReferrersInScripts(ProjectEntity projectEntity) throws IOException, CoreException {
+        return findReferrers(GroovyUtil.getAllScriptFiles(projectEntity));
+    }
+
     public List<IFile> findReferrersInTestCaseScripts(ProjectEntity projectEntity) throws IOException, CoreException {
         return findReferrers(GroovyUtil.getAllTestCaseScripts(projectEntity));
     }
