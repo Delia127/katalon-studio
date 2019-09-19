@@ -10,12 +10,12 @@ public enum WindowsAction implements IWindowsAction {
     RightClick("rightClick", "Right click on the given element"),
     GetText("getText", "Get text of the given element"),
     SetText("setText", "Set text to the given element"),
+    SendKeys("sendKeys", "Send combined keys to Application Windows"),
     ClearText("clearText", "Clear text on the given element"),
     CloseApplication("closeApplication", "Close the application"),
     SwitchToDesktop("switchToDesktop", "Switch to Desktop Windows"),
     SwitchToApplication("switchToApplication", "Switch to Application Windows"),
-    StartApplication("startApplication", "Start Windows Application", false),
-    SendKeys("sendKeys", "Send combined keys to Application Windows");
+    StartApplication("startApplication", "Start Windows Application", false);
 
     private String description;
 
