@@ -210,7 +210,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 	/**
 	 * Add test case folder into test case table viewer
 	 * 
-	 * @param monitor 
+	 * @param folderEntity 
 	 * @throws Exception
 	 */
     private void addTestCaseFolderToTable(FolderEntity folderEntity) throws Exception {
