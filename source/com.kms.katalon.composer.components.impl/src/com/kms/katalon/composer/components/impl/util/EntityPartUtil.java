@@ -193,9 +193,9 @@ public class EntityPartUtil {
             String profileId = getEntityIdFromPartId(partElementId, IdConstants.EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX);
             if (profileId != null) {
                 ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-                String[] name = profileId.split("\\\\");
-                String[] nameFile = name[name.length - 1].split("\\.");
-                return  GlobalVariableController.getInstance().getExecutionProfile(nameFile[0], projectEntity);
+                String[] profileIdName = profileId.split("\\\\");
+                String[] fileName = profileIdName[profileIdName.length - 1].split("\\.");
+                return  GlobalVariableController.getInstance().getExecutionProfile(fileName[0], projectEntity);
             }
             
             String windowsEntityId = getEntityIdFromPartId(partElementId, IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX);
@@ -213,7 +213,7 @@ public class EntityPartUtil {
         if (!StringUtils.startsWith(partElementId, entityPrefixId)) {
             return null;
         }
-        return StringUtils.substringBetween(partElementId, "(", ")");
+        return StringUtils.substring(partElementId, partElementId.indexOf("(")+1, partElementId.lastIndexOf(")"));
     }
 
     /**

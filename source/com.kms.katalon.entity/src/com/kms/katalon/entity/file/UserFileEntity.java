@@ -3,8 +3,11 @@ package com.kms.katalon.entity.file;
 import java.io.File;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 
+import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.constants.StringConstants;
+import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class UserFileEntity extends FileEntity {
 
@@ -31,6 +34,20 @@ public class UserFileEntity extends FileEntity {
     }
     
     @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof UserFileEntity)) {
+            return false;
+        }
+        UserFileEntity that = (UserFileEntity)object;
+        
+        if (this.getName().equals(that.getName())) {
+            return true;
+        }
+        return false;
+        
+    }
+    
+    @Override
     public String getLocation() {
         if (parentFolder != null) {
             return parentFolder.getLocation() + File.separator + name;
@@ -49,6 +66,9 @@ public class UserFileEntity extends FileEntity {
             return name;
         }
     }
+    
+    @Override
+    
     
     public String getRelativePathForUI() {
         if (parentFolder != null) {

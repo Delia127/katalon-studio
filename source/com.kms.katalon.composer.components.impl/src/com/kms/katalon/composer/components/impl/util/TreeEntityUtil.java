@@ -205,8 +205,8 @@ public class TreeEntityUtil {
                 createSelectedTreeEntityHierachy(reportCollectionEntity.getParentFolder(), reportRootFolder));
     }
 
-    public static CheckpointTreeEntity getCheckpointTreeEntity(CheckpointEntity checkpointEntity) throws Exception {
-        FolderEntity checkpointRootFolder = FolderController.getInstance().getReportRoot(checkpointEntity.getProject());
+    public static CheckpointTreeEntity getCheckpointTreeEntity(CheckpointEntity checkpointEntity, ProjectEntity projectEntity) throws Exception {
+        FolderEntity checkpointRootFolder = FolderController.getInstance().getCheckpointRoot(projectEntity);
         return new CheckpointTreeEntity(checkpointEntity,
                 createSelectedTreeEntityHierachy(checkpointEntity.getParentFolder(), checkpointRootFolder));
     }
@@ -491,8 +491,8 @@ public class TreeEntityUtil {
                 // Checkpoint
                 CheckpointEntity cp = CheckpointController.getInstance().getByDisplayedId(id);
                 if (cp != null) {
-                    treeEntities.add(getCheckpointTreeEntity(cp));
-                }
+                    treeEntities.add(getCheckpointTreeEntity(cp, project));
+                } 
             }
 
             if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_PROFILES)) {
