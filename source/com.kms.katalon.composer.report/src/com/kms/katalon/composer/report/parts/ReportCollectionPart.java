@@ -129,7 +129,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
             parent.layout();
             new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
 
-            createControls(parent);
+            createControls(controlComposite);
 
             updateInput();
 
