@@ -31,7 +31,7 @@ public class PluginMenuItemDescription implements ToolItemWithMenuDescription {
 
     @Override
     public String iconUrl() {
-        return "platform:/plugin/" + StringConstants.PLUGIN_BUNDLE_ID + "/icons/import_TC_TO_32x24.png";
+        return "platform:/plugin/" + StringConstants.PLUGIN_BUNDLE_ID + "/icons/import_test_artifacts_32x24.png";
     }
 
     @Override
