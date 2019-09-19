@@ -112,12 +112,12 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
         if (this.reportCollectionEntity == null) {
             layout.topControl = reportComposite;
-            
+
             Label lblReport = new Label(reportComposite, SWT.NONE);
             lblReport.setText(
                     "You don't have any executed test suite collection. The Result tab allows you to view the latest test result.");
         } else {
-           
+
             layout.topControl = controlComposite;
             parent.layout();
             new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
