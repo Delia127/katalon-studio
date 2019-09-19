@@ -58,6 +58,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
@@ -308,19 +309,52 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         this.mpart = part;
         this.parent = parent;
         mainComposite = parent;
+        
+        //report
+        Composite reportComposite = new Composite(parent, SWT.NONE);
+        GridLayout glMessageComposite = new GridLayout();
+        glMessageComposite.marginTop = 0;
+        reportComposite.setLayout(glMessageComposite);
+        reportComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        
+        Composite controlComposite = new Composite(parent, SWT.NONE);
+        GridLayout glComposite = new GridLayout();
+        glComposite.marginTop = 0;
+        controlComposite.setLayout(glComposite);
+        controlComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        
+        
+        parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+        StackLayout layout = new StackLayout();
+        parent.setLayout(layout);
+        
         if (report == null) {
+            layout.topControl = reportComposite;
+           
+            Label lblReport = new Label(reportComposite, SWT.NONE);
+            lblReport.setText(
+                    "You don't have any executed test suite. The Result tab allows you to view the latest test result.");
             return;
         }
-        setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, new NullProgressMonitor()));
-        testLogView = new ReportPartTestLogView(this);
-        isSearching = false;
-        registerListeners();
-        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE);
-        createControls(parent);
-        registerControlModifyListeners();
-        updateInput();
-//        setPartLabel(report.getDisplayName());
-        isInitialized = true;
+        else {
+            
+            layout.topControl = controlComposite;
+            parent.layout();
+            setTestSuiteLogRecord(
+                    LogRecordLookup.getInstance().getTestSuiteLogRecord(report, new NullProgressMonitor()));
+            testLogView = new ReportPartTestLogView(this);
+            isSearching = false;
+            registerListeners();
+            new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE);
+
+            createControls(controlComposite);
+            registerControlModifyListeners();
+            updateInput();
+            // setPartLabel(report.getDisplayName());
+            isInitialized = true;
+
+        }
+
     }
 
     private void registerControlModifyListeners() {
