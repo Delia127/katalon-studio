@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -24,11 +29,13 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -154,44 +161,76 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
      * @throws Exception
      */
     public void updateTestCaseTableViewer() throws Exception {
-       List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
-       List<TestSuiteTestCaseLink> links = tableViewer.getInput();
-		// add new checked items
-		for (Object object : selectedObjects) {
-			if (!(object instanceof ITreeEntity)) {
-				continue;
-			}
-			ITreeEntity treeEntity = (ITreeEntity) object;
-			if (treeEntity instanceof FolderTreeEntity) {
-				addTestCaseFolderToTable((FolderEntity) treeEntity.getObject());
-			} else if (treeEntity instanceof TestCaseTreeEntity) {
-				tableViewer.addTestCase((TestCaseEntity) treeEntity.getObject());
-			}
-		}
+        List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
+        List<TestSuiteTestCaseLink> links = tableViewer.getInput();
+        // add new checked items
 
-		// finally, update test case tree entity list
-		updateTestCaseTreeEntities();
-	}
+        Job addTestCasesToTestSuiteJob = new Job("Adding test cases to test suite ...") {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                int selectedObjectsSize = selectedObjects.size();
+                monitor.beginTask("", selectedObjectsSize);
+                SubMonitor subMonitor = SubMonitor.convert(monitor);
+                subMonitor.beginTask("", selectedObjectsSize);
+                for (Object object : selectedObjects) {
+                    try {
+                        SubMonitor subSubMonitor = subMonitor.split(1, SubMonitor.SUPPRESS_NONE);
+                        if (!(object instanceof ITreeEntity)) {
+                            continue;
+                        }
+                        ITreeEntity treeEntity = (ITreeEntity) object;
+                        if (treeEntity instanceof FolderTreeEntity) {
+                            FolderEntity fEntity = (FolderEntity) treeEntity.getObject();
+                            addTestCaseFolderToTable(fEntity, monitor);
+                        } else if (treeEntity instanceof TestCaseTreeEntity) {
+                            TestCaseEntity tcEntity = (TestCaseEntity) treeEntity.getObject();
+                            subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite", 1);
+                            UISynchronizeService.syncExec(() -> {
+                                try {
+                                    tableViewer.addTestCase(tcEntity);
+                                } catch (Exception e) {}
+                            });
+                            subSubMonitor.done();
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+                monitor.done();
+                return Status.OK_STATUS;
+            }
+        };
+        addTestCasesToTestSuiteJob.setUser(true);
+        addTestCasesToTestSuiteJob.schedule();
+        // finally, update test case tree entity list
+        updateTestCaseTreeEntities();
+    }
     
 
 	/**
 	 * Add test case folder into test case table viewer
 	 * 
 	 * @param folderEntity
+	 * @param monitor 
 	 * @throws Exception
 	 */
-	private void addTestCaseFolderToTable(FolderEntity folderEntity) throws Exception {
-		if (folderEntity.getFolderType() == FolderType.TESTCASE) {
-			FolderController folderController = FolderController.getInstance();
-			for (Object childObject : folderController.getChildren(folderEntity)) {
-				if (childObject instanceof TestCaseEntity) {
-					tableViewer.addTestCase((TestCaseEntity) childObject);
-				} else if (childObject instanceof FolderEntity) {
-					addTestCaseFolderToTable((FolderEntity) childObject);
-				}
-			}
-		}
-	}
+    private void addTestCaseFolderToTable(FolderEntity folderEntity, IProgressMonitor monitor) throws Exception {
+        if (folderEntity.getFolderType() == FolderType.TESTCASE) {
+            FolderController folderController = FolderController.getInstance();
+            List<FileEntity> childObjects = folderController.getChildren(folderEntity);
+            for (Object childObject : childObjects) {
+                if (childObject instanceof TestCaseEntity) {
+                    UISynchronizeService.syncExec(() -> {
+                        try {
+                            tableViewer.addTestCase((TestCaseEntity) childObject);
+                        } catch (Exception e) {}
+                    });
+                } else if (childObject instanceof FolderEntity) {
+                    addTestCaseFolderToTable((FolderEntity) childObject, monitor);
+                }
+            }
+        }
+    }
 
 	/**
 	 * Keep track of Test Case list in table viewer
