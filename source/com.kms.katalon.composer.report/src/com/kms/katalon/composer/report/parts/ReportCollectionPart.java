@@ -121,8 +121,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
             layout.topControl = reportComposite;
 
             Label lblReport = new Label(reportComposite, SWT.NONE);
-            lblReport.setText(
-                    "You don't have any executed test suite collection. The Result tab allows you to view the latest test result.");
+            lblReport.setText(StringConstants.LABEL_STATUS_REPORT_TESTSUITE_COLECTION);
         } else {
 
             layout.topControl = controlComposite;

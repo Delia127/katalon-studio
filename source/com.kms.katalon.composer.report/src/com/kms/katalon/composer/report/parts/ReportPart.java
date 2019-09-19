@@ -307,34 +307,31 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         this.parent = parent;
         mainComposite = parent;
         
-        //report
+        // report
         Composite reportComposite = new Composite(parent, SWT.NONE);
         GridLayout glMessageComposite = new GridLayout();
-        glMessageComposite.marginTop = 0;
+        glMessageComposite.marginTop = 20;
         reportComposite.setLayout(glMessageComposite);
         reportComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        
+
         Composite controlComposite = new Composite(parent, SWT.NONE);
         GridLayout glComposite = new GridLayout();
         glComposite.marginTop = 0;
         controlComposite.setLayout(glComposite);
         controlComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        
-        
+
         parent.setLayoutData(new GridData(GridData.FILL_BOTH));
         StackLayout layout = new StackLayout();
         parent.setLayout(layout);
-        
+
         if (report == null) {
             layout.topControl = reportComposite;
-           
+
             Label lblReport = new Label(reportComposite, SWT.NONE);
-            lblReport.setText(
-                    "You don't have any executed test suite. The Result tab allows you to view the latest test result.");
+            lblReport.setText(StringConstants.LABEL_STATUS_REPORT_TESTSUITE);
             return;
-        }
-        else {
-            
+        } else {
+
             layout.topControl = controlComposite;
             parent.layout();
             setTestSuiteLogRecord(
