@@ -14,7 +14,8 @@ public enum WindowsAction implements IWindowsAction {
     CloseApplication("closeApplication", "Close the application"),
     SwitchToDesktop("switchToDesktop", "Switch to Desktop Windows"),
     SwitchToApplication("switchToApplication", "Switch to Application Windows"),
-    StartApplication("startApplication", "Start Windows Application", false);
+    StartApplication("startApplication", "Start Windows Application", false),
+    SendKeys("sendKeys", "Send combined keys to Application Windows");
 
     private String description;
 

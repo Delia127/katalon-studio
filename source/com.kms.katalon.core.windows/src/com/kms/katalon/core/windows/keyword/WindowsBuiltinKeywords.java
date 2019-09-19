@@ -397,4 +397,49 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     public static void switchToApplication(FailureHandling flowControl) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "switchToApplication", flowControl);
     }
+
+    /**
+     * Simulates keystroke events on the specified element, as though you typed the value key-by-key
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @param strKeys
+     * The combination of keys to type
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
+     * @throws StepFailedException
+     * 
+     * @since 7.0.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static void sendKeys(WindowsTestObject windowsObject, String strKeys, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "sendKeys", windowsObject, strKeys, flowControl);
+    }
+
+    /**
+     * Simulates keystroke events on the specified element, as though you typed the value key-by-key
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @param strKeys
+     * The combination of keys to type
+     * 
+     * @throws StepFailedException
+     * 
+     * @since 7.0.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static void sendKeys(WindowsTestObject windowsObject, String strKeys) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "sendKeys", windowsObject, strKeys);
+    }
 }
