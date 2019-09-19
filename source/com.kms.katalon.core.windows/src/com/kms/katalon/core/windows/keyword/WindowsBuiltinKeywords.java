@@ -22,7 +22,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * Absolute path to the Windows application.
      * @throws StepFailedException
      * If KS could not start Windows Driver, could not start the application or the application file doesn't exist.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void startApplication(String appFile) throws StepFailedException {
@@ -44,7 +44,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If KS could not start Windows Driver, could not start the application or the application file doesn't exist.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void startApplication(String appFile, FailureHandling flowControl) throws StepFailedException {
@@ -60,7 +60,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * An object that describes locator and locator strategy to find Windows Element.
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform click action on the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void click(WindowsTestObject windowsObject) throws StepFailedException {
@@ -83,7 +83,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform click action on the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void click(WindowsTestObject windowsObject, FailureHandling flowControl) throws StepFailedException {
@@ -99,7 +99,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * An object that describes locator and locator strategy to find Windows Element.
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform double-click action on the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void doubleClick(WindowsTestObject windowsObject) throws StepFailedException {
@@ -122,7 +122,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform double-click action on the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void doubleClick(WindowsTestObject windowsObject, FailureHandling flowControl)
@@ -139,7 +139,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * An object that describes locator and locator strategy to find Windows Element.
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform right-click action on the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void rightClick(WindowsTestObject windowsObject) throws StepFailedException {
@@ -162,7 +162,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform right-click action on the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void rightClick(WindowsTestObject windowsObject, FailureHandling flowControl)
@@ -182,7 +182,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * The text content to set on the element.
      * @throws StepFailedException
      * If the windowsObject doesn't exist, or KS could not perform set text action on the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void setText(WindowsTestObject windowsObject, String text) throws StepFailedException {
@@ -208,7 +208,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void setText(WindowsTestObject windowsObject, String text, FailureHandling flowControl)
@@ -225,7 +225,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * An object that describes locator and locator strategy to find Windows Element.
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get text of the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static String getText(WindowsTestObject windowsObject) throws StepFailedException {
@@ -249,7 +249,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get text of the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static String getText(WindowsTestObject windowsObject, FailureHandling flowControl)
@@ -265,7 +265,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * An object that describes locator and locator strategy to find Windows Element.
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not clear text of the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void clearText(WindowsTestObject windowsObject) throws StepFailedException {
@@ -287,7 +287,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get text of the element.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static void clearText(WindowsTestObject windowsObject, FailureHandling flowControl)
@@ -305,7 +305,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * 
      * @throws StepFailedException
      * If KS could not close the Windows Driver.
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void closeApplication() throws StepFailedException {
@@ -315,7 +315,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Gets the current Windows Driver.
      * 
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static WindowsDriver<WebElement> getDriver() {
@@ -335,7 +335,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If KS could not initialize the desktop Windows Driver.
      * 
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void switchToDesktop() throws StepFailedException {
@@ -363,7 +363,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If KS could not initialize the desktop Windows Driver.
      * 
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void switchToDesktop(FailureHandling flowControl) throws StepFailedException {
@@ -373,7 +373,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Switches the current running driver to the application WindowsDriver.
      * 
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void switchToApplication() throws StepFailedException {
@@ -391,7 +391,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * @since 6.5.0
+     * @since 7.0.0
      */
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void switchToApplication(FailureHandling flowControl) throws StepFailedException {
