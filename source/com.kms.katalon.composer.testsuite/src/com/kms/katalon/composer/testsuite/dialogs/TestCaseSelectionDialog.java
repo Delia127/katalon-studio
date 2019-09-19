@@ -181,7 +181,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                         ITreeEntity treeEntity = (ITreeEntity) object;
                         if (treeEntity instanceof FolderTreeEntity) {
                             FolderEntity fEntity = (FolderEntity) treeEntity.getObject();
-                            addTestCaseFolderToTable(fEntity, monitor);
+                            addTestCaseFolderToTable(fEntity);
                         } else if (treeEntity instanceof TestCaseTreeEntity) {
                             TestCaseEntity tcEntity = (TestCaseEntity) treeEntity.getObject();
                             subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite", 1);
@@ -210,11 +210,10 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 	/**
 	 * Add test case folder into test case table viewer
 	 * 
-	 * @param folderEntity
 	 * @param monitor 
 	 * @throws Exception
 	 */
-    private void addTestCaseFolderToTable(FolderEntity folderEntity, IProgressMonitor monitor) throws Exception {
+    private void addTestCaseFolderToTable(FolderEntity folderEntity) throws Exception {
         if (folderEntity.getFolderType() == FolderType.TESTCASE) {
             FolderController folderController = FolderController.getInstance();
             List<FileEntity> childObjects = folderController.getChildren(folderEntity);
@@ -226,7 +225,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                         } catch (Exception e) {}
                     });
                 } else if (childObject instanceof FolderEntity) {
-                    addTestCaseFolderToTable((FolderEntity) childObject, monitor);
+                    addTestCaseFolderToTable((FolderEntity) childObject);
                 }
             }
         }
