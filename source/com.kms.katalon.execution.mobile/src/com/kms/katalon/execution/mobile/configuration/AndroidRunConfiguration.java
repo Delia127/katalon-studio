@@ -9,16 +9,21 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.device.AndroidDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
+import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 
 public class AndroidRunConfiguration extends MobileRunConfiguration {
     public AndroidRunConfiguration(String projectDir) throws IOException {
         super(projectDir, new AndroidDriverConnector(projectDir + File.separator
                 + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
+    
+    public AndroidRunConfiguration(String projectDir, MobileDriverConnector connector) throws IOException {
+        super(projectDir, connector);
+    }
 
     @Override
     public IRunConfiguration cloneConfig() throws IOException {
-        return new AndroidRunConfiguration(projectDir);
+        return new AndroidRunConfiguration(projectDir, mobileDriverConnector);
     }
     
     @Override

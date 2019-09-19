@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -87,6 +88,12 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     private boolean isInitialized;
     
     private Composite mainComposite;
+
+    private Composite reportCollectionMainComposite;
+
+    private ToolBar tbExportReport;
+
+    private Composite exportReportToolbarComposite;
 
     @PostConstruct
     public void initialize(Composite parent, ReportCollectionEntity reportCollectionEntity, MPart mpart) {
@@ -134,6 +141,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
             isInitialized = true;
         }
        
+
     }
 
     private void updateInput() {
@@ -150,15 +158,16 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     private void createControls(Composite parent) {
         parent.setLayout(new GridLayout(1, false));
 
-        Composite composite = new Composite(parent, SWT.NONE);
-        composite.setLayout(new GridLayout(1, false));
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        ToolBar tbExportReport = new ToolBar(composite, SWT.RIGHT);
-        tbExportReport.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-        createExportReportMenu(tbExportReport);
+        reportCollectionMainComposite = new Composite(parent, SWT.NONE);
+        reportCollectionMainComposite.setLayout(new GridLayout(1, false));
+        reportCollectionMainComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         
-        tableViewer = new CTableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
+        exportReportToolbarComposite = new Composite(reportCollectionMainComposite, SWT.NONE);
+        exportReportToolbarComposite.setLayout(new GridLayout(1, false));
+        exportReportToolbarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 1, 1));
+        createExportReportToolbar(exportReportToolbarComposite);
+        
+        tableViewer = new CTableViewer(reportCollectionMainComposite, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
@@ -214,6 +223,18 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
             tblclmnEnvironment.setWidth(0);
             tblclmnEnvironment.setResizable(false);
         }
+    }
+
+    private void createExportReportToolbar(Composite parent) {
+        if(tbExportReport != null) {
+            tbExportReport.dispose();
+        }
+        
+        tbExportReport = new ToolBar(parent, SWT.RIGHT);
+        tbExportReport.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+        createExportReportMenu(tbExportReport);
+        
+        parent.requestLayout();
     }
 
     private void createExportReportMenu(ToolBar toolBar) {
@@ -346,6 +367,9 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
                     return;
                 }
                 setPartLabel(reportCollection.getDisplayName());
+                break;
+            case EventConstants.REPORT_EXPORT_PROVIDERS_COLLECTED:
+                createExportReportToolbar(exportReportToolbarComposite);
                 break;
         }
     }

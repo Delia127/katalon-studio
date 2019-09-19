@@ -1,13 +1,20 @@
 package com.kms.katalon.composer.windows.handler;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.windows.dialog.WindowsSpyObjectDialog;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.composer.windows.dialog.WindowsAppComposite;
 
 public class SpyWindowsObjectHandler {
+
+    @CanExecute
+    public boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
+    }
 
     @Execute
     public void execute(Shell activeShell) {

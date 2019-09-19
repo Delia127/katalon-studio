@@ -43,12 +43,14 @@ import com.google.gson.GsonBuilder;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsRunConfiguration;
@@ -139,6 +141,26 @@ public class AnalyticsApiProvider {
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
+    }
+    
+    public static List<AnalyticsApiKey> getApiKeys(String serverUrl, String accessToken) throws Exception {
+        URI uri = getApiURI(serverUrl, "/api/v1/search");
+        URIBuilder builder = new URIBuilder(uri);
+        String query = 
+        "{"
+        + "\"type\":\"ApiKey\","
+        + "\"conditions\":[],"
+        + "\"functions\":[],"
+        + "\"pagination\":{\"page\":0,\"size\":1,\"sorts\":[\"createdAt,asc\"]},"
+        + "\"groupBys\":[]"
+        + "}";
+        builder.setParameter("q", query);
+        
+        HttpGet httpGet = new HttpGet(builder.build().toASCIIString());
+        httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+        AnalyticsPage<AnalyticsApiKey> result =  executeRequest(httpGet, new TypeToken<AnalyticsPage<AnalyticsApiKey>>() {});
+        return result.getContent();
+        
     }
 
     public static List<AnalyticsProject> getProjects(String serverUrl, AnalyticsTeam team, String accessToken)

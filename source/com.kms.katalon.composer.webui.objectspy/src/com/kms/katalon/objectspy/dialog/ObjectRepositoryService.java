@@ -195,32 +195,34 @@ public class ObjectRepositoryService {
                 case REPLACE_EXISTING_OBJECT:
                     oldWebElementEntity.setWebElementProperties(newWebElement.getProperties());
                     oldWebElementEntity.setWebElementXpaths(newWebElement.getXpaths());
-                    // Replace old selector method with new one
                     oldWebElementEntity.setSelectorMethod(WebElementSelectorMethod.valueOf(wrapElement.getOriginalWebElement().getSelectorMethod().toString()));
+                    newWebElement.getSelectorCollection().entrySet().forEach(entry -> {
+                        oldWebElementEntity.setSelectorValue(
+                                WebElementSelectorMethod.valueOf(entry.getKey().toString()), entry.getValue());
+                    });
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 
                 case MERGE_CHANGE_TO_EXISTING_OBJECT:
                     Set<WebElementPropertyEntity> mergedProperties = new LinkedHashSet<>();
                     mergedProperties.addAll(newWebElement.getProperties());
-                    //uncheck all properties of old web element.
                     for(WebElementPropertyEntity wProperty: oldWebElementEntity.getWebElementProperties()) {
                         wProperty.setIsSelected(false);
                     }
                     mergedProperties.addAll(oldWebElementEntity.getWebElementProperties());
                     oldWebElementEntity.setWebElementProperties(new ArrayList<>(mergedProperties));
-                    
                     Set<WebElementXpathEntity> mergedXpaths = new LinkedHashSet<>();
                     mergedXpaths.addAll(newWebElement.getXpaths());
-                    //uncheck all xpaths of old web element.
                     for(WebElementXpathEntity wXpath: oldWebElementEntity.getWebElementXpaths()) {
                         wXpath.setIsSelected(false);
                     }
                     mergedXpaths.addAll(oldWebElementEntity.getWebElementXpaths());
                     oldWebElementEntity.setWebElementXpaths(new ArrayList<>(mergedXpaths));
-                    
-                    // Replace old selector method with new one
                     oldWebElementEntity.setSelectorMethod(WebElementSelectorMethod.valueOf(wrapElement.getOriginalWebElement().getSelectorMethod().toString()));
+                    newWebElement.getSelectorCollection().entrySet().forEach(entry -> {
+                        oldWebElementEntity.setSelectorValue(
+                                WebElementSelectorMethod.valueOf(entry.getKey().toString()), entry.getValue());
+                    });
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 

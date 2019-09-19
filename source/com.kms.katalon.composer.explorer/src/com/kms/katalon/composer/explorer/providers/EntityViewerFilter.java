@@ -15,13 +15,17 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.controller.FilterController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.execution.setting.ExplorerSettingStore;
 
 public class EntityViewerFilter extends AbstractEntityViewerFilter {
 
     private String searchString;
 
     private EntityProvider entityProvider;
+    
+    private ExplorerSettingStore store;
 
     public EntityViewerFilter(EntityProvider entityProvider) {
         this.entityProvider = entityProvider;
@@ -34,6 +38,26 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
     @SuppressWarnings("restriction")
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
+        if (store == null) {
+            try {
+                store = new ExplorerSettingStore(ProjectController.getInstance().getCurrentProject());
+            } catch (Exception e) {
+                LoggerSingleton.getInstance().getLogger().error(e);
+            }
+        }
+
+        if (element instanceof ITreeEntity && store != null) {
+            try {
+                String entityName = ((ITreeEntity) element).getText();
+                boolean isShow = store.isItemShow(entityName);
+                if (!isShow) {
+                    return false;
+                }
+            } catch (Exception e) {
+                LoggerSingleton.getInstance().getLogger().error(e);
+            }
+        }
+
         if (searchString == null || searchString.equals(StringUtils.EMPTY)) {
             return true;
         }
