@@ -483,4 +483,9 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         }
         return collectedInfo;
     }
+
+    @Override
+    public Rerunable mergeWith(Rerunable rerunable) {
+        return this;
+    }
 }
