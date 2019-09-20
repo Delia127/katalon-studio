@@ -554,45 +554,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         btnAdd.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(
-                            getParentShell());
-                    if (dialog.open() != Dialog.OK) {
-                        return;
-                    }
-                    FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
-                    FolderEntity folder = folderTreeEntity.getObject();
-                    List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
-                    Trackings.trackSaveSpy("windows", newTreeEntities.size());
-                    removeSelectedCapturedElements(
-                            capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedWindowsElement[0]));
-                    updateExplorerState(folderTreeEntity, newTreeEntities);
-                } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
-                    MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
-                }
-            }
-
-            private void updateExplorerState(FolderTreeEntity folderTreeEntity, List<ITreeEntity> newTreeEntities) {
-                IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-                eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, folderTreeEntity);
-                eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newTreeEntities.toArray());
-            }
-
-            private List<ITreeEntity> addElementsToRepository(FolderTreeEntity folderTreeEntity, FolderEntity folder)
-                    throws Exception {
-                CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
-                List<ITreeEntity> newTreeEntities = new ArrayList<>();
-
-                WindowsElementController objectRepositoryController = WindowsElementController.getInstance();
-                for (CapturedWindowsElement mobileElement : capturedObjectsTableViewer.getAllCheckedElements()) {
-                    WindowsElementEntity testObject = converter.convert(mobileElement);
-                    testObject.setParentFolder(folder);
-                    testObject.setProject(folder.getProject());
-                    objectRepositoryController.updateWindowsElementEntity(testObject);
-                    newTreeEntities.add(new WindowsElementTreeEntity(testObject, folderTreeEntity));
-                }
-                return newTreeEntities;
+                saveCapturedObjectsToObjectRepository();
             }
         });
     }
@@ -646,6 +608,56 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
                 stopObjectInspectorAction();
             }
         });
+    }
+    
+    @Override
+    protected void okPressed() {
+        saveCapturedObjectsToObjectRepository();
+        super.okPressed();
+    }
+    
+    private void saveCapturedObjectsToObjectRepository() {
+        if (capturedObjectsTableViewer.getAllCheckedElements().size() > 0) {
+            try {
+                AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(
+                        getParentShell());
+                if (dialog.open() != Dialog.OK) {
+                    return;
+                }
+                FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
+                FolderEntity folder = folderTreeEntity.getObject();
+                List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
+                Trackings.trackSaveSpy("windows", newTreeEntities.size());
+                removeSelectedCapturedElements(
+                        capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedWindowsElement[0]));
+                updateExplorerState(folderTreeEntity, newTreeEntities);
+            } catch (Exception ex) {
+                LoggerSingleton.logError(ex);
+                MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
+            }
+        }
+    }
+    
+    private void updateExplorerState(FolderTreeEntity folderTreeEntity, List<ITreeEntity> newTreeEntities) {
+        IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, folderTreeEntity);
+        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newTreeEntities.toArray());
+    }
+
+    private List<ITreeEntity> addElementsToRepository(FolderTreeEntity folderTreeEntity, FolderEntity folder)
+            throws Exception {
+        CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
+        List<ITreeEntity> newTreeEntities = new ArrayList<>();
+
+        WindowsElementController objectRepositoryController = WindowsElementController.getInstance();
+        for (CapturedWindowsElement mobileElement : capturedObjectsTableViewer.getAllCheckedElements()) {
+            WindowsElementEntity testObject = converter.convert(mobileElement);
+            testObject.setParentFolder(folder);
+            testObject.setProject(folder.getProject());
+            objectRepositoryController.updateWindowsElementEntity(testObject);
+            newTreeEntities.add(new WindowsElementTreeEntity(testObject, folderTreeEntity));
+        }
+        return newTreeEntities;
     }
 
     @Override
