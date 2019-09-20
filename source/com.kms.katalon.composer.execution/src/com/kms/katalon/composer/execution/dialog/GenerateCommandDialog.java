@@ -932,9 +932,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         
 
         if (chkAPIKey.getSelection()) {
-            UISynchronizeService.asyncExec(() -> {
-                args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
-            });
+            args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
         }
 
         return args;
