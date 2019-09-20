@@ -85,7 +85,6 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
     @Inject
     private IEventBroker eventBroker;
 
-    @SuppressWarnings("unchecked")
     @PostConstruct
     public void createComposite(Composite parent, MPart part) {
         this.mPart = part;
