@@ -3,9 +3,12 @@ package com.kms.katalon.composer.windows.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.swt.widgets.Shell;
 
@@ -29,6 +32,7 @@ import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialog;
 import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialog.RecordActionResult;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElementConverter;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
@@ -39,6 +43,9 @@ import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class RecordWindowsObjectHandler {
+
+    @Inject
+    private IEventBroker eventBroker;
     
    @CanExecute
    public boolean canExecute() {
@@ -73,7 +80,7 @@ public class RecordWindowsObjectHandler {
                 return;
             }
             saveTestObject(activeShell, recordActionResult);
-
+            
             saveToTestCase(activeShell, recordActionDialog.getRecordActionResult());
 
         } catch (Exception e) {
@@ -118,7 +125,25 @@ public class RecordWindowsObjectHandler {
         testCasePart.getTreeTableInput().setChanged(true);
         testCaseCompositePart.changeScriptNode(testCasePart.getTreeTableInput().getMainClassNode());
         testCaseCompositePart.save();
+
+        FolderTreeEntity treeEntity = new FolderTreeEntity(exportResult.getFolder());
+        refreshAndExpandSelectedTree(treeEntity);
     }
+    
+    private void refreshAndExpandSelectedTree(FolderTreeEntity treeEntity) {
+        if (treeEntity != null) {
+            try {
+                // The parent folder must be refresh first
+                refreshAndExpandSelectedTree((FolderTreeEntity) treeEntity.getParent());
+            } catch (Exception error) {
+                LoggerSingleton.logError(error);
+            }
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity);
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, treeEntity);
+            eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, treeEntity);
+        }
+    }
+    
 
     private void saveTestObject(Shell activeShell, WindowsRecorderDialog.RecordActionResult recordResult)
             throws ControllerException {
