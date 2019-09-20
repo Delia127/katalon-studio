@@ -26,6 +26,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String REPORT_TABLE_END_TIME_COLUMN_HEADER = ComposerReportMessageConstants.REPORT_TABLE_END_TIME_COLUMN_HEADER;
     public static final String REPORT_TABLE_ELAPSED_TIME_COLUMN_HEADER = ComposerReportMessageConstants.REPORT_TABLE_ELAPSED_TIME_COLUMN_HEADER;
     public static final String REPORT_TABLE_STATUS_COLUMN_HEADER = ComposerReportMessageConstants.REPORT_TABLE_STATUS_COLUMN_HEADER;
+    public static final String LABEL_STATUS_REPORT_TESTSUITE = ComposerReportMessageConstants.LABEL_STATUS_REPORT_TESTSUITE;
+    public static final String LABEL_STATUS_REPORT_TESTSUITE_COLECTION = ComposerReportMessageConstants.LABEL_STATUS_REPORT_TESTSUITE_COLECTION;
     public static final String REPORT_TABLE_DESCRIPTION_COLUMN_HEADER = ComposerReportMessageConstants.REPORT_TABLE_DESCRIPTION_COLUMN_HEADER;
     public static final String REPORT_TABLE_ATTACHMENT_COLUMN_HEADER = ComposerReportMessageConstants.REPORT_TABLE_ATTACHMENT_COLUMN_HEADER;
     public static final String PA_SEARCH_TEXT_DEFAULT_VALUE = ComposerReportMessageConstants.PA_SEARCH_TEXT_DEFAULT_VALUE;
