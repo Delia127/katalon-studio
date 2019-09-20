@@ -186,6 +186,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     
     private AnalyticsSettingStore analyticsSettingStore;
 
+    private boolean isRetrievingApi;
+
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
         setDialogTitle(StringConstants.DIA_TITLE_GENERATE_COMMAND_FOR_CONSOLE);
@@ -430,15 +432,13 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private void changeEnabled() {
-        UISynchronizeService.asyncExec(() -> {
-            txtAPIKey.setEnabled(chkAPIKey.getSelection());
-        });
+        txtAPIKey.setEnabled(chkAPIKey.getSelection());
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, GENERATE_PROPERTY_ID, StringConstants.DIA_BTN_GEN_PROPERTY_FILE, false);
-        createButton(parent, GENERATE_COMMAND_ID, StringConstants.DIA_BTN_GEN_COMMAND, true);
+        createButton(parent, GENERATE_COMMAND_ID, StringConstants.DIA_BTN_GEN_COMMAND, isValidInput());
         createButton(parent, IDialogConstants.CLOSE_ID, IDialogConstants.CLOSE_LABEL, false);
     }
 
@@ -966,6 +966,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private boolean isValidInput() {
+        if(isRetrievingApi) {
+            return false;
+        }
         String entityId = txtTestSuite.getText();
         if (isBlank(entityId)) {
             return false;
@@ -1105,6 +1108,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private void getApiKey() {
+        isRetrievingApi = true;
         Thread getApiKey = new Thread(() -> {
             try {
                 boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
@@ -1118,10 +1122,14 @@ public class GenerateCommandDialog extends AbstractDialog {
                     UISynchronizeService.asyncExec(() -> {
                         if (!apiKeys.isEmpty() && !txtAPIKey.isDisposed()) {
                             txtAPIKey.setText(apiKeys.get(0).getKey());
+                            isRetrievingApi = false;
+                            setGenerateCommandButtonStates();
                         }
                     });
                 }
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                LoggerSingleton.logError(ex);
+            }
         });
         getApiKey.start();
     }
