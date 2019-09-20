@@ -29,6 +29,7 @@
 
 
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
+		<product.apisourceDirectory>${product.resourcesDirectory}/sources</product.apisourceDirectory>
 
 		<product.archiveFileName>katalon-studio</product.archiveFileName>
 		<product.name>Katalon_Studio</product.name>

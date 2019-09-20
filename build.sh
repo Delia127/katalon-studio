@@ -70,6 +70,7 @@ building() {
     # fi
 
     cd $katalonDir/source/com.kms.katalon.apidocs && $katalonDir/source/mvnw ${mavenOpts} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}
+    cd $katalonDir/source/com.kms.katalon.api.source && $katalonDir/source/mvnw ${mavenOpts} clean verify && cp -R 'target/resources/source' ${tmpDir}
 }
 
 copy_build() {
@@ -144,6 +145,9 @@ repackage() {
 
     cd ${tmpDir} && zip -r "${tmpDir}/apidocs.zip" "apidocs"
     rm -rf "${tmpDir}/apidocs"
+
+    cd ${tmpDir} && zip -r "${tmpDir}/source.zip" "source"
+    rm -rf "${tmpDir}/source"
 }
 
 branch=${1}

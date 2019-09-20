@@ -252,6 +252,9 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 
                             // Generate API docs
                             sh "cd com.kms.katalon.apidocs && mvn clean ${command} && cp -R 'target/resources/apidocs' ${env.tmpDir}"
+
+                            // Generate Source
+                            sh "cd com.kms.katalon.api.source && mvn clean ${command} && cp -R 'target/resources/source' ${env.tmpDir}"
                         }
                     }
                 }
@@ -372,6 +375,9 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 
                 sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/apidocs.zip' 'apidocs'"
                 sh "rm -rf '${env.tmpDir}/apidocs'"
+
+                sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/source.zip' 'source'"
+                sh "rm -rf '${env.tmpDir}/source'"
             }
         }
 
