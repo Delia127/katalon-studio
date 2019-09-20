@@ -330,7 +330,7 @@ public class AnalyticsApiProvider {
             String fileName, String uploadedPath, boolean isEnd, String token) throws AnalyticsApiExeception {
 
         try {
-            LogUtil.logInfo("KA: Start uploading report to KA server: " + serverUrl);
+            LogUtil.logInfo("TestOps: Start uploading report to Katalon TestOps server: " + serverUrl);
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_KATALON_TEST_REPORTS);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("projectId", String.valueOf(projectId));
@@ -353,7 +353,7 @@ public class AnalyticsApiProvider {
     public static List<AnalyticsExecution> uploadMultipleFileInfo(String serverUrl, long projectId, long timestamp,
             List<AnalyticsFileInfo> fileInfoList, String token) throws AnalyticsApiExeception {
         try {
-            LogUtil.logInfo("KA: Start uploading report to KA server: " + serverUrl);
+            LogUtil.logInfo("TestOps: Start uploading report to Katalon TestOps server: " + serverUrl);
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_KATALON_MULTIPLE_TEST_REPORTS);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("projectId", String.valueOf(projectId));
@@ -378,7 +378,7 @@ public class AnalyticsApiProvider {
             String fileName, String uploadedPath, String token) throws AnalyticsApiExeception {
 
         try {
-            LogUtil.logInfo("KA: Start uploading test project to KA server: " + serverUrl);
+            LogUtil.logInfo("TestOps: Start uploading test project to Katalon TestOps server: " + serverUrl);
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_UPLOAD_TEST_PROJECT);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("name", name);
@@ -403,7 +403,7 @@ public class AnalyticsApiProvider {
             String cloudType, String configType, long testSuiteCollectionId, String token)
             throws AnalyticsApiExeception {
         try {
-            LogUtil.logInfo("KA: Create test plan in KA server: " + serverUrl);
+            LogUtil.logInfo("TestOps: Create test plan in Katalon TestOps server: " + serverUrl);
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_CREATE_TEST_PLAN);
             URIBuilder uriBuilder = new URIBuilder(uri);
 
@@ -440,7 +440,7 @@ public class AnalyticsApiProvider {
         int statusCode = httpResponse.getStatusLine().getStatusCode();
         if (statusCode != HttpStatus.SC_OK) {
             LogUtil.logError(MessageFormat.format(
-                    "KA: Unexpected response code from KA server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
+                    "TestOps: Unexpected response code from Katalon TestOps server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
                     httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
             throw new AnalyticsApiExeception(new Throwable(responseString));
         }

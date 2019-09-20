@@ -104,7 +104,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oiLmoAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handledmenuitem.searchFile" label="Search..." tooltip="" command="_N5ChkARIEeWyKYoESvUc1g"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_1lwroEVsEemrfdWg5nXJug" elementId="com.kms.katalon.menu.integration" label="TestOps">
-        <children xsi:type="menu:DirectMenuItem" xmi:id="_2-ob8EdBEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.katalonanalytics" label="Katalon Analytics" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenKatalonAnalyticsPageHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_2-ob8EdBEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.katalonanalytics" label="Katalon TestOps" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenKatalonAnalyticsPageHandler"/>
         <children xsi:type="menu:Menu" xmi:id="_MwX0gEdDEem6k_LppvmRLg" elementId="com.kms.katalon.menu.alm" label="ALM - Test Management">
           <children xsi:type="menu:DirectMenuItem" xmi:id="__A-o4EVsEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.jiraIntegration" label="Jira" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenJiraPluginPageHandler"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_-9-wIEeZEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.qtest" label="qTest" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenQTestPageHandler"/>
