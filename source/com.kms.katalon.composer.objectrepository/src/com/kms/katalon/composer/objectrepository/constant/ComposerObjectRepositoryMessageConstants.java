@@ -90,6 +90,8 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
     public static String UNUSED_TEST_OBJECT_TOOLBAR_DELETE_ALL;
 
     public static String UNUSED_TEST_OBJECT_TOOLBAR_EXPORT_CSV;
+
+    public static String DIA_UNUSED_TEST_OBJECT_DELETE_MESSAGE;
     
     // ObjectPropertyView
     public static String VIEW_ITEM_TIP_ADD_NEW_PROPERTY;

@@ -14,6 +14,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -178,13 +179,16 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
 
         toolItemDeleteAll = new ToolItem(tableToolbar, SWT.NONE);
         toolItemDeleteAll.setText(StringConstants.UNUSED_TEST_OBJECT_TOOLBAR_DELETE_ALL);
-        toolItemDeleteAll.setToolTipText(StringConstants.VIEW_LBL_DELETE);
+        toolItemDeleteAll.setToolTipText(StringConstants.UNUSED_TEST_OBJECT_TOOLBAR_DELETE_ALL);
         toolItemDeleteAll.setImage(ImageConstants.IMG_16_REMOVE);
 
         toolItemDeleteAll.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                deleteAll();
+                if (MessageDialog.openQuestion(shell, StringConstants.DELETE,
+                        StringConstants.DIA_UNUSED_TEST_OBJECT_DELETE_MESSAGE)) {
+                    deleteAll();
+                }
             }
         });
 
