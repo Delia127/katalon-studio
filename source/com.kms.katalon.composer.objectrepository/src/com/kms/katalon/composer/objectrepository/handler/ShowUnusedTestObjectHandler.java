@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.composer.objectrepository.part.UnusedTestObjectsPart;
 import com.kms.katalon.constants.EventConstants;
@@ -105,6 +106,7 @@ public class ShowUnusedTestObjectHandler {
             mPart.setElementId(partId);
             mPart.setLabel(StringConstants.UNUSED_TEST_OBJECT_LABEL);
             mPart.setContributionURI(UNUSED_TEST_OBJECTS_PART_URI);
+            mPart.setIconURI(ImageConstants.URL_16_UNUSED_TEST_OBJECT);
             mPart.setCloseable(true);
             mPart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
             stack.getChildren().add(mPart);

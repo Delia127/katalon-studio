@@ -191,6 +191,7 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
         toolItemExportCSV = new ToolItem(tableToolbar, SWT.NONE);
         toolItemExportCSV.setText(StringConstants.UNUSED_TEST_OBJECT_TOOLBAR_EXPORT_CSV);
         toolItemExportCSV.setToolTipText(StringConstants.UNUSED_TEST_OBJECT_TOOLBAR_EXPORT_CSV);
+        toolItemExportCSV.setImage(ImageConstants.IMG_16_EXPORT_CSV);
 
         toolItemExportCSV.addSelectionListener(new SelectionAdapter() {
             @Override
