@@ -18,8 +18,8 @@ public class NewFilteringTestSuiteDialog extends CommonNewEntityDialog<Filtering
 
     public NewFilteringTestSuiteDialog(Shell parentShell, FolderEntity parentFolder, String suggestedName) {
         super(parentShell, parentFolder, suggestedName);
-        setDialogTitle("New Dynamic Querying Test Suite");
-        setDialogMsg("Create new Dynamic Querying Test Suite");
+        setDialogTitle("New Dynamic Test Suite");
+        setDialogMsg("Create new Dynamic Test Suite");
     }
 
     @Override
