@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.objectrepository.part;
 
+import static org.eclipse.jface.dialogs.MessageDialog.openError;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,6 +56,10 @@ import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
 public class UnusedTestObjectsPart extends CPart implements EventHandler {
+
+    private static final String[] FILTER_NAMES = { "Comma Separated Values Files (*.csv)" };
+
+    private static final String[] FILTER_EXTS = { "*.csv" };
 
     protected ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
@@ -218,16 +224,16 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
             updateContent(Collections.emptyList());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LoggerSingleton.logError(e);
+            openError(shell, StringConstants.ERROR_TITLE, e.getMessage());
         }
     }
 
     private void exportCSV() {
         FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
         fileDialog.setText("Export");
-        fileDialog.setFilterExtensions(new String[] { "*.csv" });
-        fileDialog.setFilterNames(new String[] { "Features(*.feature)" });
+        fileDialog.setFilterExtensions(FILTER_EXTS);
+        fileDialog.setFilterNames(FILTER_NAMES);
         fileDialog.setFileName("Unused Test Objects.csv");
         String filePath = fileDialog.open();
 
@@ -250,8 +256,8 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
             UISynchronizeService.syncExec(() -> Program.launch(exportedFile.toURI().toString()));
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LoggerSingleton.logError(e);
+            openError(shell, StringConstants.ERROR_TITLE, e.getMessage());
         }
 
     }
