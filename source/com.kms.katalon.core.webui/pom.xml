@@ -139,22 +139,22 @@
 				</executions>
 			</plugin>
 
- 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
 							<outputDirectory>${sourcecodeOutputDirectory}</outputDirectory>
 							<finalName>${project.artifactId}</finalName>
 						</configuration>
-                    </execution>
-                </executions>
-            </plugin>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

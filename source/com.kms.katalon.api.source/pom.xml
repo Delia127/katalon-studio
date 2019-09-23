@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001 XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.kms</groupId>
-    <artifactId>com.kms.katalon.sources</artifactId>
+    <artifactId>com.kms.katalon.source</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0.qualifier</version>
-    <name>Katalon Studio API Sources</name>
+    <name>Katalon Studio API Source</name>
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
@@ -19,7 +19,7 @@
         <coreMobileModule>com.kms.katalon.core.mobile</coreMobileModule>
         <coreWebserviceModule>com.kms.katalon.core.webservice</coreWebserviceModule>
         <coreWebUiModule>com.kms.katalon.core.webui</coreWebUiModule>
-        <apisourceDirectory>${project.build.directory}/${resourcesDiretory}/apidocs</apisourceDirectory>
+        <apisourceDirectory>${project.build.directory}/${resourcesDiretory}/source</apisourceDirectory>
         <apisourceSourcePath>${project.basedir}/../${coreModule}/src${path.separator}${project.basedir}/../${coreMobileModule}/src${path.separator}${project.basedir}/../${coreWebserviceModule}/src${path.separator}${project.basedir}/../${coreWebUiModule}/src</apisourceSourcePath>
         <apisourcePackageNames>com.kms.katalon.core.annotation,com.kms.katalon.core.checkpoint,com.kms.katalon.core.configuration,com.kms.katalon.core.driver,com.kms.katalon.core.keyword,com.kms.katalon.core.model,com.kms.katalon.core.testcase,com.kms.katalon.core.testdata,com.kms.katalon.core.testobject,com.kms.katalon.core.util,com.kms.katalon.core.mobile.driver,com.kms.katalon.core.mobile.keyword,com.kms.katalon.core.webservice.keyword,com.kms.katalon.core.webui.driver,com.kms.katalon.core.webui.keyword</apisourcePackageNames>
         <apisourceFooter>
@@ -44,30 +44,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <!-- Copy katalon favicon to the generated apidocs directory -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>copy-katalon-favicon</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${apisourceDirectory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/${resourcesDiretory}/sources</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
     <!--These dependencies used for generating groovy document -->
     <dependencies>

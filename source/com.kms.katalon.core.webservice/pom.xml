@@ -51,9 +51,9 @@
               <goal>jar</goal>
             </goals>
             <configuration>
-							<outputDirectory>${sourcecodeOutputDirectory}</outputDirectory>
+              <outputDirectory>${sourcecodeOutputDirectory}</outputDirectory>
               <finalName>${project.artifactId}</finalName>
-						</configuration>
+            </configuration>
           </execution>
         </executions>
       </plugin>

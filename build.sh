@@ -145,9 +145,6 @@ repackage() {
 
     cd ${tmpDir} && zip -r "${tmpDir}/apidocs.zip" "apidocs"
     rm -rf "${tmpDir}/apidocs"
-
-    cd ${tmpDir} && zip -r "${tmpDir}/source.zip" "source"
-    rm -rf "${tmpDir}/source"
 }
 
 branch=${1}

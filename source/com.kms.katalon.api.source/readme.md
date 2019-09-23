@@ -1,4 +1,4 @@
-#Katalon Studio API Specification Source
+#Katalon Studio API Source
 
 ##Build command
 
@@ -6,4 +6,4 @@
 
 ##Generated Sources location
 
-`target/resources/sources`
+`target/resources/source`

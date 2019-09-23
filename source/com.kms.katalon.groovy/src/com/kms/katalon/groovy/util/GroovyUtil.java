@@ -111,6 +111,8 @@ public class GroovyUtil {
 
     private static final String RESOURCE_FOLDER_NAME_REGEX = ".*\\.svn$";
 
+    private static final String API_SOURCE_EXTENSION = "-sources.jar";
+
     public static IProject getGroovyProject(ProjectEntity projectEntity) {
         return ResourcesPlugin.getWorkspace()
                 .getRoot()
@@ -447,7 +449,7 @@ public class GroovyUtil {
     }
     
     /**
-     * @return Returns libraries folder of the current Katalon installed folder.
+     * @return Returns source folder of the current Katalon installed folder.
      * @throws IOException
      */
     private static File getPlatformSourceDir() throws IOException {
@@ -523,10 +525,10 @@ public class GroovyUtil {
             File javaSourceDir = new File(getPlatformSourceDir(), bundle.getSymbolicName());
             IPath sourcePath = null;
             if (FileLocator.getBundleFile(bundle).isFile() && 
-            		javaSourceDir.isDirectory() && 
-            		javaSourceDir.exists() && 
-            		bundle.getSymbolicName().startsWith("com.kms.katalon.core")) {
-            	javaSourceDir = new File(javaSourceDir, bundle.getSymbolicName() + "-sources.jar");
+                    javaSourceDir.isDirectory() && 
+                    javaSourceDir.exists() && 
+                    bundle.getSymbolicName().startsWith("com.kms.katalon.core")) {
+                javaSourceDir = new File(javaSourceDir, bundle.getSymbolicName() + API_SOURCE_EXTENSION);
                 sourcePath = new Path(javaSourceDir.getAbsolutePath());
             }
             IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), sourcePath, null, null,
