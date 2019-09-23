@@ -526,7 +526,7 @@ public class GroovyUtil {
             		javaSourceDir.isDirectory() && 
             		javaSourceDir.exists() && 
             		bundle.getSymbolicName().startsWith("com.kms.katalon.core")) {
-                sourcePath = new Path(javaSourceDir.getAbsolutePath());
+                sourcePath = new Path(javaSourceDir.getAbsolutePath(), bundle.getSymbolicName() + "-sources.jar");
             }
             IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), sourcePath, null, null,
                     attributes, false);
