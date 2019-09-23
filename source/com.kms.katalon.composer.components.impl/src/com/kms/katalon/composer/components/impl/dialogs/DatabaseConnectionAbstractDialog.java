@@ -343,6 +343,7 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
         chkSecureUserPassword.setEnabled(enabled);
         enableUserPassword(enabled && chkSecureUserPassword.getSelection());
         txtConnectionURL.setEnabled(enabled);
+        txtDriverClassName.setEnabled(enabled);
     }
 
     private void enableUserPassword(boolean enabled) {

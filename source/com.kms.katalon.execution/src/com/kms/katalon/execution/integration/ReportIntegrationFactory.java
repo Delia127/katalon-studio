@@ -9,7 +9,7 @@ import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 
 public class ReportIntegrationFactory {
     
-    private static final String ANALYTICS_NAME = "Katalon Analytics";
+    private static final String ANALYTICS_NAME = "Katalon TestOps";
     
     private static ReportIntegrationFactory _instance;
 

@@ -44,6 +44,10 @@ public class ComposerReportMessageConstants extends NLS {
     public static String REPORT_TABLE_ELAPSED_TIME_COLUMN_HEADER;
 
     public static String REPORT_TABLE_STATUS_COLUMN_HEADER;
+    
+    public static String LABEL_STATUS_REPORT_TESTSUITE;
+    
+    public static String LABEL_STATUS_REPORT_TESTSUITE_COLECTION;
 
     public static String REPORT_TABLE_DESCRIPTION_COLUMN_HEADER;
 

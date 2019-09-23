@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -29,13 +30,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -217,41 +217,79 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
     }
 
     private void initialize() {
-    	if (tokenInfo != null) {
-    		fillData();    		
-    	}
+        if (tokenInfo != null) {
+            fillData();
+        }
     }
 
     private void fillData() {
-        cbbTeams.setItems();
-        cbbProjects.setItems();
-
-//        cbxAutoSubmit.setSelection(true);
-//        cbxAttachScreenshot.setSelection(true);
-
         teams.clear();
         projects.clear();
-        
+
         txtOrganization.setText(organization.getName());
         txtOrganization.setEnabled(false);
-        
-        Long orgId = organization.getId();
-        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo,
-                new ProgressMonitorDialog(getShell()));
-        if (teams != null && teams.size() > 0) {
-            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl,
-                    teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-                    tokenInfo, new ProgressMonitorDialog(getShell()));
-            cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-            int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-            cbbTeams.select(indexSelectTeam);
-            cbbTeams.setEnabled(true);
-            setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+
+        enableObject(false);
+
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService.syncExec(() -> {
+                setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
+            });
+            UISynchronizeService.syncExec(() -> {
+                Long orgId = organization.getId();
+                getTeam(serverUrl, orgId, tokenInfo);
+                if (teams != null && teams.size() > 0) {
+                    getProject(serverUrl,
+                            teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+                            tokenInfo);
+                    cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                    int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                    cbbTeams.select(indexSelectTeam);
+                    cbbTeams.setEnabled(true);
+                    setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+                    enableObject(true);
+                } else {
+                    enableObject(false);
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM, true);
+                }
+            });
+        });
+    }
+    
+    private void enableObject(boolean isEnable) {
+        cbbTeams.setEnabled(isEnable);
+        cbbProjects.setEnabled(isEnable);
+        btnNewProject.setEnabled(isEnable);
+        if (btnOk != null) {
+        	btnOk.setEnabled(isEnable);        	
+        }
+    }
+
+    private void getTeam(String serverUrl, Long orgId, AnalyticsTokenInfo tokenInfo) {
+        try {
+            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
+            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled), orgId, tokenInfo);
+            setProgressMessage(StringUtils.EMPTY, false);
+        } catch (Exception e) {
+            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+        }
+    }
+
+    private void getProject(final String serverUrl, final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
+        try {
+            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo);
+            setProgressMessage(StringUtils.EMPTY, false);
+        } catch (Exception e) {
+            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+        }
+    }
+
+    private void setProgressMessage(String message, boolean isError) {
+        lnkStatus.setText(message);
+        if (isError) {
+            lnkStatus.setForeground(ColorUtil.getTextErrorColor());
         } else {
-        	cbbTeams.setEnabled(false);
-        	cbbProjects.setEnabled(false);
-        	btnNewProject.setEnabled(false);
-        	lnkStatus.setText(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM);
+            lnkStatus.setForeground(ColorUtil.getTextRunningColor());
         }
     }
 
@@ -261,18 +299,18 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
             cbbProjects.setItems(
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
-            lnkStatus.setText("");
+            setProgressMessage(StringUtils.EMPTY, false);
         } else {
             cbbProjects.clearSelection();
             cbbProjects.removeAll();
-            lnkStatus.setText(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_PROJECT);
+            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_PROJECT, true);
         }
         btnNewProject.setEnabled(true);
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-    	btnRefresh = createButton(parent, REFRESH_ID, "Refresh", true);
+        btnRefresh = createButton(parent, REFRESH_ID, "Refresh", true);
         btnOk = createButton(parent, OK_ID, "OK", true);
         addControlListeners();
     }
@@ -303,17 +341,21 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         cbbTeams.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                AnalyticsTeam getSelectTeam = teams.get(cbbTeams.getSelectionIndex());
-
-                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
-                        analyticsSettingStore);
-                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, getSelectTeam,
-                        tokenInfo, new ProgressMonitorDialog(getShell()));
-
-                setProjectsBasedOnTeam(getSelectTeam, projects);
+               Executors.newFixedThreadPool(1).submit(() -> {
+                    UISynchronizeService.syncExec(() -> {
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS, false);
+                    });
+                    UISynchronizeService.syncExec(() -> {
+                        AnalyticsTeam getSelectTeam = teams.get(cbbTeams.getSelectionIndex());
+                        AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
+                                password, analyticsSettingStore);
+                        getProject(serverUrl, getSelectTeam, tokenInfo);
+                        setProjectsBasedOnTeam(getSelectTeam, projects);
+                    });
+                });
             }
         });
-        
+
         btnNewProject.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -321,15 +363,13 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
                 if (teams != null && teams.size() > 0) {
                     team = teams.get(cbbTeams.getSelectionIndex());
                 }
-
                 NewProjectDialog dialog = new NewProjectDialog(btnNewProject.getDisplay().getActiveShell(), serverUrl,
                         email, password, team);
                 if (dialog.open() == Dialog.OK) {
                     AnalyticsProject createdProject = dialog.getAnalyticsProject();
                     if (createdProject != null) {
                         AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo,
-                                new ProgressMonitorDialog(getShell()));
+                        getProject(serverUrl, team, tokenInfo);
                         if (projects == null) {
                             return;
                         }
@@ -348,7 +388,6 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
                 Program.launch(e.text);
             }
         });
-
     }
 
     private boolean updateDataStore() {

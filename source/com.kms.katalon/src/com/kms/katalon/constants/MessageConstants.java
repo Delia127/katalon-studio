@@ -324,6 +324,8 @@ public class MessageConstants extends NLS {
     
     public static String OFFLINE_ACTIVATION;
     
+    public static String ENTERPRISE_TRIAL_LICENSE;
+    
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
     
     public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
@@ -347,6 +349,8 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LBL_AGREE_TERM;
     
     public static String ActivationDialogV2_LBL_LEARN_ABOUT_KS;
+    
+    public static String ActivationDialogV2_LBL_ENTERPRISE_LICENSE;
    
     public static String ActivationDialogV2_LBL_ERROR;
 

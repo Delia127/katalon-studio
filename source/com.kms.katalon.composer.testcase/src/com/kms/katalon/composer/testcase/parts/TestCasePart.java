@@ -42,6 +42,7 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTre
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
@@ -283,6 +284,10 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
 
     public void addDefaultImports() {
         getTreeTableInput().addDefaultImports();
+    }
+    
+    public void addImports(List<ImportNodeWrapper> imports) {
+        getTreeTableInput().addImports(imports);
     }
 
     public TreeViewer getTestCaseTreeTable() {

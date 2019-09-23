@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -36,6 +37,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -98,24 +100,47 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         this.reportCollectionEntity = reportCollectionEntity;
         this.mainComposite = parent;
         this.mpart = mpart;
-        
+        // report
+        Composite reportComposite = new Composite(parent, SWT.NONE);
+        GridLayout glMessageComposite = new GridLayout();
+        glMessageComposite.marginTop = 20;
+        reportComposite.setLayout(glMessageComposite);
+        reportComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        Composite controlComposite = new Composite(parent, SWT.NONE);
+        GridLayout glComposite = new GridLayout();
+        glComposite.marginTop = 0;
+        controlComposite.setLayout(glComposite);
+        controlComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+        StackLayout layout = new StackLayout();
+        parent.setLayout(layout);
+
         if (this.reportCollectionEntity == null) {
-            return;
+            layout.topControl = reportComposite;
+
+            Label lblReport = new Label(reportComposite, SWT.NONE);
+            lblReport.setText(StringConstants.LABEL_STATUS_REPORT_TESTSUITE_COLECTION);
+        } else {
+
+            layout.topControl = controlComposite;
+            parent.layout();
+            new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
+
+            createControls(controlComposite);
+
+            updateInput();
+
+            // setPartLabel(reportCollectionEntity.getDisplayName());
+
+            eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
+            eventBroker.subscribe(EventConstants.REPORT_COLLECTION_RENAMED, this);
+
+            isInitialized = true;
         }
+       
 
-        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
-        
-        createControls(parent);
-
-        updateInput();
-
-//        setPartLabel(reportCollectionEntity.getDisplayName());
-
-        eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
-        eventBroker.subscribe(EventConstants.REPORT_COLLECTION_RENAMED, this);
-        eventBroker.subscribe(EventConstants.REPORT_EXPORT_PROVIDERS_COLLECTED, this);
-        
-        isInitialized = true;
     }
 
     private void updateInput() {

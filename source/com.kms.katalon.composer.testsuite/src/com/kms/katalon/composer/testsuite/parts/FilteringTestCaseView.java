@@ -114,7 +114,7 @@ public class FilteringTestCaseView {
         kaComposite.setLayout(new FillLayout());
 
         btnViewHistory = new Button(kaComposite, SWT.NONE);
-        btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
+        btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_TESTOPS_16));
         btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
 
         Composite cpsTestCaseSearch = new Composite(container, SWT.NONE);

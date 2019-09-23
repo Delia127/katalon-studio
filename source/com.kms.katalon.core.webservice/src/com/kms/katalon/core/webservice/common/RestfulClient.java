@@ -197,8 +197,16 @@ public class RestfulClient extends BasicRequestor {
         char[] buffer = new char[1024];
         long bodyLength = 0L;
         
-        MediaType mediaType = MediaType.parse(conn.getContentType());
-        Charset charset = mediaType.charset().or(StandardCharsets.UTF_8);
+        Charset charset = StandardCharsets.UTF_8;
+        try {
+	        String contentType = conn.getContentType();
+	        if (StringUtils.isNotBlank(contentType)) {
+	        	MediaType mediaType = MediaType.parse(contentType);
+	        	charset = mediaType.charset().or(StandardCharsets.UTF_8);
+	        }
+        } catch (Exception e) {
+        	// ignored - don't let tests fail just because charset could not be detected
+        }
         
         try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream()) {
             if (inputStream != null) {
