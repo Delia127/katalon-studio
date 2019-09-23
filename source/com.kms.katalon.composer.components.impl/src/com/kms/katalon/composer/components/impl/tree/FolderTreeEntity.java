@@ -37,18 +37,7 @@ public class FolderTreeEntity extends AbstractTreeEntity {
     private FolderEntity folder;
 
     public FolderTreeEntity(FolderEntity folder, ITreeEntity parentTreeEntity) {
-        super(folder, parentTreeEntity != null
-                ? parentTreeEntity
-                : (folder.getParentFolder() != null
-                    ? new FolderTreeEntity(folder.getParentFolder())
-                    : null));
-        this.folder = folder;
-    }
-
-    public FolderTreeEntity(FolderEntity folder) {
-        super(folder, folder.getParentFolder() != null
-                ? new FolderTreeEntity(folder.getParentFolder())
-                : null);
+        super(folder, parentTreeEntity);
         this.folder = folder;
     }
 

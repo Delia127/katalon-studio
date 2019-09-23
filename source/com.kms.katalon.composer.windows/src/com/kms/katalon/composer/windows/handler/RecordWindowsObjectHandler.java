@@ -14,7 +14,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
@@ -44,13 +46,10 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class RecordWindowsObjectHandler {
 
-    @Inject
-    private IEventBroker eventBroker;
-    
-   @CanExecute
-   public boolean canExecute() {
-       return ProjectController.getInstance().getCurrentProject() != null;
-   }
+    @CanExecute
+    public boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
+    }
 
     private TestCaseEntity getTestCase(ExportReportToTestCaseSelectionDialog.ExportTestCaseSelectionResult result)
             throws ControllerException {
@@ -80,7 +79,7 @@ public class RecordWindowsObjectHandler {
                 return;
             }
             saveTestObject(activeShell, recordActionResult);
-            
+
             saveToTestCase(activeShell, recordActionDialog.getRecordActionResult());
 
         } catch (Exception e) {
@@ -101,7 +100,17 @@ public class RecordWindowsObjectHandler {
         }
 
         ExportReportToTestCaseSelectionDialog.ExportTestCaseSelectionResult exportResult = dialog.getResult();
-        MCompositePart part = OpenTestCaseHandler.getInstance().openTestCase(getTestCase(exportResult));
+
+        FolderEntity selectedFolder = exportResult.getFolder();
+        FolderTreeEntity selectedFolderTreeEntity = TreeEntityUtil.getFolderTreeEntity(selectedFolder);
+
+        TestCaseEntity testCaseEntity = getTestCase(exportResult);
+        TestCaseTreeEntity testCaseTreeEntity = new TestCaseTreeEntity(testCaseEntity, selectedFolderTreeEntity);
+
+        ExplorerPart.getInstance().refreshTreeEntity(selectedFolderTreeEntity);
+        ExplorerPart.getInstance().setSelectedItems(new Object[] { testCaseTreeEntity });
+
+        MCompositePart part = OpenTestCaseHandler.getInstance().openTestCase(testCaseEntity);
 
         boolean shouldOverride = false;
         if (exportResult
@@ -125,25 +134,7 @@ public class RecordWindowsObjectHandler {
         testCasePart.getTreeTableInput().setChanged(true);
         testCaseCompositePart.changeScriptNode(testCasePart.getTreeTableInput().getMainClassNode());
         testCaseCompositePart.save();
-
-        FolderTreeEntity treeEntity = new FolderTreeEntity(exportResult.getFolder());
-        refreshAndExpandSelectedTree(treeEntity);
     }
-    
-    private void refreshAndExpandSelectedTree(FolderTreeEntity treeEntity) {
-        if (treeEntity != null) {
-            try {
-                // The parent folder must be refresh first
-                refreshAndExpandSelectedTree((FolderTreeEntity) treeEntity.getParent());
-            } catch (Exception error) {
-                LoggerSingleton.logError(error);
-            }
-            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity);
-            eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, treeEntity);
-            eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, treeEntity);
-        }
-    }
-    
 
     private void saveTestObject(Shell activeShell, WindowsRecorderDialog.RecordActionResult recordResult)
             throws ControllerException {
