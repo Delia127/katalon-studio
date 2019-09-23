@@ -18,6 +18,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.testng.util.Strings;
 
 import com.google.common.net.MediaType;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -197,8 +198,16 @@ public class RestfulClient extends BasicRequestor {
         char[] buffer = new char[1024];
         long bodyLength = 0L;
         
-        MediaType mediaType = MediaType.parse(conn.getContentType());
-        Charset charset = mediaType.charset().or(StandardCharsets.UTF_8);
+        Charset charset = StandardCharsets.UTF_8;
+        try {
+	        String contentType = conn.getContentType();
+	        if (Strings.isNotNullAndNotEmpty(contentType)) {
+	        	MediaType mediaType = MediaType.parse(contentType);
+	        	charset = mediaType.charset().or(StandardCharsets.UTF_8);
+	        }
+        } catch (Exception e) {
+        	// ignored - don't let tests fail just because charset could not be detected
+        }
         
         try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream()) {
             if (inputStream != null) {
