@@ -60,6 +60,8 @@ public class ComposerMobileObjectspyMessageConstants extends NLS {
     public static String DIA_LBL_OBJECT_NAME;
 
     public static String DIA_TOOLTIP_OBJECT_NAME;
+    
+    public static String DIA_BTN_DEFAULT;
 
     public static String DIA_JOB_TASK_LOADING_DEVICES;
 
