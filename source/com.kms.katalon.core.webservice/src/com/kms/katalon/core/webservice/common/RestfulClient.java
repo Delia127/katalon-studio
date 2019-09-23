@@ -18,7 +18,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.testng.util.Strings;
 
 import com.google.common.net.MediaType;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -201,7 +200,7 @@ public class RestfulClient extends BasicRequestor {
         Charset charset = StandardCharsets.UTF_8;
         try {
 	        String contentType = conn.getContentType();
-	        if (Strings.isNotNullAndNotEmpty(contentType)) {
+	        if (StringUtils.isNotBlank(contentType)) {
 	        	MediaType mediaType = MediaType.parse(contentType);
 	        	charset = mediaType.charset().or(StandardCharsets.UTF_8);
 	        }
