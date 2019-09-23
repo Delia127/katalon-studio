@@ -40,6 +40,19 @@ public class ExecutionProfileEntity extends FileEntity {
         if (globalVariableEntities == null) {
             globalVariableEntities = new ArrayList<GlobalVariableEntity>();
         }
+        else {
+            List<GlobalVariableEntity> lstGlobalVariables = new ArrayList<GlobalVariableEntity>();
+            for (GlobalVariableEntity globalVariable : globalVariableEntities) {
+
+                GlobalVariableEntity newGlobalVariable = new GlobalVariableEntity();
+                newGlobalVariable.setName(globalVariable.getName());
+                newGlobalVariable.setInitValue(globalVariable.getInitValue());
+                newGlobalVariable.setDescription(globalVariable.getDescription());
+                lstGlobalVariables.add(newGlobalVariable);
+            }
+            globalVariableEntities = lstGlobalVariables;
+        }
+
         return globalVariableEntities;
     }
 
