@@ -873,7 +873,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         btnUploadToAnalytics = new ToolItem(toolBar, SWT.DROP_DOWN);
         btnUploadToAnalytics.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
-        btnUploadToAnalytics.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
+        btnUploadToAnalytics.setImage(ImageManager.getImage(IImageKeys.KATALON_TESTOPS_16));
 
         Menu katalonAnalyticsMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
         MenuItem accessKAMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);

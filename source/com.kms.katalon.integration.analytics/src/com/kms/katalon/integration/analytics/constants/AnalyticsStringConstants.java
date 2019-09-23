@@ -2,7 +2,7 @@ package com.kms.katalon.integration.analytics.constants;
 
 public class AnalyticsStringConstants {
     
-    public static final String ANALYTICS_NAME = "Katalon Analytics";
+    public static final String ANALYTICS_NAME = "Katalon TestOps";
     
     public static final String ANALYTICS_BUNDLE_ID = "com.kms.katalon.integration.analytics";
     
