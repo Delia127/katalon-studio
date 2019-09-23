@@ -43,7 +43,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.windows.dialog.WindowsObjectDialog;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
-import com.kms.katalon.composer.windows.util.WindowsElementHelper;
+import com.kms.katalon.composer.windows.helper.WindowsElementHelper;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity.LocatorStrategy;
 

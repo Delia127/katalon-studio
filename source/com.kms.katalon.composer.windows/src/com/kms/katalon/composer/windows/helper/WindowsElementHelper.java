@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.windows.util;
+package com.kms.katalon.composer.windows.helper;
 
 import com.kms.katalon.composer.windows.element.SnapshotWindowsElement;
 import com.kms.katalon.entity.repository.WindowsElementEntity.LocatorStrategy;
