@@ -104,7 +104,6 @@ public class RecordWindowsObjectHandler {
         TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) part.getObject();
         TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
         testCaseCompositePart.setScriptContentToManual();
-        testCasePart.addDefaultImports();
         StringBuilder stringBuilder = new StringBuilder();
         new GroovyWrapperParser(stringBuilder).parseGroovyAstIntoScript(actionResult.getScript());
         ScriptNodeWrapper script = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(stringBuilder.toString());
@@ -115,6 +114,7 @@ public class RecordWindowsObjectHandler {
         } else {
             testCasePart.addStatementsToMainBlock(children, NodeAddType.Add, true);
         }
+        testCasePart.addImports(script.getImports());
         testCasePart.getTreeTableInput().setChanged(true);
         testCaseCompositePart.changeScriptNode(testCasePart.getTreeTableInput().getMainClassNode());
         testCaseCompositePart.save();

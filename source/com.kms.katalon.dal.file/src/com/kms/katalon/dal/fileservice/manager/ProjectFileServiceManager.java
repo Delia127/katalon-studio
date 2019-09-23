@@ -62,7 +62,7 @@ public class ProjectFileServiceManager {
         File projectFile = new File(projectFileLocation);
         if (projectFile.isFile() && projectFile.exists()) {
             ProjectEntity project = (ProjectEntity) EntityService.getInstance().getEntityByPath(projectFileLocation);
-            project.setFolderLocation(projectFile.getParent());
+            project.setProjectFile(projectFile);
             createSettingFolder(project);
             return project;
         }
@@ -73,7 +73,7 @@ public class ProjectFileServiceManager {
         File projectFile = new File(projectFileLocation);
         if (projectFile.isFile() && projectFile.exists()) {
             ProjectEntity project = (ProjectEntity) EntityService.getInstance().getEntityByPath(projectFileLocation);
-            project.setFolderLocation(projectFile.getParent());
+            project.setProjectFile(projectFile);
             createSettingFolder(project);
             FolderFileServiceManager.initRootEntityFolders(project);
 

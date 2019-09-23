@@ -80,7 +80,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.JIRA_INACTIVE_16);
         ImageManager.registerImage(IImageKeys.KEYWORD_WIKI_16);
         ImageManager.registerImage(IImageKeys.KOBITON_16);
-        ImageManager.registerImage(IImageKeys.KATALON_ANALYTICS_16);
+        ImageManager.registerImage(IImageKeys.KATALON_TESTOPS_16);
         ImageManager.registerImage(IImageKeys.NEW_PROJECT_16);
         ImageManager.registerImage(IImageKeys.OPEN_PROJECT_16);
         ImageManager.registerImage(IImageKeys.PROGRESS_16);

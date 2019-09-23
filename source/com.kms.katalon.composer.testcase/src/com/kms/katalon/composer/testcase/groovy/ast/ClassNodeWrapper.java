@@ -378,6 +378,10 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         addImport(Checkpoint.class);
         addImport(GlobalVariableParser.INTERNAL_PACKAGE_NAME, GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME);
     }
+    
+    public void addImportNodes(List<ImportNodeWrapper> importNodes) {
+        importNodes.stream().forEach(i -> importNodeCollection.addImportNode(i));
+    }
 
     public void addImport(String packageName, String className) {
         importNodeCollection.addImportNode(new ImportNodeWrapper(packageName + "." + className, className, this));

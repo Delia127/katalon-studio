@@ -16,6 +16,8 @@ public class ApplicationMessageConstants {
     public static String KATALON_NOT_ACTIVATED;
 
     public static String NETWORK_ERROR;
+    
+    public static String INVALID_ACCOUNT_ERROR;
 
     public static String SEND_SUCCESS_RESPONSE;
 

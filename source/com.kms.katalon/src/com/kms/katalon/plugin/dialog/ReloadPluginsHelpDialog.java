@@ -39,7 +39,6 @@ public class ReloadPluginsHelpDialog extends Dialog {
         GridData gdHelp = new GridData(SWT.FILL, SWT.FILL, true, true);
         gdHelp.verticalIndent = 5;
         gdHelp.widthHint = 430;
-        gdHelp.heightHint = 15;
         lblHelp.setLayoutData(gdHelp);
         lblHelp.setText(StringConstants.KStorePluginsDialog_LBL_HELP);
         lblHelp.setAlignment(SWT.CENTER);

@@ -197,7 +197,7 @@ public class ActivationInfoCollector {
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
                 errorMessage.delete(0, errorMessage.length());
-                errorMessage.append(ApplicationMessageConstants.NETWORK_ERROR);
+                errorMessage.append(ApplicationMessageConstants.INVALID_ACCOUNT_ERROR);
             }
         }
         return license;

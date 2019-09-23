@@ -37,7 +37,7 @@ public class NewFilteringTestSuiteHandler {
 
     private FolderTreeEntity testSuiteTreeRoot;
 
-    private String newDefaultName = "New Dynamic Querying Test Suite";
+    private String newDefaultName = "New Dynamic Test Suite";
 
     @CanExecute
     public boolean canExecute() {

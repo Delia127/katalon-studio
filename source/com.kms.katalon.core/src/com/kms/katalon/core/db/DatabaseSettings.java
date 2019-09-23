@@ -30,9 +30,14 @@ public class DatabaseSettings {
             return null;
         }
 
-        if (isSecureUserAccount()) {
-            return new DatabaseConnection(getUrl(), getUser(), getPassword());
-        }
+		if (isSecureUserAccount()) {
+
+			if (getDriverClassName() != null) {
+				return new DatabaseConnection(getUrl(), getUser(), getPassword(), getDriverClassName());
+			} else {
+				return new DatabaseConnection(getUrl(), getUser(), getPassword());
+			}
+		}
 
         return new DatabaseConnection(getUrl());
     }
