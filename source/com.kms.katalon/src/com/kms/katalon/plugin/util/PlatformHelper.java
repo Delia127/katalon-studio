@@ -33,6 +33,7 @@ public class PlatformHelper {
     public synchronized static Bundle installComposerArtifactBundle() throws BundleException {
         Bundle bundle = Platform.getBundle("com.kms.katalon.composer.artifact");
         if (bundle != null && !isComposerArtifactBundleInstalled) {
+            bundle.start();
             PluginInstaller pluginInstaller = getPluginInstaller();
             pluginInstaller.register(bundle);
             isComposerArtifactBundleInstalled = true;
