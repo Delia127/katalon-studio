@@ -26,7 +26,8 @@ Require-Bundle: org.codehaus.groovy,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-core,
  com.fasterxml.jackson.core.jackson-annotations,
- com.google.guava
+ com.google.guava,
+ com.kms.katalon.selenium-standalone
 Export-Package: com.kms.katalon.core.webservice.common,
  com.kms.katalon.core.webservice.constants,
  com.kms.katalon.core.webservice.contribution,
