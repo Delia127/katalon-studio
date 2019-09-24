@@ -1,20 +1,21 @@
 package com.kms.katalon.composer.testsuite.dialogs;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -164,10 +165,10 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
         List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
         List<TestSuiteTestCaseLink> links = tableViewer.getInput();
         // add new checked items
-
-        Job addTestCasesToTestSuiteJob = new Job("Adding test cases to test suite ...") {
+        new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, true, new IRunnableWithProgress() {
             @Override
-            protected IStatus run(IProgressMonitor monitor) {
+            public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+
                 int selectedObjectsSize = selectedObjects.size();
                 monitor.beginTask("", selectedObjectsSize);
                 SubMonitor subMonitor = SubMonitor.convert(monitor);
@@ -184,7 +185,8 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                             addTestCaseFolderToTable(fEntity);
                         } else if (treeEntity instanceof TestCaseTreeEntity) {
                             TestCaseEntity tcEntity = (TestCaseEntity) treeEntity.getObject();
-                            subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite", 1);
+                            subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite",
+                                    1);
                             UISynchronizeService.syncExec(() -> {
                                 try {
                                     tableViewer.addTestCase(tcEntity);
@@ -197,11 +199,8 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                     }
                 }
                 monitor.done();
-                return Status.OK_STATUS;
             }
-        };
-        addTestCasesToTestSuiteJob.setUser(true);
-        addTestCasesToTestSuiteJob.schedule();
+        });
         // finally, update test case tree entity list
         updateTestCaseTreeEntities();
     }
