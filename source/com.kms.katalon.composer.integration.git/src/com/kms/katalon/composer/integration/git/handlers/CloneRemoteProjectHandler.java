@@ -226,8 +226,6 @@ public class CloneRemoteProjectHandler {
             if (projectType == ProjectType.MOBILE) {
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.API_QUICK_START_MOBILE_DIALOG_OPEN, null);
             }
-            
-            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, null);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), GitStringConstants.ERROR,
