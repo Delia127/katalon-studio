@@ -162,6 +162,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.UNWATCH_16);
         ImageManager.registerImage(IImageKeys.MAP_ALL_16);
         ImageManager.registerImage(IImageKeys.RECENT_16);
+        ImageManager.registerImage(IImageKeys.EXPORT_CSV_16);
 
         // Sub-toolbar disabled icons
         ImageManager.registerImage(IImageKeys.CLEAR_DISABLED_16);

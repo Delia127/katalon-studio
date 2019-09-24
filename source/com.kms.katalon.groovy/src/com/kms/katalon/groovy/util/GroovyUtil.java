@@ -90,6 +90,8 @@ public class GroovyUtil {
     private static final String TEST_SCRIPT_SOURCE_FOLDER_NAME = "Scripts";
 
     private static final String TEST_CASE_ROOT_FOLDER_NAME = "Test Cases";
+    
+    private static final String TEST_LISTENERS_ROOT_FOLDER_NAME = "Test Listeners";
 
     private static final String GROOVY_NATURE = "org.eclipse.jdt.groovy.core.groovyNature";
 
@@ -677,6 +679,11 @@ public class GroovyUtil {
         IProject groovyProject = getGroovyProject(project);
         return groovyProject.getFolder(TEST_SCRIPT_SOURCE_FOLDER_NAME);
     }
+    
+    public static IFolder getTestListenerSourceFolder(ProjectEntity project) {
+        IProject groovyProject = getGroovyProject(project);
+        return groovyProject.getFolder(TEST_LISTENERS_ROOT_FOLDER_NAME);
+    }
 
     public static String getTestCaseIdByScriptPath(String scriptFilePath, ProjectEntity projectEntity) {
         String testCaseScriptFolderPath = (new File(scriptFilePath)).getParent();
@@ -968,6 +975,17 @@ public class GroovyUtil {
             }
         }
         return listTestCaseFiles;
+    }
+
+    public static List<IFile> getAllScriptFiles(ProjectEntity projectEntity) throws CoreException {
+        List<IFile> scriptFiles = new ArrayList<>();
+        IFolder testCaseRootFolder = GroovyUtil.getTestCaseScriptSourceFolder(projectEntity);
+        scriptFiles.addAll(getAllScriptFiles(testCaseRootFolder));
+        IFolder customKeywordRootFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
+        scriptFiles.addAll(getAllScriptFiles(customKeywordRootFolder));
+        IFolder testListenersRootFolder = GroovyUtil.getTestListenerSourceFolder(projectEntity);
+        scriptFiles.addAll(getAllScriptFiles(testListenersRootFolder));
+        return scriptFiles;
     }
 
     public static List<IFile> getAllTestCaseScripts(ProjectEntity projectEntity) throws CoreException {
