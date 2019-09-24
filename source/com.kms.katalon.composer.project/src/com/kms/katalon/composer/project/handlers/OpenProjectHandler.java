@@ -3,6 +3,7 @@ package com.kms.katalon.composer.project.handlers;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -88,8 +89,15 @@ public class OpenProjectHandler {
     }
 
     public static File getProjectFile(File projectDirectory) {
-        for (File file : projectDirectory.listFiles()) {
-            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath()))
+        if (projectDirectory == null) {
+            return null;
+        }
+        File[] childFiles = projectDirectory.listFiles();
+        if (childFiles == null) {
+            return null;
+        }
+        for (File file : childFiles) {
+            if (file.isFile() && ('.' + FilenameUtils.getExtension(file.getAbsolutePath()))
                     .equals(ProjectEntity.getProjectFileExtension())) {
                 return file;
             }
@@ -98,6 +106,9 @@ public class OpenProjectHandler {
     }
 
     public static List<File> getProjectFiles(File projectDirectory) {
+        if (projectDirectory == null || projectDirectory.listFiles() == null) {
+            return Collections.emptyList();
+        }
         List<File> childProjectFiles = new ArrayList<>();
         for (File file : projectDirectory.listFiles()) {
             if (file.isDirectory()) {
