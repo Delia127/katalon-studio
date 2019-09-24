@@ -186,7 +186,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     	uploadReportToIntegratingProduct(reportFolder);
     }
 
-    private boolean needToRerun() {
+    public boolean needToRerun() {
         if (getResult().getNumErrors() + getResult().getNumFailures() > 0 && getExecutedEntity() instanceof Rerunable) {
             Rerunable rerun = (Rerunable) getExecutedEntity();
 

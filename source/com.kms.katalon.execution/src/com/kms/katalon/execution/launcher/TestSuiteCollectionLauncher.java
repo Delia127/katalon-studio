@@ -33,8 +33,8 @@ import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
-import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.execution.launcher.result.TestSuiteCollectionLauncherResult;
 import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
 import com.kms.katalon.logging.LogUtil;
 
@@ -44,7 +44,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     protected List<ReportableLauncher> subLaunchers;
 
-    private LauncherResult result;
+    private TestSuiteCollectionLauncherResult result;
 
     protected TestSuiteCollectionLauncherManager subLauncherManager;
 
@@ -74,7 +74,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         for (ReportableLauncher subLauncher : subLaunchers) {
             subLauncher.setExecutionUUID(super.getExecutionUUID());
         }
-        this.result = new LauncherResult(executedEntity.getTotalTestCases());
+        this.result = new TestSuiteCollectionLauncherResult(this, executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
         this.executedEntity = executedEntity;
         this.executionMode = executionMode;
@@ -292,7 +292,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         subReportableLauncher.setParentLauncher(this);
 
         ILauncherResult subLauncherResult = subLauncher.getResult();
-        LauncherResult newResult = new LauncherResult(
+        TestSuiteCollectionLauncherResult newResult = new TestSuiteCollectionLauncherResult(this,
                 result.getTotalTestCases() + subLauncherResult.getTotalTestCases());
         newResult.setNumPasses(result.getNumPasses() + subLauncherResult.getNumPasses());
         newResult.setNumFailures(result.getNumFailures() + subLauncherResult.getNumFailures());
