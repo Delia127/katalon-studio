@@ -89,7 +89,7 @@ public class GeneralPreferencePage extends PreferencePage {
         if(!prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)){
             prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING, true);
         }
-        chkCheckAllowUsageTracking.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING));
+        chkCheckAllowUsageTracking.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING));
     }
 
     @Override
@@ -98,7 +98,7 @@ public class GeneralPreferencePage extends PreferencePage {
             return;
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION);
-        getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING);
+        getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING);
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP);
         initialize();
         super.performDefaults();
@@ -114,7 +114,7 @@ public class GeneralPreferencePage extends PreferencePage {
                 chkCheckNewVersion.getSelection());
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP,
                 chkShowHelpAtStartUp.getSelection());
-        getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING,
+        getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING,
                 chkCheckAllowUsageTracking.getSelection());
     }
 
