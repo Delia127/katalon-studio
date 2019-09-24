@@ -69,7 +69,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_TOOLTIP_OBJECT_NAME = ComposerMobileObjectspyMessageConstants.DIA_TOOLTIP_OBJECT_NAME;
     
-    public static final String DIA_BTN_DEFAULT = ComposerMobileObjectspyMessageConstants.DIA_BTN_DEFAULT;
+    public static final String DIA_BTN_GENERATE = ComposerMobileObjectspyMessageConstants.DIA_BTN_GENERATE;
+    
+    public static final String DIA_TOOLTIP_GENERATE_LOCATOR = ComposerMobileObjectspyMessageConstants.DIA_TOOLTIP_GENERATE_LOCATOR;
 
     public static final String DIA_JOB_TASK_LOADING_DEVICES = ComposerMobileObjectspyMessageConstants.DIA_JOB_TASK_LOADING_DEVICES;
 

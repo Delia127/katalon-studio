@@ -118,10 +118,11 @@ public class WindowsElementPropertiesComposite {
         cbbLocatorStrategy = new Combo(locatorStrategyComposite, SWT.READ_ONLY);
         cbbLocatorStrategy.setItems(strategies);
 
-        Button btnRestoreDefaultLocator = new Button(locatorStrategyComposite, SWT.PUSH);
-        btnRestoreDefaultLocator.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-        btnRestoreDefaultLocator.setText(StringConstants.DIA_BTN_DEFAULT);
-        btnRestoreDefaultLocator.addSelectionListener(new SelectionAdapter() {
+        Button btnGenerateLocator = new Button(locatorStrategyComposite, SWT.PUSH);
+        btnGenerateLocator.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+        btnGenerateLocator.setText(StringConstants.DIA_BTN_GENERATE);
+        btnGenerateLocator.setToolTipText(StringConstants.DIA_TOOLTIP_GENERATE_LOCATOR);
+        btnGenerateLocator.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 setLocatorByLocatorStrategy();
