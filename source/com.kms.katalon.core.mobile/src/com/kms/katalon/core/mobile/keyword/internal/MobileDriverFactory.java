@@ -49,8 +49,6 @@ public class MobileDriverFactory {
 
     public static final String EXISTING_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_EXISTING_DRIVER;
 
-    public static final String AUTOMATION_FRAMEWORK_PROPERTY = "automationFramework";
-
     /**
      * Clean up all running drivers and processes
      * 
@@ -464,7 +462,6 @@ public class MobileDriverFactory {
     public static AppiumDriver<?> startRemoteMobileDriver(String remoteWebUrl, DesiredCapabilities desiredCapabilities,
             MobileDriverType driverType, String appFile) throws MalformedURLException, MobileDriverInitializeException {
         desiredCapabilities.setCapability("app", appFile);
-        desiredCapabilities.setCapability(AUTOMATION_FRAMEWORK_PROPERTY, "Katalon");
         return AppiumDriverManager.createMobileDriver(driverType, desiredCapabilities, new URL(remoteWebUrl));
     }
 }
