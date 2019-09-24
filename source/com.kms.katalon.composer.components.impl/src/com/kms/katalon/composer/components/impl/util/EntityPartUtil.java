@@ -60,7 +60,7 @@ public class EntityPartUtil {
     }
 
     public static String getUnusedTestObjectsPartId() {
-        return IdConstants.UNUSED_TESTOBJECTS_CONTENT_PART_ID;
+        return IdConstants.UNUSED_TESTOBJECTS_CONTENT_PART_ID + "()";
     }
 
     public static String getTestSuiteCompositePartId(String testSuitePk) {
