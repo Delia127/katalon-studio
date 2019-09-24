@@ -176,6 +176,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             suiteCollectionLogRecord.setTotalPassedTestCases(String.valueOf(result.getNumPasses()));
             suiteCollectionLogRecord.setTotalFailedTestCases(String.valueOf(result.getNumFailures()));
             suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
+            suiteCollectionLogRecord.setTotalTestCases(String.valueOf(result.getExecutedTestCases()));
 
             ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
 
