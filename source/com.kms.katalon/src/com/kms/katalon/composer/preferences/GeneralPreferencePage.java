@@ -22,6 +22,8 @@ public class GeneralPreferencePage extends PreferencePage {
     private Button radioAutoCleanPrevSession;
 
     private Button chkCheckNewVersion;
+    
+    private Button chkCheckAllowUsageTracking;
 
     private Button chkShowHelpAtStartUp;
 
@@ -52,6 +54,9 @@ public class GeneralPreferencePage extends PreferencePage {
         chkCheckNewVersion = new Button(parentComposite, SWT.CHECK);
         chkCheckNewVersion.setText(MessageConstants.PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE);
         
+        chkCheckAllowUsageTracking = new Button(parentComposite,  SWT.CHECK);
+        chkCheckAllowUsageTracking.setText(MessageConstants.PAGE_PREF_AUTO_ALLOW_USAGE_TRACKING);
+        
         initialize();
 
         return parentComposite;
@@ -80,6 +85,11 @@ public class GeneralPreferencePage extends PreferencePage {
             prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
         }
         chkShowHelpAtStartUp.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP));
+        
+        if(!prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING)){
+            prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING, true);
+        }
+        chkCheckAllowUsageTracking.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING));
     }
 
     @Override
@@ -88,6 +98,7 @@ public class GeneralPreferencePage extends PreferencePage {
             return;
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION);
+        getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING);
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP);
         initialize();
         super.performDefaults();
@@ -103,6 +114,8 @@ public class GeneralPreferencePage extends PreferencePage {
                 chkCheckNewVersion.getSelection());
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP,
                 chkShowHelpAtStartUp.getSelection());
+        getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING,
+                chkCheckAllowUsageTracking.getSelection());
     }
 
     @Override
