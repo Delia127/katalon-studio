@@ -7,6 +7,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -964,7 +965,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private boolean isValidInput() {
-        if(isRetrievingApi) {
+        if (isRetrievingApi) {
             return false;
         }
         String entityId = txtTestSuite.getText();
@@ -1108,6 +1109,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     private void getApiKey() {
         isRetrievingApi = true;
         Thread getApiKey = new Thread(() -> {
+            AnalyticsApiKey apiKey = null;
             try {
                 boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
                 String serverUrl = analyticsSettingStore.getServerEndpoint(isEncryptionEnabled);
@@ -1117,16 +1119,23 @@ public class GenerateCommandDialog extends AbstractDialog {
                     String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
                     AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                     List<AnalyticsApiKey> apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token.getAccess_token());
+                    if (!apiKeys.isEmpty()) {
+                        apiKey = apiKeys.get(0);
+                    }
+                }
+            } catch (Exception ex) {
+                LoggerSingleton.logError(ex);
+            } finally {
+                if (apiKey != null) {
+                    String key = apiKey.getKey();
                     UISynchronizeService.asyncExec(() -> {
-                        if (!apiKeys.isEmpty() && !txtAPIKey.isDisposed()) {
-                            txtAPIKey.setText(apiKeys.get(0).getKey());
+                        if (!txtAPIKey.isDisposed()) {
+                            txtAPIKey.setText(key);
                             isRetrievingApi = false;
                             setGenerateCommandButtonStates();
                         }
                     });
                 }
-            } catch (Exception ex) {
-                LoggerSingleton.logError(ex);
             }
         });
         getApiKey.start();
