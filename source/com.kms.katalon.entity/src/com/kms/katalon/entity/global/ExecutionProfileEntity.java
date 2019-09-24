@@ -39,8 +39,7 @@ public class ExecutionProfileEntity extends FileEntity {
     public List<GlobalVariableEntity> getGlobalVariableEntities() {
         if (globalVariableEntities == null) {
             globalVariableEntities = new ArrayList<GlobalVariableEntity>();
-        }
-        else {
+        } else {
             List<GlobalVariableEntity> lstGlobalVariables = new ArrayList<GlobalVariableEntity>();
             for (GlobalVariableEntity globalVariable : globalVariableEntities) {
 
