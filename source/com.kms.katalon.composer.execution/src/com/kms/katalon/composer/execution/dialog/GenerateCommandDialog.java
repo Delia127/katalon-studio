@@ -7,6 +7,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.execution.collection.dialog.ExecutionProfileSelectionDialog;
@@ -94,7 +96,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
-import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -185,6 +186,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Button btnChangeProfile;
     
     private AnalyticsSettingStore analyticsSettingStore;
+
+    private boolean isRetrievingApi;
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -430,13 +433,13 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private void changeEnabled() {
-    	txtAPIKey.setEnabled(chkAPIKey.getSelection());
+        txtAPIKey.setEnabled(chkAPIKey.getSelection());
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, GENERATE_PROPERTY_ID, StringConstants.DIA_BTN_GEN_PROPERTY_FILE, false);
-        createButton(parent, GENERATE_COMMAND_ID, StringConstants.DIA_BTN_GEN_COMMAND, true);
+        createButton(parent, GENERATE_COMMAND_ID, StringConstants.DIA_BTN_GEN_COMMAND, isValidInput());
         createButton(parent, IDialogConstants.CLOSE_ID, IDialogConstants.CLOSE_LABEL, false);
     }
 
@@ -928,8 +931,9 @@ public class GenerateCommandDialog extends AbstractDialog {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
         }
         
+
         if (chkAPIKey.getSelection()) {
-        	args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
+            args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
         }
 
         return args;
@@ -961,6 +965,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private boolean isValidInput() {
+        if (isRetrievingApi) {
+            return false;
+        }
         String entityId = txtTestSuite.getText();
         if (isBlank(entityId)) {
             return false;
@@ -1100,21 +1107,38 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private void getApiKey() {
-        try {
-            boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            String serverUrl = analyticsSettingStore.getServerEndpoint(isEncryptionEnabled);
-            String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-            if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
-                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                List<AnalyticsApiKey> apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token.getAccess_token());
-                if (!apiKeys.isEmpty()) {
-                    txtAPIKey.setText(apiKeys.get(0).getKey());
+        isRetrievingApi = true;
+        Thread getApiKey = new Thread(() -> {
+            AnalyticsApiKey apiKey = null;
+            try {
+                boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
+                String serverUrl = analyticsSettingStore.getServerEndpoint(isEncryptionEnabled);
+                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                    List<AnalyticsApiKey> apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token.getAccess_token());
+                    if (!apiKeys.isEmpty()) {
+                        apiKey = apiKeys.get(0);
+                    }
+                }
+            } catch (Exception ex) {
+                LoggerSingleton.logError(ex);
+            } finally {
+                if (apiKey != null) {
+                    String key = apiKey.getKey();
+                    UISynchronizeService.asyncExec(() -> {
+                        if (!txtAPIKey.isDisposed()) {
+                            txtAPIKey.setText(key);
+                            isRetrievingApi = false;
+                            setGenerateCommandButtonStates();
+                        }
+                    });
                 }
             }
-        } catch (Exception ex) {
-        }
+        });
+        getApiKey.start();
     }
     
     private RunConfigurationDescription getStoredConfigurationDescription() {
