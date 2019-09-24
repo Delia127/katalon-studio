@@ -93,6 +93,7 @@
 		<module>com.kms.katalon.netlightbody</module>
         <module>com.kms.katalon.poi</module>
 		<module>com.kms.katalon.platform.internal</module>
+		<module>com.kms.katalon.composer.artifact</module>
 	</modules>
 
 	<properties>
@@ -100,7 +101,7 @@
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<platform.version>1.0.13</platform.version>
+		<platform.version>1.0.14</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>

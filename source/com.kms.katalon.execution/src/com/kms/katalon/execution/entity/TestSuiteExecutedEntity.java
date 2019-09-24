@@ -122,7 +122,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             List<Extension> availableExtensions = dynamicQueryingTestSuiteProvider.getAvailableExtensions(project);
             if (availableExtensions.isEmpty()) {
                 throw new ExtensionRequiredException(
-                        "No query provider available to execute the dynamic querying test suite: "
+                        "No query provider available to execute the dynamic test suite: "
                                 + testSuite.getIdForDisplay());
             }
             selectedQueryingDescription = dynamicQueryingTestSuiteProvider.getDynamicQueryingDescription(
@@ -482,5 +482,10 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             }
         }
         return collectedInfo;
+    }
+
+    @Override
+    public Rerunable mergeWith(Rerunable rerunable) {
+        return this;
     }
 }

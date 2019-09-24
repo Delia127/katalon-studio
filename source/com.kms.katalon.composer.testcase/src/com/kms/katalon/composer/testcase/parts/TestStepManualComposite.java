@@ -258,7 +258,7 @@ public class TestStepManualComposite {
 			
 			btnViewHistory = new Button(compositeTableButtons, SWT.NONE);
 			btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
-			btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
+			btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_TESTOPS_16));
 			btnViewHistory.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {

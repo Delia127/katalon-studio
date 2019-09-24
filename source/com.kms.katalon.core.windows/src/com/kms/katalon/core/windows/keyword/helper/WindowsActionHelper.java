@@ -172,7 +172,7 @@ public class WindowsActionHelper {
         action.perform();
     }
 
-    public void sendKeys(WindowsTestObject testObject, String[] keys) {
+    public void sendKeys(WindowsTestObject testObject, CharSequence... keys) {
         WebElement windowElement = findElement(testObject);
         windowElement.sendKeys(keys);
     }

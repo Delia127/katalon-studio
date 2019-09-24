@@ -3,6 +3,7 @@ package com.kms.katalon.composer.project.handlers;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +22,7 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -87,8 +89,15 @@ public class OpenProjectHandler {
     }
 
     public static File getProjectFile(File projectDirectory) {
-        for (File file : projectDirectory.listFiles()) {
-            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath()))
+        if (projectDirectory == null) {
+            return null;
+        }
+        File[] childFiles = projectDirectory.listFiles();
+        if (childFiles == null) {
+            return null;
+        }
+        for (File file : childFiles) {
+            if (file.isFile() && ('.' + FilenameUtils.getExtension(file.getAbsolutePath()))
                     .equals(ProjectEntity.getProjectFileExtension())) {
                 return file;
             }
@@ -97,6 +106,9 @@ public class OpenProjectHandler {
     }
 
     public static List<File> getProjectFiles(File projectDirectory) {
+        if (projectDirectory == null || projectDirectory.listFiles() == null) {
+            return Collections.emptyList();
+        }
         List<File> childProjectFiles = new ArrayList<>();
         for (File file : projectDirectory.listFiles()) {
             if (file.isDirectory()) {
@@ -172,6 +184,7 @@ public class OpenProjectHandler {
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
                     TimeUnit.SECONDS.sleep(1);
+                    eventBrokerService.post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {

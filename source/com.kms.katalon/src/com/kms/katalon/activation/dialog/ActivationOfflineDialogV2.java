@@ -46,6 +46,8 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     private Label lblProgressMessage;
     
     private Link lnkOfflineActivation;
+    
+    private Link lnkEnterprieseTrialLicense;
 
     private Link lnkOnlineRequest;
     
@@ -109,6 +111,13 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch(StringConstants.OFFLINE_ACTIVATION);
+            }
+        });
+        
+        lnkEnterprieseTrialLicense.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(StringConstants.ENTERPRISE_TRIAL_LICENSE);
             }
         });
 
@@ -195,11 +204,14 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         
         Composite offlineComposite = new Composite(container, SWT.NONE);
         GridLayout glOfflineComposite = new GridLayout();
+        glOfflineComposite.numColumns = 2;
         glOfflineComposite.verticalSpacing = 10;
         offlineComposite.setLayout(glOfflineComposite);
         offlineComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        lnkOfflineActivation = new Link(offlineComposite, SWT.WRAP);
+        lnkOfflineActivation = new Link(offlineComposite, SWT.NONE);
         lnkOfflineActivation.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KS);
+        lnkEnterprieseTrialLicense = new Link(offlineComposite, SWT.NONE);
+        lnkEnterprieseTrialLicense.setText(MessageConstants.ActivationDialogV2_LBL_ENTERPRISE_LICENSE);
         
         Composite messageComposite = new Composite(container, SWT.NONE);
         GridLayout glMessageComposite = new GridLayout();

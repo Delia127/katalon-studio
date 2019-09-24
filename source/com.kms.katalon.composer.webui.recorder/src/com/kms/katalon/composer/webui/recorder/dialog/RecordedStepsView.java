@@ -343,12 +343,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         String newActionName = newAction.getAction().getName();
         if (objectId.equals(targetElement.getName())) {
             if (preventAddMultiSetTextAction(latestKeywordName, newActionName)) {
-
-                WebElementPropertyEntity property = targetElement.getProperty("type");
-                if (property != null && "password".equals(property.getValue())) {
-                    secureSetTextAction(newAction);
-                }
-
                 modifyStep(wrapper, latestNode);
                 return true;
             }

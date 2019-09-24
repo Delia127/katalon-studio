@@ -86,7 +86,7 @@ public class ProjectFileServiceDataProvider implements IProjectDataProvider {
 
             if (project != null) {
                 File projectFile = new File(projectFileLocation);
-                project.setFolderLocation(projectFile.getParent());
+                project.setProjectFile(projectFile);
             }
             return project;
         } catch (Exception e) {
@@ -105,7 +105,7 @@ public class ProjectFileServiceDataProvider implements IProjectDataProvider {
         try {
             ProjectEntity project = (ProjectEntity) EntityService.getInstance()
                     .getEntityByPath(projectFile.getAbsolutePath());
-            project.setFolderLocation(projectFile.getParentFile().getAbsolutePath());
+            project.setProjectFile(projectFile);
             project.setName(newInfo.getName());
             project.setDescription(newInfo.getDescription());
             FileUtils.deleteQuietly(projectFile);

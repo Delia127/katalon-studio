@@ -12,7 +12,7 @@
       </programArgs>
       <programArgsMac>-vm ../../Contents/Eclipse/jre/Contents/Home/jre/lib/jli/libjli.dylib
       </programArgsMac>
-      <vmArgs>-XX:+UseG1GC -XX:+UseStringDeduplication -Xms256m
+      <vmArgs>-XX:+UseG1GC -XX:+UseStringDeduplication -Xms256m -Dfile.encoding=utf-8
          <argsX86>-Xmx1280m</argsX86>
          <argsX86_64>-Xmx2048m</argsX86_64>
          <argsPPC>-Xmx2048m</argsPPC>

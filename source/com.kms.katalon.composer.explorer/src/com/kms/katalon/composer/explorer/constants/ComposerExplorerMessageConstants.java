@@ -36,6 +36,12 @@ public class ComposerExplorerMessageConstants extends NLS {
     public static String ERROR_CANNOT_FIND_CONTAINING_FOLDER;
     
     public static String CONTR_MENU_CONTEXT_IMPORT_OBJECTS;
+    
+    public static String PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS;
+    
+    public static String PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS;
+    
+    public static String PAGE_ERROR_MSG_UNABLE_TO_REFESH_EXPLORER;
 
     static {
         // initialize resource bundle
