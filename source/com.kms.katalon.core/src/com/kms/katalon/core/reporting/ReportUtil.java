@@ -155,7 +155,7 @@ public class ReportUtil {
         JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
 
         String testSuiteName = suiteLogEntity.getName();
-        String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
+        String totalTests = suiteLogEntity.getTotalTestCases() + "";
         String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
         String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
         String duration = ((suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
@@ -180,7 +180,7 @@ public class ReportUtil {
         ts.setSystemErr(suiteLogEntity.getSystemErrorMsg().trim());
 
         // tests: The total number of tests in the suite, required
-        ts.setTests(totalPass);
+        ts.setTests(totalTests);
         // errors: The total number of tests in the suite that error
         ts.setErrors(totalError);
         // failures: The total number of tests in the suite that failed
@@ -229,7 +229,7 @@ public class ReportUtil {
         }
 
         String testSuiteCollectionName = suiteCollectionLogRecord.getTestSuiteCollectionId();
-        String testSuiteCollectionTotalPass = suiteCollectionLogRecord.getTotalPassedTestCases();
+        String testSuiteCollectionTotalTests = suiteCollectionLogRecord.getTotalTestCases();
         String testSuiteCollectiontotalError = suiteCollectionLogRecord.getTotalErrorTestCases();
         String testSuiteCollectionTotalFailure = suiteCollectionLogRecord.getTotalFailedTestCases();
         String testSuiteCollectionDuration = ((suiteCollectionLogRecord.getEndTime() - suiteCollectionLogRecord.getStartTime()) / 1000) + "";;
@@ -239,8 +239,8 @@ public class ReportUtil {
         tss.setErrors(testSuiteCollectiontotalError);
         // failures: total number of failed tests from all test suite
         tss.setFailures(testSuiteCollectionTotalFailure);
-        // tests: total number of successful tests from all test suite
-        tss.setTests(testSuiteCollectionTotalPass);
+        // tests: total number of tests from all test suite
+        tss.setTests(testSuiteCollectionTotalTests);
         // time: in seconds to execute all test suites
         tss.setTime(testSuiteCollectionDuration);
         // name
@@ -268,7 +268,7 @@ public class ReportUtil {
         tss.setErrors(ts.getErrors());
         // failures: total number of failed tests from all test suite
         tss.setFailures(ts.getFailures());
-        // tests: total number of successful tests from all test suite
+        // tests: total number of tests from all test suite
         tss.setTests(ts.getTests());
         // time: in seconds to execute all test suites
         tss.setTime(ts.getTime());
