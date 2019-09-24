@@ -252,9 +252,6 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 
                             // Generate API docs
                             sh "cd com.kms.katalon.apidocs && mvn clean ${command} && cp -R 'target/resources/apidocs' ${env.tmpDir}"
-
-                            // Generate Source
-                            sh "cd com.kms.katalon.api.source && mvn clean ${command} && cp -R 'target/resources/source' ${env.tmpDir}"
                         }
                     }
                 }
