@@ -177,6 +177,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
         updateTestCaseTreeEntities();
     }
 
+    @SuppressWarnings("unused")
     private Job getAddTestCasesToTestSuiteJob() {
         return new Job("Adding test cases to test suite ...") {
             @Override
