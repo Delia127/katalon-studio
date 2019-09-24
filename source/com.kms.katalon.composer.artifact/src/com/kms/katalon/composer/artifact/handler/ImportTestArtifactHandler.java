@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -119,7 +120,7 @@ public class ImportTestArtifactHandler {
 
                             importProfiles(sourceFolder);
                             
-                            importKeywords(sourceFolder);
+                            List<File> importedKeywordFiles = importKeywords(sourceFolder);
 
                             if (testObjectImportFolder != null && testScriptImportFolder != null) {
                                 Map<String, String> testObjectIdLookup = collectTestObjectIds(testObjectImportFolder);
@@ -128,6 +129,9 @@ public class ImportTestArtifactHandler {
                                 TestArtifactScriptRefactor refactor = TestArtifactScriptRefactor
                                         .createForTestObjectEntity(testObjectIdLookup);
                                 refactor.updateReferences(scriptFiles);
+                                if (importedKeywordFiles != null) {
+                                    refactor.updateReferences(importedKeywordFiles);
+                                }
                             }
 
                             if (testCaseImportFolder != null && testScriptImportFolder != null) {
@@ -137,6 +141,9 @@ public class ImportTestArtifactHandler {
                                 TestArtifactScriptRefactor refactor = TestArtifactScriptRefactor
                                         .createForTestCaseEntity(testCaseIdLookup);
                                 refactor.updateReferences(scriptFiles);
+                                if (importedKeywordFiles != null) {
+                                    refactor.updateReferences(importedKeywordFiles);
+                                }
                             }
                         }
                     }
@@ -260,7 +267,7 @@ public class ImportTestArtifactHandler {
         }
     }
     
-    private void importKeywords(File sourceFolder) throws IOException, ResourceException {
+    private List<File> importKeywords(File sourceFolder) throws IOException, ResourceException {
         File sharedKeywordFolder = new File(sourceFolder, "shared-keywords");
         if (!FileUtil.isEmptyFolder(sharedKeywordFolder)) {
             ProjectEntity project = PlatformUtil.getCurrentProject();
@@ -273,6 +280,18 @@ public class ImportTestArtifactHandler {
                     .getFolder(project, "Keywords");
             TestExplorerActionService explorerActionService = PlatformUtil.getUIService(TestExplorerActionService.class);
             explorerActionService.refreshFolder(project, importFolderEntity);
+            
+            List<File> keywordFiles = FileUtil.listFilesWithExtension(sharedKeywordFolder, "groovy");
+            List<File> copiedKeywordFiles = keywordFiles.stream()
+                .map(keywordFile -> {
+                    String keywordFilePath = keywordFile.getAbsolutePath();
+                    String keywordFileRelativePath = keywordFilePath.substring((sharedKeywordFolder.getAbsolutePath() + File.separator).length());
+                    File copiedKeywordFile = new File(keywordRootFolder, keywordFileRelativePath);
+                    return copiedKeywordFile;
+                }).collect(Collectors.toList());
+            return copiedKeywordFiles;
+        } else {
+            return null;
         }
     }
 
