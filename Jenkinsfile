@@ -375,9 +375,6 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 
                 sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/apidocs.zip' 'apidocs'"
                 sh "rm -rf '${env.tmpDir}/apidocs'"
-
-                sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/source.zip' 'source'"
-                sh "rm -rf '${env.tmpDir}/source'"
             }
         }
 
