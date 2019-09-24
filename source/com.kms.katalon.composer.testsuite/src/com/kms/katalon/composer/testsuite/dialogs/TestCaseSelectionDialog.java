@@ -6,7 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -162,47 +165,60 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
      * @throws Exception
      */
     public void updateTestCaseTableViewer() throws Exception {
-        List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
         List<TestSuiteTestCaseLink> links = tableViewer.getInput();
         // add new checked items
         new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, true, new IRunnableWithProgress() {
             @Override
             public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-
-                int selectedObjectsSize = selectedObjects.size();
-                monitor.beginTask("", selectedObjectsSize);
-                SubMonitor subMonitor = SubMonitor.convert(monitor);
-                subMonitor.beginTask("", selectedObjectsSize);
-                for (Object object : selectedObjects) {
-                    try {
-                        SubMonitor subSubMonitor = subMonitor.split(1, SubMonitor.SUPPRESS_NONE);
-                        if (!(object instanceof ITreeEntity)) {
-                            continue;
-                        }
-                        ITreeEntity treeEntity = (ITreeEntity) object;
-                        if (treeEntity instanceof FolderTreeEntity) {
-                            FolderEntity fEntity = (FolderEntity) treeEntity.getObject();
-                            addTestCaseFolderToTable(fEntity);
-                        } else if (treeEntity instanceof TestCaseTreeEntity) {
-                            TestCaseEntity tcEntity = (TestCaseEntity) treeEntity.getObject();
-                            subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite",
-                                    1);
-                            UISynchronizeService.syncExec(() -> {
-                                try {
-                                    tableViewer.addTestCase(tcEntity);
-                                } catch (Exception e) {}
-                            });
-                            subSubMonitor.done();
-                        }
-                    } catch (Exception e) {
-
-                    }
-                }
-                monitor.done();
+                addTestCasesToTestSuite(monitor);
             }
         });
         // finally, update test case tree entity list
         updateTestCaseTreeEntities();
+    }
+
+    private Job getAddTestCasesToTestSuiteJob() {
+        return new Job("Adding test cases to test suite ...") {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                addTestCasesToTestSuite(monitor);
+                return Status.OK_STATUS;
+            }
+        };
+    }
+    
+    private void addTestCasesToTestSuite(IProgressMonitor monitor) {
+        List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
+        int selectedObjectsSize = selectedObjects.size();
+        monitor.beginTask("", selectedObjectsSize);
+        SubMonitor subMonitor = SubMonitor.convert(monitor);
+        subMonitor.beginTask("", selectedObjectsSize);
+        for (Object object : selectedObjects) {
+            try {
+                SubMonitor subSubMonitor = subMonitor.split(1, SubMonitor.SUPPRESS_NONE);
+                if (!(object instanceof ITreeEntity)) {
+                    continue;
+                }
+                ITreeEntity treeEntity = (ITreeEntity) object;
+                if (treeEntity instanceof FolderTreeEntity) {
+                    FolderEntity fEntity = (FolderEntity) treeEntity.getObject();
+                    addTestCaseFolderToTable(fEntity);
+                } else if (treeEntity instanceof TestCaseTreeEntity) {
+                    TestCaseEntity tcEntity = (TestCaseEntity) treeEntity.getObject();
+                    subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite",
+                            1);
+                    UISynchronizeService.syncExec(() -> {
+                        try {
+                            tableViewer.addTestCase(tcEntity);
+                        } catch (Exception e) {}
+                    });
+                    subSubMonitor.done();
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        monitor.done();
     }
     
 
