@@ -113,6 +113,8 @@ public class GroovyUtil {
 
     private static final String RESOURCE_FOLDER_NAME_REGEX = ".*\\.svn$";
 
+    private static final String API_SOURCE_EXTENSION = "-sources.jar";
+
     public static IProject getGroovyProject(ProjectEntity projectEntity) {
         return ResourcesPlugin.getWorkspace()
                 .getRoot()
@@ -447,6 +449,14 @@ public class GroovyUtil {
     private static File getPlatformLibDir() throws IOException {
         return new File(getPlatformResourcesDir(), "lib");
     }
+    
+    /**
+     * @return Returns source folder of the current Katalon installed folder.
+     * @throws IOException
+     */
+    private static File getPlatformSourceDir() throws IOException {
+        return new File(getPlatformResourcesDir(), "source");
+    }
 
     /**
      * Adds the given <code>customBundleFile</code> if it isn't in the given <code>entries</code>. Also attaches source
@@ -510,11 +520,20 @@ public class GroovyUtil {
             File javaDocDir = new File(getPlatformAPIDocDir(), bundle.getSymbolicName());
             String javadocLoc = javaDocDir.toURI().toString();
             IClasspathAttribute[] attributes = null;
-
             if (FileLocator.getBundleFile(bundle).isFile() && javaDocDir.isDirectory() && javaDocDir.exists()) {
                 attributes = new IClasspathAttribute[] { new ClasspathAttribute("javadoc_location", javadocLoc) };
             }
-            IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), null, null, null,
+            
+            File javaSourceDir = new File(getPlatformSourceDir(), bundle.getSymbolicName());
+            IPath sourcePath = null;
+            if (FileLocator.getBundleFile(bundle).isFile() && 
+                    javaSourceDir.isDirectory() && 
+                    javaSourceDir.exists() && 
+                    bundle.getSymbolicName().startsWith("com.kms.katalon.core")) {
+                javaSourceDir = new File(javaSourceDir, bundle.getSymbolicName() + API_SOURCE_EXTENSION);
+                sourcePath = new Path(javaSourceDir.getAbsolutePath());
+            }
+            IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), sourcePath, null, null,
                     attributes, false);
             if (entry != null && !entries.contains(entry)) {
                 entries.add(entry);
