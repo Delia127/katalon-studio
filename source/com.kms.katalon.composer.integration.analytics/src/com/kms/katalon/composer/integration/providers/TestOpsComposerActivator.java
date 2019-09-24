@@ -20,6 +20,6 @@ public class TestOpsComposerActivator implements BundleActivator{
 
     @Override
     public void stop(BundleContext context) throws Exception {
-    	
+        //Do nothing here
     }
 }
