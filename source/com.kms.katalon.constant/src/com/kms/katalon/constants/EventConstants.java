@@ -12,8 +12,6 @@ public class EventConstants {
 
     public static final String ACTIVATION_CHECKED = "ACTIVATION/CHECKED";
     
-    public static final String USAGE_TRACKING = "USAGE/TRACKING";
-    
     public static final String WORKSPACE_PLUGIN_LOADED = "WORKSPACE/PLUGIN_LOADED";
 
     public static final String ACTIVATION_QTEST_INTEGRATION_CHECK = "ACTIVATION/QTEST_INTEGRATION_CHECK";

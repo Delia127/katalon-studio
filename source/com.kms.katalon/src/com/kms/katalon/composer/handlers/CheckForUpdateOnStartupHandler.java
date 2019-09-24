@@ -11,9 +11,7 @@ import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class CheckForUpdateOnStartupHandler extends CheckForUpdatesHandler {
     
@@ -36,8 +34,8 @@ public class CheckForUpdateOnStartupHandler extends CheckForUpdatesHandler {
         boolean checkNewVersion = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION)
                 ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION) : true;
 
-        boolean checkAllowUsage = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING)
-                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECKL_ALLOW_USAGE_TRACKING) : true;
+        boolean checkAllowUsage = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
+                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
         if (!checkNewVersion) {
             return;
         }
