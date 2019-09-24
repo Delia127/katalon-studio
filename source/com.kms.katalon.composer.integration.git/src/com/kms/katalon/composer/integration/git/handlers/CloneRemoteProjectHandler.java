@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.editors.MarkdownPart;
@@ -226,6 +227,7 @@ public class CloneRemoteProjectHandler {
             if (projectType == ProjectType.MOBILE) {
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.API_QUICK_START_MOBILE_DIALOG_OPEN, null);
             }
+            KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), GitStringConstants.ERROR,

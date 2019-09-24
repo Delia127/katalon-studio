@@ -575,8 +575,8 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         int selectionIdx = cboProjects.getSelectionIndex();
         String selectedProjectName = cboProjects.getItem(selectionIdx);
+        Object selectedSampleProject = cboProjects.getData(selectedProjectName);
         if (!selectedProjectName.equals(BLANK_PROJECT)) {
-            Object selectedSampleProject = cboProjects.getData(selectedProjectName);
             if (selectedSampleProject instanceof SampleRemoteProject) {
                 handleCreatingSampleRemoteProject((SampleRemoteProject) selectedSampleProject);
             } else if (selectedSampleProject instanceof SampleLocalProject) {
@@ -586,8 +586,10 @@ public class NewProjectDialog extends TitleAreaDialog {
             handleCreatingBlankProject();
         }
         super.okPressed();
-
-        KatalonApplicationActivator.getTestOpsConfiguration().testOpsConfiguration();
+        
+        if (!(selectedSampleProject instanceof SampleRemoteProject)) {
+        	KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
+        }
     }
 
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
