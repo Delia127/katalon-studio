@@ -51,17 +51,15 @@ import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
-import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
+import com.kms.katalon.entity.file.FileEntity;
 
 public class UnusedTestObjectsPart extends CPart implements EventHandler {
 
     private static final String[] FILTER_NAMES = { "Comma Separated Values Files (*.csv)" };
 
     private static final String[] FILTER_EXTS = { "*.csv" };
-
-    protected ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
     private MPart mPart;
 
@@ -71,7 +69,7 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
 
     private ToolItem toolItemDeleteAll, toolItemExportCSV;
 
-    List<WebElementEntity> unusedTestObjects;
+    List<FileEntity> unusedTestObjects;
 
     @Inject
     private Shell shell;
@@ -92,7 +90,7 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
         eventBroker.subscribe(EventConstants.UNUSED_TEST_OBJECTS_UPDATED, this);
 
         createTestObjectTable(parent);
-        updateContent((List<WebElementEntity>) mPart.getObject());
+        updateContent((List<FileEntity>) mPart.getObject());
 
     }
 
@@ -102,7 +100,7 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
             try {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof List) {
-                    updateContent((List<WebElementEntity>) object);
+                    updateContent((List<FileEntity>) object);
                 }
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
@@ -146,7 +144,7 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
         tableViewerColumnOrder.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                return String.valueOf(unusedTestObjects.indexOf((WebElementEntity) element) + 1);
+                return String.valueOf(unusedTestObjects.indexOf((FileEntity) element) + 1);
             }
         });
 
@@ -157,7 +155,7 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
         tableViewerColumnName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                return ((WebElementEntity) element).getIdForDisplay();
+                return ((FileEntity) element).getIdForDisplay();
             }
         });
 
@@ -168,7 +166,7 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
             public void doubleClick(DoubleClickEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 Object element = selection.getFirstElement();
-                eventBroker.post(EventConstants.TEST_OBJECT_OPEN, element);
+                eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, element);
 
             }
         });
@@ -210,15 +208,15 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
         });
     }
 
-    private void updateContent(List<WebElementEntity> content) {
+    private void updateContent(List<FileEntity> content) {
         unusedTestObjects = content;
         tableViewer.setInput(unusedTestObjects);
     }
 
     private void deleteAll() {
         try {
-            for (WebElementEntity webElement : unusedTestObjects) {
-                toController.deleteWebElement(webElement);
+            for (FileEntity element : unusedTestObjects) {
+                EntityFileServiceManager.delete(element);
             }
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
             updateContent(Collections.emptyList());
@@ -247,9 +245,9 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
             List<Object[]> datas = new ArrayList<Object[]>();
             CellProcessor[] cellProcessor = new CellProcessor[] { new NotNull(), new NotNull() };
             int index = 1;
-            unusedTestObjects.stream().map(webElement -> webElement.getIdForDisplay()).toArray();
-            for (WebElementEntity webElement : unusedTestObjects) {
-                datas.add(new String[] { String.valueOf(index++), webElement.getIdForDisplay() });
+            unusedTestObjects.stream().map(element -> element.getIdForDisplay()).toArray();
+            for (FileEntity element : unusedTestObjects) {
+                datas.add(new String[] { String.valueOf(index++), element.getIdForDisplay() });
             }
             CsvWriter.writeArraysToCsv(headers, datas, exportedFile, cellProcessor);
             UISynchronizeService.syncExec(() -> Program.launch(exportedFile.toURI().toString()));
