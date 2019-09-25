@@ -177,8 +177,7 @@
                   sourcepath="${project.basedir}/src" use="true"
                   windowtitle="${project.name}"
                   doctitle="${project.name}" 
-                  packagenames="com.kms.katalon.core.mobile.driver,com.kms.katalon.core.mobile.keyword"
-                >
+                  packagenames="com.kms.katalon.core.mobile.*">
                   <link packages="java.,org.xml.,javax.,org.xml."
                     href="http://download.oracle.com/javase/6/docs/api" />
                   <link packages="org.apache.tools.ant." 
