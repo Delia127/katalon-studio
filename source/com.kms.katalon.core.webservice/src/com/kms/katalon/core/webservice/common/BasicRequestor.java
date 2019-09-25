@@ -23,6 +23,18 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.ssl.KeyMaterial;
+import org.apache.http.Header;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.auth.oauth.OAuthParameters;
@@ -48,10 +60,18 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class BasicRequestor implements Requestor {
+    
+    protected static PoolingHttpClientConnectionManager connectionManager;
+    
+    static {
+        connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(2000);
+        connectionManager.setDefaultMaxPerRoute(500);
+    }
 
     private String projectDir;
 
-    private ProxyInformation proxyInformation;
+    protected ProxyInformation proxyInformation;
 
     public BasicRequestor(String projectDir, ProxyInformation proxyInformation) {
         this.projectDir = projectDir;
@@ -140,7 +160,7 @@ public abstract class BasicRequestor implements Requestor {
         }
     }
 
-    protected void setHttpConnectionHeaders(HttpURLConnection con, RequestObject request)
+    protected void setHttpConnectionHeaders(HttpRequest httpRequest, RequestObject request)
             throws GeneralSecurityException, IOException {
         List<TestObjectProperty> complexAuthAttributes = request.getHttpHeaderProperties()
                 .stream()
@@ -159,9 +179,9 @@ public abstract class BasicRequestor implements Requestor {
         headers.forEach(header -> {
             if (request.getBodyContent() instanceof HttpFormDataBodyContent 
                     && header.getName().equalsIgnoreCase("Content-Type")) {
-                con.setRequestProperty(header.getName(), request.getBodyContent().getContentType());
+                httpRequest.addHeader(header.getName(), request.getBodyContent().getContentType());
             } else {
-                con.setRequestProperty(header.getName(), header.getValue());
+                httpRequest.addHeader(header.getName(), header.getValue());
             }
         });
     }
@@ -244,8 +264,8 @@ public abstract class BasicRequestor implements Requestor {
         return null;
     }
     
-    protected void setBodyContent(HttpURLConnection conn, StringBuffer sb, ResponseObject responseObject) {
-        String contentTypeHeader = conn.getHeaderField(RequestHeaderConstants.CONTENT_TYPE);
+    protected void setBodyContent(HttpResponse httpRequest, StringBuffer sb, ResponseObject responseObject) {
+        String contentTypeHeader = getResponseContentType(httpRequest);
         String contentType = contentTypeHeader;
         String charset = "UTF-8";
         if (contentTypeHeader != null && contentTypeHeader.contains(";")) {
@@ -261,10 +281,29 @@ public abstract class BasicRequestor implements Requestor {
                         .trim().replace("\"", "");
             }
         }
-
         HttpTextBodyContent textBodyContent = new HttpTextBodyContent(sb.toString(), charset, contentType);
         responseObject.setBodyContent(textBodyContent);
         responseObject.setContentCharset(charset);
     }
 
+    protected String getResponseContentType(HttpResponse httpResponse) {
+        Header contentTypeHeader = httpResponse.getFirstHeader("Content-Type");
+        if (contentTypeHeader != null) {
+            return contentTypeHeader.getValue();
+        } else {
+            return null;
+        }
+    }
+    
+    protected void configureProxy(HttpClientBuilder httpClientBuilder, ProxyInformation proxyInformation) {
+        HttpHost httpProxy = new HttpHost(proxyInformation.getProxyServerAddress(), proxyInformation.getProxyServerPort());
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        String username = proxyInformation.getUsername();
+        String password = proxyInformation.getPassword();
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            credentialsProvider.setCredentials(new AuthScope(httpProxy), new UsernamePasswordCredentials(username, password));
+        }
+        httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(httpProxy))
+            .setDefaultCredentialsProvider(credentialsProvider);
+    }
 }
