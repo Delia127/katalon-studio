@@ -9,6 +9,7 @@ import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.core.webui.util.WebDriverCleanerUtil;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.preferences.WebUIConsoleOptionContributor;
@@ -36,6 +37,8 @@ public class EdgeRunConfiguration extends WebUiRunConfiguration {
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
+            	//Terminate running WebDriver
+            	WebDriverCleanerUtil.cleanup();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.EDGE_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempEdgeDriverPath();
