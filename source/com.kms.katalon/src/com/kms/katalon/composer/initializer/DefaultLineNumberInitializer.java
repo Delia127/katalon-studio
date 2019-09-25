@@ -11,15 +11,19 @@ public class DefaultLineNumberInitializer implements ApplicationInitializer {
 	public void setup() {
 		ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.EDITORS_ID);
 
-        if (store.getBoolean(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED)) {
-            return;
-        }
-		if (store.getBoolean(PreferenceConstants.LINE_NUMBER_RULER)) {
+		boolean a = store.getBoolean(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED);
+		if (a) {
 			return;
 		} else {
-			store.setValue(PreferenceConstants.LINE_NUMBER_RULER, true);
-			store.setValue(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED, false);
+			if (store.getBoolean(PreferenceConstants.LINE_NUMBER_RULER)) {
+				return;
+			} else {
+				store.setValue(PreferenceConstants.LINE_NUMBER_RULER, true);
+				store.setValue(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED, true);
+			}
+			return;
 		}
-		return;
+//		store.setValue(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED, false);
+//		return;
 	}
 }
