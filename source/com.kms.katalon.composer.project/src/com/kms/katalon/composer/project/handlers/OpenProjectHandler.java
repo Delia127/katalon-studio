@@ -19,6 +19,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -46,13 +48,13 @@ public class OpenProjectHandler {
     private IEventBroker eventBroker;
 
     @Inject
-    private EModelService modelService;
+    private static EModelService modelService;
 
     @Inject
     private EPartService partService;
 
     @Inject
-    private MApplication application;
+    private static MApplication application;
 
     @Inject
     private UISynchronize sync;
@@ -79,6 +81,7 @@ public class OpenProjectHandler {
                     }
                 }
             }
+
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.HAND_ERROR_MSG_CANNOT_OPEN_PROJ);
@@ -142,8 +145,8 @@ public class OpenProjectHandler {
                     monitor.worked(1);
                     monitor.subTask(StringConstants.HAND_LOADING_PROJ);
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
-                            progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));                    
-                    
+                            progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));
+
                     monitor.subTask(StringConstants.HAND_REFRESHING_EXPLORER);
                     syncService.syncExec(new Runnable() {
                         @Override
@@ -189,17 +192,27 @@ public class OpenProjectHandler {
                 }
             }
         });
-        
+        setUpToolbar();
+    }
+
+    public static void setUpToolbar() {
+        List<MPerspectiveStack> psList = modelService.findElements(application, null, MPerspectiveStack.class, null);
+        MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID,
+                psList.get(0).getSelectedElement());
+        consolePartStack.getTags().remove("Minimized");
+        consolePartStack.setVisible(true);
+        if (!consolePartStack.isToBeRendered()) {
+            consolePartStack.setToBeRendered(true);
+        }
     }
 
     public static void updateProjectTitle(ProjectEntity projectEntity, EModelService modelService, MApplication app) {
         MWindow win = (MWindow) modelService.find(IdConstants.MAIN_WINDOW_ID, app);
         String versionTag = ApplicationInfo.versionTag();
         if (win != null) {
-            win.setLabel(win.getLabel().split(" - ")[0] + " - " +
-                (!StringUtils.isBlank(versionTag) ? versionTag + " - " : "") +
-                projectEntity.getName() + " - [Location: "
-                    + projectEntity.getFolderLocation() + "]");
+            win.setLabel(win.getLabel().split(" - ")[0] + " - "
+                    + (!StringUtils.isBlank(versionTag) ? versionTag + " - " : "") + projectEntity.getName()
+                    + " - [Location: " + projectEntity.getFolderLocation() + "]");
             win.updateLocalization();
         }
     }
