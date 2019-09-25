@@ -23,9 +23,9 @@ public class TrackingService {
 
     public void track(TrackInfo trackInfo) {
         IPreferenceStore prefStore = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
-        boolean checkNewVersion = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
+        boolean checkAllowUsage = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
                 ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
-        if (!checkNewVersion) {
+        if (!checkAllowUsage) {
             return;
         } else {
             executor.submit(() -> {
