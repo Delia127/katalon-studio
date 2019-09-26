@@ -40,8 +40,7 @@ public class ChromeRunConfiguration extends WebUiRunConfiguration {
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
-            	//Terminate running WebDriver
-            	WebDriverCleanerUtil.cleanup();
+            	WebDriverCleanerUtil.terminateChromedriver();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.CHROME_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempChromeDriverPath();

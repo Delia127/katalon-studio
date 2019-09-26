@@ -41,8 +41,7 @@ public class FirefoxRunConfiguration extends WebUiRunConfiguration {
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
-            	//Terminate running WebDriver
-            	WebDriverCleanerUtil.cleanup();
+            	WebDriverCleanerUtil.terminateGeckodriver();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.FIREFOX_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempGeckoDriverPath();

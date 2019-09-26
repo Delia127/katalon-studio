@@ -36,8 +36,7 @@ public class IERunConfiguration extends WebUiRunConfiguration {
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
-            	//Terminate running WebDriver
-            	WebDriverCleanerUtil.cleanup();
+            	WebDriverCleanerUtil.terminateIEDriverServer();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.IE_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempIEDriverPath();

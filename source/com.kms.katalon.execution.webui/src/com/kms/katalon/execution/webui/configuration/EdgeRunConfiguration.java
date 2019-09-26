@@ -37,8 +37,7 @@ public class EdgeRunConfiguration extends WebUiRunConfiguration {
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
-            	//Terminate running WebDriver
-            	WebDriverCleanerUtil.cleanup();
+            	WebDriverCleanerUtil.terminateMicrosoftWebDriver();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.EDGE_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempEdgeDriverPath();
