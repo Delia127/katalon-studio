@@ -162,6 +162,7 @@ public class WindowsActionHandler {
             try {
                 this.element = element;
                 this.activeShell = activeShell;
+                action.setCanceled(false);
 
                 performActionBeforeProgress();
                 final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(activeShell) {
@@ -255,6 +256,7 @@ public class WindowsActionHandler {
             try {
                 this.element = element;
                 this.activeShell = activeShell;
+                action.setCanceled(false);
 
                 performActionBeforeProgress();
                 final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(activeShell) {
