@@ -614,7 +614,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
     
     private void connect() {
-    	enableObject(false);
+        enableObject(false);
 
         cbbTeams.setItems();
         cbbProjects.setItems();
