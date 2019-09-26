@@ -348,7 +348,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(
                             () -> {
-                            	enableObject(false);
+                                enableObject(false);
                                 setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
                             });
                     UISynchronizeService.syncExec(() -> {
