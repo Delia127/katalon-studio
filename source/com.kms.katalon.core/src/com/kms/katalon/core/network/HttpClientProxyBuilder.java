@@ -42,6 +42,14 @@ import com.kms.katalon.core.util.internal.ProxyUtil;
 
 public class HttpClientProxyBuilder {
 
+    private static PoolingHttpClientConnectionManager connectionManager;
+    
+    static {
+        connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(2000);
+        connectionManager.setDefaultMaxPerRoute(500);
+    }
+    
     private final HttpClientBuilder clientBuilder;
 
     private final HttpClientContext clientContext;
@@ -91,9 +99,11 @@ public class HttpClientProxyBuilder {
 
             clientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(httpHost))
                     .setDefaultCredentialsProvider(credentialsProvider)
-                    .setConnectionManager(getSystemConnectionManager(proxy))
                     .setSSLHostnameVerifier(new NoopHostnameVerifier());
         }
+        
+        clientBuilder.setConnectionManager(connectionManager)
+            .setConnectionManagerShared(true);
 
         return new HttpClientProxyBuilder(clientBuilder, context);
     }
