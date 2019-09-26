@@ -21,6 +21,8 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     private int previousRerunTimes;
     private int remainingRerunTimes;
     private boolean rerunFailedTestCaseOnly;
+    private boolean overrideRerunFailedTestCaseOnly;
+    private boolean overrideRemainingRerunTimes;
 
     public static final IntegerConsoleOption RETRY_CONSOLE_OPTION = new IntegerConsoleOption() {
         @Override
@@ -97,9 +99,25 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         }
         if (consoleOption == RETRY_CONSOLE_OPTION) {
             setRemainingRerunTimes(Integer.valueOf(argumentValue));
+            overrideRemainingRerunTimes = true;
         } else if (consoleOption == RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION) {
             setRerunFailedTestCaseOnly(Boolean.valueOf(argumentValue));
+            overrideRerunFailedTestCaseOnly = true;
         }
+    }
+
+    @Override
+    public Rerunable mergeWith(Rerunable rerunable) {
+        if (rerunable == null) {
+            return this;
+        }
+        if (!overrideRemainingRerunTimes) {
+            setRemainingRerunTimes(rerunable.getRemainingRerunTimes());
+        }
+        if (!overrideRerunFailedTestCaseOnly) {
+            setRerunFailedTestCaseOnly(rerunable.isRerunFailedTestCasesOnly());
+        }
+        return this;
     }
 
 }

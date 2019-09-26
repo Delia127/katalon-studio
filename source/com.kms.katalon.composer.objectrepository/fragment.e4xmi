@@ -7,11 +7,13 @@
     <elements xsi:type="commands:Command" xmi:id="_GJVzECauEeS9vYgzPyb1ug" elementId="com.kms.katalon.composer.objectrepository.command.add" commandName="" description="New Test Object"/>
     <elements xsi:type="commands:Command" xmi:id="_qx_Y8DcrEeSiAqu25cXbFw" elementId="com.kms.katalon.composer.objectrepository.command.spy" commandName="" description="Spy Object"/>
     <elements xsi:type="commands:Command" xmi:id="_VVuxcBDREeW0R_pMAWEPbg" elementId="com.kms.katalon.composer.objectrepository.command.addToObjectSpy" commandName="Add To Web Object Spy"/>
+    <elements xsi:type="commands:Command" xmi:id="_pvu7kNhmEemHlsYlTAGHQQ" elementId="com.kms.katalon.composer.objectrepository.command.showUnusedTestObjects" commandName="Show unused Test Objects"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_S2W4QCauEeS9vYgzPyb1ug" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_XX5JwCauEeS9vYgzPyb1ug" elementId="com.kms.katalon.composer.objectrepository.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.handler.NewTestObjectHandler" command="_GJVzECauEeS9vYgzPyb1ug"/>
     <elements xsi:type="commands:Handler" xmi:id="_vGkMgDcrEeSiAqu25cXbFw" elementId="com.kms.katalon.composer.objectrepository.handler.spy" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.handler.SpyObjectHandler" command="_qx_Y8DcrEeSiAqu25cXbFw"/>
     <elements xsi:type="commands:Handler" xmi:id="_YKHkoBDREeW0R_pMAWEPbg" elementId="com.kms.katalon.composer.objectrepository.handler.addToObjectSpy" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.handler.AddToObjectSpyHandler" command="_VVuxcBDREeW0R_pMAWEPbg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_zINRYNhnEemHlsYlTAGHQQ" elementId="com.kms.katalon.composer.objectrepository.handler.showUnusedTestObjects" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.handler.ShowUnusedTestObjectHandler" command="_pvu7kNhmEemHlsYlTAGHQQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0_h9ACauEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.composer.webservice.handledmenuitem.webServiceRequest">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_EVuD4CavEeS9vYgzPyb1ug" elementId="com.kms.katalon.menu.submenu.new.testobject" label="Test Object" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_object_16.png" tooltip="" command="_GJVzECauEeS9vYgzPyb1ug"/>
@@ -37,5 +39,10 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_sMfnkMxJEeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.spy">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_lJfpcMxKEeis-d8dVdcONw" elementId="com.kms.katalon.composer.objectrepository.handledmenuitem.spyweb" label="Spy Web" iconURI="" command="_qx_Y8DcrEeSiAqu25cXbFw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_vuZPMNhiEemHlsYlTAGHQQ" featurename="children" parentElementId="com.kms.katalon.menu.tools" positionInList="5">
+    <elements xsi:type="menu:Menu" xmi:id="_YX0UsNqvEemnsdQtD9ZFdg" elementId="com.kms.katalon.composer.objectrepository.menu.testobject" label="Test Object" mnemonics="">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_ds7YMNqvEemnsdQtD9ZFdg" elementId="com.kms.katalon.composer.objectrepository.handledmenuitem.showunusedtestobjects" label="Show unused Test Objects" command="_pvu7kNhmEemHlsYlTAGHQQ"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>

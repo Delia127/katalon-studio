@@ -99,10 +99,10 @@ public class CloneRemoteProjectHandler {
 
 
                         sample = (SampleRemoteProject) objects[0];
-                        String projectLocation = ((ProjectEntity) objects[1]).getLocation();
+                        String projectFolderLocation = ((ProjectEntity) objects[1]).getFolderLocation();
                         projectType = ((ProjectEntity) objects[1]).getType();
 
-                        File workdir = new File(projectLocation);
+                        File workdir = new File(projectFolderLocation);
                         workdir.mkdirs();
 
                         Job job = new Job("Cloning remote project") {

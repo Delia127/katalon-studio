@@ -39,6 +39,7 @@ import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -365,8 +366,9 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
         for (TestCaseTestDataLink dataLink : view.getSelectedTestCaseLink().getTestDataLinks()) {
             try {
-                TestData testData = TestDataFactory.findTestDataForExternalBundleCaller(dataLink.getTestDataId(),
-                        projectEntity.getFolderLocation());
+//                TestData testData = TestDataFactory.findTestDataForExternalBundleCaller(dataLink.getTestDataId(),
+//                        projectEntity.getFolderLocation());
+            	TestData testData = TestDataController.getInstance().getTestDataInstance(dataLink.getTestDataId(), projectEntity.getFolderLocation());
                 if (testData == null) {
                     continue;
                 }

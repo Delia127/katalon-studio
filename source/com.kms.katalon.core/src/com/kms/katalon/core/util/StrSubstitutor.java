@@ -32,6 +32,9 @@ public class StrSubstitutor {
         if (StringUtils.isBlank(str)) {
             return StringUtils.EMPTY;
         }
+        if (!str.contains("${") || !str.contains("}")) {
+            return str;
+        }
         // Pass 1: use simple substitutor
         try {
         	str = org.apache.commons.lang3.text.StrSubstitutor.replace(str, variables);
