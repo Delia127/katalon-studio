@@ -92,9 +92,6 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<excludes>
-								<exclude>*.internal.*</exclude>
-							</excludes>
 							<target>
 								<taskdef name="groovydoc" classname="org.codehaus.groovy.ant.Groovydoc"
 									classpathref="maven.compile.classpath" />
