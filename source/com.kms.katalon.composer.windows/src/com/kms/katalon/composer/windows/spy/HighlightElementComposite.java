@@ -93,12 +93,12 @@ public class HighlightElementComposite {
             parentDialog.highlightElementRects(elementRects);
 
             if (webElements.size() > 0) {
-                displayFoundMessageSync(webElements.size(), locatorStrategyName, locator);
+                displayFoundMessage(webElements.size(), locatorStrategyName, locator);
             } else {
-                displayNotFoundMessageSync(locatorStrategyName, locator);
+                displayNotFoundMessage(locatorStrategyName, locator);
             }
         } catch (NoSuchElementException e) {
-            displayNotFoundMessageSync(locatorStrategyName, locator);
+            displayNotFoundMessage(locatorStrategyName, locator);
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog("Unable to highlight element!", e.getMessage(),
                     ExceptionsUtil.getStackTraceForThrowable(e));
@@ -122,26 +122,26 @@ public class HighlightElementComposite {
         return windowsActionHelper.findElements(windowsTestObject);
     }
 
-    private void displaySuccessfulMessageSync(String message) {
+    private void displaySuccessfulMessage(String message) {
         lblMessageVerifyObject.setForeground(ColorUtil.getTextSuccessfulColor());
         lblMessageVerifyObject.setText(message);
         lblMessageVerifyObject.getParent().layout(true);
     }
 
-    private void displayErrorMessageSync(String message) {
+    private void displayErrorMessage(String message) {
         lblMessageVerifyObject.setForeground(ColorUtil.getTextErrorColor());
         lblMessageVerifyObject.setText(message);
         lblMessageVerifyObject.getParent().layout(true);
     }
 
-    private void displayFoundMessageSync(int numElements, String strategy, String selector) {
+    private void displayFoundMessage(int numElements, String strategy, String selector) {
         String pluralPostfix = numElements > 1 ? "s" : "";
-        displaySuccessfulMessageSync(MessageFormat.format(StringConstants.DIA_MSG_ELEMENT_FOUND, numElements,
+        displaySuccessfulMessage(MessageFormat.format(StringConstants.DIA_MSG_ELEMENT_FOUND, numElements,
                 pluralPostfix, strategy, selector));
     }
 
-    private void displayNotFoundMessageSync(String strategy, String selector) {
-        displayErrorMessageSync(MessageFormat.format(StringConstants.DIA_MSG_ELEMENT_NOT_FOUND, strategy, selector));
+    private void displayNotFoundMessage(String strategy, String selector) {
+        displayErrorMessage(MessageFormat.format(StringConstants.DIA_MSG_ELEMENT_NOT_FOUND, strategy, selector));
     }
 
     private void clearMessage() {
