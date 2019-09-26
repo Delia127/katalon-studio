@@ -82,6 +82,7 @@ import com.kms.katalon.composer.windows.element.TreeWindowsElement;
 import com.kms.katalon.composer.windows.exception.WindowsComposerException;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementTableViewer;
+import com.kms.katalon.composer.windows.spy.HighlightElementComposite;
 import com.kms.katalon.composer.windows.spy.WindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
 import com.kms.katalon.composer.windows.spy.WindowsElementTreeContentProvider;
@@ -109,9 +110,15 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     private WindowsInspectorController inspectorController = new WindowsInspectorController();
 
+    public WindowsInspectorController getInspectorController() {
+        return inspectorController;
+    }
+
     private Composite container;
 
     private WindowsElementPropertiesComposite propertiesComposite;
+
+    private HighlightElementComposite highlightElementComposite;
 
     private Composite appsComposite;
 
@@ -299,6 +306,12 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         return control;
     }
 
+    private Control createHighlightElementComposite(Composite parent) {
+        highlightElementComposite = new HighlightElementComposite(this);
+        Control control = highlightElementComposite.createComposite(parent);
+        return control;
+    }
+
     private Composite createCapturedObjectsComposite(Composite parent) {
         Composite capturedObjectsComposite = new Composite(parent, SWT.NONE);
         capturedObjectsComposite.setLayout(new GridLayout());
@@ -339,6 +352,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 CapturedWindowsElement firstElement = (CapturedWindowsElement) selection.getFirstElement();
                 propertiesComposite.setEditingElement(firstElement);
+                highlightElementComposite.setEditingElement(firstElement);
                 highlightObject(firstElement);
             }
         });
@@ -458,7 +472,8 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         createCapturedObjectsComposite(hSashForm);
         createPropertiesComposite(hSashForm);
-        hSashForm.setWeights(new int[] { 4, 6 });
+        createHighlightElementComposite(hSashForm);
+        hSashForm.setWeights(new int[] { 4, 6, 1 });
 
         capturedObjectsTabItem.setControl(hSashForm);
         capturedObjectsTabItem.setText("Captured Objects");
@@ -676,7 +691,6 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
             allElementTreeViewer.setInput(new Object[] {});
             allElementTreeViewer.refresh();
-            propertiesComposite.setEditingElement(null);
             targetElementChanged(null);
             try {
                 stepView.refreshTree();
@@ -764,7 +778,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         allObjectsTreeComposite.setLayout(new FillLayout());
 
         allElementTreeViewer = new CTreeViewer(allObjectsTreeComposite,
-                SWT.FULL_SELECTION | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
         allElementTreeViewer.setLabelProvider(new WindowsElementLabelProvider());
         allElementTreeViewer.setContentProvider(new WindowsElementTreeContentProvider());
 
@@ -820,6 +834,11 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         screenComposite.highlightElement(selectedElement);
     }
 
+    @Override
+    public void highlightElementRects(List<Rectangle> rects) {
+        screenComposite.highlightRects(rects);
+    }
+
     private Font getFontBold(Label label) {
         FontDescriptor boldDescriptor = FontDescriptor.createFrom(label.getFont()).setStyle(SWT.BOLD);
         return boldDescriptor.createFont(label.getDisplay());
@@ -855,6 +874,9 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
      * @return element that were found
      */
     private TreeWindowsElement recursivelyFindElementByLocation(TreeWindowsElement currentElement, int x, int y) {
+        if (!screenComposite.isElementOnScreen((double) x, (double) y, (double) 1, (double) 1)) {
+            return null;
+        }
         for (TreeWindowsElement childElement : currentElement.getChildren()) {
             Map<String, String> attributes = childElement.getProperties();
             Double elementX = Double.parseDouble(attributes.get(GUIObject.X));
