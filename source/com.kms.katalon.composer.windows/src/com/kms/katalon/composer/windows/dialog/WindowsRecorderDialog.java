@@ -91,6 +91,8 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.windows.driver.WindowsSession;
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class WindowsRecorderDialog extends AbstractDialog implements WindowsObjectDialog {
@@ -379,7 +381,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                                     : null;
 
                             WindowsActionMapping actionMapping = performAction(action, element);
-                            if (actionMapping == null) {
+                            if (actionMapping == null || actionMapping.getAction().isCanceled()) {
                                 return;
                             }
                             if (actionMapping.getTargetElement() != null) {
@@ -516,22 +518,25 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                 super.cancelPressed();
                 finishedRun();
                 getProgressMonitor().done();
-                btnStart.setEnabled(true);
-                btnStop.setEnabled(false);
-                btnCapture.setEnabled(false);
+                setStartStopButtonsState(true);
             }
         };
         inspectorController.setStreamHandler(progressDlg);
         try {
             WindowsActionMapping actionMapping = mobileComposite.startApp(inspectorController, progressDlg);
-            captureObjectAction();
-
-            btnCapture.setEnabled(true);
-            btnStop.setEnabled(true);
-            getButton(IDialogConstants.OK_ID).setEnabled(true);
-            stepView.refreshTree();
             try {
-                stepView.addNode(actionMapping);
+                if (!progressDlg.getProgressMonitor().isCanceled()) {
+                    captureObjectAction();
+
+                    setStartStopButtonsState(false);
+                    getButton(IDialogConstants.OK_ID).setEnabled(true);
+                    stepView.refreshTree();
+                    
+                    stepView.addNode(actionMapping);
+                } else {
+                    stopObjectInspectorAction();
+                    setStartStopButtonsState(true);
+                }
             } catch (ClassNotFoundException e) {
                 throw new InvocationTargetException(e);
             }
@@ -553,11 +558,21 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
             }
 
             // Enable start button and show error dialog if application cannot start
+            setStartStopButtonsState(true);
+        } finally {
+            inspectorController.setStreamHandler(null);
+        }
+    }
+    
+    private void setStartStopButtonsState(boolean isReadyToStart) {
+        if (isReadyToStart) {
             btnStart.setEnabled(true);
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
-        } finally {
-            inspectorController.setStreamHandler(null);
+        } else {
+            btnStart.setEnabled(false);
+            btnStop.setEnabled(true);
+            btnCapture.setEnabled(true);
         }
     }
 
@@ -656,6 +671,15 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     private void stopObjectInspectorAction() {
         // Close application
+        try {
+            WindowsSession appSession = inspectorController.getWindowsSession();
+            if (appSession != null) {
+                WindowsActionHelper actionHelper = new WindowsActionHelper(appSession);
+                actionHelper.closeApp();
+            }
+        } catch (NoSuchWindowException exception) {
+            // The application is already closed
+        }
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

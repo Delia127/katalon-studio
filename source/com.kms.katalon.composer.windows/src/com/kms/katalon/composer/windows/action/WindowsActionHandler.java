@@ -170,10 +170,11 @@ public class WindowsActionHandler {
                         super.cancelPressed();
                         finishedRun();
                         getProgressMonitor().done();
+                        action.setCanceled(true);
                     }
                 };
                 IRunnableWithProgress runnable = getActionMappingProgress();
-                progressDlg.run(true, false, runnable);
+                progressDlg.run(true, true, runnable);
                 performActionAfterProgress();
 
                 return getActionMapping();
@@ -262,10 +263,11 @@ public class WindowsActionHandler {
                         super.cancelPressed();
                         finishedRun();
                         getProgressMonitor().done();
+                        action.setCanceled(true);
                     }
                 };
                 IRunnableWithProgress runnable = getActionMappingProgress();
-                progressDlg.run(true, false, runnable);
+                progressDlg.run(true, true, runnable);
                 performActionAfterProgress();
 
                 return getActionMapping();
