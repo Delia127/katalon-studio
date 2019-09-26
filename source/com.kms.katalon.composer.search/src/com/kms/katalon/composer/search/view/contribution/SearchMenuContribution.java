@@ -18,6 +18,7 @@ import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -85,6 +86,7 @@ public class SearchMenuContribution {
 		if (selectedObjects == null || selectedObjects.length != 1) return false;
 		ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
 		if (treeEntity instanceof TestCaseTreeEntity ||
+		        treeEntity instanceof WindowsElementTreeEntity ||
 				treeEntity instanceof WebElementTreeEntity ||
 				treeEntity instanceof TestDataTreeEntity ||
 				treeEntity instanceof KeywordTreeEntity ||
