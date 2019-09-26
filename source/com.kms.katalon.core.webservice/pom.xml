@@ -73,14 +73,12 @@
               <target>
                 <taskdef name="groovydoc"
                   classname="org.codehaus.groovy.ant.Groovydoc" 
-                  classpathref="maven.compile.classpath"
-                />
+                  classpathref="maven.compile.classpath"/>
                 <groovydoc destdir="${groovydocOutputDirectory}"
                   sourcepath="${project.basedir}/src" use="true"
                   windowtitle="${project.name}"
                   doctitle="${project.name}" 
-                  packagenames="com.kms.katalon.core.webservice.keyword"
-                >
+				  packagenames="**.*">
                   <link packages="java.,org.xml.,javax.,org.xml."
                     href="http://download.oracle.com/javase/6/docs/api" />
                   <link packages="org.apache.tools.ant." 
