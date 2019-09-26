@@ -39,7 +39,6 @@ public class MouseOverKeyword extends WebUIAbstractKeyword {
         mouseOver(to,flowControl)
     }
 
-    @CompileStatic
     public void mouseOver(TestObject to, FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
