@@ -1098,7 +1098,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
         try {
-            boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled() && analyticsSettingStore.isAutoSubmit();
+            boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled();
             chkAPIKey.setSelection(enableApiKey);
             getApiKey();
         } catch (IOException e) {

@@ -65,8 +65,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button enableAnalyticsIntegration;
 
-    private Button cbxAutoSubmit, cbxAttachScreenshot, cbxAttachCaptureVideo;
-
     private Text txtServerUrl, txtEmail, txtOrganization;
 
     private Label lblStatus;
@@ -134,7 +132,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         createAuthenticationGroup();
         createSelectGroup();
-        createTestResultGroup();
 
         addListeners();
         initialize();
@@ -222,34 +219,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         lblStatusAccessProject = new Label(compConnect, SWT.NONE);
         lblStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         lblStatusAccessProject.setForeground(ColorUtil.getTextErrorColor());
-    }
-
-    private void createTestResultGroup() {
-        Group grpTestResult = new Group(mainComposite, SWT.NONE);
-        grpTestResult.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glGrpTestResult = new GridLayout(1, false);
-        glGrpTestResult.horizontalSpacing = 15;
-        grpTestResult.setLayout(glGrpTestResult);
-        grpTestResult.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_GROUP);
-
-        cbxAutoSubmit = new Button(grpTestResult, SWT.CHECK);
-        cbxAutoSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbxAutoSubmit.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_AUTO_SUBMIT);
-        cbxAutoSubmit.setEnabled(false);
-
-//        Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
-//        GridLayout glGrpAttach = new GridLayout(1, false);
-//        glGrpAttach.marginLeft = 15;
-//        attachComposite.setLayout(glGrpAttach);
-//        attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-//        cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
-//        cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-//        cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
-//
-//        cbxAttachCaptureVideo = new Button(attachComposite, SWT.CHECK);
-//        cbxAttachCaptureVideo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-//        cbxAttachCaptureVideo
-//                .setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_CAPTURED_VIDEO);
     }
 
     @Override
@@ -357,9 +326,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             txtEmail.setText(email);
             txtServerUrl.setText(serverUrl);
             txtOrganization.setText(analyticsSettingStore.getOrganization().getName());
-            cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
-//            cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
-//            cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
             
             selectProjectFromConfig = analyticsSettingStore.getProject();
             selectTeamFromConfig = analyticsSettingStore.getTeam();
@@ -382,9 +348,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(
                             () -> {
-                                cbbTeams.setEnabled(false);
-                                cbbProjects.setEnabled(false);
-                                btnConnect.setEnabled(false);
+                            	enableObject(false);
                                 setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
                             });
                     UISynchronizeService.syncExec(() -> {
@@ -413,9 +377,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         } catch (Exception e) {
                             LoggerSingleton.logError(e);
                         }
-                        cbbTeams.setEnabled(true);
-                        cbbProjects.setEnabled(true);
-                        btnConnect.setEnabled(true);
+                        enableObject(true);
                     });
                 });
             }
@@ -495,9 +457,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         } else {
             btnCreate.setEnabled(false);
         }
-        cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
-//        cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
-//        cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
     }
 
     private boolean isIntegratedSuccessfully() {
@@ -520,10 +479,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     analyticsSettingStore.setProject(projects.get(cbbProjects.getSelectionIndex()));
                 }
             }
-            analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
-//            analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
-            analyticsSettingStore.setAttachLog(enableAnalyticsIntegration.getSelection());
-//            analyticsSettingStore.setAttachCapturedVideos(cbxAttachCaptureVideo.getSelection());
 
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
             eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
@@ -635,7 +590,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     if (createdProject != null) {
                         cbbProjects.setEnabled(false);
                         Executors.newFixedThreadPool(1).submit(() -> {
-                            UISynchronizeService.syncExec(() -> setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false));
+                            UISynchronizeService.syncExec(() -> setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS, false));
                             UISynchronizeService.syncExec(() -> {
                                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
                                 getProject(serverUrl, teams.get(cbbTeams.getSelectionIndex()), tokenInfo);
@@ -656,39 +611,10 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
             }
         });
-
-        cbxAutoSubmit.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-//                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
-//                cbxAttachCaptureVideo.setSelection(cbxAutoSubmit.getSelection());
-            }
-        });
-
-//        cbxAttachScreenshot.addSelectionListener(new SelectionAdapter() {
-//            @Override
-//            public void widgetSelected(SelectionEvent e) {
-//                if (cbxAttachScreenshot.getSelection()) {
-//                    cbxAutoSubmit.setSelection(true);
-//                }
-//            }
-//        });
-//
-//        cbxAttachCaptureVideo.addSelectionListener(new SelectionAdapter() {
-//            @Override
-//            public void widgetSelected(SelectionEvent e) {
-//                if (cbxAttachCaptureVideo.getSelection()) {
-//                    cbxAutoSubmit.setSelection(true);
-//                }
-//            }
-//        });
-
     }
     
     private void connect() {
-        cbbTeams.setEnabled(false);
-        cbbProjects.setEnabled(false);
-        btnCreate.setEnabled(false);
+    	enableObject(false);
 
         cbbTeams.setItems();
         cbbProjects.setItems();
@@ -722,11 +648,16 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                             ComposerAnalyticsStringConstants.WARN,
                             ComposerIntegrationAnalyticsMessageConstants.REPORT_WARNING_MSG_NO_TEAM);
                 }
-                cbbTeams.setEnabled(true);
-                cbbProjects.setEnabled(true);
-                btnCreate.setEnabled(true);
+                enableObject(true);
             });
          });
+    }
+    
+    private void enableObject(boolean isEnable) {
+        cbbTeams.setEnabled(isEnable);
+        cbbProjects.setEnabled(isEnable);
+        btnConnect.setEnabled(isEnable);
+        btnCreate.setEnabled(isEnable);
     }
 
     private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
