@@ -50,7 +50,7 @@ public class WindowsDriverFactory {
             throws SeleniumException, IOException, URISyntaxException {
         Map<String, Object> userConfigProperties = RunConfiguration.getDriverPreferencesProperties("Windows");
         if (userConfigProperties == null) {
-            userConfigProperties = new HashMap<>();
+            userConfigProperties = new HashMap<String, Object>();
         }
 
         String remoteAddressURLAsString = (String) userConfigProperties.getOrDefault(WIN_APP_DRIVER_PROPERTY,
