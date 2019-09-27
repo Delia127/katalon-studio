@@ -30,6 +30,8 @@ public enum WindowsAction implements IWindowsAction {
     private boolean hasElement = false;
 
     private boolean isUserInputAction = true;
+    
+    private boolean isCanceled = false;
 
     private WindowsAction(String mappedKeywordMethod) {
         this(mappedKeywordMethod, "");
@@ -99,5 +101,15 @@ public enum WindowsAction implements IWindowsAction {
 
     public String getReadableName() {
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(getName())), " ");
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return isCanceled;
+    }
+
+    @Override
+    public void setCanceled(boolean isCanceled) {
+        this.isCanceled = isCanceled;
     }
 }

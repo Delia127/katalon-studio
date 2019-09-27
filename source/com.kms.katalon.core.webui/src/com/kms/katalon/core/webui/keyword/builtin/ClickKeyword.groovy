@@ -41,6 +41,7 @@ public class ClickKeyword extends WebUIAbstractKeyword {
         click(to,flowControl)
     }
 
+    @CompileStatic
     public void click(TestObject to, FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
