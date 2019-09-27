@@ -29,6 +29,8 @@ public class TestArtifactScriptRefactor {
 
     private FolderType parentType;
 
+    private EntityType entityType;
+
     private String entityId;
 
     private boolean hasRightBracket;
@@ -41,12 +43,18 @@ public class TestArtifactScriptRefactor {
 
     public TestArtifactScriptRefactor(FolderType parentType, String entityId, boolean hasRightBracket,
             boolean hasRightQuote, boolean hasRightDoubleQuote) {
-        this(parentType, entityId, hasRightBracket, hasRightQuote, hasRightDoubleQuote, false);
+        this(parentType, null, entityId, hasRightBracket, hasRightQuote, hasRightDoubleQuote, false);
     }
 
     public TestArtifactScriptRefactor(FolderType parentType, String entityId, boolean hasRightBracket,
             boolean hasRightQuote, boolean hasRightDoubleQuote, boolean isFolder) {
+        this(parentType, null, entityId, hasRightBracket, hasRightQuote, hasRightDoubleQuote, false);
+    }
+
+    public TestArtifactScriptRefactor(FolderType parentType, EntityType entityType, String entityId,
+            boolean hasRightBracket, boolean hasRightQuote, boolean hasRightDoubleQuote, boolean isFolder) {
         this.parentType = parentType;
+        this.entityType = entityType;
         this.entityId = entityId;
         this.hasRightBracket = hasRightBracket;
         this.hasRightQuote = hasRightQuote;
@@ -62,7 +70,25 @@ public class TestArtifactScriptRefactor {
         return entityId;
     }
 
+    private String getReferencePrefixByEntityType() {
+        if (entityType == null) {
+            return StringUtils.EMPTY;
+        }
+        switch (entityType) {
+            case WEBELEMENT:
+                return "findTestObject";
+            case WINDOWSELEMENT:
+                return "findWindowsObject";
+            default:
+                return StringUtils.EMPTY;
+        }
+    }
+
     private String getReferencePrefix() {
+        String prefix = getReferencePrefixByEntityType();
+        if (!prefix.isEmpty()) {
+            return prefix;
+        }
         switch (parentType) {
             case DATAFILE:
                 return "findTestData";
@@ -180,6 +206,10 @@ public class TestArtifactScriptRefactor {
         return referrers;
     }
 
+    public List<IFile> findReferrersInScripts(ProjectEntity projectEntity) throws IOException, CoreException {
+        return findReferrers(GroovyUtil.getAllScriptFiles(projectEntity));
+    }
+
     public List<IFile> findReferrersInTestCaseScripts(ProjectEntity projectEntity) throws IOException, CoreException {
         return findReferrers(GroovyUtil.getAllTestCaseScripts(projectEntity));
     }
@@ -219,7 +249,13 @@ public class TestArtifactScriptRefactor {
     }
 
     public static TestArtifactScriptRefactor createForTestObjectEntity(String testObjectId) {
-        return new TestArtifactScriptRefactor(FolderType.WEBELEMENT, testObjectId, false, true, true);
+        return new TestArtifactScriptRefactor(FolderType.WEBELEMENT, EntityType.WEBELEMENT, testObjectId, false, true,
+                true, false);
+    }
+
+    public static TestArtifactScriptRefactor createForWindowsObjectEntity(String testObjectId) {
+        return new TestArtifactScriptRefactor(FolderType.WEBELEMENT, EntityType.WINDOWSELEMENT, testObjectId, false,
+                true, true, false);
     }
 
     public static TestArtifactScriptRefactor createForCheckpointEntity(String checkpointId) {
@@ -229,5 +265,9 @@ public class TestArtifactScriptRefactor {
     public static TestArtifactScriptRefactor createForFolderEntity(FolderEntity folder) {
         return new TestArtifactScriptRefactor(folder.getFolderType(), folder.getIdForDisplay() + ENTITY_ID_SEPARATOR,
                 false, false, false, true);
+    }
+
+    public enum EntityType {
+        DATAFILE, TESTCASE, CHECKPOINT, WEBELEMENT, WINDOWSELEMENT
     }
 }

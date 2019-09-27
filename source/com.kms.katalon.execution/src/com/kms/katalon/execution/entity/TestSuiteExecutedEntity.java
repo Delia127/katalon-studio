@@ -17,6 +17,7 @@ import com.katalon.platform.api.extension.DynamicQueryingTestSuiteDescription;
 import com.kms.katalon.controller.FilterController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
@@ -237,7 +238,8 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         TestData testData = testDataUsedMap.get(testDataLink.getTestDataId());
 
         if (testData == null) {
-            testData = TestDataFactory.findTestDataForExternalBundleCaller(testDataLink.getTestDataId(), projectDir);
+//            testData = TestDataFactory.findTestDataForExternalBundleCaller(testDataLink.getTestDataId(), projectDir);
+        	testData = TestDataController.getInstance().getTestDataInstance(testDataLink.getTestDataId(), projectDir);
         }
 
         if (testData == null || testData.getRowNumbers() < 1) {
@@ -482,5 +484,10 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             }
         }
         return collectedInfo;
+    }
+
+    @Override
+    public Rerunable mergeWith(Rerunable rerunable) {
+        return this;
     }
 }

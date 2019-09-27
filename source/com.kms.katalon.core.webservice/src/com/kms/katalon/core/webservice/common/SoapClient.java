@@ -1,16 +1,15 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -24,7 +23,16 @@ import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.xml.sax.InputSource;
 
 import com.ibm.wsdl.BindingOperationImpl;
@@ -39,6 +47,7 @@ import com.ibm.wsdl.extensions.soap12.SOAP12BindingImpl;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
@@ -151,42 +160,56 @@ public class SoapClient extends BasicRequestor {
     @Override
     public ResponseObject send(RequestObject request)
             throws Exception {
+        HttpClientBuilder clientBuilder = HttpClients.custom();
+        
+        clientBuilder.disableRedirectHandling();
+        
+        clientBuilder.setConnectionManager(connectionManager);
+        clientBuilder.setConnectionManagerShared(true);
+        
         this.requestObject = request;
         parseWsdl();
         boolean isHttps = isHttps(request);
         if (isHttps) {
             SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            sc.init(getKeyManagers(), getTrustManagers(), null);
+            clientBuilder.setSSLContext(sc);
         }
 
-        URL oURL = new URL(endPoint);
-        Proxy proxy = request.getProxy() != null ? request.getProxy() : getProxy();
-        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
-        if (con instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
+        ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
+        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
+        if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
+            configureProxy(clientBuilder, proxyInfo);
         }
-        con.setRequestMethod(POST);
-        con.setDoOutput(true);
-        con.setRequestProperty(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
-        con.setRequestProperty(SOAP_ACTION, actionUri);
         
-        setHttpConnectionHeaders(con, request);
+//        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
+        if (StringUtils.defaultString(endPoint).toLowerCase().startsWith(HTTPS)) {
+            clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
+        }
+        HttpPost post = new HttpPost(endPoint);
+        post.addHeader(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
+        post.addHeader(SOAP_ACTION, actionUri);
+        
+        setHttpConnectionHeaders(post, request);
 
-        OutputStream reqStream = con.getOutputStream();
-        reqStream.write(request.getSoapBody().getBytes(StandardCharsets.UTF_8));
+        InputStreamEntity reqStream = new InputStreamEntity(
+                new ByteArrayInputStream(request.getSoapBody().getBytes(StandardCharsets.UTF_8)));
+        post.setEntity(reqStream);
+        
+        CloseableHttpClient httpClient = clientBuilder.build();
         
         long startTime = System.currentTimeMillis();
-        int statusCode = con.getResponseCode();
+        CloseableHttpResponse response = httpClient.execute(post);
+        int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         
-        long headerLength = WebServiceCommonHelper.calculateHeaderLength(con);
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(response);
         long contentDownloadTime = 0L;
         StringBuffer sb = new StringBuffer();
 
         char[] buffer = new char[1024];
         long bodyLength = 0L;
-        try (InputStream inputStream = (statusCode >= 400) ? con.getErrorStream() : con.getInputStream()) {
+        try (InputStream inputStream = response.getEntity().getContent()) {
             if (inputStream != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                 int len = 0;
@@ -222,7 +245,8 @@ public class SoapClient extends BasicRequestor {
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
-        setBodyContent(con, sb, responseObject);
+        setBodyContent(response, sb, responseObject);
+        
         boolean redirect = false;
         if (statusCode == HttpURLConnection.HTTP_MOVED_TEMP
             || statusCode == HttpURLConnection.HTTP_MOVED_PERM
@@ -231,7 +255,8 @@ public class SoapClient extends BasicRequestor {
         }
         
         if (redirect) {
-            String newUrl = con.getHeaderField("location");
+            Header locationHeader = response.getFirstHeader("location");
+            String newUrl = locationHeader != null ? locationHeader.getValue() : null;
             if (!StringUtils.isBlank(newUrl)) {
                 request.setRestUrl(newUrl);
                 request.setRedirectTimes(request.getRedirectTimes() + 1);
@@ -301,7 +326,14 @@ public class SoapClient extends BasicRequestor {
             return url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:");
         }
 
-        private InputStream load(String url) throws GeneralSecurityException, IOException, WebServiceException {
+        private InputStream load(String url) throws GeneralSecurityException, IOException, WebServiceException, URISyntaxException {
+            HttpClientBuilder clientBuilder = HttpClients.custom();
+            
+            clientBuilder.disableRedirectHandling();
+
+            clientBuilder.setConnectionManager(connectionManager);
+            clientBuilder.setConnectionManagerShared(true);
+            
             boolean isHttps = isHttps(url);
             if (isHttps) {
                 SSLContext sc = SSLContext.getInstance(SSL);
@@ -309,18 +341,25 @@ public class SoapClient extends BasicRequestor {
                 HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             }
 
-            URL oURL = new URL(url);
-            Proxy proxy = request.getProxy() != null ? request.getProxy() : getProxy();
-            HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
-            if (con instanceof HttpsURLConnection) {
-                ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
+            ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
+            Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
+            if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
+                configureProxy(clientBuilder, proxyInfo);
             }
-            con.setRequestMethod(GET);
-            con.setDoOutput(true);
+            
+            if (StringUtils.defaultString(url).toLowerCase().startsWith(HTTPS)) {
+                clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
+            }
+            HttpGet get = new HttpGet(url);
 
-            setHttpConnectionHeaders(con, requestObject);
+            setHttpConnectionHeaders(get, requestObject);
 
-            InputStream is = con.getInputStream();
+            CloseableHttpClient httpClient = clientBuilder.build();
+            CloseableHttpResponse response = httpClient.execute(get);
+            InputStream is = response.getEntity().getContent();
+            
+            IOUtils.closeQuietly(httpClient);
+            
             return is;
         }
 
