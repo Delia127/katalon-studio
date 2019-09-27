@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
-import com.kms.katalon.composer.integration.analytics.dialog.KatalonAnalyticsIntegrationDialog;
+import com.kms.katalon.composer.integration.analytics.dialog.KatalonTestOpsIntegrationDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 
@@ -35,7 +35,7 @@ public class KatalonAnalyticsIntegrationHandler {
 
     @Execute
     public void execute() {
-        KatalonAnalyticsIntegrationDialog quickStartDialog = new KatalonAnalyticsIntegrationDialog(Display.getCurrent().getActiveShell());
+        KatalonTestOpsIntegrationDialog quickStartDialog = new KatalonTestOpsIntegrationDialog(Display.getCurrent().getActiveShell());
         if (quickStartDialog.checkConnection()) {
              quickStartDialog.open();
         }
