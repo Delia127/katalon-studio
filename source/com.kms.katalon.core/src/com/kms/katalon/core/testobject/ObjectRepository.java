@@ -288,7 +288,7 @@ public class ObjectRepository {
 
             objectProperty.setName(propertyName);
             objectProperty.setCondition(propertyCondition);
-            objectProperty.setValue(propertyValue);
+            objectProperty.setValue(strSubtitutor.replace(propertyValue));
             objectProperty.setActive(isPropertySelected);
 
             // Check if this element is inside a frame
@@ -315,7 +315,7 @@ public class ObjectRepository {
 
             objectXpath.setName(propertyName);
             objectXpath.setCondition(propertyCondition);
-            objectXpath.setValue(propertyValue);
+            objectXpath.setValue(strSubtitutor.replace(propertyValue));
             objectXpath.setActive(isPropertySelected);
 
             // Check if this element is inside a frame
@@ -327,14 +327,6 @@ public class ObjectRepository {
             } else {
                 testObject.addXpath(objectXpath);
             }
-        }
-
-        if (testObject == null || variables == null || variables.isEmpty()) {
-            return testObject;
-        }
-        
-        for (TestObjectProperty objectProperty : testObject.getProperties()) {
-            objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue()));
         }
 
         return testObject;
