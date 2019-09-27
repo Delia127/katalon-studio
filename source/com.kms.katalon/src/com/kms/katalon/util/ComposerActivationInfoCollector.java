@@ -3,15 +3,12 @@ package com.kms.katalon.util;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
-import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.activation.ActivationService;
-import com.kms.katalon.activation.ActivationServiceConsumer;
 import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
 import com.kms.katalon.activation.dialog.SignupDialog;
@@ -19,12 +16,8 @@ import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.composer.components.impl.handler.CommandCaller;
-import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
-import com.kms.katalon.imp.wizard.RecommendPluginsDialog;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
@@ -54,21 +47,13 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             // Send anonymous info for the first time using
             Trackings.trackOpenFirstTime();
         }
-        ActivationService activationService = ActivationServiceConsumer.getServiceInstance();
-        if (activationService != null) {
-            boolean activated = activationService.checkActivation(Display.getCurrent().getActiveShell());
-            if (!activated) {
+        if (!isActivated) {
+            if (checkActivationDialog()) {
+                showFunctionsIntroductionForTheFirstTime();
+                // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
+                return true;
+            } else {
                 return false;
-            }
-        } else {
-            if (!isActivated) {
-                if (checkActivationDialog()) {
-                    showFunctionsIntroductionForTheFirstTime();
-                    // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
-                    return true;
-                } else {
-                    return false;
-                }
             }
         }
 
