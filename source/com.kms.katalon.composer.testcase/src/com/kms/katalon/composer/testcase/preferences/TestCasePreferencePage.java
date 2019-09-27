@@ -1,13 +1,5 @@
 package com.kms.katalon.composer.testcase.preferences;
 
-import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.defaultStore;
-import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.enableLineWrapping;
-import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.getMaximumLineWidth;
-import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.isLineWrappingEnabled;
-import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.setMaximumLineWidth;
-import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.updateStore;
-
-import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,28 +12,20 @@ import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
-import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
@@ -76,16 +60,9 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
 
     private Map<String, String> defaultKeywords;
 
-    private Text txtMaximumLineWidth;
-
-    private Button btnAllowLineWrapping;
-
-    private Composite cpsWrappingLineWidth;
-
     public TestCasePreferencePage() {
         setTitle(StringConstants.PREF_TITLE_TEST_CASE);
-        java.util.List<IKeywordContributor> keywordContributorList = KeywordContributorCollection
-                .getKeywordContributors();
+        java.util.List<IKeywordContributor> keywordContributorList = KeywordContributorCollection.getKeywordContributors();
         contributors = keywordContributorList.toArray(new IKeywordContributor[keywordContributorList.size()]);
     }
 
@@ -241,48 +218,10 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
         sashFormDefaultKeyword.setWeights(new int[] { 1, 1 });
 
         initializeValue(false);
+
         registerControlModifyListeners();
-        Group grpLineWrappingSettings = new Group(fieldEditorParent, SWT.NONE);
-        grpLineWrappingSettings.setText(StringConstants.PREF_MANUAL_GRP_LINE_WRAPPING);
-        grpLineWrappingSettings.setLayout(new GridLayout(1, false));
-        grpLineWrappingSettings.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-        btnAllowLineWrapping = new Button(grpLineWrappingSettings, SWT.CHECK);
-        btnAllowLineWrapping.setText(StringConstants.PREF_MANUAL_BTN_ENABLE_LINE_WRAPPING);
-
-        cpsWrappingLineWidth = new Composite(grpLineWrappingSettings, SWT.NONE);
-        GridData gdCpsWrappingLineWidth = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdCpsWrappingLineWidth.horizontalIndent = 10;
-        cpsWrappingLineWidth.setLayoutData(gdCpsWrappingLineWidth);
-        GridLayout glCpsWrappingLineWidth = new GridLayout(2, false);
-        glCpsWrappingLineWidth.marginHeight = 0;
-        glCpsWrappingLineWidth.marginWidth = 0;
-        cpsWrappingLineWidth.setLayout(glCpsWrappingLineWidth);
-
-        Label lblNewLabel1 = new Label(cpsWrappingLineWidth, SWT.NONE);
-        lblNewLabel1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblNewLabel1.setText(StringConstants.PREF_MANUAL_LBL_LINE_WIDTH);
-
-        txtMaximumLineWidth = new Text(cpsWrappingLineWidth, SWT.BORDER);
-        GridData gdTxtMaximumLineWidth = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-        gdTxtMaximumLineWidth.widthHint = 50;
-        txtMaximumLineWidth.setLayoutData(gdTxtMaximumLineWidth);
-
-        updateInput();
-        registerControlModifyListenersforManual();
 
         return fieldEditorParent;
-    }
-
-    private void checkButtonAndNotifyToListener(Button btn, boolean selected) {
-        btn.setSelection(selected);
-        btn.notifyListeners(SWT.Selection, new Event());
-    }
-
-    private void updateInput() {
-        checkButtonAndNotifyToListener(btnAllowLineWrapping, isLineWrappingEnabled());
-
-        txtMaximumLineWidth.setText(Integer.toString(getMaximumLineWidth()));
     }
 
     private void createTestCaseDefaultViewGroup() {
@@ -336,8 +275,7 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                IKeywordContributor contributor = (IKeywordContributor) ((IStructuredSelection) listViewerKwType
-                        .getSelection()).getFirstElement();
+                IKeywordContributor contributor = (IKeywordContributor) ((IStructuredSelection) listViewerKwType.getSelection()).getFirstElement();
 
                 KeywordMethod method = (KeywordMethod) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
@@ -346,51 +284,6 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
         });
 
         registerControlModifyListenersForTestCaseStartView();
-    }
-
-    private void enableWrappingLineComposite(boolean enabled) {
-        ControlUtils.recursiveSetEnabled(cpsWrappingLineWidth, enabled);
-    }
-
-    private void registerControlModifyListenersforManual() {
-        btnAllowLineWrapping.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                enableWrappingLineComposite(btnAllowLineWrapping.getSelection());
-            }
-        });
-
-        // Prevent user enter invalid line width
-        txtMaximumLineWidth.addVerifyListener(new VerifyListener() {
-            @Override
-            public void verifyText(VerifyEvent e) {
-                final String oldS = txtMaximumLineWidth.getText();
-                final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
-                if (StringUtils.isEmpty(newS)) {
-                    return;
-                }
-                e.doit = isPositive(newS);
-            }
-
-            private boolean isPositive(String s) {
-                try {
-                    return Integer.parseInt(s) >= 1;
-                } catch (NumberFormatException ex) {
-                    return false;
-                }
-            }
-        });
-
-        txtMaximumLineWidth.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                String lineWidth = txtMaximumLineWidth.getText();
-                if (StringUtils.isEmpty(lineWidth)) {
-                    txtMaximumLineWidth.setText(Integer.toString(getMaximumLineWidth()));
-                }
-            }
-        });
     }
 
     private void registerControlModifyListenersForTestCaseStartView() {
@@ -421,19 +314,17 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
         String defaultTestCaseView = (isDefault)
                 ? preferenceStore.getDefaultString(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW)
                 : preferenceStore.getString(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW);
-        btnDefaultViewManual
-                .setSelection(StringUtils.equals(defaultTestCaseView, TestCaseCompositePart.MANUAL_TAB_TITLE));
-        btnDefaultViewScript
-                .setSelection(StringUtils.equals(defaultTestCaseView, TestCaseCompositePart.SCRIPT_TAB_TITLE));
+        btnDefaultViewManual.setSelection(StringUtils.equals(defaultTestCaseView,
+                TestCaseCompositePart.MANUAL_TAB_TITLE));
+        btnDefaultViewScript.setSelection(StringUtils.equals(defaultTestCaseView,
+                TestCaseCompositePart.SCRIPT_TAB_TITLE));
     }
 
     private void initDefaultKeywordType(boolean isDefault) {
         IPreferenceStore preferenceStore = getPreferenceStore();
-        String defaultKeywordTypeString = preferenceStore
-                .getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
+        String defaultKeywordTypeString = preferenceStore.getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
         if (isDefault) {
-            defaultKeywordTypeString = preferenceStore
-                    .getDefaultString(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
+            defaultKeywordTypeString = preferenceStore.getDefaultString(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
         }
         int selectedIndex = 0;
         String[] keywordTypeStringArray = new String[contributors.length];
@@ -466,10 +357,9 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
     }
 
     private void updateListViewKwName() throws Exception {
-        IKeywordContributor contributor = (IKeywordContributor) ((IStructuredSelection) listViewerKwType.getSelection())
-                .getFirstElement();
-        java.util.List<KeywordMethod> methods = KeywordController.getInstance()
-                .getBuiltInKeywords(contributor.getKeywordClass().getSimpleName(), true);
+        IKeywordContributor contributor = (IKeywordContributor) ((IStructuredSelection) listViewerKwType.getSelection()).getFirstElement();
+        java.util.List<KeywordMethod> methods = KeywordController.getInstance().getBuiltInKeywords(
+                contributor.getKeywordClass().getSimpleName(), true);
 
         listViewerKwName.setInput(methods);
         listViewerKwName.getList().deselectAll();
@@ -493,11 +383,11 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
     private void initTestCaseCallingValue(boolean isDefault) {
         resetAllRadioButtonStates();
 
-        String defaultVariableType = getPreferenceStore()
-                .getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE);
+        String defaultVariableType = getPreferenceStore().getString(
+                TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE);
         if (isDefault) {
-            defaultVariableType = getPreferenceStore()
-                    .getDefaultString(TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE);
+            defaultVariableType = getPreferenceStore().getDefaultString(
+                    TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE);
         }
 
         InputValueType valueType = InputValueType.valueOf(defaultVariableType);
@@ -510,11 +400,11 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
                 break;
         }
 
-        boolean generateDefaultValue = getPreferenceStore()
-                .getBoolean(TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE);
+        boolean generateDefaultValue = getPreferenceStore().getBoolean(
+                TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE);
         if (isDefault) {
-            generateDefaultValue = getPreferenceStore()
-                    .getDefaultBoolean(TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE);
+            generateDefaultValue = getPreferenceStore().getDefaultBoolean(
+                    TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE);
         }
 
         if (generateDefaultValue) {
@@ -525,11 +415,11 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
             btnExportVariable.setEnabled(true);
         }
 
-        boolean exportVariables = getPreferenceStore()
-                .getBoolean(TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE);
+        boolean exportVariables = getPreferenceStore().getBoolean(
+                TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE);
         if (isDefault) {
-            exportVariables = getPreferenceStore()
-                    .getDefaultBoolean(TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE);
+            exportVariables = getPreferenceStore().getDefaultBoolean(
+                    TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE);
         }
 
         if (exportVariables) {
@@ -554,16 +444,6 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
         }
         resetAllRadioButtonStates();
         initializeValue(true);
-
-        if (isNotAbleToUpdate()) {
-            return;
-        }
-        defaultStore();
-        updateInput();
-    }
-
-    private boolean isNotAbleToUpdate() {
-        return fieldEditorParent == null || fieldEditorParent.isDisposed();
     }
 
     @Override
@@ -619,27 +499,13 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
     }
 
     public boolean performOk() {
-        try {
-            boolean result = super.performOk();
-            if (result && isValid()) {
-                performApply();
-            }
-            if (isNotAbleToUpdate()) {
-                return true;
-            }
-
-            enableLineWrapping(btnAllowLineWrapping.getSelection());
-            setMaximumLineWidth(Integer.valueOf(txtMaximumLineWidth.getText()));
-
-            updateStore();
-            return true;
-        } catch (IOException e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PREF_MANUAL_MSG_UNABLE_TO_UPDATE, e.getMessage());
-            LoggerSingleton.logError(e);
-            return false;
+        boolean result = super.performOk();
+        if (result && isValid()) {
+            performApply();
         }
+        return true;
     }
-
+    
     @Override
     public boolean hasDocumentation() {
         return true;
