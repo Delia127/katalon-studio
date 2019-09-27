@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -63,7 +64,7 @@ public class MachineUtil {
      * because the user can use argument -Duser.name={thanhto} to make System.getProperty('user.name') returns 'thanhto'
      */
     public static String getOsDependentUsername() {
-        String result = System.getProperty("user.name");
+        String result = Optional.ofNullable(System.getProperty("user.name")).orElse("");
         try {
             String className = null;
             String methodName = "getUsername";
