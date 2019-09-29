@@ -193,7 +193,7 @@ public class SoapClient extends BasicRequestor {
         CloseableHttpClient httpClient = clientBuilder.build();
         
         long startTime = System.currentTimeMillis();
-        CloseableHttpResponse response = httpClient.execute(post);
+        CloseableHttpResponse response = httpClient.execute(post, getHttpContext());
         int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         
