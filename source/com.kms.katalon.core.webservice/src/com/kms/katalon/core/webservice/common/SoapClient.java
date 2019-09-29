@@ -169,13 +169,7 @@ public class SoapClient extends BasicRequestor {
         
         this.requestObject = request;
         parseWsdl();
-        boolean isHttps = isHttps(request);
-        if (isHttps) {
-            SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(getKeyManagers(), getTrustManagers(), null);
-            clientBuilder.setSSLContext(sc);
-        }
-
+       
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
         Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
