@@ -321,4 +321,16 @@ public abstract class BasicRequestor implements Requestor {
         httpContext.setAttribute(SOCKET_FACTORY_REGISTRY, reg);
         return httpContext;
     }
+    
+    protected boolean isRedirectResponse(int statusCode) {
+        switch (statusCode) {
+        case 301:
+        case 302:
+        case 303:
+        case 307:
+            return true;
+        }
+        
+        return false;
+    }
 }

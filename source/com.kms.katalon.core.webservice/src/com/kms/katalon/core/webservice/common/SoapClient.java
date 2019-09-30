@@ -241,20 +241,15 @@ public class SoapClient extends BasicRequestor {
         
         setBodyContent(response, sb, responseObject);
         
-        boolean redirect = false;
-        if (statusCode == HttpURLConnection.HTTP_MOVED_TEMP
-            || statusCode == HttpURLConnection.HTTP_MOVED_PERM
-            || statusCode == HttpURLConnection.HTTP_SEE_OTHER) {
-            redirect = true;
-        }
-        
-        if (redirect) {
-            Header locationHeader = response.getFirstHeader("location");
-            String newUrl = locationHeader != null ? locationHeader.getValue() : null;
+        if (isRedirectResponse(statusCode) && request.isFollowRedirects()) {
+            String newUrl = responseObject.getHeaderField("location");
+            if (StringUtils.isBlank(newUrl)) {
+                newUrl = responseObject.getHeaderField("Location");
+            }
             if (!StringUtils.isBlank(newUrl)) {
                 request.setRestUrl(newUrl);
                 request.setRedirectTimes(request.getRedirectTimes() + 1);
-                if (request.isFollowRedirects() && request.getRedirectTimes() <= MAX_REDIRECTS) {
+                if (request.getRedirectTimes() <= MAX_REDIRECTS) {
                     responseObject = send(request);
                 }
             }
