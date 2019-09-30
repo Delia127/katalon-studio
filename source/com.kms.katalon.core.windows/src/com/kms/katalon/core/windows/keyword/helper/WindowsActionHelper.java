@@ -206,7 +206,7 @@ public class WindowsActionHelper {
         if (windowsSession.getDesktopDriver() == null) {
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
-            WindowsDriver<WebElement> desktopDriver = new WindowsDriver<>(WindowsDriverFactory
+            WindowsDriver<WebElement> desktopDriver = new WindowsDriver<WebElement>(WindowsDriverFactory
                     .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxy()),
                     desiredCapabilities);
             windowsSession.setDesktopDriver(desktopDriver);
