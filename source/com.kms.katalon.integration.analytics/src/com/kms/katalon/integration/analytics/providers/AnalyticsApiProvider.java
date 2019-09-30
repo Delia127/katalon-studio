@@ -206,13 +206,16 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String machineKey, String accessToken)
-            throws AnalyticsApiExeception {
+    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String username, String sessionId,
+            String hostname, String machineKey, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("machineKey", machineKey + "");
             uriBuilder.setParameter("ksVersion", VersionUtil.getCurrentVersion().getVersion());
+            uriBuilder.setParameter("email", username);
+            uriBuilder.setParameter("sessionId", sessionId);
+            uriBuilder.setParameter("hostname", hostname);
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
