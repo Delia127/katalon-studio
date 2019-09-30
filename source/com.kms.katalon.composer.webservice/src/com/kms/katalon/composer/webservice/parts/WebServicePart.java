@@ -2676,7 +2676,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     public List<MPart> getChildParts() {
         return Arrays.asList(ui.getApiControlsPart(), ui.getHeadersPart(), ui.getAuthorizationPart(), ui.getBodyPart(),
                 ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart(),
-                ui.getVariableEditorPart());
+                ui.getVariableEditorPart(), ui.getConfigurationPart());
     }
 
     private class ToolBarForVerificationPart extends ToolBarForMPart {
