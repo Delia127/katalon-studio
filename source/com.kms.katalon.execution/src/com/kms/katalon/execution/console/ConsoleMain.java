@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -26,6 +29,7 @@ import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -137,6 +141,8 @@ public class ConsoleMain {
                     licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
                 } else if (environmentVariable != null) {
                     licenseFile = environmentVariable;
+                } else {
+                    licenseFile = readLicenseFromDefaultLocation();
                 }
                 if (!StringUtils.isBlank(licenseFile)) {
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
@@ -229,6 +235,11 @@ public class ConsoleMain {
         }
     }
     
+    private static String readLicenseFromDefaultLocation() {
+        File defaultLicenseFile = new File(ApplicationInfo.userDirLocation() + "/license/katalon.lic");
+        return defaultLicenseFile.exists() ? defaultLicenseFile.getAbsolutePath() : "";
+    }
+
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> reloadPluginsHandlerClass = katalonBundle
