@@ -170,9 +170,9 @@ public class RestfulClient extends BasicRequestor {
         if (httpClient == null || httpRequest == null) {
             return null;
         }
-
+        
         long startTime = System.currentTimeMillis();
-        CloseableHttpResponse response = httpClient.execute(httpRequest);
+        CloseableHttpResponse response = httpClient.execute(httpRequest, getHttpContext());
         int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         long contentDownloadTime = 0L;
