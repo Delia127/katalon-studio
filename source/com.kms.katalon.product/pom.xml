@@ -124,7 +124,7 @@
 						<configuration>
 							<target>
 								<copy file="${product.win32EclipsecFile}" 
-									tofile="${product.win64KataloncFile}"
+									tofile="${product.win32KataloncFile}"
 									overwrite="true" />
 								<copy file="${product.win64EclipsecFile}"
 									tofile="${product.win64KataloncFile}"
