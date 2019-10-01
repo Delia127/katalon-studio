@@ -56,9 +56,10 @@ public class WindowsElementLabelProvider extends TypeCheckedStyleTreeCellLabelPr
             }
         }
 
-        String optionalName = element.getOptinalName().split("(\n|(\r\n))")[0];
+        String optionalName = element.getOptinalName();
         if (StringUtils.isNotEmpty(optionalName)) {
-            styledString.append(" " + optionalName, StyledString.COUNTER_STYLER);
+            String firstLine = optionalName.split("(\n|(\r\n))")[0];
+            styledString.append(" " + firstLine, StyledString.COUNTER_STYLER);
         }
 
         cell.setText(styledString.getString());
