@@ -233,8 +233,8 @@ public class ActivationInfoCollector {
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
         String sessionId = UUID.randomUUID().toString();
         String hostname = getHostname();
-        String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, userName, sessionId,
-                hostname, token, machineId);
+        String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName, sessionId,
+                hostname, machineId);
         return license;
     }
     
