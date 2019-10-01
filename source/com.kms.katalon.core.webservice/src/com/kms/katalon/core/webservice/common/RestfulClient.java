@@ -62,7 +62,9 @@ public class RestfulClient extends BasicRequestor {
     private ResponseObject sendRequest(RequestObject request) throws Exception {
         HttpClientBuilder clientBuilder = HttpClients.custom();
         
-        clientBuilder.disableRedirectHandling();
+        if (!request.isFollowRedirects()) {
+            clientBuilder.disableRedirectHandling();
+        }
         
         clientBuilder.setConnectionManager(connectionManager);
         clientBuilder.setConnectionManagerShared(true);
@@ -95,21 +97,6 @@ public class RestfulClient extends BasicRequestor {
         setHttpConnectionHeaders(httpRequest, request);
         
         ResponseObject responseObject = response(httpClient, httpRequest);
-        int statusCode = responseObject.getStatusCode();
-        
-        if (isRedirectResponse(statusCode) && request.isFollowRedirects()) {
-            String newUrl = responseObject.getHeaderField("location");
-            if (StringUtils.isBlank(newUrl)) {
-                newUrl = responseObject.getHeaderField("Location");
-            }
-            if (!StringUtils.isBlank(newUrl)) {
-                request.setRestUrl(newUrl);
-                request.setRedirectTimes(request.getRedirectTimes() + 1);
-                if (request.getRedirectTimes() <= MAX_REDIRECTS) {
-                    responseObject = sendRequest(request);
-                }
-            }
-        }
         
         IOUtils.closeQuietly(httpClient);
 
