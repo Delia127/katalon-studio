@@ -170,10 +170,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                 String password = txtPassword.getText();
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(() -> {
-                        btnActivate.setEnabled(false);
-                        txtServerUrl.setEnabled(false);
-                        txtEmail.setEnabled(false);
-                        txtPassword.setEnabled(false);
+                        enableObject(false);
                         setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false);
                     });
                     UISynchronizeService.syncExec(() -> {
@@ -183,9 +180,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                             getOrganizations();
                             setProgressMessage("", false);
                         } else {
-                            btnActivate.setEnabled(true);
-                            txtEmail.setEnabled(true);
-                            txtPassword.setEnabled(true);
+                            enableObject(true);
                             setProgressMessage(errorMessage.toString(), true);
                         }
                     });
@@ -209,6 +204,13 @@ public class ActivationDialogV2 extends AbstractDialog {
         });
     }
 
+    private void enableObject(boolean isEnable) {
+        btnActivate.setEnabled(isEnable);
+        txtServerUrl.setEnabled(isEnable);
+        txtEmail.setEnabled(isEnable);
+        txtPassword.setEnabled(isEnable);
+    }
+
     private void save(int index) {
         AnalyticsOrganization organization = organizations.get(index);
         String email = txtEmail.getText();
@@ -223,9 +225,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     close();
                     Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {
-                	txtEmail.setEnabled(true);
-                    txtPassword.setEnabled(true);
-                    btnActivate.setEnabled(true);
+                    enableObject(true);
                     btnSave.setEnabled(false);
                     LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
                 }
@@ -269,9 +269,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                             MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR,
                             new String[] { "OK" }, 0);
                     if (dialog.open() == Dialog.OK) {
-                        txtEmail.setEnabled(true);
-                        txtPassword.setEnabled(true);
-                        btnActivate.setEnabled(true);
+                        enableObject(true);
                         btnSave.setEnabled(false);
                     }
                 }
@@ -303,7 +301,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     @Override
     protected void setInput() {
-    	txtServerUrl.setText(ApplicationInfo.getTestOpsServer());
+        txtServerUrl.setText(ApplicationInfo.getTestOpsServer());
         btnActivate.setEnabled(validateInput());
     }
 
