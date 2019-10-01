@@ -193,7 +193,7 @@ public class ApplicationInfo {
     public static String getTestOpsServer() {
         String server = getAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
         if (server == null) {
-        	server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+            server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
         }
         if (server == null) {
             server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
