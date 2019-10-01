@@ -184,6 +184,11 @@ public class ActivationInfoCollector {
         return host;
     }
 
+    public static License activate(String serverUrl, String userName, String password, String machineId, StringBuilder errorMessage) {
+        ApplicationInfo.setTestOpsServer(serverUrl);
+        return activate(userName, password, machineId, errorMessage);
+    }
+
     public static License activate(String userName, String password, String machineId, StringBuilder errorMessage) {
         try {
             String userInfo = collectActivationInfo(userName, password);

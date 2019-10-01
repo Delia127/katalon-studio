@@ -145,6 +145,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String EMAIL;
 
+    public static String SERVER_URL;
+
     public static String LEVEL;
 
     public static String TIME;

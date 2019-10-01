@@ -55,6 +55,8 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     public static final int REQUEST_OFFLINE_CODE = 1002;
 
+    private Text txtServerUrl;
+
     private Text txtEmail;
 
     private Text txtPassword;
@@ -163,18 +165,20 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                String serverUrl = txtServerUrl.getText();
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(() -> {
                         btnActivate.setEnabled(false);
+                        txtServerUrl.setEnabled(false);
                         txtEmail.setEnabled(false);
                         txtPassword.setEnabled(false);
                         setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false);
                     });
                     UISynchronizeService.syncExec(() -> {
                         StringBuilder errorMessage = new StringBuilder();
-                        license = ActivationInfoCollector.activate(username, password, machineId, errorMessage);
+                        license = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
                         if (license != null) {
                             getOrganizations();
                             setProgressMessage("", false);
@@ -299,6 +303,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     @Override
     protected void setInput() {
+    	txtServerUrl.setText(ApplicationInfo.getTestOpsServer());
         btnActivate.setEnabled(validateInput());
     }
 
@@ -328,6 +333,13 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         GridData gdBtn = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
         gdBtn.widthHint = 100;
+
+        Label lblServerUrl = new Label(contentComposite, SWT.NONE);
+        lblServerUrl.setLayoutData(gdLabel);
+        lblServerUrl.setText(StringConstants.SERVER_URL);
+
+        txtServerUrl = new Text(contentComposite, SWT.BORDER);
+        txtServerUrl.setLayoutData(gdText);
 
         Label lblEmail = new Label(contentComposite, SWT.NONE);
         lblEmail.setLayoutData(gdLabel);

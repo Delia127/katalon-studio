@@ -41,8 +41,6 @@ public class ApplicationInfo {
     
     private static final String PROFILE_PROPERTY_KEY = "katalonProfile";
 
-    private static final String KATALON_ANALYTICS_SERVER = "testOps.serverUrl";
-
     private static Properties aboutMappingsProperties;
 
     private static Properties appProperties;
@@ -188,8 +186,15 @@ public class ApplicationInfo {
         }
     }
 
+    public static void setTestOpsServer(String serverUrl) {
+        setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, serverUrl, true);
+    }
+
     public static String getTestOpsServer() {
-        String server = System.getProperty(KATALON_ANALYTICS_SERVER);
+        String server = getAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+        if (server == null) {
+        	server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+        }
         if (server == null) {
             server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
         }
