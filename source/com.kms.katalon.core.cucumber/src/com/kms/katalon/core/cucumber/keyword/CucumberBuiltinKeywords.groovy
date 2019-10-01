@@ -18,6 +18,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.model.RunningMode
 import com.kms.katalon.core.util.internal.PathUtil
 
+import cucumber.api.CucumberOptions
 import cucumber.api.cli.Main;
 import groovy.transform.CompileStatic
 
@@ -85,6 +86,49 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
         }, flowControl, "Keyword runFeatureFile was failed");
     }
 
+    @Keyword
+    public static CucumberRunnerResult runFeatureFileWithOptions(String relativeFilePath, CucumberOptions cucumberOptions, FailureHandling flowControl) {
+        return KeywordMain.runKeyword({
+            if (StringUtils.isEmpty(relativeFilePath)) {
+                throw new IllegalArgumentException("featureRelativeFilePath param must not be null or empty")
+            }
+            String reportDir = RunConfiguration.getReportFolder() + "/cucumber_report/" + System.currentTimeMillis()
+            String projectDir = RunConfiguration.getProjectDir()
+            RunningMode runningMode = RunConfiguration.getRunningMode()
+
+            logger.logInfo(
+                MessageFormat.format("Starting run keyword runFeatureFile: ''{0}'' and extract report to folder: ''{1}''...",
+                    relativeFilePath, reportDir))
+            String[] argv = [
+                "-g",
+                "",
+                projectDir + "/" + relativeFilePath,
+                "--strict",
+//                "--plugin",
+//                "pretty",
+                "--plugin",
+                "html:" + reportDir + "/html",
+                "--plugin",
+                "json:" + reportDir + "/cucumber.json",
+                "--plugin",
+                "junit:"+ reportDir + "/cucumber.xml",
+                "--plugin",
+                CucumberReporter.class.getName()
+            ]
+            if (runningMode == RunningMode.CONSOLE) {
+                argv = argv + ["--monochrome"]
+            }
+            boolean runSuccess = Main.run(argv, CucumberBuiltinKeywords.class.getClassLoader()) == 0;
+            CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(
+                runSuccess ? 'passed' : 'failed', reportDir)
+            if (runSuccess) {
+                logger.logPassed(MessageFormat.format("Feature file: ''{0}'' was passed", relativeFilePath));
+            } else {
+                KeywordMain.stepFailed(MessageFormat.format("Feature file ''{0}'' was failed", relativeFilePath), flowControl)
+            }
+            return cucumberResult;
+        }, flowControl, "Keyword runFeatureFile was failed");
+    }
     /**
      * Runs the given Feature file with <code>featureId</code> by invoking
      * {@link cucumber.api.cli.Main#run(String[], ClassLoader)}
@@ -99,6 +143,11 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
     @Keyword
     public static boolean runFeatureFile(String relativeFilePath) {
         return runFeatureFile(relativeFilePath, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    @Keyword
+    public static boolean runFeatureFileWithOptions(String relativeFilePath, CucumberOptions cucumberOptions) {
+        return runFeatureFileWithOptions(relativeFilePath, cucumberOptions, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -156,6 +205,48 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             return cucumberResult;
         }, flowControl, "Keyword runFeatureFolder was failed");
     }
+    
+    @Keyword
+    public static boolean runFeatureFolderWithOptions(String folderRelativePath, CucumberOptions cucumberOptions, FailureHandling flowControl) {
+        return KeywordMain.runKeyword({
+            if (StringUtils.isEmpty(folderRelativePath)) {
+                throw new IllegalArgumentException("folderRelativePath param must not be null")
+            }
+            String reportDir = RunConfiguration.getReportFolder() + "/cucumber_report/" + System.currentTimeMillis()
+            String projectDir = RunConfiguration.getProjectDir()
+            RunningMode runningMode = RunConfiguration.getRunningMode()
+            logger.logInfo(
+                MessageFormat.format("Starting run keyword runFeatureFolder: ''{0}'' and extract report to folder: ''{1}''...",
+                    folderRelativePath, reportDir))
+            String[] argv = [
+                "-g",
+                "",
+                projectDir + "/" + folderRelativePath,
+                "--strict",
+                "--plugin",
+                "pretty",
+                "--plugin",
+                "html:" + reportDir + "/html",
+                "--plugin",
+                "json:" + reportDir + "/cucumber.json",
+                "--plugin",
+                "junit:"+ reportDir + "/cucumber.xml",
+            ]
+            if (runningMode == RunningMode.CONSOLE) {
+                argv = argv + ["--monochrome"]
+            }
+
+            boolean runSuccess = Main.run(argv, CucumberBuiltinKeywords.class.getClassLoader()) == 0;
+            CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(
+                runSuccess ? 'passed' : 'failed', reportDir)
+            if (runSuccess) {
+                logger.logPassed(MessageFormat.format("All feature files in ''{0}'' were passed", folderRelativePath));
+            } else {
+                KeywordMain.stepFailed(MessageFormat.format("Run feature folder ''{0}'' failed", folderRelativePath));
+            }
+            return cucumberResult;
+        }, flowControl, "Keyword runFeatureFolder was failed");
+    }
 
     /**
      * Runs the given Feature folder and its nested sub-folder with <code>folderRelativePath</code>
@@ -170,6 +261,11 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
     @Keyword
     public static boolean runFeatureFolder(String folderRelativePath) {
         return runFeatureFolder(folderRelativePath, RunConfiguration.getDefaultFailureHandling())
+    }
+    
+    @Keyword
+    public static boolean runFeatureFolderWithOptions(String folderRelativePath, CucumberOptions cucumberOptions) {
+        return runFeatureFolderWithOptions(folderRelativePath, cucumberOptions, RunConfiguration.getDefaultFailureHandling())
     }
 
     /**
