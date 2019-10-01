@@ -47,6 +47,7 @@ import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
@@ -112,11 +113,9 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
-            Properties props = System.getProperties();
-            String launcherName = props.getProperty("eclipse.launcher.name");
-            
-            if (!launcherName.equalsIgnoreCase("katalonc")) {
-                launcherName = launcherName.toLowerCase();
+            boolean isDevelopmentMode = Platform.inDebugMode();
+            boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
+            if (!isDevelopmentMode && !isRunningInKatalonC) {
                 String extension = OSUtil.getExecutableExtension();
                 String katalon = "katalon" + extension;
                 String katalonc = "katalonc" + extension;
