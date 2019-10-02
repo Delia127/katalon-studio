@@ -74,6 +74,9 @@ public interface IdConstants {
     // EventLog placeholder 
     public static final String EVENT_LOG_PLACEHOLDER_ID = "com.kms.katalon.placeholder.eventLog";
 
+    // ProblemView placeholder 
+    public static final String PROBLEM_VIEW_PLACEHOLDER_ID = "org.eclipse.ui.views.ProblemView";
+    
     // Explorer part content
     public static final String EXPLORER_PART_ID = "com.kms.katalon.composer.part.explorer";
 
