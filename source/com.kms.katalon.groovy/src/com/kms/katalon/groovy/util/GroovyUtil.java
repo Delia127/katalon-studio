@@ -93,6 +93,8 @@ public class GroovyUtil {
     
     private static final String TEST_LISTENERS_ROOT_FOLDER_NAME = "Test Listeners";
 
+    private static final String GLOBAL_VARIABLE_ROOT_FOLDER_NAME = "Profiles";
+
     private static final String GROOVY_NATURE = "org.eclipse.jdt.groovy.core.groovyNature";
 
     private static final String KEYWORD_LIB_FOLDER_NAME = "Libs";
@@ -704,6 +706,16 @@ public class GroovyUtil {
         return groovyProject.getFolder(TEST_LISTENERS_ROOT_FOLDER_NAME);
     }
 
+    public static IFolder getTestCaseSourceFolder(ProjectEntity project) {
+        IProject groovyProject = getGroovyProject(project);
+        return groovyProject.getFolder(TEST_CASE_ROOT_FOLDER_NAME);
+    }
+
+    public static IFolder getGlobalVariableSourceFolder(ProjectEntity project) {
+        IProject groovyProject = getGroovyProject(project);
+        return groovyProject.getFolder(GLOBAL_VARIABLE_ROOT_FOLDER_NAME);
+    }
+
     public static String getTestCaseIdByScriptPath(String scriptFilePath, ProjectEntity projectEntity) {
         String testCaseScriptFolderPath = (new File(scriptFilePath)).getParent();
 
@@ -981,29 +993,40 @@ public class GroovyUtil {
         }
     }
 
-    public static List<IFile> getAllScriptFiles(IFolder parentFolder) throws CoreException {
+    public static List<IFile> getAllFiles(IFolder parentFolder, String extension) throws CoreException {
         parentFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
-        List<IFile> listTestCaseFiles = new ArrayList<IFile>();
+        List<IFile> listFiles = new ArrayList<IFile>();
         for (IResource childResource : parentFolder.members()) {
             if (childResource instanceof IFile) {
-                if ("groovy".equals(childResource.getFileExtension())) {
-                    listTestCaseFiles.add((IFile) childResource);
+                if (extension.equals(childResource.getFileExtension())) {
+                    listFiles.add((IFile) childResource);
                 }
             } else if (childResource instanceof IFolder) {
-                listTestCaseFiles.addAll(getAllScriptFiles((IFolder) childResource));
+                listFiles.addAll(getAllFiles((IFolder) childResource, extension));
             }
         }
-        return listTestCaseFiles;
+        return listFiles;
+    }
+
+    public static List<IFile> getAllScriptFiles(IFolder parentFolder) throws CoreException {
+        return getAllFiles(parentFolder, "groovy");
+    }
+
+    public static List<IFile> getAllGlobalVariableFiles(ProjectEntity projectEntity) throws CoreException {
+        IFolder globalVariableRootFolder = getGlobalVariableSourceFolder(projectEntity);
+        return getAllFiles(globalVariableRootFolder, "glbl");
+    }
+
+    public static List<IFile> getAllTestCaseFiles(ProjectEntity projectEntity) throws CoreException {
+        IFolder testCaseRootFolder = getTestCaseSourceFolder(projectEntity);
+        return getAllFiles(testCaseRootFolder, "tc");
     }
 
     public static List<IFile> getAllScriptFiles(ProjectEntity projectEntity) throws CoreException {
         List<IFile> scriptFiles = new ArrayList<>();
-        IFolder testCaseRootFolder = GroovyUtil.getTestCaseScriptSourceFolder(projectEntity);
-        scriptFiles.addAll(getAllScriptFiles(testCaseRootFolder));
-        IFolder customKeywordRootFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
-        scriptFiles.addAll(getAllScriptFiles(customKeywordRootFolder));
-        IFolder testListenersRootFolder = GroovyUtil.getTestListenerSourceFolder(projectEntity);
-        scriptFiles.addAll(getAllScriptFiles(testListenersRootFolder));
+        scriptFiles.addAll(getAllTestCaseScripts(projectEntity));
+        scriptFiles.addAll(getAllCustomKeywordsScripts(projectEntity));
+        scriptFiles.addAll(getAllTestListenerScripts(projectEntity));
         return scriptFiles;
     }
 
@@ -1015,6 +1038,11 @@ public class GroovyUtil {
     public static List<IFile> getAllCustomKeywordsScripts(ProjectEntity projectEntity) throws CoreException {
         IFolder customKeywordRootFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
         return getAllScriptFiles(customKeywordRootFolder);
+    }
+
+    public static List<IFile> getAllTestListenerScripts(ProjectEntity projectEntity) throws CoreException {
+        IFolder testListenersRootFolder = GroovyUtil.getTestListenerSourceFolder(projectEntity);
+        return getAllScriptFiles(testListenersRootFolder);
     }
 
     private static void createFilters(IProject groovyProject) throws CoreException {

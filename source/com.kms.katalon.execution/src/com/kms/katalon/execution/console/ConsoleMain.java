@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -48,6 +51,7 @@ import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
@@ -118,18 +122,16 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
-            Properties props = System.getProperties();
-            String launcherName = props.getProperty("eclipse.launcher.name");
-
-            if (!launcherName.equalsIgnoreCase("katalonc")) {
-                launcherName = launcherName.toLowerCase();
-                String extension = OSUtil.getExecutableExtension();
-                String katalon = "katalon" + extension;
-                String katalonc = "katalonc" + extension;
-                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
-                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
-            }
-            
+//            boolean isDevelopmentMode = Platform.inDebugMode();
+//            boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
+//            if (!isDevelopmentMode && !isRunningInKatalonC) {
+//                String extension = OSUtil.getExecutableExtension();
+//                String katalon = "katalon" + extension;
+//                String katalonc = "katalonc" + extension;
+//                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
+//                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+//            }
+ 
             LocalInformationUtil.printSystemInformation();
 
             ConsoleExecutor consoleExecutor = new ConsoleExecutor();
@@ -161,6 +163,8 @@ public class ConsoleMain {
                     licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
                 } else if (environmentVariable != null) {
                     licenseFile = environmentVariable;
+                } else {
+                    licenseFile = readLicenseFromDefaultLocation();
                 }
                 if (!StringUtils.isBlank(licenseFile)) {
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
@@ -277,6 +281,11 @@ public class ConsoleMain {
         }
     }
     
+    private static String readLicenseFromDefaultLocation() {
+        File defaultLicenseFile = new File(ApplicationInfo.userDirLocation() + "/license/katalon.lic");
+        return defaultLicenseFile.exists() ? defaultLicenseFile.getAbsolutePath() : "";
+    }
+
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> reloadPluginsHandlerClass = katalonBundle

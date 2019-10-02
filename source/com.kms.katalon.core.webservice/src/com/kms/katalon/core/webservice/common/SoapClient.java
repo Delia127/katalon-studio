@@ -162,7 +162,9 @@ public class SoapClient extends BasicRequestor {
             throws Exception {
         HttpClientBuilder clientBuilder = HttpClients.custom();
         
-        clientBuilder.disableRedirectHandling();
+        if (!request.isFollowRedirects()) {
+            clientBuilder.disableRedirectHandling();
+        }
         
         clientBuilder.setConnectionManager(connectionManager);
         clientBuilder.setConnectionManagerShared(true);
@@ -240,25 +242,6 @@ public class SoapClient extends BasicRequestor {
         responseObject.setContentDownloadTime(contentDownloadTime);
         
         setBodyContent(response, sb, responseObject);
-        
-        boolean redirect = false;
-        if (statusCode == HttpURLConnection.HTTP_MOVED_TEMP
-            || statusCode == HttpURLConnection.HTTP_MOVED_PERM
-            || statusCode == HttpURLConnection.HTTP_SEE_OTHER) {
-            redirect = true;
-        }
-        
-        if (redirect) {
-            Header locationHeader = response.getFirstHeader("location");
-            String newUrl = locationHeader != null ? locationHeader.getValue() : null;
-            if (!StringUtils.isBlank(newUrl)) {
-                request.setRestUrl(newUrl);
-                request.setRedirectTimes(request.getRedirectTimes() + 1);
-                if (request.isFollowRedirects() && request.getRedirectTimes() <= MAX_REDIRECTS) {
-                    responseObject = send(request);
-                }
-            }
-        }
         
         return responseObject;
     }
