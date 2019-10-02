@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -25,7 +28,9 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -47,6 +52,7 @@ import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
+import com.kms.katalon.license.models.License;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -95,6 +101,10 @@ public class ConsoleMain {
     public static final String BUILD_LABEL_OPTION = "buildLabel";
     
     public static final String BUILD_URL_OPTION = "buildURL";
+    
+    private static ScheduledFuture<?> checkLicenseTask;
+    
+    private static boolean stop;
 
     private ConsoleMain() {
         // hide constructor
@@ -110,7 +120,7 @@ public class ConsoleMain {
         try {
             Properties props = System.getProperties();
             String launcherName = props.getProperty("eclipse.launcher.name");
-            
+            launcherName = "katalonc";
             if (!launcherName.equalsIgnoreCase("katalonc")) {
                 launcherName = launcherName.toLowerCase();
                 String extension = OSUtil.getExecutableExtension();
@@ -141,6 +151,7 @@ public class ConsoleMain {
 
             LogUtil.logInfo("Activating...");
             
+            boolean isOnlineActivation = false;
             if (!ActivationInfoCollector.isActivated()) {
                 //read license file and activate
                 boolean isActivated = false;
@@ -160,6 +171,7 @@ public class ConsoleMain {
                         throw new InvalidLicenseException("Invalid license");
                     }
                 } else {
+                    isOnlineActivation = true;
                     isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue);
                 }
                 
@@ -223,6 +235,29 @@ public class ConsoleMain {
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
 
             consoleExecutor.execute(project, options);
+            
+            if (isOnlineActivation) {
+                Map<String, String> localStore = new HashMap<>();
+                localStore.put("apiKey", apiKeyValue);
+                checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+                    try {
+                        StringBuilder errorMessage = new StringBuilder();
+                        String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+                        License license = ActivationInfoCollector.parseLicense(jwsCode, errorMessage);
+                        
+                        if (license == null || ActivationInfoCollector.isExpired(license)) {
+                            stop = true;
+                            LogUtil.logInfo("Your license expired. Katalon Studio will automatically stop");
+                            checkLicenseTask.cancel(false);
+                        } else if (ActivationInfoCollector.isReachRenewTime(license)) {
+                            String apiKey = localStore.get("apiKey");
+                            ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey);
+                        }
+                    } catch(Exception e) {
+                        LogUtil.logError(e, "Error when closing Katalon Studio");
+                    }
+                }, 0, 5, TimeUnit.SECONDS);
+            }
 
             waitForExecutionToFinish(options);
 
@@ -396,7 +431,7 @@ public class ConsoleMain {
             } catch (InterruptedException e) {
                 // Thread interrupted, do nothing
             }
-        } while (LauncherManager.getInstance().isAnyLauncherRunning());
+        } while (!stop && LauncherManager.getInstance().isAnyLauncherRunning());
         printStatus();
     }
 

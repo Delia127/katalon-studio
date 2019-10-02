@@ -1,6 +1,9 @@
 package com.kms.katalon.license.constants;
 
 public class LicenseConstants {
+    
+    public static final String RENEW_TIME = "renewTime";
+    
 	public static final String EXPIRATION_DATE = "expirationDate";
 	
 	public static final String MACHINE_ID = "machineId";

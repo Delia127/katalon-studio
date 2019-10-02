@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
 import java.util.Map;
 
 import com.kms.katalon.crypto.LicenseHelper;
@@ -40,7 +41,13 @@ public class LicenseService {
     
     private License getLicenseFromClaims(Map<String, Claim> claims, String jws) throws IOException {
         License license = new License();
-        license.setExpirationDate(claims.get(LicenseConstants.EXPIRATION_DATE).asDate());
+        
+        long renewTime = claims.get(LicenseConstants.RENEW_TIME).asLong();
+        license.setRenewTime(new Date(renewTime));
+        
+        long expireDate = claims.get(LicenseConstants.EXPIRATION_DATE).asLong();
+        license.setExpirationDate(new Date(expireDate));
+        
         license.setMachineId(claims.get(LicenseConstants.MACHINE_ID).asString());
         Claim orgId =  claims.get(LicenseConstants.ORGANIZATION_ID);
         if (orgId != null) {

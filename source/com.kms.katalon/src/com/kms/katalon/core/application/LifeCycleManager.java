@@ -4,8 +4,6 @@ import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -28,7 +26,6 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
-import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -50,9 +47,6 @@ import com.kms.katalon.constants.GroovyTemplatePreferenceConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-import com.kms.katalon.tracking.core.TrackingManager;
-import com.kms.katalon.tracking.service.Trackings;
-import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
@@ -218,37 +212,6 @@ public class LifeCycleManager {
                         PlatformUI.getWorkbench().close();
                     }
                 }
-            }
-
-            private boolean checkActivation(final IEventBroker eventBroker) throws Exception {
-                // if (VersionUtil.isInternalBuild()) {
-                // return true;
-                // }
-                if (!(ComposerActivationInfoCollector.checkActivation())) {
-                    eventBroker.send(EventConstants.PROJECT_CLOSE, null);
-                    PlatformUI.getWorkbench().close();
-                    return false;
-                }
-
-                // Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                // .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
-                // RunningMode.GUI)));
-                // sendEventForTracking();
-                try {
-                    Trackings.trackOpenApplication(false, "gui");
-                } catch (Exception ignored) {
-
-                }
-
-                return true;
-            }
-
-            private void scheduleCollectingStatistics() {
-                int trackingTime = TrackingManager.getInstance().getTrackingTime();
-                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-                    Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(),
-                            !ActivationInfoCollector.isActivated(), "gui");
-                }, trackingTime, trackingTime, TimeUnit.SECONDS);
             }
         });
     }

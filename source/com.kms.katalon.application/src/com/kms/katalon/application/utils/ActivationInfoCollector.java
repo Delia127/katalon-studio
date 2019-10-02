@@ -1,13 +1,10 @@
 package com.kms.katalon.application.utils;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
-import java.security.GeneralSecurityException;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -22,14 +19,10 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
-import com.kms.katalon.feature.TestOpsFeatureActivator;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
-import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.feature.FeatureServiceConsumer;
-import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -145,7 +138,6 @@ public class ActivationInfoCollector {
 
         return Objects.hash(hostName);
     }
-
     private static String collectActivationInfo(String userName, String pass) {
         JsonObject traits = traitsWithAppInfo();
         traits.addProperty("password", pass);
@@ -210,7 +202,7 @@ public class ActivationInfoCollector {
         return license;
     }
     
-    private static License parseLicense(String jwtCode, StringBuilder errorMessage) {
+    public static License parseLicense(String jwtCode, StringBuilder errorMessage) {
         try {
             if (jwtCode != null && !jwtCode.isEmpty()) {
                 License license = LicenseService.getInstance().parseJws(jwtCode);
@@ -272,9 +264,14 @@ public class ActivationInfoCollector {
         }
     }
     
-    private static boolean isExpired(License license) {
+    public static boolean isExpired(License license) {
         Date currentDate = new Date();
         return currentDate.after(license.getExpirationDate());
+    }
+    
+    public static boolean isReachRenewTime(License license) {
+        Date currentDate = new Date();
+        return currentDate.after(license.getRenewTime());
     }
     
     private static void enableFeatures(License license) {
