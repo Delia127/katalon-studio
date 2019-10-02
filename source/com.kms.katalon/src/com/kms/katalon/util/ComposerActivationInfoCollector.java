@@ -3,6 +3,7 @@ package com.kms.katalon.util;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
+import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -18,8 +19,12 @@ import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.impl.handler.CommandCaller;  
+import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
+import com.kms.katalon.imp.wizard.RecommendPluginsDialog;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
