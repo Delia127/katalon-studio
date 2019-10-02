@@ -224,6 +224,24 @@ public class AnalyticsApiProvider {
             throw new AnalyticsApiExeception(e);
         }
     }
+    
+    public static void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,
+            String packageName, long orgId, String accessToken) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_RELEASE_LICENSE);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("machineKey", machineId);
+            uriBuilder.setParameter("ksVersion", ksVersion);
+            uriBuilder.setParameter("sessionId", sessionId);
+            uriBuilder.setParameter("package", packageName);
+            uriBuilder.setParameter("organizationId", String.valueOf(orgId));
+            HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            executeRequest(httpPost, Object.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
 
     public static void sendTrackingActivity(String serverUrl, String accessToken, AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
         try {

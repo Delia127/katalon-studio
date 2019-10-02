@@ -115,14 +115,14 @@ public class ConsoleMain {
             Properties props = System.getProperties();
             String launcherName = props.getProperty("eclipse.launcher.name");
             
-            if (!launcherName.equalsIgnoreCase("katalonc")) {
-                launcherName = launcherName.toLowerCase();
-                String extension = OSUtil.getExecutableExtension();
-                String katalon = "katalon" + extension;
-                String katalonc = "katalonc" + extension;
-                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
-                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
-            }
+//            if (!launcherName.equalsIgnoreCase("katalonc")) {
+//                launcherName = launcherName.toLowerCase();
+//                String extension = OSUtil.getExecutableExtension();
+//                String katalon = "katalon" + extension;
+//                String katalonc = "katalonc" + extension;
+//                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
+//                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+//            }
             
             LocalInformationUtil.printSystemInformation();
 
@@ -236,6 +236,7 @@ public class ConsoleMain {
             
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format("Execution completed. Exit code: {0}.", exitCode));
+            ActivationInfoCollector.releaseLicense();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());

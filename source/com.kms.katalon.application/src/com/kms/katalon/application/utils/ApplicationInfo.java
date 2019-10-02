@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Platform;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.logging.LogManager;
 import com.kms.katalon.logging.LogMode;
 import com.kms.katalon.logging.LogUtil;
