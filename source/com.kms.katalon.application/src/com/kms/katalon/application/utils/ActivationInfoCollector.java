@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +34,10 @@ public class ActivationInfoCollector {
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
     private static boolean activated = false;
+    
+    private static boolean isOfflineActivation;
+    
+    private static ScheduledFuture<?> checkLicenseTask;
 
     protected ActivationInfoCollector() {
     }
@@ -237,6 +244,7 @@ public class ActivationInfoCollector {
                 markActivatedLicenseCode(activationCode);
                 enableFeatures(license);
                 activated = true;
+                isOfflineActivation = true;
                 return activated;
             }
         } catch (Exception ex) {
@@ -325,5 +333,26 @@ public class ActivationInfoCollector {
             numbers = ArrayUtils.add(numbers, "0");
         }
         return StringUtils.join(ArrayUtils.subarray(numbers, 0, 3), ".");
+    }
+    
+    public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
+        if (!isOfflineActivation) {
+            checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+                try {
+                    StringBuilder errorMessage = new StringBuilder();
+                    String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+                    License license = ActivationInfoCollector.parseLicense(jwsCode, errorMessage);
+                    
+                    if (license == null || ActivationInfoCollector.isExpired(license)) {
+                        expiredHandler.run();
+                        checkLicenseTask.cancel(false);
+                    } else if (ActivationInfoCollector.isReachRenewTime(license)) {
+                        renewHandler.run();
+                    }
+                } catch(Exception e) {
+                    LogUtil.logError(e, "Error when closing Katalon Studio");
+                }
+            }, 0, 5, TimeUnit.SECONDS);
+        }
     }
 }

@@ -9,14 +9,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.activation.dialog.ExpiredLicenseDialog;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.license.models.License;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.core.TrackingManager;
 import com.kms.katalon.tracking.service.Trackings;
@@ -26,9 +23,9 @@ public class ApplicationStaupHandler {
     
     private static IEventBroker eventBroker;
     
-    private static ScheduledFuture<?> checkLicenseTask;
-    
     private static ScheduledFuture<?> closeAppTask;
+    
+    private static ExpiredLicenseDialog expiredDialog;
     
     public static boolean checkActivation() throws Exception {
         eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
@@ -47,7 +44,7 @@ public class ApplicationStaupHandler {
         // RunningMode.GUI)));
         // sendEventForTracking();
         
-//        scheduleCheckLicense();
+        scheduleCheckLicense();
         
         try {
             Trackings.trackOpenApplication(false, "gui");
@@ -67,26 +64,18 @@ public class ApplicationStaupHandler {
     }
     
     public static void scheduleCheckLicense() {
-        checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-            UISynchronizeService.syncExec(() -> {
-                try {
-                    StringBuilder errorMessage = new StringBuilder();
-                    String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-                    License license = ActivationInfoCollector.parseLicense(jwsCode, errorMessage);
-                    
-                    if (license == null || ActivationInfoCollector.isExpired(license)) {
+        ActivationInfoCollector.scheduleCheckLicense(
+                () -> {
+                    UISynchronizeService.syncExec(() -> {
                         closeKSAfter(30);
-                        ExpiredLicenseDialog dialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
-                        dialog.open();
+                        expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
+                        expiredDialog.open();
                         closeKS();
-                    } else if (ActivationInfoCollector.isReachRenewTime(license)) {
-                        ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
-                    }
-                } catch (Exception e) {
-                    LogUtil.logError(e, "Error when checking license");
-                }
-            });
-        }, 0, 5, TimeUnit.SECONDS);
+                    });        
+                }, 
+                () -> {
+                    ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+                });
     }
     
     public static void closeKSAfter(long seconds) {
@@ -94,6 +83,7 @@ public class ApplicationStaupHandler {
             try {
                 UISynchronizeService.syncExec(() -> {
                     closeKS();
+                    closeAppTask.cancel(false);
                 });
             } catch(Exception e) {
                 LogUtil.logError(e, "Error when closing Katalon Studio");
@@ -102,19 +92,8 @@ public class ApplicationStaupHandler {
     }
     
     public static void closeKS() {
-        UISynchronizeService.syncExec(() -> {
-            eventBroker.send(EventConstants.PROJECT_CLOSE, null);
-            PlatformUI.getWorkbench().close(); 
-            cleanupTask();
-        });
-    }
-    
-    private static void cleanupTask() {
-        if (checkLicenseTask != null) {
-            checkLicenseTask.cancel(false);
-        }
-        if (closeAppTask != null) {
-            closeAppTask.cancel(false);
-        }
+        expiredDialog.close();
+        eventBroker.send(EventConstants.PROJECT_CLOSE, null);
+        PlatformUI.getWorkbench().close(); 
     }
 }
