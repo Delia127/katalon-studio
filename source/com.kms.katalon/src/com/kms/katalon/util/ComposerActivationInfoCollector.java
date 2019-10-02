@@ -19,7 +19,7 @@ import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.composer.components.impl.handler.CommandCaller;  
+import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
 import com.kms.katalon.imp.wizard.RecommendPluginsDialog;

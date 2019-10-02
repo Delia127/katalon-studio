@@ -219,36 +219,36 @@ public class LifeCycleManager {
                     }
                 }
             }
-            
-            private boolean checkActivation(final IEventBroker eventBroker) throws Exception {  
-                // if (VersionUtil.isInternalBuild()) { 
-                // return true; 
-                // }    
-                if (!(ComposerActivationInfoCollector.checkActivation())) { 
-                    eventBroker.send(EventConstants.PROJECT_CLOSE, null);   
-                    PlatformUI.getWorkbench().close();  
-                    return false;   
-                }   
 
-                // Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector  
-                // .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,   
-                // RunningMode.GUI)));  
-                // sendEventForTracking();  
-                try {   
-                    Trackings.trackOpenApplication(false, "gui");   
-                } catch (Exception ignored) {   
+            private boolean checkActivation(final IEventBroker eventBroker) throws Exception {
+                // if (VersionUtil.isInternalBuild()) {
+                // return true;
+                // }
+                if (!(ComposerActivationInfoCollector.checkActivation())) {
+                    eventBroker.send(EventConstants.PROJECT_CLOSE, null);
+                    PlatformUI.getWorkbench().close();
+                    return false;
+                }
 
-                }   
+                // Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+                // .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
+                // RunningMode.GUI)));
+                // sendEventForTracking();
+                try {
+                    Trackings.trackOpenApplication(false, "gui");
+                } catch (Exception ignored) {
 
-                return true;    
-            }   
+                }
 
-            private void scheduleCollectingStatistics() {   
-                int trackingTime = TrackingManager.getInstance().getTrackingTime(); 
-                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> { 
-                    Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(),   
-                            !ActivationInfoCollector.isActivated(), "gui"); 
-                }, trackingTime, trackingTime, TimeUnit.SECONDS);   
+                return true;
+            }
+
+            private void scheduleCollectingStatistics() {
+                int trackingTime = TrackingManager.getInstance().getTrackingTime();
+                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+                    Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(),
+                            !ActivationInfoCollector.isActivated(), "gui");
+                }, trackingTime, trackingTime, TimeUnit.SECONDS);
             }
         });
     }
