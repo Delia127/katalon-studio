@@ -44,6 +44,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.license.models.License;
+import com.kms.katalon.license.models.OrganizationFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialogV2 extends AbstractDialog {
@@ -174,7 +175,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     });
                     UISynchronizeService.syncExec(() -> {
                         StringBuilder errorMessage = new StringBuilder();
-                        license = ActivationInfoCollector.activate(username, password, machineId, errorMessage);
+                        license = ActivationInfoCollector.activate(username, password, machineId, errorMessage, OrganizationFeature.KSE);
                         if (license != null) {
                             getOrganizations();
                             setProgressMessage("", false);

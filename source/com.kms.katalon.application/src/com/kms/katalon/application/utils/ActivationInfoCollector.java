@@ -26,6 +26,7 @@ import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
+import com.kms.katalon.license.models.OrganizationFeature;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -66,7 +67,7 @@ public class ActivationInfoCollector {
                     String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                     String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
                     String machineId = MachineUtil.getMachineId();
-                    license = activate(email, password, machineId, null);
+                    license = activate(email, password, machineId, null, OrganizationFeature.KSE);
                 }
                 
                 if (license != null) {
@@ -86,7 +87,7 @@ public class ActivationInfoCollector {
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey) {
         try {
             String machineId = MachineUtil.getMachineId();
-            License license = activate(null, apiKey, machineId, null);
+            License license = activate(null, apiKey, machineId, null, OrganizationFeature.ENGINE);
             
             if (license != null) {
                 enableFeatures(license);
@@ -128,7 +129,7 @@ public class ActivationInfoCollector {
 
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
             String machineId = MachineUtil.getMachineId();
-            License license = ActivationInfoCollector.activate(username, password, machineId, errorMessage);
+            License license = ActivationInfoCollector.activate(username, password, machineId, errorMessage, OrganizationFeature.KSE);
             return license != null;
         } catch (Exception ex) {
             LogUtil.logError(ex);
@@ -185,7 +186,7 @@ public class ActivationInfoCollector {
         return host;
     }
 
-    public static License activate(String userName, String password, String machineId, StringBuilder errorMessage) {
+    public static License activate(String userName, String password, String machineId, StringBuilder errorMessage, OrganizationFeature organizationFeature) {
         try {
             String userInfo = collectActivationInfo(userName, password);
             ServerAPICommunicationUtil.post("/segment/identify", userInfo);
@@ -199,7 +200,7 @@ public class ActivationInfoCollector {
         
         License license = null;
         try {
-            String jwtCode = getLicenseFromTestOps(userName, password, machineId);
+            String jwtCode = getLicenseFromTestOps(userName, password, machineId, organizationFeature);
             license = parseLicense(jwtCode, errorMessage);
         } catch (Exception ex) {
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
@@ -229,12 +230,12 @@ public class ActivationInfoCollector {
         return null;
     }
     
-    private static String getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
+    private static String getLicenseFromTestOps(String userName, String password, String machineId, OrganizationFeature organizationFeature) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
         String hostname = getHostname();
         String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName, sessionId,
-                hostname, machineId);
+                hostname, machineId, organizationFeature);
         return license;
     }
     

@@ -9,6 +9,7 @@ import com.kms.katalon.feature.TestOpsFeatureActivator;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.license.models.OrganizationFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
@@ -39,9 +40,9 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
 
     @Override
     public String getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
-            String machineId) throws Exception {
+            String machineId, OrganizationFeature organizationFeature) throws Exception {
         AnalyticsLicenseKey analyticsLicenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, username, sessionId,
-                hostname, machineId, token);
+                hostname, machineId, token, organizationFeature);
         if (analyticsLicenseKey.getValue() != null) {
             return analyticsLicenseKey.getValue();
         }

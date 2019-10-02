@@ -44,6 +44,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.license.models.OrganizationFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class SignupDialog extends AbstractDialog {
@@ -355,7 +356,7 @@ public class SignupDialog extends AbstractDialog {
         StringBuilder errorMessageBuilder = new StringBuilder();
         String machineId = MachineUtil.getMachineId();
         ActivationInfoCollector.activate(authenticationInfo.getEmail(), authenticationInfo.getPassword(), machineId,
-                errorMessageBuilder);
+                errorMessageBuilder, OrganizationFeature.KSE);
         if (errorMessageBuilder.length() > 0) {
             throw new ActivationErrorException(errorMessageBuilder.toString());
         }

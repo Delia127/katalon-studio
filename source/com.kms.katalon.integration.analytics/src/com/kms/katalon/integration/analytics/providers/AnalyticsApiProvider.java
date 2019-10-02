@@ -62,6 +62,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.license.models.OrganizationFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsApiProvider {
@@ -207,7 +208,7 @@ public class AnalyticsApiProvider {
     }
     
     public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String username, String sessionId,
-            String hostname, String machineKey, String accessToken) throws AnalyticsApiExeception {
+            String hostname, String machineKey, String accessToken, OrganizationFeature organizationFeature) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
             URIBuilder uriBuilder = new URIBuilder(uri);
@@ -216,6 +217,7 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("email", username);
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
+            uriBuilder.setParameter("package", organizationFeature.name());
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
