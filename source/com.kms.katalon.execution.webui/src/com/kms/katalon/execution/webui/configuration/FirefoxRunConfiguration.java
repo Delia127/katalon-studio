@@ -35,13 +35,12 @@ public class FirefoxRunConfiguration extends WebUiRunConfiguration {
         } catch (IOException ex) {
             LogUtil.printAndLogError(ex);
         }
-        ScopedPreferenceStore store = PreferenceStoreManager
-                .getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
+        ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
         boolean isUpdateDriverAllowed = store.getBoolean(WebUIConsoleOptionContributor.WEB_UI_AUTO_UPDATE_DRIVERS);
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
-            	WebDriverCleanerUtil.terminateGeckodriver();
+                WebDriverCleanerUtil.terminateGeckodriver();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.FIREFOX_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempGeckoDriverPath();

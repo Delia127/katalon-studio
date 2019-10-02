@@ -31,13 +31,12 @@ public class EdgeRunConfiguration extends WebUiRunConfiguration {
     
     private String buildEdgeDriverPath() {
         String driverPath = SeleniumWebDriverProvider.getEdgeDriverPath();
-        ScopedPreferenceStore store = PreferenceStoreManager
-                .getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
+        ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
         boolean isUpdateDriverAllowed = store.getBoolean(WebUIConsoleOptionContributor.WEB_UI_AUTO_UPDATE_DRIVERS);
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
-            	WebDriverCleanerUtil.terminateMicrosoftWebDriver();
+                WebDriverCleanerUtil.terminateMicrosoftWebDriver();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.EDGE_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempEdgeDriverPath();
@@ -47,7 +46,7 @@ public class EdgeRunConfiguration extends WebUiRunConfiguration {
             } catch (InterruptedException | IOException e) {
                 LogUtil.logError(e);
             }
-            LogUtil.printOutputLine("Edge driver is located at: "+ driverPath);
+            LogUtil.printOutputLine("Edge driver is located at: " + driverPath);
         } else {
             LogUtil.printOutputLine(String.format(
                     "Edge driver is located at default location: %s. In case your browser is updated to a newer version,"

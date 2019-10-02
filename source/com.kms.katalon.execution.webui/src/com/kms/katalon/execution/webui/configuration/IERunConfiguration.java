@@ -30,13 +30,12 @@ public class IERunConfiguration extends WebUiRunConfiguration {
     
     private String buildIEDriverPath() {
         String driverPath = SeleniumWebDriverProvider.getIEDriverPath();
-        ScopedPreferenceStore store = PreferenceStoreManager
-                .getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
+        ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
         boolean isUpdateDriverAllowed = store.getBoolean(WebUIConsoleOptionContributor.WEB_UI_AUTO_UPDATE_DRIVERS);
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
-            	WebDriverCleanerUtil.terminateIEDriverServer();
+                WebDriverCleanerUtil.terminateIEDriverServer();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.IE_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempIEDriverPath();
@@ -46,7 +45,7 @@ public class IERunConfiguration extends WebUiRunConfiguration {
             } catch (InterruptedException | IOException e) {
                 LogUtil.logError(e);
             }
-            LogUtil.printOutputLine("IEDriverServer is located at: "+ driverPath);
+            LogUtil.printOutputLine("IEDriverServer is located at: " + driverPath);
         } else {
             LogUtil.printOutputLine(String.format(
                     "IEDriverServer is located at default location: %s. In case your browser is updated to a newer version,"

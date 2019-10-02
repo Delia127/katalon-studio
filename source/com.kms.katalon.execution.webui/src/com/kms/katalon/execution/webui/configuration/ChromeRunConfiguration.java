@@ -34,13 +34,12 @@ public class ChromeRunConfiguration extends WebUiRunConfiguration {
 
     private String buildChromeDriverPath() {
         String driverPath = SeleniumWebDriverProvider.getChromeDriverPath();
-        ScopedPreferenceStore store = PreferenceStoreManager
-                .getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
+        ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
         boolean isUpdateDriverAllowed = store.getBoolean(WebUIConsoleOptionContributor.WEB_UI_AUTO_UPDATE_DRIVERS);
         if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
-            	WebDriverCleanerUtil.terminateChromedriver();
+                WebDriverCleanerUtil.terminateChromedriver();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.CHROME_DRIVER,
                         SeleniumWebDriverProvider.getTempDriverDirectory());
                 String tempDriverPath = SeleniumWebDriverProvider.getTempChromeDriverPath();
