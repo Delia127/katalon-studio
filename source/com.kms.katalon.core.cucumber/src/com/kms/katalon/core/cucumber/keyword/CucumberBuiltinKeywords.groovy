@@ -2,6 +2,8 @@ package com.kms.katalon.core.cucumber.keyword;
 
 import java.text.MessageFormat;
 
+import javax.swing.text.html.parser.TagStack
+
 import org.apache.commons.lang3.StringUtils
 import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
@@ -20,6 +22,7 @@ import com.kms.katalon.core.util.internal.PathUtil
 
 import cucumber.api.CucumberOptions
 import cucumber.api.cli.Main;
+import cucumber.runtime.snippets.Snippet
 import groovy.transform.CompileStatic
 
 public class CucumberBuiltinKeywords extends BuiltinKeywords {
@@ -99,22 +102,45 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             logger.logInfo(
                 MessageFormat.format("Starting run keyword runFeatureFile: ''{0}'' and extract report to folder: ''{1}''...",
                     relativeFilePath, reportDir))
-            String[] argv = [
-                "-g",
-                "",
-                projectDir + "/" + relativeFilePath,
-                "--strict",
-//                "--plugin",
-//                "pretty",
-                "--plugin",
-                "html:" + reportDir + "/html",
-                "--plugin",
-                "json:" + reportDir + "/cucumber.json",
-                "--plugin",
-                "junit:"+ reportDir + "/cucumber.xml",
-                "--plugin",
-                CucumberReporter.class.getName()
-            ]
+            String[] argv = []
+            if(cucumberOptions.strict()) {
+                argv = argv + ["--strict"]
+            }
+            if(cucumberOptions.plugin().size() > 0) {
+                argv = argv + ["--plugin"]
+                for(String plugin : cucumberOptions.plugin()) {
+                    argv = argv + plugin
+                }
+            }
+            if(cucumberOptions.snippets().name().length()) {
+                argv = argv + ["--snippet"]
+            }
+            if(cucumberOptions.dryRun()){
+                argv = argv + ["--dryRun"]
+            }
+            if(cucumberOptions.tags().size() > 0) {
+                argv = argv + ["--tags"]
+                for(String tag : cucumberOptions.tags()) {
+                    argv = argv + tag
+                }
+            }
+            if(cucumberOptions.junit().size() > 0) {
+                argv = argv + ["--junit"]
+                for(String unit : cucumberOptions.junit()) {
+                    argv = argv + unit
+                }
+            }
+            if(cucumberOptions.glue().size() > 0) {
+                argv = argv + ["--glue"]
+                for(String g : cucumberOptions.glue()) {
+                    argv = argv + g
+                }
+            }
+            if(cucumberOptions.features().size() > 0) {
+                argv = argv + ["--features"]
+                for(String feature : cucumberOptions.features()) {
+                    argv = argv + feature
+            }
             if (runningMode == RunningMode.CONSOLE) {
                 argv = argv + ["--monochrome"]
             }
