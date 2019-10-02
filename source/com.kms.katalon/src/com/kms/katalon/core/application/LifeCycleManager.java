@@ -4,7 +4,7 @@ import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;  
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -50,8 +50,8 @@ import com.kms.katalon.constants.GroovyTemplatePreferenceConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-import com.kms.katalon.tracking.core.TrackingManager;   
-import com.kms.katalon.tracking.service.Trackings;  
+import com.kms.katalon.tracking.core.TrackingManager;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
