@@ -111,12 +111,8 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if(e.text.equals("https://www.katalon.com/enterprise/")){
-                    Program.launch(StringConstants.OFFLINE_ACTIVATION);
-                }else {
-                    Program.launch(StringConstants.ENTERPRISE_TRIAL_LICENSE);
-                }
-               
+                Program.launch(e.text);
+
             }
         });
 
@@ -193,7 +189,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         gdCopyToClipboard.widthHint = 80;
         btnCopyToClipboard.setLayoutData(gdCopyToClipboard);
         btnCopyToClipboard.setText(MessageConstants.BTN_COPY_TITLE);
-        
+
         Label lblLicenseFile = new Label(composite, SWT.NONE);
         lblLicenseFile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblLicenseFile.setText(MessageConstants.ActivationOfflineDialogV2_LBL_LICENSE_FILE);
@@ -232,7 +228,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         Composite bottomLeftComposite = new Composite(bottomBar, SWT.NONE);
         bottomLeftComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
         bottomLeftComposite.setLayout(new GridLayout());
-        
+
         btnOnlineRequest = new Button(bottomLeftComposite, SWT.PUSH);
         GridData gdBtnOnlineRequest = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
         gdBtnOnlineRequest.widthHint = 84;
