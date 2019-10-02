@@ -38,6 +38,8 @@ public class ActivationInfoCollector {
     private static boolean isOfflineActivation;
     
     private static ScheduledFuture<?> checkLicenseTask;
+    
+    private static String sessionId = UUID.randomUUID().toString();
 
     protected ActivationInfoCollector() {
     }
@@ -230,7 +232,6 @@ public class ActivationInfoCollector {
     private static String getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
-        String sessionId = UUID.randomUUID().toString();
         String hostname = getHostname();
         String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName, sessionId,
                 hostname, machineId);
@@ -352,7 +353,7 @@ public class ActivationInfoCollector {
                 } catch(Exception e) {
                     LogUtil.logError(e, "Error when closing Katalon Studio");
                 }
-            }, 0, 60, TimeUnit.SECONDS);
+            }, 0, 5, TimeUnit.SECONDS);
         }
     }
 }
