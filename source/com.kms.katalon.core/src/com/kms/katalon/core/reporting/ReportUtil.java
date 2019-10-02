@@ -139,7 +139,7 @@ public class ReportUtil {
 
         writeSimpleHTMLReport(suiteLogEntity, logFolder);
 
-        // writeJsonReport(suiteLogEntity, logFolder);
+//        writeJsonReport(suiteLogEntity, logFolder);
 
         writeJUnitReport(suiteLogEntity, logFolder);
     }
@@ -150,7 +150,7 @@ public class ReportUtil {
             writeJUnitReport(testSuiteLogRecord, new File(logFolder));
         }
     }
-
+    
     public static JUnitTestSuite generateJUnitTestSuite(TestSuiteLogRecord suiteLogEntity) {
         JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
 
@@ -188,11 +188,9 @@ public class ReportUtil {
 
         Arrays.asList(suiteLogEntity.getChildRecords()).stream().forEach(item -> {
             JUnitTestCase tc = factory.createTestCase();
-            String time = ((float) (item.getEndTime() - item.getStartTime()) / 1000) + "";
-
             tc.setClassname(item.getId());
             tc.setName(item.getName());
-            tc.setTime(time);
+
             TestStatus status = item.getStatus();
             TestStatusValue statusValue = status.getStatusValue();
             String statusName = statusValue.name();
@@ -219,13 +217,13 @@ public class ReportUtil {
 
         return ts;
     }
-
+    
     public static void writeJUnitReport(TestSuiteCollectionLogRecord suiteCollectionLogRecord, File logFolder)
             throws JAXBException, IOException {
         JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
         List<JUnitTestSuite> tsList = new ArrayList<>();
 
-        for (TestSuiteLogRecord suiteLogEntity : suiteCollectionLogRecord.getTestSuiteRecords()) {
+        for(TestSuiteLogRecord suiteLogEntity : suiteCollectionLogRecord.getTestSuiteRecords()) {
             JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
             tsList.add(ts);
         }
@@ -234,9 +232,7 @@ public class ReportUtil {
         String testSuiteCollectionTotalTests = suiteCollectionLogRecord.getTotalTestCases();
         String testSuiteCollectiontotalError = suiteCollectionLogRecord.getTotalErrorTestCases();
         String testSuiteCollectionTotalFailure = suiteCollectionLogRecord.getTotalFailedTestCases();
-        String testSuiteCollectionDuration = ((float) (suiteCollectionLogRecord.getEndTime()
-                - suiteCollectionLogRecord.getStartTime()) / 1000) + "";
-        ;
+        String testSuiteCollectionDuration = ((suiteCollectionLogRecord.getEndTime() - suiteCollectionLogRecord.getStartTime()) / 1000) + "";;
 
         JUnitTestSuites tss = factory.createTestSuites();
         // errors: total number of tests with error result from all test suite
@@ -262,7 +258,7 @@ public class ReportUtil {
 
     public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws JAXBException, IOException {
-
+    	
         JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
         JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
 
@@ -289,26 +285,26 @@ public class ReportUtil {
         marshaller.marshal(tss, new File(logFolder, "JUnit_Report.xml"));
     }
 
-    // public static void writeJsonReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
-    // List<String> excludedFieldNames = Arrays.asList(suiteLogEntity.getJsonExcludedFields());
-    // ExclusionStrategy excludeFields = new ExclusionStrategy() {
-    //
-    // @Override
-    // public boolean shouldSkipField(FieldAttributes paramFieldAttributes) {
-    // return excludedFieldNames.size() == 0 ? false
-    // : excludedFieldNames.contains(paramFieldAttributes.getName());
-    // }
-    //
-    // @Override
-    // public boolean shouldSkipClass(Class<?> paramClass) {
-    // return false;
-    // }
-    // };
-    // String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
-    // .create()
-    // .toJson(suiteLogEntity);
-    // FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json, StringConstants.DF_CHARSET);
-    // }
+//    public static void writeJsonReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
+//        List<String> excludedFieldNames = Arrays.asList(suiteLogEntity.getJsonExcludedFields());
+//        ExclusionStrategy excludeFields = new ExclusionStrategy() {
+//
+//            @Override
+//            public boolean shouldSkipField(FieldAttributes paramFieldAttributes) {
+//                return excludedFieldNames.size() == 0 ? false
+//                        : excludedFieldNames.contains(paramFieldAttributes.getName());
+//            }
+//
+//            @Override
+//            public boolean shouldSkipClass(Class<?> paramClass) {
+//                return false;
+//            }
+//        };
+//        String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
+//                .create()
+//                .toJson(suiteLogEntity);
+//        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json, StringConstants.DF_CHARSET);
+//    }
 
     public static void writeTSCollectionHTMLReport(String reportTitle, String tsReportsJson, File destDir)
             throws IOException, URISyntaxException {
@@ -357,9 +353,10 @@ public class ReportUtil {
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + reportDirLocationHashCode + ".html"),
                 htmlSb.toString(), StringConstants.DF_CHARSET);
     }
-
+    
     public static void writeExecutionUUIDToFile(String UUID, File logFolder) throws IOException, URISyntaxException {
-        FileUtils.writeStringToFile(new File(logFolder, "execution.uuid"), UUID, StringConstants.DF_CHARSET);
+        FileUtils.writeStringToFile(new File(logFolder, "execution.uuid"),
+        		UUID, StringConstants.DF_CHARSET);
     }
 
     public static void writeCSVReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
