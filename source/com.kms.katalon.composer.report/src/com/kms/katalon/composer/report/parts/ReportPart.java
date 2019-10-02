@@ -315,7 +315,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         reportComposite.setLayoutData(parent.getLayoutData());
 
         Composite controlComposite = new Composite(parent, SWT.NONE);
-        controlComposite.setLayout(new GridLayout());
+        controlComposite.setLayout(new FillLayout(SWT.VERTICAL));
         controlComposite.setLayoutData(parent.getLayoutData());
 
         parent.setLayoutData(new GridData(GridData.FILL_BOTH));
