@@ -82,6 +82,7 @@ public class ApplicationStaupHandler {
         closeAppTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
                 UISynchronizeService.syncExec(() -> {
+                    expiredDialog.close();
                     closeKS();
                     closeAppTask.cancel(false);
                 });
@@ -92,7 +93,6 @@ public class ApplicationStaupHandler {
     }
     
     public static void closeKS() {
-        expiredDialog.close();
         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
         PlatformUI.getWorkbench().close(); 
     }
