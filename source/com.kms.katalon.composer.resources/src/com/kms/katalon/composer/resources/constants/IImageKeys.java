@@ -775,4 +775,9 @@ public interface IImageKeys {
     
     // In App Survey
     public static final String STAR = "highlight_24.png";
+    
+    //Result tab
+    public static final String IMG_REPORT_EMPTY_TEST_SUITE = "result_tab/empty_report_test_suite.png";
+    
+    public static final String IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION = "result_tab/empty_report_test_suite_collection.png";
 }
