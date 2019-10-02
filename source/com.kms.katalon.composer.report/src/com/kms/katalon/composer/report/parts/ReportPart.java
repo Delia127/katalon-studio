@@ -312,10 +312,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         GridLayout glMessageComposite = new GridLayout();
         glMessageComposite.marginTop = 20;
         reportComposite.setLayout(glMessageComposite);
-        reportComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        reportComposite.setLayoutData(parent.getLayoutData());
 
         Composite controlComposite = new Composite(parent, SWT.NONE);
-        controlComposite.setLayout(parent.getLayout());
+        controlComposite.setLayout(new GridLayout());
         controlComposite.setLayoutData(parent.getLayoutData());
 
         parent.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -324,12 +324,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         if (report == null) {
             layout.topControl = reportComposite;
-
+            parent.layout();
             Label lblReport = new Label(reportComposite, SWT.NONE);
             lblReport.setText(StringConstants.LABEL_STATUS_REPORT_TESTSUITE);
             return;
         } else {
-
             layout.topControl = controlComposite;
             parent.layout();
             setTestSuiteLogRecord(
@@ -344,7 +343,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             updateInput();
             // setPartLabel(report.getDisplayName());
             isInitialized = true;
-
         }
 
     }
