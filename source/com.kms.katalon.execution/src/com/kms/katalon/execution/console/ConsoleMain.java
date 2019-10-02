@@ -120,7 +120,7 @@ public class ConsoleMain {
         try {
             Properties props = System.getProperties();
             String launcherName = props.getProperty("eclipse.launcher.name");
-            launcherName = "katalonc";
+
             if (!launcherName.equalsIgnoreCase("katalonc")) {
                 launcherName = launcherName.toLowerCase();
                 String extension = OSUtil.getExecutableExtension();
