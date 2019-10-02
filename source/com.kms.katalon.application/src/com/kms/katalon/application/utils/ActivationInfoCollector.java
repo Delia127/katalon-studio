@@ -209,7 +209,7 @@ public class ActivationInfoCollector {
         return license;
     }
     
-    public static License parseLicense(String jwtCode, StringBuilder errorMessage) {
+    private static License parseLicense(String jwtCode, StringBuilder errorMessage) {
         try {
             if (jwtCode != null && !jwtCode.isEmpty()) {
                 License license = LicenseService.getInstance().parseJws(jwtCode);
@@ -272,7 +272,7 @@ public class ActivationInfoCollector {
         }
     }
     
-    public static boolean isExpired(License license) {
+    private static boolean isExpired(License license) {
         Date currentDate = new Date();
         return currentDate.after(license.getExpirationDate());
     }
