@@ -453,6 +453,6 @@ public class ImageProcessor {
 
     private void registerResultTabImages() {
         ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE);
-    	ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION);
+        ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION);
     }
 }
