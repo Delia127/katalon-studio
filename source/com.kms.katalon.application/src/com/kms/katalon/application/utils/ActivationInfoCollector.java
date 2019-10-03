@@ -358,7 +358,7 @@ public class ActivationInfoCollector {
                         expiredHandler.run();
                     }
                 } catch (Exception e) {
-                    LogUtil.logError(e, "Error when closing Katalon Studio");
+                    LogUtil.logError(e, "Error when check license");
                 }
             }, 0, 5, TimeUnit.SECONDS);
         }
