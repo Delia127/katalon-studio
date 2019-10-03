@@ -95,8 +95,6 @@ public class ConsoleMain {
     public static final String BUILD_LABEL_OPTION = "buildLabel";
     
     public static final String BUILD_URL_OPTION = "buildURL";
-    
-    private static boolean stop;
 
     private ConsoleMain() {
         // hide constructor
@@ -228,7 +226,6 @@ public class ConsoleMain {
             localStore.put("apiKey", apiKeyValue);
             ActivationInfoCollector.scheduleCheckLicense(
                     () ->{
-                        stop = true;
                         LogUtil.logInfo("Your license expired. Katalon Studio will automatically stop");
                         LauncherManager.getInstance().stopAllLauncher();
                     }, 
@@ -418,7 +415,7 @@ public class ConsoleMain {
             } catch (InterruptedException e) {
                 // Thread interrupted, do nothing
             }
-        } while (!stop && LauncherManager.getInstance().isAnyLauncherRunning());
+        } while (LauncherManager.getInstance().isAnyLauncherRunning());
         printStatus();
     }
 
