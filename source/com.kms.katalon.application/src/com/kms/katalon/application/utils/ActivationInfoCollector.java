@@ -359,7 +359,7 @@ public class ActivationInfoCollector {
     
     public static void cleanup() {
         if (checkLicenseTask != null) {
-            checkLicenseTask.cancel(true);
+            checkLicenseTask.cancel(false);
         }
     }
 }
