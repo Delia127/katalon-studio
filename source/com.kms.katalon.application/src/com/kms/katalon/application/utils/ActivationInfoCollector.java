@@ -35,6 +35,8 @@ public class ActivationInfoCollector {
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
     
     private static final String sessionId = UUID.randomUUID().toString();
+    
+    public static final String EXPIRED_MESSAGE = "The license of this working session has expired.";
 
     private static boolean activated = false;
     
@@ -354,7 +356,7 @@ public class ActivationInfoCollector {
                         }
                     }
 
-                    if (license == null || ActivationInfoCollector.isExpired(license)) {
+                    if (license == null) {
                         expiredHandler.run();
                     }
                 } catch (Exception e) {

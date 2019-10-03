@@ -225,7 +225,7 @@ public class ConsoleMain {
             Map<String, String> localStore = new HashMap<>();
             localStore.put("apiKey", apiKeyValue);
             ActivationInfoCollector.scheduleCheckLicense(() -> {
-                LogUtil.logInfo("Your license expired. Katalon Studio will automatically stop");
+                LogUtil.logInfo(ActivationInfoCollector.EXPIRED_MESSAGE);
                 LauncherManager.getInstance().stopAllLauncher();
             }, () -> {
                 String apiKey = localStore.get("apiKey");
