@@ -73,6 +73,8 @@ public class KatalonAboutDialog extends TrayDialog {
     
     protected static final String VERSION_UPDATE = "KatalonVersionUpdate";
     
+    private static final String KATALON_NAME_INFO = "Katalon Studio";
+    
     private static String licenseType;
 
     /**
@@ -84,7 +86,7 @@ public class KatalonAboutDialog extends TrayDialog {
         licenseType = ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE);
         product = Platform.getProduct();
         if (product != null) {
-            productName = product.getName();
+            productName = getProductNameBasedOnLicenseType();
         }
         if (productName == null) {
             productName = WorkbenchMessages.AboutDialog_defaultProductName;
@@ -101,6 +103,14 @@ public class KatalonAboutDialog extends TrayDialog {
                 }
             }
         }
+    }
+
+    private String getProductNameBasedOnLicenseType() {
+        String name = product.getName();
+        if (licenseType.equals("ENTERPRISE")) {
+            name += " Enterprise";
+        }
+        return name;
     }
 
     /*
@@ -173,7 +183,13 @@ public class KatalonAboutDialog extends TrayDialog {
         b.setFocus();
     }
     
-    protected String updateVersionInfo(String aboutText) {
+    protected String updateInfo(String aboutText) {
+        String versionUpdated = updateVersionInfo(aboutText);
+        String nameUpdated = updateProductNameInfo(versionUpdated);
+        return nameUpdated;
+    }
+    
+    private String updateVersionInfo(String aboutText) {
         int start = aboutText.indexOf(VERSION_UPDATE);
         if (start < 0) {
             return aboutText;
@@ -186,9 +202,20 @@ public class KatalonAboutDialog extends TrayDialog {
         StringBuilder versionUpdateInfo = new StringBuilder(aboutText);
         versionUpdateInfo.delete(start, start + VERSION_UPDATE.length());
         versionUpdateInfo.insert(start, versionStatus);
-        
+
         return versionUpdateInfo.toString();
-        
+    }
+    
+    private String updateProductNameInfo(String aboutText) {
+        int start = aboutText.indexOf(KATALON_NAME_INFO);
+        if (start < 0) {
+            return aboutText;
+        }
+        String updatedName = licenseType.equals("ENTERPRISE") ? "Katalon Studio Enterprise" : "Katalon Studio";
+        StringBuilder versionUpdateInfo = new StringBuilder(aboutText);
+        versionUpdateInfo.delete(start, start + KATALON_NAME_INFO.length());
+        versionUpdateInfo.insert(start, updatedName);
+        return versionUpdateInfo.toString();
     }
 
     /**
@@ -206,8 +233,7 @@ public class KatalonAboutDialog extends TrayDialog {
         Image aboutImage = null;
         AboutItem item = null;
         if (product != null) {
-            ImageDescriptor imageDescriptor = ProductProperties
-                    .getAboutImage(product);
+            ImageDescriptor imageDescriptor = getProductAboutImageBasedOnLicenseType();
             if (imageDescriptor != null) {
                 aboutImage = imageDescriptor.createImage();
             }
@@ -217,7 +243,7 @@ public class KatalonAboutDialog extends TrayDialog {
                     || aboutImage.getBounds().width <= MAX_IMAGE_WIDTH_FOR_TEXT) {
                 String aboutText = ProductProperties.getAboutText(product);
                 if (aboutText != null) {
-                    item = VersionAboutTextManager.scan(updateVersionInfo(aboutText));
+                    item = VersionAboutTextManager.scan(updateInfo(aboutText));
                 }
             }
 
@@ -398,6 +424,13 @@ public class KatalonAboutDialog extends TrayDialog {
 
 
         return workArea;
+    }
+
+    private ImageDescriptor getProductAboutImageBasedOnLicenseType() {
+        if (licenseType.equals("ENTERPRISE")) {
+            return ProductProperties.getImage("/icons/kse.png", product.getDefiningBundle());
+        }
+        return ProductProperties.getAboutImage(product);
     }
 
     /**

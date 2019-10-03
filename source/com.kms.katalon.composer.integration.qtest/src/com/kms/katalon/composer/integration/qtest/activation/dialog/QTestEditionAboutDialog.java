@@ -21,7 +21,7 @@ public class QTestEditionAboutDialog extends KatalonAboutDialog {
     }
 
     @Override
-    protected String updateVersionInfo(String aboutText) {
+    protected String updateInfo(String aboutText) {
         
         LocalDateTime localDateTime = LocalDateTime
                 .ofInstant(Instant.ofEpochMilli(activationPayload.getExp().getTime()), ZoneId.systemDefault());
@@ -30,6 +30,6 @@ public class QTestEditionAboutDialog extends KatalonAboutDialog {
                         localDateTime.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")),
                         VERSION_UPDATE));
         
-        return super.updateVersionInfo(nextAboutText);
+        return super.updateInfo(nextAboutText);
     }
 }
