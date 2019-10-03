@@ -371,9 +371,8 @@ public class ActivationInfoCollector {
     }
 
     private static License getLicense() {
-        StringBuilder errorMessage = new StringBuilder();
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-        License license = ActivationInfoCollector.parseLicense(jwsCode, errorMessage);
+        License license = ActivationInfoCollector.parseLicense(jwsCode, null);
         return license;
     }
 }
