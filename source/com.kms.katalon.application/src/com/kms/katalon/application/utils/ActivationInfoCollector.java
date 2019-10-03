@@ -65,7 +65,7 @@ public class ActivationInfoCollector {
                         .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
             }
 
-            if (license == null || !isOffline) {
+            if (!isOffline) {
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                 String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
