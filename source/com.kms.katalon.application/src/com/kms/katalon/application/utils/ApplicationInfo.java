@@ -9,11 +9,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.logging.LogManager;
 import com.kms.katalon.logging.LogMode;
 import com.kms.katalon.logging.LogUtil;
@@ -192,10 +192,10 @@ public class ApplicationInfo {
 
     public static String getTestOpsServer() {
         String server = getAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
-        if (server == null) {
+        if (StringUtils.isEmpty(server)) {
             server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
         }
-        if (server == null) {
+        if (StringUtils.isEmpty(server)) {
             server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
         }
         return server;
