@@ -46,6 +46,8 @@ import org.eclipse.ui.internal.about.InstallationDialog;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionInfo;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.MessageConstants;
@@ -70,6 +72,8 @@ public class KatalonAboutDialog extends TrayDialog {
     private AboutTextManager aboutTextManager;
     
     protected static final String VERSION_UPDATE = "KatalonVersionUpdate";
+    
+    private static String licenseType;
 
     /**
      * Create an instance of the AboutDialog for the given window.
@@ -77,7 +81,7 @@ public class KatalonAboutDialog extends TrayDialog {
      */
     public KatalonAboutDialog(Shell parentShell) {
         super(parentShell);
-
+        licenseType = ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE);
         product = Platform.getProduct();
         if (product != null) {
             productName = product.getName();

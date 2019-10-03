@@ -54,5 +54,10 @@ public class License {
     public void setJwtCode(String jwtCode) {
         this.jwtCode = jwtCode;
     }
+
+    public String getType() {
+        // TODO Return the appropriate string here
+        return "ENTERPRISE";
+    }
     
 }

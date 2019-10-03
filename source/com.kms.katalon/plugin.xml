@@ -6,10 +6,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="com.kms.katalon.application"
-            name="Katalon Studio Enterprise">
+            name="Katalon Studio">
          <property
                name="appName"
-               value="Katalon Studio Enterprise">
+               value="Katalon Studio">
          </property>
          <property 
          		name="applicationXMI" 

@@ -1,13 +1,10 @@
 package com.kms.katalon.application.utils;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
-import java.security.GeneralSecurityException;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -22,14 +19,10 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
-import com.kms.katalon.feature.TestOpsFeatureActivator;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
-import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.feature.FeatureServiceConsumer;
-import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -70,6 +63,7 @@ public class ActivationInfoCollector {
                 if (license != null) {
                     enableFeatures(license);
                     markActivatedLicenseCode(license.getJwtCode());
+                    saveLicenseType(license.getType());
                     activated = true;
                 }
             }
@@ -81,6 +75,10 @@ public class ActivationInfoCollector {
         return activated;
     }
 
+    private static void saveLicenseType(String type) {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, type, true);
+    }
+
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey) {
         try {
             String machineId = MachineUtil.getMachineId();
@@ -89,6 +87,7 @@ public class ActivationInfoCollector {
             if (license != null) {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
+                saveLicenseType(license.getType());
                 activated = true;
             }
         } catch (Exception ex) {
@@ -248,6 +247,7 @@ public class ActivationInfoCollector {
             License license = parseLicense(activationCode, errorMessage);
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
+                saveLicenseType(license.getType());
                 enableFeatures(license);
                 activated = true;
                 return activated;
@@ -304,6 +304,7 @@ public class ActivationInfoCollector {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, organization, true);
         markActivatedLicenseCode(license.getJwtCode());
+        saveLicenseType(license.getType());
     }
 
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
