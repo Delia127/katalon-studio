@@ -81,7 +81,6 @@ public class ApplicationStaupHandler {
             try {
                 UISynchronizeService.syncExec(() -> {
                     closeAppTask.cancel(false);
-                    expiredDialog.close();
                     closeKS();
                 });
             } catch (Exception e) {
