@@ -211,10 +211,11 @@ public class OpenProjectHandler {
         for (MStackElement element : children) {
             if (element.getElementId().equals(IdConstants.PROBLEM_VIEW_PLACEHOLDER_ID)) {
                 problemViewStackElement = element;
+                consolePartStack.setSelectedElement(problemViewStackElement);
+                consolePartStack.setVisible(true);
+                break;
             }
         }
-        consolePartStack.setSelectedElement(problemViewStackElement);
-        consolePartStack.setVisible(true);
         if (!consolePartStack.isToBeRendered()) {
             consolePartStack.setToBeRendered(true);
         }
