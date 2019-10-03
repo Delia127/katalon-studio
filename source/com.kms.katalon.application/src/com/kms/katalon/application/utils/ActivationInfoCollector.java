@@ -33,14 +33,14 @@ import com.kms.katalon.util.CryptoUtil;
 public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
+    
+    private static final String sessionId = UUID.randomUUID().toString();
 
     private static boolean activated = false;
     
     private static boolean isOfflineActivation;
     
     private static ScheduledFuture<?> checkLicenseTask;
-    
-    private static String sessionId = UUID.randomUUID().toString();
 
     protected ActivationInfoCollector() {
     }
@@ -360,7 +360,7 @@ public class ActivationInfoCollector {
                 } catch (Exception e) {
                     LogUtil.logError(e, "Error when check license");
                 }
-            }, 0, 5, TimeUnit.SECONDS);
+            }, 0, 1 * 60, TimeUnit.SECONDS);
         }
     }
 
