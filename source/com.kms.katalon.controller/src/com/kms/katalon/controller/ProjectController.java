@@ -172,7 +172,7 @@ public class ProjectController extends EntityController {
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
             try {
                 // Remote all existing projects out of workspace
-                project.delete(false, false, null);
+                project.delete(false, true, null);
             } catch (Exception ignored) {}
         }
     }
