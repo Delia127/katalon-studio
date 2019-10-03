@@ -77,6 +77,17 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         }
     };
 
+    private StringConsoleOption katalonTestOpsServerUrlOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_TESTOP_SERVER;
+        };
+
+        public boolean isRequired() {
+            return false;
+        };
+    };
+
     private StringConsoleOption katalonApiKeyOption = new StringConsoleOption() {
         @Override
         public String getOption() {
@@ -149,6 +160,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> allOptions = super.getConsoleOptionList();
+        allOptions.add(katalonTestOpsServerUrlOption);
         allOptions.add(testSuitePathOption);
         allOptions.add(browserTypeOption);
         allOptions.add(executionProfileOption);
