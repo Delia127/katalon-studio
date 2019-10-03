@@ -22,6 +22,7 @@ import com.kms.katalon.composer.search.constants.StringConstants;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -61,7 +62,12 @@ public class OpenEditorAction {
 	public static void openReport(ReportEntity report) {
 		IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 		eventBroker.send(EventConstants.REPORT_OPEN, report);
-	}
+    }
+
+    public static void openExecutionProfile(ExecutionProfileEntity profile) {
+        IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+        eventBroker.send(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, profile);
+    }
 
 	/**
 	 * Opens {@link TestCaseCompositePart} of the given testCase, sets selected part is <code>Script</code> part

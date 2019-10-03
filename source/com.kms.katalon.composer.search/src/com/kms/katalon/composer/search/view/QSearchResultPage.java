@@ -16,12 +16,14 @@ import org.eclipse.ui.PartInitException;
 
 import com.kms.katalon.composer.search.action.OpenEditorAction;
 import com.kms.katalon.composer.search.view.provider.SearchResultPageLabelProvider;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -99,9 +101,16 @@ public class QSearchResultPage extends FileSearchPage {
 				String reportDisplayId = file.getParent().getProjectRelativePath().toString();
 				ReportEntity testData = ReportController.getInstance().getReportEntityByDisplayId(reportDisplayId,
 						project);
-				OpenEditorAction.openReport(testData);
-				return true;
-			}
+                OpenEditorAction.openReport(testData);
+                return true;
+            } else if (fileExtension.equals(ExecutionProfileEntity.getGlobalVariableFileExtension())) {
+                String profileName = file.getName()
+                        .replace(ExecutionProfileEntity.getGlobalVariableFileExtension(), "");
+                ExecutionProfileEntity profile = GlobalVariableController.getInstance().getExecutionProfile(profileName,
+                        project);
+                OpenEditorAction.openExecutionProfile(profile);
+                return true;
+            }
 		} catch (Exception e) {
 			// An error occurs when open by IDE, open file by default navigator.
 		}
