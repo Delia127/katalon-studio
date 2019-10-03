@@ -133,8 +133,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Button chkRetryFailedTestCase;
     
-    private Button chkAPIKey;
-
     private ProjectEntity project;
 
     private static final String ZERO = "0";
@@ -218,7 +216,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         createPlatformPart(main);
         createOptionsPart(main);
         getConfigurationAnalytics();
-        changeEnabled();
         
         return main;
     }
@@ -412,12 +409,13 @@ public class GenerateCommandDialog extends AbstractDialog {
         Label lblSeconds = new Label(grpOptionsContainer, SWT.NONE);
         lblSeconds.setText(StringConstants.DIA_LBL_SECONDS);
         
-        chkAPIKey = new Button(grpOptionsContainer, SWT.CHECK);
-        chkAPIKey.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        chkAPIKey.setText(StringConstants.DIA_API_KEY);
+        
+        Label lblAPIKey = new Label(grpOptionsContainer, SWT.NONE);
+        lblAPIKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblAPIKey.setText(StringConstants.DIA_LBL_APIKEY);
         
         txtAPIKey = new Text(grpOptionsContainer, SWT.BORDER);
-        GridData gdTxtAPIKey = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 3, 1);
+        GridData gdTxtAPIKey = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
         gdTxtAPIKey.widthHint = 600;
         txtAPIKey.setLayoutData(gdTxtAPIKey);
         
@@ -432,10 +430,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         new HelpComposite(pluginOptionsComposite, DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
     }
     
-    private void changeEnabled() {
-        txtAPIKey.setEnabled(chkAPIKey.getSelection());
-    }
-
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, GENERATE_PROPERTY_ID, StringConstants.DIA_BTN_GEN_PROPERTY_FILE, false);
@@ -645,12 +639,6 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         });
                 
-        chkAPIKey.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                changeEnabled();
-            }
-        });
     }
 
     private void onRunConfigurationDataChanged() {
@@ -835,7 +823,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void generateCommandPressed() {
         try {
-        	if (chkAPIKey.getSelection() && StringUtils.isEmpty(txtAPIKey.getText())) {
+        	if (StringUtils.isEmpty(txtAPIKey.getText())) {
                 MessageDialog.openError(Display.getCurrent().getActiveShell(),
                         ComposerAnalyticsStringConstants.ERROR,
                         StringConstants.REPORT_MSG_MUST_ENTER_API_KEY);
@@ -932,9 +920,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
         
 
-        if (chkAPIKey.getSelection()) {
-            args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
-        }
+        args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
 
         return args;
     }
@@ -1096,14 +1082,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     
     private void getConfigurationAnalytics() {
         analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
-
-        try {
-            boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled();
-            chkAPIKey.setSelection(enableApiKey);
-            getApiKey();
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
+        getApiKey();
     }
     
     private void getApiKey() {
