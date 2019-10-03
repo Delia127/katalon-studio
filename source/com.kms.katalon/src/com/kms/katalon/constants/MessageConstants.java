@@ -157,6 +157,8 @@ public class MessageConstants extends NLS {
 
     public static String PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE;
     
+    public static String PAGE_PREF_AUTO_ALLOW_USAGE_TRACKING;
+    
     public static String PAGE_PREF_AUTO_UPDATE_WEBDRIVERS;
 
     public static String PAGE_PREF_SHOW_HELP_AT_START_UP;

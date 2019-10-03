@@ -38,4 +38,8 @@ public class ImageConstants {
 
     public static final Image IMG_16_FULL_SIZE = ImageManager.getImage(IImageKeys.FULL_SIZE_16);
 
+    public static final Image IMG_REPORT_EMPTY_TEST_SUITE = ImageManager.getImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE);
+
+    public static final Image IMG_REPORT_EMPRY_TEST_SUITE_COLLECTION = ImageManager.getImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION);
+
 }

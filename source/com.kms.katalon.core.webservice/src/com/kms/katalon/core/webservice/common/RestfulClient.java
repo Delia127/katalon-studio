@@ -62,7 +62,9 @@ public class RestfulClient extends BasicRequestor {
     private ResponseObject sendRequest(RequestObject request) throws Exception {
         HttpClientBuilder clientBuilder = HttpClients.custom();
         
-        clientBuilder.disableRedirectHandling();
+        if (!request.isFollowRedirects()) {
+            clientBuilder.disableRedirectHandling();
+        }
         
         clientBuilder.setConnectionManager(connectionManager);
         clientBuilder.setConnectionManagerShared(true);
@@ -95,30 +97,12 @@ public class RestfulClient extends BasicRequestor {
         setHttpConnectionHeaders(httpRequest, request);
         
         ResponseObject responseObject = response(httpClient, httpRequest);
-        boolean redirect = false;
-        int statusCode = responseObject.getStatusCode();
-        if (statusCode == HttpURLConnection.HTTP_MOVED_TEMP
-            || statusCode == HttpURLConnection.HTTP_MOVED_PERM
-            || statusCode == HttpURLConnection.HTTP_SEE_OTHER) {
-            redirect = true;
-        }
-        
-        if (redirect) {
-            String newUrl = responseObject.getHeaderField("location");
-            if (!StringUtils.isBlank(newUrl)) {
-                request.setRestUrl(newUrl);
-                request.setRedirectTimes(request.getRedirectTimes() + 1);
-                if (request.isFollowRedirects() && request.getRedirectTimes() <= MAX_REDIRECTS) {
-                    responseObject = sendRequest(request);
-                }
-            }
-        }
         
         IOUtils.closeQuietly(httpClient);
 
         return responseObject;
     }
-    
+
     private static boolean isBodySupported(String requestMethod) {
         return RestRequestMethodHelper.isBodySupported(requestMethod);
     }
@@ -170,9 +154,9 @@ public class RestfulClient extends BasicRequestor {
         if (httpClient == null || httpRequest == null) {
             return null;
         }
-
+        
         long startTime = System.currentTimeMillis();
-        CloseableHttpResponse response = httpClient.execute(httpRequest);
+        CloseableHttpResponse response = httpClient.execute(httpRequest, getHttpContext());
         int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         long contentDownloadTime = 0L;

@@ -297,7 +297,7 @@ public class ResponseObject implements PerformanceResourceTiming, HttpMessage {
     
     public String getHeaderField(String name) {
         List<String> headerValues = headerFields.get(name);
-        if (headerValues.size() > 0) {
+        if (headerValues != null && headerValues.size() > 0) {
             return headerValues.get(0);
         } else {
             return null;

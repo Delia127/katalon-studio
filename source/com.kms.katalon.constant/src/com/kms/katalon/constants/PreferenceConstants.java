@@ -8,6 +8,8 @@ public interface PreferenceConstants {
     public static final String GENERAL_APP_CLOSE_SUDDENLY = "general.appCloseSuddenly";
 
     public static final String GENERAL_AUTO_CHECK_NEW_VERSION = "general.autoCheckNewVersion";
+    
+    public static final String GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING = "general.autoCheckAllowUsage_Tracking";
 
     public static final String GENERAL_SHOW_HELP_AT_START_UP = "general.showHelpAtStartUp";
 

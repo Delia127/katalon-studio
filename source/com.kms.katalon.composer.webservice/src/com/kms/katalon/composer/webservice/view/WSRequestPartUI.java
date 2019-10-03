@@ -477,6 +477,10 @@ public class WSRequestPartUI {
     public MPart getResponsePart() {
         return responsePart;
     }
+    
+    public MPart getConfigurationPart() {
+        return configurationPart;
+    }
 
     public Composite getApiControlsPartComposite() {
         return getPartComposite(apiControlsPart);

@@ -76,7 +76,7 @@ public class ShowUnusedTestObjectHandler {
                                 FileEntity element = (FileEntity) entity;
                                 String testObjectId = element.getIdForDisplay();
                                 List<IFile> affectedScripts = TestArtifactScriptRefactor
-                                        .createForTestObjectEntity(testObjectId).findReferrersInScripts(project);
+                                        .createForTestObjectEntity(testObjectId).findReferrersInScriptsAndVariables(project);
                                 if (affectedScripts.isEmpty()) {
                                     unusedTestObject.add(element);
                                 }
@@ -84,7 +84,7 @@ public class ShowUnusedTestObjectHandler {
                                 FileEntity element = (FileEntity) entity;
                                 String testObjectId = element.getIdForDisplay();
                                 List<IFile> affectedScripts = TestArtifactScriptRefactor
-                                        .createForWindowsObjectEntity(testObjectId).findReferrersInScripts(project);
+                                        .createForWindowsObjectEntity(testObjectId).findReferrersInScriptsAndVariables(project);
                                 if (affectedScripts.isEmpty()) {
                                     unusedTestObject.add(element);
                                 }

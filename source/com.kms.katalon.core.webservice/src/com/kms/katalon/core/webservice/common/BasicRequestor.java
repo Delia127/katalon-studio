@@ -2,13 +2,10 @@ package com.kms.katalon.core.webservice.common;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.security.KeyManagementException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -30,18 +28,23 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.auth.oauth.OAuthRsaSigner;
 import com.google.api.client.auth.oauth.OAuthSigner;
 import com.google.api.client.http.GenericUrl;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
@@ -50,16 +53,16 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
-import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class BasicRequestor implements Requestor {
+    private static final String SSL = RequestHeaderConstants.SSL;
+    
+    private static final String SOCKET_FACTORY_REGISTRY = "http.socket-factory-registry";
     
     protected static PoolingHttpClientConnectionManager connectionManager;
     
@@ -305,5 +308,17 @@ public abstract class BasicRequestor implements Requestor {
         }
         httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(httpProxy))
             .setDefaultCredentialsProvider(credentialsProvider);
+    }
+    
+    protected HttpContext getHttpContext() throws KeyManagementException, GeneralSecurityException, IOException {
+        HttpContext httpContext = new BasicHttpContext();
+        SSLContext sc = SSLContext.getInstance(SSL);
+        sc.init(getKeyManagers(), getTrustManagers(), null);
+        Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory> create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", new SSLConnectionSocketFactory(sc))
+                .build();
+        httpContext.setAttribute(SOCKET_FACTORY_REGISTRY, reg);
+        return httpContext;
     }
 }

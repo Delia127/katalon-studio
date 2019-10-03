@@ -206,8 +206,12 @@ public class TestArtifactScriptRefactor {
         return referrers;
     }
 
-    public List<IFile> findReferrersInScripts(ProjectEntity projectEntity) throws IOException, CoreException {
-        return findReferrers(GroovyUtil.getAllScriptFiles(projectEntity));
+    public List<IFile> findReferrersInScriptsAndVariables(ProjectEntity projectEntity) throws IOException, CoreException {
+        List<IFile> files = new ArrayList<>();
+        files.addAll(GroovyUtil.getAllScriptFiles(projectEntity));
+        files.addAll(GroovyUtil.getAllGlobalVariableFiles(projectEntity));
+        files.addAll(GroovyUtil.getAllTestCaseFiles(projectEntity));
+        return findReferrers(files);
     }
 
     public List<IFile> findReferrersInTestCaseScripts(ProjectEntity projectEntity) throws IOException, CoreException {

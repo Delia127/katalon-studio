@@ -162,20 +162,16 @@ public class SoapClient extends BasicRequestor {
             throws Exception {
         HttpClientBuilder clientBuilder = HttpClients.custom();
         
-        clientBuilder.disableRedirectHandling();
+        if (!request.isFollowRedirects()) {
+            clientBuilder.disableRedirectHandling();
+        }
         
         clientBuilder.setConnectionManager(connectionManager);
         clientBuilder.setConnectionManagerShared(true);
         
         this.requestObject = request;
         parseWsdl();
-        boolean isHttps = isHttps(request);
-        if (isHttps) {
-            SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(getKeyManagers(), getTrustManagers(), null);
-            clientBuilder.setSSLContext(sc);
-        }
-
+       
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
         Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
@@ -199,7 +195,7 @@ public class SoapClient extends BasicRequestor {
         CloseableHttpClient httpClient = clientBuilder.build();
         
         long startTime = System.currentTimeMillis();
-        CloseableHttpResponse response = httpClient.execute(post);
+        CloseableHttpResponse response = httpClient.execute(post, getHttpContext());
         int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         
@@ -246,25 +242,6 @@ public class SoapClient extends BasicRequestor {
         responseObject.setContentDownloadTime(contentDownloadTime);
         
         setBodyContent(response, sb, responseObject);
-        
-        boolean redirect = false;
-        if (statusCode == HttpURLConnection.HTTP_MOVED_TEMP
-            || statusCode == HttpURLConnection.HTTP_MOVED_PERM
-            || statusCode == HttpURLConnection.HTTP_SEE_OTHER) {
-            redirect = true;
-        }
-        
-        if (redirect) {
-            Header locationHeader = response.getFirstHeader("location");
-            String newUrl = locationHeader != null ? locationHeader.getValue() : null;
-            if (!StringUtils.isBlank(newUrl)) {
-                request.setRestUrl(newUrl);
-                request.setRedirectTimes(request.getRedirectTimes() + 1);
-                if (request.isFollowRedirects() && request.getRedirectTimes() <= MAX_REDIRECTS) {
-                    responseObject = send(request);
-                }
-            }
-        }
         
         return responseObject;
     }
