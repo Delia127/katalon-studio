@@ -55,32 +55,34 @@ public class ActivationInfoCollector {
     
     public static boolean checkAndMarkActivatedForGUIMode() {
         try {
-            String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-            License license = parseLicense(jwsCode, null);
-            
+            License license = getLicense();
+            boolean isOffline = false;
+
             if (license != null) {
-                boolean isOffline = license.getFeatures()
-                        .stream().anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
-                
-                if (!isOffline) {
-                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                    String machineId = MachineUtil.getMachineId();
-                    license = activate(email, password, machineId, null, OrganizationFeature.KSE);
-                }
-                
-                if (license != null) {
-                    enableFeatures(license);
-                    markActivatedLicenseCode(license.getJwtCode());
-                    activated = true;
-                }
+                isOffline = license.getFeatures()
+                        .stream()
+                        .map(Feature::getKey)
+                        .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
+            }
+
+            if (license == null || !isOffline) {
+                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                String machineId = MachineUtil.getMachineId();
+                license = activate(email, password, machineId, null, OrganizationFeature.KSE);
+            }
+
+            if (license != null) {
+                enableFeatures(license);
+                markActivatedLicenseCode(license.getJwtCode());
+                activated = true;
             }
         } catch (Exception ex) {
             activated = false;
             LogUtil.logError(ex);
         }
-        
+
         return activated;
     }
 
@@ -341,25 +343,37 @@ public class ActivationInfoCollector {
         if (!isOfflineActivation) {
             checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
                 try {
-                    StringBuilder errorMessage = new StringBuilder();
-                    String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-                    License license = ActivationInfoCollector.parseLicense(jwsCode, errorMessage);
-                    
+                    License license = getLicense();
+
+                    if (license == null || ActivationInfoCollector.isReachRenewTime(license)) {
+                        try {
+                            renewHandler.run();
+                            license = getLicense();
+                        } catch (Exception e) {
+                            LogUtil.logError(e, "Error when renew Katalon Studio license");
+                        }
+                    }
+
                     if (license == null || ActivationInfoCollector.isExpired(license)) {
                         expiredHandler.run();
-                    } else if (ActivationInfoCollector.isReachRenewTime(license)) {
-                        renewHandler.run();
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     LogUtil.logError(e, "Error when closing Katalon Studio");
                 }
             }, 0, 5, TimeUnit.SECONDS);
         }
     }
-    
+
     public static void cleanup() {
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(false);
         }
+    }
+
+    private static License getLicense() {
+        StringBuilder errorMessage = new StringBuilder();
+        String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        License license = ActivationInfoCollector.parseLicense(jwsCode, errorMessage);
+        return license;
     }
 }

@@ -33,6 +33,8 @@ public class ApplicationStaupHandler {
         // return true;
         // }
         
+//        ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+        
         if (!(ComposerActivationInfoCollector.checkActivation())) {
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             PlatformUI.getWorkbench().close();
