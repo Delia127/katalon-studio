@@ -212,6 +212,8 @@ public class GlobalStringConstants {
 
     public static final String EMAIL = GlobalMessageConstants.EMAIL;
 
+    public static final String SERVER_URL = GlobalMessageConstants.SERVER_URL;
+
     public static final String LEVEL = GlobalMessageConstants.LEVEL;
 
     public static final String TIME = GlobalMessageConstants.TIME;

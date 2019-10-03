@@ -47,6 +47,7 @@ import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
@@ -100,6 +101,8 @@ public class ConsoleMain {
     
     public static final String BUILD_URL_OPTION = "buildURL";
 
+    public static final String KATALON_TESTOP_SERVER = "serverUrl";
+
     private ConsoleMain() {
         // hide constructor
     }
@@ -112,17 +115,15 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
-            Properties props = System.getProperties();
-            String launcherName = props.getProperty("eclipse.launcher.name");
-            
-//            if (!launcherName.equalsIgnoreCase("katalonc")) {
-//                launcherName = launcherName.toLowerCase();
-//                String extension = OSUtil.getExecutableExtension();
-//                String katalon = "katalon" + extension;
-//                String katalonc = "katalonc" + extension;
-//                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
-//                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
-//            }
+            boolean isDevelopmentMode = Platform.inDebugMode();
+            boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
+            if (!isDevelopmentMode && !isRunningInKatalonC) {
+                String extension = OSUtil.getExecutableExtension();
+                String katalon = "katalon" + extension;
+                String katalonc = "katalonc" + extension;
+                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+            }
             
             LocalInformationUtil.printSystemInformation();
 
@@ -134,6 +135,11 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
             
+            if (options.has(KATALON_TESTOP_SERVER)) {
+                String serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+                ApplicationInfo.setTestOpsServer(serverUrl);
+            }
+
             String apiKeyValue = null;
             if (options.has(KATALON_API_KEY_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
