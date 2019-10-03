@@ -42,6 +42,6 @@ public class ExpiredLicenseDialog extends AbstractDialog {
     
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, "Close now", true);
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
     }
 }
