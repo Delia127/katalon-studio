@@ -823,12 +823,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void generateCommandPressed() {
         try {
-        	if (StringUtils.isEmpty(txtAPIKey.getText())) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                        ComposerAnalyticsStringConstants.ERROR,
-                        StringConstants.REPORT_MSG_MUST_ENTER_API_KEY);
-                return;
-            }
         	
             GeneratedCommandDialog generatedCommandDialog = new GeneratedCommandDialog(getShell(), generateCommand());
             generatedCommandDialog.open();
@@ -920,7 +914,10 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
         
 
-        args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
+        if (!StringUtils.isEmpty(txtAPIKey.getText())) {
+            args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
+        }
+        
 
         return args;
     }
