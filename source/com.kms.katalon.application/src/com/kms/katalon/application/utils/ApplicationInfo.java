@@ -198,6 +198,9 @@ public class ApplicationInfo {
         if (StringUtils.isEmpty(server)) {
             server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
         }
+        if (server.endsWith("/")) {
+            server = server.substring(0, server.length() - 1);
+        }
         return server;
     }
 }
