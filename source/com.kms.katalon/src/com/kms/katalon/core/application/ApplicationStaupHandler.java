@@ -1,7 +1,6 @@
 package com.kms.katalon.core.application;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -22,8 +21,6 @@ import com.kms.katalon.util.ComposerActivationInfoCollector;
 public class ApplicationStaupHandler {
 
     private static IEventBroker eventBroker;
-
-    private static ScheduledFuture<?> closeAppTask;
 
     private static ExpiredLicenseDialog expiredDialog;
 
@@ -77,10 +74,9 @@ public class ApplicationStaupHandler {
     }
 
     public static void closeKSAfter(long seconds) {
-        closeAppTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
                 UISynchronizeService.syncExec(() -> {
-                    closeAppTask.cancel(false);
                     closeKS();
                 });
             } catch (Exception e) {
@@ -90,8 +86,8 @@ public class ApplicationStaupHandler {
     }
 
     public static void closeKS() {
-        ActivationInfoCollector.cleanup();
         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
         PlatformUI.getWorkbench().close();
+        ActivationInfoCollector.cleanup();
     }
 }
