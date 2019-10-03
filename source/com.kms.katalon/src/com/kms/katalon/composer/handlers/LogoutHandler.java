@@ -10,7 +10,6 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.application.ApplicationStaupHandler;
-import com.kms.katalon.execution.util.StringUtil;
 import com.kms.katalon.logging.LogUtil;
 
 public class LogoutHandler {
