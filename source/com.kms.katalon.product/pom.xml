@@ -189,7 +189,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>set-executable-linux-macos</id>
+						<id>set-executable-linux-mac</id>
 						<phase>package</phase>
 						<goals>
 							<goal>run</goal>
@@ -232,55 +232,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>exec-maven-plugin</artifactId>
-			    <version>1.6.0</version>
-			    <executions>
-			       <execution>
-			            <id>set-executable-linux32</id>
-			            <phase>package</phase>
-			            <goals>
-			                <goal>exec</goal>
-			            </goals>
-			            <configuration>
-			                <executable>chmod</executable>
-			                <arguments>
-			                    <argument>+x</argument>
-			                    <argument>${product.linux32KataloncFile}</argument>
-			                </arguments>
-			            </configuration>
-			        </execution>
-			       <execution>
-			            <id>set-executable-linux64</id>
-			            <phase>package</phase>
-			            <goals>
-			                <goal>exec</goal>
-			            </goals>
-			            <configuration>
-			                <executable>chmod</executable>
-			                <arguments>
-			                    <argument>+x</argument>
-			                    <argument>${product.linux64KataloncFile}</argument>
-			                </arguments>
-			            </configuration>
-			        </execution>
-			       <execution>
-			            <id>set-executable-mac64</id>
-			            <phase>package</phase>
-			            <goals>
-			                <goal>exec</goal>
-			            </goals>
-			            <configuration>
-			                <executable>chmod</executable>
-			                <arguments>
-			                    <argument>+x</argument>
-			                    <argument>${product.mac64KataloncFile}</argument>
-			                </arguments>
-			            </configuration>
-			        </execution>
-			    </executions>
-			</plugin> -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-director-plugin</artifactId>
