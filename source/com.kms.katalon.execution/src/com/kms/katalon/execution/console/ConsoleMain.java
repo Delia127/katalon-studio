@@ -113,15 +113,15 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
-//            boolean isDevelopmentMode = Platform.inDebugMode();
-//            boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
-//            if (!isDevelopmentMode && !isRunningInKatalonC) {
-//                String extension = OSUtil.getExecutableExtension();
-//                String katalon = "katalon" + extension;
-//                String katalonc = "katalonc" + extension;
-//                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
-//                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
-//            }
+            boolean isDevelopmentMode = Platform.inDebugMode();
+            boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
+            if (!isDevelopmentMode && !isRunningInKatalonC) {
+                String extension = OSUtil.getExecutableExtension();
+                String katalon = "katalon" + extension;
+                String katalonc = "katalonc" + extension;
+                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+            }
             
             LocalInformationUtil.printSystemInformation();
 

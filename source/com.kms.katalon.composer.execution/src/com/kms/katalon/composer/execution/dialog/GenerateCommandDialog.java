@@ -7,7 +7,6 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,11 +106,11 @@ public class GenerateCommandDialog extends AbstractDialog {
         CONSOLE_COMMAND, PROPERTIES_FILE
     };
 
-    private static final String KATALON_EXECUTABLE_LINUX = "./katalon --args";
+    private static final String KATALON_EXECUTABLE_LINUX = "./katalonc";
 
-    private static final String KATALON_EXECUTABLE_WIN32 = "katalon";
+    private static final String KATALON_EXECUTABLE_WIN32 = "katalonc";
 
-    private static final String KATALON_EXECUTABLE_MACOS = "./Katalon\\ Studio.app/Contents/MacOS/katalon --args";
+    private static final String KATALON_EXECUTABLE_MACOS = "./Katalon\\ Studio.app/Contents/MacOS/katalonc";
 
     private static final int GENERATE_PROPERTY_ID = 22;
 
@@ -126,10 +125,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Text txtAPIKey;
 
     private Button btnBrowseTestSuite;
-
-    private Button chkDisplayConsoleLog;
-
-    private Button chkKeepConsoleLog;
 
     private Button chkRetryFailedTestCase;
     
@@ -148,10 +143,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RUN_MODE = Application.RUN_MODE_OPTION;
 
     private static final String ARG_PROJECT_PATH = ConsoleMain.PROJECT_PK_OPTION;
-
-    private static final String ARG_OSGI_CONSOLE_LOG = OsgiConsoleOptionContributor.OSGI_CONSOLE_LOG_OPTION;
-
-    private static final String ARG_OSGI_NO_EXIT = OsgiConsoleOptionContributor.OSGI_NO_EXIT_OPTION;
 
     private static final String ARG_STATUS_DELAY = ConsoleMain.SHOW_STATUS_DELAY_OPTION;
 
@@ -363,14 +354,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         grpOptionsContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         grpOptionsContainer.setText(StringConstants.DIA_GRP_OTHER_OPTIONS);
 
-        chkDisplayConsoleLog = new Button(grpOptionsContainer, SWT.CHECK);
-        chkDisplayConsoleLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        chkDisplayConsoleLog.setText(StringConstants.DIA_CHK_DISPLAY_CONSOLE_LOG);
-
-        chkKeepConsoleLog = new Button(grpOptionsContainer, SWT.CHECK);
-        chkKeepConsoleLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        chkKeepConsoleLog.setText(StringConstants.DIA_CHK_KEEP_CONSOLE_LOG);
-
         Composite compRetry = new Composite(grpOptionsContainer, SWT.NONE);
         GridLayout glRetry = new GridLayout(4, false);
         glRetry.marginWidth = 0;
@@ -467,16 +450,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private void loadLastWorkingData() {
         try {
             ScopedPreferenceStore prefs = getPreference();
-
-            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG)) {
-                chkDisplayConsoleLog.setSelection(
-                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG));
-            }
-
-            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG)) {
-                chkKeepConsoleLog.setSelection(
-                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG));
-            }
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL)) {
                 txtStatusDelay.setText(String.valueOf(
@@ -878,7 +851,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 commandBuilder.append(KATALON_EXECUTABLE_LINUX);
         }
 
-        commandBuilder.append(" -noSplash ");
+        commandBuilder.append(" -noSplash");
 
         for (String key : consoleAgrsMap.keySet()) {
             commandBuilder.append(" ");
@@ -897,15 +870,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         Map<String, String> args = new LinkedHashMap<String, String>();
         if (generateCommandMode == GenerateCommandMode.CONSOLE_COMMAND) {
             args.put(ARG_RUN_MODE, Application.RUN_MODE_OPTION_CONSOLE);
-            if (chkDisplayConsoleLog.getSelection()) {
-                // OSGi argument
-                args.put(ARG_OSGI_CONSOLE_LOG, StringConstants.EMPTY);
-            }
-
-            if (chkKeepConsoleLog.getSelection()) {
-                // OSGi argument
-                args.put(ARG_OSGI_NO_EXIT, StringConstants.EMPTY);
-            }
         }
 
         args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
@@ -1076,10 +1040,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private void saveUserInput() {
         ScopedPreferenceStore prefs = getPreference();
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID, txtTestSuite.getText());
-        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG,
-                chkDisplayConsoleLog.getSelection());
-        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG,
-                chkKeepConsoleLog.getSelection());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY, txtRetry.getText());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES,
                 chkRetryFailedTestCase.getSelection());
