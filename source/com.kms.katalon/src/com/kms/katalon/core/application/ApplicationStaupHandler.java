@@ -20,21 +20,19 @@ import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 public class ApplicationStaupHandler {
-    
+
     private static IEventBroker eventBroker;
-    
+
     private static ScheduledFuture<?> closeAppTask;
-    
+
     private static ExpiredLicenseDialog expiredDialog;
-    
+
     public static boolean checkActivation() throws Exception {
         eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
         // if (VersionUtil.isInternalBuild()) {
         // return true;
         // }
-        
-//        ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
-        
+
         if (!(ComposerActivationInfoCollector.checkActivation())) {
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             PlatformUI.getWorkbench().close();
@@ -45,9 +43,9 @@ public class ApplicationStaupHandler {
         // .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
         // RunningMode.GUI)));
         // sendEventForTracking();
-        
+
         scheduleCheckLicense();
-        
+
         try {
             Trackings.trackOpenApplication(false, "gui");
         } catch (Exception ignored) {
@@ -64,22 +62,20 @@ public class ApplicationStaupHandler {
                     !ActivationInfoCollector.isActivated(), "gui");
         }, trackingTime, trackingTime, TimeUnit.SECONDS);
     }
-    
+
     public static void scheduleCheckLicense() {
-        ActivationInfoCollector.scheduleCheckLicense(
-                () -> {
-                    UISynchronizeService.syncExec(() -> {
-                        closeKSAfter(30);
-                        expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
-                        expiredDialog.open();
-                        closeKS();
-                    });        
-                }, 
-                () -> {
-                    ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
-                });
+        ActivationInfoCollector.scheduleCheckLicense(() -> {
+            UISynchronizeService.syncExec(() -> {
+                closeKSAfter(30);
+                expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
+                expiredDialog.open();
+                closeKS();
+            });
+        }, () -> {
+            ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+        });
     }
-    
+
     public static void closeKSAfter(long seconds) {
         closeAppTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
@@ -88,15 +84,15 @@ public class ApplicationStaupHandler {
                     expiredDialog.close();
                     closeKS();
                 });
-            } catch(Exception e) {
+            } catch (Exception e) {
                 LogUtil.logError(e, "Error when closing Katalon Studio");
             }
         }, seconds, 5, TimeUnit.SECONDS);
     }
-    
+
     public static void closeKS() {
         ActivationInfoCollector.cleanup();
         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
-        PlatformUI.getWorkbench().close(); 
+        PlatformUI.getWorkbench().close();
     }
 }
