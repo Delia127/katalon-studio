@@ -1102,12 +1102,12 @@ public class GenerateCommandDialog extends AbstractDialog {
             } catch (Exception ex) {
                 LoggerSingleton.logError(ex);
             } finally {
+                isRetrievingApi = false;
                 if (apiKey != null) {
                     String key = apiKey.getKey();
                     UISynchronizeService.asyncExec(() -> {
                         if (!txtAPIKey.isDisposed()) {
                             txtAPIKey.setText(key);
-                            isRetrievingApi = false;
                             setGenerateCommandButtonStates();
                         }
                     });
