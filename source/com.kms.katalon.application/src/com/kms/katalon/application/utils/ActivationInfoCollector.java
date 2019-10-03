@@ -347,14 +347,19 @@ public class ActivationInfoCollector {
                     
                     if (license == null || ActivationInfoCollector.isExpired(license)) {
                         expiredHandler.run();
-                        checkLicenseTask.cancel(false);
                     } else if (ActivationInfoCollector.isReachRenewTime(license)) {
                         renewHandler.run();
                     }
                 } catch(Exception e) {
                     LogUtil.logError(e, "Error when closing Katalon Studio");
                 }
-            }, 0, 1, TimeUnit.MINUTES);
+            }, 0, 5, TimeUnit.SECONDS);
+        }
+    }
+    
+    public static void cleanup() {
+        if (checkLicenseTask != null) {
+            checkLicenseTask.cancel(true);
         }
     }
 }

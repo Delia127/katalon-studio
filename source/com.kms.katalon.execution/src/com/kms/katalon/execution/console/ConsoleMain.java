@@ -224,21 +224,24 @@ public class ConsoleMain {
             // Parse all arguments before execute
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
 
-            consoleExecutor.execute(project, options);
-            
             Map<String, String> localStore = new HashMap<>();
             localStore.put("apiKey", apiKeyValue);
             ActivationInfoCollector.scheduleCheckLicense(
                     () ->{
                         stop = true;
                         LogUtil.logInfo("Your license expired. Katalon Studio will automatically stop");
+                        LauncherManager.getInstance().stopAllLauncher();
                     }, 
                     () -> {
                         String apiKey = localStore.get("apiKey");
                         ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey);
                     });
+            
+            consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
+            
+            ActivationInfoCollector.cleanup();
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
             

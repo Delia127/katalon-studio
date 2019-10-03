@@ -84,7 +84,6 @@ public class ApplicationStaupHandler {
                 UISynchronizeService.syncExec(() -> {
                     expiredDialog.close();
                     closeKS();
-                    closeAppTask.cancel(false);
                 });
             } catch(Exception e) {
                 LogUtil.logError(e, "Error when closing Katalon Studio");
