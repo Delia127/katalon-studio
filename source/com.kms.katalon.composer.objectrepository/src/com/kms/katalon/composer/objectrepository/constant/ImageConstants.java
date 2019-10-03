@@ -17,4 +17,8 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
 
     public static final Image IMG_16_HELP = ImageManager.getImage(IImageKeys.HELP_16);
 
+    // UnusedTestObject
+    public static final String URL_16_UNUSED_TEST_OBJECT = ImageManager
+            .getImageURLString(IImageKeys.UNUSED_TEST_OBJECT);
+
 }

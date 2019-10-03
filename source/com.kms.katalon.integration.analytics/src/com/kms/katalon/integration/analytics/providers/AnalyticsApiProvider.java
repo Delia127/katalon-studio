@@ -41,7 +41,10 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
@@ -206,19 +209,31 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String machineKey, String accessToken)
-            throws AnalyticsApiExeception {
+    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String username, String sessionId,
+            String hostname, String machineKey, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("machineKey", machineKey + "");
             uriBuilder.setParameter("ksVersion", VersionUtil.getCurrentVersion().getVersion());
+            uriBuilder.setParameter("email", username);
+            uriBuilder.setParameter("sessionId", sessionId);
+            uriBuilder.setParameter("hostname", hostname);
+            uriBuilder.setParameter("package", getKatalonPackageName());
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
             return licenseKey;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    private static String getKatalonPackageName() {
+        if (!ExecutionUtil.isRunningInKatalonC()) {
+            return "KSE";
+        } else {
+            return "Engine";
         }
     }
 

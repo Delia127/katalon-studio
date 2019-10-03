@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -574,8 +575,8 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         int selectionIdx = cboProjects.getSelectionIndex();
         String selectedProjectName = cboProjects.getItem(selectionIdx);
+        Object selectedSampleProject = cboProjects.getData(selectedProjectName);
         if (!selectedProjectName.equals(BLANK_PROJECT)) {
-            Object selectedSampleProject = cboProjects.getData(selectedProjectName);
             if (selectedSampleProject instanceof SampleRemoteProject) {
                 handleCreatingSampleRemoteProject((SampleRemoteProject) selectedSampleProject);
             } else if (selectedSampleProject instanceof SampleLocalProject) {
@@ -585,11 +586,16 @@ public class NewProjectDialog extends TitleAreaDialog {
             handleCreatingBlankProject();
         }
         super.okPressed();
+        
+        if (!(selectedSampleProject instanceof SampleRemoteProject)) {
+        	KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
+        }
     }
 
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
-        String projectLocation = getProjectLocation();
+        String projectParentLocation = getProjectLocation();
+        String projectLocation = new File(projectParentLocation, projectName).getAbsolutePath();
         String projectDescription = getProjectDescription();
         ProjectType projectType = getSelectedProjectType();
 
@@ -628,7 +634,6 @@ public class NewProjectDialog extends TitleAreaDialog {
             TimeUnit.SECONDS.sleep(1);
 
             eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
-            eventBroker.post(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, null);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -661,7 +666,6 @@ public class NewProjectDialog extends TitleAreaDialog {
             if (!(getSelectedProjectType() == ProjectType.GENERIC)) {
                 eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
             }
-            eventBroker.post(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, null);
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     ex.getMessage());

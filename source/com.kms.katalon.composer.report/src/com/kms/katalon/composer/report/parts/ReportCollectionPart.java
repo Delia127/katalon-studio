@@ -30,6 +30,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -56,6 +57,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
+import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.platform.ExportReportProviderPlugin;
@@ -120,8 +122,10 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         if (this.reportCollectionEntity == null) {
             layout.topControl = reportComposite;
 
+            Image imgReportEmpty = ImageConstants.IMG_REPORT_EMPRY_TEST_SUITE_COLLECTION;
             Label lblReport = new Label(reportComposite, SWT.NONE);
-            lblReport.setText(StringConstants.LABEL_STATUS_REPORT_TESTSUITE_COLECTION);
+            lblReport.setImage(imgReportEmpty);
+            lblReport.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
         } else {
 
             layout.topControl = controlComposite;

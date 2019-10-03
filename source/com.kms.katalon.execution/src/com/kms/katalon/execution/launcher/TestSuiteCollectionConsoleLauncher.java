@@ -50,8 +50,9 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             Map<String, Object> globalVariables, String executionUUID, Map<String, String> additionalInfo) throws ExecutionException {
         TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
         executedEntity.setReportable(reportable);
-        executedEntity.setRerunable(rerunable);
-
+        if (rerunable != null) {
+            executedEntity.setRerunable(rerunable.mergeWith(executedEntity.getRunnable()));
+        }
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
             String executionSessionId =  dateFormat.format(new Date());
@@ -114,7 +115,8 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
-            tsExecutedEntity.setRerunSetting((DefaultRerunSetting) executedEntity.getRunnable());
+            tsExecutedEntity.setRerunSetting(
+                    (DefaultRerunSetting) executedEntity.getRunnable().mergeWith(tsExecutedEntity.getRerunSetting()));
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));
             tsExecutedEntity.setEmailConfig(executedEntity.getEmailConfig(testSuiteCollection.getProject()));
             if (tsExecutedEntity.getTotalTestCases() == 0) {

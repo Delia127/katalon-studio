@@ -3,6 +3,7 @@ package com.kms.katalon.composer.project.handlers;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,9 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -31,9 +35,11 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -88,8 +94,15 @@ public class OpenProjectHandler {
     }
 
     public static File getProjectFile(File projectDirectory) {
-        for (File file : projectDirectory.listFiles()) {
-            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath()))
+        if (projectDirectory == null) {
+            return null;
+        }
+        File[] childFiles = projectDirectory.listFiles();
+        if (childFiles == null) {
+            return null;
+        }
+        for (File file : childFiles) {
+            if (file.isFile() && ('.' + FilenameUtils.getExtension(file.getAbsolutePath()))
                     .equals(ProjectEntity.getProjectFileExtension())) {
                 return file;
             }
@@ -98,6 +111,9 @@ public class OpenProjectHandler {
     }
 
     public static List<File> getProjectFiles(File projectDirectory) {
+        if (projectDirectory == null || projectDirectory.listFiles() == null) {
+            return Collections.emptyList();
+        }
         List<File> childProjectFiles = new ArrayList<>();
         for (File file : projectDirectory.listFiles()) {
             if (file.isDirectory()) {
@@ -191,7 +207,31 @@ public class OpenProjectHandler {
                 }
             }
         });
-        
+        setUpToolbar();
+    }
+    
+    public static void setUpToolbar() {
+        EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
+        MApplication application = ApplicationSingleton.getInstance().getApplication();
+
+        List<MPerspectiveStack> psList = modelService.findElements(application, null, MPerspectiveStack.class, null);
+        MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID,
+                psList.get(0).getSelectedElement());
+        consolePartStack.getTags().remove("Minimized");
+
+        List<MStackElement> children = consolePartStack.getChildren();
+        MStackElement problemViewStackElement = null;
+        for (MStackElement element : children) {
+            if (element.getElementId().equals(IdConstants.PROBLEM_VIEW_PLACEHOLDER_ID)) {
+                problemViewStackElement = element;
+                consolePartStack.setSelectedElement(problemViewStackElement);
+                consolePartStack.setVisible(true);
+                break;
+            }
+        }
+        if (!consolePartStack.isToBeRendered()) {
+            consolePartStack.setToBeRendered(true);
+        }
     }
 
     public static void updateProjectTitle(ProjectEntity projectEntity, EModelService modelService, MApplication app) {

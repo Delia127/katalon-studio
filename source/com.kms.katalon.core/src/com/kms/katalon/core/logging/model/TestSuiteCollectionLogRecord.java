@@ -19,6 +19,8 @@ public class TestSuiteCollectionLogRecord {
     private String totalErrorTestCases;
 
     private String totalFailedTestCases;
+    
+    private String totalTestCases;
 
     public String getTestSuiteCollectionId() {
         return testSuiteCollectionId;
@@ -82,5 +84,13 @@ public class TestSuiteCollectionLogRecord {
 
     public void setTotalFailedTestCases(String totalFailedTestCases) {
         this.totalFailedTestCases = totalFailedTestCases;
+    }
+    
+    public String getTotalTestCases() {
+        return totalTestCases;
+    }
+
+    public void setTotalTestCases(String totalTestCases) {
+        this.totalTestCases = totalTestCases;
     }
 }

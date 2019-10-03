@@ -16,6 +16,7 @@ import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -23,6 +24,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -87,6 +89,17 @@ public class QSearchQueryBuilder {
     }
 
     /**
+     * @return Array of string pattern of all windows object references.
+     */
+    private static String[] getWindowsObjectReferencesFileNamePatterns() {
+        List<String> windowsObjectReferencesFileNamePatterns = new ArrayList<String>();
+        windowsObjectReferencesFileNamePatterns.add(GROOVY_FILE_FORMAT);
+        windowsObjectReferencesFileNamePatterns.add("*" + WindowsElementEntity.FILE_EXTENSION);
+
+        return windowsObjectReferencesFileNamePatterns.toArray(new String[0]);
+    }
+
+    /**
      * @return Array of string pattern of all keyword references.
      */
     private static String[] getKeywordReferencesFileNamePatterns() {
@@ -111,6 +124,8 @@ public class QSearchQueryBuilder {
             return getTestCaseReferenceQuery((TestCaseTreeEntity) treeEntity, groovyProject);
         } else if (treeEntity instanceof WebElementTreeEntity) {
             return getTestObjectReferenceQuery((WebElementTreeEntity) treeEntity, groovyProject);
+        } else if (treeEntity instanceof WindowsElementTreeEntity) {
+            return getWindowsObjectReferenceQuery((WindowsElementTreeEntity) treeEntity, groovyProject);
         } else if (treeEntity instanceof TestDataTreeEntity) {
             return getTestDataReferenceQuery((TestDataTreeEntity) treeEntity, groovyProject);
         } else if (treeEntity instanceof KeywordTreeEntity) {
@@ -141,6 +156,10 @@ public class QSearchQueryBuilder {
         TestArtifactScriptRefactor scriptReference = null;
         if (entity instanceof FolderEntity) {
             scriptReference = TestArtifactScriptRefactor.createForFolderEntity((FolderEntity) entity);
+        } else if (entity instanceof WebElementEntity) {
+            scriptReference = TestArtifactScriptRefactor.createForTestObjectEntity(entity.getIdForDisplay());
+        } else if (entity instanceof WindowsElementEntity) {
+            scriptReference = TestArtifactScriptRefactor.createForWindowsObjectEntity(entity.getIdForDisplay());
         } else {
             scriptReference = new TestArtifactScriptRefactor(entity.getParentFolder().getFolderType(),
                     entity.getIdForDisplay(), true, true, true);
@@ -233,6 +252,25 @@ public class QSearchQueryBuilder {
 
         QSearchInput input = new QSearchInput(searchText, isCaseSensitive, isRegExSearch,
                 getTestObjectReferencesFileNamePatterns(), groovyProject);
+        return getQuery(input);
+    }
+
+    public static QSearchQuery getWindowsObjectReferenceQuery(WindowsElementTreeEntity windowsObjectTreeEntity,
+            IProject groovyProject) throws Exception {
+        WindowsElementEntity windowsElementEntity = (WindowsElementEntity) windowsObjectTreeEntity.getObject();
+        if (windowsElementEntity == null) {
+            return null;
+        }
+
+        String windowsObjectId = windowsElementEntity.getIdForDisplay();
+
+        String searchTextMetaData = "(<value>" + Pattern.quote(windowsObjectId) + "</value>)";
+        String searchText = getSearchTextInScript(windowsElementEntity) + "|" + searchTextMetaData;
+        boolean isCaseSensitive = true;
+        boolean isRegExSearch = true;
+
+        QSearchInput input = new QSearchInput(searchText, isCaseSensitive, isRegExSearch,
+                getWindowsObjectReferencesFileNamePatterns(), groovyProject);
         return getQuery(input);
     }
 

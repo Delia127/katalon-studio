@@ -162,6 +162,7 @@ public class WindowsActionHandler {
             try {
                 this.element = element;
                 this.activeShell = activeShell;
+                action.setCanceled(false);
 
                 performActionBeforeProgress();
                 final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(activeShell) {
@@ -170,10 +171,11 @@ public class WindowsActionHandler {
                         super.cancelPressed();
                         finishedRun();
                         getProgressMonitor().done();
+                        action.setCanceled(true);
                     }
                 };
                 IRunnableWithProgress runnable = getActionMappingProgress();
-                progressDlg.run(true, false, runnable);
+                progressDlg.run(true, true, runnable);
                 performActionAfterProgress();
 
                 return getActionMapping();
@@ -254,6 +256,7 @@ public class WindowsActionHandler {
             try {
                 this.element = element;
                 this.activeShell = activeShell;
+                action.setCanceled(false);
 
                 performActionBeforeProgress();
                 final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(activeShell) {
@@ -262,10 +265,11 @@ public class WindowsActionHandler {
                         super.cancelPressed();
                         finishedRun();
                         getProgressMonitor().done();
+                        action.setCanceled(true);
                     }
                 };
                 IRunnableWithProgress runnable = getActionMappingProgress();
-                progressDlg.run(true, false, runnable);
+                progressDlg.run(true, true, runnable);
                 performActionAfterProgress();
 
                 return getActionMapping();

@@ -74,6 +74,9 @@ public interface IdConstants {
     // EventLog placeholder 
     public static final String EVENT_LOG_PLACEHOLDER_ID = "com.kms.katalon.placeholder.eventLog";
 
+    // ProblemView placeholder 
+    public static final String PROBLEM_VIEW_PLACEHOLDER_ID = "org.eclipse.ui.views.ProblemView";
+    
     // Explorer part content
     public static final String EXPLORER_PART_ID = "com.kms.katalon.composer.part.explorer";
 
@@ -112,8 +115,11 @@ public interface IdConstants {
     public static final String TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testobject";
 
     public static final String WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".windowstestobject";
-    
+
     public static final String DRAFT_REQUEST_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".draftRequest";
+
+    public static final String UNUSED_TESTOBJECTS_CONTENT_PART_ID = COMPOSER_CONTENT_PARTSTACK_ID
+            + ".unusedtestobjects";
 
     // Test Suite Part content
     public static final String TESTSUITE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testsuite";

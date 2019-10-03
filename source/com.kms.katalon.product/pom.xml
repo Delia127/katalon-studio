@@ -19,6 +19,18 @@
 		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64/${product.macName}.app/Contents/Eclipse</product.mac64OutputDirectory>
 		<product.linux32OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86</product.linux32OutputDirectory>
 		<product.linux64OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
+		
+		<product.win32EclipsecFile>${product.win32OutputDirectory}/eclipsec.exe</product.win32EclipsecFile>
+		<product.win32KataloncFile>${product.win32OutputDirectory}/katalonc.exe</product.win32KataloncFile>
+		<product.win64EclipsecFile>${product.win64OutputDirectory}/eclipsec.exe</product.win64EclipsecFile>
+		<product.win64KataloncFile>${product.win64OutputDirectory}/katalonc.exe</product.win64KataloncFile>
+		
+		<product.linux32KatalonFile>${product.linux32OutputDirectory}/katalon</product.linux32KatalonFile>
+		<product.linux32KataloncFile>${product.linux32OutputDirectory}/katalonc</product.linux32KataloncFile>
+		<product.linux64KatalonFile>${product.linux64OutputDirectory}/katalon</product.linux64KatalonFile>
+		<product.linux64KataloncFile>${product.linux64OutputDirectory}/katalonc</product.linux64KataloncFile>
+		<product.mac64KatalonFile>${product.mac64OutputDirectory}/../MacOS/katalon</product.mac64KatalonFile>
+		<product.mac64KataloncFile>${product.mac64OutputDirectory}/../MacOS/katalonc</product.mac64KataloncFile>
 
 		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
 		<product.mac64ResourcesDirectory>configuration/macosx64_resources</product.mac64ResourcesDirectory>
@@ -29,6 +41,7 @@
 
 
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
+		<product.apisourceDirectory>${product.resourcesDirectory}/source</product.apisourceDirectory>
 
 		<product.archiveFileName>katalon-studio</product.archiveFileName>
 		<product.name>Katalon_Studio</product.name>
@@ -102,6 +115,43 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.7</version>
 				<executions>
+					<execution>
+						<id>copy-eclipsec-to-katalonc</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<copy file="${product.win32EclipsecFile}" 
+									tofile="${product.win32KataloncFile}"
+									overwrite="true" />
+								<copy file="${product.win64EclipsecFile}"
+									tofile="${product.win64KataloncFile}"
+									overwrite="true" />
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>duplicate-katalon-to-katalonc</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<copy file="${product.linux32KatalonFile}"
+									tofile="${product.linux32KataloncFile}"
+									overwrite="true" />
+								<copy file="${product.linux64KatalonFile}"
+									tofile="${product.linux64KataloncFile}"
+									overwrite="true" />
+								<copy file="${product.mac64KatalonFile}"
+									tofile="${product.mac64KataloncFile}"
+									overwrite="true" />
+							</target>
+						</configuration>
+					</execution>
 					<execution>
 						<id>delete-p2-binary-cache</id>
 						<phase>package</phase>
@@ -204,7 +254,7 @@
 							</resources>
 						</configuration>
 					</execution>					
-					<execution>						
+					<execution>
 						<id>copy-resources-linux32</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -223,7 +273,7 @@
 						</configuration>
 					</execution>
 					
-					<execution>						
+					<execution>
 						<id>copy-resources-linux64</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -259,7 +309,6 @@
 							</resources>
 						</configuration>
 					</execution>
-		
 				</executions>
 			</plugin>
 			<plugin>

@@ -58,7 +58,7 @@ building() {
     done
 
     echo "Building: Standard Prod"
-    cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+    cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} clean verify -P prod
 
     # if [ "$isQtest" = "true" ]
     # then
