@@ -26,7 +26,7 @@ def get_version(branch):
 
     if is_release is True:
 
-        if (branch.endswith(version) is False):
+        if ((branch.endswith(version) | ("{0}.rc".format(version) in branch)) is False):
             print('Branch or version is incorrect.')
             raise ValueError('Branch or version is incorrect.')
             
