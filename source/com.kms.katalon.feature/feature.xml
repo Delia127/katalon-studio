@@ -2662,10 +2662,32 @@
          version="0.0.0"
          unpack="false"/>
 
-	<plugin
+   <plugin
          id="com.kms.katalon.composer.artifact"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.composer.integration.qtest"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.integration.qtest"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.qas.qtest.sdk-java"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
