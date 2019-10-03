@@ -33,4 +33,6 @@ public interface PreferenceConstants {
     public static final String WEBUI_QUALIFIER = "com.kms.katalon.composer.webui";
 
     public static final String PREF_FIRST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
+
+    public static final String CANCLE_DEBUG_UI = "org.eclipse.debug.ui.cancel_launch_with_compile_errors";
 }

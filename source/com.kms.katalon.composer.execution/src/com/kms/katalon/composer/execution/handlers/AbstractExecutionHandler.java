@@ -6,9 +6,11 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import javax.inject.Inject;
-
+import com.kms.katalon.preferences.internal.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -26,9 +28,11 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.ToolControlImpl;
 import org.eclipse.e4.ui.workbench.addons.minmax.TrimStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -50,7 +54,9 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
+import com.kms.katalon.composer.execution.constants.ProblemMarkerConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.composer.execution.dialog.ProblemsViewDialog;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
 import com.kms.katalon.composer.execution.launcher.IDELaunchShorcut;
@@ -60,6 +66,7 @@ import com.kms.katalon.composer.testsuite.parts.ParentTestSuiteCompositePart;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.controller.exception.ControllerException;
@@ -79,7 +86,9 @@ import com.kms.katalon.execution.exception.ExtensionRequiredException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
@@ -128,7 +137,6 @@ public abstract class AbstractExecutionHandler {
                         application);
                 if (composerStack == null)
                     return false;
-
                 if (composerStack.isVisible() && composerStack.getSelectedElement() != null) {
                     MPart part = (MPart) composerStack.getSelectedElement();
                     String partElementId = part.getElementId();
@@ -275,20 +283,73 @@ public abstract class AbstractExecutionHandler {
         if (targetEntity == null) {
             return;
         }
-        if (targetEntity instanceof TestCaseEntity) {
-            TestCaseEntity testCase = (TestCaseEntity) targetEntity;
-            executeTestCase(testCase, launchMode);
-            eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
-        } else if (targetEntity instanceof TestSuiteEntity) {
-            TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
-            executeTestSuite(testSuite, launchMode);
-            eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
-        } else if (targetEntity instanceof SystemFileEntity) {
-            SystemFileEntity feature = (SystemFileEntity) targetEntity;
-            executeFeatureFile(feature, launchMode);
+
+        IProject project = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject());
+        List<IMarker> errorMarkers = ProblemMarkerConstants.findErrorMarkers(project);
+        if (errorMarkers.size() != 0) {
+            ProblemsViewDialog dialog = new ProblemsViewDialog(Display.getCurrent().getActiveShell());
+//            MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+//                    null, StringConstants.HAND_ERROR_MSG_ERROR_IN_PROJECT,
+//                    MessageDialog.ERROR, new String[] { "Show in Problem view", "Proceed", "Cancel" }, 0);
+            int result = dialog.open();
+            switch (result) {
+                case IdConstants.SHOW_PROBLEM_ID: {
+                        openProlemsView();
+                }
+                    break;
+                case IdConstants.PROCEED_ID: {
+                    settingDebugUI();
+                    if (targetEntity instanceof TestCaseEntity) {
+                        TestCaseEntity testCase = (TestCaseEntity) targetEntity;
+                        executeTestCase(testCase, launchMode);
+                        eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
+                    } else if (targetEntity instanceof TestSuiteEntity) {
+                        TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
+                        executeTestSuite(testSuite, launchMode);
+                        eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
+                    } else if (targetEntity instanceof SystemFileEntity) {
+                        SystemFileEntity feature = (SystemFileEntity) targetEntity;
+                        executeFeatureFile(feature, launchMode);
+                    }
+                }
+                    break;
+                default:{
+                    return;
+                }
+            }
         }
+        
+//        if (targetEntity instanceof TestCaseEntity) {
+//            TestCaseEntity testCase = (TestCaseEntity) targetEntity;
+//            executeTestCase(testCase, launchMode);
+//            eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
+//        } else if (targetEntity instanceof TestSuiteEntity) {
+//            TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
+//            executeTestSuite(testSuite, launchMode);
+//            eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
+//        } else if (targetEntity instanceof SystemFileEntity) {
+//            SystemFileEntity feature = (SystemFileEntity) targetEntity;
+//            executeFeatureFile(feature, launchMode);
+//        }
     }
 
+    public void settingDebugUI(){
+        ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.DEBUG_UI_ID);
+        boolean isFirstTimeSetup = store.getBoolean(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED);
+
+        if (isFirstTimeSetup) {
+            return;
+        }
+        
+        store.setValue(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED, true);
+        store.setValue(PreferenceConstants.CANCLE_DEBUG_UI, "always");
+        try {
+            store.save();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+        
+    }
     public void executeFeatureFile(final SystemFileEntity feature, final LaunchMode launchMode) throws Exception {
         Job job = new Job(ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE) {
             @Override
@@ -511,6 +572,34 @@ public abstract class AbstractExecutionHandler {
         });
     }
 
+    //Open Problems View and its partStack
+    public static void openProlemsView(){
+        UISynchronizeService.asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                // set console partStack is visible
+                List<MPerspectiveStack> psList = modelService.findElements(application, null, MPerspectiveStack.class,
+                        null);
+
+                MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID,
+                        psList.get(0).getSelectedElement());
+
+                // set console partStack visible
+                consolePartStack.getTags().remove("Minimized");
+                consolePartStack.setVisible(true);
+                if (!consolePartStack.isToBeRendered()) {
+                    consolePartStack.setToBeRendered(true);
+                }
+
+                // set current page of console partStack is log viewer
+                MUIElement consoleLogPart = (MUIElement) modelService.find(IdConstants.IDE_PROBLEM_VIEW_PART_ID, consolePartStack);
+                if (consoleLogPart != null && consolePartStack.getSelectedElement() != consoleLogPart) {
+                    consolePartStack.setSelectedElement((MStackElement) consoleLogPart);
+                }
+            }
+        });
+    }
+    
     public UISynchronize getSync() {
         return UISynchronizeService.getInstance().getSync();
     }
