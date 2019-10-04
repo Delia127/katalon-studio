@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.kms.katalon.controller.constants.ControllerMessageConstants;
@@ -18,6 +20,7 @@ import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.logging.LogUtil;
 
 public class GlobalVariableController extends EntityController {
 
@@ -72,7 +75,40 @@ public class GlobalVariableController extends EntityController {
         }
     }
     
-    private void waitForGlobalVariableClassFileAvailable(ProjectEntity project) throws InterruptedException {
+    /**
+     * @see https://github.com/kms-technology/katalon/issues/3600
+     * 
+     * @param project Current Project
+     * @throws Exception
+     * @throws ControllerException
+     */
+    public void generateGlobalVariableLibFileFromRawTextTemplate(ProjectEntity project, IProgressMonitor monitor)
+            throws ControllerException, Exception {
+        try {
+            if (monitor != null) {
+                String taskName = "Generating global variables...";
+                monitor.beginTask(taskName, 1);
+            }
+            File libFolder = new File(project.getFolderLocation() + File.separator + "/Libs/");
+            if (!libFolder.exists()) {
+                libFolder.mkdirs();
+            }
+            GlobalVariableParser.getInstance().generateGlobalVariableLibFileV2(libFolder,
+                    getAllGlobalVariableCollections(project));
+        } finally {
+            if (monitor != null) {
+                monitor.done();
+            }
+        }
+    }
+    
+    /**
+     * Wait until ${project}/bin/lib/internal/GlobalVariable.class becomes available within 30s
+     * 
+     * @param project Current Katalon Project
+     * @throws InterruptedException
+     */
+    public void waitForGlobalVariableClassFileAvailable(ProjectEntity project) throws InterruptedException {
         File globalVariableClassFile = new File(project.getFolderLocation(), "bin/lib/internal/GlobalVariable.class");
         long time = System.currentTimeMillis();
         while (System.currentTimeMillis() - time < TimeUnit.MINUTES.toMillis(5) && !globalVariableClassFile.exists()) {
