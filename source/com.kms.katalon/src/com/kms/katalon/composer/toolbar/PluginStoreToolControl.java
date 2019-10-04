@@ -44,7 +44,6 @@ public class PluginStoreToolControl {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
         toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         ToolItem accountToolItem = new ToolItem(toolbar, SWT.DROP_DOWN);
-        accountToolItem.setText("Account");
         accountToolItem.setImage(ImageConstants.IMG_KATALON_ACCOUNT_24);
         accountToolItem.addSelectionListener(new DropdownToolItemSelectionListener() {
 
