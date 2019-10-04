@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -15,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -41,7 +39,10 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
@@ -62,7 +63,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
-import com.kms.katalon.license.models.OrganizationFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsApiProvider {
@@ -208,7 +208,7 @@ public class AnalyticsApiProvider {
     }
     
     public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String username, String sessionId,
-            String hostname, String machineKey, String accessToken, OrganizationFeature organizationFeature) throws AnalyticsApiExeception {
+            String hostname, String machineKey, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
             URIBuilder uriBuilder = new URIBuilder(uri);
@@ -217,13 +217,21 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("email", username);
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
-            uriBuilder.setParameter("package", organizationFeature.name());
+            uriBuilder.setParameter("package", getKatalonPackageName());
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
             return licenseKey;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    private static String getKatalonPackageName() {
+        if (!ExecutionUtil.isRunningInKatalonC()) {
+            return "KSE";
+        } else {
+            return "Engine";
         }
     }
 

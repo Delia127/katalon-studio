@@ -71,7 +71,6 @@
 		<module>com.kms.katalon.execution.windows</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
-		<module>com.kms.katalon.feature.qtest_edition</module>
 		<module>com.kms.katalon.groovy</module>
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
@@ -80,7 +79,6 @@
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.util</module>
 		<module>com.kms.katalon.product</module>
-		<module>com.kms.katalon.product.qtest_edition</module>
 		<module>com.kms.katalon.selenium-standalone</module>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon.application</module>

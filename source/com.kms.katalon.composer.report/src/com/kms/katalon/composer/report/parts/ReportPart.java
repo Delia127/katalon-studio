@@ -65,6 +65,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -315,7 +316,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         reportComposite.setLayoutData(parent.getLayoutData());
 
         Composite controlComposite = new Composite(parent, SWT.NONE);
-        controlComposite.setLayout(new GridLayout());
+        controlComposite.setLayout(new FillLayout(SWT.VERTICAL));
         controlComposite.setLayoutData(parent.getLayoutData());
 
         parent.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -325,8 +326,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         if (report == null) {
             layout.topControl = reportComposite;
             parent.layout();
+
+            Image imgReportEmpty = ImageConstants.IMG_REPORT_EMPTY_TEST_SUITE;
             Label lblReport = new Label(reportComposite, SWT.NONE);
-            lblReport.setText(StringConstants.LABEL_STATUS_REPORT_TESTSUITE);
+            lblReport.setImage(imgReportEmpty);
+            lblReport.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
             return;
         } else {
             layout.topControl = controlComposite;

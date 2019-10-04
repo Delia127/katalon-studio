@@ -49,5 +49,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.integration.qtest.credential,
  com.kms.katalon.integration.qtest.helper,
  org.qas.qtest.api.services.project.model
-Service-Component: OSGI-INF/component.xml
 Bundle-ActivationPolicy: lazy

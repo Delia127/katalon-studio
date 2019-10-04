@@ -33,7 +33,6 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.MachineUtil;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -44,7 +43,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.license.models.License;
-import com.kms.katalon.license.models.OrganizationFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialogV2 extends AbstractDialog {
@@ -55,6 +53,8 @@ public class ActivationDialogV2 extends AbstractDialog {
     public static final int REQUEST_SIGNUP_CODE = 1001;
 
     public static final int REQUEST_OFFLINE_CODE = 1002;
+
+    private Text txtServerUrl;
 
     private Text txtEmail;
 
@@ -164,25 +164,22 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                String serverUrl = txtServerUrl.getText();
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(() -> {
-                        btnActivate.setEnabled(false);
-                        txtEmail.setEnabled(false);
-                        txtPassword.setEnabled(false);
+                        enableObject(false);
                         setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false);
                     });
                     UISynchronizeService.syncExec(() -> {
                         StringBuilder errorMessage = new StringBuilder();
-                        license = ActivationInfoCollector.activate(username, password, machineId, errorMessage, OrganizationFeature.KSE);
+                        license = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
                         if (license != null) {
                             getOrganizations();
                             setProgressMessage("", false);
                         } else {
-                            btnActivate.setEnabled(true);
-                            txtEmail.setEnabled(true);
-                            txtPassword.setEnabled(true);
+                            enableObject(true);
                             setProgressMessage(errorMessage.toString(), true);
                         }
                     });
@@ -206,6 +203,13 @@ public class ActivationDialogV2 extends AbstractDialog {
         });
     }
 
+    private void enableObject(boolean isEnable) {
+        btnActivate.setEnabled(isEnable);
+        txtServerUrl.setEnabled(isEnable);
+        txtEmail.setEnabled(isEnable);
+        txtPassword.setEnabled(isEnable);
+    }
+
     private void save(int index) {
         AnalyticsOrganization organization = organizations.get(index);
         String email = txtEmail.getText();
@@ -220,9 +224,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     close();
                     Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {
-                	txtEmail.setEnabled(true);
-                    txtPassword.setEnabled(true);
-                    btnActivate.setEnabled(true);
+                    enableObject(true);
                     btnSave.setEnabled(false);
                     LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
                 }
@@ -266,9 +268,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                             MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR,
                             new String[] { "OK" }, 0);
                     if (dialog.open() == Dialog.OK) {
-                        txtEmail.setEnabled(true);
-                        txtPassword.setEnabled(true);
-                        btnActivate.setEnabled(true);
+                        enableObject(true);
                         btnSave.setEnabled(false);
                     }
                 }
@@ -300,6 +300,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     @Override
     protected void setInput() {
+        txtServerUrl.setText(ApplicationInfo.getTestOpsServer());
         btnActivate.setEnabled(validateInput());
     }
 
@@ -329,6 +330,13 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         GridData gdBtn = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
         gdBtn.widthHint = 100;
+
+        Label lblServerUrl = new Label(contentComposite, SWT.NONE);
+        lblServerUrl.setLayoutData(gdLabel);
+        lblServerUrl.setText(StringConstants.SERVER_URL);
+
+        txtServerUrl = new Text(contentComposite, SWT.BORDER);
+        txtServerUrl.setLayoutData(gdText);
 
         Label lblEmail = new Label(contentComposite, SWT.NONE);
         lblEmail.setLayoutData(gdLabel);

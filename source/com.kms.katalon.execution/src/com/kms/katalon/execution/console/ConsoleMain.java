@@ -96,6 +96,8 @@ public class ConsoleMain {
     
     public static final String BUILD_URL_OPTION = "buildURL";
 
+    public static final String KATALON_TESTOP_SERVER = "serverUrl";
+
     private ConsoleMain() {
         // hide constructor
     }
@@ -128,6 +130,11 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
             
+            if (options.has(KATALON_TESTOP_SERVER)) {
+                String serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+                ApplicationInfo.setTestOpsServer(serverUrl);
+            }
+
             String apiKeyValue = null;
             if (options.has(KATALON_API_KEY_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
