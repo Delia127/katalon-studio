@@ -448,7 +448,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Find element by test object
      * @param windowsObject
-     *      represent a element
+     * An object that describes locator and locator strategy to find Windows Element.
      * @return
      *      the found element
      * @throws StepFailedException
@@ -462,7 +462,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Find elements by test object
      * @param windowsObject
-     *      represent a element
+     * An object that describes locator and locator strategy to find Windows Element.
      * @return
      *      the found elements
      * @throws StepFailedException
