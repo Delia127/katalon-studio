@@ -72,8 +72,6 @@ public class ActivationDialogV2 extends AbstractDialog {
     private Label lblMachineKeyDetail;
 
     private Link lnkConfigProxy;
-
-    private Link lnkOfflineActivation;
     
     private Link lnkOfflineActivation2;
 
@@ -141,14 +139,6 @@ public class ActivationDialogV2 extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch(StringConstants.AGREE_TERM_URL);
-            }
-        });
-
-        lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                setReturnCode(REQUEST_OFFLINE_CODE);
-                close();
             }
         });
         
@@ -472,16 +462,6 @@ public class ActivationDialogV2 extends AbstractDialog {
         lnkForgotPassword = new Link(linkBar, SWT.NONE);
         lnkForgotPassword.setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_RESET_PASSWORD));
         lnkForgotPassword.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
-
-        Label label = new Label(linkBar, SWT.SEPARATOR);
-        GridData gdSeparator = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-        gdSeparator.heightHint = 22;
-        label.setLayoutData(gdSeparator);
-
-        lnkOfflineActivation = new Link(linkBar, SWT.NONE);
-        lnkOfflineActivation
-                .setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_KSE_ACTIVATION));
-        lnkOfflineActivation.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
         
         Label label3 = new Label(linkBar, SWT.SEPARATOR);
         GridData gdSeparatorofOfline = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -491,7 +471,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         lnkOfflineActivation2 = new Link(linkBar, SWT.NONE);
         lnkOfflineActivation2
                 .setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATION));
-        lnkOfflineActivation.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+        lnkOfflineActivation2.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 
         Label label4 = new Label(linkBar, SWT.SEPARATOR);
         label4.setLayoutData(gdSeparatorofOfline);
