@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.handlers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
@@ -18,18 +19,18 @@ public class LogoutHandler {
         try {
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, "", true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, "", true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, "", true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, "", true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, "", true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, StringUtils.EMPTY, true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, StringUtils.EMPTY, true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, StringUtils.EMPTY, true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, StringUtils.EMPTY, true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, StringUtils.EMPTY, true);
             
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE) != null) {
-                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, "", true);
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, StringUtils.EMPTY, true);
             }
             
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN) != null) {
-                ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, "", true);
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, StringUtils.EMPTY, true);
             }
             
             ActivationInfoCollector.setActivated(false);

@@ -244,10 +244,10 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                             // else build development mode for qTest package
                             if (isQtest) {
                                 echo "Building: qTest Prod"
-                                sh "mvn -pl \\!com.kms.katalon.product clean ${command} -P prod"
+                                sh "mvn clean ${command} -P prod"
                             } else {
                                 echo "Building: Standard Prod"
-                                sh "mvn -pl \\!com.kms.katalon.product.qtest_edition clean ${command} -P prod"
+                                sh "mvn clean ${command} -P prod"
                             }
 
                             // Generate API docs
