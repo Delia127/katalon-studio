@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="469">
+<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="468">
 <locations>
+<location path="${eclipse_home}" type="Directory"/>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.codehaus.groovy.compilerless.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <unit id="org.codehaus.groovy23.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
@@ -15,6 +16,7 @@
 <unit id="org.codehaus.groovy21.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <repository location="http://localhost:33333/site/"/>
 </location>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit"/>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.objectweb.asm.all.debug" version="5.0.3"/>
 <unit id="ch.qos.logback.classic" version="1.2.3"/>
@@ -167,7 +169,6 @@
 <unit id="org.eclipse.jetty.websocket.api" version="9.3.9.v20160517"/>
 <repository location="http://localhost:9999/site"/>
 </location>
-<location path="${eclipse_home}" type="Directory"/>
 </locations>
 <includeBundles>
 <plugin id="antlr"/>
