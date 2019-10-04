@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.handlers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
@@ -29,13 +30,14 @@ public class LogoutHandler {
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, "", true);
+
             
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE) != null) {
-                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, "", true);
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, StringUtils.EMPTY, true);
             }
             
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN) != null) {
-                ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, "", true);
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, StringUtils.EMPTY, true);
             }
             
             ActivationInfoCollector.setActivated(false);
