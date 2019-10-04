@@ -17,7 +17,13 @@ public class LogoutHandler {
     public void execute() {
         try {
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-
+            
+            try {
+                ActivationInfoCollector.releaseLicense();
+            } catch (Exception e) {
+                LogUtil.logError(e);
+            }
+            
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, "", true);

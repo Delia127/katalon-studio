@@ -294,32 +294,34 @@ public class ActivationInfoCollector {
     
     public static void releaseLicense() throws Exception {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-        License license = parseLicense(jwsCode, null);
-        boolean isOffline = license.getFeatures()
-                .stream()
-                .anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
-        if (!isOffline) {
-            String serverUrl = ApplicationInfo.getTestOpsServer();
-            String machineId = MachineUtil.getMachineId();
-            String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-            long orgId = license.getOrganizationId();
-            String token;
-            if (StringUtils.isBlank(apiKey)) {
-                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
-            } else {
-                token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
+        if (StringUtils.isNotBlank(jwsCode)) {
+            License license = parseLicense(jwsCode, null);
+            boolean isOffline = license.getFeatures()
+                    .stream()
+                    .anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
+            if (!isOffline) {
+                String serverUrl = ApplicationInfo.getTestOpsServer();
+                String machineId = MachineUtil.getMachineId();
+                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                long orgId = license.getOrganizationId();
+                String token;
+                if (StringUtils.isBlank(apiKey)) {
+                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
+                } else {
+                    token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
+                }
+               KatalonApplicationActivator.getFeatureActivator().releaseLicense(
+                       serverUrl,
+                       machineId,
+                       ksVersion,
+                       sessionId,
+                       orgId,
+                       token
+               );
             }
-           KatalonApplicationActivator.getFeatureActivator().releaseLicense(
-                   serverUrl,
-                   machineId,
-                   ksVersion,
-                   sessionId,
-                   orgId,
-                   token
-           );
         }
     }
 
