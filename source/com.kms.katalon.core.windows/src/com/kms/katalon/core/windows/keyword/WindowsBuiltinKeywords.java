@@ -446,12 +446,46 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Find element by test object
+     * Finds element by using locator value of the given windowsObject.
+     * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
      * @return
-     *      the found element
+     *      The found element
+     *      
      * @throws StepFailedException
+     * 
+     * @since 7.0.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static WebElement findElement(WindowsTestObject windowsObject, FailureHandling flowControl)
+            throws StepFailedException {
+        return (WebElement) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElement", windowsObject);
+    }
+
+
+    /**
+     * Finds element by using locator value of the given windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @return
+     *      The found element
+     *      
+     * @throws StepFailedException
+     * 
+     * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
     public static WebElement findElement(WindowsTestObject windowsObject)
@@ -460,12 +494,48 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Find elements by test object
+     * Finds elements by using locator value of the given windowsObject.
+     * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
      * @return
-     *      the found elements
+     *      The found elements
+     *      
      * @throws StepFailedException
+     * If the Windows element doesn't exist, or KS could not get text of the element.
+     * 
+     * @since 7.0.0
+     */
+    @SuppressWarnings("unchecked")
+    @Keyword(keywordObject = "Element")
+    public static List<WebElement> findElements(WindowsTestObject windowsObject, FailureHandling flowControl)
+            throws StepFailedException {
+        return (List<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElements", windowsObject, flowControl);
+    }
+
+    /**
+     * Finds elements by using locator value of the given windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @return
+     *      The found elements
+     *      
+     * @throws StepFailedException
+     * If the Windows element doesn't exist, or KS could not get text of the element.
+     * 
+     * @since 7.0.0
      */
     @SuppressWarnings("unchecked")
     @Keyword(keywordObject = "Element")
