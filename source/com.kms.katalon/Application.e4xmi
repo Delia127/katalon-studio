@@ -160,6 +160,10 @@
         <children xsi:type="menu:Menu" xmi:id="_RQKm0M7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.menu.webTools" label="Web">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running WebDrivers" command="_631dcM7NEemY2ti3wcTZeQ"/>
         </children>
+        <children xsi:type="menu:Menu" xmi:id="_HKkFUOZyEemHBaFKs9NW4A" elementId="com.kms.katalon.menu.utilityTools" label="Import/Export Test Artifact" tooltip="Import/Export Test Artifact">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_MLN7wOZyEemHBaFKs9NW4A" elementId="com.kms.katalon.handledmenuitem.testArtifact" label="Import Test Artifacts" command="_YVmN8OZyEemHBaFKs9NW4A"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_nCk_wOZyEemHBaFKs9NW4A" elementId="com.kms.katalon.handledmenuitem.exportTestArtifact" label="Export Test Artifacts" command="_xTOwMOZyEemHBaFKs9NW4A"/>
+        </children>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
@@ -205,12 +209,6 @@
         </children>
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0">
           <persistedState key="index" value="2"/>
-        </children>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_vacCkNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new" label="New" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_24.png" tooltip="" command="_4ZGKMNukEeaEL7_gfQD4GQ">
-          <persistedState key="index" value="3"/>
-          <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_disabled_24.png"/>
-          <tags>FORCE_TEXT</tags>
-          <menu xmi:id="_x0pbMNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new.menu" label=""/>
         </children>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_OxkeMMe1Eei46rf775bdjg" elementId="com.kms.katalon.toolcontrol.separator" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.SeparatorToolControl"/>
@@ -260,7 +258,6 @@
   <handlers xmi:id="_uIDlQNn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.handler.resetPerspective" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ResetPerspectiveHandler" command="_oilxkNn4EeWQyuuwTERZYg"/>
   <handlers xmi:id="_oHfwwGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handler.welcome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenWelcomePageHandler" command="_jm89wGgxEeatJ4Re1SnNtw"/>
   <handlers xmi:id="_Z3rb4Gp9EeakEakFblwi9Q" elementId="com.kms.katalon.handler.functionsIntroduction" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenFunctionsIntroductionHandler" command="_agaP0Gp9EeakEakFblwi9Q"/>
-  <handlers xmi:id="_dcHiMNurEeaEL7_gfQD4GQ" elementId="com.kms.katalon.handler.toolbar.new" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.NewHandler" command="_4ZGKMNukEeaEL7_gfQD4GQ"/>
   <handlers xmi:id="_fCWuYOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handler.reportIssue" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ReportIssueHandler" command="_blPuUOxNEeal34fhcBE7BQ"/>
   <handlers xmi:id="_sGnLMNxwEeaEL7_gfQD4GQ" elementId="com.kms.katalon.handler.commandpalette" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.CommandPaletteHandler" command="_nGeSINxwEeaEL7_gfQD4GQ"/>
   <handlers xmi:id="_MI5sEPKjEeaEMap8QCd-4Q" elementId="com.kms.katalon.handler.preferences" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.PreferenceHandler" command="_H0WtsPKjEeaEMap8QCd-4Q"/>
@@ -281,6 +278,9 @@
   <handlers xmi:id="_0mYYYKLZEemSv8QN3vNGMQ" elementId="com.kms.katalon.handler.quickstart" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenQuickStartDialogHandler" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
   <handlers xmi:id="_Uz26kM7OEemY2ti3wcTZeQ" elementId="com.kms.katalon.handler.killRunningWebdriverProcess" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.KillRunningWebdriverProcessHandler" command="_631dcM7NEemY2ti3wcTZeQ"/>
   <handlers xmi:id="_RRcl4OWaEemDQJN2QfizAQ" elementId="com.kms.katalon.handler.toolbar.community" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.CommunityHandler" command="_Hoo1YOWWEemDQJN2QfizAQ"/>
+  <handlers xmi:id="_6no60OZyEemHBaFKs9NW4A" elementId="com.kms.katalon.handler.importTestArtifacts" command="_2sDjkOBxEeejXLn7_j51hg"/>
+  <handlers xmi:id="_AT22wOZzEemHBaFKs9NW4A" elementId="com.kms.katalon.handler.exportTestArtifact" contributionURI="bundleclass://com.kms.katalon.composer.artifact/target.classes.com.kms.katalon.composer.artifact.handler.ExportTestArtifactHandler" command="_xTOwMOZyEemHBaFKs9NW4A"/>
+  <handlers xmi:id="_Es-hMOZ1EemHBaFKs9NW4A" elementId="com.kms.katalon.handler.importTestArtifact" contributionURI="bundleclass://com.kms.katalon.composer.artifact/target.classes.com.kms.katalon.composer.artifact.handler.ImportTestArtifactHandler" command="_YVmN8OZyEemHBaFKs9NW4A"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -301,7 +301,6 @@
   <commands xmi:id="_agaP0Gp9EeakEakFblwi9Q" elementId="com.kms.katalon.command.openFunctionsIntroductionCommand" commandName="openFunctionsIntroductionCommand"/>
   <commands xmi:id="_uIL9wI7GEeantftUyMtBVg" elementId="org.eclipse.ui.edit.undo" commandName="undoCommand"/>
   <commands xmi:id="_2yTOMI7GEeantftUyMtBVg" elementId="org.eclipse.ui.edit.redo" commandName="redoCommand"/>
-  <commands xmi:id="_4ZGKMNukEeaEL7_gfQD4GQ" elementId="com.kms.katalon.command.new" commandName="New Command" description="Command for New button on toolbar"/>
   <commands xmi:id="_blPuUOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.command.reportIssue" commandName="reportIssueCommand"/>
   <commands xmi:id="_nGeSINxwEeaEL7_gfQD4GQ" elementId="com.kms.katalon.command.commandpalette" commandName="Command Palette"/>
   <commands xmi:id="_H0WtsPKjEeaEMap8QCd-4Q" elementId="com.kms.katalon.command.katalonpreferences" commandName="Katalon Preferences"/>
@@ -323,6 +322,8 @@
   <commands xmi:id="_2X2LcKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.command.quickstart" commandName="QuickStart"/>
   <commands xmi:id="_631dcM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.command.killProcessWebDriver" commandName="TerminateRunningWebDrivers"/>
   <commands xmi:id="_Hoo1YOWWEemDQJN2QfizAQ" elementId="com.kms.katalon.command.community" commandName="Community"/>
+  <commands xmi:id="_YVmN8OZyEemHBaFKs9NW4A" elementId="com.kms.katalon.command.testArtifact" commandName="Import Test Artifacts"/>
+  <commands xmi:id="_xTOwMOZyEemHBaFKs9NW4A" elementId="com.kms.katalon.command.exporttestartifacts" commandName="Export Test Artifacts"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
