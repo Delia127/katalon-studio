@@ -9,14 +9,14 @@ import org.eclipse.swt.graphics.Image;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ImageUtil;
-import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
+import com.kms.katalon.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.execution.collection.provider.TestExecutionConfigurationProvider;
 
 public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabelProvider<TestSuiteRunConfiguration> {
 

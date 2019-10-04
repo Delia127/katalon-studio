@@ -3,12 +3,12 @@ package com.kms.katalon.composer.webui.execution.testsuite;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionDriverEntry;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
 import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.execution.collection.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.execution.collection.provider.TestExecutionDriverEntry;
+import com.kms.katalon.execution.collection.provider.TestExecutionGroup;
+import com.kms.katalon.execution.collection.provider.TestExecutionItem;
 
 public class WebDesktopExecutionGroup implements TestExecutionGroup {
 

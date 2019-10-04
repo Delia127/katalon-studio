@@ -16,13 +16,13 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransferData;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
+import com.kms.katalon.execution.collection.collector.TestExecutionGroupCollector;
 
 public class TestSuiteTableDropListener extends TableDropTargetEffect {
 

@@ -70,6 +70,7 @@ public class LifeCycleManager {
         setupHandlers();
         setupPreferences();
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_CREATED, "");
+
         WORKSPACE_CREATED = true;
     }
 

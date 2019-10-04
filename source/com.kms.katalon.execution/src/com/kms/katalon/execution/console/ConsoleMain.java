@@ -34,6 +34,7 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleMainOptionContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -362,9 +363,9 @@ public class ConsoleMain {
     }
 
     private static void reloadPlugins(String apiKey) throws Exception {
-        Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon.misc");
         Class<?> reloadPluginsHandlerClass = katalonBundle
-                .loadClass("com.kms.katalon.composer.handlers.ConsoleModeReloadPluginsHandler");
+                .loadClass("com.kms.katalon.misc.plugin.handler.ConsoleModeReloadPluginsHandler");
         Object handler = reloadPluginsHandlerClass.newInstance();
         Method reloadMethod = Arrays.asList(reloadPluginsHandlerClass.getMethods()).stream()
                 .filter(method -> method.getName().equals("reload"))

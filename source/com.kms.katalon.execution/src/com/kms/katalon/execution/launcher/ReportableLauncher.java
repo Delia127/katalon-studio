@@ -22,7 +22,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
 import com.kms.katalon.application.utils.VersionUtil;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
@@ -38,6 +37,7 @@ import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
@@ -143,7 +143,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
             TestSuiteExecutedEntity executedEntity = (TestSuiteExecutedEntity) getExecutedEntity();
             TestSuiteEntity testSuite = (TestSuiteEntity) executedEntity.getEntity();
-            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.TEST_SUITE_FINISHED, testSuite);
+            ExecutionBundleActivator.getInstance().getEventBroker().post(EventConstants.TEST_SUITE_FINISHED, testSuite);
         }
 
         if (needToRerun()) {
@@ -484,7 +484,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (executedEntity instanceof TestSuiteExecutedEntity) {
             TestSuiteExecutionContextImpl executionContext = getTestSuiteExecutionContext();
             TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);
-            EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
+            ExecutionBundleActivator.getInstance().getEventBroker().post(eventName, eventObject);
         }
         return null;
     }

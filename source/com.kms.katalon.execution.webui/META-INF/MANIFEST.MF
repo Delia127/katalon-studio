@@ -18,9 +18,8 @@ Import-Package: com.kms.katalon.util.collections,
  org.eclipse.core.commands,
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
- org.eclipse.e4.core.services.events,
- org.eclipse.ui,
  org.eclipse.e4.core.di,
+ org.eclipse.e4.core.services.events,
  org.osgi.framework,
  org.osgi.service.event
 Bundle-Activator: com.kms.katalon.execution.webui.addon.WebUiExecutionBundleActivator

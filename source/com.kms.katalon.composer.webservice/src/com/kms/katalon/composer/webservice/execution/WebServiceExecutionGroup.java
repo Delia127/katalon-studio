@@ -1,9 +1,9 @@
 package com.kms.katalon.composer.webservice.execution;
 
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.execution.collection.provider.TestExecutionGroup;
+import com.kms.katalon.execution.collection.provider.TestExecutionItem;
 
 public class WebServiceExecutionGroup implements TestExecutionGroup {
 

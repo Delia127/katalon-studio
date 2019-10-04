@@ -6,6 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.execution.classpath,
+ com.kms.katalon.execution.collection.collector,
+ com.kms.katalon.execution.collection.provider,
  com.kms.katalon.execution.collector,
  com.kms.katalon.execution.configuration,
  com.kms.katalon.execution.configuration.contributor,
@@ -74,9 +76,7 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.jdt.launching,
  com.kms.katalon.util,
  com.kms.katalon.application,
- com.kms.katalon.composer.components,
  org.greenrobot.eventbus,
- com.kms.katalon.composer.components.impl,
  com.kms.katalon.tracking,
  com.kms.katalon.core.webservice,
  com.katalon.platform,

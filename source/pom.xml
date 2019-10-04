@@ -51,6 +51,8 @@
 		<module>com.kms.katalon.composer.webui.recorder</module>
 		<module>com.kms.katalon.composer.webui</module>
 		<module>com.kms.katalon.composer.windows</module>
+		<module>com.kms.katalon.composer.platform.internal</module>
+		<module>com.kms.katalon.activation</module>
 		<module>com.kms.katalon.console</module>
 		<module>com.kms.katalon.constant</module>
 		<module>com.kms.katalon.controller</module>
@@ -71,6 +73,7 @@
 		<module>com.kms.katalon.execution.windows</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
+		<module>com.kms.katalon.feature.engine</module>
 		<module>com.kms.katalon.groovy</module>
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>

@@ -2475,13 +2475,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.codehaus.mojo.animal-sniffer-annotations"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"
          download-size="0"
          install-size="0"
@@ -2489,21 +2482,7 @@
          unpack="false"/>
 
    <plugin
-         id="com.google.errorprone.error_prone_annotations"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.fasterxml.woodstox.woodstox-core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.j2objc.annotations"
          download-size="0"
          install-size="0"
          version="0.0.0"

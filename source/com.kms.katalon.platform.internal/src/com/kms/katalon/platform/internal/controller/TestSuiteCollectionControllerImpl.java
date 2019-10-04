@@ -6,7 +6,6 @@ import com.katalon.platform.api.controller.TestSuiteCollectionController;
 import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.model.ProjectEntity;
 import com.katalon.platform.api.model.TestSuiteCollectionEntity;
-import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.controller.exception.ControllerException;
@@ -14,6 +13,7 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
+import com.kms.katalon.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.platform.internal.entity.TestSuiteCollectionEntityImpl;
 
 public class TestSuiteCollectionControllerImpl implements TestSuiteCollectionController {
