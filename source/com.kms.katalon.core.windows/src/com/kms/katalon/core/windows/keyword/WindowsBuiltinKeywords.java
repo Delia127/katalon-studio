@@ -511,7 +511,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * 
      * @return
-     *      The found elements.
+     * The found elements.
      *      
      * @throws StepFailedException
      * If KS could not find any element.
@@ -532,7 +532,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * An object that describes locator and locator strategy to find Windows Element.
      * 
      * @return
-     *      The found elements.
+     * The found elements.
      *      
      * @throws StepFailedException
      * If KS could not find any element.
