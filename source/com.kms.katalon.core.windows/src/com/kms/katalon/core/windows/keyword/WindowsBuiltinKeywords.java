@@ -499,7 +499,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * Finds elements by using locator value of the given windowsObject.
      * 
      * @param windowsObject
-     * An object that describes locator and locator strategy to find Windows Element.
+     * An object that describes locator and locator strategy to find Windows Elements.
      * 
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
@@ -529,7 +529,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * Finds elements by using locator value of the given windowsObject.
      * 
      * @param windowsObject
-     * An object that describes locator and locator strategy to find Windows Element.
+     * An object that describes locator and locator strategy to find Windows Elements.
      * 
      * @return
      * The found elements.
