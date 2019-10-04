@@ -75,7 +75,6 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "--plugin",
                 CucumberReporter.class.getName()
             ]
-            System.out.println(argv)
             if (runningMode == RunningMode.CONSOLE) {
                 argv = argv + ["--monochrome"]
             }
@@ -104,30 +103,52 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             logger.logInfo(
                     MessageFormat.format("Starting run keyword runFeatureFile: ''{0}'' and extract report to folder: ''{1}''...",
                     relativeFilePath, reportDir))
-            String[] argv = ["-g", "",]
+            String[] argv = []
 
-            if(cucumberOptions.glue().size() > 0) {
-                for(String g : cucumberOptions.glue()) {
+            if(cucumberOptions.glue().size() >= 0) {
+                if(cucumberOptions.glue().size() == 0) {
                     argv = argv + ["-g"]
-                    argv = argv + g
+                    argv = argv + ""
+                } else {
+                    for(String g : cucumberOptions.glue()) {
+                        argv = argv + ["-g"]
+                        argv = argv + g
+                    }
                 }
+
             }
-            if(cucumberOptions.name().size() >0) {
-                for(String name : cucumberOptions.name()) {
+            
+            if(cucumberOptions.name().size() >= 0) {
+                if(cucumberOptions.name().size() == 0) {
                     argv = argv + ["--name"]
-                    argv = argv + name
+                    argv = argv + ""
+                } else {
+                    for(String name : cucumberOptions.name()) {
+                        argv = argv + ["--name"]
+                        argv = argv + name
+                    }
                 }
+
             }
+            
             String filePath = projectDir + "/" + relativeFilePath
             argv = argv +  filePath
+            
             if(cucumberOptions.strict()) {
                 argv = argv + ["--strict"]
             }
-            if(cucumberOptions.plugin().size() > 0) {
-                for(String plugin : cucumberOptions.plugin()) {
+            
+            if(cucumberOptions.plugin().size() >= 0) {
+                if(cucumberOptions.plugin().size() == 0) {
                     argv = argv + ["--plugin"]
-                    argv = argv + plugin
+                    argv = argv + ""
+                } else {
+                    for(String plugin : cucumberOptions.plugin()) {
+                        argv = argv + ["--plugin"]
+                        argv = argv + plugin
+                    }
                 }
+
             }
             if(cucumberOptions.snippets().name().length() > 0) {
                 argv = argv + ["--snippets"]
@@ -136,21 +157,25 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             if(cucumberOptions.dryRun()){
                 argv = argv + ["-d"]
             }
-            if(cucumberOptions.tags().size() > 0) {
-                for(String tag : cucumberOptions.tags()) {
+            if(cucumberOptions.tags().size() >= 0) {
+                if(cucumberOptions.tags().size() == 0) {
                     argv = argv + ["--tags"]
-                    argv = argv + tag
+                    argv = argv + ""
+                } else {
+                    for(String tag : cucumberOptions.tags()) {
+                        argv = argv + ["--tags"]
+                        argv = argv + tag
+                }
+
                 }
             }
-            if(cucumberOptions.junit().size() > 0) {
+            if(cucumberOptions.junit().size() >= 0) {
                 for(String unit : cucumberOptions.junit()) {
-                    //                    argv = argv + ["--junit"]
                     argv = argv + unit
                 }
             }
 
-            if(cucumberOptions.features().size() > 0) {
-                // argv = argv + ["--features"]
+            if(cucumberOptions.features().size() >= 0) {
                 for(String feature : cucumberOptions.features()) {
                     argv = argv + feature
                 }
@@ -159,7 +184,6 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             if (runningMode == RunningMode.CONSOLE) {
                 argv = argv + ["--monochrome"]
             }
-            System.out.println(argv)
             boolean runSuccess = Main.run(argv, CucumberBuiltinKeywords.class.getClassLoader()) == 0;
             CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(
                     runSuccess ? 'passed' : 'failed', reportDir)
@@ -260,31 +284,51 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             logger.logInfo(
                     MessageFormat.format("Starting run keyword runFeatureFolder: ''{0}'' and extract report to folder: ''{1}''...",
                     folderRelativePath, reportDir))
-            String[] argv = ["-g", "",]
-
-            if(cucumberOptions.glue().size() > 0) {
-                for(String g : cucumberOptions.glue()) {
+            String[] argv = []
+            if(cucumberOptions.glue().size() >= 0) {
+                if(cucumberOptions.glue().size() == 0) {
                     argv = argv + ["-g"]
-                    argv = argv + g
+                    argv = argv + ""
+                } else {
+                    for(String g : cucumberOptions.glue()) {
+                        argv = argv + ["-g"]
+                        argv = argv + g
+                    }
                 }
-            }
-            if(cucumberOptions.name().size() >0) {
-                for(String name : cucumberOptions.name()) {
-                    argv = argv + ["--name"]
-                    argv = argv + name
-                }
+
             }
 
+            if(cucumberOptions.name().size() >= 0) {
+                if(cucumberOptions.name().size() == 0) {
+                    argv = argv + ["--name"]
+                    argv = argv + ""
+                } else {
+                    for(String name : cucumberOptions.name()) {
+                        argv = argv + ["--name"]
+                        argv = argv + name
+                    }
+                }
+
+            }
+            
             String filePath = projectDir + "/" + folderRelativePath
             argv = argv +  filePath
+            
             if(cucumberOptions.strict()) {
                 argv = argv + ["--strict"]
             }
-            if(cucumberOptions.plugin().size() > 0) {
-                for(String plugin : cucumberOptions.plugin()) {
+            
+            if(cucumberOptions.plugin().size() >= 0) {
+                if(cucumberOptions.plugin().size() == 0) {
                     argv = argv + ["--plugin"]
-                    argv = argv + plugin
+                    argv = argv + ""
+                } else {
+                    for(String plugin : cucumberOptions.plugin()) {
+                        argv = argv + ["--plugin"]
+                        argv = argv + plugin
+                    }
                 }
+
             }
             if(cucumberOptions.snippets().name().length() > 0) {
                 argv = argv + ["--snippets"]
@@ -293,24 +337,30 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             if(cucumberOptions.dryRun()){
                 argv = argv + ["-d"]
             }
-            if(cucumberOptions.tags().size() > 0) {
-                for(String tag : cucumberOptions.tags()) {
+            if(cucumberOptions.tags().size() >= 0) {
+                if(cucumberOptions.tags().size() == 0) {
                     argv = argv + ["--tags"]
-                    argv = argv + tag
+                    argv = argv + ""
+                } else {
+                    for(String tag : cucumberOptions.tags()) {
+                        argv = argv + ["--tags"]
+                        argv = argv + tag
+                }
+
                 }
             }
-            if(cucumberOptions.junit().size() > 0) {
+            if(cucumberOptions.junit().size() >= 0) {
                 for(String unit : cucumberOptions.junit()) {
-                    //                    argv = argv + ["--junit"]
                     argv = argv + unit
                 }
             }
-            if(cucumberOptions.features().size() > 0) {
-                // argv = argv + ["--features"]
+
+            if(cucumberOptions.features().size() >= 0) {
                 for(String feature : cucumberOptions.features()) {
                     argv = argv + feature
                 }
             }
+            
             if (runningMode == RunningMode.CONSOLE) {
                 argv = argv + ["--monochrome"]
             }
