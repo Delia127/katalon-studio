@@ -115,7 +115,7 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
-            boolean isDevelopmentMode = Platform.inDebugMode();
+            boolean isDevelopmentMode = Platform.inDevelopmentMode();
             boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
             if (!isDevelopmentMode && !isRunningInKatalonC) {
                 String extension = OSUtil.getExecutableExtension();

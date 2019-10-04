@@ -6,10 +6,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="com.kms.katalon.application"
-            name="Katalon Studio">
+            name="Katalon Studio Engine">
          <property
                name="appName"
-               value="Katalon Studio">
+               value="Katalon Studio Engine">
          </property>
          <property 
          		name="applicationXMI" 
@@ -23,7 +23,11 @@
 		    name="rendererFactoryUri"
 		    value="bundleclass://com.kms.katalon/com.kms.katalon.composer.components.CustomWorkbenchRendererFactory">
 		</property>
-	   <property
+         <property
+               name="cssTheme"
+               value="platform:/plugin/com.kms.katalon/css/default.css">
+         </property>
+         <property
                name="windowImages"
                value="icons/branding_16.png,icons/branding_32.png,icons/branding_48.png,icons/branding_64.png,icons/branding_128.png,icons/branding_256.png">
          </property>
@@ -40,20 +44,8 @@
                value="0,290,450,10">
          </property>
          <property
-               name="cssTheme"
-               value="platform:/plugin/com.kms.katalon/css/default.css">
-         </property>
-         <property
                name="applicationCSS"
                value="platform:/plugin/com.kms.katalon/css/default.css">
-         </property>
-         <property
-               name="aboutImage"
-               value="icons/branding_128.png">
-         </property>
-         <property
-               name="aboutText"
-               value="%productBlurb">
          </property>
          <property
                name="preferenceCustomization"
@@ -162,4 +154,17 @@
           label="Katalon Default">
     </theme>
  </extension>
+ 
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="com.kms.katalon.product.engine.product"
+            application="com.kms.katalon.application">
+         <property
+               name="appName"
+               value="com.kms.katalon.console.product">
+         </property>
+      </product>
+   </extension>
 </plugin>
