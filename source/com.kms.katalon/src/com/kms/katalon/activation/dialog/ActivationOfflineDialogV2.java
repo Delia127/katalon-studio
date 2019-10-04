@@ -14,6 +14,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -33,6 +34,8 @@ import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
@@ -46,14 +49,12 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     private Label lblProgressMessage;
     
     private Link lnkOfflineActivation;
-    
-    private Link lnkEnterprieseTrialLicense;
 
-    private Link lnkOnlineRequest;
+    private Button btnOnlineRequest;
     
     private Button btnCopyToClipboard;
     
-    private Label lblMachineKeyDetail;
+    private Text txtMachineKeyDetail;
     
     private Text txtLicenseFile;
     
@@ -83,12 +84,12 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Clipboard cb = new Clipboard(getShell().getDisplay());
-                cb.setContents(new Object[] { lblMachineKeyDetail.getText() },
+                cb.setContents(new Object[] { txtMachineKeyDetail.getText() },
                         new Transfer[] { TextTransfer.getInstance() });
             }
         });
         
-        lnkOnlineRequest.addSelectionListener(new SelectionAdapter() {
+        btnOnlineRequest.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (navigateFromSignUp) {
@@ -110,14 +111,8 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Program.launch(StringConstants.OFFLINE_ACTIVATION);
-            }
-        });
-        
-        lnkEnterprieseTrialLicense.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Program.launch(StringConstants.ENTERPRISE_TRIAL_LICENSE);
+                Program.launch(e.text);
+
             }
         });
 
@@ -179,19 +174,22 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         lblMachineKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblMachineKey.setText(MessageConstants.ActivationOfflineDialogV2_LBL_MACHINE_KEY);
         
-        lblMachineKeyDetail = new Label(composite, SWT.NONE);
-        lblMachineKeyDetail.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        lblMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
-        increateFontSize(lblMachineKeyDetail, 2);
+        txtMachineKeyDetail = new Text(composite, SWT.BORDER);
+        txtMachineKeyDetail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        txtMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
+       // increateFontSize(txtMachineKeyDetail, 2);
         try {
-            lblMachineKeyDetail.setText(MachineUtil.getMachineId());
+            txtMachineKeyDetail.setText(MachineUtil.getMachineId());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
         
         btnCopyToClipboard = new Button(composite, SWT.PUSH);
+        GridData gdCopyToClipboard = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+        gdCopyToClipboard.widthHint = 80;
+        btnCopyToClipboard.setLayoutData(gdCopyToClipboard);
         btnCopyToClipboard.setText(MessageConstants.BTN_COPY_TITLE);
-        
+
         Label lblLicenseFile = new Label(composite, SWT.NONE);
         lblLicenseFile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblLicenseFile.setText(MessageConstants.ActivationOfflineDialogV2_LBL_LICENSE_FILE);
@@ -200,29 +198,22 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         txtLicenseFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         
         btnChooseFile = new Button(composite, SWT.PUSH);
+        GridData gdChooseFile = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+        gdChooseFile.widthHint = 80;
+        btnChooseFile.setLayoutData(gdChooseFile);
         btnChooseFile.setText(MessageConstants.ActivationOfflineDialogV2_BTN_CHOOSE_FILE);
         
         Composite offlineComposite = new Composite(container, SWT.NONE);
         GridLayout glOfflineComposite = new GridLayout();
-        glOfflineComposite.numColumns = 2;
         glOfflineComposite.verticalSpacing = 10;
         offlineComposite.setLayout(glOfflineComposite);
-        offlineComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        offlineComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
         lnkOfflineActivation = new Link(offlineComposite, SWT.NONE);
         lnkOfflineActivation.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KS);
-        lnkEnterprieseTrialLicense = new Link(offlineComposite, SWT.NONE);
-        lnkEnterprieseTrialLicense.setText(MessageConstants.ActivationDialogV2_LBL_ENTERPRISE_LICENSE);
-        
-        Composite messageComposite = new Composite(container, SWT.NONE);
-        GridLayout glMessageComposite = new GridLayout();
-        glMessageComposite.verticalSpacing = 10;
-        messageComposite.setLayout(glMessageComposite);
-        messageComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        
-        lblProgressMessage = new Label(messageComposite, SWT.NONE);
-        lblProgressMessage.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
-        lnkAgreeTerm = new Link(messageComposite, SWT.WRAP);
+        lnkAgreeTerm = new Link(offlineComposite, SWT.WRAP);
+        GridData gdLnkAgreeTerm = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lnkAgreeTerm.setLayoutData(gdLnkAgreeTerm);
         lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);
         
         return container;
@@ -235,18 +226,24 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         bottomBar.setLayout(new GridLayout(2, false));
 
         Composite bottomLeftComposite = new Composite(bottomBar, SWT.NONE);
-        bottomLeftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        bottomLeftComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
         bottomLeftComposite.setLayout(new GridLayout());
 
-        lnkOnlineRequest = new Link(bottomLeftComposite, SWT.NONE);
-        lnkOnlineRequest.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
-        lnkOnlineRequest.setText(String.format("<a>%s</a>", MessageConstants.ActivationOfflineDialogV2_LNK_BACK));
+        btnOnlineRequest = new Button(bottomLeftComposite, SWT.PUSH);
+        GridData gdBtnOnlineRequest = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+        gdBtnOnlineRequest.widthHint = 84;
+        btnOnlineRequest.setLayoutData(gdBtnOnlineRequest);
+        btnOnlineRequest.setText(MessageConstants.ActivationOfflineDialogV2_LNK_BACK);
+        getShell().setDefaultButton(btnOnlineRequest);
 
         Composite bottomRightComposite = new Composite(bottomBar, SWT.NONE);
         bottomRightComposite.setLayout(new GridLayout());
         bottomRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
         btnActivate = new Button(bottomRightComposite, SWT.PUSH);
+        GridData gdBtnActivate = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+        gdBtnActivate.widthHint = 84;
+        btnActivate.setLayoutData(gdBtnActivate);
         btnActivate.setText(MessageConstants.BTN_ACTIVATE_TITLE);
         getShell().setDefaultButton(btnActivate);
 
@@ -279,7 +276,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         return MessageConstants.DIALOG_OFFLINE_TITLE;
     }
     
-    private void increateFontSize(Label label, int sizeIncreased) {
+    private void increateFontSize(Text label, int sizeIncreased) {
         FontData fontData = label.getFont().getFontData()[0];
         fontData.setHeight(fontData.getHeight() + sizeIncreased);
         label.setFont(new Font(label.getDisplay(), fontData));
