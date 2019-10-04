@@ -101,14 +101,8 @@ public class GlobalVariableController extends EntityController {
             }
         }
     }
-    
-    /**
-     * Wait until ${project}/bin/lib/internal/GlobalVariable.class becomes available within 30s
-     * 
-     * @param project Current Katalon Project
-     * @throws InterruptedException
-     */
-    public void waitForGlobalVariableClassFileAvailable(ProjectEntity project) throws InterruptedException {
+
+    private void waitForGlobalVariableClassFileAvailable(ProjectEntity project) throws InterruptedException {
         File globalVariableClassFile = new File(project.getFolderLocation(), "bin/lib/internal/GlobalVariable.class");
         long time = System.currentTimeMillis();
         while (System.currentTimeMillis() - time < TimeUnit.MINUTES.toMillis(5) && !globalVariableClassFile.exists()) {
