@@ -1,5 +1,7 @@
 package com.kms.katalon.core.windows.keyword;
 
+import java.util.List;
+
 import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.core.annotation.Keyword;
@@ -441,5 +443,34 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = "Element")
     public static void sendKeys(WindowsTestObject windowsObject, String strKeys) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "sendKeys", windowsObject, strKeys);
+    }
+
+    /**
+     * Find element by test object
+     * @param windowsObject
+     *      represent a element
+     * @return
+     *      the found element
+     * @throws StepFailedException
+     */
+    @Keyword(keywordObject = "Element")
+    public static WebElement findElement(WindowsTestObject windowsObject)
+            throws StepFailedException {
+        return (WebElement) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElement", windowsObject);
+    }
+
+    /**
+     * Find elements by test object
+     * @param windowsObject
+     *      represent a element
+     * @return
+     *      the found elements
+     * @throws StepFailedException
+     */
+    @SuppressWarnings("unchecked")
+    @Keyword(keywordObject = "Element")
+    public static List<WebElement> findElements(WindowsTestObject windowsObject)
+            throws StepFailedException {
+        return (List<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElements", windowsObject);
     }
 }
