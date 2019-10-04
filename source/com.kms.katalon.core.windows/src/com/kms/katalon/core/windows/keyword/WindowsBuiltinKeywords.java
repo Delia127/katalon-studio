@@ -461,9 +461,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * 
      * @return
-     *      The found element
+     * The found element.
      *      
      * @throws StepFailedException
+     * If KS could not find any element.
      * 
      * @since 7.0.0
      */
@@ -481,9 +482,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * An object that describes locator and locator strategy to find Windows Element.
      * 
      * @return
-     *      The found element
+     * The found element.
      *      
      * @throws StepFailedException
+     * If KS could not find any element.
      * 
      * @since 7.0.0
      */
@@ -509,7 +511,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * 
      * @return
-     *      The found elements
+     *      The found elements.
      *      
      * @throws StepFailedException
      * If KS could not find any element.
@@ -530,7 +532,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * An object that describes locator and locator strategy to find Windows Element.
      * 
      * @return
-     *      The found elements
+     *      The found elements.
      *      
      * @throws StepFailedException
      * If KS could not find any element.
