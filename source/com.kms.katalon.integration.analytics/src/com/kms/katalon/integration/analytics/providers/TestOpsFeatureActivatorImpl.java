@@ -50,9 +50,9 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
 
     @Override
     public void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,
-            String packageName, long orgId, String token) throws Exception {
+            long orgId, String token) throws Exception {
         try {
-            AnalyticsApiProvider.releaseLicense(serverUrl, machineId, ksVersion, sessionId, packageName, orgId, token);
+            AnalyticsApiProvider.releaseLicense(serverUrl, machineId, ksVersion, sessionId, orgId, token);
         } catch (Exception ex) {
             LogUtil.logError(ex);
             throw ex;

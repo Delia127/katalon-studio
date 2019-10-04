@@ -302,7 +302,6 @@ public class ActivationInfoCollector {
             String serverUrl = ApplicationInfo.getTestOpsServer();
             String machineId = MachineUtil.getMachineId();
             String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-            String packageName = KatalonApplication.getKatalonPackage().getPackageName();
             long orgId = license.getOrganizationId();
             String token;
             if (StringUtils.isBlank(apiKey)) {
@@ -318,7 +317,6 @@ public class ActivationInfoCollector {
                    machineId,
                    ksVersion,
                    sessionId,
-                   packageName,
                    orgId,
                    token
            );

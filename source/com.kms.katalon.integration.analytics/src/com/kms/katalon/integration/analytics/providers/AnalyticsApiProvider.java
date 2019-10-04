@@ -40,8 +40,12 @@ import org.apache.http.util.EntityUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
@@ -216,6 +220,7 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("email", username);
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
+            uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
@@ -226,14 +231,14 @@ public class AnalyticsApiProvider {
     }
     
     public static void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,
-            String packageName, long orgId, String accessToken) throws AnalyticsApiExeception {
+            long orgId, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_RELEASE_LICENSE);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("machineKey", machineId);
             uriBuilder.setParameter("ksVersion", ksVersion);
             uriBuilder.setParameter("sessionId", sessionId);
-            uriBuilder.setParameter("package", packageName);
+            uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
             uriBuilder.setParameter("organizationId", String.valueOf(orgId));
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
