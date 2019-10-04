@@ -274,6 +274,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_CHK_KEEP_CONSOLE_LOG = ComposerExecutionMessageConstants.DIA_CHK_KEEP_CONSOLE_LOG;
 
     public static final String DIA_LBL_UPDATE_EXECUTION_STATUS = ComposerExecutionMessageConstants.DIA_LBL_UPDATE_EXECUTION_STATUS;
+    
+    public static final String DIA_LBL_APIKEY = ComposerExecutionMessageConstants.DIA_LBL_APIKEY;
 
     public static final String DIA_LBL_SECONDS = ComposerExecutionMessageConstants.DIA_LBL_SECONDS;
 
