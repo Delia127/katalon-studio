@@ -1,5 +1,7 @@
 package com.kms.katalon.core.windows.keyword;
 
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.core.annotation.Keyword;
@@ -441,5 +443,99 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = "Element")
     public static void sendKeys(WindowsTestObject windowsObject, String strKeys) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "sendKeys", windowsObject, strKeys);
+    }
+
+    /**
+     * Get the position of the {@link WebElement} that is found by using locator value of the given
+     * windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
+     * @return
+     * The element's position.
+     * 
+     * @throws StepFailedException
+     * If KS could not find the specified element.
+     */
+    @Keyword(keywordObject = "Element")
+    public static Point getElementPosition(WindowsTestObject windowsObject, FailureHandling flowControl)
+            throws StepFailedException {
+        return (Point) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getElementPosition", windowsObject, flowControl);
+    }
+
+    /**
+     * Get the position of the {@link WebElement} that is found by using locator value of the given
+     * windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @return
+     * The element's position.
+     * 
+     * @throws StepFailedException
+     * If KS could not find the specified element.
+     */
+    @Keyword(keywordObject = "Element")
+    public static Point getElementPosition(WindowsTestObject windowsObject)
+            throws StepFailedException {
+        return (Point) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getElementPosition", windowsObject);
+    }
+
+    /**
+     * Get the bounding rectangle of the {@link WebElement} that is found by using locator value of
+     * the given windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
+     * @return
+     * The element's bounding rectangle.
+     * 
+     * @throws StepFailedException
+     * If KS could not find the specified element.
+     */
+    @Keyword(keywordObject = "Element")
+    public static Rectangle getElementRect(WindowsTestObject windowsObject, FailureHandling flowControl)
+            throws StepFailedException {
+        return (Rectangle) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getElementRect", windowsObject, flowControl);
+    }
+
+    /**
+     * Get the bounding rectangle of the {@link WebElement} that is found by using locator value of
+     * the given windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @return
+     * The element's bounding rectangle.
+     * 
+     * @throws StepFailedException
+     * If KS could not find the specified element.
+     */
+    @Keyword(keywordObject = "Element")
+    public static Rectangle getElementRect(WindowsTestObject windowsObject)
+            throws StepFailedException {
+        return (Rectangle) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getElementRect", windowsObject);
     }
 }
