@@ -212,6 +212,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_CHK_KEEP_CONSOLE_LOG;
 
     public static String DIA_LBL_UPDATE_EXECUTION_STATUS;
+    
+    public static String DIA_LBL_APIKEY;
 
     public static String DIA_LBL_SECONDS;
 
