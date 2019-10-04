@@ -63,8 +63,8 @@ public class ApplicationStaupHandler {
     public static void scheduleCheckLicense() {
         ActivationInfoCollector.scheduleCheckLicense(() -> {
             UISynchronizeService.syncExec(() -> {
-                closeKSAfter(30);
                 expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
+                closeExpiredDialogAfter(30);
                 expiredDialog.open();
                 closeKS();
             });
@@ -73,11 +73,11 @@ public class ApplicationStaupHandler {
         });
     }
 
-    public static void closeKSAfter(long seconds) {
+    public static void closeExpiredDialogAfter(long seconds) {
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
                 UISynchronizeService.syncExec(() -> {
-                    closeKS();
+                    expiredDialog.close();
                 });
             } catch (Exception e) {
                 LogUtil.logError(e, "Error when closing Katalon Studio");
