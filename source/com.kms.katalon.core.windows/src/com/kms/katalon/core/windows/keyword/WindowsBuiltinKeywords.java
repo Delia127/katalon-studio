@@ -512,7 +512,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *      The found elements
      *      
      * @throws StepFailedException
-     * If the Windows element doesn't exist, or KS could not get text of the element.
+     * If the Windows element doesn't exist, or KS could not find any element.
      * 
      * @since 7.0.0
      */
@@ -533,7 +533,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *      The found elements
      *      
      * @throws StepFailedException
-     * If the Windows element doesn't exist, or KS could not get text of the element.
+     * If the Windows element doesn't exist, or KS could not find any element.
      * 
      * @since 7.0.0
      */
