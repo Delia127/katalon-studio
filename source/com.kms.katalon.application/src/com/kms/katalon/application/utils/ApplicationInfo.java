@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.logging.LogManager;
 import com.kms.katalon.logging.LogMode;
 import com.kms.katalon.logging.LogUtil;
@@ -184,6 +185,19 @@ public class ApplicationInfo {
             appProps.remove(key);
             saveAppProperties();
         }
+    }
+    
+    public static Organization getOrganization() {
+        Organization organization = new Organization();
+        String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
+        if (StringUtils.isNotBlank(jsonObject)) {
+            try {
+                organization = JsonUtil.fromJson(jsonObject, Organization.class);
+            } catch (IllegalArgumentException e) {
+                LogUtil.logError(e);
+            }
+        }
+        return organization;
     }
 
     public static void setTestOpsServer(String serverUrl) {
