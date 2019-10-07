@@ -242,6 +242,7 @@ public class ConsoleMain {
             
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format("Execution completed. Exit code: {0}.", exitCode));
+            ActivationInfoCollector.releaseLicense();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());

@@ -1,13 +1,10 @@
 package com.kms.katalon.application.utils;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
-import java.security.GeneralSecurityException;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -22,14 +19,10 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
-import com.kms.katalon.feature.TestOpsFeatureActivator;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
-import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.feature.FeatureServiceConsumer;
-import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -38,6 +31,10 @@ public class ActivationInfoCollector {
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
     private static boolean activated = false;
+    
+    private static String apiKey;
+    
+    private static String sessionId = UUID.randomUUID().toString();
 
     protected ActivationInfoCollector() {
     }
@@ -90,6 +87,7 @@ public class ActivationInfoCollector {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
                 activated = true;
+                ActivationInfoCollector.apiKey = apiKey;
             }
         } catch (Exception ex) {
             activated = false;
@@ -236,7 +234,6 @@ public class ActivationInfoCollector {
     private static String getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
-        String sessionId = UUID.randomUUID().toString();
         String hostname = getHostname();
         String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName, sessionId,
                 hostname, machineId);
@@ -293,6 +290,39 @@ public class ActivationInfoCollector {
     public static void clearFeatures() {
         IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         featureService.clear();
+    }
+    
+    public static void releaseLicense() throws Exception {
+        String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        if (StringUtils.isNotBlank(jwsCode)) {
+            License license = parseLicense(jwsCode, null);
+            boolean isOffline = license.getFeatures()
+                    .stream()
+                    .anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
+            if (!isOffline) {
+                String serverUrl = ApplicationInfo.getTestOpsServer();
+                String machineId = MachineUtil.getMachineId();
+                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                long orgId = license.getOrganizationId();
+                String token;
+                if (StringUtils.isBlank(apiKey)) {
+                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
+                } else {
+                    token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
+                }
+               KatalonApplicationActivator.getFeatureActivator().releaseLicense(
+                       serverUrl,
+                       machineId,
+                       ksVersion,
+                       sessionId,
+                       orgId,
+                       token
+               );
+            }
+        }
     }
 
     public static void markActivated(String userName, String password, String organization, License license) throws Exception {
