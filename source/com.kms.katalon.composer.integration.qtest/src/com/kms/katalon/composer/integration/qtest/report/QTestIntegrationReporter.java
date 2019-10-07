@@ -20,6 +20,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -291,21 +292,31 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
      * uploads the given test log of the given test suite to qTest server.
      */
     @Override
-    public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
-        if (!isIntegrationActive(testSuite)) {
-            return;
-        }
+    public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
+        for (String subFolder : reportFolder.getReportFolders()) {
+            TestSuiteLogRecord suiteLog = ReportUtil.generate(subFolder);
 
-        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-
-        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
-        for (ILogRecord logRecord : suiteLog.getChildRecords()) {
-            if (!(logRecord instanceof TestCaseLogRecord)) {
-                continue;
+            if (!isIntegrationActive(testSuite)) {
+                return;
             }
 
-            uploadTestCaseResult(testSuite, projectIntegratedEntity, (TestCaseLogRecord) logRecord, suiteLog);
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+
+            IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+            for (ILogRecord logRecord : suiteLog.getChildRecords()) {
+                if (!(logRecord instanceof TestCaseLogRecord)) {
+                    continue;
+                }
+
+                uploadTestCaseResult(testSuite, projectIntegratedEntity, (TestCaseLogRecord) logRecord, suiteLog);
+            }
         }
+    }
+
+    @Override
+    public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
+        // TODO Auto-generated method stub
+        
     }
 
     private boolean isUploadByDefault() {
@@ -347,16 +358,4 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             destType = argumentValue.trim();
         }
     }
-
-	@Override
-	public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 }
