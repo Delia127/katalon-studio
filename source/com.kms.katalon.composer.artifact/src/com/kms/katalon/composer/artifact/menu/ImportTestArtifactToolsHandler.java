@@ -1,4 +1,4 @@
- 
+
 package com.kms.katalon.composer.artifact.menu;
 
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -11,9 +11,9 @@ import com.kms.katalon.composer.artifact.core.util.PlatformUtil;
 import com.kms.katalon.composer.artifact.handler.ImportTestArtifactHandler;
 
 public class ImportTestArtifactToolsHandler {
-	@Execute
-	public void execute() {
-	    ProjectEntity project = PlatformUtil.getCurrentProject();
+    @Execute
+    public void execute() {
+        ProjectEntity project = PlatformUtil.getCurrentProject();
         if (project != null) {
             ImportTestArtifactHandler handler = new ImportTestArtifactHandler(Display.getCurrent().getActiveShell());
             handler.execute();
@@ -21,7 +21,7 @@ public class ImportTestArtifactToolsHandler {
             MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
                     StringConstants.MSG_OPEN_A_PROJECT);
         }
-        
-	}
-		
+
+    }
+
 }
