@@ -42,8 +42,6 @@ public class ActivationInfoCollector {
     private static boolean isOfflineActivation;
     
     private static ScheduledFuture<?> checkLicenseTask;
-    
-    private static License lastUsedLicense;
 
     protected ActivationInfoCollector() {
     }
@@ -272,16 +270,7 @@ public class ActivationInfoCollector {
     }
 
     private static boolean isValidLicense(License license) {
-        return isDowngradeLicense(license) && hasValidMachineId(license) && !isExpired(license);
-    }
-    
-    private static boolean isDowngradeLicense(License license) {
-        if (lastUsedLicense != null && "ENTERPRISE".equals(lastUsedLicense.getLicenseType())) {
-            if (license != null && !"ENTERPRISE".equals(license.getLicenseType())) {
-                return false;
-            }
-        }
-        return true;
+        return hasValidMachineId(license) && !isExpired(license);
     }
 
     private static boolean hasValidMachineId(License license) {
@@ -332,7 +321,6 @@ public class ActivationInfoCollector {
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
-        lastUsedLicense = getLicense();
     }
 
     private static void setActivatedVal() throws Exception {
