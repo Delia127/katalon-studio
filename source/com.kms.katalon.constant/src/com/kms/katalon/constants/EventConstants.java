@@ -206,6 +206,8 @@ public class EventConstants {
 
     public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL = "WSOBJECT/WSDL";
 
+    public static final String UNUSED_TEST_OBJECTS_UPDATED = "UNUSED_TESTOBJECT/EXPORT";
+
     // Report Event
     public static final String REPORT_OPEN = "REPORT/OPEN";
 

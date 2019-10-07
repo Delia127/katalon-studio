@@ -37,13 +37,15 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
         }
     }
 
-	@Override
-	public String getLicense(String serverUrl, String token, String machineId) throws Exception {
-        AnalyticsLicenseKey analyticsLicenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, machineId, token);
+    @Override
+    public String getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
+            String machineId) throws Exception {
+        AnalyticsLicenseKey analyticsLicenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, username, sessionId,
+                hostname, machineId, token);
         if (analyticsLicenseKey.getValue() != null) {
             return analyticsLicenseKey.getValue();
         }
         return "";
-	}
+    }
 
 }

@@ -21,6 +21,8 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     
     public static final String ARG_OFFLINE_ACTIVATION = "offlineActivation";
 
+    public static final String KATALON_TESTOPS_SERVER = "testOps.serverUrl";
+
     // Proxy Configuration
     public static final String PROXY_OPTION = "proxy.option";
 

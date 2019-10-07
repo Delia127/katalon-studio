@@ -44,7 +44,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
-public class KatalonAnalyticsIntegrationDialog extends Dialog {
+public class KatalonTestOpsIntegrationDialog extends Dialog {
     
     public static final int REFRESH_ID = 3;
 	
@@ -88,7 +88,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
 
     private boolean isClose = false;
 
-    public KatalonAnalyticsIntegrationDialog(Shell parentShell) {
+    public KatalonTestOpsIntegrationDialog(Shell parentShell) {
         super(parentShell);
         analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {

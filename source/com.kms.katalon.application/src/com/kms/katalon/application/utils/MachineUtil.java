@@ -1,14 +1,15 @@
 package com.kms.katalon.application.utils;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
-import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.hardware.Hardware;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.logging.LogUtil;
@@ -45,20 +46,49 @@ public class MachineUtil {
 
         if (SystemUtils.IS_OS_MAC) {
             machineId = parseMachineIdForMac();
-            machineId = hash(machineId.matches(UUID_REGEX) ? appendMachineSerial(machineId) : UNAVAILABLE);
+            machineId = hash(machineId.matches(UUID_REGEX) ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_LINUX) {
             machineId = parseMachineIdForLinux();
             // machine id on a linux is not a UUID
-            machineId = hash(machineId.length() == 32 ? appendMachineSerial(machineId) : UNAVAILABLE);
+            machineId = hash(machineId.length() == 32 ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_WINDOWS) {
             machineId = parseMachineIdForWindows();
-            machineId = hash(machineId.matches(UUID_REGEX) ? appendMachineSerial(machineId) : UNAVAILABLE);
+            machineId = hash(machineId.matches(UUID_REGEX) ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
         }
         return machineId;
     }
+    
+    /**
+     * Use Reflection to find OS-dependent {@link com.sun.security.auth.module} class
+     * and run the method get OS user name. Using System.getProperty('user.name') as the last resort
+     * because the user can use argument -Duser.name={thanhto} to make System.getProperty('user.name') returns 'thanhto'
+     */
+    public static String getOsDependentUsername() {
+        String result = Optional.ofNullable(System.getProperty("user.name")).orElse("");
+        try {
+            String className = null;
+            String methodName = "getUsername";
+            if (SystemUtils.IS_OS_WINDOWS) {
+                className = "com.sun.security.auth.module.NTSystem";
+                methodName = "getName";
+            } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
+                className = "com.sun.security.auth.module.UnixSystem";
+            }
 
-    private static String appendMachineSerial(String str) {
-        return str + "_" + Hardware.getSerialNumber().toLowerCase();
+            if (className != null) {
+                Class<?> c = Class.forName(className);
+                Method method = c.getDeclaredMethod(methodName);
+                Object o = c.newInstance();
+                result = (String) method.invoke(o);
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        return result;
+    }
+
+    private static String appendAdditionalSignatures(String str) {
+        return str + "_" + Hardware.getSerialNumber().toLowerCase() + "_" + getOsDependentUsername().toLowerCase();
     }
 
     private static String hash(String str) {

@@ -1,6 +1,7 @@
 package com.kms.katalon.controller;
 
 import java.io.File;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,9 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.core.db.DatabaseConnection;
+import com.kms.katalon.core.testdata.DBData;
+import com.kms.katalon.core.testdata.TestData;
+import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -213,5 +217,39 @@ public class TestDataController extends EntityController {
                 .getDatabaseConnection(testData.isUsingGlobalDBSetting(), testData.isSecureUserAccount(),
                         testData.getUser(), testData.getPassword(), testData.getDataSourceUrl(), testData.getDriverClassName());
     }
-
+    
+	public TestData getTestDataInstance(String dataFileId, String projectLocation) throws Exception {
+		DataFileEntity dataFile = getTestDataByDisplayId(dataFileId);
+		if (dataFile.getDriver() == DataFileDriverType.DBData) {
+			ClassLoader oldClassLoader = null;
+			try {
+				
+				oldClassLoader = Thread.currentThread().getContextClassLoader();
+				// fetch data and load into table
+				URLClassLoader projectClassLoader = ProjectController.getInstance()
+						.getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+				Thread.currentThread().setContextClassLoader(projectClassLoader);
+				
+				DatabaseConnection dbConnection = TestDataController.getInstance().getDatabaseConnection(dataFile);
+				
+				if (dbConnection == null) {
+					throw new Exception("DatabaseConnection is null");
+				}
+				
+				dbConnection.getConnection();
+				DBData dbData = new DBData(dbConnection, dataFile.getQuery());
+				return dbData;
+			} catch (Exception e) {
+				return null;
+			} finally {
+				if (oldClassLoader != null) {
+					Thread.currentThread().setContextClassLoader(oldClassLoader);
+				}
+			}
+		} else {
+			TestData testData = null;
+			testData = TestDataFactory.findTestDataForExternalBundleCaller(dataFileId, projectLocation);
+			return testData;
+		}
+	}
 }

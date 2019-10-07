@@ -10,13 +10,14 @@
 
 	<artifactId>com.kms.katalon.core</artifactId>
 	<packaging>eclipse-plugin</packaging>
-  
-  <properties>
+
+	<properties>
 		<groovydocOutputDirectory>${mainBuildDirectory}/${apidocDirectory}/${project.artifactId}</groovydocOutputDirectory>
-  </properties>
-    
+		<sourcecodeOutputDirectory>${mainBuildDirectory}/${apisourceDirectory}/${project.artifactId}</sourcecodeOutputDirectory>
+	</properties>
+
 	<build>
-	
+
 		<plugins>
 			<!-- Copies resources to parent's resources directory -->
 			<plugin>
@@ -40,67 +41,74 @@
 					</execution>
 				</executions>
 			</plugin>
-      <!-- AntRun cannot read project.parent, so must workaround like this (http://stackoverflow.com/questions/4040778/parent-properties-inside-maven-antrun-plugin) -->
-      <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>set-custom-property</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <providerSelection>2.0</providerSelection>
-              <source>
-                project.properties.setProperty('mainBuildDirectory', project.parent.build.directory.toString())
-              </source>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <executions>
-          <execution>
-            <id>groovydoc</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <taskdef name="groovydoc"
-                  classname="org.codehaus.groovy.ant.Groovydoc" 
-                  classpathref="maven.compile.classpath"
-                />
-                <groovydoc destdir="${groovydocOutputDirectory}"
-                  sourcepath="${project.basedir}/src" use="true"
-                  windowtitle="${project.name}"
-                  doctitle="${project.name}" 
-                  packagenames="com.kms.katalon.core.annotation,com.kms.katalon.core.checkpoint,com.kms.katalon.core.configuration,com.kms.katalon.core.driver,com.kms.katalon.core.keyword,com.kms.katalon.core.model,com.kms.katalon.core.testcase,com.kms.katalon.core.testdata,com.kms.katalon.core.testobject,com.kms.katalon.core.testobject.impl,com.kms.katalon.core.util,com.kms.katalon.core.context"
-                >
-                  <link packages="java.,org.xml.,javax.,org.xml."
-                    href="http://download.oracle.com/javase/6/docs/api" />
-                  <link packages="org.apache.tools.ant." 
-                    href="http://evgeny-goldin.org/javadoc/ant/api" />
-                  <link packages="org.junit.,junit.framework."
-                    href="http://kentbeck.github.com/junit/javadoc/latest" />
-                  <link packages="groovy.,org.codehaus.groovy."
-                    href="http://groovy.codehaus.org/api/" />
-                  <link packages="org.codehaus.gmaven."
-                    href="http://evgeny-goldin.org/javadoc/gmaven" />
-                </groovydoc>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+			<!-- AntRun cannot read project.parent, so must workaround like this (http://stackoverflow.com/questions/4040778/parent-properties-inside-maven-antrun-plugin) -->
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>set-custom-property</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<providerSelection>2.0</providerSelection>
+							<source>
+								project.properties.setProperty('mainBuildDirectory', project.parent.build.directory.toString())
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${sourcecodeOutputDirectory}</outputDirectory>
+							<finalName>${project.artifactId}</finalName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>groovydoc</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<taskdef name="groovydoc" classname="org.codehaus.groovy.ant.Groovydoc"
+									classpathref="maven.compile.classpath" />
+								<groovydoc destdir="${groovydocOutputDirectory}"
+									sourcepath="${project.basedir}/src" use="true" windowtitle="${project.name}"
+									doctitle="${project.name}" packagenames="**.*">
+									<link packages="java.,org.xml.,javax.,org.xml." href="http://docs.oracle.com/javase/8/docs/api/" />
+                                    <link packages="org.apache.tools.ant." href="http://docs.groovy-lang.org/docs/ant/api/" />
+                                    <link packages="org.junit.,junit.framework." href="http://junit.org/junit4/javadoc/latest/" />
+                                    <link packages="groovy.,org.codehaus.groovy." href="http://docs.groovy-lang.org/latest/html/api/" />
+                                    <link packages="org.codehaus.gmaven." href="http://groovy.github.io/gmaven/apidocs/" />
+								</groovydoc>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 		</plugins>
 	</build>

@@ -475,6 +475,8 @@ public interface IImageKeys {
     public static final String GIT_FILE_16 = "entity/git_file_16.png"; //$NON-NLS-1$
     
     public static final String WINDOWS_ENTITY_16 = "windows_application_16.png"; //$NON-NLS-1$
+
+    public static final String UNUSED_TEST_OBJECT = "entity/unused_test_object_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar
@@ -533,6 +535,8 @@ public interface IImageKeys {
     public static final String UNWATCH_16 = "unwatch_16.png"; //$NON-NLS-1$
 
     public static final String RECENT_16 = "recent_16.png"; //$NON-NLS-1$
+
+    public static final String EXPORT_CSV_16 = "export_csv_16.png"; //$NON-NLS-1$
 
     // Sub-toolbar disabled icons
     public static final String CLEAR_DISABLED_16 = "clear_disabled_16.png"; //$NON-NLS-1$
@@ -781,4 +785,9 @@ public interface IImageKeys {
     
     // In App Survey
     public static final String STAR = "highlight_24.png";
+    
+    //Result tab
+    public static final String IMG_REPORT_EMPTY_TEST_SUITE = "result_tab/empty_report_test_suite.png";
+    
+    public static final String IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION = "result_tab/empty_report_test_suite_collection.png";
 }

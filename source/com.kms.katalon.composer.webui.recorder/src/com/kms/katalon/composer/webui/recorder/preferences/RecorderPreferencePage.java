@@ -9,9 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,19 +19,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.RecorderPreferenceConstants;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
-import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.objectspy.constants.UtilitiesAddonPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
-public class RecorderPreferencePage extends FieldEditorPreferencePageWithHelp {
+public class RecorderPreferencePage extends PreferencePageWithHelp {
 
     private Combo cbbDefaultBrowser;
 
@@ -41,15 +36,9 @@ public class RecorderPreferencePage extends FieldEditorPreferencePageWithHelp {
 
     private Button chckPinRecorder;
 
-    private static final int MIN_PORT_NUMBER = 1;
-
-    private static final int MAX_PORT_NUMBER = 65534;
-
     public RecorderPreferencePage() {
         setPreferenceStore(
                 PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER));
-        setPreferenceStore(
-                PreferenceStoreManager.getPreferenceStore(UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_QUALIFIER));
     }
 
     @Override
@@ -75,16 +64,6 @@ public class RecorderPreferencePage extends FieldEditorPreferencePageWithHelp {
         cbbDefaultBrowser.setText(StringConstants.PREF_LBL_DEFAULT_BROWSER);
 
         setInput();
-
-        IntegerFieldEditor portEditor = new IntegerFieldEditor(
-                UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_ACTIVE_BROWSER_PORT,
-                StringConstants.PREF_LBL_ACTIVE_BROWSER_PORT, mainComposite);
-        portEditor.setValidRange(MIN_PORT_NUMBER, MAX_PORT_NUMBER);
-        addField(portEditor);
-        addCheckboxField(mainComposite);
-
-        initialize();
-        checkState();
 
         return mainComposite;
     }
@@ -124,28 +103,5 @@ public class RecorderPreferencePage extends FieldEditorPreferencePageWithHelp {
             LoggerSingleton.logError(e);
         }
         return super.performOk();
-    }
-
-    private void addCheckboxField(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        addField(new BooleanFieldEditor(
-                UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN,
-                StringConstants.PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG, composite));
-    }
-
-    @Override
-    public boolean hasDocumentation() {
-        return true;
-    }
-
-    @Override
-    public String getDocumentationUrl() {
-        return DocumentationMessageConstants.PREFERENCE_UTILITY_ADDON;
-    }
-
-    @Override
-    protected void createFieldEditors() {
-
     }
 }

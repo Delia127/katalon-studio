@@ -17,11 +17,14 @@
         <resourcesDiretory>resources</resourcesDiretory>
         <coreModule>com.kms.katalon.core</coreModule>
         <coreMobileModule>com.kms.katalon.core.mobile</coreMobileModule>
+        <coreWindowsModule>com.kms.katalon.core.windows</coreWindowsModule>
+        <coreCucumberModule>com.kms.katalon.core.cucumber</coreCucumberModule>
         <coreWebserviceModule>com.kms.katalon.core.webservice</coreWebserviceModule>
         <coreWebUiModule>com.kms.katalon.core.webui</coreWebUiModule>
+
         <apidocDirectory>${project.build.directory}/${resourcesDiretory}/apidocs</apidocDirectory>
-        <apidocSourcePath>${project.basedir}/../${coreModule}/src${path.separator}${project.basedir}/../${coreMobileModule}/src${path.separator}${project.basedir}/../${coreWebserviceModule}/src${path.separator}${project.basedir}/../${coreWebUiModule}/src</apidocSourcePath>
-        <apidocPackageNames>com.kms.katalon.core.annotation,com.kms.katalon.core.checkpoint,com.kms.katalon.core.configuration,com.kms.katalon.core.driver,com.kms.katalon.core.keyword,com.kms.katalon.core.model,com.kms.katalon.core.testcase,com.kms.katalon.core.testdata,com.kms.katalon.core.testobject,com.kms.katalon.core.util,com.kms.katalon.core.mobile.driver,com.kms.katalon.core.mobile.keyword,com.kms.katalon.core.webservice.keyword,com.kms.katalon.core.webui.driver,com.kms.katalon.core.webui.keyword</apidocPackageNames>
+        <apidocSourcePath>${project.basedir}/../${coreModule}/src${path.separator}${project.basedir}/../${coreMobileModule}/src${path.separator}${project.basedir}/../${coreWindowsModule}/src${path.separator}${project.basedir}/../${coreCucumberModule}/src${path.separator}${project.basedir}/../${coreWebserviceModule}/src${path.separator}${project.basedir}/../${coreWebUiModule}/src</apidocSourcePath>
+        <apidocPackageNames>**.*</apidocPackageNames>
         <apidocFooter>
             <![CDATA[
         <script type="text/javascript">
@@ -59,12 +62,17 @@
                         <configuration>
                             <target>
                                 <taskdef name="groovydoc" classname="org.codehaus.groovy.ant.Groovydoc" classpathref="maven.compile.classpath" />
-                                <groovydoc destdir="${apidocDirectory}" sourcepath="${apidocSourcePath}" use="true" windowtitle="${apidocHeader}" doctitle="${apidocHeader}" header="${apidocHeader}" footer="${apidocFooter}" packagenames="${apidocPackageNames}" charset="UTF-8">
-                                    <link packages="java.,org.xml.,javax.,org.xml." href="http://download.oracle.com/javase/6/docs/api" />
-                                    <link packages="org.apache.tools.ant." href="http://evgeny-goldin.org/javadoc/ant/api" />
-                                    <link packages="org.junit.,junit.framework." href="http://kentbeck.github.com/junit/javadoc/latest" />
-                                    <link packages="groovy.,org.codehaus.groovy." href="http://groovy.codehaus.org/api/" />
-                                    <link packages="org.codehaus.gmaven." href="http://evgeny-goldin.org/javadoc/gmaven" />
+                                <groovydoc destdir="${apidocDirectory}"
+                                 sourcepath="${apidocSourcePath}" 
+                                 use="true" windowtitle="${apidocHeader}" 
+                                 doctitle="${apidocHeader}" header="${apidocHeader}" 
+                                 footer="${apidocFooter}"
+                                 packagenames="${apidocPackageNames}" charset="UTF-8">
+                                    <link packages="java.,org.xml.,javax.,org.xml." href="http://docs.oracle.com/javase/8/docs/api/" />
+                                    <link packages="org.apache.tools.ant." href="http://docs.groovy-lang.org/docs/ant/api/" />
+                                    <link packages="org.junit.,junit.framework." href="http://junit.org/junit4/javadoc/latest/" />
+                                    <link packages="groovy.,org.codehaus.groovy." href="http://docs.groovy-lang.org/latest/html/api/" />
+                                    <link packages="org.codehaus.gmaven." href="http://groovy.github.io/gmaven/apidocs/" />
                                 </groovydoc>
                             </target>
                         </configuration>

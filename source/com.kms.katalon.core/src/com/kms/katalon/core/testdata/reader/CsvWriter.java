@@ -143,4 +143,19 @@ public class CsvWriter {
             IOUtils.closeQuietly(csvWriter);
         }
     }
+
+    public static void writeArraysToCsv(String[] header, List<Object[]> datas, File csvFile,
+            CellProcessor[] cellProcessor) throws IOException {
+        ICsvListWriter csvWriter = null;
+        try {
+            csvWriter = new CsvListWriter(new OutputStreamWriter(new FileOutputStream(csvFile), StandardCharsets.UTF_8),
+                    CsvPreference.STANDARD_PREFERENCE);
+            csvWriter.writeHeader(header);
+            for (Object[] arr : datas) {
+                csvWriter.write(Arrays.asList(arr), cellProcessor);
+            }
+        } finally {
+            IOUtils.closeQuietly(csvWriter);
+        }
+    }
 }

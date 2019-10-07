@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -26,6 +29,7 @@ import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -43,7 +47,9 @@ import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.LocalInformationUtil;
+import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.logging.LogUtil;
@@ -95,6 +101,8 @@ public class ConsoleMain {
     
     public static final String BUILD_URL_OPTION = "buildURL";
 
+    public static final String KATALON_TESTOP_SERVER = "serverUrl";
+
     private ConsoleMain() {
         // hide constructor
     }
@@ -107,6 +115,16 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
+//            boolean isDevelopmentMode = Platform.inDebugMode();
+//            boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
+//            if (!isDevelopmentMode && !isRunningInKatalonC) {
+//                String extension = OSUtil.getExecutableExtension();
+//                String katalon = "katalon" + extension;
+//                String katalonc = "katalonc" + extension;
+//                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
+//                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+//            }
+            
             LocalInformationUtil.printSystemInformation();
 
             ConsoleExecutor consoleExecutor = new ConsoleExecutor();
@@ -117,6 +135,11 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
             
+            if (options.has(KATALON_TESTOP_SERVER)) {
+                String serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+                ApplicationInfo.setTestOpsServer(serverUrl);
+            }
+
             String apiKeyValue = null;
             if (options.has(KATALON_API_KEY_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
@@ -137,6 +160,8 @@ public class ConsoleMain {
                     licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
                 } else if (environmentVariable != null) {
                     licenseFile = environmentVariable;
+                } else {
+                    licenseFile = readLicenseFromDefaultLocation();
                 }
                 if (!StringUtils.isBlank(licenseFile)) {
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
@@ -216,6 +241,7 @@ public class ConsoleMain {
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
             
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
+            LogUtil.logInfo(MessageFormat.format("Execution completed. Exit code: {0}.", exitCode));
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());
@@ -228,6 +254,11 @@ public class ConsoleMain {
         }
     }
     
+    private static String readLicenseFromDefaultLocation() {
+        File defaultLicenseFile = new File(ApplicationInfo.userDirLocation() + "/license/katalon.lic");
+        return defaultLicenseFile.exists() ? defaultLicenseFile.getAbsolutePath() : "";
+    }
+
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> reloadPluginsHandlerClass = katalonBundle

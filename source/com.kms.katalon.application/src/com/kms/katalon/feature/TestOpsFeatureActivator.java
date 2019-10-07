@@ -7,5 +7,6 @@ public interface TestOpsFeatureActivator {
 
     String connect(String serverUrl, String email, String password) throws Exception;
     
-    String getLicense(String serverUrl, String token, String machineId) throws Exception;
+    String getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
+            String machineId) throws Exception;
 }

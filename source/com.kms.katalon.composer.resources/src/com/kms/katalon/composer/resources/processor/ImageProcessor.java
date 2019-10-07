@@ -24,6 +24,7 @@ public class ImageProcessor {
         registerApiQuickStartImages();
         registerInAppSurveyImages();
         registerWalkthroughImages();
+        registerResultTabImages();
     }
     
     private void registerWalkthroughImages(){
@@ -162,6 +163,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.UNWATCH_16);
         ImageManager.registerImage(IImageKeys.MAP_ALL_16);
         ImageManager.registerImage(IImageKeys.RECENT_16);
+        ImageManager.registerImage(IImageKeys.EXPORT_CSV_16);
 
         // Sub-toolbar disabled icons
         ImageManager.registerImage(IImageKeys.CLEAR_DISABLED_16);
@@ -452,5 +454,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_PLUGIN_STORE);
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_DESKTOP_APPS_TESTING);
         
+    }
+
+    private void registerResultTabImages() {
+        ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE);
+        ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION);
     }
 }

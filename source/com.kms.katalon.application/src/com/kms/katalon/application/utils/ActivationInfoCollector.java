@@ -8,6 +8,7 @@ import java.util.List;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -135,7 +136,7 @@ public class ActivationInfoCollector {
     }
 
     private static int getHostNameHashValue() throws Exception {
-        String hostName = InetAddress.getLocalHost().getHostName();
+        String hostName = getHostname();
         String ipAddress = InetAddress.getLocalHost().getHostAddress();
 
         if (hostName.equals(ipAddress)) {
@@ -161,11 +162,7 @@ public class ActivationInfoCollector {
         String katVersion = ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo();
         String osType = Platform.getOSArch().contains("64") ? "64" : "32";
         String host = "";
-        try {
-            host = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException ignored) {
-            host = "unknown";
-        }
+        host = getHostname();
 
         traits.addProperty("host_name", host);
         traits.addProperty("os", Platform.getOS());
@@ -175,6 +172,21 @@ public class ActivationInfoCollector {
         traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
         traits.addProperty(UsagePropertyConstant.PROPERTY_USER_KEY, KatalonApplication.USER_KEY);
         return traits;
+    }
+
+    private static String getHostname() {
+        String host = "";
+        try {
+            host = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException ignored) {
+            host = "unknown";
+        }
+        return host;
+    }
+
+    public static License activate(String serverUrl, String userName, String password, String machineId, StringBuilder errorMessage) {
+        ApplicationInfo.setTestOpsServer(serverUrl);
+        return activate(userName, password, machineId, errorMessage);
     }
 
     public static License activate(String userName, String password, String machineId, StringBuilder errorMessage) {
@@ -224,7 +236,10 @@ public class ActivationInfoCollector {
     private static String getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
-        String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, machineId);
+        String sessionId = UUID.randomUUID().toString();
+        String hostname = getHostname();
+        String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName, sessionId,
+                hostname, machineId);
         return license;
     }
     

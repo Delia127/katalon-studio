@@ -82,6 +82,7 @@ import com.kms.katalon.composer.windows.element.CapturedWindowsElementConverter;
 import com.kms.katalon.composer.windows.element.TreeWindowsElement;
 import com.kms.katalon.composer.windows.spy.CapturedWindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.spy.CapturedWindowsObjectTableViewer;
+import com.kms.katalon.composer.windows.spy.HighlightElementComposite;
 import com.kms.katalon.composer.windows.spy.SelectableWindowsElementEditingSupport;
 import com.kms.katalon.composer.windows.spy.WindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
@@ -98,11 +99,9 @@ import com.kms.katalon.tracking.service.Trackings;
 
 public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialog {
 
-    public static final Point DIALOG_SIZE = new Point(800, 800);
+    public static final Point DIALOG_SIZE = new Point(1200, 800);
 
     private static final String DIALOG_TITLE = "Spy Windows Objects";
-
-    private static final int DIALOG_MARGIN_OFFSET = 5;
 
     private CheckboxTreeViewer allElementTreeViewer;
 
@@ -114,7 +113,10 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
     private WindowsInspectorController inspectorController;
 
-    private WindowsDeviceDialog deviceView;
+    @Override
+    public WindowsInspectorController getInspectorController() {
+        return this.inspectorController;
+    }
 
     private Composite container;
 
@@ -129,6 +131,10 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
     private Composite appsComposite;
 
     private WindowsAppComposite mobileComposite;
+
+    private HighlightElementComposite highlightElementComposite;
+
+    private WindowsScreenView screenComposite;
 
     private static WindowsSpyObjectDialog instance;
 
@@ -175,16 +181,17 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
         propertiesComposite = new WindowsElementPropertiesComposite(this);
         propertiesComposite.createObjectPropertiesComposite(hSashForm);
+        
+        createHighlightElementComposite(hSashForm);
 
-        hSashForm.setWeights(new int[] { 1, 1 });
+        hSashForm.setWeights(new int[] { 4, 6, 1 });
         leftSashForm.setContent(explorerComposite);
 
-        ScrolledComposite rightSashForm = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
-        rightSashForm.setExpandHorizontal(true);
-        rightSashForm.setExpandVertical(true);
-        rightSashForm.setMinSize(280, 400);
+        ScrolledComposite middleSashForm = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+        middleSashForm.setExpandHorizontal(true);
+        middleSashForm.setExpandVertical(true);
 
-        Composite contentComposite = new Composite(rightSashForm, SWT.BORDER);
+        Composite contentComposite = new Composite(middleSashForm, SWT.BORDER);
         contentComposite.setLayout(layout);
 
         addStartStopToolbar(contentComposite);
@@ -192,9 +199,11 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         createSettingComposite(contentComposite);
 
         createAllObjectsComposite(contentComposite);
-        rightSashForm.setContent(contentComposite);
+        middleSashForm.setContent(contentComposite);
 
-        sashForm.setWeights(new int[] { 5, 5 });
+        createScreenViewComposite(sashForm);
+
+        sashForm.setWeights(new int[] { 5, 5, 6 });
 
         new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_OBJECT_SPY_MOBILE);
 
@@ -252,6 +261,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 CapturedWindowsElement firstElement = (CapturedWindowsElement) selection.getFirstElement();
                 propertiesComposite.setEditingElement(firstElement);
+                highlightElementComposite.setEditingElement(firstElement);
             }
         });
 
@@ -350,6 +360,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         capturedObjectsTableViewer.removeCapturedElements(Arrays.asList(elements));
 
         propertiesComposite.setEditingElement(null);
+        highlightElementComposite.setEditingElement(null);
     }
 
     private void clearAllObjectState(CapturedWindowsElement[] elements) {
@@ -427,6 +438,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
                         capturedObjectsTableViewer.removeCapturedElement(capturedElement);
                         selectedElement.setCapturedElement(null);
                         propertiesComposite.setEditingElement(null);
+                        highlightElementComposite.setEditingElement(null);
                     }
                 }
                 allElementTreeViewer.refresh(selectedElement);
@@ -482,6 +494,17 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         appsComposite.setLayout(new FillLayout());
 
         mobileComposite.createComposite(appsComposite, SWT.NONE, this);
+    }
+
+    private Control createHighlightElementComposite(Composite parent) {
+        highlightElementComposite = new HighlightElementComposite(this);
+        Control control = highlightElementComposite.createComposite(parent);
+        return control;
+    }
+    
+    private Control createScreenViewComposite(Composite parent) {
+        screenComposite = new WindowsScreenView(this);
+        return screenComposite.createControls(parent);
     }
 
     public void updateSelectedElement(CapturedWindowsElement selectedElement) {
@@ -687,27 +710,16 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
     // Highlight Selected object on captured screenshot
     private void highlightObject(BasicWindowsElement selectedElement) {
-        if (selectedElement == null || deviceView == null || deviceView.isDisposed()) {
+        if (selectedElement == null || screenComposite == null || screenComposite.isDisposed()) {
             return;
         }
 
-        deviceView.highlightElement(selectedElement);
+        screenComposite.highlightElement(selectedElement);
     }
 
-    private boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
-        return startX < 0 || startX + dialogSize.x > displayBounds.width + displayBounds.x;
-    }
-
-    private int getDeviceViewStartXIfPlaceRight(Rectangle objectSpyViewBounds) {
-        return objectSpyViewBounds.x + objectSpyViewBounds.width + DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDeviceViewStartXIfPlaceLeft(Rectangle objectSpyViewBounds, Point dialogSize) {
-        return objectSpyViewBounds.x - dialogSize.x - DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDefaultDeviceViewDialogStartX(Rectangle displayBounds, Point dialogSize) {
-        return displayBounds.width - dialogSize.x;
+    @Override
+    public void highlightElementRects(List<Rectangle> rects) {
+        screenComposite.highlightRects(rects);
     }
 
     private int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
@@ -719,31 +731,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
     private int calculateObjectSpyDialogStartY(Rectangle displayBounds, Point dialogSize) {
         int startY = displayBounds.height - dialogSize.y;
         return Math.max(startY, 0) / 2;
-    }
-
-    private Point calculateInitPositionForDeviceViewDialog() {
-        Rectangle displayBounds = getShell().getMonitor().getBounds();
-        Point dialogSize = new Point(WindowsDeviceDialog.DIALOG_WIDTH, WindowsDeviceDialog.DIALOG_HEIGHT);
-        Rectangle objectSpyViewBounds = getShell().getBounds();
-        int startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
-        if (isOutOfBound(displayBounds, dialogSize, startX)) {
-            startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
-            if (isOutOfBound(displayBounds, dialogSize, startX)) {
-                startX = getDefaultDeviceViewDialogStartX(displayBounds, dialogSize);
-            }
-        }
-        return new Point(startX, objectSpyViewBounds.y);
-    }
-
-    private void openDeviceView() {
-        if (deviceView != null && !deviceView.isDisposed()) {
-            return;
-        }
-        deviceView = new WindowsDeviceDialog(getParentShell(), this, calculateInitPositionForDeviceViewDialog());
-
-        deviceView.setBlockOnOpen(false);
-        deviceView.open();
-        setDeviceView(deviceView);
     }
 
     public void setSelectedElementByLocation(int x, int y) {
@@ -817,12 +804,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
                 refreshDeviceView(imgPath);
 
-                UISynchronizeService.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceView.getShell().forceActive();
-                    }
-                });
                 monitor.done();
             }
 
@@ -847,7 +828,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
             private void refreshDeviceView(String imgPath) {
                 File imgFile = new File(imgPath);
                 if (imgFile.exists()) {
-                    deviceView.refreshDialog(imgFile);
+                    screenComposite.refreshDialog(imgFile);
                 }
             }
 
@@ -863,7 +844,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
         try {
             btnCapture.setEnabled(false);
-            openDeviceView();
             dialog.run(true, true, runnable);
         } catch (InterruptedException ignored) {
             // User canceled
@@ -960,8 +940,8 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
             }
         }
 
-        if (deviceView != null) {
-            deviceView.closeApp();
+        if (screenComposite != null) {
+            screenComposite.refreshDialog(null);
         }
 
         dispose();
@@ -991,10 +971,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         Rectangle displayBounds = getShell().getMonitor().getBounds();
         return new Point(calculateObjectSpyDialogStartX(displayBounds, initialSize),
                 calculateObjectSpyDialogStartY(displayBounds, initialSize));
-    }
-
-    private void setDeviceView(WindowsDeviceDialog deviceView) {
-        this.deviceView = deviceView;
     }
 
     public void addElements(List<WindowsElementEntity> webElements) {

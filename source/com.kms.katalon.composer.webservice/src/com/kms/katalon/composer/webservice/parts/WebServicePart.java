@@ -964,7 +964,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             }
         }
 
-        List<VariableEntity> variables = originalWsObject.getVariables();
+        //List<VariableEntity> variables = originalWsObject.getVariables();
+        List<VariableEntity> variables = new ArrayList<VariableEntity>();
+        for (VariableEntity variable : originalWsObject.getVariables()) {
+            VariableEntity newVariable = new VariableEntity();
+            newVariable.setName(variable.getName());
+            newVariable.setDefaultValue(variable.getDefaultValue());
+            newVariable.setDescription(variable.getDescription());
+            newVariable.setId(variable.getId());
+            variables.add(newVariable);
+        }
         variableView.addVariable(variables.toArray(new VariableEntity[variables.size()]));
     }
 
@@ -2667,7 +2676,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     public List<MPart> getChildParts() {
         return Arrays.asList(ui.getApiControlsPart(), ui.getHeadersPart(), ui.getAuthorizationPart(), ui.getBodyPart(),
                 ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart(),
-                ui.getVariableEditorPart());
+                ui.getVariableEditorPart(), ui.getConfigurationPart());
     }
 
     private class ToolBarForVerificationPart extends ToolBarForMPart {

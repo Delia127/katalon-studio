@@ -31,6 +31,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -42,6 +43,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.windows.dialog.WindowsObjectDialog;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
+import com.kms.katalon.composer.windows.helper.WindowsElementHelper;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity.LocatorStrategy;
 
@@ -74,7 +76,6 @@ public class WindowsElementPropertiesComposite {
     public Composite createObjectPropertiesComposite(Composite parent) {
         Composite objectPropertiesComposite = new Composite(parent, SWT.NONE);
         GridLayout glObjectPropertiesComposite = new GridLayout(2, false);
-        glObjectPropertiesComposite.horizontalSpacing = 10;
         objectPropertiesComposite.setLayout(glObjectPropertiesComposite);
 
         Label lblObjectProperties = new Label(objectPropertiesComposite, SWT.NONE);
@@ -93,6 +94,7 @@ public class WindowsElementPropertiesComposite {
         txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtObjectName.setToolTipText(StringConstants.DIA_TOOLTIP_OBJECT_NAME);
 
+        // Locator Strategy
         Composite locatorComposite = new Composite(objectPropertiesComposite, SWT.NONE);
         GridLayout glLocatorComposite = new GridLayout(2, false);
         glLocatorComposite.marginWidth = 0;
@@ -106,9 +108,28 @@ public class WindowsElementPropertiesComposite {
         gdLocatorStrategy.widthHint = DF_LABEL_WIDTH_HINT;
         lblLocatorStrategy.setLayoutData(gdLocatorStrategy);
 
-        cbbLocatorStrategy = new Combo(locatorComposite, SWT.READ_ONLY);
+        Composite locatorStrategyComposite = new Composite(locatorComposite, SWT.NONE);
+        GridLayout glLocatorStrategyComposite = new GridLayout(2, false);
+        glLocatorStrategyComposite.marginWidth = 0;
+        glLocatorStrategyComposite.marginHeight = 0;
+        locatorStrategyComposite.setLayout(glLocatorStrategyComposite);
+        locatorStrategyComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+        
+        cbbLocatorStrategy = new Combo(locatorStrategyComposite, SWT.READ_ONLY);
         cbbLocatorStrategy.setItems(strategies);
 
+        Button btnGenerateLocator = new Button(locatorStrategyComposite, SWT.PUSH);
+        btnGenerateLocator.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+        btnGenerateLocator.setText(StringConstants.DIA_BTN_GENERATE);
+        btnGenerateLocator.setToolTipText(StringConstants.DIA_TOOLTIP_GENERATE_LOCATOR);
+        btnGenerateLocator.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setLocatorByLocatorStrategy();
+            }
+        });
+
+        // Locator
         Label lblLocator = new Label(locatorComposite, SWT.NONE);
         GridData gdLocator = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLocator.widthHint = DF_LABEL_WIDTH_HINT;
@@ -120,6 +141,7 @@ public class WindowsElementPropertiesComposite {
         gdTxtEditor.heightHint = 50;
         txtLocator.setLayoutData(gdTxtEditor);
 
+        // Object Properties
         Composite attributesTableComposite = new Composite(objectPropertiesComposite, SWT.NONE);
         attributesTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
@@ -171,6 +193,9 @@ public class WindowsElementPropertiesComposite {
         cbbLocatorStrategy.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                if (editingElement == null) {
+                    return;
+                }
                 int index = cbbLocatorStrategy.getSelectionIndex();
                 editingElement.setLocatorStrategy(LocatorStrategy.valueOfStrategy(strategies[index]));
             }
@@ -218,6 +243,13 @@ public class WindowsElementPropertiesComposite {
                 }
             }
         });
+    }
+    
+    private void setLocatorByLocatorStrategy() {
+        LocatorStrategy locatorStrategy = editingElement.getLocatorStrategy();
+        String locator = WindowsElementHelper.getLocatorByStrategy(locatorStrategy, editingElement.getSnapshotWindowsElement());
+        editingElement.setLocator(locator);
+        txtLocator.setText(locator);
     }
 
     private void createColumns(TableViewer viewer, TableColumnLayout tableColumnLayout) {

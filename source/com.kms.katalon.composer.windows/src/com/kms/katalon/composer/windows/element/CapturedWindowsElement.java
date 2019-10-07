@@ -20,6 +20,16 @@ public class CapturedWindowsElement implements BasicWindowsElement {
     private String locator;
     
     private String scriptId;
+    
+    private SnapshotWindowsElement snapshotWindowsElement;
+
+    public SnapshotWindowsElement getSnapshotWindowsElement() {
+        return snapshotWindowsElement;
+    }
+
+    public void setSnapshotWindowsElement(SnapshotWindowsElement snapshotWindowsElement) {
+        this.snapshotWindowsElement = snapshotWindowsElement;
+    }
 
     public TreeWindowsElement getLink() {
         return link;
