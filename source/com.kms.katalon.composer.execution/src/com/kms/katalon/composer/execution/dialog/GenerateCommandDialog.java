@@ -1047,8 +1047,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         Thread getApiKey = new Thread(() -> {
             AnalyticsApiKey apiKey = null;
             try {
-                boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-                String serverUrl = analyticsSettingStore.getServerEndpoint(isEncryptionEnabled);
+                String serverUrl = analyticsSettingStore.getServerEndpoint();
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                 if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {

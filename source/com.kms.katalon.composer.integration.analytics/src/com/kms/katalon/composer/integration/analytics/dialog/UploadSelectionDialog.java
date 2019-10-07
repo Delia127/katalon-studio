@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -71,10 +70,9 @@ public class UploadSelectionDialog extends Dialog {
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {
-            boolean encryptionEnabled = true;
-            email = analyticsSettingStore.getEmail(encryptionEnabled);
-            password = analyticsSettingStore.getPassword(encryptionEnabled);
-            serverUrl = analyticsSettingStore.getServerEndpoint(encryptionEnabled);
+            email = analyticsSettingStore.getEmail();
+            password = analyticsSettingStore.getPassword();
+            serverUrl = analyticsSettingStore.getServerEndpoint();
             organization = analyticsSettingStore.getOrganization();
         } catch (IOException | GeneralSecurityException e) {
             // ignore

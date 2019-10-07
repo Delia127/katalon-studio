@@ -14,7 +14,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -34,11 +33,8 @@ import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.resources.constants.IImageKeys;
-import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 public class ActivationOfflineDialogV2 extends AbstractDialog {
 
@@ -174,7 +170,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         lblMachineKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblMachineKey.setText(MessageConstants.ActivationOfflineDialogV2_LBL_MACHINE_KEY);
         
-        txtMachineKeyDetail = new Text(composite, SWT.BORDER);
+        txtMachineKeyDetail = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
         txtMachineKeyDetail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         txtMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
        // increateFontSize(txtMachineKeyDetail, 2);
@@ -196,12 +192,21 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         
         txtLicenseFile = new Text(composite, SWT.BORDER);
         txtLicenseFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        
+        txtLicenseFile.setFocus();
         btnChooseFile = new Button(composite, SWT.PUSH);
         GridData gdChooseFile = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
         gdChooseFile.widthHint = 80;
         btnChooseFile.setLayoutData(gdChooseFile);
         btnChooseFile.setText(MessageConstants.ActivationOfflineDialogV2_BTN_CHOOSE_FILE);
+        
+        Composite messageComposite = new Composite(container, SWT.NONE);
+        GridLayout glMessageComposite = new GridLayout();
+        glMessageComposite.verticalSpacing = 10;
+        messageComposite.setLayout(glMessageComposite);
+        messageComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        
+        lblProgressMessage = new Label(messageComposite, SWT.NONE);
+        lblProgressMessage.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
         
         Composite offlineComposite = new Composite(container, SWT.NONE);
         GridLayout glOfflineComposite = new GridLayout();

@@ -341,8 +341,8 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {
-            String email = analyticsSettingStore.getEmail(true);
-            String password = analyticsSettingStore.getPassword(true);
+            String email = analyticsSettingStore.getEmail();
+            String password = analyticsSettingStore.getPassword();
             
             if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password)) {
                 Shell shell = Display.getCurrent().getActiveShell();

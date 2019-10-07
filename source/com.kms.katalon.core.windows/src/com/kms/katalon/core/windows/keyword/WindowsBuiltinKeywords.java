@@ -1,5 +1,7 @@
 package com.kms.katalon.core.windows.keyword;
 
+import java.util.List;
+
 import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.core.annotation.Keyword;
@@ -441,5 +443,106 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = "Element")
     public static void sendKeys(WindowsTestObject windowsObject, String strKeys) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "sendKeys", windowsObject, strKeys);
+    }
+
+    /**
+     * Finds element by using locator value of the given windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
+     * @return
+     * The found element.
+     *      
+     * @throws StepFailedException
+     * If KS could not find any element.
+     * 
+     * @since 7.0.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static WebElement findElement(WindowsTestObject windowsObject, FailureHandling flowControl)
+            throws StepFailedException {
+        return (WebElement) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElement", windowsObject);
+    }
+
+
+    /**
+     * Finds element by using locator value of the given windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * 
+     * @return
+     * The found element.
+     *      
+     * @throws StepFailedException
+     * If KS could not find any element.
+     * 
+     * @since 7.0.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static WebElement findElement(WindowsTestObject windowsObject)
+            throws StepFailedException {
+        return (WebElement) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElement", windowsObject);
+    }
+
+    /**
+     * Finds elements by using locator value of the given windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Elements.
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
+     * @return
+     * The found elements.
+     *      
+     * @throws StepFailedException
+     * If KS could not find any element.
+     * 
+     * @since 7.0.0
+     */
+    @SuppressWarnings("unchecked")
+    @Keyword(keywordObject = "Element")
+    public static List<WebElement> findElements(WindowsTestObject windowsObject, FailureHandling flowControl)
+            throws StepFailedException {
+        return (List<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElements", windowsObject, flowControl);
+    }
+
+    /**
+     * Finds elements by using locator value of the given windowsObject.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Elements.
+     * 
+     * @return
+     * The found elements.
+     *      
+     * @throws StepFailedException
+     * If KS could not find any element.
+     * 
+     * @since 7.0.0
+     */
+    @SuppressWarnings("unchecked")
+    @Keyword(keywordObject = "Element")
+    public static List<WebElement> findElements(WindowsTestObject windowsObject)
+            throws StepFailedException {
+        return (List<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElements", windowsObject);
     }
 }

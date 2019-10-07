@@ -112,7 +112,7 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
-            boolean isDevelopmentMode = Platform.inDebugMode();
+            boolean isDevelopmentMode = Platform.inDevelopmentMode();
             boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
             if (!isDevelopmentMode && !isRunningInKatalonC) {
                 String extension = OSUtil.getExecutableExtension();
@@ -251,6 +251,7 @@ public class ConsoleMain {
             
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format("Execution completed. Exit code: {0}.", exitCode));
+            ActivationInfoCollector.releaseLicense();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());

@@ -2,12 +2,10 @@ package com.kms.katalon.integration.analytics.handler;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -16,7 +14,6 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
-import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -28,54 +25,50 @@ public class AnalyticsAuthorizationHandler {
     
 	public static AnalyticsTokenInfo getTokenNew(String serverUrl, String email, String password, AnalyticsSettingStore settingStore) {
         try {
-            boolean encryptionEnabled = true;
             AnalyticsTokenInfo tokenInfo = requestToken(serverUrl, email, password);
-            settingStore.setToken(tokenInfo.getAccess_token(), encryptionEnabled);
+            settingStore.setToken(tokenInfo.getAccess_token());
             return tokenInfo;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             LoggerSingleton.logError(ex);
             try {
-                settingStore.setPassword(StringUtils.EMPTY, true);
                 settingStore.enableIntegration(false);
-            } catch (IOException | GeneralSecurityException e) {
+            } catch (IOException e) {
                 LoggerSingleton.logError(e);
             }
         }
-        return null;    
-    } 
-	
+        return null;
+    }
+
     public static AnalyticsTokenInfo getToken(String serverUrl, String email, String password, AnalyticsSettingStore settingStore) {
         try {
-            boolean encryptionEnabled = true;
             AnalyticsTokenInfo tokenInfo = requestToken(serverUrl, email, password);
-            settingStore.setToken(tokenInfo.getAccess_token(), encryptionEnabled);
+            settingStore.setToken(tokenInfo.getAccess_token());
             return tokenInfo;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             LoggerSingleton.logError(ex);
             try {
-                settingStore.setPassword(StringUtils.EMPTY, true);
                 settingStore.enableIntegration(false);
-            } catch (IOException | GeneralSecurityException e) {
+            } catch (IOException e) {
                 LoggerSingleton.logError(e);
             }
             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
-            		IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+                    IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
         }
-        return null;    
-    } 
-    
+        return null;
+    }
+
     public static List<AnalyticsProject> getProjects(final String serverUrl, final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
         final List<AnalyticsProject> projects = new ArrayList<>();
-            List<AnalyticsProject> loaded;
-            try {
-                loaded = AnalyticsApiProvider.getProjects(serverUrl, team, tokenInfo.getAccess_token());
-	            if (loaded != null && !loaded.isEmpty()) {
-	                projects.addAll(loaded);
-	            }
-	        } catch (AnalyticsApiExeception e) {
-	            LoggerSingleton.logError(e);
-	        }
-            return projects;
+        List<AnalyticsProject> loaded;
+        try {
+            loaded = AnalyticsApiProvider.getProjects(serverUrl, team, tokenInfo.getAccess_token());
+            if (loaded != null && !loaded.isEmpty()) {
+                projects.addAll(loaded);
+            }
+        } catch (AnalyticsApiExeception e) {
+            LoggerSingleton.logError(e);
+        }
+        return projects;
     }
     
     public static List<AnalyticsProject> getProjects(final String serverUrl, final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
