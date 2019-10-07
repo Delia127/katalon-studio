@@ -3,8 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Artifact
 Bundle-SymbolicName: com.kms.katalon.composer.artifact;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: resources/,
+ .
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.jface,
  com.kms.katalon.entity,
  org.eclipse.osgi,
@@ -23,7 +24,8 @@ Require-Bundle: org.eclipse.jface,
  com.kms.katalon.composer.keyword,
  org.eclipse.jdt.core,
  org.eclipse.ui.workbench,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.e4.ui.model.workbench;bundle-version="1.2.0.v20160229-1459"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: org.eclipse.e4.core.di.annotations
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: resources/,
- .
