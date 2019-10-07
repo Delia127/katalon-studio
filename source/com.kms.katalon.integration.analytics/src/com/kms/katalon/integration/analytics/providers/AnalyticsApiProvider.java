@@ -114,6 +114,19 @@ public class AnalyticsApiProvider {
         }
     }
 
+    public static AnalyticsOrganization getOrganization(String serverUrl, String accessToken, long orgId) throws AnalyticsApiExeception {
+        try {
+            URIBuilder uriBuilder = new URIBuilder(serverUrl);
+            uriBuilder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_API_ORGANIZATION, orgId));
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            AnalyticsOrganization organization = executeRequest(httpGet, AnalyticsOrganization.class);
+            return organization;
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
     public static List<AnalyticsOrganization> getOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);

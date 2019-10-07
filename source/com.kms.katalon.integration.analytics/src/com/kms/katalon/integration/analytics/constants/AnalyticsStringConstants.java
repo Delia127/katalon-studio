@@ -20,6 +20,8 @@ public class AnalyticsStringConstants {
 
     public static final String ANALYTICS_USERS_ME = "/api/v1/users/me";
     
+    public static final String ANALYTICS_API_ORGANIZATION = "/api/v1/organizations/%d";
+    
     public static final String ANALYTICS_API_ACTIVATE = "/api/v1/license-keys/activate";
     
     public static final String ANALYTICS_API_RELEASE_LICENSE = "/api/v1/license-keys/release";

@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.MachineUtil;
@@ -167,8 +168,17 @@ public class ActivationDialogV2 extends AbstractDialog {
                         StringBuilder errorMessage = new StringBuilder();
                         license = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
                         if (license != null) {
-                            getOrganizations();
-                            setProgressMessage("", false);
+                            if (license.getOrganizationId() != 0) {
+                                try {
+                                    String org = ActivationInfoCollector.getOrganization(username, password, license.getOrganizationId());
+                                    save(org);
+                                } catch (Exception e1) {
+                                    
+                                }
+                            } else {
+                                getOrganizations();
+                                setProgressMessage("", false);
+                            }
                         } else {
                             enableObject(true);
                             setProgressMessage(errorMessage.toString(), true);
@@ -212,6 +222,27 @@ public class ActivationDialogV2 extends AbstractDialog {
             UISynchronizeService.syncExec(() -> {
                 try {
                     ActivationInfoCollector.markActivated(email, password, JsonUtil.toJson(organization), license);
+                    close();
+                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+                } catch (Exception e) {
+                    enableObject(true);
+                    btnSave.setEnabled(false);
+                    LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                }
+            });
+        });
+    }
+    
+    private void save(String org) {
+        String email = txtEmail.getText();
+        String password = txtPassword.getText();
+
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService
+                    .syncExec(() -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_FEATURE, false));
+            UISynchronizeService.syncExec(() -> {
+                try {
+                    ActivationInfoCollector.markActivated(email, password, org, license);
                     close();
                     Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {

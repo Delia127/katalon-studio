@@ -240,6 +240,13 @@ public class ActivationInfoCollector {
         return license;
     }
     
+    public static String getOrganization(String userName, String password, long orgId) throws Exception {
+        String serverUrl = ApplicationInfo.getTestOpsServer();
+        String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
+        String org = KatalonApplicationActivator.getFeatureActivator().getOrganization(serverUrl, token, orgId);
+        return org;
+    }
+    
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
             License license = parseLicense(activationCode, errorMessage);
