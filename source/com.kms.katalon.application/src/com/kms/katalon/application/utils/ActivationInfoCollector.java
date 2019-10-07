@@ -42,6 +42,10 @@ public class ActivationInfoCollector {
     private static boolean isOfflineActivation;
     
     private static ScheduledFuture<?> checkLicenseTask;
+    
+    static {
+        ApplicationInfo.removeAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+    }
 
     protected ActivationInfoCollector() {
     }
