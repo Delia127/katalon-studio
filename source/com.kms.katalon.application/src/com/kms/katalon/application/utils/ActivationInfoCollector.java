@@ -17,6 +17,7 @@ import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.TestOpsFeatureKey;
@@ -253,6 +254,11 @@ public class ActivationInfoCollector {
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
                 enableFeatures(license);
+
+                Organization org = new Organization();
+                org.setId(license.getOrganizationId());
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+
                 activated = true;
                 return activated;
             }
