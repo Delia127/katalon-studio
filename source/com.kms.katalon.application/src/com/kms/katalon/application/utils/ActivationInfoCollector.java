@@ -91,7 +91,7 @@ public class ActivationInfoCollector {
         try {
             String machineId = MachineUtil.getMachineId();
             License license = activate(null, apiKey, machineId, null);
-            
+
             if (license != null) {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
@@ -101,7 +101,7 @@ public class ActivationInfoCollector {
             activated = false;
             LogUtil.logError(ex);
         }
-        
+
         return activated;
     }
 
@@ -116,7 +116,7 @@ public class ActivationInfoCollector {
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
-        
+
         return false;
     }
 
@@ -137,7 +137,7 @@ public class ActivationInfoCollector {
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
-        
+
         return false;
     }
 
@@ -151,6 +151,7 @@ public class ActivationInfoCollector {
 
         return Objects.hash(hostName);
     }
+
     private static String collectActivationInfo(String userName, String pass) {
         JsonObject traits = traitsWithAppInfo();
         traits.addProperty("password", pass);
@@ -189,7 +190,8 @@ public class ActivationInfoCollector {
         return host;
     }
 
-    public static License activate(String serverUrl, String userName, String password, String machineId, StringBuilder errorMessage) {
+    public static License activate(String serverUrl, String userName, String password, String machineId,
+            StringBuilder errorMessage) {
         ApplicationInfo.setTestOpsServer(serverUrl);
         return activate(userName, password, machineId, errorMessage);
     }
@@ -204,8 +206,7 @@ public class ActivationInfoCollector {
         } catch (Exception e) {
             LogUtil.logError(e);
         }
-        
-        
+
         License license = null;
         try {
             String jwtCode = getLicenseFromTestOps(userName, password, machineId);
@@ -217,9 +218,10 @@ public class ActivationInfoCollector {
                 errorMessage.append(ApplicationMessageConstants.INVALID_ACCOUNT_ERROR);
             }
         }
+
         return license;
     }
-    
+
     private static License parseLicense(String jwtCode, StringBuilder errorMessage) {
         try {
             if (jwtCode != null && !jwtCode.isEmpty()) {
@@ -237,16 +239,16 @@ public class ActivationInfoCollector {
         }
         return null;
     }
-    
+
     private static String getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
         String hostname = getHostname();
-        String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName, sessionId,
-                hostname, machineId);
+        String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName,
+                sessionId, hostname, machineId);
         return license;
     }
-    
+
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
             License license = parseLicense(activationCode, errorMessage);
@@ -267,11 +269,21 @@ public class ActivationInfoCollector {
         activated = false;
         return activated;
     }
-    
+
     private static boolean isValidLicense(License license) {
-        return hasValidMachineId(license) && !isExpired(license);
+        return isDowngradeLicense(license) && hasValidMachineId(license) && !isExpired(license);
     }
     
+    private static boolean isDowngradeLicense(License license) {
+        License lastUsedLicense = getLastUsedLicense();
+        if (lastUsedLicense != null && "ENTERPRISE".equals(lastUsedLicense.getLicenseType())) {
+            if (license != null && !"ENTERPRISE".equals(license.getLicenseType())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static boolean hasValidMachineId(License license) {
         try {
             String machineId = MachineUtil.getMachineId();
@@ -281,17 +293,17 @@ public class ActivationInfoCollector {
             return false;
         }
     }
-    
+
     private static boolean isExpired(License license) {
         Date currentDate = new Date();
         return currentDate.after(license.getExpirationDate());
     }
-    
+
     public static boolean isReachRenewTime(License license) {
         Date currentDate = new Date();
         return currentDate.after(license.getRenewTime());
     }
-    
+
     private static void enableFeatures(License license) {
         List<Feature> features = license.getFeatures();
         IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
@@ -305,7 +317,8 @@ public class ActivationInfoCollector {
         featureService.clear();
     }
 
-    public static void markActivated(String userName, String password, String organization, License license) throws Exception {
+    public static void markActivated(String userName, String password, String organization, License license)
+            throws Exception {
         activated = true;
         enableFeatures(license);
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
@@ -320,7 +333,6 @@ public class ActivationInfoCollector {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
     }
-    
 
     private static void setActivatedVal() throws Exception {
         String activatedVal = Integer.toString(getHostNameHashValue());
@@ -344,7 +356,7 @@ public class ActivationInfoCollector {
         }
         return StringUtils.join(ArrayUtils.subarray(numbers, 0, 3), ".");
     }
-    
+
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
         if (!isOfflineActivation) {
             checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
@@ -380,5 +392,15 @@ public class ActivationInfoCollector {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         License license = ActivationInfoCollector.parseLicense(jwsCode, null);
         return license;
+    }
+
+    private static License getLastUsedLicense() {
+        try {
+            String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+            License license = LicenseService.getInstance().parseJws(jwsCode);
+            return license;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
