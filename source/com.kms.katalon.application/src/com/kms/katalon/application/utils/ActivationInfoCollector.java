@@ -394,14 +394,4 @@ public class ActivationInfoCollector {
         License license = ActivationInfoCollector.parseLicense(jwsCode, null);
         return license;
     }
-
-    private static License getLastUsedLicense() {
-        try {
-            String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-            License license = LicenseService.getInstance().parseJws(jwsCode);
-            return license;
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }
