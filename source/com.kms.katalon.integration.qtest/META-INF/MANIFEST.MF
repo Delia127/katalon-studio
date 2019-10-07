@@ -30,7 +30,8 @@ Require-Bundle: com.kms.katalon.entity,
  com.kms.katalon.execution,
  com.google.gson,
  com.kms.katalon.application,
- com.google.http-client.google-http-client
+ com.google.http-client.google-http-client,
+ com.katalon.platform
 Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.constants,
  com.kms.katalon.integration.qtest.credential,

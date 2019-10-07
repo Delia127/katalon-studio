@@ -52,10 +52,12 @@ public class LicenseService {
         license.setExpirationDate(new Date(expireDate));
         
         license.setMachineId(claims.get(LicenseConstants.MACHINE_ID).asString());
-        Claim orgId =  claims.get(LicenseConstants.ORGANIZATION_ID);
-        if (orgId != null) {
-            license.setOrganizationId(claims.get(LicenseConstants.ORGANIZATION_ID).asLong());
-        }
+        Claim orgIdClaim =  claims.get(LicenseConstants.ORGANIZATION_ID);
+        Long orgId = null;
+        if (orgIdClaim != null) {
+            orgId = claims.get(LicenseConstants.ORGANIZATION_ID).asLong();
+        } 
+        license.setOrganizationId(orgId);
         license.setFeatures(claims.get(LicenseConstants.FEATURES).asList(Feature.class));
         license.setJwtCode(jws);
         return license;

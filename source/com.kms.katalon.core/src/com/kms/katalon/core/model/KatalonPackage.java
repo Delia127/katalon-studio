@@ -2,7 +2,7 @@ package com.kms.katalon.core.model;
 
 public enum KatalonPackage {
     KSE("KSE"),
-    ENGINE("Engine");
+    ENGINE("ENGINE");
     
     private final String packageName;
     

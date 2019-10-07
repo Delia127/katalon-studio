@@ -15,7 +15,7 @@ public class License {
 
     private List<Feature> features;
 
-    private long organizationId;
+    private Long organizationId;
 
     private String licenseType;
 
@@ -51,11 +51,11 @@ public class License {
         this.features = features;
     }
 
-    public long getOrganizationId() {
+    public Long getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(long organizationId) {
+    public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
     }
 

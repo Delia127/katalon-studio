@@ -229,7 +229,7 @@ public class AnalyticsApiProvider {
     }
     
     public static void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,
-            long orgId, String accessToken) throws AnalyticsApiExeception {
+            Long orgId, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_RELEASE_LICENSE);
             URIBuilder uriBuilder = new URIBuilder(uri);
@@ -237,7 +237,9 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("ksVersion", ksVersion);
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
-            uriBuilder.setParameter("organizationId", String.valueOf(orgId));
+            if (orgId != null) {
+                uriBuilder.setParameter("organizationId", String.valueOf(orgId));
+            }
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             executeRequest(httpPost, Object.class);
