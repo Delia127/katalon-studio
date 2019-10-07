@@ -18,12 +18,19 @@ public class LogoutHandler {
     public void execute() {
         try {
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+            
+            try {
+                ActivationInfoCollector.releaseLicense();
+            } catch (Exception e) {
+                LogUtil.logError(e);
+            }
+            
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, "", true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, "", true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, "", true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, "", true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, "", true);
 
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, StringUtils.EMPTY, true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, StringUtils.EMPTY, true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, StringUtils.EMPTY, true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, StringUtils.EMPTY, true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, StringUtils.EMPTY, true);
             
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, StringUtils.EMPTY, true);
@@ -35,6 +42,10 @@ public class LogoutHandler {
  
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, StringUtils.EMPTY, true);
+            }
+            
+            if (ApplicationInfo.getAppProperty(ApplicationStringConstants.EXPIRATION_DATE) != null) {
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.EXPIRATION_DATE, StringUtils.EMPTY, true);
             }
 
             ActivationInfoCollector.setActivated(false);

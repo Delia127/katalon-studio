@@ -5,10 +5,12 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.FileHashUtil;
@@ -60,6 +62,20 @@ public class KatalonApplication {
             hostName = UNKNOWN_HOST;
         }
         return hostName;
+    }
+    
+    public static KatalonPackage getKatalonPackage() {
+        if (!isRunningInKatalonC()) {
+            return KatalonPackage.KSE;
+        } else {
+            return KatalonPackage.ENGINE;
+        }
+    }
+    
+    private static boolean isRunningInKatalonC() {
+        Properties props = System.getProperties();
+        String launcherName = props.getProperty("eclipse.launcher.name");
+        return launcherName.equalsIgnoreCase("katalonc");
     }
 
     public static String getMacAddress() {

@@ -33,7 +33,6 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.MachineUtil;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;

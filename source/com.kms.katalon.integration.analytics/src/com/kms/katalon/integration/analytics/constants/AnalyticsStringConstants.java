@@ -22,6 +22,8 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_API_ACTIVATE = "/api/v1/license-keys/activate";
     
+    public static final String ANALYTICS_API_RELEASE_LICENSE = "/api/v1/license-keys/release";
+    
     public static final String ANALYTICS_API_KATALON_TEST_REPORTS = "/api/v1/katalon-test-reports";
     
     public static final String ANALYTICS_API_KATALON_MULTIPLE_TEST_REPORTS = "/api/v1/katalon/test-reports/multiple";

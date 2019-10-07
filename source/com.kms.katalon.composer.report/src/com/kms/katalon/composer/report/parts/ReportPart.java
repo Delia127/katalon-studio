@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -120,7 +119,6 @@ import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
-import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -135,17 +133,11 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
-import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
-import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
-import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -154,8 +146,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private static final String BTN_SHOW_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_SHOW_TEST_CASE_DETAILS;
 
     private static final String BTN_HIDE_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_HIDE_TEST_CASE_DETAILS;
-
-    private static AnalyticsTokenInfo tokenInfo;
 
     @Inject
     private IEventBroker eventBroker;
@@ -900,8 +890,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {
-            String email = analyticsSettingStore.getEmail(true);
-            String password = analyticsSettingStore.getPassword(true);
+            String email = analyticsSettingStore.getEmail();
+            String password = analyticsSettingStore.getPassword();
             
             if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password)) {
                 Shell shell = Display.getCurrent().getActiveShell();

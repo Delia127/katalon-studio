@@ -70,6 +70,8 @@ public class KatalonAboutDialog extends TrayDialog {
     private boolean isLatestVersion = true;
 
     private String latestVersion;
+    
+    private String expirationDate;
 
     private static LicenseType licenseType;
 
@@ -85,6 +87,7 @@ public class KatalonAboutDialog extends TrayDialog {
     public KatalonAboutDialog(Shell parentShell) {
         super(parentShell);
         licenseType = LicenseType.valueOf(ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE));
+        expirationDate = ApplicationInfo.getAppProperty(ApplicationStringConstants.EXPIRATION_DATE);
         product = Platform.getProduct();
         if (product != null) {
             productName = getProductNameBasedOnLicenseType();
@@ -287,7 +290,7 @@ public class KatalonAboutDialog extends TrayDialog {
             ControlUtils.setFontStyle(lblExpirationDate, SWT.BOLD, 10);
 
             Label expiration = new Label(contentComposite, SWT.NONE);
-            expiration.setText("31 October 2019");
+            expiration.setText(expirationDate);
             ControlUtils.setFontStyle(expiration, SWT.NONE, 10);
         }
 
