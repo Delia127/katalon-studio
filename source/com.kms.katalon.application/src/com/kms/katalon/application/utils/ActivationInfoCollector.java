@@ -43,9 +43,7 @@ public class ActivationInfoCollector {
     
     private static ScheduledFuture<?> checkLicenseTask;
     
-    static {
-        ApplicationInfo.removeAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-    }
+    private static License lastUsedLicense;
 
     protected ActivationInfoCollector() {
     }
@@ -278,7 +276,6 @@ public class ActivationInfoCollector {
     }
     
     private static boolean isDowngradeLicense(License license) {
-        License lastUsedLicense = getLastUsedLicense();
         if (lastUsedLicense != null && "ENTERPRISE".equals(lastUsedLicense.getLicenseType())) {
             if (license != null && !"ENTERPRISE".equals(license.getLicenseType())) {
                 return false;
@@ -335,6 +332,7 @@ public class ActivationInfoCollector {
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
+        lastUsedLicense = getLicense();
     }
 
     private static void setActivatedVal() throws Exception {
