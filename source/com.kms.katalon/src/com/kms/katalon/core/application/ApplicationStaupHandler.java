@@ -88,6 +88,5 @@ public class ApplicationStaupHandler {
     public static void closeKS() {
         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
         PlatformUI.getWorkbench().close();
-        ActivationInfoCollector.cleanup();
     }
 }
