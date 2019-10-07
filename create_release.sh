@@ -14,6 +14,7 @@ create_github_release() {
             "${tmpDir}/apidocs.zip" \
             "${tmpDir}/commit.txt" \
             "${tmpDir}/Katalon Studio.app.zip" \
+            "${tmpDir}/Katalon Studio.dmg" \
             "${tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz" \
             "${tmpDir}/Katalon_Studio_Windows_32-${version}.zip" \
             "${tmpDir}/Katalon_Studio_Windows_64-${version}.zip"
