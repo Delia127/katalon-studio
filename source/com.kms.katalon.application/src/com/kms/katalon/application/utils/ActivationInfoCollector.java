@@ -2,6 +2,8 @@ package com.kms.katalon.application.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +25,7 @@ import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -64,6 +67,7 @@ public class ActivationInfoCollector {
                     enableFeatures(license);
                     markActivatedLicenseCode(license.getJwtCode());
                     saveLicenseType(license.getType());
+                    saveExpirationDate(license.getExpirationDate());
                     activated = true;
                 }
             }
@@ -75,8 +79,14 @@ public class ActivationInfoCollector {
         return activated;
     }
 
-    private static void saveLicenseType(String type) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, type, true);
+    private static void saveLicenseType(LicenseType type) {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, type.toString(), true);
+    }
+
+    private static void saveExpirationDate(Date date) {
+        Format formatter = new SimpleDateFormat("MMMMM dd,yyyy");
+        String dateWithFormatter = formatter.format(date);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.EXPIRATION_DATE, dateWithFormatter, true);
     }
 
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey) {
@@ -88,6 +98,7 @@ public class ActivationInfoCollector {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
                 saveLicenseType(license.getType());
+                saveExpirationDate(license.getExpirationDate());
                 activated = true;
             }
         } catch (Exception ex) {
@@ -199,7 +210,6 @@ public class ActivationInfoCollector {
             LogUtil.logError(e);
         }
         
-        
         License license = null;
         try {
             String jwtCode = getLicenseFromTestOps(userName, password, machineId);
@@ -248,6 +258,7 @@ public class ActivationInfoCollector {
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
                 saveLicenseType(license.getType());
+                saveExpirationDate(license.getExpirationDate());
                 enableFeatures(license);
                 activated = true;
                 return activated;
@@ -305,6 +316,7 @@ public class ActivationInfoCollector {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, organization, true);
         markActivatedLicenseCode(license.getJwtCode());
         saveLicenseType(license.getType());
+        saveExpirationDate(license.getExpirationDate());
     }
 
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
@@ -312,7 +324,6 @@ public class ActivationInfoCollector {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
     }
     
-
     private static void setActivatedVal() throws Exception {
         String activatedVal = Integer.toString(getHostNameHashValue());
         String curVersion = new StringBuilder(ApplicationInfo.versionNo().replaceAll("\\.", "")).reverse().toString();

@@ -14,6 +14,8 @@ public class License {
     private List<Feature> features;
 
     private long organizationId;
+    
+    private LicenseType licenseType;
 
     public Date getExpirationDate() {
         return expirationDate;
@@ -55,9 +57,12 @@ public class License {
         this.jwtCode = jwtCode;
     }
 
-    public String getType() {
-        // TODO Return the appropriate string here
-        return "ENTERPRISE";
+    public LicenseType getType() {
+        return LicenseType.ENTERPRISE;
+    }
+    
+    public void setLicenseType(String licenseType) {
+        this.licenseType = LicenseType.valueOf(licenseType);
     }
     
 }

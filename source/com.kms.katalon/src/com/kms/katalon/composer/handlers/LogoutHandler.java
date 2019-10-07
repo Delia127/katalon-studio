@@ -32,7 +32,11 @@ public class LogoutHandler {
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, StringUtils.EMPTY, true);
             }
-            
+ 
+            if (ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE) != null) {
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, StringUtils.EMPTY, true);
+            }
+
             ActivationInfoCollector.setActivated(false);
             ActivationInfoCollector.clearFeatures();
             

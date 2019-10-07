@@ -1,6 +1,5 @@
 package com.kms.katalon.about.dialog;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -8,82 +7,84 @@ import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.IWorkbenchHelpContextIds;
-import org.eclipse.ui.internal.ProductProperties;
 import org.eclipse.ui.internal.WorkbenchMessages;
 import org.eclipse.ui.internal.about.AboutBundleGroupData;
-import org.eclipse.ui.internal.about.AboutItem;
-import org.eclipse.ui.internal.about.AboutTextManager;
 import org.eclipse.ui.internal.about.InstallationDialog;
-import org.eclipse.ui.menus.CommandContributionItem;
-import org.eclipse.ui.menus.CommandContributionItemParameter;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionInfo;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.composer.components.ComponentBundleActivator;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.MessageConstants;
+import com.kms.katalon.license.models.LicenseType;
 
 /**
  * Displays information about the product.
  */
 @SuppressWarnings({ "restriction" })
 public class KatalonAboutDialog extends TrayDialog {
-    private final static int MAX_IMAGE_WIDTH_FOR_TEXT = 250;
-
     private final static int DETAILS_ID = IDialogConstants.CLIENT_ID + 1;
 
     private String productName;
+
+    private Image logo;
 
     private IProduct product;
 
     private ArrayList<Image> images = new ArrayList<>();
 
-    private StyledText text;
-    
-    private AboutTextManager aboutTextManager;
-    
     protected static final String VERSION_UPDATE = "KatalonVersionUpdate";
-    
+
     private static final String KATALON_NAME_INFO = "Katalon Studio";
+
+    private static final String KSE_NAME_INFO = "Katalon Studio Enterprise";
+
+    private boolean isTrial = false;
     
-    private static String licenseType;
+    private boolean isKSE = false;
+
+    private boolean isLatestVersion = true;
+
+    private String latestVersion;
+
+    private static LicenseType licenseType;
+
+    private Link lnkCopyright;
+
+    private Button btnInstalltionDetails, btnOk;
 
     /**
      * Create an instance of the AboutDialog for the given window.
+     * 
      * @param parentShell The parent of the dialog.
      */
     public KatalonAboutDialog(Shell parentShell) {
         super(parentShell);
-        licenseType = ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE);
+        licenseType = LicenseType.valueOf(ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE));
         product = Platform.getProduct();
         if (product != null) {
             productName = getProductNameBasedOnLicenseType();
@@ -91,6 +92,7 @@ public class KatalonAboutDialog extends TrayDialog {
         if (productName == null) {
             productName = WorkbenchMessages.AboutDialog_defaultProductName;
         }
+        updateVersionInfo();
 
         // create a descriptive object for each BundleGroup
         IBundleGroupProvider[] providers = Platform.getBundleGroupProviders();
@@ -106,11 +108,39 @@ public class KatalonAboutDialog extends TrayDialog {
     }
 
     private String getProductNameBasedOnLicenseType() {
-        String name = product.getName();
-        if (licenseType.equals("ENTERPRISE")) {
-            name += " Enterprise";
+        String name;
+        switch (licenseType) {
+            case ENTERPRISE:
+                name = KSE_NAME_INFO;
+                logo = ImageManager.getImage(IImageKeys.LOGO_KSE);
+                isTrial = false;
+                isKSE = true;
+                break;
+            case TRIAL:
+                name = KSE_NAME_INFO;
+                logo = ImageManager.getImage(IImageKeys.LOGO_KSE);
+                isTrial = true;
+                isKSE = true;
+                break;
+            case FREE:
+                name = KATALON_NAME_INFO;
+                logo = ImageManager.getImage(IImageKeys.LOGO_KATALON_STUDIO);
+                isTrial = false;
+                isKSE = false;
+                break;
+            default:
+                name = product.getName();
+                logo = ImageManager.getImage(IImageKeys.LOGO_KATALON_STUDIO);
+                isTrial = false;
+                isKSE = false;
+                break;
         }
         return name;
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+
     }
 
     /*
@@ -119,20 +149,20 @@ public class KatalonAboutDialog extends TrayDialog {
     @Override
     protected void buttonPressed(int buttonId) {
         switch (buttonId) {
-        case DETAILS_ID:
-            BusyIndicator.showWhile(getShell().getDisplay(), new Runnable() {
-                @Override
-                public void run() {
-                    IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                    InstallationDialog dialog = new InstallationDialog(getShell(), workbenchWindow);
-                    dialog.setModalParent(KatalonAboutDialog.this);
-                    dialog.open();  
-                }
-            });
-            break;
-        default:
-            super.buttonPressed(buttonId);
-            break;
+            case DETAILS_ID:
+                BusyIndicator.showWhile(getShell().getDisplay(), new Runnable() {
+                    @Override
+                    public void run() {
+                        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                        InstallationDialog dialog = new InstallationDialog(getShell(), workbenchWindow);
+                        dialog.setModalParent(KatalonAboutDialog.this);
+                        dialog.open();
+                    }
+                });
+                break;
+            default:
+                super.buttonPressed(buttonId);
+                break;
         }
     }
 
@@ -153,318 +183,207 @@ public class KatalonAboutDialog extends TrayDialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(NLS.bind(WorkbenchMessages.AboutDialog_shellTitle,productName ));
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell,
-                IWorkbenchHelpContextIds.ABOUT_DIALOG);
+        newShell.setText(NLS.bind(WorkbenchMessages.AboutDialog_shellTitle, productName));
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell, IWorkbenchHelpContextIds.ABOUT_DIALOG);
     }
 
-    /**
-     * Add buttons to the dialog's button bar.
-     * 
-     * Subclasses should override.
-     * 
-     * @param parent
-     *            the button bar composite
-     */
-    @Override
-    protected void createButtonsForButtonBar(Composite parent) {
-        parent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-        createButton(parent, DETAILS_ID, WorkbenchMessages.AboutDialog_DetailsButton, false); 
-
-        Label l = new Label(parent, SWT.NONE);
-        l.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridLayout layout = (GridLayout) parent.getLayout();
-        layout.numColumns++;
-        layout.makeColumnsEqualWidth = false;
-
-        Button b = createButton(parent, IDialogConstants.OK_ID,
-                IDialogConstants.OK_LABEL, true);
-        b.setFocus();
-    }
-    
-    protected String updateInfo(String aboutText) {
-        String versionUpdated = updateVersionInfo(aboutText);
-        String nameUpdated = updateProductNameInfo(versionUpdated);
-        return nameUpdated;
-    }
-    
-    private String updateVersionInfo(String aboutText) {
-        int start = aboutText.indexOf(VERSION_UPDATE);
-        if (start < 0) {
-            return aboutText;
-        }
+    private void updateVersionInfo() {
         VersionInfo lastestVersion = VersionUtil.getLatestVersion();
-        String versionStatus = MessageConstants.VERSION_IS_UP_TODATE;
         if (VersionUtil.isNewer(lastestVersion.getVersion(), VersionUtil.getCurrentVersion().getVersion())) {
-            versionStatus = MessageFormat.format(MessageConstants.NEW_VERSION_AVAIABLE, lastestVersion.getVersion());
+            isLatestVersion = false;
+            latestVersion = lastestVersion.getVersion();
         } else {
-            versionStatus = MessageFormat.format(MessageConstants.HAND_MSG_UP_TO_DATE, "");
+            isLatestVersion = true;
+            latestVersion = MessageConstants.HAND_MSG_UP_TO_DATE;
         }
-        
-        StringBuilder versionUpdateInfo = new StringBuilder(aboutText);
-        versionUpdateInfo.delete(start, start + VERSION_UPDATE.length());
-        versionUpdateInfo.insert(start, versionStatus);
-
-        return versionUpdateInfo.toString();
-    }
-    
-    private String updateProductNameInfo(String aboutText) {
-        int start = aboutText.indexOf(KATALON_NAME_INFO);
-        if (start < 0) {
-            return aboutText;
-        }
-        String updatedName = licenseType.equals("ENTERPRISE") ? "Katalon Studio Enterprise" : "Katalon Studio";
-        StringBuilder versionUpdateInfo = new StringBuilder(aboutText);
-        versionUpdateInfo.delete(start, start + KATALON_NAME_INFO.length());
-        versionUpdateInfo.insert(start, updatedName);
-        return versionUpdateInfo.toString();
     }
 
     /**
-     * Creates and returns the contents of the upper part 
+     * Creates and returns the contents of the upper part
      * of the dialog (above the button bar).
      *
      * Subclasses should overide.
      *
-     * @param parent  the parent composite to contain the dialog area
+     * @param parent the parent composite to contain the dialog area
      * @return the dialog area control
      */
     @Override
     protected Control createDialogArea(Composite parent) {
-         // brand the about box if there is product info
-        Image aboutImage = null;
-        AboutItem item = null;
-        if (product != null) {
-            ImageDescriptor imageDescriptor = getProductAboutImageBasedOnLicenseType();
-            if (imageDescriptor != null) {
-                aboutImage = imageDescriptor.createImage();
-            }
+        Image bg = getBackground();
+        parent.setBackgroundImage(bg);
+        GridData gridData = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        gridData.widthHint = bg.getBounds().width;
+        gridData.heightHint = bg.getBounds().height;
+        parent.setLayoutData(gridData);
+        GridLayout gridLayout = new GridLayout(2, false);
+        parent.setLayout(gridLayout);
+        parent.setBackgroundMode(SWT.INHERIT_DEFAULT);
 
-            // if the about image is small enough, then show the text
-            if (aboutImage == null
-                    || aboutImage.getBounds().width <= MAX_IMAGE_WIDTH_FOR_TEXT) {
-                String aboutText = ProductProperties.getAboutText(product);
-                if (aboutText != null) {
-                    item = VersionAboutTextManager.scan(updateInfo(aboutText));
-                }
-            }
+        Composite logoComposite = new Composite(parent, SWT.TRANSPARENT);
+        GridLayout glLogo = new GridLayout(1, false);
+        glLogo.marginTop = 50;
+        glLogo.marginLeft = 30;
+        logoComposite.setLayout(glLogo);
+        logoComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
 
-            if (aboutImage != null) {
-                images.add(aboutImage);
-            }
+        Label lblLogo = new Label(logoComposite, SWT.TRANSPARENT);
+        lblLogo.setImage(logo);
+
+        Composite contentComposite = new Composite(parent, SWT.TRANSPARENT);
+        GridLayout contentContent = new GridLayout(2, false);
+        contentContent.marginTop = 50;
+        contentContent.marginLeft = 20;
+        contentComposite.setLayout(contentContent);
+
+        Composite titleComposite = new Composite(contentComposite, SWT.TRANSPARENT);
+        GridLayout glTitle = new GridLayout(2, false);
+        glTitle.marginTop = 0;
+        glTitle.marginLeft = 0;
+        glTitle.marginRight = 0;
+        glTitle.marginBottom = 0;
+        titleComposite.setLayout(glTitle);
+        GridData gdTitle = new GridData(SWT.LEFT, SWT.CENTER, true, true, 2, 1);
+        titleComposite.setLayoutData(gdTitle);
+
+        Label lblProductName = new Label(titleComposite, SWT.NONE);
+        GridData gdProductName = new GridData(SWT.LEFT, SWT.CENTER, true, true);
+        lblProductName.setLayoutData(gdProductName);
+        lblProductName.setText(productName);
+        ControlUtils.setFontStyle(lblProductName, SWT.BOLD, 17);
+
+        Label lblTrial = new Label(titleComposite, SWT.BOTTOM);
+        GridData gdTrial = new GridData(SWT.LEFT, SWT.CENTER, true, true);
+        lblTrial.setLayoutData(gdTrial);
+        ControlUtils.setFontStyle(lblTrial, SWT.ITALIC, 10);
+        if (isTrial) {
+            lblTrial.setText("(Trial)");
         }
 
-        // create a composite which is the parent of the top area and the bottom
-        // button bar, this allows there to be a second child of this composite with 
-        // a banner background on top but not have on the bottom
-        Composite workArea = new Composite(parent, SWT.NONE);
-        GridLayout workLayout = new GridLayout();
-        workLayout.marginHeight = 0;
-        workLayout.marginWidth = 0;
-        workLayout.verticalSpacing = 0;
-        workLayout.horizontalSpacing = 0;
-        workArea.setLayout(workLayout);
-        workArea.setLayoutData(new GridData(GridData.FILL_BOTH));
+        GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, true, true);
+        gdLabel.widthHint = 200;
 
-        // page group
-        Color background = JFaceColors.getBannerBackground(parent.getDisplay());
-        Color foreground = JFaceColors.getBannerForeground(parent.getDisplay());
-        Composite top = (Composite) super.createDialogArea(workArea);
+        Label lblversion = new Label(contentComposite, SWT.NONE);
+        lblversion.setText("Version");
+        lblversion.setLayoutData(gdLabel);
+        ControlUtils.setFontStyle(lblversion, SWT.BOLD, 10);
 
-        // override any layout inherited from createDialogArea 
-        GridLayout layout = new GridLayout();
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
-        layout.verticalSpacing = 0;
-        layout.horizontalSpacing = 0;
-        top.setLayout(layout);
-        top.setLayoutData(new GridData(GridData.FILL_BOTH));
-        top.setBackground(background);
-        top.setForeground(foreground);
+        Label version = new Label(contentComposite, SWT.NONE);
+        version.setText(VersionUtil.getCurrentVersion().getVersion());
+        ControlUtils.setFontStyle(version, SWT.NONE, 10);
 
-        // the image & text 
-        final Composite topContainer = new Composite(top, SWT.NONE);
-        topContainer.setBackground(background);
-        topContainer.setForeground(foreground);
+        Label lblBuild = new Label(contentComposite, SWT.NONE);
+        lblBuild.setLayoutData(gdLabel);
+        lblBuild.setText("Build");
+        ControlUtils.setFontStyle(lblBuild, SWT.BOLD, 10);
 
-        layout = new GridLayout();
-        layout.numColumns = (aboutImage == null || item == null ? 1 : 2);
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        layout.verticalSpacing = 0;
-        layout.horizontalSpacing = 0;
-        topContainer.setLayout(layout);
-        
+        Label build = new Label(contentComposite, SWT.NONE);
+        build.setText(Integer.toString(VersionUtil.getCurrentVersion().getBuildNumber()));
+        ControlUtils.setFontStyle(version, SWT.NONE, 10);
 
-        GC gc = new GC(parent);
-        // arbitrary default
-        int topContainerHeightHint = 100;
-        try {
-            // default height enough for 6 lines of text
-            topContainerHeightHint = Math.max(topContainerHeightHint, gc
-                    .getFontMetrics().getHeight() * 6);
-        }
-        finally {
-            gc.dispose();
-        }
-        
-        //image on left side of dialog
-        if (aboutImage != null) {
-            Label imageLabel = new Label(topContainer, SWT.NONE);
-            imageLabel.setBackground(background);
-            imageLabel.setForeground(foreground);
+        if (isKSE) {
+            Label lblExpirationDate = new Label(contentComposite, SWT.NONE);
+            lblExpirationDate.setLayoutData(gdLabel);
+            lblExpirationDate.setText("Expiration Date");
+            ControlUtils.setFontStyle(lblExpirationDate, SWT.BOLD, 10);
 
-            GridData data = new GridData();
-            data.horizontalAlignment = GridData.FILL;
-            data.verticalAlignment = GridData.BEGINNING;
-            data.grabExcessHorizontalSpace = false;
-            data.verticalIndent = 5;
-            data.horizontalIndent = 5;
-            imageLabel.setLayoutData(data);
-            imageLabel.setImage(aboutImage);
-            topContainerHeightHint = Math.max(topContainerHeightHint, aboutImage.getBounds().height);
-        }
-        
-        GridData data = new GridData();
-        data.horizontalAlignment = GridData.FILL;
-        data.verticalAlignment = GridData.FILL;
-        data.grabExcessHorizontalSpace = true;
-        data.grabExcessVerticalSpace = true;
-        topContainer.setLayoutData(data);
-
-        if (item != null) {
-            final int minWidth = 400; // This value should really be calculated
-            // from the computeSize(SWT.DEFAULT,
-            // SWT.DEFAULT) of all the
-            // children in infoArea excluding the
-            // wrapped styled text
-            // There is no easy way to do this.
-            final ScrolledComposite scroller = new ScrolledComposite(topContainer,
-                    SWT.V_SCROLL | SWT.H_SCROLL);
-            data = new GridData(GridData.FILL_BOTH);
-            data.widthHint = minWidth;
-            scroller.setLayoutData(data);
-
-            final Composite textComposite = new Composite(scroller, SWT.NONE);
-            textComposite.setBackground(background);
-            
-            layout = new GridLayout();
-            textComposite.setLayout(layout);
-
-            text = new StyledText(textComposite, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
-
-            // Don't set caret to 'null' as this causes https://bugs.eclipse.org/293263.
-//          text.setCaret(null);
-
-            text.setFont(parent.getFont());
-            text.setText(item.getText());
-            text.setCursor(null);
-            text.setBackground(background);
-            text.setForeground(foreground);
-            
-            aboutTextManager = new VersionAboutTextManager(text);
-            aboutTextManager.setItem(item);
-            
-            createTextMenu();
-            
-            GridData gd = new GridData();
-            gd.verticalAlignment = GridData.BEGINNING;
-            gd.horizontalAlignment = GridData.FILL;
-            gd.grabExcessHorizontalSpace = true;
-            text.setLayoutData(gd);
-
-            // Adjust the scrollbar increments
-            scroller.getHorizontalBar().setIncrement(20);
-            scroller.getVerticalBar().setIncrement(20);
-
-            final boolean[] inresize = new boolean[1]; // flag to stop unneccesary
-            // recursion
-            textComposite.addControlListener(new ControlAdapter() {
-                @Override
-                public void controlResized(ControlEvent e) {
-                    if (inresize[0])
-                        return;
-                    inresize[0] = true;
-                    // required because of bugzilla report 4579
-                    textComposite.layout(true);
-                    // required because you want to change the height that the
-                    // scrollbar will scroll over when the width changes.
-                    int width = textComposite.getClientArea().width;
-                    Point p = textComposite.computeSize(width, SWT.DEFAULT);
-                    scroller.setMinSize(minWidth, p.y);
-                    inresize[0] = false;
-                }
-            });
-
-            scroller.setExpandHorizontal(true);
-            scroller.setExpandVertical(true);
-            Point p = textComposite.computeSize(minWidth, SWT.DEFAULT);
-            textComposite.setSize(p.x, p.y);
-            scroller.setMinWidth(minWidth);
-            scroller.setMinHeight(p.y);
-
-            scroller.setContent(textComposite);
+            Label expiration = new Label(contentComposite, SWT.NONE);
+            expiration.setText("31 October 2019");
+            ControlUtils.setFontStyle(expiration, SWT.NONE, 10);
         }
 
-        // horizontal bar
-        Label bar = new Label(workArea, SWT.HORIZONTAL | SWT.SEPARATOR);
-        data = new GridData();
-        data.horizontalAlignment = GridData.FILL;
-        bar.setLayoutData(data);
+        Label lblNotice = new Label(contentComposite, SWT.NONE);
+        lblNotice.setLayoutData(gdLabel);
+        ControlUtils.setFontStyle(lblNotice, SWT.BOLD, 10);
+        if (!isLatestVersion) {
+            lblNotice.setText(MessageConstants.NEW_VERSION_AVAIABLE);
+        }
 
-        // add image buttons for bundle groups that have them
-        Composite bottom = (Composite) super.createDialogArea(workArea);
-        // override any layout inherited from createDialogArea 
-        layout = new GridLayout();
-        bottom.setLayout(layout);
-        data = new GridData();
-        data.horizontalAlignment = SWT.FILL;
-        data.verticalAlignment = SWT.FILL;
-        data.grabExcessHorizontalSpace = true;
-        
-        bottom.setLayoutData(data);
+        Label notice = new Label(contentComposite, SWT.NONE);
+        notice.setText(latestVersion);
+        ControlUtils.setFontStyle(notice, SWT.NONE, 10);
 
+        Label lblCopyright = new Label(contentComposite, SWT.NONE);
+        lblCopyright.setLayoutData(gdLabel);
+        lblCopyright.setText("Copyright Katalon LLC");
+        ControlUtils.setFontStyle(lblCopyright, SWT.BOLD, 10);
 
-        return workArea;
+        lnkCopyright = new Link(contentComposite, SWT.NONE);
+        lnkCopyright.setText(String.format("<a>%s</a>", "https://www.katalon.com"));
+        ControlUtils.setFontStyle(lnkCopyright, SWT.NONE, 10);
+
+        Composite btnComposite = new Composite(parent, SWT.TRANSPARENT);
+        btnComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.RIGHT, true, true, 2, 1));
+        GridLayout glbtn = new GridLayout(2, false);
+        glbtn.marginTop = 40;
+        glbtn.marginBottom = 0;
+        glbtn.marginRight = 40;
+        btnComposite.setLayout(glbtn);
+        btnComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
+
+        GridData gdBtn = new GridData(SWT.RIGHT, SWT.RIGHT, true, true);
+        gdBtn.heightHint = 40;
+        gdBtn.widthHint = 200;
+        btnInstalltionDetails = new Button(btnComposite, SWT.NONE);
+        btnInstalltionDetails.setLayoutData(gdBtn);
+        btnInstalltionDetails.setText("Installation Details");
+
+        btnOk = new Button(btnComposite, SWT.NONE);
+        GridData gdBtno = new GridData(SWT.RIGHT, SWT.RIGHT, true, true);
+        gdBtno.heightHint = 40;
+        gdBtno.widthHint = 100;
+        btnOk.setLayoutData(gdBtno);
+        btnOk.setText("OK");
+
+        addListener();
+
+        return parent;
     }
 
-    private ImageDescriptor getProductAboutImageBasedOnLicenseType() {
-        if (licenseType.equals("ENTERPRISE")) {
-            return ProductProperties.getImage("/icons/kse.png", product.getDefiningBundle());
-        }
-        return ProductProperties.getAboutImage(product);
-    }
-
-    /**
-     * Create the context menu for the text widget.
-     * 
-     * @since 3.4
-     */
-    private void createTextMenu() {
-        final MenuManager textManager = new MenuManager();
-        textManager.add(new CommandContributionItem(
-                new CommandContributionItemParameter(PlatformUI
-                        .getWorkbench(), null, IWorkbenchCommandConstants.EDIT_COPY,
-                        CommandContributionItem.STYLE_PUSH)));
-        textManager.add(new CommandContributionItem(
-                new CommandContributionItemParameter(PlatformUI
-                        .getWorkbench(), null, IWorkbenchCommandConstants.EDIT_SELECT_ALL,
-                        CommandContributionItem.STYLE_PUSH)));
-        text.setMenu(textManager.createContextMenu(text));
-        text.addDisposeListener(new DisposeListener() {
-
+    private void addListener() {
+        lnkCopyright.addSelectionListener(new SelectionAdapter() {
             @Override
-            public void widgetDisposed(DisposeEvent e) {
-                textManager.dispose();
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch("https://www.katalon.com");
+            }
+        });
+
+        btnInstalltionDetails.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                BusyIndicator.showWhile(getShell().getDisplay(), new Runnable() {
+                    @Override
+                    public void run() {
+                        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                        InstallationDialog dialog = new InstallationDialog(getShell(), workbenchWindow);
+                        dialog.setModalParent(KatalonAboutDialog.this);
+                        dialog.open();
+                    }
+                });
+            }
+        });
+
+        btnOk.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                BusyIndicator.showWhile(getShell().getDisplay(), new Runnable() {
+                    @Override
+                    public void run() {
+                        close();
+                    }
+                });
             }
         });
     }
-    
+
+    private Image getBackground() {
+        if (ComponentBundleActivator.isDarkTheme(getShell().getDisplay())) {
+            return ImageManager.getImage(IImageKeys.IMG_ABOUT_BG_DRANK);
+        }
+        return ImageManager.getImage(IImageKeys.IMG_ABOUT_BG_LIGHT);
+    }
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.eclipse.jface.dialogs.Dialog#isResizable()
      */
     @Override
