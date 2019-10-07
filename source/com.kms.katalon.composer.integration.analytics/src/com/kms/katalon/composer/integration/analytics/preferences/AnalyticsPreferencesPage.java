@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.integration.analytics.preferences;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -37,7 +36,6 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.NewProjectDialog;
-import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -49,8 +47,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.CryptoUtil;
 
 public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp {
@@ -89,8 +85,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private AnalyticsSettingStore analyticsSettingStore;
 
-    private Button chckEncrypt;
-
     private String email, password, serverUrl;
 
     private AnalyticsOrganization organization;
@@ -99,10 +93,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {
-            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-            email = analyticsSettingStore.getEmail(encryptionEnabled);
-            password = analyticsSettingStore.getPassword(encryptionEnabled);
+            serverUrl = analyticsSettingStore.getServerEndpoint();
+            email = analyticsSettingStore.getEmail();
+            password = analyticsSettingStore.getPassword();
             organization = analyticsSettingStore.getOrganization();
         } catch (Exception e) {
             //ignore
@@ -167,11 +160,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         txtEmail = new Text(grpAuthentication, SWT.BORDER);
         txtEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtEmail.setEnabled(false);
-
-        chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
-        chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true, 2, 1));
-        chckEncrypt.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_ANTHENTICATION_ENCRYPTION);
-        chckEncrypt.setEnabled(false);
     }
 
     private void createSelectGroup() {
@@ -316,13 +304,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void fillData() {
         try {
-            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            enableAnalyticsIntegration.setSelection(encryptionEnabled);
+            enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
 
             cbbTeams.setItems();
             cbbProjects.setItems();
 
-            chckEncrypt.setSelection(encryptionEnabled);
             txtEmail.setText(email);
             txtServerUrl.setText(serverUrl);
             txtOrganization.setText(analyticsSettingStore.getOrganization().getName());
@@ -346,11 +332,10 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             if (enableAnalyticsIntegration.getSelection()) {
                 Executors.newFixedThreadPool(1).submit(() -> {
-                    UISynchronizeService.syncExec(
-                            () -> {
-                                enableObject(false);
-                                setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
-                            });
+                    UISynchronizeService.syncExec(() -> {
+                        enableObject(false);
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
+                    });
                     UISynchronizeService.syncExec(() -> {
                         try {
                             AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
@@ -382,20 +367,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 });
             }
 
-            ScopedPreferenceStore preferenceStore = PreferenceStoreManager
-                    .getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
-            String preferenceEmail = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
-            String preferencePassword = preferenceStore
-                    .getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
-
-            if (!StringUtils.isEmpty(preferenceEmail) && !StringUtils.isEmpty(preferencePassword)) {
-                txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
-                password = CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword));
-                // empty preference store password
-                preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
-            }
             changeEnabled();
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (IOException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
@@ -403,8 +376,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void getTeam(String serverUrl, Long orgId, AnalyticsTokenInfo tokenInfo) {
         try {
-            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled), orgId, tokenInfo);
+            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(), orgId, tokenInfo);
             setProgressMessage("", false);
         } catch (Exception e) {
             setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
@@ -449,7 +421,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private void changeEnabled() {
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
         btnConnect.setEnabled(isAnalyticsIntegrated);
-        chckEncrypt.setEnabled(isAnalyticsIntegrated);
         cbbProjects.setEnabled(isAnalyticsIntegrated);
         cbbTeams.setEnabled(isAnalyticsIntegrated);
         if (canAccessProject && isAnalyticsIntegrated) {
@@ -470,9 +441,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void updateDataStore() {
         try {
-            boolean encryptionEnabled = enableAnalyticsIntegration.getSelection();
             analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
-            analyticsSettingStore.enableEncryption(encryptionEnabled);
             if (!teams.isEmpty()) {
                 analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
                 if (!projects.isEmpty()) {
@@ -545,7 +514,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             public void widgetSelected(SelectionEvent e) {
                 cbbProjects.setEnabled(false);
                 Executors.newFixedThreadPool(1).submit(() -> {
-                    UISynchronizeService.syncExec(() -> setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false));
+                    UISynchronizeService.syncExec(() -> setProgressMessage(
+                            ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS, false));
                     UISynchronizeService.syncExec(() -> {
                         AnalyticsTeam selectTeamFromUser = teams.get(cbbTeams.getSelectionIndex());
                         if (!canAccessProject) {
