@@ -306,8 +306,7 @@ public class ActivationInfoCollector {
         featureService.clear();
     }
 
-    public static void markActivated(String userName, String password, String organization, License license)
-            throws Exception {
+    public static void markActivated(String userName, String password, String organization, License license) throws Exception {
         activated = true;
         enableFeatures(license);
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
