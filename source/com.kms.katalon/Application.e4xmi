@@ -160,10 +160,6 @@
         <children xsi:type="menu:Menu" xmi:id="_RQKm0M7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.menu.webTools" label="Web">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running WebDrivers" command="_631dcM7NEemY2ti3wcTZeQ"/>
         </children>
-        <children xsi:type="menu:Menu" xmi:id="_HKkFUOZyEemHBaFKs9NW4A" elementId="com.kms.katalon.menu.utilityTools" label="Import/Export Test Artifact" tooltip="Import/Export Test Artifact">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_MLN7wOZyEemHBaFKs9NW4A" elementId="com.kms.katalon.handledmenuitem.testArtifact" label="Import Test Artifacts" command="_YVmN8OZyEemHBaFKs9NW4A"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_nCk_wOZyEemHBaFKs9NW4A" elementId="com.kms.katalon.handledmenuitem.exportTestArtifact" label="Export Test Artifacts" command="_xTOwMOZyEemHBaFKs9NW4A"/>
-        </children>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>

@@ -1,5 +1,7 @@
+ 
 package com.kms.katalon.composer.artifact.menu;
 
+import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
@@ -7,18 +9,11 @@ import com.katalon.platform.api.model.ProjectEntity;
 import com.kms.katalon.composer.artifact.constant.StringConstants;
 import com.kms.katalon.composer.artifact.core.util.PlatformUtil;
 import com.kms.katalon.composer.artifact.handler.ImportTestArtifactHandler;
-import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 
-public class ImportTestArtifactToolsHandler extends AbstractHandler {
-
-    @Override
-    public boolean canExecute() {
-        return true;
-    }
-
-    @Override
-    public void execute() {
-        ProjectEntity project = PlatformUtil.getCurrentProject();
+public class ImportTestArtifactToolsHandler {
+	@Execute
+	public void execute() {
+	    ProjectEntity project = PlatformUtil.getCurrentProject();
         if (project != null) {
             ImportTestArtifactHandler handler = new ImportTestArtifactHandler(Display.getCurrent().getActiveShell());
             handler.execute();
@@ -26,7 +21,7 @@ public class ImportTestArtifactToolsHandler extends AbstractHandler {
             MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
                     StringConstants.MSG_OPEN_A_PROJECT);
         }
-
-    }
-
+        
+	}
+		
 }
