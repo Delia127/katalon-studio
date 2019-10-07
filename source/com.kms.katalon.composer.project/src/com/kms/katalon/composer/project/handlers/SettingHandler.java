@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
 import com.katalon.platform.api.Extension;
+import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.extension.PluginPreferencePage;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
@@ -150,6 +151,8 @@ public class SettingHandler {
                 pluginPreferences);
 
         hideIOSPageOnNoneMacOS(pm);
+        
+        hideQTestIntegrationPageIfQTestPluginNotInstalled(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
@@ -311,6 +314,34 @@ public class SettingHandler {
             }
         } catch (MissingProjectSettingPageException e) {
             // In case of someone changes the page ID in e4xmi, this will get DEV attention
+            LoggerSingleton.logError(e);
+        }
+    }
+    
+    private void hideQTestIntegrationPageIfQTestPluginNotInstalled(PreferenceManager pm) {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(StringConstants.QTEST_PLUGIN_ID);
+        if (plugin != null) {
+            return;
+        }
+        
+        try {
+            IPreferenceNode integrationSettings = null;
+            for (IPreferenceNode node : pm.getRootSubNodes()) {
+                if (StringConstants.PROJECT_INTEGRATION_SETTINGS_PAGE_ID.equals(node.getId())) {
+                    integrationSettings = node;
+                    break;
+                }
+            }
+            
+            if (integrationSettings == null) {
+                return;
+            }
+            
+            IPreferenceNode qTestNode = integrationSettings.remove(StringConstants.PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID);
+            if (qTestNode == null) {
+                throw new MissingProjectSettingPageException(StringConstants.PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID);
+            }
+        } catch (MissingProjectSettingPageException e) {
             LoggerSingleton.logError(e);
         }
     }

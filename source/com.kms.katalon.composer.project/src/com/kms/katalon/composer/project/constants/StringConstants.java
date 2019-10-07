@@ -53,6 +53,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PROJECT_EXECUTION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.execution.settings";
 
+    public static final String PROJECT_INTEGRATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.preferences.integration";
+    
+    public static final String PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.intergration.qtest.setting";
     // Setting Page Id
     public static final String PROJECT_INFORMATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.project.information";
 
@@ -196,4 +199,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_OPTION_RELOAD_OFFLINE = ComposerProjectMessageConstants.PAGE_OPTION_RELOAD_OFFLINE;
     
     public static final String PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE = ComposerProjectMessageConstants.PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE;
+
+    public static final String QTEST_PLUGIN_ID = "com.katalon.katalon-studio-qtest";
 }
