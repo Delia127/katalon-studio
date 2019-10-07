@@ -1,13 +1,11 @@
 package com.kms.katalon.about.dialog;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -37,9 +35,11 @@ import com.kms.katalon.application.utils.VersionInfo;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.MessageConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.license.models.LicenseType;
 
 /**
@@ -47,15 +47,11 @@ import com.kms.katalon.license.models.LicenseType;
  */
 @SuppressWarnings({ "restriction" })
 public class KatalonAboutDialog extends TrayDialog {
-    private final static int DETAILS_ID = IDialogConstants.CLIENT_ID + 1;
-
     private String productName;
 
     private Image logo;
 
     private IProduct product;
-
-    private ArrayList<Image> images = new ArrayList<>();
 
     protected static final String VERSION_UPDATE = "KatalonVersionUpdate";
 
@@ -64,13 +60,13 @@ public class KatalonAboutDialog extends TrayDialog {
     private static final String KSE_NAME_INFO = "Katalon Studio Enterprise";
 
     private boolean isTrial = false;
-    
+
     private boolean isKSE = false;
 
     private boolean isLatestVersion = true;
 
     private String latestVersion;
-    
+
     private String expirationDate;
 
     private static LicenseType licenseType;
@@ -151,32 +147,11 @@ public class KatalonAboutDialog extends TrayDialog {
      */
     @Override
     protected void buttonPressed(int buttonId) {
-        switch (buttonId) {
-            case DETAILS_ID:
-                BusyIndicator.showWhile(getShell().getDisplay(), new Runnable() {
-                    @Override
-                    public void run() {
-                        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                        InstallationDialog dialog = new InstallationDialog(getShell(), workbenchWindow);
-                        dialog.setModalParent(KatalonAboutDialog.this);
-                        dialog.open();
-                    }
-                });
-                break;
-            default:
-                super.buttonPressed(buttonId);
-                break;
-        }
+
     }
 
     @Override
     public boolean close() {
-        // dispose all images
-        for (int i = 0; i < images.size(); ++i) {
-            Image image = (Image) images.get(i);
-            image.dispose();
-        }
-
         return super.close();
     }
 
@@ -259,14 +234,14 @@ public class KatalonAboutDialog extends TrayDialog {
         lblTrial.setLayoutData(gdTrial);
         ControlUtils.setFontStyle(lblTrial, SWT.ITALIC, 10);
         if (isTrial) {
-            lblTrial.setText("(Trial)");
+            lblTrial.setText(StringConstants.ABOUT_LBL_TRAIL);
         }
 
         GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, true, true);
         gdLabel.widthHint = 200;
 
         Label lblversion = new Label(contentComposite, SWT.NONE);
-        lblversion.setText("Version");
+        lblversion.setText(StringConstants.ABOUT_LBL_VERSION);
         lblversion.setLayoutData(gdLabel);
         ControlUtils.setFontStyle(lblversion, SWT.BOLD, 10);
 
@@ -276,7 +251,7 @@ public class KatalonAboutDialog extends TrayDialog {
 
         Label lblBuild = new Label(contentComposite, SWT.NONE);
         lblBuild.setLayoutData(gdLabel);
-        lblBuild.setText("Build");
+        lblBuild.setText(StringConstants.ABOUT_LBL_BUILD);
         ControlUtils.setFontStyle(lblBuild, SWT.BOLD, 10);
 
         Label build = new Label(contentComposite, SWT.NONE);
@@ -286,7 +261,7 @@ public class KatalonAboutDialog extends TrayDialog {
         if (isKSE) {
             Label lblExpirationDate = new Label(contentComposite, SWT.NONE);
             lblExpirationDate.setLayoutData(gdLabel);
-            lblExpirationDate.setText("Expiration Date");
+            lblExpirationDate.setText(StringConstants.ABOUT_LBL_EXPIRATION_DATE);
             ControlUtils.setFontStyle(lblExpirationDate, SWT.BOLD, 10);
 
             Label expiration = new Label(contentComposite, SWT.NONE);
@@ -297,45 +272,49 @@ public class KatalonAboutDialog extends TrayDialog {
         Label lblNotice = new Label(contentComposite, SWT.NONE);
         lblNotice.setLayoutData(gdLabel);
         ControlUtils.setFontStyle(lblNotice, SWT.BOLD, 10);
-        if (!isLatestVersion) {
-            lblNotice.setText(MessageConstants.NEW_VERSION_AVAIABLE);
-        }
-
+        
         Label notice = new Label(contentComposite, SWT.NONE);
         notice.setText(latestVersion);
-        ControlUtils.setFontStyle(notice, SWT.NONE, 10);
+        ControlUtils.setFontStyle(notice, SWT.ITALIC, 10);
+        if (!isLatestVersion) {
+            lblNotice.setText(MessageConstants.NEW_VERSION_AVAIABLE);
+            ControlUtils.setFontStyle(notice, SWT.NONE, 10);
+        }
+
 
         Label lblCopyright = new Label(contentComposite, SWT.NONE);
         lblCopyright.setLayoutData(gdLabel);
-        lblCopyright.setText("Copyright Katalon LLC");
+        lblCopyright.setText(StringConstants.ABOUT_LBL_COPYRIGHT);
         ControlUtils.setFontStyle(lblCopyright, SWT.BOLD, 10);
 
         lnkCopyright = new Link(contentComposite, SWT.NONE);
         lnkCopyright.setText(String.format("<a>%s</a>", "https://www.katalon.com"));
         ControlUtils.setFontStyle(lnkCopyright, SWT.NONE, 10);
 
-        Composite btnComposite = new Composite(parent, SWT.TRANSPARENT);
-        btnComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.RIGHT, true, true, 2, 1));
+        Composite buttonBarComposite = new Composite(parent, SWT.TRANSPARENT);
+        buttonBarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.RIGHT, true, true, 2, 1));
         GridLayout glbtn = new GridLayout(2, false);
         glbtn.marginTop = 40;
         glbtn.marginBottom = 0;
         glbtn.marginRight = 40;
-        btnComposite.setLayout(glbtn);
-        btnComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
+        buttonBarComposite.setLayout(glbtn);
+        buttonBarComposite.setBackgroundMode(SWT.INHERIT_FORCE);
 
         GridData gdBtn = new GridData(SWT.RIGHT, SWT.RIGHT, true, true);
         gdBtn.heightHint = 40;
         gdBtn.widthHint = 200;
-        btnInstalltionDetails = new Button(btnComposite, SWT.NONE);
+        btnInstalltionDetails = new Button(buttonBarComposite, SWT.NONE);
         btnInstalltionDetails.setLayoutData(gdBtn);
-        btnInstalltionDetails.setText("Installation Details");
+        btnInstalltionDetails.setText(StringConstants.ABOUT_BTN_INSTALLATION_DETAILS);
+        ControlUtils.setFontStyle(btnInstalltionDetails, SWT.BOLD, 10);
 
-        btnOk = new Button(btnComposite, SWT.NONE);
+        btnOk = new Button(buttonBarComposite, SWT.NONE);
         GridData gdBtno = new GridData(SWT.RIGHT, SWT.RIGHT, true, true);
         gdBtno.heightHint = 40;
         gdBtno.widthHint = 100;
         btnOk.setLayoutData(gdBtno);
-        btnOk.setText("OK");
+        btnOk.setText(StringConstants.ABOUT_BTN_OK);
+        ControlUtils.setFontStyle(btnOk, SWT.BOLD, 10);
 
         addListener();
 
