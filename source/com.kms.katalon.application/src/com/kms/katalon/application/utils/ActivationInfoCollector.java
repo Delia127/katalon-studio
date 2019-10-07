@@ -383,6 +383,7 @@ public class ActivationInfoCollector {
 
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
         if (!isOfflineActivation) {
+            cleanup();
             checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
                 try {
                     License license = getLicense();
@@ -409,6 +410,7 @@ public class ActivationInfoCollector {
     public static void cleanup() {
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(false);
+            checkLicenseTask = null;
         }
     }
 
