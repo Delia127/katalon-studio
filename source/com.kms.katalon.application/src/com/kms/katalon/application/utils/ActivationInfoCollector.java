@@ -39,6 +39,8 @@ public class ActivationInfoCollector {
     
     private static boolean isOfflineActivation;
     
+    private static boolean isStartSession;
+    
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
@@ -354,6 +356,7 @@ public class ActivationInfoCollector {
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
+        isStartSession = true;
     }
 
     private static void setActivatedVal() throws Exception {
@@ -380,12 +383,11 @@ public class ActivationInfoCollector {
     }
 
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
-        if (!isOfflineActivation) {
-            cleanup();
-            checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-                try {
-                    License license = getLicense();
+        checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+            try {
+                License license = getLicense();
 
+                if (!isOfflineActivation) {
                     if (license == null || ActivationInfoCollector.isReachRenewTime(license)) {
                         try {
                             renewHandler.run();
@@ -394,18 +396,20 @@ public class ActivationInfoCollector {
                             LogUtil.logError(e, "Error when renew Katalon Studio license");
                         }
                     }
-
-                    if (license == null) {
-                        expiredHandler.run();
-                    }
-                } catch (Exception e) {
-                    LogUtil.logError(e, "Error when check license");
                 }
-            }, 0, 60, TimeUnit.SECONDS);
-        }
+
+                if (isStartSession && license == null) {
+                    expiredHandler.run();
+                }
+            } catch (Exception e) {
+                LogUtil.logError(e, "Error when check license");
+            }
+        }, 0, 60, TimeUnit.SECONDS);
     }
 
     public static void cleanup() {
+        isOfflineActivation = false;
+        isStartSession = false;
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
         }
