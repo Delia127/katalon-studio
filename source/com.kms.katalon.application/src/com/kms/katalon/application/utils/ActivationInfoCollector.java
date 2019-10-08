@@ -280,11 +280,16 @@ public class ActivationInfoCollector {
     private static boolean isExpired(License license) {
         Date currentDate = new Date();
         return currentDate.after(license.getExpirationDate());
+        
     }
 
     public static boolean isReachRenewTime(License license) {
         Date currentDate = new Date();
-        return currentDate.after(license.getRenewTime());
+        Date renewTime = license.getRenewTime();
+        if (renewTime != null) {
+            return currentDate.after(renewTime);
+        }
+        return false;
     }
 
     private static void enableFeatures(License license) {

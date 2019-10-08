@@ -41,16 +41,9 @@ public class LicenseService {
     
     private License getLicenseFromClaims(Map<String, Claim> claims, String jws) throws IOException {
         License license = new License();
-
-        String licenseType = claims.get(LicenseConstants.LICENSE_TYPE).asString();
-        license.setLicenseType(licenseType);
-
-        long renewTime = claims.get(LicenseConstants.RENEW_TIME).asLong();
-        license.setRenewTime(new Date(renewTime));
-        
-        long expireDate = claims.get(LicenseConstants.EXPIRATION_DATE).asLong();
-        license.setExpirationDate(new Date(expireDate));
-        
+        license.setLicenseType(claims.get(LicenseConstants.LICENSE_TYPE).asString());
+        license.setExpirationDate(claims.get(LicenseConstants.EXPIRATION_DATE).asDate());
+        license.setRenewTime(claims.get(LicenseConstants.RENEW_TIME).asDate());
         license.setMachineId(claims.get(LicenseConstants.MACHINE_ID).asString());
         Claim orgIdClaim =  claims.get(LicenseConstants.ORGANIZATION_ID);
         Long orgId = null;
