@@ -102,6 +102,7 @@ public class KStoreLoginDialog extends Dialog {
         inputComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         GridLayout glInput = new GridLayout(2, false);
         glInput.verticalSpacing = 10;
+        glInput.marginBottom = 10;
         inputComposite.setLayout(glInput);
         
         GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -301,7 +302,7 @@ public class KStoreLoginDialog extends Dialog {
                     if (isValidOrganization(organization)) {
                         save();
                     } else {
-                        setProgressMessage("You dont belong in org id: " + organization.getId(), true);
+                        setProgressMessage(String.format(MessageConstants.MSG_ERROR_NOT_BELONG_ORG, organization.getId()), true);
                         enableObject(true);
                     }
                 } catch (Exception e) {
