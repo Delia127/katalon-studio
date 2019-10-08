@@ -11,6 +11,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
@@ -204,10 +206,10 @@ public class ActivationInfoCollector {
             String jwtCode = getLicenseFromTestOps(userName, password, machineId);
             license = parseLicense(jwtCode, errorMessage);
         } catch (Exception ex) {
+            String message = KatalonApplicationActivator.getTestOpsConfiguration().getTestOpsMessage(ex.getMessage());
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
-                errorMessage.delete(0, errorMessage.length());
-                errorMessage.append(ApplicationMessageConstants.INVALID_ACCOUNT_ERROR);
+                errorMessage.append(message);
             }
         }
         return license;
