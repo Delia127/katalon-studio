@@ -56,14 +56,7 @@ public class ActivationInfoCollector {
     public static boolean checkAndMarkActivatedForGUIMode() {
         try {
             License license = getLicense();
-            boolean isOffline = false;
-
-            if (license != null) {
-                isOffline = license.getFeatures()
-                        .stream()
-                        .map(Feature::getKey)
-                        .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
-            }
+            boolean isOffline = isOffline(license);
 
             if (!isOffline) {
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
@@ -309,9 +302,7 @@ public class ActivationInfoCollector {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         if (StringUtils.isNotBlank(jwsCode)) {
             License license = parseLicense(jwsCode, null);
-            boolean isOffline = license.getFeatures()
-                    .stream()
-                    .anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
+            boolean isOffline = isOffline(license);
             if (!isOffline) {
                 String serverUrl = ApplicationInfo.getTestOpsServer();
                 String machineId = MachineUtil.getMachineId();
@@ -382,12 +373,7 @@ public class ActivationInfoCollector {
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
                 License license = getLicense();
-                boolean isOffline = false;
-                if (license != null) {
-                    isOffline = license.getFeatures()
-                            .stream()
-                            .anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
-                }
+                boolean isOffline = isOffline(license);
                 
                 if (!isOffline) {
                     if (license == null || ActivationInfoCollector.isReachRenewTime(license)) {
@@ -414,6 +400,17 @@ public class ActivationInfoCollector {
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
         }
+    }
+    
+    public static boolean isOffline(License license) {
+        boolean isOffline = false;
+        if (license != null) {
+            isOffline = license.getFeatures()
+                    .stream()
+                    .map(Feature::getKey)
+                    .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
+        }
+        return isOffline;
     }
 
     private static License getLicense() {
