@@ -13,6 +13,7 @@ import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
+import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
@@ -20,7 +21,6 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
-import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -293,10 +293,10 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
      */
     @Override
     public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
-        for (String subFolder : reportFolder.getReportFolders()) {
-            TestSuiteLogRecord suiteLog = ReportUtil.generate(subFolder);
+        for (String reportFullpath : reportFolder.getReportFolders()) {
+            TestSuiteLogRecord suiteLog = LogRecordLookup.getInstance().getTestSuiteLogRecordByFullPath(reportFullpath);
 
-            if (!isIntegrationActive(testSuite)) {
+            if (!isIntegrationActive(testSuite) || suiteLog == null) {
                 return;
             }
 
