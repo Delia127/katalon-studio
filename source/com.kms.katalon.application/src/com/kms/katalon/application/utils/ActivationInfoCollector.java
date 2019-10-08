@@ -41,6 +41,8 @@ public class ActivationInfoCollector {
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
+    
+    private static boolean isOffline;
 
     protected ActivationInfoCollector() {
     }
@@ -343,6 +345,7 @@ public class ActivationInfoCollector {
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
+        isOffline = isOffline();
         isStartSession = true;
     }
 
@@ -373,7 +376,6 @@ public class ActivationInfoCollector {
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
                 License license = getLicense();
-                boolean isOffline = isOffline(license);
                 
                 if (!isOffline) {
                     if (license == null || ActivationInfoCollector.isReachRenewTime(license)) {
@@ -396,10 +398,23 @@ public class ActivationInfoCollector {
     }
 
     public static void cleanup() {
+        isOffline = false;
         isStartSession = false;
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
         }
+    }
+    
+    public static boolean isOffline() {
+        License license = getLicense();
+        boolean isOffline = false;
+        if (license != null) {
+            isOffline = license.getFeatures()
+                    .stream()
+                    .map(Feature::getKey)
+                    .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
+        }
+        return isOffline;
     }
     
     public static boolean isOffline(License license) {
