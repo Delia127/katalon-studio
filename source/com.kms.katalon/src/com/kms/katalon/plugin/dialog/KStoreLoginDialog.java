@@ -314,7 +314,6 @@ public class KStoreLoginDialog extends Dialog {
     }
     
     private boolean isValidOrganization(Organization organization) {
-        
         for (int i = 0; i < organizations.size(); i++) {
             AnalyticsOrganization org = organizations.get(i);
             if (org.getId().equals(organization.getId())) {
