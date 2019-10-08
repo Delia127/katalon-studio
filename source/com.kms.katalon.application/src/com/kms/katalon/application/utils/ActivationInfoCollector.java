@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -36,8 +35,6 @@ public class ActivationInfoCollector {
     public static final String EXPIRED_MESSAGE = "The license of this working session has expired.";
 
     private static boolean activated = false;
-    
-    private static boolean isOfflineActivation;
     
     private static boolean isStartSession;
     
@@ -258,7 +255,6 @@ public class ActivationInfoCollector {
                 markActivatedLicenseCode(activationCode);
                 enableFeatures(license);
                 activated = true;
-                isOfflineActivation = true;
                 return activated;
             }
         } catch (Exception ex) {
@@ -386,8 +382,14 @@ public class ActivationInfoCollector {
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
                 License license = getLicense();
-
-                if (!isOfflineActivation) {
+                boolean isOffline = false;
+                if (license != null) {
+                    isOffline = license.getFeatures()
+                            .stream()
+                            .anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
+                }
+                
+                if (!isOffline) {
                     if (license == null || ActivationInfoCollector.isReachRenewTime(license)) {
                         try {
                             renewHandler.run();
@@ -408,7 +410,6 @@ public class ActivationInfoCollector {
     }
 
     public static void cleanup() {
-        isOfflineActivation = false;
         isStartSession = false;
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
