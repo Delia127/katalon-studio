@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.Organization;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -101,6 +102,7 @@ public class KStoreLoginDialog extends Dialog {
         inputComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         GridLayout glInput = new GridLayout(2, false);
         glInput.verticalSpacing = 10;
+        glInput.marginBottom = 10;
         inputComposite.setLayout(glInput);
         
         GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -295,24 +297,31 @@ public class KStoreLoginDialog extends Dialog {
 
                     String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
                     organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token);
-
-                    if (organizations.size() == 1) {
-                        save(0);
+                    
+                    Organization organization = ApplicationInfo.getOrganization();
+                    if (isValidOrganization(organization)) {
+                        save();
                     } else {
-                        layoutExecutionCompositeListener();
-                        cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
-                        cbbOrganization.select(getDefaultOrganizationIndex()); 
-                        cbbOrganization.setEnabled(true);
-                        btnConnect.setEnabled(true);
-                        btnConnect.setText(StringConstants.KStoreLoginDialog_BTN_OK);
-                        setProgressMessage(StringUtils.EMPTY, false);
+                        setProgressMessage(String.format(MessageConstants.MSG_ERROR_NOT_BELONG_ORG, organization.getId()), true);
+                        enableObject(true);
                     }
                 } catch (Exception e) {
                     setProgressMessage(StringConstants.KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG, true);
-                    enableObject(false);
+                    enableObject(true);
                 }
             });
         });
+    }
+    
+    private boolean isValidOrganization(Organization organization) {
+        for (int i = 0; i < organizations.size(); i++) {
+            AnalyticsOrganization org = organizations.get(i);
+            if (org.getId().equals(organization.getId())) {
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org) , true);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void enableObject(boolean isEnable) {
@@ -324,6 +333,10 @@ public class KStoreLoginDialog extends Dialog {
 
     private void save(int index) {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(organizations.get(index)) , true);
+        super.okPressed();
+    }
+    
+    private void save() {
         super.okPressed();
     }
 

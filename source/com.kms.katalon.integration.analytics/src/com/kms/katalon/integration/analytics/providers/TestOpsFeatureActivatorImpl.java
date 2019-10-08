@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.TestOpsFeatureActivator;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.logging.LogUtil;
 
@@ -59,4 +61,9 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
         }
     }
 
+    @Override
+    public String getOrganization(String serverUrl, String token, long orgId) throws Exception {
+        AnalyticsOrganization organization = AnalyticsApiProvider.getOrganization(serverUrl, token, orgId);
+        return JsonUtil.toJson(organization);
+    }
 }
