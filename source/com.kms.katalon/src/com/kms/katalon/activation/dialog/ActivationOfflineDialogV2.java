@@ -170,7 +170,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         lblMachineKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblMachineKey.setText(MessageConstants.ActivationOfflineDialogV2_LBL_MACHINE_KEY);
         
-        txtMachineKeyDetail = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+        txtMachineKeyDetail = new Text(composite, SWT.READ_ONLY);
         txtMachineKeyDetail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         txtMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
        // increateFontSize(txtMachineKeyDetail, 2);
@@ -205,8 +205,11 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         messageComposite.setLayout(glMessageComposite);
         messageComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         
-        lblProgressMessage = new Label(messageComposite, SWT.NONE);
-        lblProgressMessage.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+        lblProgressMessage = new Label(messageComposite, SWT.WRAP);
+        GridData data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        data.widthHint = 650;
+        data.heightHint = 50;
+        lblProgressMessage.setLayoutData(data);
         
         Composite offlineComposite = new Composite(container, SWT.NONE);
         GridLayout glOfflineComposite = new GridLayout();
@@ -273,7 +276,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     @Override
     protected Point getInitialSize() {
         Point initialSize = super.getInitialSize();
-        return new Point(Math.max(500, initialSize.x), initialSize.y);
+        return new Point(Math.max(500, initialSize.x), initialSize.y + 20);
     }
     
     @Override

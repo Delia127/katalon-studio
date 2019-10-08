@@ -222,11 +222,11 @@ public class ActivationInfoCollector {
                 }
             }
         } catch (Exception ex) {
-            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+            LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
             ex.printStackTrace();
         }
         if (errorMessage != null) {
-            errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+            errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         }
         return null;
     }
