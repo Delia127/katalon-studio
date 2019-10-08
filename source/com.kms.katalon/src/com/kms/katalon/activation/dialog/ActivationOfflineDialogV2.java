@@ -206,8 +206,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         messageComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         
         lblProgressMessage = new Label(messageComposite, SWT.WRAP);
-        GridData data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
-        data.widthHint = 650;
+        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         data.heightHint = 50;
         lblProgressMessage.setLayoutData(data);
         
