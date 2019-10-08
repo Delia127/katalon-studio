@@ -41,8 +41,6 @@ public class ActivationInfoCollector {
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
-    
-    private static boolean isOffline;
 
     protected ActivationInfoCollector() {
     }
@@ -350,7 +348,6 @@ public class ActivationInfoCollector {
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
-        isOffline = isOffline();
         isStartSession = true;
     }
 
@@ -382,44 +379,33 @@ public class ActivationInfoCollector {
             try {
                 License license = getLicense();
                 
-                if (!isOffline) {
-                    if (license == null || ActivationInfoCollector.isReachRenewTime(license)) {
-                        try {
-                            renewHandler.run();
-                            license = getLicense();
-                        } catch (Exception e) {
-                            LogUtil.logError(e, "Error when renew Katalon Studio license");
+                if (license == null) {
+                    if (isStartSession) {
+                        expiredHandler.run();
+                    }
+                } else {
+                    boolean isOffline = isOffline(license);
+                    if (!isOffline) {
+                        if (ActivationInfoCollector.isReachRenewTime(license)) {
+                            try {
+                                renewHandler.run();
+                            } catch (Exception e) {
+                                LogUtil.logError(e, "Error when renew Katalon Studio license");
+                            }
                         }
                     }
-                }
-
-                if (isStartSession && license == null) {
-                    expiredHandler.run();
                 }
             } catch (Exception e) {
                 LogUtil.logError(e, "Error when check license");
             }
-        }, 0, 60, TimeUnit.SECONDS);
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     public static void cleanup() {
-        isOffline = false;
         isStartSession = false;
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
         }
-    }
-    
-    public static boolean isOffline() {
-        License license = getLicense();
-        boolean isOffline = false;
-        if (license != null) {
-            isOffline = license.getFeatures()
-                    .stream()
-                    .map(Feature::getKey)
-                    .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
-        }
-        return isOffline;
     }
     
     public static boolean isOffline(License license) {
