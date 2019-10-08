@@ -170,8 +170,10 @@ public class ActivationDialogV2 extends AbstractDialog {
                                 try {
                                     String org = ActivationInfoCollector.getOrganization(username, password, license.getOrganizationId());
                                     save(org);
-                                } catch (Exception e1) {
-                                    
+                                } catch (Exception ex) {
+                                    LogUtil.logError(ex);
+                                    setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
+                                    enableObject(true);
                                 }
                             } else {
                                 getOrganizations();
