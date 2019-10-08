@@ -30,11 +30,9 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.MachineUtil;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -168,7 +166,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                         StringBuilder errorMessage = new StringBuilder();
                         license = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
                         if (license != null) {
-                            if (license.getOrganizationId() != 0) {
+                            if (license.getOrganizationId() != null) {
                                 try {
                                     String org = ActivationInfoCollector.getOrganization(username, password, license.getOrganizationId());
                                     save(org);
@@ -272,15 +270,23 @@ public class ActivationDialogV2 extends AbstractDialog {
                     String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
                     organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token);
 
-                    if (organizations.size() == 1) {
-                        save(0);
-                    } else {
-                        layoutExecutionCompositeListener();
-                        cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
-                        cbbOrganization.select(getDefaultOrganizationIndex()); 
-                        setProgressMessage("", false);
-                        cbbOrganization.setEnabled(true);
-                        btnSave.setEnabled(true);
+                    switch (organizations.size()) {
+                        case 0:
+                            AnalyticsOrganization organizationDefault = AnalyticsApiProvider.createDefaultOrganization(serverUrl, token);
+                            organizations.add(organizationDefault);
+                            save(0);
+                            break;
+                        case 1:
+                            save(0);
+                            break;
+                        default:
+                            layoutExecutionCompositeListener();
+                            cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
+                            cbbOrganization.select(getDefaultOrganizationIndex()); 
+                            setProgressMessage("", false);
+                            cbbOrganization.setEnabled(true);
+                            btnSave.setEnabled(true);
+                            break;
                     }
                 } catch (Exception e) {
                     LogUtil.logError(e);

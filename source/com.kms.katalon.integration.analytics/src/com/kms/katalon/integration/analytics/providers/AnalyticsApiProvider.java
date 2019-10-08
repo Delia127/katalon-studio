@@ -117,7 +117,7 @@ public class AnalyticsApiProvider {
     public static AnalyticsOrganization getOrganization(String serverUrl, String accessToken, long orgId) throws AnalyticsApiExeception {
         try {
             URIBuilder uriBuilder = new URIBuilder(serverUrl);
-            uriBuilder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_API_ORGANIZATION, orgId));
+            uriBuilder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_API_ORGANIZATION_ITEM, orgId));
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsOrganization organization = executeRequest(httpGet, AnalyticsOrganization.class);
@@ -519,6 +519,21 @@ public class AnalyticsApiProvider {
             StringEntity entity = new StringEntity(gson.toJson(testRun));
             httpPost.setEntity(entity);
             executeRequest(httpPost, Object.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static AnalyticsOrganization createDefaultOrganization(String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ORGANIZATION);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpPost httpPost = new HttpPost(uriBuilder.build());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            return executeRequest(httpPost, AnalyticsOrganization.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

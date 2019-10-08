@@ -66,5 +66,4 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
         AnalyticsOrganization organization = AnalyticsApiProvider.getOrganization(serverUrl, token, orgId);
         return JsonUtil.toJson(organization);
     }
-
 }
