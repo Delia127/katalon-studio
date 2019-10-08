@@ -11,8 +11,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
