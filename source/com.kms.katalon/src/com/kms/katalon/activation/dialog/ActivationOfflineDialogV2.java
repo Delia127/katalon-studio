@@ -276,7 +276,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     @Override
     protected Point getInitialSize() {
         Point initialSize = super.getInitialSize();
-        return new Point(Math.max(500, initialSize.x), initialSize.y + 20);
+        return new Point(Math.max(500, initialSize.x), initialSize.y);
     }
     
     @Override
