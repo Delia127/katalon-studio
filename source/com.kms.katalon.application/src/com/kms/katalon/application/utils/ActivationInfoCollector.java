@@ -19,6 +19,7 @@ import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.TestOpsFeatureKey;
@@ -241,12 +242,24 @@ public class ActivationInfoCollector {
         return license;
     }
 
+    public static String getOrganization(String userName, String password, long orgId) throws Exception {
+        String serverUrl = ApplicationInfo.getTestOpsServer();
+        String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
+        String org = KatalonApplicationActivator.getFeatureActivator().getOrganization(serverUrl, token, orgId);
+        return org;
+    }
+
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
             License license = parseLicense(activationCode, errorMessage);
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
                 enableFeatures(license);
+
+                Organization org = new Organization();
+                org.setId(license.getOrganizationId());
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+
                 activated = true;
                 return activated;
             }
