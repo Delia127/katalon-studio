@@ -316,7 +316,7 @@ public class ActivationInfoCollector {
                 String serverUrl = ApplicationInfo.getTestOpsServer();
                 String machineId = MachineUtil.getMachineId();
                 String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-                long orgId = license.getOrganizationId();
+                Long orgId = license.getOrganizationId();
                 String token;
                 if (StringUtils.isBlank(apiKey)) {
                     String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);

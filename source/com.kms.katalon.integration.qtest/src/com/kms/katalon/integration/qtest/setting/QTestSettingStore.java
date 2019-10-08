@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
@@ -17,6 +19,8 @@ import com.kms.katalon.util.CryptoUtil;
 
 public class QTestSettingStore {
     private static final String FILE_NAME = "com.kms.katalon.integration.qtest";
+    
+    private static final String QTEST_PLUGIN_ID = "com.katalon.katalon-studio-qtest";
 
     public static final String TOKEN_PROPERTY = "token";
 
@@ -159,11 +163,16 @@ public class QTestSettingStore {
 
     public static boolean isIntegrationActive(String projectDir) {
         try {
-            return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(ENABLE_INTEGRATION_PROPERTY,
+            return isQTestPluginInstalled() && Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(ENABLE_INTEGRATION_PROPERTY,
                     getPropertyFile(projectDir)));
         } catch (IOException e) {
             return false;
         }
+    }
+    
+    private static boolean isQTestPluginInstalled() {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(QTEST_PLUGIN_ID);
+        return plugin != null;
     }
 
     public static void setEnableEncryption(boolean enabled, String projectDir) throws IOException {
