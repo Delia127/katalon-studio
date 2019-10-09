@@ -101,10 +101,4 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
             LogUtil.logError(e);
         }
     }
-
-	@Override
-	public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 }
