@@ -61,7 +61,7 @@ public class SetEncryptedTextKeyword extends MobileAbstractKeyword {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ENCRYPTED_TEXT_HAS_BEEN_SET_TO_ELEMENT, encryptedText, to.getObjectId()))
         }, flowControl, true,
             (to != null)
-                ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SET_ELEMENT_ENCRYPTED_TEXT, to.getObjectId())
+                ? MessageFormat.format(StringConstants.KW_MSG_FAILED_SET_ELEMENT_ENCRYPTED_TEXT, to.getObjectId())
                 : StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT)
     }
 }

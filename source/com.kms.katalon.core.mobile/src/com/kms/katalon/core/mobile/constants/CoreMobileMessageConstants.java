@@ -91,7 +91,7 @@ public class CoreMobileMessageConstants extends NLS {
 
     public static String KW_MSG_FAILED_TO_SET_ELEMENT_TEXT;
     
-    public static String KW_MSG_CANNOT_SET_ELEMENT_ENCRYPTED_TEXT;
+    public static String KW_MSG_FAILED_SET_ELEMENT_ENCRYPTED_TEXT;
 
     public static String KW_LOG_PASSED_TAPPED_ON_ELEMENT;
 
