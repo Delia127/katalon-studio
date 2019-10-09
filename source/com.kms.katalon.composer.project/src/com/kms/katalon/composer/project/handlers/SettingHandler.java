@@ -149,8 +149,6 @@ public class SettingHandler {
         PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP,
                 pluginPreferences);
 
-        hideIOSPageOnNoneMacOS(pm);
-
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
             private Composite helpComposite;
@@ -270,49 +268,6 @@ public class SettingHandler {
                 eclipseContext);
 
         execute(Display.getCurrent().getActiveShell(), preferencesRegistry);
-    }
-
-    private void hideIOSPageOnNoneMacOS(PreferenceManager pm) {
-        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
-            return;
-        }
-
-        try {
-            IPreferenceNode executionSettings = null;
-            for (IPreferenceNode node : pm.getRootSubNodes()) {
-                if (StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID.equals(node.getId())) {
-                    executionSettings = node;
-                    break;
-                }
-            }
-            if (executionSettings == null) {
-                return;
-            }
-
-            IPreferenceNode defaultExecutionSettings = executionSettings
-                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            if (defaultExecutionSettings == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            }
-
-            IPreferenceNode mobileNode = defaultExecutionSettings
-                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
-            if (mobileNode == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
-            }
-
-            IPreferenceNode iOSNode = mobileNode
-                    .remove(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
-            if (iOSNode == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
-            }
-        } catch (MissingProjectSettingPageException e) {
-            // In case of someone changes the page ID in e4xmi, this will get DEV attention
-            LoggerSingleton.logError(e);
-        }
     }
 
     public static SettingHandler getInstance() {
