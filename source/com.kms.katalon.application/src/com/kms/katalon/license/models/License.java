@@ -15,7 +15,7 @@ public class License {
 
     private List<Feature> features;
 
-    private long organizationId;
+    private Long organizationId;
 
     private LicenseType licenseType;
 
@@ -70,7 +70,8 @@ public class License {
     public LicenseType getType() {
         return licenseType;
     }
-        public void setLicenseType(String licenseType) {
+
+    public void setLicenseType(String licenseType) {
         this.licenseType = LicenseType.valueOf(licenseType);
     }
 }
