@@ -414,7 +414,7 @@ public class ActivationInfoCollector {
         }, 0, 60, TimeUnit.SECONDS);
     }
 
-    public static void cleanup() {
+    public static void postEndSession() {
         isStartSession = false;
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
