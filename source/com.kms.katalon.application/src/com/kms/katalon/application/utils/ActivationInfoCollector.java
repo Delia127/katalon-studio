@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,13 +36,11 @@ public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
     
-    private static final String sessionId = UUID.randomUUID().toString();
-    
     public static final String EXPIRED_MESSAGE = "The license of this working session has expired.";
 
     private static boolean activated = false;
     
-    private static boolean isOfflineActivation;
+    private static boolean isStartSession;
     
     private static ScheduledFuture<?> checkLicenseTask;
 
@@ -63,14 +60,7 @@ public class ActivationInfoCollector {
     public static boolean checkAndMarkActivatedForGUIMode() {
         try {
             License license = getLicense();
-            boolean isOffline = false;
-
-            if (license != null) {
-                isOffline = license.getFeatures()
-                        .stream()
-                        .map(Feature::getKey)
-                        .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
-            }
+            boolean isOffline = isOffline(license);
 
             if (!isOffline) {
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
@@ -265,7 +255,7 @@ public class ActivationInfoCollector {
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
         String hostname = getHostname();
         String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName,
-                sessionId, hostname, machineId);
+                KatalonApplication.SESSION_ID, hostname, machineId);
         return license;
     }
 
@@ -290,7 +280,6 @@ public class ActivationInfoCollector {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
 
                 activated = true;
-                isOfflineActivation = true;
                 return activated;
             }
         } catch (Exception ex) {
@@ -321,11 +310,16 @@ public class ActivationInfoCollector {
     private static boolean isExpired(License license) {
         Date currentDate = new Date();
         return currentDate.after(license.getExpirationDate());
+        
     }
 
     public static boolean isReachRenewTime(License license) {
         Date currentDate = new Date();
-        return currentDate.after(license.getRenewTime());
+        Date renewTime = license.getRenewTime();
+        if (renewTime != null) {
+            return currentDate.after(renewTime);
+        }
+        return false;
     }
 
     private static void enableFeatures(License license) {
@@ -345,9 +339,7 @@ public class ActivationInfoCollector {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         if (StringUtils.isNotBlank(jwsCode)) {
             License license = parseLicense(jwsCode, null);
-            boolean isOffline = license.getFeatures()
-                    .stream()
-                    .anyMatch(item -> item.getKey().equals(TestOpsFeatureKey.OFFLINE));
+            boolean isOffline = isOffline(license);
             if (!isOffline) {
                 String serverUrl = ApplicationInfo.getTestOpsServer();
                 String machineId = MachineUtil.getMachineId();
@@ -366,7 +358,7 @@ public class ActivationInfoCollector {
                        serverUrl,
                        machineId,
                        ksVersion,
-                       sessionId,
+                       KatalonApplication.SESSION_ID,
                        orgId,
                        token
                );
@@ -390,6 +382,7 @@ public class ActivationInfoCollector {
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
+        isStartSession = true;
     }
 
     private static void setActivatedVal() throws Exception {
@@ -416,34 +409,48 @@ public class ActivationInfoCollector {
     }
 
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
-        if (!isOfflineActivation) {
-            checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-                try {
-                    License license = getLicense();
-
-                    if (license == null || ActivationInfoCollector.isReachRenewTime(license)) {
-                        try {
-                            renewHandler.run();
-                            license = getLicense();
-                        } catch (Exception e) {
-                            LogUtil.logError(e, "Error when renew Katalon Studio license");
-                        }
-                    }
-
-                    if (license == null) {
+        checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+            try {
+                License license = getLicense();
+                
+                if (license == null) {
+                    if (isStartSession) {
                         expiredHandler.run();
                     }
-                } catch (Exception e) {
-                    LogUtil.logError(e, "Error when check license");
+                } else {
+                    boolean isOffline = isOffline(license);
+                    if (!isOffline) {
+                        if (ActivationInfoCollector.isReachRenewTime(license)) {
+                            try {
+                                renewHandler.run();
+                            } catch (Exception e) {
+                                LogUtil.logError(e, "Error when renew Katalon Studio license");
+                            }
+                        }
+                    }
                 }
-            }, 0, 60, TimeUnit.SECONDS);
-        }
+            } catch (Exception e) {
+                LogUtil.logError(e, "Error when check license");
+            }
+        }, 0, 60, TimeUnit.SECONDS);
     }
 
-    public static void cleanup() {
+    public static void postEndSession() {
+        isStartSession = false;
         if (checkLicenseTask != null) {
-            checkLicenseTask.cancel(false);
+            checkLicenseTask.cancel(true);
         }
+    }
+    
+    public static boolean isOffline(License license) {
+        boolean isOffline = false;
+        if (license != null) {
+            isOffline = license.getFeatures()
+                    .stream()
+                    .map(Feature::getKey)
+                    .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
+        }
+        return isOffline;
     }
 
     private static License getLicense() {

@@ -20,6 +20,7 @@ public class LogoutHandler {
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
             
             try {
+                ActivationInfoCollector.postEndSession();
                 ActivationInfoCollector.releaseLicense();
             } catch (Exception e) {
                 LogUtil.logError(e);

@@ -244,13 +244,13 @@ public class ConsoleMain {
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
-            
-            ActivationInfoCollector.cleanup();
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
             
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format("Execution completed. Exit code: {0}.", exitCode));
+
+            ActivationInfoCollector.postEndSession();
             ActivationInfoCollector.releaseLicense();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
