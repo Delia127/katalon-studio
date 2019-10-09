@@ -205,10 +205,10 @@ public class ActivationInfoCollector {
             String jwtCode = getLicenseFromTestOps(userName, password, machineId);
             license = parseLicense(jwtCode, errorMessage);
         } catch (Exception ex) {
+            String message = KatalonApplicationActivator.getTestOpsConfiguration().getTestOpsMessage(ex.getMessage());
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
-                errorMessage.delete(0, errorMessage.length());
-                errorMessage.append(ApplicationMessageConstants.INVALID_ACCOUNT_ERROR);
+                errorMessage.append(message);
             }
         }
         return license;
