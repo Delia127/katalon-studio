@@ -30,7 +30,15 @@ public class MobileSpyKobitonDeviceHandler {
 
     private boolean openObjectSpyDialog(Shell activeShell) {
         try {
-            boolean isIntegrationEnabled = KobitonPreferencesProvider.isKobitonIntegrationEnabled();
+            
+            boolean isKobitonPluginEnabled = KobitonPreferencesProvider.isKobitonPluginInstalled();
+            if(!isKobitonPluginEnabled) {
+                MessageDialog.openInformation(activeShell, StringConstants.INFO,
+                        "Kobiton plugin is not installed yet. Please install the plugin to start using Kobiton integration");
+                return false;
+            }
+            
+            boolean isIntegrationEnabled = KobitonPreferencesProvider.isKobitonIntegrationAvailable();
             if (!isIntegrationEnabled) {
                 boolean confirmToConfigureKobiton = MessageDialog.openConfirm(activeShell, StringConstants.INFO,
                         "Kobiton integration has not been enabled yet. Would you like to enable now?");
