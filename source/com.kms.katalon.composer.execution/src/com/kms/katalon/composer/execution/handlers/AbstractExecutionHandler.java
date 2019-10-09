@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import javax.inject.Inject;
-import com.kms.katalon.preferences.internal.*;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.resources.IMarker;
@@ -90,6 +90,7 @@ import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
