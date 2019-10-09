@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +18,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -234,6 +231,16 @@ public class ConsoleMain {
             // Parse all arguments before execute
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
 
+            Map<String, String> localStore = new HashMap<>();
+            localStore.put("apiKey", apiKeyValue);
+            ActivationInfoCollector.scheduleCheckLicense(() -> {
+                LogUtil.logInfo(ActivationInfoCollector.EXPIRED_MESSAGE);
+                LauncherManager.getInstance().stopAllLauncher();
+            }, () -> {
+                String apiKey = localStore.get("apiKey");
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey);
+            });
+            
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
@@ -242,6 +249,8 @@ public class ConsoleMain {
             
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format("Execution completed. Exit code: {0}.", exitCode));
+
+            ActivationInfoCollector.postEndSession();
             ActivationInfoCollector.releaseLicense();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {

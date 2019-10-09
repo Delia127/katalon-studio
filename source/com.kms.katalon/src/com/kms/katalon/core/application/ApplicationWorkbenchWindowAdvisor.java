@@ -80,6 +80,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         }
        
         try {
+            ActivationInfoCollector.postEndSession();
             ActivationInfoCollector.releaseLicense();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
