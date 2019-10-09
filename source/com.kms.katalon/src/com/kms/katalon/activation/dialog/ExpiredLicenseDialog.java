@@ -31,7 +31,8 @@ public class ExpiredLicenseDialog extends AbstractDialog {
         composite.setLayout(new GridLayout());
 
         Label lblText = new Label(composite, SWT.NONE);
-        lblText.setText(ActivationInfoCollector.EXPIRED_MESSAGE);
+        lblText.setText(ActivationInfoCollector.EXPIRED_MESSAGE + "\n" + 
+                "Katalon Studio will automatically close in 5 minutes after you acknowledge");
         return composite;
     }
     
