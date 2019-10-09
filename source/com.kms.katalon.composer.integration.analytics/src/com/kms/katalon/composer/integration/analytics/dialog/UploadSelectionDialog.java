@@ -83,7 +83,6 @@ public class UploadSelectionDialog extends Dialog {
     protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.NONE);
         GridData bodyGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        bodyGridData.widthHint = 450;
         body.setLayoutData(bodyGridData);
         GridLayout bodyGridLayout = new GridLayout(1, false);
         bodyGridLayout.marginWidth = 10;

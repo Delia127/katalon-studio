@@ -6,6 +6,8 @@ public class ApplicationMessageConstants {
     private static final String BUNDLE_NAME = "com.kms.katalon.application.constants.applicationMessageConstants"; //$NON-NLS-1$
 
     public static String ACTIVATE_INFO_INVALID;
+    
+    public static String KSE_ACTIVATE_INFOR_INVALID;
 
     public static String ACTIVATION_CODE_INVALID;
 

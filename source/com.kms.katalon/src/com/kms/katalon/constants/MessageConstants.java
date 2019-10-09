@@ -447,6 +447,8 @@ public class MessageConstants extends NLS {
     
     public static String LINK_KS_PLUGINS_DOCS_LINK;
 
+    public static String MSG_ERROR_NOT_BELONG_ORG;
+
     // ReloadPluginsResultDialog
     public static String KStorePluginsDialog_COL_PLUGIN;
 

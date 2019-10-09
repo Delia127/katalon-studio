@@ -22,6 +22,7 @@ import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.TestOpsFeatureKey;
@@ -231,10 +232,10 @@ public class ActivationInfoCollector {
             String jwtCode = getLicenseFromTestOps(userName, password, machineId);
             license = parseLicense(jwtCode, errorMessage);
         } catch (Exception ex) {
+            String message = KatalonApplicationActivator.getTestOpsConfiguration().getTestOpsMessage(ex.getMessage());
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
-                errorMessage.delete(0, errorMessage.length());
-                errorMessage.append(ApplicationMessageConstants.INVALID_ACCOUNT_ERROR);
+                errorMessage.append(message);
             }
         }
 
@@ -250,11 +251,11 @@ public class ActivationInfoCollector {
                 }
             }
         } catch (Exception ex) {
-            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+            LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
             ex.printStackTrace();
         }
         if (errorMessage != null) {
-            errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+            errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         }
         return null;
     }
@@ -268,6 +269,13 @@ public class ActivationInfoCollector {
         return license;
     }
 
+    public static String getOrganization(String userName, String password, long orgId) throws Exception {
+        String serverUrl = ApplicationInfo.getTestOpsServer();
+        String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
+        String org = KatalonApplicationActivator.getFeatureActivator().getOrganization(serverUrl, token, orgId);
+        return org;
+    }
+
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
             License license = parseLicense(activationCode, errorMessage);
@@ -276,6 +284,11 @@ public class ActivationInfoCollector {
                 saveLicenseType(license.getType());
                 saveExpirationDate(license.getExpirationDate());
                 enableFeatures(license);
+
+                Organization org = new Organization();
+                org.setId(license.getOrganizationId());
+                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+
                 activated = true;
                 isOfflineActivation = true;
                 return activated;
