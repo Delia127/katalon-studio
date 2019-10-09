@@ -164,7 +164,7 @@ public class ConsoleMain {
 
                 if (!isActivated) {
                     LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
-                    throw new ActivationException("Failed to activate");
+                    return LauncherResult.RETURN_CODE_FAILED_AND_ERROR;
                 }
             }
 
@@ -223,7 +223,7 @@ public class ConsoleMain {
             Map<String, String> localStore = new HashMap<>();
             localStore.put("apiKey", apiKeyValue);
             ActivationInfoCollector.scheduleCheckLicense(() -> {
-                LogUtil.logInfo(ActivationInfoCollector.EXPIRED_MESSAGE);
+                LogUtil.printErrorLine(ActivationInfoCollector.EXPIRED_MESSAGE);
                 LauncherManager.getInstance().stopAllLauncher();
             }, () -> {
                 String apiKey = localStore.get("apiKey");
