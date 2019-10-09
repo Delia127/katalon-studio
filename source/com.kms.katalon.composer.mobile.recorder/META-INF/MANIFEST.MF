@@ -46,7 +46,8 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: KMS
-Import-Package: javax.inject,
+Import-Package: com.kms.katalon.util,
+ javax.inject,
  org.codehaus.groovy.control
 Export-Package: com.kms.katalon.composer.mobile.recorder.components
 

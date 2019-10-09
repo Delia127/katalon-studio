@@ -77,9 +77,13 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_LOG_PASSED_TEXT_HAS_BEEN_SET_TO_ELEMENT = CoreMobileMessageConstants.KW_LOG_PASSED_TEXT_HAS_BEEN_SET_TO_ELEMENT;
 
+    public static final String KW_LOG_PASSED_ENCRYPTED_TEXT_HAS_BEEN_SET_TO_ELEMENT = CoreMobileMessageConstants.KW_LOG_PASSED_ENCRYPTED_TEXT_HAS_BEEN_SET_TO_ELEMENT;
+
     public static final String KW_MSG_FAILED_TO_SET_ELEMENT_X_TEXT = CoreMobileMessageConstants.KW_MSG_FAILED_TO_SET_ELEMENT_X_TEXT;
 
     public static final String KW_MSG_FAILED_TO_SET_ELEMENT_TEXT = CoreMobileMessageConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT;
+    
+    public static final String KW_MSG_CANNOT_SET_ELEMENT_ENCRYPTED_TEXT = CoreMobileMessageConstants.KW_MSG_CANNOT_SET_ELEMENT_ENCRYPTED_TEXT;
 
     public static final String KW_LOG_PASSED_TAPPED_ON_ELEMENT = CoreMobileMessageConstants.KW_LOG_PASSED_TAPPED_ON_ELEMENT;
 

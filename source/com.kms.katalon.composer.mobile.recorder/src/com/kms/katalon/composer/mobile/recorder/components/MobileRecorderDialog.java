@@ -107,6 +107,7 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.util.CryptoUtil;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
@@ -608,6 +609,27 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                     }
                                     mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
                                     mobileActionHelper.setText(testObject, textInput);
+                                    break;
+                                case SetEncryptedText:
+                                    final StringBuilder stringBuilder2 = new StringBuilder();
+                                    UISynchronizeService.syncExec(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            InputDialog inputDialog = new InputDialog(getShell(),
+                                                    MobileRecoderMessagesConstants.DLG_TITLE_TEXT_INPUT,
+                                                    MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null);
+                                            if (inputDialog.open() == Window.OK) {
+                                                stringBuilder2.append(inputDialog.getValue());
+                                            }
+                                        }
+                                    });
+                                    String password = stringBuilder2.toString();
+                                    String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
+                                    if (password.isEmpty()) {
+                                        throw new CancellationException();
+                                    }
+                                    mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(encryptedPassword));
+                                    mobileActionHelper.setText(testObject, password);
                                     break;
                                 case SwitchToLandscape:
                                     mobileActionHelper.switchToLandscape();
