@@ -319,6 +319,16 @@ public interface IImageKeys {
     public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
     
     public static final String KATALON_ACCOUNT_24 = "toolbar/account_32x24.png"; //$NON-NLS-1$
+    
+    public static final String KATALON_COMMUNITY_24 = "toolbar/community_32x24.png";//$NON-NLS-1$
+     
+    public static final String KATALON_FORUM_24 = "toolbar/search_icon_24.png";//$NON-NLS-1$
+    
+    public static final String KATALON_CHAT_24 = "toolbar/chat_support_24.png";//$NON-NLS-1$
+    
+    public static final String KATALON_TWEETABOUTUS_24 = "toolbar/tweetaboutus_24.png";//$NON-NLS-1$
+    
+    public static final String KATALON_FEEDBACK_24 = "toolbar/Feedback_24PX.png";//$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps
