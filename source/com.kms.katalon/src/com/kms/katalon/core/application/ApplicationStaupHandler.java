@@ -41,6 +41,7 @@ public class ApplicationStaupHandler {
         // RunningMode.GUI)));
         // sendEventForTracking();
 
+        expiredDialog = null;
         scheduleCheckLicense();
 
         try {
@@ -63,9 +64,11 @@ public class ApplicationStaupHandler {
     public static void scheduleCheckLicense() {
         ActivationInfoCollector.scheduleCheckLicense(() -> {
             UISynchronizeService.syncExec(() -> {
-                expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
-                expiredDialog.open();
-                closeKSAfter(300);
+                if (expiredDialog == null) {
+                    expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
+                    expiredDialog.open();
+                    closeKSAfter(300);
+                }
             });
         }, () -> {
             ActivationInfoCollector.checkAndMarkActivatedForGUIMode();

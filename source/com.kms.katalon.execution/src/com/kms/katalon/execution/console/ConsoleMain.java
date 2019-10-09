@@ -152,7 +152,7 @@ public class ConsoleMain {
                 
                 String licenseFile = getLicenseFilePath(options);
                 if (!StringUtils.isBlank(licenseFile)) {
-                    LogUtil.printErrorLine("License file path: " + licenseFile);
+                    LogUtil.logInfo("License file path: " + licenseFile);
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
                     StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);

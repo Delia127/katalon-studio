@@ -190,7 +190,7 @@ public class ActivationInfoCollector {
     }
 
     public static License activate(String userName, String password, String machineId, StringBuilder errorMessage) {
-        LogUtil.printErrorLine("Start activate online");
+        LogUtil.logInfo("Start activate online");
         try {
             String userInfo = collectActivationInfo(userName, password);
             ServerAPICommunicationUtil.post("/segment/identify", userInfo);
@@ -214,9 +214,9 @@ public class ActivationInfoCollector {
         }
         
         if (license == null) {
-            LogUtil.printErrorLine("Fail to activate online");
+            LogUtil.logInfo("Fail to activate online");
         } else {
-            LogUtil.printErrorLine("Activate online sucessfully");
+            LogUtil.logInfo("Activate online sucessfully");
         }
 
         return license;
@@ -258,7 +258,7 @@ public class ActivationInfoCollector {
 
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
-            LogUtil.printErrorLine("Start activating offline");
+            LogUtil.logInfo("Start activating offline");
             License license = parseLicense(activationCode, errorMessage);
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
@@ -268,7 +268,7 @@ public class ActivationInfoCollector {
                 org.setId(license.getOrganizationId());
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
 
-                LogUtil.printErrorLine("Activate offline successfully");
+                LogUtil.logInfo("Activate offline successfully");
                 activated = true;
                 return activated;
             }
@@ -279,7 +279,7 @@ public class ActivationInfoCollector {
             }
         }
 
-        LogUtil.printErrorLine("Fail to activate offline");
+        LogUtil.logInfo("Fail to activate offline");
         activated = false;
         return activated;
     }
@@ -291,11 +291,11 @@ public class ActivationInfoCollector {
             return true;
         } else {
             if (!isValidMachineId) {
-                LogUtil.printErrorLine("Invalid machine id " + license.getMachineId());
+                LogUtil.logInfo("Invalid machine id " + license.getMachineId());
             }
             
             if (isExpired) {
-                LogUtil.printErrorLine("License expired");
+                LogUtil.logInfo("License expired");
             }
             
             return false;
