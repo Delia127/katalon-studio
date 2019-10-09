@@ -344,6 +344,9 @@ public class ActivationInfoCollector {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         if (StringUtils.isNotBlank(jwsCode)) {
             License license = parseLicense(jwsCode, null);
+            if (license == null) {
+                license = getLastUsedLicense();
+            }
             boolean isOffline = isOffline(license);
             if (!isOffline) {
                 String serverUrl = ApplicationInfo.getTestOpsServer();
@@ -460,5 +463,19 @@ public class ActivationInfoCollector {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         License license = ActivationInfoCollector.parseLicense(jwsCode, null);
         return license;
+    }
+
+    private static License getLastUsedLicense() {
+        try {
+            String jwtCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+            if (jwtCode != null && !jwtCode.isEmpty()) {
+                License license = LicenseService.getInstance().parseJws(jwtCode);
+                return license;
+            }
+        } catch (Exception ex) {
+            LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
