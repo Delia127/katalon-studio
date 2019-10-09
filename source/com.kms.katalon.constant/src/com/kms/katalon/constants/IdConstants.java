@@ -354,6 +354,4 @@ public interface IdConstants {
     
     // Button ID Dialog
     public static final int SHOW_PROBLEM_ID = 1;
-    public static final int PROCEED_ID = 2;
-    public static final int CANCEL_ID = 3;
 }
