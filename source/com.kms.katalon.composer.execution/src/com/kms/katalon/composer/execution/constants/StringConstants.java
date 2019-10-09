@@ -62,8 +62,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_ERROR_MSG_ERROR_IN_SCRIPT = ComposerExecutionMessageConstants.HAND_ERROR_MSG_ERROR_IN_SCRIPT;
     
-    public static final String HAND_ERROR_MSG_ERROR_IN_PROJECT = ComposerExecutionMessageConstants.HAND_ERROR_MSG_ERROR_IN_PROJECT;
-    
     public static final String HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE = ComposerExecutionMessageConstants.HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE;
     
     public static final String HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE = ComposerExecutionMessageConstants.HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE;
