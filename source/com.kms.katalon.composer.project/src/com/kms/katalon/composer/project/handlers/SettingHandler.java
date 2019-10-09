@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
 import com.katalon.platform.api.Extension;
+import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.extension.PluginPreferencePage;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
@@ -148,6 +149,8 @@ public class SettingHandler {
         pluginPreferences.put(PARENT_PLUGIN_PREFERENCE_PAGE_ID, allNodeDescriptions);
         PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP,
                 pluginPreferences);
+
+        hideQTestIntegrationPageIfQTestPluginNotInstalled(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
@@ -268,6 +271,34 @@ public class SettingHandler {
                 eclipseContext);
 
         execute(Display.getCurrent().getActiveShell(), preferencesRegistry);
+    }
+
+    private void hideQTestIntegrationPageIfQTestPluginNotInstalled(PreferenceManager pm) {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(StringConstants.QTEST_PLUGIN_ID);
+        if (plugin != null) {
+            return;
+        }
+        
+        try {
+            IPreferenceNode integrationSettings = null;
+            for (IPreferenceNode node : pm.getRootSubNodes()) {
+                if (StringConstants.PROJECT_INTEGRATION_SETTINGS_PAGE_ID.equals(node.getId())) {
+                    integrationSettings = node;
+                    break;
+                }
+            }
+            
+            if (integrationSettings == null) {
+                return;
+            }
+            
+            IPreferenceNode qTestNode = integrationSettings.remove(StringConstants.PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID);
+            if (qTestNode == null) {
+                throw new MissingProjectSettingPageException(StringConstants.PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID);
+            }
+        } catch (MissingProjectSettingPageException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     public static SettingHandler getInstance() {

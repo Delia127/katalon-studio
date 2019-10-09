@@ -35,7 +35,6 @@ import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.License;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;

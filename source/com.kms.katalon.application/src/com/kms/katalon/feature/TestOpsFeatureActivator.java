@@ -11,5 +11,7 @@ public interface TestOpsFeatureActivator {
             String machineId) throws Exception;
     
     void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,
-            long orgId, String token) throws Exception;
+            Long orgId, String token) throws Exception;
+    
+    String getOrganization(String serverUrl, String token, long orgId) throws Exception;
 }

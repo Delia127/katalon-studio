@@ -8,12 +8,16 @@ public class License {
     private String jwtCode;
     
     private Date expirationDate;
+    
+    private Date renewTime;
 
     private String machineId;
 
     private List<Feature> features;
 
-    private long organizationId;
+    private Long organizationId;
+
+    private String licenseType;
 
     public Date getExpirationDate() {
         return expirationDate;
@@ -21,6 +25,14 @@ public class License {
 
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
+    }
+    
+    public Date getRenewTime() {
+        return renewTime;
+    }
+
+    public void setRenewTime(Date renewTime) {
+        this.renewTime = renewTime;
     }
 
     public String getMachineId() {
@@ -39,11 +51,11 @@ public class License {
         this.features = features;
     }
 
-    public long getOrganizationId() {
+    public Long getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(long organizationId) {
+    public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
     }
 
@@ -54,5 +66,13 @@ public class License {
     public void setJwtCode(String jwtCode) {
         this.jwtCode = jwtCode;
     }
-    
+
+    public String getLicenseType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(String licenseType) {
+        this.licenseType = licenseType;
+    }
+
 }
