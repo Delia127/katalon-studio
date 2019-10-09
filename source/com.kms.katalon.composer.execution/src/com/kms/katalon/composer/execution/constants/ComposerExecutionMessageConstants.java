@@ -271,6 +271,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String MSG_DELETING_LIBRARY_FILES;
 
+    public static String MSG_PROBLEMS_VIEW;
+
     public static String PREF_MSG_TEST_EMAIL_IS_SENT_SUCCESSFULLY;
 
     public static String PREF_FAILED_APACHE_MAIL_PREFIX_ERROR_MSG;

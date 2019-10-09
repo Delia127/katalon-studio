@@ -328,6 +328,10 @@ public class GlobalStringConstants {
 
     public static final String DIA_NO = GlobalMessageConstants.DIA_NO;
     
+    public static final String DIA_PROCEED = GlobalMessageConstants.DIA_PROCEED;
+    
+    public static final String DIA_SHOW_PROBLEM = GlobalMessageConstants.DIA_SHOW_PROBLEM;
+    
     public static final String DIA_LET_START = GlobalMessageConstants.DIA_LET_START;
     
     public static final String DIA_NEW_PROJECT = GlobalMessageConstants.DIA_NEW_PROJECT;

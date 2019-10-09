@@ -37,6 +37,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.impl.ToolControlImpl;
 import org.eclipse.e4.ui.workbench.addons.minmax.TrimStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWTException;
@@ -288,16 +289,12 @@ public abstract class AbstractExecutionHandler {
         List<IMarker> errorMarkers = ProblemMarkerConstants.findErrorMarkers(project);
         if (errorMarkers.size() != 0) {
             ProblemsViewDialog dialog = new ProblemsViewDialog(Display.getCurrent().getActiveShell());
-//            MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-//                    null, StringConstants.HAND_ERROR_MSG_ERROR_IN_PROJECT,
-//                    MessageDialog.ERROR, new String[] { "Show in Problem view", "Proceed", "Cancel" }, 0);
-            int result = dialog.open();
-            switch (result) {
+            switch (dialog.open()) {
                 case IdConstants.SHOW_PROBLEM_ID: {
-                        openProlemsView();
+                    openProlemsView();
                 }
                     break;
-                case IdConstants.PROCEED_ID: {
+                case IDialogConstants.PROCEED_ID: {
                     settingDebugUI();
                     if (targetEntity instanceof TestCaseEntity) {
                         TestCaseEntity testCase = (TestCaseEntity) targetEntity;
@@ -313,24 +310,11 @@ public abstract class AbstractExecutionHandler {
                     }
                 }
                     break;
-                default:{
+                default: {
                     return;
                 }
             }
         }
-        
-//        if (targetEntity instanceof TestCaseEntity) {
-//            TestCaseEntity testCase = (TestCaseEntity) targetEntity;
-//            executeTestCase(testCase, launchMode);
-//            eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
-//        } else if (targetEntity instanceof TestSuiteEntity) {
-//            TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
-//            executeTestSuite(testSuite, launchMode);
-//            eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
-//        } else if (targetEntity instanceof SystemFileEntity) {
-//            SystemFileEntity feature = (SystemFileEntity) targetEntity;
-//            executeFeatureFile(feature, launchMode);
-//        }
     }
 
     public void settingDebugUI(){
@@ -572,8 +556,8 @@ public abstract class AbstractExecutionHandler {
         });
     }
 
-    //Open Problems View and its partStack
-    public static void openProlemsView(){
+    // Open Problems View and its partStack
+    public static void openProlemsView() {
         UISynchronizeService.asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -591,8 +575,9 @@ public abstract class AbstractExecutionHandler {
                     consolePartStack.setToBeRendered(true);
                 }
 
-                // set current page of console partStack is log viewer
-                MUIElement consoleLogPart = (MUIElement) modelService.find(IdConstants.IDE_PROBLEM_VIEW_PART_ID, consolePartStack);
+                // set current page of console partStack is problems view
+                MUIElement consoleLogPart = (MUIElement) modelService.find(IdConstants.IDE_PROBLEM_VIEW_PART_ID,
+                        consolePartStack);
                 if (consoleLogPart != null && consolePartStack.getSelectedElement() != consoleLogPart) {
                     consolePartStack.setSelectedElement((MStackElement) consoleLogPart);
                 }
