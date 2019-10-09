@@ -216,7 +216,7 @@ public class ActivationInfoCollector {
         } catch (Exception e) {
             LogUtil.logError(e);
         }
-        
+
         License license = null;
         try {
             String jwtCode = getLicenseFromTestOps(userName, password, machineId);

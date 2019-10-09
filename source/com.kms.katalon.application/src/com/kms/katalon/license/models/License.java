@@ -16,7 +16,7 @@ public class License {
     private List<Feature> features;
 
     private long organizationId;
-    
+
     private LicenseType licenseType;
 
     public Date getExpirationDate() {
@@ -70,8 +70,7 @@ public class License {
     public LicenseType getType() {
         return licenseType;
     }
-    
-    public void setLicenseType(String licenseType) {
+        public void setLicenseType(String licenseType) {
         this.licenseType = LicenseType.valueOf(licenseType);
     }
 }
