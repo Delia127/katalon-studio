@@ -105,10 +105,10 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                     relativeFilePath, reportDir))
             String[] argv = []
 
-            if (cucumberOptions.glue().equals(null)) {
+            if (cucumberOptions.glue() == null) {
                 argv = argv + ["-g"]
                 argv = argv + ""
-            } else if (cucumberOptions.glue().size() >= 0) {
+            } else {
                 if (cucumberOptions.glue().size() == 0) {
                     argv = argv + ["-g"]
                     argv = argv + ""
@@ -120,10 +120,10 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 }
 
             }
-            if (cucumberOptions.name().equals(null)) {
+            if (cucumberOptions.name() == null) {
                 argv = argv + ["--name"]
                 argv = argv + ""
-            } else if (cucumberOptions.name().size() >= 0) {
+            } else {
                 if (cucumberOptions.name().size() == 0) {
                     argv = argv + ["--name"]
                     argv = argv + ""
@@ -142,10 +142,10 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             if (cucumberOptions.strict()) {
                 argv = argv + ["--strict"]
             }
-            if (cucumberOptions.plugin().equals(null)) {
+            if (cucumberOptions.plugin() == null) {
                 argv = argv + ["--plugin"]
                 argv = argv + ""
-            } else if (cucumberOptions.plugin().size() >= 0) {
+            } else {
                 if (cucumberOptions.plugin().size() == 0) {
                     argv = argv + ["--plugin"]
                     argv = argv + ""
@@ -157,20 +157,20 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 }
 
             }
-            if (cucumberOptions.snippets().equals(null)) {
+            if (cucumberOptions.snippets() == null) {
                 argv = argv + ["--snippets"]
-                argv = argv + SnippetType.UNDERSCORE;
-            } else if (cucumberOptions.snippets().name().length() > 0) {
+                argv = argv + SnippetType.UNDERSCORE
+            } else {
                 argv = argv + ["--snippets"]
                 argv = argv + cucumberOptions.snippets().toString()
             }
             if (cucumberOptions.dryRun()){
                 argv = argv + ["-d"]
             }
-            if (cucumberOptions.tags().equals(null)) {
+            if (cucumberOptions.tags() == null) {
                 argv = argv + ["--tags"]
                 argv = argv + ""
-            } else if (cucumberOptions.tags().size() >= 0) {
+            } else {
                 if (cucumberOptions.tags().size() == 0) {
                     argv = argv + ["--tags"]
                     argv = argv + ""
@@ -182,16 +182,16 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
 
                 }
             }
-            if (cucumberOptions.junit().equals(null)) {
+            if (cucumberOptions.junit() == null) {
                 argv = argv
-            } else if (cucumberOptions.junit().size() >= 0) {
+            } else {
                 for (String unit : cucumberOptions.junit()) {
                     argv = argv + unit
                 }
             }
-            if (cucumberOptions.features().equals(null)) {
+            if (cucumberOptions.features() == null) {
                 argv = argv 
-            } else if (cucumberOptions.features().size() >= 0) {
+            } else {
                 for (String feature : cucumberOptions.features()) {
                     argv = argv + feature
                 }
@@ -301,10 +301,11 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                     MessageFormat.format("Starting run keyword runFeatureFolder: ''{0}'' and extract report to folder: ''{1}''...",
                     folderRelativePath, reportDir))
             String[] argv = []
-            if (cucumberOptions.glue().equals(null)) {
-                 argv = argv + ["-g"]
-                 argv = argv + ""
-            } else if (cucumberOptions.glue().size() >= 0) {
+            
+             if (cucumberOptions.glue() == null) {
+                argv = argv + ["-g"]
+                argv = argv + ""
+            } else {
                 if (cucumberOptions.glue().size() == 0) {
                     argv = argv + ["-g"]
                     argv = argv + ""
@@ -316,10 +317,10 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 }
 
             }
-            if (cucumberOptions.name().equals(null)) {
+            if (cucumberOptions.name() == null) {
                 argv = argv + ["--name"]
                 argv = argv + ""
-           } else if (cucumberOptions.name().size() >= 0) {
+            } else {
                 if (cucumberOptions.name().size() == 0) {
                     argv = argv + ["--name"]
                     argv = argv + ""
@@ -331,17 +332,17 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 }
 
             }
-            
+
             String filePath = projectDir + "/" + folderRelativePath
             argv = argv +  filePath
-            
+
             if (cucumberOptions.strict()) {
                 argv = argv + ["--strict"]
             }
-            if (cucumberOptions.plugin().equals(null)) {
-                 argv = argv + ["--plugin"]
-                 argv = argv + ""
-            } else if (cucumberOptions.plugin().size() >= 0) {
+            if (cucumberOptions.plugin() == null) {
+                argv = argv + ["--plugin"]
+                argv = argv + ""
+            } else {
                 if (cucumberOptions.plugin().size() == 0) {
                     argv = argv + ["--plugin"]
                     argv = argv + ""
@@ -353,21 +354,21 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 }
 
             }
-            if (cucumberOptions.snippets().equals(null)) {
+            if (cucumberOptions.snippets() == null) {
                 argv = argv + ["--snippets"]
-                argv = argv + SnippetType.UNDERSCORE;
-            } else if (cucumberOptions.snippets().name().length() > 0) {
+                argv = argv + SnippetType.UNDERSCORE
+            } else {
                 argv = argv + ["--snippets"]
                 argv = argv + cucumberOptions.snippets().toString()
             }
             if (cucumberOptions.dryRun()){
                 argv = argv + ["-d"]
             }
-            if (cucumberOptions.tags().equals(null)) {
+            if (cucumberOptions.tags() == null) {
                 argv = argv + ["--tags"]
                 argv = argv + ""
-            } else if (cucumberOptions.tags().size() >= 0) {
-                if(cucumberOptions.tags().size() == 0) {
+            } else {
+                if (cucumberOptions.tags().size() == 0) {
                     argv = argv + ["--tags"]
                     argv = argv + ""
                 } else {
@@ -378,20 +379,21 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
 
                 }
             }
-            if (cucumberOptions.junit().equals(null)) {
-                argv = argv 
-            } else if (cucumberOptions.junit().size() >= 0) {
+            if (cucumberOptions.junit() == null) {
+                argv = argv
+            } else {
                 for (String unit : cucumberOptions.junit()) {
                     argv = argv + unit
                 }
             }
-            if (cucumberOptions.features().equals(null)) {
+            if (cucumberOptions.features() == null) {
                 argv = argv 
-            } else if (cucumberOptions.features().size() >= 0) {
+            } else {
                 for (String feature : cucumberOptions.features()) {
                     argv = argv + feature
                 }
             }
+
             
             if (runningMode == RunningMode.CONSOLE) {
                 argv = argv + ["--monochrome"]
