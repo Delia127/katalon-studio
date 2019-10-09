@@ -190,6 +190,7 @@ public class ActivationInfoCollector {
     }
 
     public static License activate(String userName, String password, String machineId, StringBuilder errorMessage) {
+        LogUtil.printErrorLine("Start activate online");
         try {
             String userInfo = collectActivationInfo(userName, password);
             ServerAPICommunicationUtil.post("/segment/identify", userInfo);
@@ -210,6 +211,12 @@ public class ActivationInfoCollector {
             if (errorMessage != null) {
                 errorMessage.append(message);
             }
+        }
+        
+        if (license == null) {
+            LogUtil.printErrorLine("Fail to activate online");
+        } else {
+            LogUtil.printErrorLine("Activate online sucessfully");
         }
 
         return license;
@@ -251,6 +258,7 @@ public class ActivationInfoCollector {
 
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
+            LogUtil.printErrorLine("Start activating offline");
             License license = parseLicense(activationCode, errorMessage);
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
@@ -260,6 +268,7 @@ public class ActivationInfoCollector {
                 org.setId(license.getOrganizationId());
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
 
+                LogUtil.printErrorLine("Activate offline successfully");
                 activated = true;
                 return activated;
             }
@@ -270,12 +279,27 @@ public class ActivationInfoCollector {
             }
         }
 
+        LogUtil.printErrorLine("Fail to activate offline");
         activated = false;
         return activated;
     }
 
     private static boolean isValidLicense(License license) {
-        return hasValidMachineId(license) && !isExpired(license);
+        boolean isValidMachineId = hasValidMachineId(license);
+        boolean isExpired = isExpired(license);
+        if (isValidMachineId && !isExpired) {
+            return true;
+        } else {
+            if (!isValidMachineId) {
+                LogUtil.printErrorLine("Invalid machine id " + license.getMachineId());
+            }
+            
+            if (isExpired) {
+                LogUtil.printErrorLine("License expired");
+            }
+            
+            return false;
+        }
     }
 
     private static boolean hasValidMachineId(License license) {

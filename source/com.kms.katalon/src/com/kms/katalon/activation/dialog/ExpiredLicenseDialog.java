@@ -36,12 +36,7 @@ public class ExpiredLicenseDialog extends AbstractDialog {
     }
     
     @Override
-    protected int getShellStyle() {
-        return SWT.DIALOG_TRIM;
-    }
-    
-    @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+        createButton(parent, IDialogConstants.OK_ID, "Acknowledge", true);
     }
 }
