@@ -617,7 +617,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                         public void run() {
                                             InputDialog inputDialog = new InputDialog(getShell(),
                                                     MobileRecoderMessagesConstants.DLG_TITLE_TEXT_INPUT,
-                                                    MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null);
+                                                    MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null) {
+                                                @Override
+                                                protected int getInputTextStyle() {
+                                                    return super.getInputTextStyle() | SWT.PASSWORD;
+                                                }
+                                            };
                                             if (inputDialog.open() == Window.OK) {
                                                 stringBuilder2.append(inputDialog.getValue());
                                             }
