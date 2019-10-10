@@ -41,6 +41,8 @@ public class ApplicationMessageConstants {
 
     public static String NO_PROXY_FOUND;
 
+    public static String ACTIVATION_ONLINE_INVALID;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ApplicationMessageConstants.class);

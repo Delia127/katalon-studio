@@ -209,7 +209,7 @@ public class LifeCycleManager {
                 }
 
                 try {
-                    if (ApplicationStaupHandler.checkActivation()) {
+                    if (ApplicationStaupHandler.checkActivation(true)) {
                         eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
                     }
                 } catch (Exception e) {
@@ -224,7 +224,7 @@ public class LifeCycleManager {
                 // if (VersionUtil.isInternalBuild()) {
                 // return true;
                 // }
-                if (!(ComposerActivationInfoCollector.checkActivation())) {
+                if (!(ComposerActivationInfoCollector.checkActivation(true))) {
                     eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                     PlatformUI.getWorkbench().close();
                     return false;
