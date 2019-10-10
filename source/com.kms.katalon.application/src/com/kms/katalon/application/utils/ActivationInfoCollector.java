@@ -72,7 +72,7 @@ public class ActivationInfoCollector {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
                 activated = true;
-                LogUtil.logInfo("Activate sucessfully for GUI mode");
+                LogUtil.logInfo("Activate successfully for GUI mode");
             }
         } catch (Exception ex) {
             activated = false;
@@ -93,7 +93,7 @@ public class ActivationInfoCollector {
                 markActivatedLicenseCode(license.getJwtCode());
                 activated = true;
                 ActivationInfoCollector.apiKey = apiKey;
-                LogUtil.logInfo("Activate sucessfully for console mode");
+                LogUtil.logInfo("Activate successfully for console mode");
             }
         } catch (Exception ex) {
             activated = false;
@@ -220,7 +220,7 @@ public class ActivationInfoCollector {
         if (license == null) {
             LogUtil.logError("Fail to activate online");
         } else {
-            LogUtil.logInfo("Activate online sucessfully");
+            LogUtil.logInfo("Activate online successfully");
         }
 
         return license;
