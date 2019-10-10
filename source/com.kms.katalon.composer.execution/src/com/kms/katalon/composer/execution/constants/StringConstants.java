@@ -320,6 +320,8 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String DIA_PROCEED = ComposerExecutionMessageConstants.DIA_PROCEED;
     
+    public static final String DIA_SHOW_PROBLEM = ComposerExecutionMessageConstants.DIA_SHOW_PROBLEM;
+    
 
     // LaunchDelegate
     public static final String LAUNCH_CONFIGURATION_TYPE_ID = "com.kms.katalon.composer.execution.scriptLaunchConfiguration";
