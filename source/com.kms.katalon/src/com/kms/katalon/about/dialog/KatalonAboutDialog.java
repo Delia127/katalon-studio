@@ -35,7 +35,6 @@ import com.kms.katalon.application.utils.VersionInfo;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.MessageConstants;
@@ -234,7 +233,7 @@ public class KatalonAboutDialog extends TrayDialog {
         lblTrial.setLayoutData(gdTrial);
         ControlUtils.setFontStyle(lblTrial, SWT.ITALIC, 10);
         if (isTrial) {
-            lblTrial.setText(StringConstants.ABOUT_LBL_TRAIL);
+            lblTrial.setText(StringConstants.ABOUT_LBL_TRIAL);
         }
 
         GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, true, true);

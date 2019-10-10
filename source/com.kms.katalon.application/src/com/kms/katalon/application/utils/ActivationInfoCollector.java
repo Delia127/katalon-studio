@@ -90,7 +90,7 @@ public class ActivationInfoCollector {
     }
 
     private static void saveExpirationDate(Date date) {
-        Format formatter = new SimpleDateFormat("MMMMM dd, yyyy");
+        Format formatter = new SimpleDateFormat("MMMMM dd, yyyy HH:mm");
         String dateWithFormatter = formatter.format(date);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.EXPIRATION_DATE, dateWithFormatter, true);
     }

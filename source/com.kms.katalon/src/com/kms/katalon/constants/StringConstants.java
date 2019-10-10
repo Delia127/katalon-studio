@@ -229,5 +229,5 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String ABOUT_BTN_OK = MessageConstants.About_BTN_OK;
 
-    public static final String ABOUT_LBL_TRAIL = MessageConstants.About_LBL_TRAIL;
+    public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
 }
