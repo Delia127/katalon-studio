@@ -99,7 +99,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @return
      * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
      *
-     * @since 5.7
+     * @since 7.0.0
      * @see CucumberRunnerResult
      */
     @Keyword
@@ -179,7 +179,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @return
      * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
      *
-     * @since 5.7
+     * @since 7.0.0
      */
     @Keyword
     public static boolean runFeatureFileWithTags(String relativeFilePath, String[] tags) {
@@ -255,7 +255,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * an instance {@link FailureHandling} that controls the running flow
      * @return
      * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
-     * @since 5.7
+     * @since 7.0.0
      */
     
     @Keyword
@@ -334,7 +334,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * what tags in the features should be executed
      * @return
      * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
-     * @since 5.7
+     * @since 7.0.0
      */
     
     @Keyword
