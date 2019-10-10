@@ -424,7 +424,6 @@ public class ActivationInfoCollector {
                     if (!isOffline) {
                         if (ActivationInfoCollector.isReachRenewTime(license)) {
                             try {
-                                LogUtil.logInfo("Renew license");
                                 renewHandler.run();
                             } catch (Exception e) {
                                 LogUtil.logError(e, "Can't renew license");
