@@ -132,7 +132,6 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "--plugin",
                 CucumberReporter.class.getName()
             ]
-
             if (tags != null) {
                 for (String tag in tags) {
                     argv = argv + ["--tags"]
@@ -288,14 +287,12 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "--plugin",
                 CucumberReporter.class.getName()
             ]
-
             if (tags != null) {
                 for (String tag in tags) {
                     argv = argv + ["--tags"]
                     argv = argv + tag
                 }
             }
-
 
             if (runningMode == RunningMode.CONSOLE) {
                 argv = argv + ["--monochrome"]
