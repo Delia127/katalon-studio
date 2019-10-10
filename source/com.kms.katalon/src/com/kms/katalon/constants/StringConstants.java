@@ -213,4 +213,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_FAIL_TO_KILL_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_KILL_WEB_DRIVER;
 
     public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
+
+    public static final String MSG_CLEANING = MessageConstants.MSG_CLEANING;
 }

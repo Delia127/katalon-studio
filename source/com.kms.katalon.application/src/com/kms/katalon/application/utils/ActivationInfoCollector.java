@@ -64,7 +64,7 @@ public class ActivationInfoCollector {
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                 String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
                 String machineId = MachineUtil.getMachineId();
-                license = activate(email, password, machineId, null);
+                license = activate(email, password, machineId, new StringBuilder());
             }
 
             if (license != null) {
@@ -83,7 +83,7 @@ public class ActivationInfoCollector {
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey) {
         try {
             String machineId = MachineUtil.getMachineId();
-            License license = activate(null, apiKey, machineId, null);
+            License license = activate(null, apiKey, machineId, new StringBuilder());
 
             if (license != null) {
                 enableFeatures(license);
@@ -190,32 +190,37 @@ public class ActivationInfoCollector {
     }
 
     public static License activate(String userName, String password, String machineId, StringBuilder errorMessage) {
-        try {
-            String userInfo = collectActivationInfo(userName, password);
-            ServerAPICommunicationUtil.post("/segment/identify", userInfo);
-            if (errorMessage != null) {
-                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+//        try {
+//            String userInfo = collectActivationInfo(userName, password);
+//            ServerAPICommunicationUtil.post("/segment/identify", userInfo);
+//            if (errorMessage != null) {
+//                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+//            }
+//        } catch (Exception e) {
+//            LogUtil.logError(e);
+//        }
+        License license;
+        if (!StringUtils.isBlank(password) && !StringUtils.isBlank(machineId)) {
+            try {
+                String jwtCode = getLicenseFromTestOps(userName, password, machineId);
+                license = parseLicense(jwtCode);
+                return license;
+            } catch (Exception ex) {
+                LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                try {
+                    String message = KatalonApplicationActivator.getTestOpsConfiguration().getTestOpsMessage(ex.getMessage());
+                    errorMessage.append(message);
+                } catch (Exception error) {
+                    //No message from server
+                    errorMessage.delete(0, errorMessage.length());
+                    errorMessage.append(ApplicationMessageConstants.ACTIVATION_ONLINE_INVALID);
+                }
             }
-        } catch (Exception e) {
-            LogUtil.logError(e);
         }
-
-        License license = null;
-        try {
-            String jwtCode = getLicenseFromTestOps(userName, password, machineId);
-            license = parseLicense(jwtCode, errorMessage);
-        } catch (Exception ex) {
-            String message = KatalonApplicationActivator.getTestOpsConfiguration().getTestOpsMessage(ex.getMessage());
-            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
-            if (errorMessage != null) {
-                errorMessage.append(message);
-            }
-        }
-
-        return license;
+        return null;
     }
 
-    private static License parseLicense(String jwtCode, StringBuilder errorMessage) {
+    private static License parseLicense(String jwtCode) throws Exception {
         try {
             if (jwtCode != null && !jwtCode.isEmpty()) {
                 License license = LicenseService.getInstance().parseJws(jwtCode);
@@ -225,10 +230,7 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
-            ex.printStackTrace();
-        }
-        if (errorMessage != null) {
-            errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+            throw ex;
         }
         return null;
     }
@@ -251,7 +253,7 @@ public class ActivationInfoCollector {
 
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
-            License license = parseLicense(activationCode, errorMessage);
+            License license = parseLicense(activationCode);
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
                 enableFeatures(license);
@@ -265,9 +267,7 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             LogUtil.logError(ex);
-            if (errorMessage != null) {
-                errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
-            }
+            errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         }
 
         activated = false;
@@ -319,7 +319,7 @@ public class ActivationInfoCollector {
     public static void releaseLicense() throws Exception {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         if (StringUtils.isNotBlank(jwsCode)) {
-            License license = parseLicense(jwsCode, null);
+            License license = parseLicense(jwsCode);
             boolean isOffline = isOffline(license);
             if (!isOffline) {
                 String serverUrl = ApplicationInfo.getTestOpsServer();
@@ -432,9 +432,9 @@ public class ActivationInfoCollector {
         return isOffline;
     }
 
-    private static License getLicense() {
+    private static License getLicense() throws Exception {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-        License license = ActivationInfoCollector.parseLicense(jwsCode, null);
+        License license = ActivationInfoCollector.parseLicense(jwsCode);
         return license;
     }
 }

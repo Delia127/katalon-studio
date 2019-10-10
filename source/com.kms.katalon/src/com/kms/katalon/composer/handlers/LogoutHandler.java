@@ -46,7 +46,7 @@ public class LogoutHandler {
             
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             
-            if (ApplicationStaupHandler.checkActivation()) {
+            if (ApplicationStaupHandler.checkActivation(false)) {
                 eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
             }
         } catch (Exception e) {
