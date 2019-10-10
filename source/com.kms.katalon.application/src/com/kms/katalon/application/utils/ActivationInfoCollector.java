@@ -436,21 +436,25 @@ public class ActivationInfoCollector {
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
                 License license = getValidLicense();
-                
                 if (license == null) {
+                    license = getLastUsedLicense();
+                } 
+                boolean isOffline = isOffline(license);
+                
+                if (!isOffline) {
+                    if (license != null && isReachRenewTime(license)) {
+                        try {
+                            renewHandler.run();
+                            license = getValidLicense();
+                        } catch (Exception e) {
+                            LogUtil.logError(e, "Can't renew license");
+                        }
+                    }
+                }
+                
+                if (license == null || !isValidLicense(license)) {
                     if (isStartSession) {
                         expiredHandler.run();
-                    }
-                } else {
-                    boolean isOffline = isOffline(license);
-                    if (!isOffline) {
-                        if (ActivationInfoCollector.isReachRenewTime(license)) {
-                            try {
-                                renewHandler.run();
-                            } catch (Exception e) {
-                                LogUtil.logError(e, "Can't renew license");
-                            }
-                        }
                     }
                 }
             } catch (Exception e) {
