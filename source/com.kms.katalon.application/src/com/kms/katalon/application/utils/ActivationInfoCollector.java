@@ -291,14 +291,15 @@ public class ActivationInfoCollector {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
         if (isValidMachineId && !isExpired) {
+            LogUtil.logInfo("License is valid");
             return true;
         } else {
             if (!isValidMachineId) {
-                LogUtil.logInfo("Invalid machine id " + license.getMachineId());
+                LogUtil.logError("Invalid machine id " + license.getMachineId());
             }
             
             if (isExpired) {
-                LogUtil.logInfo("License expired");
+                LogUtil.logError("License expired");
             }
             
             return false;
