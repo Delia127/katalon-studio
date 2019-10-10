@@ -232,7 +232,6 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
-            ex.printStackTrace();
         }
         if (errorMessage != null) {
             errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
@@ -470,11 +469,12 @@ public class ActivationInfoCollector {
             String jwtCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
             if (jwtCode != null && !jwtCode.isEmpty()) {
                 License license = LicenseService.getInstance().parseJws(jwtCode);
-                return license;
+                if (hasValidMachineId(license)) {
+                    return license;
+                }
             }
         } catch (Exception ex) {
             LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
-            ex.printStackTrace();
         }
         return null;
     }
