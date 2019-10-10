@@ -156,6 +156,11 @@ public class ConsoleMain {
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
                     StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+
+                    String error = errorMessage.toString();
+                    if (StringUtils.isNotBlank(error)) {
+                        LogUtil.printErrorLine(error);
+                    }
                 }
                 
                 if (!isActivated) {
@@ -258,13 +263,13 @@ public class ConsoleMain {
         String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
         if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
             licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-            LogUtil.printErrorLine("Get license file from options " + licenseFile);
+            LogUtil.logInfo("Get license file from options " + licenseFile);
         } else if (environmentVariable != null) {
             licenseFile = environmentVariable;
-            LogUtil.printErrorLine("Get license file from environment variables " + licenseFile);
+            LogUtil.logInfo("Get license file from environment variables " + licenseFile);
         } else {
             licenseFile = readLicenseFromDefaultLocation();
-            LogUtil.printErrorLine("Get default license file" + licenseFile);
+            LogUtil.logInfo("Get default license file" + licenseFile);
         }
         return licenseFile;
     }

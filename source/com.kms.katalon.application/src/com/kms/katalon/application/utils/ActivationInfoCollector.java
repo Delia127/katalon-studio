@@ -56,7 +56,8 @@ public class ActivationInfoCollector {
     
     public static boolean checkAndMarkActivatedForGUIMode() {
         try {
-            License license = getLicense();
+            LogUtil.logInfo("Start activate for GUI mode");
+            License license = getValidLicense();
             boolean isOffline = isOffline(license);
 
             if (!isOffline) {
@@ -71,10 +72,11 @@ public class ActivationInfoCollector {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
                 activated = true;
+                LogUtil.logInfo("Activate sucessfully for GUI mode");
             }
         } catch (Exception ex) {
             activated = false;
-            LogUtil.logError(ex);
+            LogUtil.logError(ex, "Fail to activate for GUI mode");
         }
 
         return activated;
@@ -82,6 +84,7 @@ public class ActivationInfoCollector {
 
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey) {
         try {
+            LogUtil.logInfo("Start activate for console mode");
             String machineId = MachineUtil.getMachineId();
             License license = activate(null, apiKey, machineId, null);
 
@@ -90,10 +93,11 @@ public class ActivationInfoCollector {
                 markActivatedLicenseCode(license.getJwtCode());
                 activated = true;
                 ActivationInfoCollector.apiKey = apiKey;
+                LogUtil.logInfo("Activate sucessfully for console mode");
             }
         } catch (Exception ex) {
             activated = false;
-            LogUtil.logError(ex);
+            LogUtil.logError(ex, "Fail to activate for console mode");
         }
 
         return activated;
@@ -214,7 +218,7 @@ public class ActivationInfoCollector {
         }
         
         if (license == null) {
-            LogUtil.logInfo("Fail to activate online");
+            LogUtil.logError("Fail to activate online");
         } else {
             LogUtil.logInfo("Activate online sucessfully");
         }
@@ -278,7 +282,7 @@ public class ActivationInfoCollector {
             }
         }
 
-        LogUtil.logInfo("Fail to activate offline");
+        LogUtil.logError("Fail to activate offline");
         activated = false;
         return activated;
     }
@@ -416,7 +420,7 @@ public class ActivationInfoCollector {
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
-                License license = getLicense();
+                License license = getValidLicense();
                 
                 if (license == null) {
                     if (isStartSession) {
@@ -458,7 +462,7 @@ public class ActivationInfoCollector {
         return isOffline;
     }
 
-    private static License getLicense() {
+    private static License getValidLicense() {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         License license = ActivationInfoCollector.parseLicense(jwsCode, null);
         return license;
