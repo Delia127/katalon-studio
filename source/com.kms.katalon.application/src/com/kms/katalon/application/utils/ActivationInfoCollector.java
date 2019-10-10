@@ -40,8 +40,6 @@ public class ActivationInfoCollector {
 
     private static boolean activated = false;
 
-    private static boolean isStartSession;
-
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
@@ -408,7 +406,6 @@ public class ActivationInfoCollector {
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
-        isStartSession = true;
     }
 
     private static void setActivatedVal() throws Exception {
@@ -455,9 +452,7 @@ public class ActivationInfoCollector {
                 }
 
                 if (license == null || !isValidLicense(license)) {
-                    if (isStartSession) {
-                        expiredHandler.run();
-                    }
+                    expiredHandler.run();
                 }
             } catch (Exception e) {
                 LogUtil.logError(e, "Error when check license");
@@ -466,7 +461,6 @@ public class ActivationInfoCollector {
     }
 
     public static void postEndSession() {
-        isStartSession = false;
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
         }
