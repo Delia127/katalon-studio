@@ -58,7 +58,7 @@ public class ActivationInfoCollector {
     }
 
     public static boolean checkAndMarkActivatedForGUIMode() {
-        return checkAndMarkActivatedForGUIMode(null);
+        return checkAndMarkActivatedForGUIMode(new StringBuilder());
     }
 
     public static boolean checkAndMarkActivatedForGUIMode(StringBuilder errorMessage) {
@@ -240,7 +240,6 @@ public class ActivationInfoCollector {
             }
         }
 
-        LogUtil.logError("Fail to activate online");
         return null;
     }
 
@@ -476,7 +475,10 @@ public class ActivationInfoCollector {
     public static boolean isOffline(License license) {
         boolean isOffline = false;
         if (license != null) {
-            isOffline = license.getFeatures().stream().map(Feature::getKey).anyMatch(TestOpsFeatureKey.OFFLINE::equals);
+            isOffline = license.getFeatures()
+                    .stream()
+                    .map(Feature::getKey)
+                    .anyMatch(TestOpsFeatureKey.OFFLINE::equals);
         }
         return isOffline;
     }
