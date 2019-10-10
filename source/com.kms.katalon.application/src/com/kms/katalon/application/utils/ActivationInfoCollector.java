@@ -435,7 +435,7 @@ public class ActivationInfoCollector {
                                 LogUtil.logInfo("Renew license");
                                 renewHandler.run();
                             } catch (Exception e) {
-                                LogUtil.logError(e, "Error when renew Katalon Studio license");
+                                LogUtil.logError(e, "Can't renew license");
                             }
                         }
                     }
