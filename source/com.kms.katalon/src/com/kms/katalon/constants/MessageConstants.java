@@ -526,7 +526,22 @@ public class MessageConstants extends NLS {
     public static String MSG_FAIL_TO_KILL_WEB_DRIVER;
 
     public static String MSG_ACTIVATING;
-    
+
+    // About
+    public static String About_LBL_VERSION;
+
+    public static String About_LBL_BUILD;
+
+    public static String About_LBL_EXPIRATION_DATE;
+
+    public static String About_LBL_COPYRIGHT;
+
+    public static String About_BTN_INSTALLATION_DETAILS;
+
+    public static String About_BTN_OK;
+
+    public static String About_LBL_TRAIL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);
