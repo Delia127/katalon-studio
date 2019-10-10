@@ -106,7 +106,7 @@ public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
                         logger.logFailed("Could not find Airplane Mode button at XPATH: //XCUIElementTypeSwitch[@visible='true' and @label='Airplane Mode']")
                         return
                     }
-                    MobileElement airplaneButton = toggleAirplaneButtonList.get(0);
+                    MobileElement airplaneButton = (MobileElement) toggleAirplaneButtonList.get(0);
                     boolean isEnabled = airplaneButton.getAttribute("value") == "1" ? true : false
                     if (isTurnOn != isEnabled) {
                         TouchAction tapAtAirPlaneButton = new TouchAction(driver)

@@ -37,7 +37,6 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
-import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
@@ -155,16 +154,33 @@ public class ConsoleMain {
                     LogUtil.logInfo("License file path: " + licenseFile);
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
                     StringBuilder errorMessage = new StringBuilder();
+                    
+                    LogUtil.logInfo("Start activating offline");
                     isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
-
-                    String error = errorMessage.toString();
-                    if (StringUtils.isNotBlank(error)) {
-                        LogUtil.printErrorLine(error);
+                    
+                    if (!isActivated) {
+                        LogUtil.printErrorLine("Fail to activate offline");
+                        
+                        String error = errorMessage.toString();
+                        if (StringUtils.isNotBlank(error)) {
+                            LogUtil.printErrorLine(error);
+                        }
                     }
                 }
                 
                 if (!isActivated) {
-                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue);
+                    LogUtil.logInfo("Start activating online for console mode");
+                    StringBuilder errorMessage = new StringBuilder();
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
+                    
+                    if (!isActivated) {
+                        LogUtil.printErrorLine("Fail to activate online for console mode");
+                        
+                        String error = errorMessage.toString();
+                        if (StringUtils.isNotBlank(error)) {
+                            LogUtil.printErrorLine(error);
+                        }
+                    }
                 }
 
                 if (!isActivated) {
@@ -232,7 +248,7 @@ public class ConsoleMain {
                 LauncherManager.getInstance().stopAllLauncher();
             }, () -> {
                 String apiKey = localStore.get("apiKey");
-                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey);
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, null);
             });
             
             consoleExecutor.execute(project, options);

@@ -56,7 +56,6 @@ public class ActivationInfoCollector {
     
     public static boolean checkAndMarkActivatedForGUIMode() {
         try {
-            LogUtil.logInfo("Start activate for GUI mode");
             License license = getValidLicense();
             boolean isOffline = isOffline(license);
 
@@ -72,7 +71,6 @@ public class ActivationInfoCollector {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
                 activated = true;
-                LogUtil.logInfo("Activate successfully for GUI mode");
             }
         } catch (Exception ex) {
             activated = false;
@@ -82,21 +80,22 @@ public class ActivationInfoCollector {
         return activated;
     }
 
-    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey) {
+    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, StringBuilder errorMessage) {
         try {
-            LogUtil.logInfo("Start activate for console mode");
             String machineId = MachineUtil.getMachineId();
-            License license = activate(null, apiKey, machineId, null);
+            License license = activate(null, apiKey, machineId, errorMessage);
 
             if (license != null) {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
                 activated = true;
                 ActivationInfoCollector.apiKey = apiKey;
-                LogUtil.logInfo("Activate successfully for console mode");
             }
         } catch (Exception ex) {
             activated = false;
+            if (errorMessage != null) {
+                errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
+            }
             LogUtil.logError(ex, "Fail to activate for console mode");
         }
 
@@ -194,7 +193,6 @@ public class ActivationInfoCollector {
     }
 
     public static License activate(String userName, String password, String machineId, StringBuilder errorMessage) {
-        LogUtil.logInfo("Start activate online");
         try {
             String userInfo = collectActivationInfo(userName, password);
             ServerAPICommunicationUtil.post("/segment/identify", userInfo);
@@ -219,8 +217,6 @@ public class ActivationInfoCollector {
         
         if (license == null) {
             LogUtil.logError("Fail to activate online");
-        } else {
-            LogUtil.logInfo("Activate online successfully");
         }
 
         return license;
@@ -261,7 +257,6 @@ public class ActivationInfoCollector {
 
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
-            LogUtil.logInfo("Start activating offline");
             License license = parseLicense(activationCode, errorMessage);
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
@@ -271,18 +266,16 @@ public class ActivationInfoCollector {
                 org.setId(license.getOrganizationId());
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
 
-                LogUtil.logInfo("Activate offline successfully");
                 activated = true;
                 return activated;
             }
         } catch (Exception ex) {
-            LogUtil.logError(ex);
+            LogUtil.logError(ex, "Fail to activate offline");
             if (errorMessage != null) {
                 errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
             }
         }
 
-        LogUtil.logError("Fail to activate offline");
         activated = false;
         return activated;
     }
@@ -291,7 +284,6 @@ public class ActivationInfoCollector {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
         if (isValidMachineId && !isExpired) {
-            LogUtil.logInfo("License is valid");
             return true;
         } else {
             if (!isValidMachineId) {
