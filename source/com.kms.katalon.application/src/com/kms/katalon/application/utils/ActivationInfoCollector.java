@@ -173,7 +173,7 @@ public class ActivationInfoCollector {
         traits.addProperty("os_type", osType);
         traits.addProperty("kat_version", katVersion);
         traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
-        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
+        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.USER_SESSION_ID);
         traits.addProperty(UsagePropertyConstant.PROPERTY_USER_KEY, KatalonApplication.USER_KEY);
         return traits;
     }
@@ -248,7 +248,7 @@ public class ActivationInfoCollector {
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
         String hostname = getHostname();
         String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName,
-                KatalonApplication.SESSION_ID, hostname, machineId);
+                KatalonApplication.USER_SESSION_ID, hostname, machineId);
         return license;
     }
 
@@ -370,7 +370,7 @@ public class ActivationInfoCollector {
                        serverUrl,
                        machineId,
                        ksVersion,
-                       KatalonApplication.SESSION_ID,
+                       KatalonApplication.USER_SESSION_ID,
                        orgId,
                        token
                );

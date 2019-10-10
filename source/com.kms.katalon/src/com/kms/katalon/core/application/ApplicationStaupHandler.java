@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.activation.dialog.ExpiredLicenseDialog;
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -25,6 +26,7 @@ public class ApplicationStaupHandler {
     private static ExpiredLicenseDialog expiredDialog;
 
     public static boolean checkActivation() throws Exception {
+        KatalonApplication.refreshUserSession();
         eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
         // if (VersionUtil.isInternalBuild()) {
         // return true;
