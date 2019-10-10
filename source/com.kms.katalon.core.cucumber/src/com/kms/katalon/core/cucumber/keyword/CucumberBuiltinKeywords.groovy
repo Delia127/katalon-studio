@@ -93,7 +93,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @param relativeFilePath
      * relativeFilePath of Feature file
      * @param tags
-     * tags in Feature file beginning scenario
+     * what tags in the features should be executed
      * @param flowControl
      * an instance {@link FailureHandling} that controls the running flow
      * @return
@@ -175,7 +175,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @param relativeFilePath
      * relativeFilePath of Feature file
      * @param tags
-     * tags in Feature file beginning scenario
+     * what tags in the features should be executed
      * @return
      * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
      *
@@ -250,7 +250,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @param folderRelativePath
      * folder relative path that starts from the current project location
      * @param tags
-     * tags that identify that scenario and beginning the scenario
+     * what tags in the features should be executed
      * @param flowControl
      * an instance {@link FailureHandling} that controls the running flow
      * @return
@@ -331,7 +331,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @param folderRelativePath
      * folder relative path that starts from current project location
      * @param tags
-     * tags that identify that scenario and beginning the scenario
+     * what tags in the features should be executed
      * @return
      * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
      * @since 5.7
