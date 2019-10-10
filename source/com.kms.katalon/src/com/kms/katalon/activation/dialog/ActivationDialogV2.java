@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.validator.UrlValidator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -157,6 +158,12 @@ public class ActivationDialogV2 extends AbstractDialog {
                 String serverUrl = txtServerUrl.getText();
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
+
+                if (!validateServer()) {
+                    setProgressMessage(MessageConstants.ERR_MSG_SERVER_INVALID, true);
+                    return;
+                }
+
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(() -> {
                         enableObject(false);
@@ -340,6 +347,12 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private boolean validatePassword() {
         return txtPassword.getText().length() >= 8;
+    }
+
+    private boolean validateServer() {
+        String[] schemes = {"http","https"};
+        UrlValidator urlValidator = new UrlValidator(schemes);
+        return urlValidator.isValid(txtServerUrl.getText());
     }
 
     @Override

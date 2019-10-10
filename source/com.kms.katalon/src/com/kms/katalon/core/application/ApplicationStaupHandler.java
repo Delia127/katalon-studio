@@ -26,14 +26,14 @@ public class ApplicationStaupHandler {
 
     private static ExpiredLicenseDialog expiredDialog;
 
-    public static boolean checkActivation() throws Exception {
+    public static boolean checkActivation(boolean isStartup) throws Exception {
         KatalonApplication.refreshUserSession();
         eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
         // if (VersionUtil.isInternalBuild()) {
         // return true;
         // }
 
-        if (!(ComposerActivationInfoCollector.checkActivation())) {
+        if (!(ComposerActivationInfoCollector.checkActivation(isStartup))) {
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             PlatformUI.getWorkbench().close();
             return false;

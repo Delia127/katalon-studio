@@ -32,12 +32,16 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     
     private static boolean isActivated;
 
-    public static boolean checkActivation() throws InvocationTargetException, InterruptedException {
+    public static boolean checkActivation(boolean isStartup) throws InvocationTargetException, InterruptedException {
         Shell shell = Display.getCurrent().getActiveShell();
         new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
+                if (isStartup) {
+                    monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
+                } else {
+                    monitor.beginTask(StringConstants.MSG_CLEANING, IProgressMonitor.UNKNOWN);
+                }
                 isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                 monitor.done();
             }

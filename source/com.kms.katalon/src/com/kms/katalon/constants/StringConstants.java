@@ -214,6 +214,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
     
+    public static final String MSG_CLEANING = MessageConstants.MSG_CLEANING;
+
     // About
     public static final String ABOUT_LBL_VERSION = MessageConstants.About_LBL_VERSION;
 
