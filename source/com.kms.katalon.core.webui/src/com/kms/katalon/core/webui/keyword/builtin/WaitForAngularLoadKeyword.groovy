@@ -52,19 +52,43 @@ public class WaitForAngularLoadKeyword extends WebUIAbstractKeyword {
             if (webDriver == null) {
                 throw new StepFailedException(CoreWebuiMessageConstants.EXC_BROWSER_IS_NOT_OPENED)
             }
+            
+            String angularJSDetectScript = '''return (window.angular != null && window.angular.version != null && window.angular.version.full != null)'''
+            String angularDetectScript = '''return (window.ng != null && window.ng.coreTokens != null && window.ng.probe != null)'''
 
             JavascriptExecutor jsExec = (JavascriptExecutor) webDriver
-            if (jsExec.executeScript('''return (window.angular === undefined) || (angular.element(document.body).injector() === undefined)''')) {
+            boolean isAngularJS = (Boolean) jsExec.executeScript(angularJSDetectScript)
+            boolean isAngular = (Boolean) jsExec.executeScript(angularDetectScript)
+            
+            if (!isAngularJS && !isAngular) {
                 logger.logWarning(CoreWebuiMessageConstants.KW_MSG_ANGULAR_NOT_USED)
                 return false
             }
+            
             WebDriverWait wait = new WebDriverWait(webDriver, WebUiCommonHelper.checkTimeout(timeout))
             ExpectedCondition jQueryLoadExpectation = new ExpectedCondition() {
                         def Boolean apply(WebDriver driver) {
-                            String waitForAngularLoadJS ='''\
-return angular.element(document.body).injector().get('$http').pendingRequests.length === 0 && document.readyState === 'complete'
-'''
-                            return jsExec.executeScript(waitForAngularLoadJS)
+                            String waitForAngularJSLoaded = '''
+                                return document.readyState === 'complete'
+                                    && window.angular.element(document.body)
+                                        .injector()
+                                        .get('$http')
+                                        .pendingRequests.length === 0
+                            '''
+                            String waitForAngularLoaded = '''
+                                return document.readyState === 'complete'
+                                    && window.getAllAngularTestabilities().findIndex(node => !node.isStable()) === -1
+                            '''
+                            
+                            String angularReadyScript = '';
+                            if (isAngularJS) {
+                                angularReadyScript = waitForAngularJSLoaded
+                            }
+                            if (isAngular) {
+                                angularReadyScript = waitForAngularLoaded
+                            }
+                            
+                            return jsExec.executeScript(angularReadyScript)
                         }
                     }
 
