@@ -2,6 +2,8 @@ package com.kms.katalon.application.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +28,7 @@ import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -74,6 +77,8 @@ public class ActivationInfoCollector {
             if (license != null) {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
+                saveLicenseType(license.getType());
+                saveExpirationDate(license.getExpirationDate());
                 activated = true;
             }
         } catch (Exception ex) {
@@ -84,6 +89,16 @@ public class ActivationInfoCollector {
         return activated;
     }
 
+    private static void saveLicenseType(LicenseType type) {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, type.toString(), true);
+    }
+
+    private static void saveExpirationDate(Date date) {
+        Format formatter = new SimpleDateFormat("MMMMM dd, yyyy");
+        String dateWithFormatter = formatter.format(date);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.EXPIRATION_DATE, dateWithFormatter, true);
+    }
+
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, StringBuilder errorMessage) {
         try {
             String machineId = MachineUtil.getMachineId();
@@ -92,6 +107,8 @@ public class ActivationInfoCollector {
             if (license != null) {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
+                saveLicenseType(license.getType());
+                saveExpirationDate(license.getExpirationDate());
                 activated = true;
                 ActivationInfoCollector.apiKey = apiKey;
             }
@@ -261,6 +278,8 @@ public class ActivationInfoCollector {
             License license = parseLicense(activationCode, errorMessage);
             if (license != null) {
                 markActivatedLicenseCode(activationCode);
+                saveLicenseType(license.getType());
+                saveExpirationDate(license.getExpirationDate());
                 enableFeatures(license);
 
                 Organization org = new Organization();
@@ -380,6 +399,8 @@ public class ActivationInfoCollector {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, organization, true);
         markActivatedLicenseCode(license.getJwtCode());
+        saveLicenseType(license.getType());
+        saveExpirationDate(license.getExpirationDate());
     }
 
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
