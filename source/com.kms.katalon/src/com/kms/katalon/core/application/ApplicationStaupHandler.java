@@ -70,7 +70,7 @@ public class ApplicationStaupHandler {
                 if (expiredDialog == null) {
                     expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
                     expiredDialog.open();
-                    closeKSAfter(5);
+                    closeKSAfter(300);
                 }
             });
         }, () -> {
