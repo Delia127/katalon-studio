@@ -159,7 +159,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * {@link cucumber.api.cli.Main#run(String[], ClassLoader)}
      *
      * @param relativeFilePath
-     * relativeFilePath of Feature file 
+     * relativeFilePath of Feature file
      * @return
      * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
      *
