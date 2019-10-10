@@ -279,44 +279,45 @@ public abstract class AbstractExecutionHandler {
         return runnable.getRunConfiguration();
     }
 
-    protected void execute(LaunchMode launchMode) throws Exception {
-        Entity targetEntity = getExecutionTarget();
+	protected void execute(LaunchMode launchMode) throws Exception {
+		Entity targetEntity = getExecutionTarget();
 
-        if (targetEntity == null) {
-            return;
-        }
+		if (targetEntity == null) {
+			return;
+		}
 
-        IProject project = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject());
-        List<IMarker> errorMarkers = ProblemMarkerConstants.findErrorMarkers(project);
-        if (errorMarkers.size() != 0) {
-            ProblemsViewDialog dialog = new ProblemsViewDialog(Display.getCurrent().getActiveShell());
-            switch (dialog.open()) {
-                case IdConstants.SHOW_PROBLEM_ID: {
-                    openProlemsView();
-                }
-                    break;
-                case IDialogConstants.PROCEED_ID: {
-                    settingDebugUI();
-                    if (targetEntity instanceof TestCaseEntity) {
-                        TestCaseEntity testCase = (TestCaseEntity) targetEntity;
-                        executeTestCase(testCase, launchMode);
-                        eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
-                    } else if (targetEntity instanceof TestSuiteEntity) {
-                        TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
-                        executeTestSuite(testSuite, launchMode);
-                        eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
-                    } else if (targetEntity instanceof SystemFileEntity) {
-                        SystemFileEntity feature = (SystemFileEntity) targetEntity;
-                        executeFeatureFile(feature, launchMode);
-                    }
-                }
-                    break;
-                default: {
-                    return;
-                }
-            }
-        }
-    }
+		IProject project = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject());
+		List<IMarker> errorMarkers = ProblemMarkerConstants.findErrorMarkers(project);
+		if (errorMarkers.size() != 0) {
+			ProblemsViewDialog dialog = new ProblemsViewDialog(Display.getCurrent().getActiveShell());
+			switch (dialog.open()) {
+			case ProblemsViewDialog.SHOW_PROBLEM_ID: {
+				openProlemsView();
+				break;
+			}
+
+			case IDialogConstants.PROCEED_ID: {
+				settingDebugUI();
+				if (targetEntity instanceof TestCaseEntity) {
+					TestCaseEntity testCase = (TestCaseEntity) targetEntity;
+					executeTestCase(testCase, launchMode);
+					eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
+				} else if (targetEntity instanceof TestSuiteEntity) {
+					TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
+					executeTestSuite(testSuite, launchMode);
+					eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
+				} else if (targetEntity instanceof SystemFileEntity) {
+					SystemFileEntity feature = (SystemFileEntity) targetEntity;
+					executeFeatureFile(feature, launchMode);
+				}
+				break;
+			}
+
+			default:
+				return;
+			}
+		}
+	}
 
     public void settingDebugUI(){
         ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.DEBUG_UI_ID);

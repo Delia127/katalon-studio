@@ -238,6 +238,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_CHK_FOR_FAILED_TEST_CASES;
 
     public static String DIA_TITLE_TEST_SUITE_BROWSER;
+    
+    public static String DIA_PROCEED;
 
     public static String PAGE_EXTERNAL_LIB_JOB_TASK_REBUILD_PROJECT;
 

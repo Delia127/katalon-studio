@@ -18,6 +18,8 @@ import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.IdConstants;
 
 public class ProblemsViewDialog extends Dialog {
+	
+	public static final int SHOW_PROBLEM_ID = 1;
 
     private Button btnShowProblemsView;
 
@@ -53,7 +55,7 @@ public class ProblemsViewDialog extends Dialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        btnShowProblemsView = createButton(parent, IdConstants.SHOW_PROBLEM_ID, StringConstants.DIA_SHOW_PROBLEM, true);
+        btnShowProblemsView = createButton(parent, SHOW_PROBLEM_ID, StringConstants.DIA_SHOW_PROBLEM, true);
         btnPreceed = createButton(parent, IDialogConstants.PROCEED_ID, StringConstants.DIA_PROCEED, false);
         btnCancel = createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_CANCEL, false);
     }

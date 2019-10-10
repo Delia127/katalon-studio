@@ -351,7 +351,4 @@ public interface IdConstants {
     public static final String SETTING_CAPABILITIES_WINDOWS = "com.kms.katalon.composer.execution.settings.default.5";
     
     public static final String SETTING_CAPABILITIES_REMOTE = "com.kms.katalon.composer.execution.settings.default.4";
-    
-    // Button ID Dialog
-    public static final int SHOW_PROBLEM_ID = 1;
 }

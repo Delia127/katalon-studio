@@ -314,8 +314,12 @@ public class StringConstants extends GlobalStringConstants {
     // TestSuiteSelectionDialog
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerExecutionMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;
     
+    
     // ProblemsViewDialog
     public static final String MSG_PROBLEMS_VIEW = ComposerExecutionMessageConstants.MSG_PROBLEMS_VIEW;
+    
+    public static final String DIA_PROCEED = ComposerExecutionMessageConstants.DIA_PROCEED;
+    
 
     // LaunchDelegate
     public static final String LAUNCH_CONFIGURATION_TYPE_ID = "com.kms.katalon.composer.execution.scriptLaunchConfiguration";
