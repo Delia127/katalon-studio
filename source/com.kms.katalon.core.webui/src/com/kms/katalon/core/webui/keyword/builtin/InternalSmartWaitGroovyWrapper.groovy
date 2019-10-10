@@ -30,7 +30,7 @@ class InternalSmartWaitGroovyWrapper extends WebUIAbstractKeyword {
         }
         return false;
     }
-    
+
     boolean shouldDoSmartWait(String webUiKeyword) {
         // We can retrieve the list of keywords for which Smart Wait Function will be triggered here
         return webUiKeyword.startsWith("takeScreenshot");

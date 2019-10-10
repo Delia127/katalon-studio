@@ -1,6 +1,5 @@
 package com.kms.katalon.core.webui.common.internal;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
@@ -20,7 +19,7 @@ public class SmartWait {
             js.executeAsyncScript(WAIT_AJAX_SCRIPT);
             js.executeAsyncScript(WAIT_DOM_SCRIPT);
         } catch (Exception e) {
-            KeywordLogger.getInstance(SmartWait.class).logDebug(ExceptionUtils.getFullStackTrace(e));
+         // Ignore exceptions to avoid clogging user's console
         }
     }
 
