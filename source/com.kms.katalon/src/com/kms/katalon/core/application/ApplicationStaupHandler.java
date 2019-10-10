@@ -3,6 +3,7 @@ package com.kms.katalon.core.application;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
@@ -73,7 +74,13 @@ public class ApplicationStaupHandler {
                 }
             });
         }, () -> {
-            ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+            StringBuilder errorMessage = new StringBuilder();
+            ActivationInfoCollector.checkAndMarkActivatedForGUIMode(errorMessage);
+            
+            String error = errorMessage.toString();
+            if (StringUtils.isNotBlank(error)) {
+                LogUtil.printErrorLine(error);
+            }
         });
     }
 

@@ -247,8 +247,14 @@ public class ConsoleMain {
                 LogUtil.printErrorLine(ActivationInfoCollector.EXPIRED_MESSAGE);
                 LauncherManager.getInstance().stopAllLauncher();
             }, () -> {
+                StringBuilder errorMessage = new StringBuilder();
                 String apiKey = localStore.get("apiKey");
-                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, null);
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+
+                String error = errorMessage.toString();
+                if (StringUtils.isNotBlank(error)) {
+                    LogUtil.printErrorLine(error);
+                }
             });
             
             consoleExecutor.execute(project, options);

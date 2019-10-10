@@ -55,6 +55,10 @@ public class ActivationInfoCollector {
     }
     
     public static boolean checkAndMarkActivatedForGUIMode() {
+        return checkAndMarkActivatedForGUIMode(null);
+    }
+    
+    public static boolean checkAndMarkActivatedForGUIMode(StringBuilder errorMessage) {
         try {
             License license = getValidLicense();
             boolean isOffline = isOffline(license);
@@ -64,7 +68,7 @@ public class ActivationInfoCollector {
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                 String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
                 String machineId = MachineUtil.getMachineId();
-                license = activate(email, password, machineId, null);
+                license = activate(email, password, machineId, errorMessage);
             }
 
             if (license != null) {
@@ -93,9 +97,6 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             activated = false;
-            if (errorMessage != null) {
-                errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
-            }
             LogUtil.logError(ex, "Fail to activate for console mode");
         }
 
