@@ -2,8 +2,6 @@ package com.kms.katalon.core.cucumber.keyword;
 
 import java.text.MessageFormat;
 
-import javax.swing.text.html.parser.TagStack
-
 import org.apache.commons.lang3.StringUtils
 import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
@@ -20,10 +18,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.model.RunningMode
 import com.kms.katalon.core.util.internal.PathUtil
 
-import cucumber.api.CucumberOptions
-import cucumber.api.SnippetType
 import cucumber.api.cli.Main;
-import cucumber.runtime.snippets.Snippet
 import groovy.transform.CompileStatic
 
 public class CucumberBuiltinKeywords extends BuiltinKeywords {
@@ -89,7 +84,19 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             return cucumberResult;
         }, flowControl, "Keyword runFeatureFile was failed");
     }
-
+    /**
+     * Runs the given Feature file with <code>featureId</code> by invoking
+     * {@link cucumber.api.cli.Main#run(String[], ClassLoader)}
+     *
+     * @param relativeFilePath
+     * relativeFilePath of Feature file
+     * @param tags
+     * tags of param in Feature file
+     * @return
+     * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
+     *
+     * @since 5.7
+     */
     @Keyword
     public static CucumberRunnerResult runFeatureFileWithTags(String relativeFilePath, String[] tags, FailureHandling flowControl) {
         return KeywordMain.runKeyword({
@@ -121,11 +128,8 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 CucumberReporter.class.getName()
             ]
 
-            if (tags == null) {
-                argv = argv + ["--tags"]
-                argv = argv + ""
-            } else {
-                for (String tag : tags) {
+            if (tags != null) {
+                for (String tag in tags) {
                     argv = argv + ["--tags"]
                     argv = argv + tag
                 }
@@ -160,7 +164,19 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
     public static boolean runFeatureFile(String relativeFilePath) {
         return runFeatureFile(relativeFilePath, RunConfiguration.getDefaultFailureHandling());
     }
-
+    /**
+     * Runs the given Feature file with <code>featureId</code> by invoking
+     * {@link cucumber.api.cli.Main#run(String[], ClassLoader)}
+     *
+     * @param relativeFilePath
+     * relativeFilePath of Feature file
+     * @param tags
+     * tags in Feature file
+     * @return
+     * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
+     *
+     * @since 5.7
+     */
     @Keyword
     public static boolean runFeatureFileWithTags(String relativeFilePath, String[] tags) {
         return runFeatureFileWithTags(relativeFilePath, tags, RunConfiguration.getDefaultFailureHandling());
@@ -221,6 +237,22 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             return cucumberResult;
         }, flowControl, "Keyword runFeatureFolder was failed");
     }
+    /**
+     * Runs the given Feature folder and its nested sub-folder with <code>folderRelativePath</code>
+     * by invoking {@link cucumber.api.cli.Main#run(String[], ClassLoader)}.
+     * </p>
+     * The generated reports will be extracted in the current report folder with the following path: <code>&lt;report_folder&gt;/cucumber_report/&lt;current_time_stamp&gt;<code>
+     *
+     * @param folderRelativePath
+     * folder relative path that starts from the current project location
+     * @param tags
+     * tags that identify that scenario and beginninng th scenario
+     * @param flowControl
+     * an instance {@link FailureHandling} that controls the running flow
+     * @return
+     * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
+     * @since 5.7
+     */
     
     @Keyword
     public static boolean runFeatureFolderWithTags(String folderRelativePath, String[] tags, FailureHandling flowControl) {
@@ -252,15 +284,13 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 CucumberReporter.class.getName()
             ]
 
-            if (tags == null) {
-                argv = argv + ["--tags"]
-                argv = argv + ""
-            } else {
-                for (String tag : tags) {
+            if (tags != null) {
+                for (String tag in tags) {
                     argv = argv + ["--tags"]
                     argv = argv + tag
                 }
             }
+
 
             if (runningMode == RunningMode.CONSOLE) {
                 argv = argv + ["--monochrome"]
@@ -284,6 +314,8 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      *
      * @param folderRelativePath
      * folder relative path that starts from current project location
+     * @param tags
+     * tags that identify that scenario and beginninng th scenario
      * @return
      * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
      * @since 5.7
@@ -292,6 +324,16 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
     public static boolean runFeatureFolder(String folderRelativePath) {
         return runFeatureFolder(folderRelativePath, RunConfiguration.getDefaultFailureHandling())
     }
+    /**
+     * Runs the given Feature folder and its nested sub-folder with <code>folderRelativePath</code>
+     * by invoking {@link cucumber.api.cli.Main#run(String[], ClassLoader)}
+     *
+     * @param folderRelativePath
+     * folder relative path that starts from current project location
+     * @return
+     * an instance of {@link CucumberRunnerResult} that includes status of keyword and report folder location.
+     * @since 5.7
+     */
     
     @Keyword
     public static boolean runFeatureFolderWithTags(String folderRelativePath, String[] tags) {
