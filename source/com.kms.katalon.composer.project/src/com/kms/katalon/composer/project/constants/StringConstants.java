@@ -199,6 +199,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_OPTION_RELOAD_OFFLINE = ComposerProjectMessageConstants.PAGE_OPTION_RELOAD_OFFLINE;
     
     public static final String PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE = ComposerProjectMessageConstants.PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE;
-
-    public static final String QTEST_PLUGIN_ID = "com.katalon.katalon-studio-qtest";
 }

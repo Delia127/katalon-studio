@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
@@ -19,8 +20,6 @@ import com.kms.katalon.util.CryptoUtil;
 
 public class QTestSettingStore {
     private static final String FILE_NAME = "com.kms.katalon.integration.qtest";
-    
-    private static final String QTEST_PLUGIN_ID = "com.katalon.katalon-studio-qtest";
 
     public static final String TOKEN_PROPERTY = "token";
 
@@ -171,7 +170,7 @@ public class QTestSettingStore {
     }
     
     private static boolean isQTestPluginInstalled() {
-        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(QTEST_PLUGIN_ID);
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.QTEST_PLUGIN_ID);
         return plugin != null;
     }
 

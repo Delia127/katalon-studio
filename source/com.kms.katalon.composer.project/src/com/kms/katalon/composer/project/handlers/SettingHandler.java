@@ -52,6 +52,7 @@ import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.exception.MissingProjectSettingPageException;
 import com.kms.katalon.composer.project.preference.CustomKeywordPluginPreferenceNodeDescription;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
@@ -274,7 +275,7 @@ public class SettingHandler {
     }
 
     private void hideQTestIntegrationPageIfQTestPluginNotInstalled(PreferenceManager pm) {
-        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(StringConstants.QTEST_PLUGIN_ID);
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.QTEST_PLUGIN_ID);
         if (plugin != null) {
             return;
         }
