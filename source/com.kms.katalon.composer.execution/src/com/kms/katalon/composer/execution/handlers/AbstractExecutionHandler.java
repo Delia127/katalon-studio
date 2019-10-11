@@ -298,26 +298,32 @@ public abstract class AbstractExecutionHandler {
 
 			case IDialogConstants.PROCEED_ID: {
 				settingDebugUI();
-				if (targetEntity instanceof TestCaseEntity) {
-					TestCaseEntity testCase = (TestCaseEntity) targetEntity;
-					executeTestCase(testCase, launchMode);
-					eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
-				} else if (targetEntity instanceof TestSuiteEntity) {
-					TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
-					executeTestSuite(testSuite, launchMode);
-					eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
-				} else if (targetEntity instanceof SystemFileEntity) {
-					SystemFileEntity feature = (SystemFileEntity) targetEntity;
-					executeFeatureFile(feature, launchMode);
-				}
+				processToRun(launchMode, targetEntity);
 				break;
 			}
 
 			default:
 				return;
 			}
+		} else {
+		    processToRun(launchMode, targetEntity);
 		}
 	}
+
+    private void processToRun(LaunchMode launchMode, Entity targetEntity) throws Exception {
+        if (targetEntity instanceof TestCaseEntity) {
+        	TestCaseEntity testCase = (TestCaseEntity) targetEntity;
+        	executeTestCase(testCase, launchMode);
+        	eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
+        } else if (targetEntity instanceof TestSuiteEntity) {
+        	TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
+        	executeTestSuite(testSuite, launchMode);
+        	eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
+        } else if (targetEntity instanceof SystemFileEntity) {
+        	SystemFileEntity feature = (SystemFileEntity) targetEntity;
+        	executeFeatureFile(feature, launchMode);
+        }
+    }
 
     public void settingDebugUI(){
         ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.DEBUG_UI_ID);
