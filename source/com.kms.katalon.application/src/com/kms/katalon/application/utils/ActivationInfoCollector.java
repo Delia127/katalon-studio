@@ -482,6 +482,11 @@ public class ActivationInfoCollector {
         License license = ActivationInfoCollector.parseLicense(jwsCode);
         return license;
     }
+    
+    public static LicenseType getLicenseType() {
+        String licenseTypeValue = ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE);
+        return LicenseType.valueOf(licenseTypeValue);
+    }
 
     private static License getLastUsedLicense() {
         try {
