@@ -154,6 +154,7 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_SCREENSHOT);
         properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_LOG);
         properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_ENCRYPTION_ENABLED);
         try {
             removeProperties(properties);
         } catch (IOException e) {
