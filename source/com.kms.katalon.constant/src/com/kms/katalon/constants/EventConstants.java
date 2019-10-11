@@ -409,4 +409,6 @@ public class EventConstants {
     public static final String BASIC_REPORT_PLUGIN_INSTALLED = "PLUGIN/BASIC_REPORT_INSTALLED";
 
     public static final String REPORT_EXPORT_PROVIDERS_COLLECTED = "PLUGIN/EXPORT_PROVIDER_COLLECTED";
+    
+    public static final String PLUGIN_PRE_DEACTIVATION = "KATALON_PLUGIN/BEFORE_DEACTIVATION";
 };

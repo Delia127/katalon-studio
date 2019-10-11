@@ -354,4 +354,7 @@ public interface IdConstants {
     public static final String SETTING_CAPABILITIES_WINDOWS = "com.kms.katalon.composer.execution.settings.default.5";
     
     public static final String SETTING_CAPABILITIES_REMOTE = "com.kms.katalon.composer.execution.settings.default.4";
+    
+    // QTest Plugin
+    public static final String QTEST_PLUGIN_ID = "com.katalon.katalon-studio-qtest";
 }
