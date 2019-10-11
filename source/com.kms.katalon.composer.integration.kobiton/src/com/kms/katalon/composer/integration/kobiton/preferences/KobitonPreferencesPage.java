@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
@@ -38,7 +37,6 @@ import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
 import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
 import com.kms.katalon.integration.kobiton.exceptions.KobitonApiException;
-import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
@@ -67,8 +65,6 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
 
     private Composite serverAndApiKeyComposite;
     
-    private boolean isKobitonPluginInstalled;
-    
     public KobitonPreferencesPage() {
         setPreferenceStore(PreferenceStoreManager.getPreferenceStore(KobitonPreferenceConstants.KOBITON_QUALIFIER));
     }
@@ -76,18 +72,8 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
     @Override
     protected Control createContents(Composite parent) {
         composite = createComposite(parent, 2, 1, GridData.FILL_HORIZONTAL);
-        isKobitonPluginInstalled = KobitonPreferencesProvider.isKobitonPluginInstalled();
-        if(!isKobitonPluginInstalled) {
-            Label lblInformation = new Label(composite, SWT.NONE);
-            lblInformation.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_YELLOW));
-            lblInformation.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-            lblInformation.setText("Kobiton plugin is not installed yet. Please install the plugin to start using Kobiton integration");
-            lblInformation.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        }
-        
         enableKobitonIntegration = new BooleanFieldEditor(KobitonPreferenceConstants.KOBITON_INTEGRATION_ENABLE,
                 ComposerIntegrationKobitonMessageConstants.LBL_ENABLE_KOBITON_INTEGRATION, composite);
-        enableKobitonIntegration.setEnabled(isKobitonPluginInstalled, composite);
         addField(enableKobitonIntegration);
         authenticateGroup = createGroup(composite, ComposerIntegrationKobitonMessageConstants.LBL_AUTHENTICATE_GROUP,
                 2, 2, GridData.FILL_HORIZONTAL);
@@ -264,8 +250,7 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
     }
 
     private void changeEnabledState() {
-        boolean isKobitonIntegrated = isKobitonPluginInstalled 
-                && enableKobitonIntegration.getBooleanValue();
+        boolean isKobitonIntegrated = enableKobitonIntegration.getBooleanValue();
         connectButton.setEnabled(isKobitonIntegrated);
         passwordFieldEditor.setEnabled(isKobitonIntegrated, authenticateGroup);
         passwordFieldEditor.getLabelControl(authenticateGroup).setEnabled(true);
