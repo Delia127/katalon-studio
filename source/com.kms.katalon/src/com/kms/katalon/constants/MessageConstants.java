@@ -546,7 +546,7 @@ public class MessageConstants extends NLS {
 
     public static String About_BTN_OK;
 
-    public static String About_LBL_TRAIL;
+    public static String About_LBL_TRIAL;
 
     static {
         // initialize resource bundle

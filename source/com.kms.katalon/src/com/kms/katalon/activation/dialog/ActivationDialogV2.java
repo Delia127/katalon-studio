@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.validator.UrlValidator;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -350,6 +350,9 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
 
     private boolean validateServer() {
+//        String[] schemes = {"http","https"};
+//        UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+//        return urlValidator.isValid(txtServerUrl.getText());
         return true;
     }
 
