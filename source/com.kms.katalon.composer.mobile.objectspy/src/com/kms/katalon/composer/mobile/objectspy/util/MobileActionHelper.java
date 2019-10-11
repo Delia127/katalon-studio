@@ -108,6 +108,20 @@ public class MobileActionHelper {
         longPressAction.release().perform();
     }
 
+    @SuppressWarnings("rawtypes")
+    public void swipe(int startX, int startY, int endX, int endY) throws Exception {
+        String context = driver.getContext();
+        try {
+            internalSwitchToNativeContext(driver);
+            TouchAction swipe = new TouchAction(driver).press(PointOption.point(startX, startY))
+                    .waitAction(WaitOptions.waitOptions(Duration.ofMillis(500L)))
+                    .moveTo(PointOption.point(endX, endY)).release();
+    swipe.perform();
+        } finally {
+            driver.context(context);
+        }
+    }
+
     public void setText(TestObject to, String text) throws Exception {
         KeywordHelper.checkTestObjectParameter(to);
         WebElement element = findElement(to, timeout * 1000);
