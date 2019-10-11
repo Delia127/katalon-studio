@@ -48,7 +48,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             Trackings.trackOpenFirstTime();
         }
         if (!isActivated) {
-            if (checkActivationDialog()) {
+            if (true) {
                 showFunctionsIntroductionForTheFirstTime();
                 // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
                 return true;
