@@ -35,13 +35,11 @@ import com.kms.katalon.util.CryptoUtil;
 public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
-    
+
     public static final String EXPIRED_MESSAGE = "The license of this working session has expired.";
 
     private static boolean activated = false;
-    
-    private static boolean isStartSession;
-    
+
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
@@ -56,10 +54,14 @@ public class ActivationInfoCollector {
     public static boolean isActivated() {
         return activated;
     }
-    
+
     public static boolean checkAndMarkActivatedForGUIMode() {
+        return checkAndMarkActivatedForGUIMode(new StringBuilder());
+    }
+
+    public static boolean checkAndMarkActivatedForGUIMode(StringBuilder errorMessage) {
         try {
-            License license = getLicense();
+            License license = getValidLicense();
             boolean isOffline = isOffline(license);
 
             if (!isOffline) {
@@ -67,7 +69,7 @@ public class ActivationInfoCollector {
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                 String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
                 String machineId = MachineUtil.getMachineId();
-                license = activate(email, password, machineId, new StringBuilder());
+                license = activate(email, password, machineId, errorMessage);
             }
 
             if (license != null) {
@@ -79,7 +81,7 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             activated = false;
-            LogUtil.logError(ex);
+            LogUtil.logError(ex, "Fail to activate for GUI mode");
         }
 
         return activated;
@@ -95,10 +97,10 @@ public class ActivationInfoCollector {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.EXPIRATION_DATE, dateWithFormatter, true);
     }
 
-    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey) {
+    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, StringBuilder errorMessage) {
         try {
             String machineId = MachineUtil.getMachineId();
-            License license = activate(null, apiKey, machineId, new StringBuilder());
+            License license = activate(null, apiKey, machineId, errorMessage);
 
             if (license != null) {
                 enableFeatures(license);
@@ -110,7 +112,7 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             activated = false;
-            LogUtil.logError(ex);
+            LogUtil.logError(ex, "Fail to activate for console mode");
         }
 
         return activated;
@@ -186,7 +188,7 @@ public class ActivationInfoCollector {
         traits.addProperty("os_type", osType);
         traits.addProperty("kat_version", katVersion);
         traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
-        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
+        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.USER_SESSION_ID);
         traits.addProperty(UsagePropertyConstant.PROPERTY_USER_KEY, KatalonApplication.USER_KEY);
         return traits;
     }
@@ -201,7 +203,8 @@ public class ActivationInfoCollector {
         return host;
     }
 
-    public static License activate(String serverUrl, String userName, String password, String machineId, StringBuilder errorMessage) {
+    public static License activate(String serverUrl, String userName, String password, String machineId,
+            StringBuilder errorMessage) {
         ApplicationInfo.setTestOpsServer(serverUrl);
         return activate(userName, password, machineId, errorMessage);
     }
@@ -234,6 +237,7 @@ public class ActivationInfoCollector {
                 }
             }
         }
+
         return null;
     }
 
@@ -257,7 +261,7 @@ public class ActivationInfoCollector {
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
         String hostname = getHostname();
         String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName,
-                KatalonApplication.SESSION_ID, hostname, machineId);
+                KatalonApplication.USER_SESSION_ID, hostname, machineId);
         return license;
     }
 
@@ -285,8 +289,10 @@ public class ActivationInfoCollector {
                 return activated;
             }
         } catch (Exception ex) {
-            LogUtil.logError(ex);
-            errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+            LogUtil.logError(ex, "Fail to activate offline");
+            if (errorMessage != null) {
+                errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+            }
         }
 
         activated = false;
@@ -294,7 +300,21 @@ public class ActivationInfoCollector {
     }
 
     private static boolean isValidLicense(License license) {
-        return hasValidMachineId(license) && !isExpired(license);
+        boolean isValidMachineId = hasValidMachineId(license);
+        boolean isExpired = isExpired(license);
+        if (isValidMachineId && !isExpired) {
+            return true;
+        } else {
+            if (!isValidMachineId) {
+                LogUtil.logError("Invalid machine id " + license.getMachineId());
+            }
+
+            if (isExpired) {
+                LogUtil.logError("License expired");
+            }
+
+            return false;
+        }
     }
 
     private static boolean hasValidMachineId(License license) {
@@ -310,7 +330,7 @@ public class ActivationInfoCollector {
     private static boolean isExpired(License license) {
         Date currentDate = new Date();
         return currentDate.after(license.getExpirationDate());
-        
+
     }
 
     public static boolean isReachRenewTime(License license) {
@@ -334,11 +354,14 @@ public class ActivationInfoCollector {
         IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         featureService.clear();
     }
-    
+
     public static void releaseLicense() throws Exception {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         if (StringUtils.isNotBlank(jwsCode)) {
             License license = parseLicense(jwsCode);
+            if (license == null) {
+                license = getLastUsedLicense();
+            }
             boolean isOffline = isOffline(license);
             if (!isOffline) {
                 String serverUrl = ApplicationInfo.getTestOpsServer();
@@ -358,7 +381,7 @@ public class ActivationInfoCollector {
                        serverUrl,
                        machineId,
                        ksVersion,
-                       KatalonApplication.SESSION_ID,
+                       KatalonApplication.USER_SESSION_ID,
                        orgId,
                        token
                );
@@ -366,7 +389,8 @@ public class ActivationInfoCollector {
         }
     }
 
-    public static void markActivated(String userName, String password, String organization, License license) throws Exception {
+    public static void markActivated(String userName, String password, String organization, License license)
+            throws Exception {
         activated = true;
         enableFeatures(license);
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
@@ -382,7 +406,6 @@ public class ActivationInfoCollector {
     private static void markActivatedLicenseCode(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
-        isStartSession = true;
     }
 
     private static void setActivatedVal() throws Exception {
@@ -411,23 +434,25 @@ public class ActivationInfoCollector {
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
-                License license = getLicense();
-                
+                License license = getValidLicense();
                 if (license == null) {
-                    if (isStartSession) {
-                        expiredHandler.run();
-                    }
-                } else {
-                    boolean isOffline = isOffline(license);
-                    if (!isOffline) {
-                        if (ActivationInfoCollector.isReachRenewTime(license)) {
-                            try {
-                                renewHandler.run();
-                            } catch (Exception e) {
-                                LogUtil.logError(e, "Error when renew Katalon Studio license");
-                            }
+                    license = getLastUsedLicense();
+                }
+                boolean isOffline = isOffline(license);
+
+                if (!isOffline) {
+                    if (license != null && isReachRenewTime(license)) {
+                        try {
+                            renewHandler.run();
+                            license = getValidLicense();
+                        } catch (Exception e) {
+                            LogUtil.logError(e, "Can't renew license");
                         }
                     }
+                }
+
+                if (license == null || !isValidLicense(license)) {
+                    expiredHandler.run();
                 }
             } catch (Exception e) {
                 LogUtil.logError(e, "Error when check license");
@@ -436,12 +461,11 @@ public class ActivationInfoCollector {
     }
 
     public static void postEndSession() {
-        isStartSession = false;
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
         }
     }
-    
+
     public static boolean isOffline(License license) {
         boolean isOffline = false;
         if (license != null) {
@@ -453,7 +477,7 @@ public class ActivationInfoCollector {
         return isOffline;
     }
 
-    private static License getLicense() throws Exception {
+    private static License getValidLicense() throws Exception {
         String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         License license = ActivationInfoCollector.parseLicense(jwsCode);
         return license;
@@ -462,5 +486,20 @@ public class ActivationInfoCollector {
     public static LicenseType getLicenseType() {
         String licenseTypeValue = ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE);
         return LicenseType.valueOf(licenseTypeValue);
+    }
+
+    private static License getLastUsedLicense() {
+        try {
+            String jwtCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+            if (jwtCode != null && !jwtCode.isEmpty()) {
+                License license = LicenseService.getInstance().parseJws(jwtCode);
+                if (hasValidMachineId(license)) {
+                    return license;
+                }
+            }
+        } catch (Exception ex) {
+            LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+        }
+        return null;
     }
 }

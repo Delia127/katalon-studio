@@ -25,6 +25,8 @@ public class KatalonApplication {
     private static final String MAC_ADDRESS;
 
     public static final String USER_KEY;
+    
+    public static String USER_SESSION_ID;
 
     static {
         SESSION_ID = UUID.randomUUID().toString();
@@ -32,6 +34,12 @@ public class KatalonApplication {
         MAC_ADDRESS = getMacAddress();
 
         USER_KEY = hashMacAndHostName();
+        
+        USER_SESSION_ID = UUID.randomUUID().toString();
+    }
+    
+    public static void refreshUserSession() {
+        USER_SESSION_ID = UUID.randomUUID().toString();
     }
     
     private static String hashMacAndHostName() {

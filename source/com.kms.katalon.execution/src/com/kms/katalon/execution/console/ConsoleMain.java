@@ -37,9 +37,7 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
-import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
-import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -149,33 +147,45 @@ public class ConsoleMain {
             LogUtil.logInfo("Activating...");
             
             if (!ActivationInfoCollector.isActivated()) {
-                //read license file and activate
                 boolean isActivated = false;
-                String licenseFile = null;
-                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
-                if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
-                    licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-                } else if (environmentVariable != null) {
-                    licenseFile = environmentVariable;
-                } else {
-                    licenseFile = readLicenseFromDefaultLocation();
-                }
+                
+                String licenseFile = getLicenseFilePath(options);
                 if (!StringUtils.isBlank(licenseFile)) {
+                    LogUtil.logInfo("License file path: " + licenseFile);
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
                     StringBuilder errorMessage = new StringBuilder();
+                    
+                    LogUtil.logInfo("Start activating offline");
                     isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    
                     if (!isActivated) {
-                        LogUtil.printErrorLine("Invalid license");
-                        throw new InvalidLicenseException("Invalid license");
+                        LogUtil.printErrorLine("Fail to activate offline");
+                        
+                        String error = errorMessage.toString();
+                        if (StringUtils.isNotBlank(error)) {
+                            LogUtil.printErrorLine(error);
+                        }
                     }
-                } else {
-                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue);
                 }
                 
-                
+                if (!isActivated) {
+                    LogUtil.logInfo("Start activating online for console mode");
+                    StringBuilder errorMessage = new StringBuilder();
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
+                    
+                    if (!isActivated) {
+                        LogUtil.printErrorLine("Fail to activate online for console mode");
+                        
+                        String error = errorMessage.toString();
+                        if (StringUtils.isNotBlank(error)) {
+                            LogUtil.printErrorLine(error);
+                        }
+                    }
+                }
+
                 if (!isActivated) {
                     LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
-                    throw new ActivationException("Failed to activate");
+                    return LauncherResult.RETURN_CODE_FAILED_AND_ERROR;
                 }
             }
 
@@ -234,11 +244,17 @@ public class ConsoleMain {
             Map<String, String> localStore = new HashMap<>();
             localStore.put("apiKey", apiKeyValue);
             ActivationInfoCollector.scheduleCheckLicense(() -> {
-                LogUtil.logInfo(ActivationInfoCollector.EXPIRED_MESSAGE);
+                LogUtil.printErrorLine(ActivationInfoCollector.EXPIRED_MESSAGE);
                 LauncherManager.getInstance().stopAllLauncher();
             }, () -> {
+                StringBuilder errorMessage = new StringBuilder();
                 String apiKey = localStore.get("apiKey");
-                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey);
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+
+                String error = errorMessage.toString();
+                if (StringUtils.isNotBlank(error)) {
+                    LogUtil.printErrorLine(error);
+                }
             });
             
             consoleExecutor.execute(project, options);
@@ -262,6 +278,22 @@ public class ConsoleMain {
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
         }
+    }
+    
+    private static String getLicenseFilePath(OptionSet options) {
+        String licenseFile = null;
+        String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
+        if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
+            licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
+            LogUtil.logInfo("Get license file from options " + licenseFile);
+        } else if (environmentVariable != null) {
+            licenseFile = environmentVariable;
+            LogUtil.logInfo("Get license file from environment variables " + licenseFile);
+        } else {
+            licenseFile = readLicenseFromDefaultLocation();
+            LogUtil.logInfo("Get default license file" + licenseFile);
+        }
+        return licenseFile;
     }
     
     private static String readLicenseFromDefaultLocation() {
