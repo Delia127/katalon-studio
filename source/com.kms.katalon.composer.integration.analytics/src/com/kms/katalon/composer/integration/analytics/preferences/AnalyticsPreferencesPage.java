@@ -436,7 +436,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     analyticsSettingStore.setProject(projects.get(cbbProjects.getSelectionIndex()));
                 }
             }
-            analyticsSettingStore.removeProperty();
+            analyticsSettingStore.removeProperties();
 
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
             eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
