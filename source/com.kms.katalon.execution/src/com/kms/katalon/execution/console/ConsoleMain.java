@@ -189,7 +189,6 @@ public class ConsoleMain {
                 }
             }
 
-            
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
@@ -208,11 +207,11 @@ public class ConsoleMain {
             if (!isCliEnabled) {
                 LogUtil.printErrorLine("You don't have permission to use Katalon Studio in console mode.");
                 return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
-            } 
+            }
 
             ProjectEntity project = findProject(options);
-//          Trackings.trackOpenApplication(project,
-//                  !ActivationInfoCollector.isActivated(), "console");
+            // Trackings.trackOpenApplication(project,
+            // !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
             
             if (apiKeyValue != null) {
@@ -225,14 +224,14 @@ public class ConsoleMain {
             acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
 
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
-            if (options.has(INSTALL_PLUGIN_OPTION)){
+            if (options.has(INSTALL_PLUGIN_OPTION)) {
                 installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                     .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
             
-//            installBasicReportPluginIfNotAvailable();
+            // installBasicReportPluginIfNotAvailable();
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
@@ -243,8 +242,10 @@ public class ConsoleMain {
 
             Map<String, String> localStore = new HashMap<>();
             localStore.put("apiKey", apiKeyValue);
+            localStore.put("lastActivateErrorMessage", "");
             ActivationInfoCollector.scheduleCheckLicense(() -> {
-                LogUtil.printErrorLine(ActivationInfoCollector.EXPIRED_MESSAGE);
+                String lastActivateErrorMessage = localStore.get("lastActivateErrorMessage");
+                LogUtil.printErrorLine(ActivationInfoCollector.EXPIRED_MESSAGE + lastActivateErrorMessage);
                 LauncherManager.getInstance().stopAllLauncher();
             }, () -> {
                 StringBuilder errorMessage = new StringBuilder();
@@ -254,6 +255,7 @@ public class ConsoleMain {
                 String error = errorMessage.toString();
                 if (StringUtils.isNotBlank(error)) {
                     LogUtil.printErrorLine(error);
+                    localStore.put("lastActivateErrorMessage", error);
                 }
             });
             

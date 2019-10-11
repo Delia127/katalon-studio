@@ -36,7 +36,7 @@ public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
-    public static final String EXPIRED_MESSAGE = "The license of this working session has expired.";
+    public static final String EXPIRED_MESSAGE = "This session has been terminated. \n Reason: ";
 
     private static boolean activated = false;
 
