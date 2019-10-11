@@ -6,6 +6,9 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
@@ -35,8 +38,7 @@ public class PropertyValueEditingSupport extends EditingSupport {
     @Override
     protected CellEditor getCellEditor(Object element) {
         if (isHeaderField) {
-            return new HttpHeaderValueCellEditor(element,
-                    HttpHeaderConstants.PRE_DEFINDED_HTTP_HEADER_FIELD_VALUES);
+            return new HttpHeaderValueCellEditor(element, HttpHeaderConstants.PRE_DEFINDED_HTTP_HEADER_FIELD_VALUES);
         }
         return new TextCellEditor(viewer.getTable());
     }
@@ -67,25 +69,33 @@ public class PropertyValueEditingSupport extends EditingSupport {
             }
         }
     }
-    
+
     private class HttpHeaderValueCellEditor extends StringComboBoxCellEditor {
-        
+
         private Object element;
 
         public HttpHeaderValueCellEditor(Object element, String[] items) {
             super(viewer.getTable(), items);
             this.element = element;
+            CCombo combo = (CCombo) getControl();
+            combo.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    String text = combo.getText();
+                    PropertyValueEditingSupport.this.setValue(element, text);
+                }
+            });
         }
-        
+
         @Override
         public AutoCompleteField getAutoCompleteField(String[] newItems) {
-            return  new AutoCompleteField(getControl(), new HeaderValueComboContentAdapter(), newItems); 
+            return new AutoCompleteField(getControl(), new HeaderValueComboContentAdapter(), newItems);
         }
 
         private class HeaderValueComboContentAdapter extends CComboContentAdapter {
             @Override
-            public void setControlContents(Control control, String text,
-                    int cursorPosition) {
+            public void setControlContents(Control control, String text, int cursorPosition) {
                 super.setControlContents(control, text, cursorPosition);
                 PropertyValueEditingSupport.this.setValue(element, text);
             }
