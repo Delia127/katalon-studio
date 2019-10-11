@@ -4,8 +4,13 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.jface.fieldassist.AutoCompleteField;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
@@ -75,6 +80,15 @@ public class PropertyNameEditingSupport extends EditingSupport {
         public HttpHeaderNameCellEditor(Object element, String[] items) {
             super(viewer.getTable(), items);
             this.element = element;
+            CCombo combo = (CCombo) getControl();
+            combo.addSelectionListener(new SelectionAdapter() {
+               
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                   String text = combo.getText();
+                   PropertyNameEditingSupport.this.setValue(element, text);
+                }
+            });
         }
         
         @Override
@@ -88,8 +102,19 @@ public class PropertyNameEditingSupport extends EditingSupport {
                     int cursorPosition) {
                 super.setControlContents(control, text, cursorPosition);
                 PropertyNameEditingSupport.this.setValue(element, text);
+                
             }
         }
+        
+//        @Override
+//        protected void keyReleaseOccured(KeyEvent keyEvent) {
+//            CCombo combo = (CCombo) keyEvent.getSource();
+//            String text = combo.getText();
+//            PropertyNameEditingSupport.this.setValue(element, text);
+//            super.keyReleaseOccured(keyEvent);
+//        }
+        
+        
     }
 
 }
