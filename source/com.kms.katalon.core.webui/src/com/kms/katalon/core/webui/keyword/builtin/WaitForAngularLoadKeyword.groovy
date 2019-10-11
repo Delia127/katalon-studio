@@ -68,27 +68,38 @@ public class WaitForAngularLoadKeyword extends WebUIAbstractKeyword {
             WebDriverWait wait = new WebDriverWait(webDriver, WebUiCommonHelper.checkTimeout(timeout))
             ExpectedCondition jQueryLoadExpectation = new ExpectedCondition() {
                         def Boolean apply(WebDriver driver) {
-                            String waitForAngularJSLoaded = '''
+                            String waitForAngularJSAllRequestsEnded = '''
                                 return document.readyState === 'complete'
                                     && window.angular.element(document.body)
                                         .injector()
                                         .get('$http')
                                         .pendingRequests.length === 0
                             '''
-                            String waitForAngularLoaded = '''
+                            String waitForAngularJSStabled = '''
+                                var callback = arguments[arguments.length - 1];
+                                try {
+                                    var testability = window.angular.getTestability(document);
+                                    testability.whenStable(() => callback(true));
+                                } catch (error) {
+                                    callback(null)
+                                }
+                            '''
+                            String waitForAngularStabled = '''
                                 return document.readyState === 'complete'
                                     && window.getAllAngularTestabilities().findIndex(node => !node.isStable()) === -1
                             '''
                             
-                            String angularReadyScript = '';
                             if (isAngularJS) {
-                                angularReadyScript = waitForAngularJSLoaded
+                                Boolean isAllRequestsEnded = jsExec.executeScript(waitForAngularJSAllRequestsEnded)
+                                Boolean isAngularStabled = jsExec.executeAsyncScript(waitForAngularJSStabled)
+                                return isAllRequestsEnded && isAngularStabled
                             }
                             if (isAngular) {
-                                angularReadyScript = waitForAngularLoaded
+                                Boolean isAngularStabled = jsExec.executeScript(waitForAngularStabled)
+                                return isAngularStabled
                             }
                             
-                            return jsExec.executeScript(angularReadyScript)
+                            return false
                         }
                     }
 
