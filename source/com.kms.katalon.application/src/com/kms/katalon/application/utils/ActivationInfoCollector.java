@@ -457,7 +457,7 @@ public class ActivationInfoCollector {
             } catch (Exception e) {
                 LogUtil.logError(e, "Error when check license");
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 60, TimeUnit.SECONDS);
     }
 
     public static void postEndSession() {
