@@ -82,15 +82,8 @@ public class OpenKobitonRecoderHandler {
             if (this.activeShell == null) {
                 this.activeShell = activeShell;
             }
-            
-            boolean isKobitonPluginEnabled = KobitonPreferencesProvider.isKobitonPluginInstalled();
-            if(!isKobitonPluginEnabled) {
-                MessageDialog.openInformation(activeShell, StringConstants.INFO,
-                        "Kobiton plugin is not installed yet. Please install the plugin to start using Kobiton integration");
-                return false;
-            }
 
-            boolean isIntegrationEnabled = KobitonPreferencesProvider.isKobitonIntegrationAvailable();
+            boolean isIntegrationEnabled = KobitonPreferencesProvider.isKobitonIntegrationEnabled();
             if (!isIntegrationEnabled) {
                 boolean confirmToConfigureKobiton = MessageDialog.openConfirm(activeShell, StringConstants.INFO,
                         "Kobiton integration has not been enabled yet. Would you like to enable now?");
