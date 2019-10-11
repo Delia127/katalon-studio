@@ -2,6 +2,8 @@ package com.kms.katalon.integration.analytics.setting;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -141,5 +143,21 @@ public class AnalyticsSettingStore extends BundleSettingStore {
             }
         }
         return organization;
+    }
+    
+    public void removeProperty() {
+        List<String> properties = new ArrayList<>();
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_AUTO_SUBMIT);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_SCREENSHOT);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_LOG);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS);
+        try {
+            removeProperties(properties);
+        } catch (IOException e) {
+            //ignore
+        }
     }
 }
