@@ -49,6 +49,8 @@ public interface IdConstants {
 
     public static final String IDE_CONSOLE_LOG_PART_ID = "com.kms.katalon.partstack.console.log";
 
+    public static final String IDE_PROBLEM_VIEW_PART_ID = "org.eclipse.ui.views.ProblemView";
+
     public static final String IDE_SEARCH_PART_ID = "org.eclipse.search.ui.views.SearchView";
 
     public static final String ECLIPSE_EXPRESSION_PART_ID = "org.eclipse.debug.ui.ExpressionView";
@@ -246,6 +248,8 @@ public interface IdConstants {
     public static final String COMPOSER_EXECUTION_BUNDLE_ID = "com.kms.katalon.composer.execution";
 
     public static final String WORKBENCH_WINDOW_ID = "org.eclipse.ui.workbench";
+
+    public static final String DEBUG_UI_ID = "org.eclipse.debug.ui";
 
     public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
     
