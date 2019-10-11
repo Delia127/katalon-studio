@@ -151,7 +151,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 KeywordMain.stepFailed(MessageFormat.format("Feature file ''{0}'' was failed", relativeFilePath), flowControl)
             }
             return cucumberResult;
-        }, flowControl, "Keyword runFeatureFile was failed");
+        }, flowControl, "Keyword runFeatureFileWithTags was failed");
     }
     /**
      * Runs the given Feature file with <code>featureId</code> by invoking
@@ -165,7 +165,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @since 5.7
      */
     @Keyword
-    public static boolean runFeatureFile(String relativeFilePath) {
+    public static CucumberRunnerResult runFeatureFile(String relativeFilePath) {
         return runFeatureFile(relativeFilePath, RunConfiguration.getDefaultFailureHandling());
     }
     /**
@@ -182,7 +182,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @since 7.0.0
      */
     @Keyword
-    public static boolean runFeatureFileWithTags(String relativeFilePath, String[] tags) {
+    public static CucumberRunnerResult runFeatureFileWithTags(String relativeFilePath, String[] tags) {
         return runFeatureFileWithTags(relativeFilePath, tags, RunConfiguration.getDefaultFailureHandling());
     }
 
@@ -201,10 +201,10 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @since 5.7
      */
     @Keyword
-    public static boolean runFeatureFolder(String folderRelativePath, FailureHandling flowControl) {
+    public static CucumberRunnerResult runFeatureFolder(String folderRelativePath, FailureHandling flowControl) {
         return KeywordMain.runKeyword({
             if (StringUtils.isEmpty(folderRelativePath)) {
-                throw new IllegalArgumentException("folderRelativePath param must not be null")
+                throw new IllegalArgumentException("folderRelativePath param must not be null or empty")
             }
             String reportDir = RunConfiguration.getReportFolder() + "/cucumber_report/" + System.currentTimeMillis()
             String projectDir = RunConfiguration.getProjectDir()
@@ -259,10 +259,10 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      */
     
     @Keyword
-    public static boolean runFeatureFolderWithTags(String folderRelativePath, String[] tags, FailureHandling flowControl) {
+    public static CucumberRunnerResult runFeatureFolderWithTags(String folderRelativePath, String[] tags, FailureHandling flowControl) {
         return KeywordMain.runKeyword({
             if (StringUtils.isEmpty(folderRelativePath)) {
-                throw new IllegalArgumentException("folderRelativePath param must not be null")
+                throw new IllegalArgumentException("folderRelativePath param must not be null or empty")
             }
             String reportDir = RunConfiguration.getReportFolder() + "/cucumber_report/" + System.currentTimeMillis()
             String projectDir = RunConfiguration.getProjectDir()
@@ -307,7 +307,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 KeywordMain.stepFailed(MessageFormat.format("Run feature folder ''{0}'' failed", folderRelativePath));
             }
             return cucumberResult;
-        }, flowControl, "Keyword runFeatureFolder was failed");
+        }, flowControl, "Keyword runFeatureFolderWithTags was failed");
     }
 
     /**
@@ -321,7 +321,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @since 5.7
      */
     @Keyword
-    public static boolean runFeatureFolder(String folderRelativePath) {
+    public static CucumberRunnerResult runFeatureFolder(String folderRelativePath) {
         return runFeatureFolder(folderRelativePath, RunConfiguration.getDefaultFailureHandling())
     }
     /**
@@ -338,7 +338,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      */
     
     @Keyword
-    public static boolean runFeatureFolderWithTags(String folderRelativePath, String[] tags) {
+    public static CucumberRunnerResult runFeatureFolderWithTags(String folderRelativePath, String[] tags) {
         return runFeatureFolderWithTags(folderRelativePath, tags, RunConfiguration.getDefaultFailureHandling())
     }
 
