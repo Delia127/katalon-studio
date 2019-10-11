@@ -26,6 +26,8 @@ public class ApplicationStaupHandler {
 
     private static ExpiredLicenseDialog expiredDialog;
 
+    private static String lastActivateErrorMessage;
+
     public static boolean checkActivation(boolean isStartup) throws Exception {
         KatalonApplication.refreshUserSession();
         eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
@@ -65,10 +67,12 @@ public class ApplicationStaupHandler {
 
     public static void scheduleCheckLicense() {
         expiredDialog = null;
+        lastActivateErrorMessage = "";
         ActivationInfoCollector.scheduleCheckLicense(() -> {
             UISynchronizeService.syncExec(() -> {
                 if (expiredDialog == null) {
-                    expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
+                    expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell(),
+                            lastActivateErrorMessage);
                     expiredDialog.open();
                     closeKSAfter(300);
                 }
@@ -76,9 +80,10 @@ public class ApplicationStaupHandler {
         }, () -> {
             StringBuilder errorMessage = new StringBuilder();
             ActivationInfoCollector.checkAndMarkActivatedForGUIMode(errorMessage);
-            
+
             String error = errorMessage.toString();
             if (StringUtils.isNotBlank(error)) {
+                lastActivateErrorMessage = error;
                 LogUtil.printErrorLine(error);
             }
         });
