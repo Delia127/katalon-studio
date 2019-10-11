@@ -145,7 +145,7 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         return organization;
     }
     
-    public void removeProperty() {
+    public void removeProperties() {
         List<String> properties = new ArrayList<>();
         properties.add(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT);
         properties.add(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL);
