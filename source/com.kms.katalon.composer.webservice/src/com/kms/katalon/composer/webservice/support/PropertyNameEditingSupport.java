@@ -9,9 +9,12 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
@@ -80,13 +83,22 @@ public class PropertyNameEditingSupport extends EditingSupport {
         public HttpHeaderNameCellEditor(Object element, String[] items) {
             super(viewer.getTable(), items);
             this.element = element;
+
             CCombo combo = (CCombo) getControl();
             combo.addSelectionListener(new SelectionAdapter() {
-               
+
                 @Override
                 public void widgetSelected(SelectionEvent event) {
-                   String text = combo.getText();
-                   PropertyNameEditingSupport.this.setValue(element, text);
+                    String text = combo.getText();
+                    PropertyNameEditingSupport.this.setValue(element, text);
+                }
+            });
+            combo.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    String text = combo.getText();
+                    PropertyNameEditingSupport.this.setValue(element, text);
                 }
             });
         }
