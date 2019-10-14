@@ -40,7 +40,8 @@ public class PropertyValueEditingSupport extends EditingSupport {
     @Override
     protected CellEditor getCellEditor(Object element) {
         if (isHeaderField) {
-            return new HttpHeaderValueCellEditor(element, HttpHeaderConstants.PRE_DEFINDED_HTTP_HEADER_FIELD_VALUES);
+            return new HttpHeaderValueCellEditor(element,
+                    HttpHeaderConstants.PRE_DEFINDED_HTTP_HEADER_FIELD_VALUES);
         }
         return new TextCellEditor(viewer.getTable());
     }
@@ -71,9 +72,7 @@ public class PropertyValueEditingSupport extends EditingSupport {
             }
         }
     }
-
     private class HttpHeaderValueCellEditor extends StringComboBoxCellEditor {
-
         private Object element;
 
         public HttpHeaderValueCellEditor(Object element, String[] items) {
@@ -97,15 +96,15 @@ public class PropertyValueEditingSupport extends EditingSupport {
                 }
             });
         }
-
         @Override
         public AutoCompleteField getAutoCompleteField(String[] newItems) {
-            return new AutoCompleteField(getControl(), new HeaderValueComboContentAdapter(), newItems);
+            return  new AutoCompleteField(getControl(), new HeaderValueComboContentAdapter(), newItems); 
         }
 
         private class HeaderValueComboContentAdapter extends CComboContentAdapter {
             @Override
-            public void setControlContents(Control control, String text, int cursorPosition) {
+            public void setControlContents(Control control, String text,
+                    int cursorPosition) {
                 super.setControlContents(control, text, cursorPosition);
                 PropertyValueEditingSupport.this.setValue(element, text);
             }
