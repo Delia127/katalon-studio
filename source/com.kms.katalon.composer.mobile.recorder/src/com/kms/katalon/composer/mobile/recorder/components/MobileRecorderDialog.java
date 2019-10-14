@@ -14,6 +14,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -95,7 +96,11 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesC
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
+import com.kms.katalon.composer.testcase.ast.dialogs.ArgumentInputBuilderDialog;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
+import com.kms.katalon.composer.testcase.model.InputParameterClass;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
@@ -660,28 +665,39 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
     }
     
-    private void handleSwipeAction(
-            MobileActionHelper mobileActionHelper,
-            MobileActionMapping mobileActionMapping
-    ) throws Exception {
-        final StringBuilder stringBuilder = new StringBuilder();
+    private void handleSwipeAction(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping)
+            throws Exception {
+        List<InputParameter> parameters = new ArrayList<>();
+        InputParameterClass integerParamType = new InputParameterClass(Integer.class);
+        ConstantExpressionWrapper defaultValue = new ConstantExpressionWrapper(0);
+        parameters.add(new InputParameter("startX", integerParamType, defaultValue));
+        parameters.add(new InputParameter("startY", integerParamType, defaultValue));
+        parameters.add(new InputParameter("endX", integerParamType, defaultValue));
+        parameters.add(new InputParameter("endY", integerParamType, defaultValue));
+        InputParameterBuilder parameterBuilder = InputParameterBuilder.createForNestedMethodCall(parameters);
+
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
-                InputDialog inputDialog = new InputDialog(getShell(),
-                        MobileRecoderMessagesConstants.DLG_TITLE_TEXT_INPUT,
-                        MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null);
-                if (inputDialog.open() == Window.OK) {
-                    stringBuilder.append(inputDialog.getValue());
-                }
+                ArgumentInputBuilderDialog inputDialog = new ArgumentInputBuilderDialog(getShell(), parameterBuilder,
+                        null);
+                inputDialog.open();
             }
         });
-        String textInput = stringBuilder.toString();
-        if (textInput.isEmpty()) {
+
+        MobileActionParamValueType[] actionParams = mobileActionMapping.getData();
+        List<InputParameter> touchCoords = parameterBuilder.getOriginalParameters();
+        List<Integer> coords = new ArrayList<Integer>();
+        IntStream.range(0, actionParams.length).forEach(index -> {
+            coords.add((Integer) (((ConstantExpressionWrapper) touchCoords.get(index).getValue()).getValue()));
+            actionParams[index].setValue(touchCoords.get(index).getValue());
+        });
+
+        if (coords.stream().allMatch(coord -> coord == 0)) {
             throw new CancellationException();
         }
-        mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
-        mobileActionHelper.swipe(100, 100, 100, 500);
+
+        mobileActionHelper.swipe(coords.get(0), coords.get(1), coords.get(2), coords.get(3));
     }
 
     private void targetElementChanged(MobileElement mobileElement) {

@@ -113,10 +113,12 @@ public class MobileActionHelper {
         String context = driver.getContext();
         try {
             internalSwitchToNativeContext(driver);
-            TouchAction swipe = new TouchAction(driver).press(PointOption.point(startX, startY))
+            TouchAction swipe = new TouchAction(driver)
+                    .press(PointOption.point(startX, startY))
                     .waitAction(WaitOptions.waitOptions(Duration.ofMillis(500L)))
-                    .moveTo(PointOption.point(endX, endY)).release();
-    swipe.perform();
+                    .moveTo(PointOption.point(endX, endY))
+                    .release();
+            swipe.perform();
         } finally {
             driver.context(context);
         }
