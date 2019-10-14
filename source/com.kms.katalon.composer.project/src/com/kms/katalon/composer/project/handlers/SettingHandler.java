@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
 import com.katalon.platform.api.Extension;
+import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.extension.PluginPreferencePage;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
@@ -51,6 +52,7 @@ import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.exception.MissingProjectSettingPageException;
 import com.kms.katalon.composer.project.preference.CustomKeywordPluginPreferenceNodeDescription;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
@@ -149,7 +151,7 @@ public class SettingHandler {
         PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP,
                 pluginPreferences);
 
-        hideIOSPageOnNoneMacOS(pm);
+        hideQTestIntegrationPageIfQTestPluginNotInstalled(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
@@ -272,45 +274,30 @@ public class SettingHandler {
         execute(Display.getCurrent().getActiveShell(), preferencesRegistry);
     }
 
-    private void hideIOSPageOnNoneMacOS(PreferenceManager pm) {
-        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+    private void hideQTestIntegrationPageIfQTestPluginNotInstalled(PreferenceManager pm) {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.QTEST_PLUGIN_ID);
+        if (plugin != null) {
             return;
         }
-
+        
         try {
-            IPreferenceNode executionSettings = null;
+            IPreferenceNode integrationSettings = null;
             for (IPreferenceNode node : pm.getRootSubNodes()) {
-                if (StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID.equals(node.getId())) {
-                    executionSettings = node;
+                if (StringConstants.PROJECT_INTEGRATION_SETTINGS_PAGE_ID.equals(node.getId())) {
+                    integrationSettings = node;
                     break;
                 }
             }
-            if (executionSettings == null) {
+            
+            if (integrationSettings == null) {
                 return;
             }
-
-            IPreferenceNode defaultExecutionSettings = executionSettings
-                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            if (defaultExecutionSettings == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            }
-
-            IPreferenceNode mobileNode = defaultExecutionSettings
-                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
-            if (mobileNode == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
-            }
-
-            IPreferenceNode iOSNode = mobileNode
-                    .remove(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
-            if (iOSNode == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
+            
+            IPreferenceNode qTestNode = integrationSettings.remove(StringConstants.PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID);
+            if (qTestNode == null) {
+                throw new MissingProjectSettingPageException(StringConstants.PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID);
             }
         } catch (MissingProjectSettingPageException e) {
-            // In case of someone changes the page ID in e4xmi, this will get DEV attention
             LoggerSingleton.logError(e);
         }
     }

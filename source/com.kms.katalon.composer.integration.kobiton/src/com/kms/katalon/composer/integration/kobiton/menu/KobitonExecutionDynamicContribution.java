@@ -24,7 +24,7 @@ public class KobitonExecutionDynamicContribution extends AbstractExecutionMenuCo
     @Override
     @AboutToShow
     public void aboutToShow(List<MMenuElement> items) {
-        if (!KobitonPreferencesProvider.isKobitonIntegrationEnabled()) {
+        if (!KobitonPreferencesProvider.isKobitonIntegrationAvailable()) {
             return;
         }
         List<ExecutionSession> exisingDrivers = getAllAvailableKobitonSession(getDriverTypeName());

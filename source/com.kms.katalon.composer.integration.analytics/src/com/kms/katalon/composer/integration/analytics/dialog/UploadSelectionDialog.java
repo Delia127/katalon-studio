@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -71,10 +70,9 @@ public class UploadSelectionDialog extends Dialog {
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {
-            boolean encryptionEnabled = true;
-            email = analyticsSettingStore.getEmail(encryptionEnabled);
-            password = analyticsSettingStore.getPassword(encryptionEnabled);
-            serverUrl = analyticsSettingStore.getServerEndpoint(encryptionEnabled);
+            email = analyticsSettingStore.getEmail();
+            password = analyticsSettingStore.getPassword();
+            serverUrl = analyticsSettingStore.getServerEndpoint();
             organization = analyticsSettingStore.getOrganization();
         } catch (IOException | GeneralSecurityException e) {
             // ignore
@@ -85,7 +83,6 @@ public class UploadSelectionDialog extends Dialog {
     protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.NONE);
         GridData bodyGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        bodyGridData.widthHint = 450;
         body.setLayoutData(bodyGridData);
         GridLayout bodyGridLayout = new GridLayout(1, false);
         bodyGridLayout.marginWidth = 10;

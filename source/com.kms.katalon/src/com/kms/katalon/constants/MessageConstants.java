@@ -227,6 +227,8 @@ public class MessageConstants extends NLS {
 
     public static String ERR_MSG_SUBJECT_CANNOT_BE_BLANK;
 
+    public static String ERR_MSG_SERVER_INVALID;
+
     public static String LBL_USERNAME;
 
     public static String LBL_PASSWORD;
@@ -381,6 +383,8 @@ public class MessageConstants extends NLS {
     
     public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATION;
 
+    public static String DIALOG_SELECT_LICENSE;
+
     // SignupDialog
     public static String SignupDialog_LBL_FULL_NAME;
 
@@ -446,6 +450,8 @@ public class MessageConstants extends NLS {
     public static String KStoreLoginDialog_LICENSE_AGREEMENT_MSG;
     
     public static String LINK_KS_PLUGINS_DOCS_LINK;
+
+    public static String MSG_ERROR_NOT_BELONG_ORG;
 
     // ReloadPluginsResultDialog
     public static String KStorePluginsDialog_COL_PLUGIN;
@@ -524,7 +530,24 @@ public class MessageConstants extends NLS {
     public static String MSG_FAIL_TO_KILL_WEB_DRIVER;
 
     public static String MSG_ACTIVATING;
-    
+
+    public static String MSG_CLEANING;
+
+    // About
+    public static String About_LBL_VERSION;
+
+    public static String About_LBL_BUILD;
+
+    public static String About_LBL_EXPIRATION_DATE;
+
+    public static String About_LBL_COPYRIGHT;
+
+    public static String About_BTN_INSTALLATION_DETAILS;
+
+    public static String About_BTN_OK;
+
+    public static String About_LBL_TRIAL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);

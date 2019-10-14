@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -15,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -40,6 +38,7 @@ import org.apache.http.util.EntityUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
@@ -108,6 +107,19 @@ public class AnalyticsApiProvider {
                     HEADER_AUTHORIZATION_PREFIX + Base64.getEncoder().encodeToString(clientCredentials.getBytes()));
 
             return executeRequest(httpPost, AnalyticsTokenInfo.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
+    public static AnalyticsOrganization getOrganization(String serverUrl, String accessToken, long orgId) throws AnalyticsApiExeception {
+        try {
+            URIBuilder uriBuilder = new URIBuilder(serverUrl);
+            uriBuilder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_API_ORGANIZATION_ITEM, orgId));
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            AnalyticsOrganization organization = executeRequest(httpGet, AnalyticsOrganization.class);
+            return organization;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
@@ -219,7 +231,7 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("email", username);
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
-            uriBuilder.setParameter("package", getKatalonPackageName());
+            uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
@@ -229,11 +241,23 @@ public class AnalyticsApiProvider {
         }
     }
     
-    private static String getKatalonPackageName() {
-        if (!ExecutionUtil.isRunningInKatalonC()) {
-            return "KSE";
-        } else {
-            return "Engine";
+    public static void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,
+            Long orgId, String accessToken) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_RELEASE_LICENSE);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("machineKey", machineId);
+            uriBuilder.setParameter("ksVersion", ksVersion);
+            uriBuilder.setParameter("sessionId", sessionId);
+            uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
+            if (orgId != null) {
+                uriBuilder.setParameter("organizationId", String.valueOf(orgId));
+            }
+            HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            executeRequest(httpPost, Object.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
         }
     }
 
@@ -493,6 +517,21 @@ public class AnalyticsApiProvider {
             StringEntity entity = new StringEntity(gson.toJson(testRun));
             httpPost.setEntity(entity);
             executeRequest(httpPost, Object.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static AnalyticsOrganization createDefaultOrganization(String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ORGANIZATION);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpPost httpPost = new HttpPost(uriBuilder.build());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            return executeRequest(httpPost, AnalyticsOrganization.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

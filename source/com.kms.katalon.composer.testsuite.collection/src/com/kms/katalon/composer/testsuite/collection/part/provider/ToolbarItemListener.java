@@ -1,12 +1,9 @@
 package com.kms.katalon.composer.testsuite.collection.part.provider;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -104,9 +101,9 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
 
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(currentProject.getFolderLocation());
         try {
-            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
-            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-            String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            String password = analyticsSettingStore.getPassword();
+            String serverUrl = analyticsSettingStore.getServerEndpoint();
+            String email = analyticsSettingStore.getEmail();
             AnalyticsProject analyticsProject = analyticsSettingStore.getProject();
 
             String nameFileZip = currentProject.getName();

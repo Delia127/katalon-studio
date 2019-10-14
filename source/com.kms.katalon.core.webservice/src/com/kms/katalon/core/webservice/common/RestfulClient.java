@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLContext;
 
@@ -30,6 +31,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 import com.google.common.net.MediaType;
+import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -39,6 +41,8 @@ import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
+import com.kms.katalon.util.URLBuilder;
+import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestfulClient extends BasicRequestor {
 
@@ -131,23 +135,8 @@ public class RestfulClient extends BasicRequestor {
     }
 
     public static void processRequestParams(RequestObject request) throws MalformedURLException {
-        StringBuilder paramString = new StringBuilder();
-        for (TestObjectProperty property : request.getRestParameters()) {
-            if (StringUtils.isEmpty(property.getName())) {
-                continue;
-            }
-            if (!StringUtils.isEmpty(paramString.toString())) {
-                paramString.append("&");
-            }
-            paramString.append(UrlEncoder.encode(property.getName()));
-            paramString.append("=");
-            paramString.append(UrlEncoder.encode(property.getValue()));
-        }
-        if (!StringUtils.isEmpty(paramString.toString())) {
-            URL url = new URL(request.getRestUrl());
-            request.setRestUrl(
-                    request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&") + paramString.toString());
-        }
+        String url = UrlEscapers.urlFragmentEscaper().escape(request.getRestUrl());
+        request.setRestUrl(url);
     }
 
     private ResponseObject response(CloseableHttpClient httpClient, BaseHttpRequest httpRequest) throws Exception {

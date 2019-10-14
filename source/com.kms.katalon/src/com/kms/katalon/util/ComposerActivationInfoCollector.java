@@ -18,6 +18,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
@@ -32,12 +33,24 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     
     private static boolean isActivated;
 
-    public static boolean checkActivation() throws InvocationTargetException, InterruptedException {
+    public static boolean checkActivation(boolean isStartup) throws InvocationTargetException, InterruptedException {
         Shell shell = Display.getCurrent().getActiveShell();
         new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
+                if (isStartup) {
+                    monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
+                } else {
+                    //Logout
+                    monitor.beginTask(StringConstants.MSG_CLEANING, IProgressMonitor.UNKNOWN);
+                    try {
+                        ActivationInfoCollector.postEndSession();
+                        ActivationInfoCollector.releaseLicense();
+                        ApplicationInfo.cleanAll();
+                    } catch (Exception e) {
+                        LogUtil.logError(e);
+                    }
+                }
                 isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                 monitor.done();
             }

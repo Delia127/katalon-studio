@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -33,7 +34,6 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.MachineUtil;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -158,6 +158,12 @@ public class ActivationDialogV2 extends AbstractDialog {
                 String serverUrl = txtServerUrl.getText();
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
+
+                if (!validateServer()) {
+                    setProgressMessage(MessageConstants.ERR_MSG_SERVER_INVALID, true);
+                    return;
+                }
+
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(() -> {
                         enableObject(false);
@@ -167,8 +173,19 @@ public class ActivationDialogV2 extends AbstractDialog {
                         StringBuilder errorMessage = new StringBuilder();
                         license = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
                         if (license != null) {
-                            getOrganizations();
-                            setProgressMessage("", false);
+                            if (license.getOrganizationId() != null) {
+                                try {
+                                    String org = ActivationInfoCollector.getOrganization(username, password, license.getOrganizationId());
+                                    save(org);
+                                } catch (Exception ex) {
+                                    LogUtil.logError(ex);
+                                    setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
+                                    enableObject(true);
+                                }
+                            } else {
+                                getOrganizations();
+                                setProgressMessage("", false);
+                            }
                         } else {
                             enableObject(true);
                             setProgressMessage(errorMessage.toString(), true);
@@ -222,6 +239,27 @@ public class ActivationDialogV2 extends AbstractDialog {
             });
         });
     }
+    
+    private void save(String org) {
+        String email = txtEmail.getText();
+        String password = txtPassword.getText();
+
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService
+                    .syncExec(() -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_FEATURE, false));
+            UISynchronizeService.syncExec(() -> {
+                try {
+                    ActivationInfoCollector.markActivated(email, password, org, license);
+                    close();
+                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+                } catch (Exception e) {
+                    enableObject(true);
+                    btnSave.setEnabled(false);
+                    LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                }
+            });
+        });
+    }
 
     private static List<String> getOrganizationNames(List<AnalyticsOrganization> organizations) {
         List<String> names = organizations.stream().map(organization -> organization.getName()).collect(Collectors.toList());
@@ -241,15 +279,23 @@ public class ActivationDialogV2 extends AbstractDialog {
                     String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
                     organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token);
 
-                    if (organizations.size() == 1) {
-                        save(0);
-                    } else {
-                        layoutExecutionCompositeListener();
-                        cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
-                        cbbOrganization.select(getDefaultOrganizationIndex()); 
-                        setProgressMessage("", false);
-                        cbbOrganization.setEnabled(true);
-                        btnSave.setEnabled(true);
+                    switch (organizations.size()) {
+                        case 0:
+                            AnalyticsOrganization organizationDefault = AnalyticsApiProvider.createDefaultOrganization(serverUrl, token);
+                            organizations.add(organizationDefault);
+                            save(0);
+                            break;
+                        case 1:
+                            save(0);
+                            break;
+                        default:
+                            layoutExecutionCompositeListener();
+                            cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
+                            cbbOrganization.select(getDefaultOrganizationIndex()); 
+                            setProgressMessage("", false);
+                            cbbOrganization.setEnabled(true);
+                            btnSave.setEnabled(true);
+                            break;
                     }
                 } catch (Exception e) {
                     LogUtil.logError(e);
@@ -301,6 +347,13 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private boolean validatePassword() {
         return txtPassword.getText().length() >= 8;
+    }
+
+    private boolean validateServer() {
+//        String[] schemes = {"http","https"};
+//        UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+//        return urlValidator.isValid(txtServerUrl.getText());
+        return true;
     }
 
     @Override

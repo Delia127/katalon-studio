@@ -565,9 +565,9 @@ public class TestSuitePartTestCaseView {
             public void widgetSelected(SelectionEvent e) {
                 try {
                     if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
-                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()),
+                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(),
                                 analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
-                                testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                                testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken()));
                     } else {
                         Program.launch(ApplicationInfo.getTestOpsServer());
                     }

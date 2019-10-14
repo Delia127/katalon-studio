@@ -194,6 +194,15 @@ public class ReportController extends EntityController {
         }
     }
 
+    public ReportEntity getReportEntityByFullPath(String reportFullpath)
+            throws ControllerException {
+        try {
+            return getDataProviderSetting().getReportDataProvider().getReportEntity(reportFullpath);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
+    }
+
     public ReportEntity updateReport(ReportEntity report) throws ControllerException {
         try {
             return getDataProviderSetting().getReportDataProvider().updateReport(report);
