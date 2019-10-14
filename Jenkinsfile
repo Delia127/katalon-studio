@@ -62,7 +62,7 @@ pipeline {
                     isBeta = isRelease && branch.contains('.rc')
                     println("Is beta ${isBeta}.")
 
-                    withUpdate = isRelease && !isQtest && !isBeta
+                    withUpdate = isRelease && !isBeta
                     println("With update ${withUpdate}.")
 
                     if (isRelease) {
@@ -261,13 +261,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                             // Generate Katalon builds
                             // If branch name contains "release", build production mode for non-qTest package
                             // else build development mode for qTest package
-                            if (isQtest) {
-                                echo "Building: qTest Prod"
-                                sh "mvn clean ${command} -P prod"
-                            } else {
-                                echo "Building: Standard Prod"
-                                sh "mvn clean ${command} -P prod"
-                            }
+                            echo "Building: Standard Prod"
+                            sh "mvn clean ${command} -P prod"
 
                             // Generate API docs
                             sh "cd com.kms.katalon.apidocs && mvn clean ${command} && cp -R 'target/resources/apidocs' ${env.tmpDir}"
@@ -398,9 +393,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         //         script {
         //             if (isRelease) {
         //                 def s3Location
-        //                 if (isQtest) {
-        //                     s3Location = "${tag}/qTest"
-        //                 } else if (isBeta) {
+        //                 if (isBeta) {
         //                     s3Location = "release-beta/${tag}"
         //                 } else {
         //                     s3Location = "${tag}"
@@ -416,7 +409,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 //         stage('Create Github release') {
 //             steps {
 //                 script {
-//                     if (isRelease && !isQtest) {
+//                     if (isRelease) {
 //                         dir("tools/release") {
 //                             nodejs(nodeJSInstallationName: 'nodejs') {
 //                                 sh 'npm prune && npm install'
