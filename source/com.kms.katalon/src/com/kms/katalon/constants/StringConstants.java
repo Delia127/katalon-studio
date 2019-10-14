@@ -230,4 +230,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ABOUT_BTN_OK = MessageConstants.About_BTN_OK;
 
     public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
+    
+    // ProxyConfigurationDialog
+    public static final String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG = MessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
 }
