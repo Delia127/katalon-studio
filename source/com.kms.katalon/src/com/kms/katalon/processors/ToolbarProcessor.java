@@ -23,6 +23,8 @@ import org.eclipse.emf.common.util.EList;
 public class ToolbarProcessor {
 
     public static final String KATALON_TOOLITEM_NEW_ID = "com.kms.katalon.composer.toolbar.new";
+    
+    public static final String KATALON_TOOLITEM_COMMUNITY_ID = "com.kms.katalon.composer.toolbar.community";
 
     public static final String KATALON_MAIN_TOOLBAR_ID = "com.kms.katalon.composer.toolbar";
 
