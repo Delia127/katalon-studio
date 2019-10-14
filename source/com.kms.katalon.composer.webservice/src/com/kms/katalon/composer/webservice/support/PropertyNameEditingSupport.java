@@ -113,6 +113,6 @@ public class PropertyNameEditingSupport extends EditingSupport {
                 PropertyNameEditingSupport.this.setValue(element, text);
                 
             }
-        } 
+        }
     }
 }

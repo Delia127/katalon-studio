@@ -59,6 +59,7 @@ public class PropertyValueEditingSupport extends EditingSupport {
         }
         return "";
     }
+    
 
     @Override
     protected void setValue(Object element, Object value) {
@@ -100,6 +101,7 @@ public class PropertyValueEditingSupport extends EditingSupport {
         public AutoCompleteField getAutoCompleteField(String[] newItems) {
             return  new AutoCompleteField(getControl(), new HeaderValueComboContentAdapter(), newItems); 
         }
+        
 
         private class HeaderValueComboContentAdapter extends CComboContentAdapter {
             @Override
