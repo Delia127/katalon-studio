@@ -319,13 +319,16 @@ public class ActivationInfoCollector {
             if (runMode == RunningMode.GUI && license.isKSELicense()) { 
                 return true;
             }
+            LogUtil.logError("Invalid License.");
             throw new Exception("KSE: Invalid License.");
         } else {
             if (!isValidMachineId) {
+                LogUtil.logError("Invalid Machine ID.");
                 throw new Exception("KSE: Invalid Machine ID.");
             }
 
             if (isExpired) {
+                LogUtil.logError("Expired License.");
                 throw new Exception("KSE: Expired License.");
             }
 
