@@ -5,10 +5,15 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +30,7 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -37,7 +43,6 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
 
-import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 
 public class HttpClientProxyBuilder {
@@ -61,6 +66,46 @@ public class HttpClientProxyBuilder {
 
     public HttpClientBuilder getClientBuilder() {
         return clientBuilder;
+    }
+    
+    /**
+     * Return a {@link org.apache.http.impl.client.HttpClientBuilder} that builds HttpClientBuilder that accepts
+     * self-signed certificates
+     */
+    public HttpClientBuilder getAcceptedSelfSignedCertClientBuilder()
+            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        HttpClientBuilder anotherClientBuilder = clientBuilder;
+        return anotherClientBuilder.setSSLSocketFactory(getSslSocketFactory())
+                .setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+    }
+
+    private SSLConnectionSocketFactory getSslSocketFactory()
+            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        SSLContext sslContext = getSslContext();
+        HostnameVerifier skipHostnameVerifier = new HostnameVerifier() {
+
+            @Override
+            public boolean verify(String arg0, SSLSession arg1) {
+                return true;
+            }
+        };
+        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, skipHostnameVerifier);
+        return sslSocketFactory;
+    }
+
+    private SSLContext getSslContext() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
+        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        TrustStrategy trustStrategy = new TrustStrategy() {
+            @Override
+            public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+                return true;
+            }
+        };
+        sslContextBuilder.loadTrustMaterial(keyStore, trustStrategy);
+        sslContextBuilder.useProtocol("TLSv1.2");
+        SSLContext sslContext = sslContextBuilder.build();
+        return sslContext;
     }
 
     public HttpClientContext getClientContext() {
