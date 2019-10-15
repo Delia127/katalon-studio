@@ -44,7 +44,7 @@ public class AnalyticsStringConstants {
 
     public static final String ANALYTICS_API_TRACKING_ACTIVITY = "/api/v1/tracking";
     
-    public static final String ANALYTICS_API_DEACTIVATE = "/api/v1/deactivate";
+    public static final String ANALYTICS_API_DEACTIVATE = "/api/v1/machine";
     
     public static final String ANALYTICS_STOREAGE = "s3";
     

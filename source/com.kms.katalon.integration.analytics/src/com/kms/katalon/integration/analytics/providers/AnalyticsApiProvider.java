@@ -535,12 +535,17 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static void deactivate(String serverUrl, String token, String machineId) throws AnalyticsApiExeception {
+    public static void deactivate(String serverUrl, String token, String machineId, Long orgId)
+            throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_DEACTIVATE);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("machineKey", machineId);
-            HttpPost httpPost = new HttpPost(uriBuilder.build());
+            uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
+            if (orgId != null) {
+                uriBuilder.setParameter("organizationId", String.valueOf(orgId));
+            }
+            HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");

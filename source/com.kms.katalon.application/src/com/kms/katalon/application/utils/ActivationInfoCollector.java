@@ -208,9 +208,18 @@ public class ActivationInfoCollector {
     }
     
     public static void deactivate(String userName, String password, String machineId) throws Exception {
+        String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        Long orgId = null;
+        if (StringUtils.isNotBlank(jwsCode)) {
+            License license = parseLicense(jwsCode);
+            if (license == null) {
+                license = getLastUsedLicense();
+            }
+            orgId = license.getOrganizationId();
+        }
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
-        KatalonApplicationActivator.getFeatureActivator().deactivate(serverUrl, token, machineId);
+        KatalonApplicationActivator.getFeatureActivator().deactivate(serverUrl, token, machineId, orgId);
     }
 
     public static License activate(String serverUrl, String userName, String password, String machineId,

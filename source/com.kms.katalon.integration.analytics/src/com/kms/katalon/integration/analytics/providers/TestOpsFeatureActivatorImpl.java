@@ -89,9 +89,9 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
     }
 
     @Override
-    public void deactivate(String serverUrl, String token, String machineId) throws Exception {
+    public void deactivate(String serverUrl, String token, String machineId, Long orgId) throws Exception {
         try {
-            AnalyticsApiProvider.deactivate(serverUrl, token, machineId);
+            AnalyticsApiProvider.deactivate(serverUrl, token, machineId, orgId);
         } catch (Exception ex) {
             LogUtil.logError(ex);
             throw ex;

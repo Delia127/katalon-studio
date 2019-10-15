@@ -20,8 +20,8 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.handlers.DeactivateHandler;
 import com.kms.katalon.composer.handlers.KatalonStoreLoginHandler;
-import com.kms.katalon.composer.handlers.LogoutHandler;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler;
 import com.kms.katalon.composer.handlers.ManagePluginsHandler;
@@ -135,7 +135,7 @@ public class PluginStoreToolControl {
 
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        new LogoutHandler().execute();
+                        new DeactivateHandler().execute();
                     }
                 });
 
