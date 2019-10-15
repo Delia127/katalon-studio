@@ -535,7 +535,7 @@ public class TreeEntityUtil {
         treeEntities.add(new FolderTreeEntity(folderController.getCheckpointRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
         treeEntities.add(new TestListenerFolderTreeEntity(folderController.getTestListenerRoot(project), null));
-//        treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
+        treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
         treeEntities.add(new IncludeTreeRootEntity(folderController.getIncludeRoot(project)));
         
         List<FileEntity> fileEntities = folderController.getRootUserFilesOrFolders(project);

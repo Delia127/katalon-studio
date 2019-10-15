@@ -15,6 +15,16 @@ public class ImageConstants {
     
     public static final Image IMG_KATALON_ACCOUNT_24 = ImageManager.getImage(IImageKeys.KATALON_ACCOUNT_24);
     
+    public static final Image IMG_KATALON_COMMUNITY_24 = ImageManager.getImage(IImageKeys.KATALON_COMMUNITY_24);
+    
+    public static final Image KATALON_FORUM_24 = ImageManager.getImage(IImageKeys.KATALON_FORUM_24);
+    
+    public static final Image KATALON_CHAT_24 = ImageManager.getImage(IImageKeys.KATALON_CHAT_24);
+    
+    public static final Image KATALON_TWEETABOUTUS_24 = ImageManager.getImage(IImageKeys.KATALON_TWEETABOUTUS_24);
+    
+    public static final Image KATALON_FEEDBACK_24 = ImageManager.getImage(IImageKeys.KATALON_FEEDBACK_24);
+    
     public static final Image IMG_KATALON_STORE = ImageManager.getImage(IImageKeys.KATALON_STORE_34);
     
     public static final Image IMG_KATALON_STORE_24 = ImageManager.getImage(IImageKeys.KATALON_STORE_24);

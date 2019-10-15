@@ -551,6 +551,8 @@ public class MessageConstants extends NLS {
     // ProxyConfigurationDialog
     public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
 
+    public static String About_LBL_CHECKING_VERSION;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);

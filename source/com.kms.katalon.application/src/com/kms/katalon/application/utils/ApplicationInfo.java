@@ -217,4 +217,10 @@ public class ApplicationInfo {
         }
         return server;
     }
+
+    public static void cleanAll() {
+        Properties appProps = getAppProperties();
+        appProps.clear();
+        saveAppProperties();
+    }
 }

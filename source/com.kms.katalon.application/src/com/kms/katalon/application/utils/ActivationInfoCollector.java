@@ -21,6 +21,8 @@ import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
@@ -290,7 +292,14 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             LogUtil.logError(ex, "Fail to activate offline");
-            if (errorMessage != null) {
+            String message = ex.getMessage();
+            if (!StringUtils.isBlank(message)) {
+                if (message.contains("KSE: ")) {
+                    errorMessage.append(message.replace("KSE: ", ""));
+                } else {
+                    errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+                }
+            } else {
                 errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
             }
         }
@@ -299,18 +308,28 @@ public class ActivationInfoCollector {
         return activated;
     }
 
-    private static boolean isValidLicense(License license) {
+    private static boolean isValidLicense(License license) throws Exception {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
         if (isValidMachineId && !isExpired) {
-            return true;
+            RunningMode runMode = ApplicationRunningMode.get();
+            if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) { 
+                return true;
+            }
+            if (runMode == RunningMode.GUI && license.isKSELicense()) { 
+                return true;
+            }
+            LogUtil.logError("Invalid License.");
+            throw new Exception("KSE: Invalid License.");
         } else {
             if (!isValidMachineId) {
-                LogUtil.logError("Invalid machine id " + license.getMachineId());
+                LogUtil.logError("Invalid Machine ID.");
+                throw new Exception("KSE: Invalid Machine ID.");
             }
 
             if (isExpired) {
-                LogUtil.logError("License expired");
+                LogUtil.logError("Expired License.");
+                throw new Exception("KSE: Expired License.");
             }
 
             return false;
