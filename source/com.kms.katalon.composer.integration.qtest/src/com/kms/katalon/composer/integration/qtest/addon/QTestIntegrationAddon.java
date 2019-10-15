@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
-import com.kms.katalon.composer.integration.qtest.handler.UninstallQTestPluginHandler;
+import com.kms.katalon.composer.integration.qtest.handler.QTestPluginEventHandler;
 
 public class QTestIntegrationAddon {
     @Inject
@@ -14,7 +14,7 @@ public class QTestIntegrationAddon {
     
     @PostConstruct
     public void registerHandler() {
-        ContextInjectionFactory.make(UninstallQTestPluginHandler.class, context);
+        ContextInjectionFactory.make(QTestPluginEventHandler.class, context);
     }
 
 }
