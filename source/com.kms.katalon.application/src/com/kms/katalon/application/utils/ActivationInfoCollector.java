@@ -294,18 +294,8 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             LogUtil.logError(ex, "Fail to activate offline");
-            String message = ex.getMessage();
-            if (!StringUtils.isBlank(message)) {
-                if (message.contains("KSE: ")) {
-                    errorMessage.append(message.replace("KSE: ", ""));
-                } else {
-                    errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
-                }
-            } else {
-                errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
-            }
         }
-
+        errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         activated = false;
         return activated;
     }
@@ -329,8 +319,6 @@ public class ActivationInfoCollector {
             if (isExpired) {
                 LogUtil.logError("Expired License.");
             }
-
-            return false;
         }
         return false;
     }

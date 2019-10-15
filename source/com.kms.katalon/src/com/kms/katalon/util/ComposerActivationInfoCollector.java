@@ -46,10 +46,10 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                     try {
                         ActivationInfoCollector.postEndSession();
                         ActivationInfoCollector.releaseLicense();
-                        ApplicationInfo.cleanAll();
                     } catch (Exception e) {
                         LogUtil.logError(e);
                     }
+                    ApplicationInfo.cleanAll();
                 }
                 isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                 monitor.done();
