@@ -230,7 +230,7 @@ public class ActivationInfoCollector {
             } catch (Exception ex) {
                 LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
                 try {
-                    String message = KatalonApplicationActivator.getTestOpsConfiguration().getTestOpsMessage(ex.getMessage());
+                    String message = KatalonApplicationActivator.getFeatureActivator().getTestOpsMessage(ex.getMessage());
                     errorMessage.append(message);
                 } catch (Exception error) {
                     //No message from server
@@ -308,7 +308,7 @@ public class ActivationInfoCollector {
         return activated;
     }
 
-    private static boolean isValidLicense(License license) throws Exception {
+    private static boolean isValidLicense(License license) {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
         if (isValidMachineId && !isExpired) {
@@ -319,21 +319,18 @@ public class ActivationInfoCollector {
             if (runMode == RunningMode.GUI && license.isKSELicense()) { 
                 return true;
             }
-            LogUtil.logError("Invalid License.");
-            throw new Exception("KSE: Invalid License.");
         } else {
             if (!isValidMachineId) {
                 LogUtil.logError("Invalid Machine ID.");
-                throw new Exception("KSE: Invalid Machine ID.");
             }
 
             if (isExpired) {
                 LogUtil.logError("Expired License.");
-                throw new Exception("KSE: Expired License.");
             }
 
             return false;
         }
+        return false;
     }
 
     private static boolean hasValidMachineId(License license) {
