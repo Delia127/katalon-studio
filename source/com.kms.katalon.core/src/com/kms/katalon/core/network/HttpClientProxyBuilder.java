@@ -17,6 +17,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -42,6 +43,8 @@ import com.kms.katalon.core.util.internal.ProxyUtil;
 
 public class HttpClientProxyBuilder {
 
+    private static final int DEFAULT_CONNECT_TIMEOUT = 5000; //milliseconds
+    
     private static PoolingHttpClientConnectionManager connectionManager;
     
     static {
@@ -104,7 +107,13 @@ public class HttpClientProxyBuilder {
         
         clientBuilder.setConnectionManager(connectionManager)
             .setConnectionManagerShared(true);
-
+        
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(DEFAULT_CONNECT_TIMEOUT)
+                .build();
+        
+        clientBuilder.setDefaultRequestConfig(config);
+        
         return new HttpClientProxyBuilder(clientBuilder, context);
     }
 
