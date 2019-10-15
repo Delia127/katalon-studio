@@ -304,8 +304,6 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                 }
                 dir("source/com.kms.katalon.product.engine/target/products") {
                     script {
-                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
-                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
                         fileOperations([
                                 fileCopyOperation(
                                     excludes: '',
