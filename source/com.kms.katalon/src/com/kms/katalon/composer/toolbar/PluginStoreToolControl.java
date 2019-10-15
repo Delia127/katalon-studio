@@ -130,7 +130,7 @@ public class PluginStoreToolControl {
                 new MenuItem(menu, SWT.SEPARATOR);
 
                 MenuItem logoutMenuItem = new MenuItem(menu, SWT.PUSH);
-                logoutMenuItem.setText("Reactivate");
+                logoutMenuItem.setText("Deactivate");
                 logoutMenuItem.addSelectionListener(new SelectionAdapter() {
 
                     @Override

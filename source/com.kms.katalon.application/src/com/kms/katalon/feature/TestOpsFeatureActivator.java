@@ -16,4 +16,6 @@ public interface TestOpsFeatureActivator {
     String getOrganization(String serverUrl, String token, long orgId) throws Exception;
 
     String getTestOpsMessage(String message);
+
+    void deactivate(String serverUrl, String token, String machineId) throws Exception;
 }

@@ -40,16 +40,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
-import com.kms.katalon.core.model.RunningMode;
-import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
+import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
-import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsPage;
@@ -65,7 +63,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.core.network.HttpClientProxyBuilder;
 
 public class AnalyticsApiProvider {
 
@@ -533,6 +530,21 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             return executeRequest(httpPost, AnalyticsOrganization.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static void deactivate(String serverUrl, String token, String machineId) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_DEACTIVATE);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("machineKey", machineId);
+            HttpPost httpPost = new HttpPost(uriBuilder.build());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            executeRequest(httpPost, Object.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

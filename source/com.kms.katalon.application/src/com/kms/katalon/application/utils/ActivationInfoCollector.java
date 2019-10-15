@@ -206,6 +206,12 @@ public class ActivationInfoCollector {
         }
         return host;
     }
+    
+    public static void deactivate(String userName, String password, String machineId) throws Exception {
+        String serverUrl = ApplicationInfo.getTestOpsServer();
+        String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
+        KatalonApplicationActivator.getFeatureActivator().deactivate(serverUrl, token, machineId);
+    }
 
     public static License activate(String serverUrl, String userName, String password, String machineId,
             StringBuilder errorMessage) {
@@ -268,7 +274,7 @@ public class ActivationInfoCollector {
                 KatalonApplication.USER_SESSION_ID, hostname, machineId);
         return license;
     }
-
+    
     public static String getOrganization(String userName, String password, long orgId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
