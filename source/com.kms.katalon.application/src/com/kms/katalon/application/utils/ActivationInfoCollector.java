@@ -311,7 +311,7 @@ public class ActivationInfoCollector {
             if (runMode == RunningMode.GUI && license.isKSELicense()) { 
                 return true;
             }
-            LogUtil.logError("Invalid License.");
+            LogUtil.logError(DEFAULT_REASON);
         } else {
             if (!isValidMachineId) {
                 LogUtil.logError("Invalid Machine ID.");
