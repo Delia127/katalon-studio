@@ -47,10 +47,6 @@ pipeline {
                     def branch = env.BRANCH_NAME
                     println("Branch ${branch}.")
 
-                    if (branch.contains('issue3542')) {
-                        branch = 'release-7.0.0.rc3'
-                    }
-
                     if (!(branch.endsWith(version) || branch.contains("${version}.rc"))) {
                         println 'Branch or version is incorrect.'
                         throw new IllegalStateException('Branch or version is incorrect.')
