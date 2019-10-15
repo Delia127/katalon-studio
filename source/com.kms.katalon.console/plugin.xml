@@ -1,33 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
 <plugin>
 
    <extension
          id="product"
          point="org.eclipse.core.runtime.products">
       <product
-            name="com.kms.katalon.console.product"
-            application="com.kms.katalon.console.application">
+            application="com.kms.katalon.application"
+            name="Katalon Studio Engine">
+         <property
+               name="windowImages"
+               value="icons/branding_16.png,icons/branding_32.png,icons/branding_48.png,icons/branding_64.png,icons/branding_128.png,icons/branding_256.png">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="404040">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="0,290,450,10">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="5,270,445,20">
+         </property>
+         <property
+               name="applicationCSS"
+               value="platform:/plugin/com.kms.katalon/css/default.css">
+         </property>
          <property
                name="appName"
-               value="com.kms.katalon.console.product">
+               value="Katalon Studio Engine">
          </property>
-         
-         <property 
-         		name="applicationXMI" 
-         		value="com.kms.katalon.console/Application.e4xmi"> 
-	     </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
       </product>
    </extension>
 
-   <extension
-       id="application"
-       name="Katalon Application"
-       point="org.eclipse.core.runtime.applications">
-      <application
-            cardinality="singleton-global"
-            visible="true">
-         <run class="com.kms.katalon.console.application.Application">
-         </run>
-      </application>
-   </extension>
 </plugin>
