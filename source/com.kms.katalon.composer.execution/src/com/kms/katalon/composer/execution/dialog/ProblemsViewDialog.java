@@ -37,7 +37,7 @@ public class ProblemsViewDialog extends Dialog {
         body.setLayoutData(bodyGridData);
         GridLayout bodyGridLayout = new GridLayout(2, false);
         bodyGridLayout.marginWidth = 10;
-        bodyGridLayout.marginHeight = 30;
+        bodyGridLayout.marginHeight = 15;
         body.setLayout(bodyGridLayout);
 
         Label lblIcon = new Label(body, SWT.NONE);
@@ -46,7 +46,7 @@ public class ProblemsViewDialog extends Dialog {
 
         Label lblInformation = new Label(body, SWT.NONE);
         GridData gdTxtLevel = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdTxtLevel.heightHint = 18;
+        gdTxtLevel.heightHint = 25;
         lblInformation.setLayoutData(gdTxtLevel);
         lblInformation.setText(StringConstants.MSG_PROBLEMS_VIEW);
 
