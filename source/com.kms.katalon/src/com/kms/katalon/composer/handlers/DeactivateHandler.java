@@ -17,11 +17,15 @@ public class DeactivateHandler {
     @Execute
     public void execute() {
         try {
+            ActivationInfoCollector.setActivated(false);
+            ActivationInfoCollector.clearFeatures();
+
             String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
             String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
             String machineId = MachineUtil.getMachineId();
             ActivationInfoCollector.deactivate(username, password, machineId);
+
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
             if (ApplicationStaupHandler.checkActivation(false)) {
                 eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
