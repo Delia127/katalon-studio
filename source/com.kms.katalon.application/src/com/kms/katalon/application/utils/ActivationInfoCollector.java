@@ -40,7 +40,7 @@ public class ActivationInfoCollector {
 
     public static final String EXPIRED_MESSAGE = "This session has been terminated. \n" + "Reason: ";
 
-    public static final String DEFAULT_REASON = "Invalid license";
+    public static final String DEFAULT_REASON = "Invalid license.";
 
     private static boolean activated = false;
 
@@ -311,6 +311,7 @@ public class ActivationInfoCollector {
             if (runMode == RunningMode.GUI && license.isKSELicense()) { 
                 return true;
             }
+            LogUtil.logError("Invalid License.");
         } else {
             if (!isValidMachineId) {
                 LogUtil.logError("Invalid Machine ID.");
