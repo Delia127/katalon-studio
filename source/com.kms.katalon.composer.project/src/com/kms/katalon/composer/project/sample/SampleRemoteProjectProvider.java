@@ -24,8 +24,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.integration.analytics.providers.HttpClientProxyBuilder;
 
 public class SampleRemoteProjectProvider {
 

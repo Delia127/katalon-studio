@@ -230,4 +230,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ABOUT_BTN_OK = MessageConstants.About_BTN_OK;
 
     public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
+    
+    public static final String ABOUT_LBL_CHECKING_VERSION = MessageConstants.About_LBL_CHECKING_VERSION;
 }

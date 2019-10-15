@@ -40,6 +40,8 @@ public class ActivationInfoCollector {
 
     public static final String EXPIRED_MESSAGE = "This session has been terminated. \n" + "Reason: ";
 
+    public static final String DEFAULT_REASON = "Invalid license.";
+
     private static boolean activated = false;
 
     private static ScheduledFuture<?> checkLicenseTask;
@@ -230,7 +232,7 @@ public class ActivationInfoCollector {
             } catch (Exception ex) {
                 LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
                 try {
-                    String message = KatalonApplicationActivator.getTestOpsConfiguration().getTestOpsMessage(ex.getMessage());
+                    String message = KatalonApplicationActivator.getFeatureActivator().getTestOpsMessage(ex.getMessage());
                     errorMessage.append(message);
                 } catch (Exception error) {
                     //No message from server
@@ -292,23 +294,13 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             LogUtil.logError(ex, "Fail to activate offline");
-            String message = ex.getMessage();
-            if (!StringUtils.isBlank(message)) {
-                if (message.contains("KSE: ")) {
-                    errorMessage.append(message.replace("KSE: ", ""));
-                } else {
-                    errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
-                }
-            } else {
-                errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
-            }
         }
-
+        errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         activated = false;
         return activated;
     }
 
-    private static boolean isValidLicense(License license) throws Exception {
+    private static boolean isValidLicense(License license) {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
         if (isValidMachineId && !isExpired) {
@@ -319,21 +311,17 @@ public class ActivationInfoCollector {
             if (runMode == RunningMode.GUI && license.isKSELicense()) { 
                 return true;
             }
-            LogUtil.logError("Invalid License.");
-            throw new Exception("KSE: Invalid License.");
+            LogUtil.logError(DEFAULT_REASON);
         } else {
             if (!isValidMachineId) {
                 LogUtil.logError("Invalid Machine ID.");
-                throw new Exception("KSE: Invalid Machine ID.");
             }
 
             if (isExpired) {
                 LogUtil.logError("Expired License.");
-                throw new Exception("KSE: Expired License.");
             }
-
-            return false;
         }
+        return false;
     }
 
     private static boolean hasValidMachineId(License license) {

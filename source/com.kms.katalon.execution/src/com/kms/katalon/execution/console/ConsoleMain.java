@@ -244,7 +244,7 @@ public class ConsoleMain {
 
             Map<String, String> localStore = new HashMap<>();
             localStore.put("apiKey", apiKeyValue);
-            localStore.put("lastActivateErrorMessage", "");
+            localStore.put("lastActivateErrorMessage", ActivationInfoCollector.DEFAULT_REASON);
             ActivationInfoCollector.scheduleCheckLicense(() -> {
                 String lastActivateErrorMessage = localStore.get("lastActivateErrorMessage");
                 LogUtil.printErrorLine(ActivationInfoCollector.EXPIRED_MESSAGE + lastActivateErrorMessage);
