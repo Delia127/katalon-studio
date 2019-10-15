@@ -67,7 +67,7 @@ public class ApplicationStaupHandler {
 
     public static void scheduleCheckLicense() {
         expiredDialog = null;
-        lastActivateErrorMessage = "";
+        lastActivateErrorMessage = ActivationInfoCollector.DEFAULT_REASON;
         ActivationInfoCollector.scheduleCheckLicense(() -> {
             UISynchronizeService.syncExec(() -> {
                 if (expiredDialog == null) {

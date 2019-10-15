@@ -40,6 +40,8 @@ public class ActivationInfoCollector {
 
     public static final String EXPIRED_MESSAGE = "This session has been terminated. \n" + "Reason: ";
 
+    public static final String DEFAULT_REASON = "Invalid license";
+
     private static boolean activated = false;
 
     private static ScheduledFuture<?> checkLicenseTask;
