@@ -25,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -47,6 +48,7 @@ import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -486,7 +488,9 @@ public class ConsoleMain {
             }
         }
         deleteLibFolders(projectPk);
-        ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk);
+        boolean allowSourceAttachment = LicenseType.valueOf(
+                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk, allowSourceAttachment);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
         if (projectEntity == null) {
             throw new InvalidConsoleArgumentException(

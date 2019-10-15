@@ -22,6 +22,8 @@ import org.osgi.service.event.EventHandler;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
@@ -33,6 +35,7 @@ import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.Plugin;
@@ -112,8 +115,10 @@ public class InstallBasicReportPluginHandler {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();
         if (currentProject != null) {
+            boolean allowSourceAttachment = LicenseType.valueOf(
+                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
             GroovyUtil.initGroovyProjectClassPath(currentProject,
-                    projectController.getCustomKeywordPlugins(currentProject), false, monitor);
+                    projectController.getCustomKeywordPlugins(currentProject), false, allowSourceAttachment, monitor);
             projectController.updateProjectClassLoader(currentProject);
             KeywordController.getInstance().parseAllCustomKeywords(currentProject, null);
             if (ApplicationRunningMode.get() == RunningMode.GUI) {
