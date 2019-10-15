@@ -548,6 +548,8 @@ public class MessageConstants extends NLS {
 
     public static String About_LBL_TRIAL;
 
+    public static String About_LBL_CHECKING_VERSION;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);
