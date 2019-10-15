@@ -74,4 +74,22 @@ public class License {
     public void setLicenseType(String licenseType) {
         this.licenseType = LicenseType.valueOf(licenseType);
     }
+
+    public boolean isEngineLicense() {
+        for (Feature feature : features) {
+            if (feature.getKey().contains("cli")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isKSELicense() {
+        for (Feature feature : features) {
+            if (feature.getKey().contains("gui")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

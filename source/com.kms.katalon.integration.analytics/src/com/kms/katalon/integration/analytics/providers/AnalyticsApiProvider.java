@@ -1,6 +1,6 @@
 package com.kms.katalon.integration.analytics.providers;
 
-import static com.kms.katalon.integration.analytics.providers.HttpClientProxyBuilder.create;
+import static com.kms.katalon.core.network.HttpClientProxyBuilder.create;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,6 +65,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
 
 public class AnalyticsApiProvider {
 

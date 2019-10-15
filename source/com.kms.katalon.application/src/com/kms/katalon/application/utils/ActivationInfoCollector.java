@@ -21,6 +21,8 @@ import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
@@ -37,6 +39,8 @@ public class ActivationInfoCollector {
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
     public static final String EXPIRED_MESSAGE = "This session has been terminated. \n" + "Reason: ";
+
+    public static final String DEFAULT_REASON = "Invalid license.";
 
     private static boolean activated = false;
 
@@ -228,7 +232,7 @@ public class ActivationInfoCollector {
             } catch (Exception ex) {
                 LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
                 try {
-                    String message = KatalonApplicationActivator.getTestOpsConfiguration().getTestOpsMessage(ex.getMessage());
+                    String message = KatalonApplicationActivator.getFeatureActivator().getTestOpsMessage(ex.getMessage());
                     errorMessage.append(message);
                 } catch (Exception error) {
                     //No message from server
@@ -290,11 +294,8 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             LogUtil.logError(ex, "Fail to activate offline");
-            if (errorMessage != null) {
-                errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
-            }
         }
-
+        errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         activated = false;
         return activated;
     }
@@ -303,18 +304,24 @@ public class ActivationInfoCollector {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
         if (isValidMachineId && !isExpired) {
-            return true;
+            RunningMode runMode = ApplicationRunningMode.get();
+            if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) { 
+                return true;
+            }
+            if (runMode == RunningMode.GUI && license.isKSELicense()) { 
+                return true;
+            }
+            LogUtil.logError(DEFAULT_REASON);
         } else {
             if (!isValidMachineId) {
-                LogUtil.logError("Invalid machine id " + license.getMachineId());
+                LogUtil.logError("Invalid Machine ID.");
             }
 
             if (isExpired) {
-                LogUtil.logError("License expired");
+                LogUtil.logError("Expired License.");
             }
-
-            return false;
         }
+        return false;
     }
 
     private static boolean hasValidMachineId(License license) {
