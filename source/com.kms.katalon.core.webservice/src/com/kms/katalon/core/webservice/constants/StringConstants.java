@@ -14,14 +14,17 @@ public class StringConstants {
     public static final String KW_LOG_PASSED_SEND_REQUEST_SUCCESS = CoreWebserviceMessageConstants.KW_LOG_PASSED_SEND_REQUEST_SUCCESS;
     public static final String KW_LOG_PASSED_SEND_REQUEST_AND_VERIFY_SUCCESS = CoreWebserviceMessageConstants.KW_LOG_PASSED_SEND_REQUEST_AND_VERIFY_SUCCESS;
     public static final String KW_LOG_FAILED_CANNOT_VERIFY_ELEMENT_COUNT = CoreWebserviceMessageConstants.KW_LOG_FAILED_CANNOT_VERIFY_ELEMENT_COUNT;
+    public static final String KW_LOG_FAILED_CANNOT_GET_ELEMENT_COUNT = CoreWebserviceMessageConstants.KW_LOG_FAILED_CANNOT_GET_ELEMENT_COUNT;
     public static final String KW_LOG_PASSED_VERIFY_ELEMENT_COUNT = CoreWebserviceMessageConstants.KW_LOG_PASSED_VERIFY_ELEMENT_COUNT;
     public static final String KW_LOG_FAILED_CANNOT_VERIFY_ELEMENT_PROPERTY_VALUE = CoreWebserviceMessageConstants.KW_LOG_FAILED_CANNOT_VERIFY_ELEMENT_PROPERTY_VALUE;
+    public static final String KW_LOG_FAILED_CANNOT_GET_ELEMENT_PROPERTY_VALUE = CoreWebserviceMessageConstants.KW_LOG_FAILED_CANNOT_GET_ELEMENT_PROPERTY_VALUE;
     public static final String KW_LOG_PASSED_VERIFY_ELEMENT_PROPERTY_VALUE = CoreWebserviceMessageConstants.KW_LOG_PASSED_VERIFY_ELEMENT_PROPERTY_VALUE;
     public static final String KW_LOG_FAILED_CANNOT_VERIFY_ELEMENT_TEXT = CoreWebserviceMessageConstants.KW_LOG_FAILED_CANNOT_VERIFY_ELEMENT_TEXT;
+    public static final String KW_LOG_FAILED_CANNOT_GET_ELEMENT_TEXT = CoreWebserviceMessageConstants.KW_LOG_FAILED_CANNOT_GET_ELEMENT_TEXT;
     public static final String KW_LOG_PASSED_VERIFY_ELEMENT_TEXT = CoreWebserviceMessageConstants.KW_LOG_PASSED_VERIFY_ELEMENT_TEXT;
     public static final String KW_LOG_PASSED_CONTAIN_STRING = CoreWebserviceMessageConstants.KW_LOG_PASSED_CONTAIN_STRING;
     public static final String KW_LOG_FAILED_CONTAIN_STRING = CoreWebserviceMessageConstants.KW_LOG_FAILED_CONTAIN_STRING;
-	
+	public static final String KW_LOG_FAILED_CANNOT_GET_RESPONSE_STATUS_CODE = CoreWebserviceMessageConstants.KW_LOG_FAILED_CANNOT_GET_RESPONSE_STATUS_CODE;
     public static final String KW_CATEGORIZE_ELEMENT = "Element";
     public static final String KW_CATEGORIZE_REQUEST = "Request";
     public static final String KW_CATEGORIZE_TEXT = "Text";
