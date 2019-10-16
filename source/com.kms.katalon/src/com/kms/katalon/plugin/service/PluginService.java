@@ -16,7 +16,9 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
 import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -371,8 +373,10 @@ public class PluginService {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();
         if (currentProject != null) {
+            boolean allowSourceAttachment = LicenseType.valueOf(
+                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
             GroovyUtil.initGroovyProjectClassPath(currentProject,
-                    projectController.getCustomKeywordPlugins(currentProject), false, monitor);
+                    projectController.getCustomKeywordPlugins(currentProject), false, allowSourceAttachment, monitor);
             projectController.updateProjectClassLoader(currentProject);
             KeywordController.getInstance().parseAllCustomKeywords(currentProject, null);
             if (ApplicationRunningMode.get() == RunningMode.GUI) {

@@ -17,7 +17,11 @@ create_github_release() {
             "${tmpDir}/Katalon Studio.dmg" \
             "${tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz" \
             "${tmpDir}/Katalon_Studio_Windows_32-${version}.zip" \
-            "${tmpDir}/Katalon_Studio_Windows_64-${version}.zip"
+            "${tmpDir}/Katalon_Studio_Windows_64-${version}.zip" \
+            "${tmpDir}/Katalon_Studio_Engine_MacOS-${version}.tar.gz" \
+            "${tmpDir}/Katalon_Studio_Engine_Linux_64-${version}.tar.gz" \
+            "${tmpDir}/Katalon_Studio_Engine_Windows_32-${version}.zip" \
+            "${tmpDir}/Katalon_Studio_Engine_Windows_64-${version}.zip"
     fi         
 }
 

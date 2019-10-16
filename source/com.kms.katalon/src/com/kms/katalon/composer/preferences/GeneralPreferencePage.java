@@ -10,10 +10,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class GeneralPreferencePage extends PreferencePage {
@@ -53,7 +56,7 @@ public class GeneralPreferencePage extends PreferencePage {
 
         chkCheckNewVersion = new Button(parentComposite, SWT.CHECK);
         chkCheckNewVersion.setText(MessageConstants.PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE);
-        
+
         chkCheckAllowUsageTracking = new Button(parentComposite,  SWT.CHECK);
         chkCheckAllowUsageTracking.setText(MessageConstants.PAGE_PREF_AUTO_ALLOW_USAGE_TRACKING);
         
@@ -86,10 +89,17 @@ public class GeneralPreferencePage extends PreferencePage {
         }
         chkShowHelpAtStartUp.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP));
         
-        if(!prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)){
-            prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING, true);
+        boolean isEnterpriseAccount = LicenseType.valueOf(
+                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        if (isEnterpriseAccount) {
+            if (!prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)){
+                prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING, true);
+            }
+            chkCheckAllowUsageTracking.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING));    
+        } else {
+            chkCheckAllowUsageTracking.setSelection(true);
+            chkCheckAllowUsageTracking.setVisible(false);
         }
-        chkCheckAllowUsageTracking.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING));
     }
 
     @Override

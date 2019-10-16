@@ -79,6 +79,7 @@
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.util</module>
 		<module>com.kms.katalon.product</module>
+		<module>com.kms.katalon.product.engine</module>
 		<module>com.kms.katalon.selenium-standalone</module>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon.application</module>

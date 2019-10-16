@@ -15,11 +15,14 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.openqa.selenium.Platform;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.processors.ToolbarProcessor;
 import com.kms.katalon.constants.IdConstants;
 
@@ -64,10 +67,24 @@ public class ProjectToolbarHandler {
                         webserviceToolbar.setToBeRendered(false);
                     }
                 }
+                showDebugToolitemForEnterpriseAccount();
             }
         });
     }
     
+    private void showDebugToolitemForEnterpriseAccount() {
+        boolean isEnterpriseAccount = LicenseType.valueOf(
+                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        MToolBar executionToolBar = (MToolBar) modelService.find(ToolbarProcessor.KATALON_EXECUTION_TOOLBAR_ID,
+                application);
+        MHandledToolItem executionToolItemDebug = (MHandledToolItem) modelService
+                .find(IdConstants.DEBUG_TOOL_ITEM_ID, executionToolBar);
+        if (executionToolItemDebug != null) {
+            executionToolItemDebug.setVisible(isEnterpriseAccount);
+            executionToolItemDebug.setToBeRendered(isEnterpriseAccount);
+        }
+    }
+
     private void setToolTipExecution() {
         if (Platform.getCurrent().is(Platform.MAC)) {
             MToolBar executionToolBar = (MToolBar) modelService.find(ToolbarProcessor.KATALON_EXECUTION_TOOLBAR_ID,

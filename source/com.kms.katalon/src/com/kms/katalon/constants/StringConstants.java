@@ -215,6 +215,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
 
     public static final String MSG_CLEANING = MessageConstants.MSG_CLEANING;
+    
+    public static final String MSG_DEACTIVATE = MessageConstants.MSG_DEACTIVATE;
 
     public static final String Account_LOGIN_AS = MessageConstants.Account_LOGIN_AS;
 
@@ -227,6 +229,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String Account_RELOAD_PLUGIN = MessageConstants.Account_RELOAD_PLUGIN;
 
     public static final String Account_MANAGE_PLUGIN = MessageConstants.Account_MANAGE_PLUGIN;
+    
+    public static final String Account_MANAGE_API_KEY = MessageConstants.Account_MANAGE_API_KEY;
 
     public static final String Account_DEACTIVATE = MessageConstants.Account_DEACTIVATE;
 

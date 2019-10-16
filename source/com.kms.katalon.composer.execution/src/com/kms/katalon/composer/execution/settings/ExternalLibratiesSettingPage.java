@@ -43,6 +43,8 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -60,6 +62,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.classpath.ProjectBuildPath;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.license.models.LicenseType;
 
 public class ExternalLibratiesSettingPage extends PreferencePageWithHelp {
     private static final int DELETING_EXTERNAL_JAR_TIMEOUT = 30000;
@@ -293,7 +296,10 @@ public class ExternalLibratiesSettingPage extends PreferencePageWithHelp {
                             removeUnusedFiles(monitor);
                             monitor.worked(TICK);
                         } finally {
+                            boolean allowSourceAttachment = LicenseType.valueOf(
+                                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
                             projectController.openProjectForUI(currentProject.getId(),
+                                    allowSourceAttachment,
                                     new SubProgressMonitor(monitor, TICK));
                         }
                     } catch (final Exception e) {
