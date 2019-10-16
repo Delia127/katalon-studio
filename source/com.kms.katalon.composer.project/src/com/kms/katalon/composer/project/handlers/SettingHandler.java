@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -155,7 +154,7 @@ public class SettingHandler {
                 pluginPreferences);
 
         hideQTestIntegrationPageIfQTestPluginNotInstalled(pm);
-        hideWebLocatorSettingIfNotEnterpriseAccount(pm);
+        hidePagesIfNotEnterpriseAccount(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
@@ -306,32 +305,37 @@ public class SettingHandler {
         }
     }
 
-    private void hideWebLocatorSettingIfNotEnterpriseAccount(PreferenceManager pm) {
+    /**
+     * Hides enterprise setting pages for users who are not enterprise account.
+     * <p>Pages:
+     * <ul>
+     * <li>Test Design/ Web Locator</li>
+     * <li>API/Web Service Method</li>
+     * </ul>
+     * 
+     * @param pm
+     * The preference manager that allows to retrieve enterprise settings page
+     */
+    private void hidePagesIfNotEnterpriseAccount(PreferenceManager pm) {
         boolean isEnterpriseAccount = LicenseType.valueOf(
                 ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
         if (isEnterpriseAccount) {
             return;
         }
-        try {
-            IPreferenceNode testDesignSettings = null;
-            for (IPreferenceNode node : pm.getRootSubNodes()) {
-                if (StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID.equals(node.getId())) {
-                    testDesignSettings = node;
-                    break;
-                }
+        IPreferenceNode testDesignSettings = null;
+        for (IPreferenceNode node : pm.getRootSubNodes()) {
+            if (StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID.equals(node.getId())) {
+                testDesignSettings = node;
+                break;
             }
-            
-            if (testDesignSettings == null) {
-                return;
-            }
-
-            IPreferenceNode webLocatorNode = testDesignSettings.remove(StringConstants.WEB_LOCATORS_SETTING_PAGE_ID);
-            if (webLocatorNode == null) {
-                throw new MissingProjectSettingPageException(StringConstants.WEB_LOCATORS_SETTING_PAGE_ID);
-            }
-        } catch (MissingProjectSettingPageException e) {
-            LoggerSingleton.logError(e);
         }
+        
+        if (testDesignSettings == null) {
+            return;
+        }
+
+        testDesignSettings.remove(StringConstants.WEB_LOCATORS_SETTING_PAGE_ID);
+        testDesignSettings.remove(StringConstants.WS_METHOD_SETTING_PAGE_ID);
     }
 
     public static SettingHandler getInstance() {
