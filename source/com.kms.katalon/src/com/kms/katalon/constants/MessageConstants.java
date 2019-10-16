@@ -549,6 +549,9 @@ public class MessageConstants extends NLS {
     public static String About_BTN_OK;
 
     public static String About_LBL_TRIAL;
+    
+    // ProxyConfigurationDialog
+    public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
 
     public static String About_LBL_CHECKING_VERSION;
 

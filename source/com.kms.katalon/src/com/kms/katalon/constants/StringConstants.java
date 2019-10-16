@@ -253,5 +253,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
     
+    // ProxyConfigurationDialog
+    public static final String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG = MessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
+
     public static final String ABOUT_LBL_CHECKING_VERSION = MessageConstants.About_LBL_CHECKING_VERSION;
 }
