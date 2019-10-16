@@ -20,6 +20,9 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -31,16 +34,20 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenProjectHandler {
@@ -153,9 +160,12 @@ public class OpenProjectHandler {
                     SubMonitor progress = SubMonitor.convert(monitor, 10);
                     monitor.worked(1);
                     monitor.subTask(StringConstants.HAND_LOADING_PROJ);
+                    boolean isEnterpriseAccount = LicenseType.valueOf(
+                            ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
+                            isEnterpriseAccount,
                             progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));                    
-                    
+
                     monitor.subTask(StringConstants.HAND_REFRESHING_EXPLORER);
                     syncService.syncExec(new Runnable() {
                         @Override
@@ -168,6 +178,8 @@ public class OpenProjectHandler {
                                 }
                                 eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));
+
+                                showProblemView();
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
                             }
@@ -202,7 +214,30 @@ public class OpenProjectHandler {
                 }
             }
         });
-        
+    }
+    
+    public static void showProblemView() {
+        EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
+        MApplication application = ApplicationSingleton.getInstance().getApplication();
+
+        List<MPerspectiveStack> psList = modelService.findElements(application, null, MPerspectiveStack.class, null);
+        MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID,
+                psList.get(0).getSelectedElement());
+        consolePartStack.getTags().remove("Minimized");
+
+        List<MStackElement> children = consolePartStack.getChildren();
+        MStackElement problemViewStackElement = null;
+        for (MStackElement element : children) {
+            if (element.getElementId().equals(IdConstants.PROBLEM_VIEW_PLACEHOLDER_ID)) {
+                problemViewStackElement = element;
+                consolePartStack.setSelectedElement(problemViewStackElement);
+                consolePartStack.setVisible(true);
+                break;
+            }
+        }
+        if (!consolePartStack.isToBeRendered()) {
+            consolePartStack.setToBeRendered(true);
+        }
     }
 
     public static void updateProjectTitle(ProjectEntity projectEntity, EModelService modelService, MApplication app) {

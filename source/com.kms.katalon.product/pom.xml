@@ -24,13 +24,23 @@
 		<product.win32KataloncFile>${product.win32OutputDirectory}/katalonc.exe</product.win32KataloncFile>
 		<product.win64EclipsecFile>${product.win64OutputDirectory}/eclipsec.exe</product.win64EclipsecFile>
 		<product.win64KataloncFile>${product.win64OutputDirectory}/katalonc.exe</product.win64KataloncFile>
-		
 		<product.linux32KatalonFile>${product.linux32OutputDirectory}/katalon</product.linux32KatalonFile>
 		<product.linux32KataloncFile>${product.linux32OutputDirectory}/katalonc</product.linux32KataloncFile>
 		<product.linux64KatalonFile>${product.linux64OutputDirectory}/katalon</product.linux64KatalonFile>
 		<product.linux64KataloncFile>${product.linux64OutputDirectory}/katalonc</product.linux64KataloncFile>
 		<product.mac64KatalonFile>${product.mac64OutputDirectory}/../MacOS/katalon</product.mac64KatalonFile>
 		<product.mac64KataloncFile>${product.mac64OutputDirectory}/../MacOS/katalonc</product.mac64KataloncFile>
+		
+		<product.win32KatalonIniFile>${product.win32OutputDirectory}/katalon.ini</product.win32KatalonIniFile>
+		<product.win32KataloncIniFile>${product.win32OutputDirectory}/katalonc.ini</product.win32KataloncIniFile>
+		<product.win64KatalonIniFile>${product.win64OutputDirectory}/katalon.ini</product.win64KatalonIniFile>
+		<product.win64KataloncIniFile>${product.win64OutputDirectory}/katalonc.ini</product.win64KataloncIniFile>
+		<product.linux32KatalonIniFile>${product.linux32OutputDirectory}/katalon.ini</product.linux32KatalonIniFile>
+		<product.linux32KataloncIniFile>${product.linux32OutputDirectory}/katalonc.ini</product.linux32KataloncIniFile>
+		<product.linux64KatalonIniFile>${product.linux64OutputDirectory}/katalon.ini</product.linux64KatalonIniFile>
+		<product.linux64KataloncIniFile>${product.linux64OutputDirectory}/katalonc.ini</product.linux64KataloncIniFile>
+		<product.mac64KatalonIniFile>${product.mac64OutputDirectory}/katalon.ini</product.mac64KatalonIniFile>
+		<product.mac64KataloncIniFile>${product.mac64OutputDirectory}/katalonc.ini</product.mac64KataloncIniFile>
 
 		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
 		<product.mac64ResourcesDirectory>configuration/macosx64_resources</product.mac64ResourcesDirectory>
@@ -149,6 +159,46 @@
 								<copy file="${product.mac64KatalonFile}"
 									tofile="${product.mac64KataloncFile}"
 									overwrite="true" />
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>duplicate-katalon-ini-to-katalonc-ini</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<copy file="${product.win32KatalonIniFile}"
+									tofile="${product.win32KataloncIniFile}"
+									overwrite="true" />
+								<copy file="${product.win64KatalonIniFile}"
+									tofile="${product.win64KataloncIniFile}"
+									overwrite="true" />
+								<copy file="${product.linux32KatalonIniFile}"
+									tofile="${product.linux32KataloncIniFile}"
+									overwrite="true" />
+								<copy file="${product.linux64KatalonIniFile}"
+									tofile="${product.linux64KataloncIniFile}"
+									overwrite="true" />
+								<copy file="${product.mac64KatalonIniFile}"
+									tofile="${product.mac64KataloncIniFile}"
+									overwrite="true" />
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>set-executable-linux-mac</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<chmod file="${product.linux32KataloncFile}" perm="+x" />
+								<chmod file="${product.linux64KataloncFile}" perm="+x" />
+								<chmod file="${product.mac64KataloncFile}" perm="+x" />
 							</target>
 						</configuration>
 					</execution>

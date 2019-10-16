@@ -29,7 +29,8 @@ Require-Bundle: org.codehaus.groovy,
  com.google.guava,
  com.kms.katalon.selenium-standalone,
  org.apache.httpcomponents.httpcore,
- org.apache.commons.io
+ org.apache.commons.io,
+ com.kms.katalon.util
 Export-Package: com.kms.katalon.core.webservice.common,
  com.kms.katalon.core.webservice.constants,
  com.kms.katalon.core.webservice.contribution,

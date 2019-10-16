@@ -120,7 +120,8 @@ public class CustomSourceBranchPage extends WizardPage {
         label = new Label(panel, SWT.NONE);
         label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        FilteredCheckboxTree fTree = new FilteredCheckboxTree(panel, null, SWT.NONE, new PatternFilter()) {
+        FilteredCheckboxTree fTree = new FilteredCheckboxTree(panel, null,
+                SWT.NONE, new PatternFilter()) {
             /*
              * Overridden to check page when refreshing is done.
              */
@@ -159,7 +160,7 @@ public class CustomSourceBranchPage extends WizardPage {
 
             @Override
             public Object[] getElements(Object input) {
-                return ((List<?>) input).toArray();
+                return ((List) input).toArray();
             }
 
             @Override
@@ -181,9 +182,9 @@ public class CustomSourceBranchPage extends WizardPage {
         refsViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                if (((Ref) element).getName().startsWith(Constants.R_HEADS))
-                    return ((Ref) element).getName().substring(Constants.R_HEADS.length());
-                return ((Ref) element).getName();
+                if (((Ref)element).getName().startsWith(Constants.R_HEADS))
+                    return ((Ref)element).getName().substring(Constants.R_HEADS.length());
+                return ((Ref)element).getName();
             }
 
             @Override
@@ -223,7 +224,6 @@ public class CustomSourceBranchPage extends WizardPage {
         Dialog.applyDialogFont(panel);
         setControl(panel);
         checkPage();
-        checkForEmptyRepo();
     }
 
     public void setSelection(@NonNull RepositorySelection selection) {
@@ -238,7 +238,7 @@ public class CustomSourceBranchPage extends WizardPage {
      * Set the ID for context sensitive help
      *
      * @param id
-     * help context
+     *            help context
      */
     public void setHelpContext(String id) {
         helpContext = id;
@@ -285,11 +285,11 @@ public class CustomSourceBranchPage extends WizardPage {
         if (newRepoSelection.equals(validatedRepoSelection)) {
             // URI hasn't changed, no need to refill the page with new data
             checkPage();
-            checkForEmptyRepo();
             return;
         }
 
-        label.setText(NLS.bind(UIText.SourceBranchPage_branchList, newRepoSelection.getURI().toString()));
+        label.setText(NLS.bind(UIText.SourceBranchPage_branchList,
+                newRepoSelection.getURI().toString()));
         label.getParent().layout();
 
         validatedRepoSelection = null;
@@ -303,11 +303,7 @@ public class CustomSourceBranchPage extends WizardPage {
         label.getDisplay().asyncExec(new Runnable() {
             @Override
             public void run() {
-                try {
-                    revalidateImpl(newRepoSelection);
-                } catch (IllegalStateException e) {
-                    // Getting branches failed, ignore this
-                }
+                revalidateImpl(newRepoSelection);
             }
         });
     }
@@ -319,24 +315,24 @@ public class CustomSourceBranchPage extends WizardPage {
         final ListRemoteOperation listRemoteOp;
         final URIish uri = newRepoSelection.getURI();
         try {
-            final Repository db = FileRepositoryBuilder.create(new File("/tmp")); //$NON-NLS-1$
-            int timeout = Activator.getDefault().getPreferenceStore().getInt(UIPreferences.REMOTE_CONNECTION_TIMEOUT);
+            final Repository db = FileRepositoryBuilder
+                    .create(new File("/tmp")); //$NON-NLS-1$
+            int timeout = Activator.getDefault().getPreferenceStore().getInt(
+                    UIPreferences.REMOTE_CONNECTION_TIMEOUT);
             listRemoteOp = new ListRemoteOperation(db, uri, timeout);
             if (credentials != null)
-                listRemoteOp.setCredentialsProvider(new EGitCredentialsProvider(credentials.getUser(),
-                        credentials.getPassword()));
+                listRemoteOp
+                        .setCredentialsProvider(new EGitCredentialsProvider(
+                                credentials.getUser(), credentials
+                                        .getPassword()));
             getContainer().run(true, true, new IRunnableWithProgress() {
                 @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                public void run(IProgressMonitor monitor)
+                        throws InvocationTargetException, InterruptedException {
                     listRemoteOp.run(monitor);
                 }
             });
         } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof TransportException) {
-                transportError(GitStringConstants.HAND_ERROR_MSG_UNABLE_TO_CONNECT);
-                return;
-            }
-            LoggerSingleton.logError(e);
             Throwable why = e.getCause();
             transportError(why);
             if (showDetailedFailureDialog())
@@ -396,26 +392,30 @@ public class CustomSourceBranchPage extends WizardPage {
         Activator.logError(why.getMessage(), why);
         Throwable cause = why.getCause();
         if (why instanceof TransportException && cause != null)
-            transportError(NLS.bind(getMessage(why), why.getMessage(), cause.getMessage()));
-        else transportError(why.getMessage());
+            transportError(NLS.bind(getMessage(why), why.getMessage(),
+                    cause.getMessage()));
+        else
+            transportError(why.getMessage());
     }
 
     private String getMessage(final Throwable why) {
         if (why.getMessage().endsWith("Auth fail")) //$NON-NLS-1$
             return UIText.SourceBranchPage_AuthFailMessage;
-        else return UIText.SourceBranchPage_CompositeTransportErrorMessage;
+        else
+            return UIText.SourceBranchPage_CompositeTransportErrorMessage;
     }
 
     private void transportError(final String msg) {
-        transportError = msg;
-        checkPage();
-        checkForEmptyRepo();
+            transportError = msg;
+            checkPage();
     }
 
     private boolean showDetailedFailureDialog() {
-        return Activator.getDefault()
+        return Activator
+                .getDefault()
                 .getPreferenceStore()
-                .getBoolean(UIPreferences.CLONE_WIZARD_SHOW_DETAILED_FAILURE_DIALOG);
+                .getBoolean(
+                        UIPreferences.CLONE_WIZARD_SHOW_DETAILED_FAILURE_DIALOG);
     }
 
 }

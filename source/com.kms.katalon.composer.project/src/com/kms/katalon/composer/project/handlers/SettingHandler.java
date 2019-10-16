@@ -39,8 +39,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
 import com.katalon.platform.api.Extension;
+import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.extension.PluginPreferencePage;
 import com.katalon.platform.api.service.ApplicationManager;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -51,10 +54,12 @@ import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.exception.MissingProjectSettingPageException;
 import com.kms.katalon.composer.project.preference.CustomKeywordPluginPreferenceNodeDescription;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.preferences.PreferenceNodeDescription;
 import com.kms.katalon.preferences.internal.PreferenceNodeDescriptionImpl;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
@@ -149,7 +154,8 @@ public class SettingHandler {
         PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP,
                 pluginPreferences);
 
-        hideIOSPageOnNoneMacOS(pm);
+        hideQTestIntegrationPageIfQTestPluginNotInstalled(pm);
+        hideWebLocatorSettingIfNotEnterpriseAccount(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
@@ -272,45 +278,58 @@ public class SettingHandler {
         execute(Display.getCurrent().getActiveShell(), preferencesRegistry);
     }
 
-    private void hideIOSPageOnNoneMacOS(PreferenceManager pm) {
-        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+    private void hideQTestIntegrationPageIfQTestPluginNotInstalled(PreferenceManager pm) {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.QTEST_PLUGIN_ID);
+        if (plugin != null) {
             return;
         }
-
+        
         try {
-            IPreferenceNode executionSettings = null;
+            IPreferenceNode integrationSettings = null;
             for (IPreferenceNode node : pm.getRootSubNodes()) {
-                if (StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID.equals(node.getId())) {
-                    executionSettings = node;
+                if (StringConstants.PROJECT_INTEGRATION_SETTINGS_PAGE_ID.equals(node.getId())) {
+                    integrationSettings = node;
                     break;
                 }
             }
-            if (executionSettings == null) {
+            
+            if (integrationSettings == null) {
+                return;
+            }
+            
+            IPreferenceNode qTestNode = integrationSettings.remove(StringConstants.PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID);
+            if (qTestNode == null) {
+                throw new MissingProjectSettingPageException(StringConstants.PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID);
+            }
+        } catch (MissingProjectSettingPageException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    private void hideWebLocatorSettingIfNotEnterpriseAccount(PreferenceManager pm) {
+        boolean isEnterpriseAccount = LicenseType.valueOf(
+                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        if (isEnterpriseAccount) {
+            return;
+        }
+        try {
+            IPreferenceNode testDesignSettings = null;
+            for (IPreferenceNode node : pm.getRootSubNodes()) {
+                if (StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID.equals(node.getId())) {
+                    testDesignSettings = node;
+                    break;
+                }
+            }
+            
+            if (testDesignSettings == null) {
                 return;
             }
 
-            IPreferenceNode defaultExecutionSettings = executionSettings
-                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            if (defaultExecutionSettings == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            }
-
-            IPreferenceNode mobileNode = defaultExecutionSettings
-                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
-            if (mobileNode == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
-            }
-
-            IPreferenceNode iOSNode = mobileNode
-                    .remove(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
-            if (iOSNode == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
+            IPreferenceNode webLocatorNode = testDesignSettings.remove(StringConstants.WEB_LOCATORS_SETTING_PAGE_ID);
+            if (webLocatorNode == null) {
+                throw new MissingProjectSettingPageException(StringConstants.WEB_LOCATORS_SETTING_PAGE_ID);
             }
         } catch (MissingProjectSettingPageException e) {
-            // In case of someone changes the page ID in e4xmi, this will get DEV attention
             LoggerSingleton.logError(e);
         }
     }

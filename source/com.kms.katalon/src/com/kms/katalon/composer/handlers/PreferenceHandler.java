@@ -10,6 +10,9 @@ import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
@@ -20,7 +23,11 @@ public class PreferenceHandler extends AbstractHandler {
     public static final String DEFAULT_PREFERENCE_PAGE_ID = "com.kms.katalon.composer.preferences.GeneralPreferencePage";
 
     private static final String[] UNNECESSARY_PREF_NODES = new String[] {};
+    
+    private static final String KOBITON_PREF_PATH = "com.kms.katalon.composer.preferences.GeneralPreferencePage/com.kms.katalon.composer.integration.kobiton.preferences";
 
+    private static final String KOBITON_PLUGIN_ID = "com.katalon.katalon-studio-kobiton";
+    
     @Override
     public boolean canExecute() {
         return true;
@@ -47,12 +54,21 @@ public class PreferenceHandler extends AbstractHandler {
         removeUnnecessaryNodes(workbenchPref);
 
         addApplicationNodesToWorkbenchPreferenceManger(workbenchPref, applicationNodes);
+        
+        hideKobitonPreferencePageIfKobitonPluginNotInstalled(workbenchPref);
 
         int result = openPreferenceDialog(workbenchPref, initPreferencePageId);
 
         removeApplicationNodesFromWorkbenchPreferenceManager(workbenchPref, applicationNodes);
 
         return result;
+    }
+
+    private static void hideKobitonPreferencePageIfKobitonPluginNotInstalled(PreferenceManager workbenchPref) {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(KOBITON_PLUGIN_ID);
+        if (plugin == null) {
+            workbenchPref.remove(KOBITON_PREF_PATH);
+        }
     }
 
     @Inject

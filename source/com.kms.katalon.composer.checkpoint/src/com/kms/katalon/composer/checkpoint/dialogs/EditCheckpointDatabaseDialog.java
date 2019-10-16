@@ -22,6 +22,8 @@ public class EditCheckpointDatabaseDialog extends DatabaseConnectionAbstractDial
 
     @Override
     protected void setInput() {
+        showDriverComposite();
+
         chkGlobalDBSetting.setSelection(sourceInfo.isUsingGlobalDBSetting());
 
         chkSecureUserPassword.setSelection(sourceInfo.isSecureUserAccount());

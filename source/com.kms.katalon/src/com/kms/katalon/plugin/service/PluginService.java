@@ -15,12 +15,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
+import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -31,6 +36,7 @@ import com.kms.katalon.execution.constants.PluginOptions;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
@@ -259,9 +265,11 @@ public class PluginService {
     private List<KStorePlugin> getOnlinePlugins(KStoreCredentials credentials) throws KStoreClientExceptionWithInfo {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
+        KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+        LicenseType licenseType = ActivationInfoCollector.getLicenseType();
         List<KStorePlugin> latestPlugins = null;
         try {
-            latestPlugins = restClient.getLatestPlugins(appVersion);
+            latestPlugins = restClient.getLatestPlugins(appVersion, katalonPackage, licenseType);
         } catch (KStoreClientExceptionWithInfo e) {
             LoggerSingleton.logError(e);
         }
@@ -365,8 +373,10 @@ public class PluginService {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();
         if (currentProject != null) {
+            boolean allowSourceAttachment = LicenseType.valueOf(
+                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
             GroovyUtil.initGroovyProjectClassPath(currentProject,
-                    projectController.getCustomKeywordPlugins(currentProject), false, monitor);
+                    projectController.getCustomKeywordPlugins(currentProject), false, allowSourceAttachment, monitor);
             projectController.updateProjectClassLoader(currentProject);
             KeywordController.getInstance().parseAllCustomKeywords(currentProject, null);
             if (ApplicationRunningMode.get() == RunningMode.GUI) {

@@ -20,7 +20,8 @@ Require-Bundle: com.kms.katalon.core,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
  com.google.gson,
- com.kms.katalon.core.appium
+ com.kms.katalon.core.appium,
+ com.katalon.platform
 Export-Package: com.kms.katalon.integration.kobiton.configuration,
  com.kms.katalon.integration.kobiton.constants,
  com.kms.katalon.integration.kobiton.driver,

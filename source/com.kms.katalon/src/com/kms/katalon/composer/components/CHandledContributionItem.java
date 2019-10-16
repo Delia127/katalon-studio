@@ -42,12 +42,16 @@ public class CHandledContributionItem extends HandledContributionItem {
         item.setImage(iconImage);
         item.setData(ICON_URI, iconURI);
         if (item instanceof ToolItem) {
-            iconImage = getImage(disabledURI);
             ToolItem toolItem = (ToolItem) item;
             toolItem.setToolTipText(getModel().getLabel());
             toolItem.setText("");
-            toolItem.setDisabledImage(iconImage);
-            item.setData(DISABLED_URI, disabledURI);
+            if (toolItem.getDisabledImage() == null) {
+                iconImage = getImage(disabledURI);
+                if (iconImage != null) {
+                    toolItem.setDisabledImage(iconImage);
+                    item.setData(DISABLED_URI, disabledURI);
+                }
+            }
         }
 
     }

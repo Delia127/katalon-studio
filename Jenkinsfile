@@ -8,7 +8,6 @@ import groovy.json.JsonOutput
 def version
 def isRelease
 def isBeta
-def isQtest
 def titleVersion
 def tag
 
@@ -53,16 +52,13 @@ pipeline {
                         throw new IllegalStateException('Branch or version is incorrect.')
                     }
 
-                    isQtest = branch.contains('qtest')
-                    println("Is qTest ${isQtest}.")
-
                     isRelease = branch.startsWith('release-') || branch.contains('-release-')
                     println("Is release ${isRelease}.")
 
                     isBeta = isRelease && branch.contains('.rc')
                     println("Is beta ${isBeta}.")
 
-                    withUpdate = isRelease && !isQtest && !isBeta
+                    withUpdate = isRelease && !isBeta
                     println("With update ${withUpdate}.")
 
                     if (isRelease) {
@@ -99,6 +95,10 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon+Studio.app.zi
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Linux_64-${secondArg}.tar.gz
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Windows_32-${secondArg}.zip
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Windows_64-${secondArg}.zip
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Engine_MacOS-${secondArg}.tar.gz
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Engine_Linux_64-${secondArg}.tar.gz
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Engine_Windows_32-${secondArg}.zip
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Engine_Windows_64-${secondArg}.zip
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/apidocs.zip
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/changeLogs.txt
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
@@ -114,13 +114,6 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             steps {
                 script {
                         def latestRelease =
-/* temporarily disable dmg build
-    {
-        "location": "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
-        "file": "mac_64"
-    },
-*/
-
 """[
     {
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
@@ -131,7 +124,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         "file": "win_64"
     },
     {
-        "location": "https://download.katalon.com/${version}/Katalon%20Studio.app.zip",
+        "location": "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
         "file": "mac_64"
     },
     {
@@ -147,42 +140,64 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
+        stage('Generate lastest_engine.json') {
+            steps {
+                script {
+                        def latestRelease =
+"""[
+    {
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Engine_Windows_32-${version}.zip",
+        "file": "win_32"
+    },
+    {
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Engine_Windows_64-${version}.zip",
+        "file": "win_64"
+    },
+    {
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Engine_MacOS-${version}.tar.gz",
+        "file": "mac_64"
+    },
+    {
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Engine_Linux_64-${version}.tar.gz",
+        "file": "linux_64"
+    }
+]"""
+                        writeFile(file: "${env.tmpDir}/lastest_engine.json", text: latestRelease)
+                        def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_engine.json")
+                        println(latest_release_from_file)
+
+                }
+            }
+        }
+
         stage('Generate releases.json') {
             steps {
                 script {
                         def releases =
-/* temporarily disable dmg build
-    {
-        "os": "macOS (dmg)",
-        "version": "${version}",
-        "filename": "Katalon.Studio.dmg",
-        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg"
-    },
-*/
 """
     {
         "os": "macOS (app)",
         "version": "${version}",
         "filename": "Katalon.Studio.app.zip",
-        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.app.zip"
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Engine_MacOS-${version}.tar.gz"
     },
     {
         "os": "Linux",
         "version": "${version}",
         "filename": "Katalon_Studio_Linux_64-${version}.tar.gz",
-        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Linux_64-${version}.tar.gz"
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Engine_Linux_64-${version}.tar.gz"
     },
     {
         "os": "Windows 32",
         "version": "${version}",
         "filename": "Katalon_Studio_Windows_32-${version}.zip",
-        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_32-${version}.zip"
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Engine_Windows_32-${version}.zip"
     },
     {
         "os": "Windows 64",
         "version": "${version}",
         "filename": "Katalon_Studio_Windows_64-${version}.zip",
-        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip"
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Engine_Windows_64-${version}.zip"
     },
 """
                         writeFile(file: "${env.tmpDir}/releases.json", text: releases)
@@ -242,13 +257,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                             // Generate Katalon builds
                             // If branch name contains "release", build production mode for non-qTest package
                             // else build development mode for qTest package
-                            if (isQtest) {
-                                echo "Building: qTest Prod"
-                                sh "mvn -pl \\!com.kms.katalon.product clean ${command} -P prod"
-                            } else {
-                                echo "Building: Standard Prod"
-                                sh "mvn -pl \\!com.kms.katalon.product.qtest_edition clean ${command} -P prod"
-                            }
+                            echo "Building: Standard Prod"
+                            sh "mvn clean ${command} -P prod"
 
                             // Generate API docs
                             sh "cd com.kms.katalon.apidocs && mvn clean ${command} && cp -R 'target/resources/apidocs' ${env.tmpDir}"
@@ -261,7 +271,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         /*
         stage('Testing') {
             steps {
-                dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
+                dir ("source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64")
                 {
                     sh 'curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip'
                     sh 'unzip master.zip'
@@ -276,34 +286,27 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
                     script {
-                        if (!isQtest) {
-                            sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
-                            writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
-                            writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
-                            fileOperations([
-                                    fileCopyOperation(
-                                        excludes: '',
-                                        includes: '*.zip, *.tar.gz, *.app',
-                                        flattenFiles: true,
-                                        targetLocation: "${env.tmpDir}")
-                            ])
-                        }
+                        sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
+                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
+                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
+                        fileOperations([
+                                fileCopyOperation(
+                                    excludes: '',
+                                    includes: '*.zip, *.tar.gz, *.app',
+                                    flattenFiles: true,
+                                    targetLocation: "${env.tmpDir}")
+                        ])
                     }
                 }
-                dir("source/com.kms.katalon.product.qtest_edition/target/products") {
+                dir("source/com.kms.katalon.product.engine/target/products") {
                     script {
-                        if (isQtest) {
-                            sh "cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
-                            writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
-                            writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
-                            fileOperations([
+                        fileOperations([
                                 fileCopyOperation(
-                                        excludes: '',
-                                        includes: '*.zip, *.tar.gz, *.app',
-                                        flattenFiles: true,
-                                        targetLocation: "${env.tmpDir}")
-                            ])
-                        }
+                                    excludes: '',
+                                    includes: '*.zip, *.tar.gz, *.app',
+                                    flattenFiles: true,
+                                    targetLocation: "${env.tmpDir}")
+                        ])
                     }
                 }
             }
@@ -359,6 +362,10 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${version}"
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Engine_Windows_32.zip ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Engine_Windows_64.zip ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Engine_MacOS.tar.gz ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Engine_Linux_64.tar.gz ${version}"
 
                         sh "rm -rf ${env.tmpDir}/*.zip"
                         sh "rm -rf ${env.tmpDir}/*.tar.gz"
@@ -375,68 +382,66 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
-        stage('Upload update packages to S3') {
-            steps {
-                script {
-                    if (withUpdate) {
-                        withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
-                            s3Upload(file: "${env.tmpDir}/update/${tag}", bucket:'katalon', path: "update/${tag}", acl:'PublicRead')
-                        }
-                        sh "rm -rf '${env.tmpDir}/update'"
-                    }
-                }
-            }
-        }
+        // stage('Upload update packages to S3') {
+        //     steps {
+        //         script {
+        //             if (withUpdate) {
+        //                 withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
+        //                     s3Upload(file: "${env.tmpDir}/update/${tag}", bucket:'katalon', path: "update/${tag}", acl:'PublicRead')
+        //                 }
+        //                 sh "rm -rf '${env.tmpDir}/update'"
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Upload build packages to S3') {
-            steps {
-                script {
-                    if (isRelease) {
-                        def s3Location
-                        if (isQtest) {
-                            s3Location = "${tag}/qTest"
-                        } else if (isBeta) {
-                            s3Location = "release-beta/${tag}"
-                        } else {
-                            s3Location = "${tag}"
-                        }
-                        withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
-                            s3Upload(file: "${env.tmpDir}", bucket:'katalon', path: "${s3Location}", acl:'PublicRead')
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Upload build packages to S3') {
+        //     steps {
+        //         script {
+        //             if (isRelease) {
+        //                 def s3Location
+        //                 if (isBeta) {
+        //                     s3Location = "release-beta/${tag}"
+        //                 } else {
+        //                     s3Location = "${tag}"
+        //                 }
+        //                 withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
+        //                     s3Upload(file: "${env.tmpDir}", bucket:'katalon', path: "${s3Location}", acl:'PublicRead')
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Create Github release') {
-            steps {
-                script {
-                    if (isRelease && !isQtest) {
-                        dir("tools/release") {
-                            nodejs(nodeJSInstallationName: 'nodejs') {
-                                sh 'npm prune && npm install'
-                                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-/* temporarily disable dmg
-                                        '${env.tmpDir}/Katalon Studio.dmg' \
-*/
-                                    sh """node app.js ${env.GITHUB_TOKEN} v${tag} \
-                                        '${env.tmpDir}/lastest_release.json' \
-                                        '${env.tmpDir}/latest_version.json' \
-                                        '${env.tmpDir}/releases.json' \
-                                        '${env.tmpDir}/apidocs.zip' \
-                                        '${env.tmpDir}/commit.txt' \
-                                        '${env.tmpDir}/Katalon Studio.app.zip' \
-                                        '${env.tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
-                                        '${env.tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
-                                        '${env.tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
-                                    """
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//         stage('Create Github release') {
+//             steps {
+//                 script {
+//                     if (isRelease) {
+//                         dir("tools/release") {
+//                             nodejs(nodeJSInstallationName: 'nodejs') {
+//                                 sh 'npm prune && npm install'
+//                                 withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+// /* temporarily disable dmg
+//                                         '${env.tmpDir}/Katalon Studio.dmg' \
+// */
+//                                     sh """node app.js ${env.GITHUB_TOKEN} v${tag} \
+//                                         '${env.tmpDir}/lastest_release.json' \
+//                                         '${env.tmpDir}/latest_version.json' \
+//                                         '${env.tmpDir}/releases.json' \
+//                                         '${env.tmpDir}/apidocs.zip' \
+//                                         '${env.tmpDir}/commit.txt' \
+//                                         '${env.tmpDir}/Katalon Studio.app.zip' \
+//                                         '${env.tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
+//                                         '${env.tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
+//                                         '${env.tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
+//                                     """
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
 
         stage ('Success') {
             steps {

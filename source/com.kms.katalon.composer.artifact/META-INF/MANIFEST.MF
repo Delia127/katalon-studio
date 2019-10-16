@@ -24,7 +24,9 @@ Require-Bundle: org.eclipse.jface,
  org.eclipse.jdt.core,
  org.eclipse.ui.workbench,
  org.eclipse.core.resources,
- com.kms.katalon.groovy
+ org.eclipse.e4.core.di.annotations,
+ com.kms.katalon.groovy,
+ com.kms.katalon.application
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: resources/,
  .

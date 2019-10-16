@@ -2,6 +2,8 @@ package com.kms.katalon.integration.analytics.setting;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,53 +33,33 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_INTEGRATION_ENABLE, enabled);
     }
 
-    public String getServerEndpoint(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-//        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT,
-//                AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT, encryptionEnabled);
-    	return ApplicationInfo.getTestOpsServer();
+    public String getServerEndpoint() throws IOException, GeneralSecurityException {
+        return ApplicationInfo.getTestOpsServer();
     }
 
-    public void setServerEndPoint(String serverEndpoint, boolean encryptionEnabled)
-            throws IOException, GeneralSecurityException {
-//        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT, serverEndpoint, encryptionEnabled);
+    public void setServerEndPoint(String serverEndpoint) throws IOException, GeneralSecurityException {
     }
 
-    public String getEmail(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        // return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, StringUtils.EMPTY,
-        // encryptionEnabled);
+    public String getEmail() throws IOException, GeneralSecurityException {
         return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
     }
 
-    public void setEmail(String email, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        // setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, email, encryptionEnabled);
+    public void setEmail(String email) throws IOException, GeneralSecurityException {
     }
 
-    public String getPassword(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        // return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, StringUtils.EMPTY,
-        // encryptionEnabled);
+    public String getPassword() throws IOException, GeneralSecurityException {
         String passwordDecode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
         return CryptoUtil.decode(CryptoUtil.getDefault(passwordDecode));
     }
 
-    public void setPassword(String rawPassword, boolean encryptionEnabled)
-            throws IOException, GeneralSecurityException {
-        // setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, rawPassword,
-        // encryptionEnabled);
-    }
-
-    public boolean isEncryptionEnabled() throws IOException {
-        return getBoolean(AnalyticsSettingStoreConstants.ANALYTICS_ENCRYPTION_ENABLED, false);
-    }
-
-    public void enableEncryption(boolean enabled) throws IOException {
-        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_ENCRYPTION_ENABLED, enabled);
+    public void setPassword(String rawPassword) throws IOException, GeneralSecurityException {
     }
 
     public AnalyticsProject getProject() throws IOException {
         String projectJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_PROJECT, StringUtils.EMPTY);
         if (StringUtils.isNotBlank(projectJson) || !StringUtils.contains(projectJson, "null")) {
             try {
-            	AnalyticsProject project = new AnalyticsProject();
+                AnalyticsProject project = new AnalyticsProject();
                 project = JsonUtil.fromJson(projectJson, AnalyticsProject.class);
                 return project;
             } catch (IllegalArgumentException e) {
@@ -95,7 +77,7 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         String teamJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_TEAM, StringUtils.EMPTY);
         if (StringUtils.isNotBlank(teamJson)) {
             try {
-            	AnalyticsTeam team = new AnalyticsTeam();
+                AnalyticsTeam team = new AnalyticsTeam();
                 team = JsonUtil.fromJson(teamJson, AnalyticsTeam.class);
                 return team;
             } catch (IllegalArgumentException e) {
@@ -109,13 +91,13 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_TEAM, JsonUtil.toJson(team));
     }
 
-    public String getToken(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+    public String getToken() throws IOException, GeneralSecurityException {
         return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_TOKEN, StringUtils.EMPTY,
-                encryptionEnabled);
+                true);
     }
 
-    public void setToken(String token, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_TOKEN, token, encryptionEnabled);
+    public void setToken(String token) throws IOException, GeneralSecurityException {
+        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_TOKEN, token, true);
     }
 
     public boolean isAutoSubmit() throws IOException {
@@ -149,9 +131,9 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     public void setAttachCapturedVideos(boolean capturedVideos) throws IOException {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS, capturedVideos);
     }
-    
+
     public AnalyticsOrganization getOrganization() {
-    	AnalyticsOrganization organization = new AnalyticsOrganization();
+        AnalyticsOrganization organization = new AnalyticsOrganization();
         String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
         if (StringUtils.isNotBlank(jsonObject)) {
             try {
@@ -161,5 +143,22 @@ public class AnalyticsSettingStore extends BundleSettingStore {
             }
         }
         return organization;
+    }
+    
+    public void removeProperties() {
+        List<String> properties = new ArrayList<>();
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_AUTO_SUBMIT);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_SCREENSHOT);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_LOG);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS);
+        properties.add(AnalyticsSettingStoreConstants.ANALYTICS_ENCRYPTION_ENABLED);
+        try {
+            removeProperties(properties);
+        } catch (IOException e) {
+            //ignore
+        }
     }
 }

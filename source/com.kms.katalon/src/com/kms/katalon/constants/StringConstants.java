@@ -81,10 +81,6 @@ public class StringConstants extends GlobalStringConstants {
     // Activation
     public static final String AGREE_TERM_URL = MessageConstants.AGREE_TERM_URL;
     
-    public static final String OFFLINE_ACTIVATION = MessageConstants.OFFLINE_ACTIVATION;
-    
-    public static final String ENTERPRISE_TRIAL_LICENSE = MessageConstants.ENTERPRISE_TRIAL_LICENSE;
-    
     public static final String FORGOT_PASS_LINK = MessageConstants.FORGOT_PASS_LINK;
 
     public static final String LINK_LABEL_FORGOT_PASS_TEXT = MessageConstants.LINK_LABEL_FORGOT_PASS_TEXT;
@@ -217,4 +213,23 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_FAIL_TO_KILL_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_KILL_WEB_DRIVER;
 
     public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
+    
+    public static final String MSG_CLEANING = MessageConstants.MSG_CLEANING;
+
+    // About
+    public static final String ABOUT_LBL_VERSION = MessageConstants.About_LBL_VERSION;
+
+    public static final String ABOUT_LBL_BUILD = MessageConstants.About_LBL_BUILD;
+
+    public static final String ABOUT_LBL_EXPIRATION_DATE = MessageConstants.About_LBL_EXPIRATION_DATE;
+
+    public static final String ABOUT_LBL_COPYRIGHT = MessageConstants.About_LBL_COPYRIGHT;
+
+    public static final String ABOUT_BTN_INSTALLATION_DETAILS = MessageConstants.About_BTN_INSTALLATION_DETAILS;
+
+    public static final String ABOUT_BTN_OK = MessageConstants.About_BTN_OK;
+
+    public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
+    
+    public static final String ABOUT_LBL_CHECKING_VERSION = MessageConstants.About_LBL_CHECKING_VERSION;
 }

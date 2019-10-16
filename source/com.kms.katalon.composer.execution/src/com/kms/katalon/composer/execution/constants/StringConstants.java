@@ -274,6 +274,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_CHK_KEEP_CONSOLE_LOG = ComposerExecutionMessageConstants.DIA_CHK_KEEP_CONSOLE_LOG;
 
     public static final String DIA_LBL_UPDATE_EXECUTION_STATUS = ComposerExecutionMessageConstants.DIA_LBL_UPDATE_EXECUTION_STATUS;
+    
+    public static final String DIA_LBL_APIKEY = ComposerExecutionMessageConstants.DIA_LBL_APIKEY;
 
     public static final String DIA_LBL_SECONDS = ComposerExecutionMessageConstants.DIA_LBL_SECONDS;
 
@@ -313,6 +315,15 @@ public class StringConstants extends GlobalStringConstants {
 
     // TestSuiteSelectionDialog
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerExecutionMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;
+    
+    
+    // ProblemsViewDialog
+    public static final String MSG_PROBLEMS_VIEW = ComposerExecutionMessageConstants.MSG_PROBLEMS_VIEW;
+    
+    public static final String DIA_PROCEED = ComposerExecutionMessageConstants.DIA_PROCEED;
+    
+    public static final String DIA_SHOW_PROBLEM = ComposerExecutionMessageConstants.DIA_SHOW_PROBLEM;
+    
 
     // LaunchDelegate
     public static final String LAUNCH_CONFIGURATION_TYPE_ID = "com.kms.katalon.composer.execution.scriptLaunchConfiguration";

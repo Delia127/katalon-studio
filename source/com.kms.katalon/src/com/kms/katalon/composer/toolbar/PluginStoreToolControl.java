@@ -32,7 +32,6 @@ import com.kms.katalon.composer.handlers.SearchPluginsHandler;
 import com.kms.katalon.composer.handlers.ViewDashboardHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
-import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
 public class PluginStoreToolControl {
 
@@ -44,7 +43,6 @@ public class PluginStoreToolControl {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
         toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         ToolItem accountToolItem = new ToolItem(toolbar, SWT.DROP_DOWN);
-        accountToolItem.setText("Account");
         accountToolItem.setImage(ImageConstants.IMG_KATALON_ACCOUNT_24);
         accountToolItem.addSelectionListener(new DropdownToolItemSelectionListener() {
 
@@ -52,10 +50,26 @@ public class PluginStoreToolControl {
             protected Menu getMenu() {
                 Menu menu = new Menu(toolbar);
 
+                if (!isLoggedIn()) {
+                    MenuItem loginMenuItem = new MenuItem(menu, SWT.PUSH);
+                    loginMenuItem.setText("Log in");
+                    loginMenuItem.addSelectionListener(new SelectionAdapter() {
+
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            new KatalonStoreLoginHandler().execute();
+                        }
+                    });
+
+                    new MenuItem(menu, SWT.SEPARATOR);
+                }
+
                 if (isLoggedIn()) {
                     MenuItem userNameMenuItem = new MenuItem(menu, SWT.PUSH);
                     String userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                     userNameMenuItem.setText("Logged in as " + userName);
+
+                    new MenuItem(menu, SWT.SEPARATOR);
 
                     MenuItem viewDashboardMenuItem = new MenuItem(menu, SWT.PUSH);
                     viewDashboardMenuItem.setText("View Dashboard");
@@ -139,18 +153,6 @@ public class PluginStoreToolControl {
                         new LogoutHandler().execute();
                     }
                 });
-
-                if (!isLoggedIn()) {
-                    MenuItem loginMenuItem = new MenuItem(menu, SWT.PUSH);
-                    loginMenuItem.setText("Log in");
-                    loginMenuItem.addSelectionListener(new SelectionAdapter() {
-
-                        @Override
-                        public void widgetSelected(SelectionEvent e) {
-                            new KatalonStoreLoginHandler().execute();
-                        }
-                    });
-                }
 
                 MenuItem helpMenuItem = new MenuItem(menu, SWT.PUSH);
                 helpMenuItem.setText("Help");

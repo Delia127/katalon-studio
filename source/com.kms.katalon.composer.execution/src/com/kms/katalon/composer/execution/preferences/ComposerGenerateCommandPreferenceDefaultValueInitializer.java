@@ -50,10 +50,6 @@ public class ComposerGenerateCommandPreferenceDefaultValueInitializer extends Ab
         IPreferenceStore store = PreferenceStoreManager
                 .getPreferenceStore(ComposerGenerateCommandPreferenceDefaultValueInitializer.class);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID, DEFAULT_SUITE_ID);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG,
-                DEFAULT_DISPLAY_CONSOLE_LOG);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG,
-                DEFAULT_NO_CLOSE_CONSOLE_LOG);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY, DEFAULT_RETRY);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES,
                 DEFAULT_RETRY_FOR_FAILED_TEST_CASES);

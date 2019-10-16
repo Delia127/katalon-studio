@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +24,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -52,6 +50,7 @@ import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
+import com.kms.katalon.util.Tools;
 
 public class SoapClient extends BasicRequestor {
     
@@ -288,7 +287,7 @@ public class SoapClient extends BasicRequestor {
             if (isAbsoluteUrl(imp)) {
                 last = imp;
             } else {
-                last = parent + "/" + imp;
+                last = Tools.joinRelativeUrl(parent, imp);
             }
             try {
                 InputStream input = load(last);

@@ -16,6 +16,10 @@ https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/Katalon+Studio.dmg
 https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/Katalon_Studio_Linux_64-${second_arg}.tar.gz
 https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/Katalon_Studio_Windows_32-${second_arg}.zip
 https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/Katalon_Studio_Windows_64-${second_arg}.zip
+https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/Katalon_Studio_Engine_MacOS-${second_arg}.tar.gz
+https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/Katalon_Studio_Engine_Linux_64-${second_arg}.tar.gz
+https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/Katalon_Studio_Engine_Windows_32-${second_arg}.zip
+https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/Katalon_Studio_Engine_Windows_64-${second_arg}.zip
 https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/apidocs.zip
 https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/changeLogs.txt
 https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/commit.txt""")

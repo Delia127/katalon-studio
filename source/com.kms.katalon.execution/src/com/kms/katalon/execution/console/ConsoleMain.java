@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +18,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -28,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -40,9 +38,7 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
-import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
-import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -52,6 +48,7 @@ import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -115,15 +112,15 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
-//            boolean isDevelopmentMode = Platform.inDebugMode();
-//            boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
-//            if (!isDevelopmentMode && !isRunningInKatalonC) {
-//                String extension = OSUtil.getExecutableExtension();
-//                String katalon = "katalon" + extension;
-//                String katalonc = "katalonc" + extension;
-//                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
-//                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
-//            }
+            boolean isDevelopmentMode = Platform.inDevelopmentMode();
+            boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
+            if (!isDevelopmentMode && !isRunningInKatalonC) {
+                String extension = OSUtil.getExecutableExtension();
+                String katalon = "katalon" + extension;
+                String katalonc = "katalonc" + extension;
+                LogUtil.printErrorLine(MessageFormat.format("{0} cannot be launched. Starting from Katalon Studio version 7.0.0, {0} is replaced by {1} in console mode.", katalon, katalonc));
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+            }
             
             LocalInformationUtil.printSystemInformation();
 
@@ -152,37 +149,48 @@ public class ConsoleMain {
             LogUtil.logInfo("Activating...");
             
             if (!ActivationInfoCollector.isActivated()) {
-                //read license file and activate
                 boolean isActivated = false;
-                String licenseFile = null;
-                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
-                if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
-                    licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-                } else if (environmentVariable != null) {
-                    licenseFile = environmentVariable;
-                } else {
-                    licenseFile = readLicenseFromDefaultLocation();
-                }
+                
+                String licenseFile = getLicenseFilePath(options);
                 if (!StringUtils.isBlank(licenseFile)) {
+                    LogUtil.logInfo("License file path: " + licenseFile);
                     String activationCode = FileUtils.readFileToString(new File(licenseFile));
                     StringBuilder errorMessage = new StringBuilder();
+                    
+                    LogUtil.logInfo("Start activating offline");
                     isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    
                     if (!isActivated) {
-                        LogUtil.printErrorLine("Invalid license");
-                        throw new InvalidLicenseException("Invalid license");
+                        LogUtil.printErrorLine("Fail to activate offline");
+                        
+                        String error = errorMessage.toString();
+                        if (StringUtils.isNotBlank(error)) {
+                            LogUtil.printErrorLine(error);
+                        }
                     }
-                } else {
-                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue);
                 }
                 
-                
+                if (!isActivated) {
+                    LogUtil.logInfo("Start activating online for console mode");
+                    StringBuilder errorMessage = new StringBuilder();
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
+                    
+                    if (!isActivated) {
+                        LogUtil.printErrorLine("Fail to activate online for console mode");
+                        
+                        String error = errorMessage.toString();
+                        if (StringUtils.isNotBlank(error)) {
+                            LogUtil.printErrorLine(error);
+                        }
+                    }
+                }
+
                 if (!isActivated) {
                     LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
-                    throw new ActivationException("Failed to activate");
+                    return LauncherResult.RETURN_CODE_FAILED_AND_ERROR;
                 }
             }
 
-            
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
@@ -201,11 +209,11 @@ public class ConsoleMain {
             if (!isCliEnabled) {
                 LogUtil.printErrorLine("You don't have permission to use Katalon Studio in console mode.");
                 return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
-            } 
+            }
 
             ProjectEntity project = findProject(options);
-//          Trackings.trackOpenApplication(project,
-//                  !ActivationInfoCollector.isActivated(), "console");
+            // Trackings.trackOpenApplication(project,
+            // !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
             
             if (apiKeyValue != null) {
@@ -218,14 +226,14 @@ public class ConsoleMain {
             acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
 
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
-            if (options.has(INSTALL_PLUGIN_OPTION)){
+            if (options.has(INSTALL_PLUGIN_OPTION)) {
                 installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                     .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
             
-//            installBasicReportPluginIfNotAvailable();
+            // installBasicReportPluginIfNotAvailable();
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
@@ -234,6 +242,25 @@ public class ConsoleMain {
             // Parse all arguments before execute
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
 
+            Map<String, String> localStore = new HashMap<>();
+            localStore.put("apiKey", apiKeyValue);
+            localStore.put("lastActivateErrorMessage", ActivationInfoCollector.DEFAULT_REASON);
+            ActivationInfoCollector.scheduleCheckLicense(() -> {
+                String lastActivateErrorMessage = localStore.get("lastActivateErrorMessage");
+                LogUtil.printErrorLine(ActivationInfoCollector.EXPIRED_MESSAGE + lastActivateErrorMessage);
+                LauncherManager.getInstance().stopAllLauncher();
+            }, () -> {
+                StringBuilder errorMessage = new StringBuilder();
+                String apiKey = localStore.get("apiKey");
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+
+                String error = errorMessage.toString();
+                if (StringUtils.isNotBlank(error)) {
+                    LogUtil.printErrorLine(error);
+                    localStore.put("lastActivateErrorMessage", error);
+                }
+            });
+            
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
@@ -242,6 +269,9 @@ public class ConsoleMain {
             
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format("Execution completed. Exit code: {0}.", exitCode));
+
+            ActivationInfoCollector.postEndSession();
+            ActivationInfoCollector.releaseLicense();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());
@@ -252,6 +282,22 @@ public class ConsoleMain {
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
         }
+    }
+    
+    private static String getLicenseFilePath(OptionSet options) {
+        String licenseFile = null;
+        String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
+        if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
+            licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
+            LogUtil.logInfo("Get license file from options " + licenseFile);
+        } else if (environmentVariable != null) {
+            licenseFile = environmentVariable;
+            LogUtil.logInfo("Get license file from environment variables " + licenseFile);
+        } else {
+            licenseFile = readLicenseFromDefaultLocation();
+            LogUtil.logInfo("Get default license file" + licenseFile);
+        }
+        return licenseFile;
     }
     
     private static String readLicenseFromDefaultLocation() {
@@ -442,7 +488,9 @@ public class ConsoleMain {
             }
         }
         deleteLibFolders(projectPk);
-        ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk);
+        boolean allowSourceAttachment = LicenseType.valueOf(
+                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk, allowSourceAttachment);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
         if (projectEntity == null) {
             throw new InvalidConsoleArgumentException(

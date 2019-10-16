@@ -9,4 +9,11 @@ public interface TestOpsFeatureActivator {
     
     String getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
             String machineId) throws Exception;
+    
+    void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,
+            Long orgId, String token) throws Exception;
+    
+    String getOrganization(String serverUrl, String token, long orgId) throws Exception;
+
+    String getTestOpsMessage(String message);
 }
