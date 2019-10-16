@@ -25,7 +25,7 @@ import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 
-public class MobileReadonlyElementPropertiesComposite {
+public class MobileReadonlyElementPropertiesComposite extends Composite {
     private Text txtObjectName;
 
     private MobileElement editingElement;
@@ -33,7 +33,8 @@ public class MobileReadonlyElementPropertiesComposite {
     private TableViewer attributesTableViewer;
 
     public MobileReadonlyElementPropertiesComposite(Composite parent) {
-        createObjectPropertiesComposite(parent);    
+        super(parent, SWT.NONE);
+        createObjectPropertiesComposite(this);
     }
 
     public void setEditingElement(MobileElement editingElement) {
@@ -49,28 +50,27 @@ public class MobileReadonlyElementPropertiesComposite {
      * @wbp.parser.entryPoint
      */
     private void createObjectPropertiesComposite(Composite parent) {
-        Composite objectPropertiesComposite = new Composite(parent, SWT.NONE);
         GridLayout glObjectPropertiesComposite = new GridLayout();
         glObjectPropertiesComposite.horizontalSpacing = 10;
         glObjectPropertiesComposite.numColumns = 2;
-        objectPropertiesComposite.setLayout(glObjectPropertiesComposite);
+        parent.setLayout(glObjectPropertiesComposite);
 
-        Label lblObjectProperties = new Label(objectPropertiesComposite, SWT.NONE);
+        Label lblObjectProperties = new Label(parent, SWT.NONE);
         lblObjectProperties.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         ControlUtils.setFontToBeBold(lblObjectProperties);
         lblObjectProperties.setText(MobileRecoderMessagesConstants.LBL_OBJECT_PROPERTIES);
 
         // Object Name
-        Label objectNameLabel = new Label(objectPropertiesComposite, SWT.NONE);
+        Label objectNameLabel = new Label(parent, SWT.NONE);
         GridData gdObjectNameLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdObjectNameLabel.widthHint = 90;
         objectNameLabel.setLayoutData(gdObjectNameLabel);
         objectNameLabel.setText("Object Name");
 
-        txtObjectName = new Text(objectPropertiesComposite, SWT.BORDER | SWT.READ_ONLY);
+        txtObjectName = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
         txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Composite attributesTableComposite = new Composite(objectPropertiesComposite, SWT.NONE);
+        Composite attributesTableComposite = new Composite(parent, SWT.NONE);
         attributesTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
         TableColumnLayout tableColumnLayout = new TableColumnLayout();

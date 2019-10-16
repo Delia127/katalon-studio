@@ -15,32 +15,18 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -52,31 +38,21 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
-import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileAction;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
-import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionParamValueType;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
@@ -86,11 +62,8 @@ import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDi
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
-import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabelProvider;
-import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementTreeContentProvider;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
-import com.kms.katalon.composer.mobile.recorder.constants.ImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
@@ -105,23 +78,26 @@ import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
+    
+    private MobileConfigurationsComposite mobileConfigurationsComposite;
 
-    private List<MobileActionMapping> recordedActions = new ArrayList<>();
+    private MobileRecordedActionsComposite recordedActionsComposite;
+
+    private MobileReadonlyElementPropertiesComposite propertiesComposite;
+    
+    private MobileAllObjectsComposite allObjectsComposite;
+    
+    private MobileAppComposite mobileComposite;
 
     private FolderTreeEntity targetFolderEntity;
 
     private List<MobileActionButtonWrapper> actionButtons = new ArrayList<>();
 
-    private ToolItem btnStart, btnCapture, btnStop, tltmDelete;
-
-    private TableViewer actionTableViewer;
-
-    private TreeViewer allElementTreeViewer;
+    private ToolItem btnStart, btnCapture, btnStop;
 
     private MobileDeviceDialog deviceView;
 
@@ -132,12 +108,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private MobileObjectSpyPreferencesHelper preferencesHelper = new MobileObjectSpyPreferencesHelper();
 
     private Composite container;
-
-    private MobileReadonlyElementPropertiesComposite propertiesComposite;
-
-    private Composite appsComposite;
-
-    private MobileAppComposite mobileComposite;
 
     public MobileRecorderDialog(Shell parentShell, MobileAppComposite appComposite) {
         super(parentShell);
@@ -242,9 +212,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         container = new Composite(parent, SWT.NONE);
         container.setLayout(createNoMarginGridLayout());
         container.setBackground(ColorUtil.getCompositeBackgroundColorForDialog());
-        container.setBackgroundMode(SWT.INHERIT_FORCE);
 
         SashForm sashForm = createMainSashForm(container);
+        sashForm.setBackground(ColorUtil.getCompositeBackgroundColorForSashform());
         populateSashForm(sashForm);
         sashForm.setWeights(getSashFormChildsWeights());
 
@@ -306,7 +276,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     public List<MobileActionMapping> getRecordedActions() {
-        return recordedActions;
+        return recordedActionsComposite.getRecordedActions();
     }
 
     public FolderTreeEntity getTargetFolderEntity() {
@@ -321,7 +291,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     protected int[] getSashFormChildsWeights() {
-        return new int[] { 6, 3, 4 };
+        return new int[] { 6, 6 };
     }
 
     /**
@@ -343,11 +313,102 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
      * @param sashForm
      */
     protected void populateSashForm(SashForm sashForm) {
-        createContentComposite(sashForm);
+        createLeftPaneComposite(sashForm);
         createMiddlePaneComposite(sashForm);
-        createRecordedActionComposite(sashForm);
     }
 
+    private void createLeftPaneComposite(SashForm sashForm) {
+        Composite contentComposite = new Composite(sashForm, SWT.NONE);
+        contentComposite.setLayout(createNoMarginGridLayout());
+
+        addStartStopToolbar(contentComposite);
+        createSettingComposite(contentComposite);
+        createActionsAndCapturedObjectsCompostite(contentComposite);
+    }
+
+    private void addStartStopToolbar(Composite contentComposite) {
+        Composite toolbarComposite = new Composite(contentComposite, SWT.NONE);
+        toolbarComposite.setLayout(new GridLayout(2, false));
+        toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        ToolBar contentToolbar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+        contentToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
+        contentToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+
+        btnCapture = new ToolItem(contentToolbar, SWT.NONE);
+        btnCapture.setImage(MobileRecorderImageConstants.IMG_24_CAPTURE);
+        btnCapture.setDisabledImage(MobileRecorderImageConstants.IMG_24_CAPTURE_DISABLED);
+        btnCapture.setText(MobileRecoderMessagesConstants.BTN_CAPTURE_OBJECT);
+        btnCapture.setToolTipText(MobileRecoderMessagesConstants.BTN_TOOLTIP_CAPTURE_OBJECT);
+        btnCapture.setEnabled(false);
+        btnCapture.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                captureObjectAction();
+            }
+        });
+
+        btnStart = new ToolItem(contentToolbar, SWT.NONE);
+        btnStart.setImage(MobileRecorderImageConstants.IMG_24_START_DEVICE);
+        btnStart.setDisabledImage(MobileRecorderImageConstants.IMG_24_START_DEVICE_DISABLED);
+        btnStart.setText(MobileRecoderMessagesConstants.BTN_START);
+        btnStart.setToolTipText(MobileRecoderMessagesConstants.BTN_TOOLTIP_START);
+        btnStart.setEnabled(false);
+        btnStart.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                // Validate all required informations are filled
+                if (validateAppSetting()) {
+                    startObjectInspectorAction();
+                    updateActionButtonsVisibility(propertiesComposite.getEditingElement(),
+                            getCurrentMobileDriverType());
+                }
+            }
+        });
+
+        btnStop = new ToolItem(contentToolbar, SWT.NONE);
+        btnStop.setImage(MobileRecorderImageConstants.IMG_24_STOP_DEVICE);
+        btnStop.setDisabledImage(MobileRecorderImageConstants.IMG_24_STOP_DEVICE_DISABLED);
+        btnStop.setText(MobileRecorderStringConstants.STOP);
+        btnStop.setToolTipText(MobileRecorderStringConstants.STOP);
+        btnStop.setEnabled(false);
+        btnStop.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                stopObjectInspectorAction();
+            }
+        });
+    }
+
+    private void createSettingComposite(Composite parent) {
+        mobileConfigurationsComposite = new MobileConfigurationsComposite(this, parent, mobileComposite);
+    }
+    
+    private void createActionsAndCapturedObjectsCompostite(Composite parent) {
+        CTabFolder leftBottomTabFolder = new CTabFolder(parent, SWT.NONE);
+        leftBottomTabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        createRecordedActionComposite(leftBottomTabFolder);
+        CTabItem recordedActionTabItem = new CTabItem(leftBottomTabFolder, SWT.NONE);
+        recordedActionTabItem.setText("Recorded Actions");
+        recordedActionTabItem.setControl(recordedActionsComposite);
+
+        createPropertiesComposite(leftBottomTabFolder);
+        CTabItem capturedObjectsTabItem = new CTabItem(leftBottomTabFolder, SWT.NONE);
+        capturedObjectsTabItem.setControl(propertiesComposite);
+        capturedObjectsTabItem.setText("Captured Objects");
+
+        leftBottomTabFolder.setSelection(recordedActionTabItem);
+    }
+
+    private void createRecordedActionComposite(Composite parent) {
+        recordedActionsComposite = new MobileRecordedActionsComposite(this, parent);
+    }
+
+    private void createPropertiesComposite(Composite parent) {
+        propertiesComposite = new MobileReadonlyElementPropertiesComposite(parent);
+    }
+    
     private void createMiddlePaneComposite(SashForm sashForm) {
         Composite middlePane = new Composite(sashForm, SWT.NONE);
         middlePane.setLayout(createNoMarginGridLayout());
@@ -356,138 +417,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         createActionListComposite(hSashForm);
-
-        propertiesComposite = new MobileReadonlyElementPropertiesComposite(hSashForm);
+        createAllObjectsComposite(hSashForm);
 
         hSashForm.setWeights(new int[] { 3, 7 });
-    }
-
-    private void createRecordedActionComposite(SashForm sashForm) {
-        Composite recordedActionComposite = new Composite(sashForm, SWT.NONE);
-        recordedActionComposite.setLayout(new GridLayout());
-
-        Label lblRecordedActions = new Label(recordedActionComposite, SWT.NONE);
-        lblRecordedActions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        lblRecordedActions.setFont(getFontBold(lblRecordedActions));
-        lblRecordedActions.setText(MobileRecoderMessagesConstants.LBL_RECORDED_ACTIONS);
-
-        createActionToolbar(recordedActionComposite);
-
-        Composite actionTableComposite = new Composite(recordedActionComposite, SWT.None);
-        actionTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        actionTableComposite.setLayout(new GridLayout());
-
-        actionTableViewer = new TableViewer(actionTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-        actionTableViewer.getTable().setHeaderVisible(true);
-        actionTableViewer.getTable()
-                .setLinesVisible(ControlUtils.shouldLineVisble(actionTableViewer.getTable().getDisplay()));
-
-        ColumnViewerToolTipSupport.enableFor(actionTableViewer);
-        ColumnViewerUtil.setTableActivation(actionTableViewer);
-
-        TableViewerColumn tableViewerColumnNo = new TableViewerColumn(actionTableViewer, SWT.NONE);
-        TableColumn tableViewerNo = tableViewerColumnNo.getColumn();
-        tableViewerNo.setText(MobileRecoderMessagesConstants.COL_HEADER_NO);
-        tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof MobileActionMapping) {
-                    return String.valueOf(recordedActions.indexOf(element) + 1);
-                }
-                return "";
-            }
-        });
-
-        TableViewerColumn tableViewerColumnAction = new TableViewerColumn(actionTableViewer, SWT.NONE);
-        TableColumn tableColumnAction = tableViewerColumnAction.getColumn();
-        tableColumnAction.setText(MobileRecoderMessagesConstants.COL_HEADER_ACTION);
-        tableViewerColumnAction.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof MobileActionMapping) {
-                    MobileActionMapping mobileActionMapping = (MobileActionMapping) element;
-                    StringBuilder stringBuilder = new StringBuilder(mobileActionMapping.getAction().getReadableName());
-                    MobileActionParamValueType[] data = mobileActionMapping.getData();
-                    if (data != null && data.length > 0) {
-                        String dataString = Arrays.asList(data)
-                                .stream()
-                                .map(dataItem -> dataItem.getParamName() + ": " + dataItem.getValueToDisplay())
-                                .collect(Collectors.joining(", "));
-                        stringBuilder.append(" [" + dataString + "]");
-                    }
-                    return stringBuilder.toString();
-                }
-                return "";
-            }
-        });
-
-        TableViewerColumn tableViewerColumnElement = new TableViewerColumn(actionTableViewer, SWT.NONE);
-        TableColumn tableColumnElement = tableViewerColumnElement.getColumn();
-        tableColumnElement.setText(MobileRecoderMessagesConstants.COL_HEADER_ELEMENT);
-        tableViewerColumnElement.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof MobileActionMapping
-                        && ((MobileActionMapping) element).getTargetElement() != null) {
-                    return ((MobileActionMapping) element).getTargetElement().getName();
-                }
-                return "";
-            }
-        });
-
-        TableColumnLayout tableLayout = new TableColumnLayout();
-        tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 30));
-        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(25, 100));
-        tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(40, 120));
-
-        actionTableComposite.setLayout(tableLayout);
-
-        actionTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        actionTableViewer.setInput(recordedActions);
-        actionTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                tltmDelete.setEnabled(isAnyTableItemSelected());
-            }
-
-            private boolean isAnyTableItemSelected() {
-                if (actionTableViewer == null) {
-                    return false;
-                }
-
-                ISelection selection = actionTableViewer.getSelection();
-                return selection != null && !selection.isEmpty();
-            }
-        });
-    }
-
-    private void createActionToolbar(Composite parent) {
-        ToolBar actionToolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
-        actionToolBar.setForeground(ColorUtil.getToolBarForegroundColor());
-        actionToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        tltmDelete = new ToolItem(actionToolBar, SWT.PUSH);
-        tltmDelete.setImage(ImageConstants.IMG_16_DELETE);
-        tltmDelete.setEnabled(false);
-        tltmDelete.setText(StringConstants.DELETE);
-        tltmDelete.addListener(SWT.Selection, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                if (!(actionTableViewer.getSelection() instanceof IStructuredSelection)) {
-                    return;
-                }
-                IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
-                for (Object selectedObject : selection.toArray()) {
-                    if (!(selectedObject instanceof MobileActionMapping)) {
-                        continue;
-                    }
-                    MobileActionMapping selectedActionMapping = (MobileActionMapping) selectedObject;
-                    recordedActions.remove(selectedActionMapping);
-                }
-                actionTableViewer.refresh();
-            }
-        });
     }
 
     private void createActionListComposite(SashForm sashForm) {
@@ -515,8 +447,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                             if (actionMapping == null) {
                                 return;
                             }
-                            recordedActions.add(actionMapping);
-                            actionTableViewer.refresh();
+                            recordedActionsComposite.getStepView().addNode(actionMapping);
+                        } catch (ClassNotFoundException e) {
+                            LoggerSingleton.logError(e);
+                            MultiStatusErrorDialog.showErrorDialog(
+                                    "Unable to perform action: " + action.getReadableName(), e.getMessage(),
+                                    ExceptionsUtil.getStackTraceForThrowable(e));
                         } catch (StepFailedException e) {
                             MultiStatusErrorDialog.showErrorDialog(
                                     "Unable to perform action: " + action.getReadableName(), e.getMessage(),
@@ -530,6 +466,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     });
                 })
                 .collect(Collectors.toList()));
+    }
+
+    private void createAllObjectsComposite(Composite parent) {
+        allObjectsComposite = new MobileAllObjectsComposite(this, parent);
     }
 
     private TestObject convertMobileElementToTestObject(MobileElement targetElement, MobileDriverType driverType) {
@@ -637,7 +577,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             progressDlg.run(true, false, processToRun);
             captureObjectAction();
             targetElementChanged(null);
-            allElementTreeViewer.setSelection(StructuredSelection.EMPTY);
+            allObjectsComposite.getAllElementTreeViewer().setSelection(StructuredSelection.EMPTY);
             return mobileActionMapping;
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ExecutionException) {
@@ -657,7 +597,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
     }
 
-    private void targetElementChanged(MobileElement mobileElement) {
+    public void targetElementChanged(MobileElement mobileElement) {
         propertiesComposite.setEditingElement(mobileElement);
         updateActionButtonsVisibility(mobileElement, getCurrentMobileDriverType());
     }
@@ -673,36 +613,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     && (!action.hasElement() || mobileElement != null)
                     && (currentMobileDriverType != null && action.isDriverTypeSupported(currentMobileDriverType)));
         });
-    }
-
-    private void createContentComposite(SashForm sashForm) {
-        Composite contentComposite = new Composite(sashForm, SWT.NONE);
-        contentComposite.setLayout(createNoMarginGridLayout());
-
-        addStartStopToolbar(contentComposite);
-
-        createSettingComposite(contentComposite);
-
-        createAllObjectsComposite(contentComposite);
-    }
-
-    private void createSettingComposite(Composite parent) {
-        Composite settingComposite = new Composite(parent, SWT.NONE);
-        settingComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glSettingComposite = new GridLayout(2, false);
-        glSettingComposite.horizontalSpacing = 10;
-        settingComposite.setLayout(glSettingComposite);
-
-        Label lblConfiguration = new Label(settingComposite, SWT.NONE);
-        lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        lblConfiguration.setFont(getFontBold(lblConfiguration));
-        lblConfiguration.setText(MobileRecoderMessagesConstants.LBL_CONFIGURATIONS);
-
-        appsComposite = new Composite(settingComposite, SWT.NONE);
-        appsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-        appsComposite.setLayout(new FillLayout());
-
-        mobileComposite.createComposite(appsComposite, SWT.NONE, this);
     }
 
     @Override
@@ -780,14 +690,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             btnCapture.setEnabled(true);
             btnStop.setEnabled(true);
             getButton(IDialogConstants.OK_ID).setEnabled(true);
-            recordedActions.clear();
             targetElementChanged(null);
-            recordedActions.add(mobileComposite.buildStartAppActionMapping());
-            actionTableViewer.refresh();
+            recordedActionsComposite.getStepView().addNode(mobileComposite.buildStartAppActionMapping());
 
             // send event for tracking
             Trackings.trackRecord("mobile");
-        } catch (InvocationTargetException | InterruptedException ex) {
+        } catch (InvocationTargetException | InterruptedException | ClassNotFoundException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
                 LoggerSingleton.logError(ex);
@@ -858,9 +766,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 UISynchronizeService.syncExec(new Runnable() {
                     @Override
                     public void run() {
-                        allElementTreeViewer.setInput(new Object[] { newAppRootElement });
-                        allElementTreeViewer.refresh();
-                        allElementTreeViewer.expandAll();
+                        allObjectsComposite.getAllElementTreeViewer().setInput(new Object[] { newAppRootElement });
+                        allObjectsComposite.getAllElementTreeViewer().refresh();
+                        allObjectsComposite.getAllElementTreeViewer().expandAll();
                     }
                 });
             }
@@ -912,7 +820,11 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             public void run() {
                 // Quit Driver
                 if (inspectorController.getDriver() != null) {
-                    addAdditionalActions();
+                    try {
+                        addAdditionalActions();
+                    } catch (ClassNotFoundException e) {
+                        LoggerSingleton.logError(e);
+                    }
                     inspectorController.closeApp();
                 }
             }
@@ -925,10 +837,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
 
-            allElementTreeViewer.setInput(new Object[] {});
-            allElementTreeViewer.refresh();
+            allObjectsComposite.getAllElementTreeViewer().setInput(new Object[] {});
+            allObjectsComposite.getAllElementTreeViewer().refresh();
             targetElementChanged(null);
-            actionTableViewer.refresh();
+//            recordedActionsComposite.getActionTableViewer().refresh();
         }
 
         if (deviceView != null) {
@@ -936,10 +848,11 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
     }
 
-    private void addAdditionalActions() {
-        MobileActionMapping lastRecordAction = recordedActions.get(recordedActions.size() - 1);
+    private void addAdditionalActions() throws ClassNotFoundException {
+        MobileActionMapping lastRecordAction = recordedActionsComposite.getRecordedActions().get(
+                recordedActionsComposite.getRecordedActions().size() - 1);
         if (lastRecordAction.getAction() != MobileAction.CloseApplication) {
-            recordedActions.add(new MobileActionMapping(MobileAction.CloseApplication, null));
+            recordedActionsComposite.getStepView().addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
         }
     }
 
@@ -947,127 +860,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         btnStart.setEnabled(mobileComposite.isAbleToStart());
     }
 
-    private void addStartStopToolbar(Composite contentComposite) {
-        Composite toolbarComposite = new Composite(contentComposite, SWT.NONE);
-        toolbarComposite.setLayout(new GridLayout(2, false));
-        toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-        ToolBar contentToolbar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
-        contentToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
-        contentToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-
-        btnCapture = new ToolItem(contentToolbar, SWT.NONE);
-        btnCapture.setImage(MobileRecorderImageConstants.IMG_24_CAPTURE);
-        btnCapture.setDisabledImage(MobileRecorderImageConstants.IMG_24_CAPTURE_DISABLED);
-        btnCapture.setText(MobileRecoderMessagesConstants.BTN_CAPTURE_OBJECT);
-        btnCapture.setToolTipText(MobileRecoderMessagesConstants.BTN_TOOLTIP_CAPTURE_OBJECT);
-        btnCapture.setEnabled(false);
-        btnCapture.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                captureObjectAction();
-            }
-        });
-
-        btnStart = new ToolItem(contentToolbar, SWT.NONE);
-        btnStart.setImage(MobileRecorderImageConstants.IMG_24_START_DEVICE);
-        btnStart.setDisabledImage(MobileRecorderImageConstants.IMG_24_START_DEVICE_DISABLED);
-        btnStart.setText(MobileRecoderMessagesConstants.BTN_START);
-        btnStart.setToolTipText(MobileRecoderMessagesConstants.BTN_TOOLTIP_START);
-        btnStart.setEnabled(false);
-        btnStart.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                // Validate all required informations are filled
-                if (validateAppSetting()) {
-                    startObjectInspectorAction();
-                    updateActionButtonsVisibility(propertiesComposite.getEditingElement(),
-                            getCurrentMobileDriverType());
-                }
-            }
-        });
-
-        btnStop = new ToolItem(contentToolbar, SWT.NONE);
-        btnStop.setImage(MobileRecorderImageConstants.IMG_24_STOP_DEVICE);
-        btnStop.setDisabledImage(MobileRecorderImageConstants.IMG_24_STOP_DEVICE_DISABLED);
-        btnStop.setText(MobileRecorderStringConstants.STOP);
-        btnStop.setToolTipText(MobileRecorderStringConstants.STOP);
-        btnStop.setEnabled(false);
-        btnStop.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                stopObjectInspectorAction();
-            }
-        });
-    }
-
     private boolean validateAppSetting() {
         return mobileComposite.validateSetting();
     }
 
-    private void createAllObjectsComposite(Composite parentComposite) {
-        Composite allObjectsComposite = new Composite(parentComposite, SWT.NONE);
-        allObjectsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        allObjectsComposite.setLayout(new GridLayout());
-
-        Label lblAllObjects = new Label(allObjectsComposite, SWT.NONE);
-        lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        lblAllObjects.setFont(getFontBold(lblAllObjects));
-        lblAllObjects.setText(MobileRecoderMessagesConstants.LBL_ALL_OBJECTS);
-
-        Composite allObjectsTreeComposite = new Composite(allObjectsComposite, SWT.NONE);
-        allObjectsTreeComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-        allObjectsTreeComposite.setLayout(new GridLayout(1, false));
-
-        allElementTreeViewer = new CTreeViewer(allObjectsTreeComposite,
-                SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-        allElementTreeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
-        allElementTreeViewer.setLabelProvider(new MobileElementLabelProvider());
-        allElementTreeViewer.setContentProvider(new MobileElementTreeContentProvider());
-
-        allElementTreeViewer.getTree().setToolTipText(StringUtils.EMPTY);
-        ColumnViewerToolTipSupport.enableFor(allElementTreeViewer, ToolTip.NO_RECREATE);
-
-        allElementTreeViewer.getTree().addMouseListener(new MouseAdapter() {
-            public void mouseDown(MouseEvent e) {
-                if (e.button != 1) {
-                    return;
-                }
-                Point pt = new Point(e.x, e.y);
-                TreeItem item = allElementTreeViewer.getTree().getItem(pt);
-                if (item != null) {
-                    MobileElement element = (MobileElement) item.getData();
-                    highlightObject(element);
-                    targetElementChanged(element);
-                }
-            }
-        });
-
-        Tree tree = (Tree) allElementTreeViewer.getControl();
-
-        Listener listener = new Listener() {
-
-            @Override
-            public void handleEvent(Event event) {
-                TreeItem treeItem = (TreeItem) event.item;
-                final TreeColumn[] treeColumns = treeItem.getParent().getColumns();
-                UISynchronizeService.syncExec(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        for (TreeColumn treeColumn : treeColumns) {
-                            treeColumn.pack();
-                        }
-                    }
-                });
-            }
-        };
-
-        tree.addListener(SWT.Expand, listener);
-    }
-
     // Highlight Selected object on captured screenshot
-    private void highlightObject(MobileElement selectedElement) {
+    public void highlightObject(MobileElement selectedElement) {
         if (selectedElement == null || deviceView == null || deviceView.isDisposed()) {
             return;
         }
@@ -1094,8 +892,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             @Override
             public void run() {
                 getShell().setFocus();
-                allElementTreeViewer.getTree().setFocus();
-                allElementTreeViewer.setSelection(new StructuredSelection(foundElement));
+                allObjectsComposite.getAllElementTreeViewer().getTree().setFocus();
+                allObjectsComposite.getAllElementTreeViewer().setSelection(new StructuredSelection(foundElement));
                 targetElementChanged(foundElement);
             }
         });

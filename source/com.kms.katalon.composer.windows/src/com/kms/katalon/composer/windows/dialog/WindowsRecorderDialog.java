@@ -166,7 +166,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     @Override
     protected void setShellStyle(int newShellStyle) {
-        super.setShellStyle(newShellStyle);
+        super.setShellStyle(newShellStyle | SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE);
         setBlockOnOpen(true);
     }
 

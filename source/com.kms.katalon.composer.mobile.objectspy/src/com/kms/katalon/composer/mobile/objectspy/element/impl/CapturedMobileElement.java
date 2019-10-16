@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.mobile.objectspy.element.impl;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 
 public class CapturedMobileElement extends BasicMobileElement {
@@ -8,6 +10,8 @@ public class CapturedMobileElement extends BasicMobileElement {
     private TreeMobileElement link;
 
     private boolean checked;
+    
+    private String scriptId;
 
     public CapturedMobileElement() {
         this(null);
@@ -36,5 +40,13 @@ public class CapturedMobileElement extends BasicMobileElement {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+
+    public String getScriptId() {
+        return StringUtils.isNotEmpty(scriptId) ? scriptId : "";
+    }
+
+    public void setScriptId(String scriptId) {
+        this.scriptId = scriptId;
     }
 }
