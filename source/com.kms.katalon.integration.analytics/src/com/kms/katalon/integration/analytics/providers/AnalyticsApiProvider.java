@@ -14,12 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -40,16 +42,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
-import com.kms.katalon.core.model.RunningMode;
-import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
+import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
-import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsPage;
@@ -65,7 +65,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.core.network.HttpClientProxyBuilder;
 
 public class AnalyticsApiProvider {
 
@@ -476,15 +475,22 @@ public class AnalyticsApiProvider {
         HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
         HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
         HttpResponse httpResponse = httpClient.execute(httpRequest);
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
         int statusCode = httpResponse.getStatusLine().getStatusCode();
-        if (statusCode != HttpStatus.SC_OK) {
-            LogUtil.logError(MessageFormat.format(
-                    "TestOps: Unexpected response code from Katalon TestOps server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
-                    httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
-            throw new AnalyticsApiExeception(new Throwable(responseString));
+
+        HttpEntity entity = httpResponse.getEntity();
+        String responseString = StringUtils.EMPTY;
+        if (entity != null) {
+            responseString = EntityUtils.toString(httpResponse.getEntity());
         }
-        return responseString;
+
+        if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_CREATED || statusCode == HttpStatus.SC_NO_CONTENT) {
+            return responseString;
+        }
+
+        LogUtil.logError(MessageFormat.format(
+                "TestOps: Unexpected response code from Katalon TestOps server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
+                httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
+        throw new AnalyticsApiExeception(new Throwable(responseString));
     }
 
     private static <T> T executeRequest(HttpUriRequest httpRequest, Class<T> returnType) throws Exception {
@@ -533,6 +539,26 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             return executeRequest(httpPost, AnalyticsOrganization.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static void deactivate(String serverUrl, String token, String machineId, Long orgId)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_DEACTIVATE);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("machineKey", machineId);
+            uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
+            if (orgId != null) {
+                uriBuilder.setParameter("organizationId", String.valueOf(orgId));
+            }
+            HttpDelete httpPost = new HttpDelete(uriBuilder.build().toASCIIString());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            executeRequest(httpPost, Object.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

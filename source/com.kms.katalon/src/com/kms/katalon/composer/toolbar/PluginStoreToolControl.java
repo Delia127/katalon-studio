@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.toolbar;
 
+import java.text.MessageFormat;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -20,8 +22,8 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.handlers.DeactivateHandler;
 import com.kms.katalon.composer.handlers.KatalonStoreLoginHandler;
-import com.kms.katalon.composer.handlers.LogoutHandler;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler;
 import com.kms.katalon.composer.handlers.ManagePluginsHandler;
@@ -32,6 +34,7 @@ import com.kms.katalon.composer.handlers.SearchPluginsHandler;
 import com.kms.katalon.composer.handlers.ViewDashboardHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
+import com.kms.katalon.constants.StringConstants;
 
 public class PluginStoreToolControl {
 
@@ -52,7 +55,7 @@ public class PluginStoreToolControl {
 
                 if (!isLoggedIn()) {
                     MenuItem loginMenuItem = new MenuItem(menu, SWT.PUSH);
-                    loginMenuItem.setText("Log in");
+                    loginMenuItem.setText(StringConstants.Account_LOG_IN);
                     loginMenuItem.addSelectionListener(new SelectionAdapter() {
 
                         @Override
@@ -67,12 +70,12 @@ public class PluginStoreToolControl {
                 if (isLoggedIn()) {
                     MenuItem userNameMenuItem = new MenuItem(menu, SWT.PUSH);
                     String userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                    userNameMenuItem.setText("Logged in as " + userName);
+                    userNameMenuItem.setText(MessageFormat.format(StringConstants.Account_LOGIN_AS, userName));
 
                     new MenuItem(menu, SWT.SEPARATOR);
 
                     MenuItem viewDashboardMenuItem = new MenuItem(menu, SWT.PUSH);
-                    viewDashboardMenuItem.setText("View Dashboard");
+                    viewDashboardMenuItem.setText(StringConstants.Account_VIEW_DASHBOARD);
                     viewDashboardMenuItem.addSelectionListener(new SelectionAdapter() {
 
                         @Override
@@ -82,7 +85,7 @@ public class PluginStoreToolControl {
                     });
 
                     MenuItem planGridExecutionMenuItem = new MenuItem(menu, SWT.PUSH);
-                    planGridExecutionMenuItem.setText("Plan Grid Execution");
+                    planGridExecutionMenuItem.setText(StringConstants.Account_PLAN_GRID_EXECUTION);
                     planGridExecutionMenuItem.addSelectionListener(new SelectionAdapter() {
 
                         @Override
@@ -96,7 +99,7 @@ public class PluginStoreToolControl {
 
                 if (isLoggedIn()) {
                     MenuItem visitStoreMenuItem = new MenuItem(menu, SWT.PUSH);
-                    visitStoreMenuItem.setText("Visit Plugin Store");
+                    visitStoreMenuItem.setText(StringConstants.Account_VISIT_PLUGIN);
                     visitStoreMenuItem.addSelectionListener(new SelectionAdapter() {
 
                         @Override
@@ -107,7 +110,7 @@ public class PluginStoreToolControl {
                 }
 
                 MenuItem reloadPluginMenuItem = new MenuItem(menu, SWT.PUSH);
-                reloadPluginMenuItem.setText("Reload Plugins");
+                reloadPluginMenuItem.setText(StringConstants.Account_RELOAD_PLUGIN);
                 reloadPluginMenuItem.addSelectionListener(new SelectionAdapter() {
 
                     @Override
@@ -118,7 +121,7 @@ public class PluginStoreToolControl {
 
                 if (isLoggedIn()) {
                     MenuItem managePluginMenuItem = new MenuItem(menu, SWT.PUSH);
-                    managePluginMenuItem.setText("Manage Plugins");
+                    managePluginMenuItem.setText(StringConstants.Account_MANAGE_PLUGIN);
                     managePluginMenuItem.addSelectionListener(new SelectionAdapter() {
 
                         @Override
@@ -132,7 +135,7 @@ public class PluginStoreToolControl {
                     new MenuItem(menu, SWT.SEPARATOR);
 
                     MenuItem manageApiKeyMenuItem = new MenuItem(menu, SWT.PUSH);
-                    manageApiKeyMenuItem.setText("Manage API Keys");
+                    manageApiKeyMenuItem.setText(StringConstants.Account_MANAGE_API_KEY);
                     manageApiKeyMenuItem.addSelectionListener(new SelectionAdapter() {
 
                         @Override
@@ -145,17 +148,17 @@ public class PluginStoreToolControl {
                 new MenuItem(menu, SWT.SEPARATOR);
 
                 MenuItem logoutMenuItem = new MenuItem(menu, SWT.PUSH);
-                logoutMenuItem.setText("Reactivate");
+                logoutMenuItem.setText(StringConstants.Account_DEACTIVATE);
                 logoutMenuItem.addSelectionListener(new SelectionAdapter() {
 
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        new LogoutHandler().execute();
+                        new DeactivateHandler().execute();
                     }
                 });
 
                 MenuItem helpMenuItem = new MenuItem(menu, SWT.PUSH);
-                helpMenuItem.setText("Help");
+                helpMenuItem.setText(StringConstants.Account_HELP);
                 helpMenuItem.addSelectionListener(new SelectionAdapter() {
 
                     @Override
