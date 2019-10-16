@@ -14,12 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -473,15 +475,22 @@ public class AnalyticsApiProvider {
         HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
         HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
         HttpResponse httpResponse = httpClient.execute(httpRequest);
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
         int statusCode = httpResponse.getStatusLine().getStatusCode();
-        if (statusCode != HttpStatus.SC_OK) {
-            LogUtil.logError(MessageFormat.format(
-                    "TestOps: Unexpected response code from Katalon TestOps server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
-                    httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
-            throw new AnalyticsApiExeception(new Throwable(responseString));
+
+        HttpEntity entity = httpResponse.getEntity();
+        String responseString = StringUtils.EMPTY;
+        if (entity != null) {
+            responseString = EntityUtils.toString(httpResponse.getEntity());
         }
-        return responseString;
+
+        if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_CREATED || statusCode == HttpStatus.SC_NO_CONTENT) {
+            return responseString;
+        }
+
+        LogUtil.logError(MessageFormat.format(
+                "TestOps: Unexpected response code from Katalon TestOps server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
+                httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
+        throw new AnalyticsApiExeception(new Throwable(responseString));
     }
 
     private static <T> T executeRequest(HttpUriRequest httpRequest, Class<T> returnType) throws Exception {
@@ -545,7 +554,7 @@ public class AnalyticsApiProvider {
             if (orgId != null) {
                 uriBuilder.setParameter("organizationId", String.valueOf(orgId));
             }
-            HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
+            HttpDelete httpPost = new HttpDelete(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
