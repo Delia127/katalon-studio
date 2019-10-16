@@ -6,15 +6,10 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -30,7 +25,6 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -41,7 +35,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import org.apache.http.ssl.TrustStrategy;
 
 import com.kms.katalon.core.util.internal.ProxyUtil;
 
@@ -50,7 +43,25 @@ public class HttpClientProxyBuilder {
     private static PoolingHttpClientConnectionManager connectionManager;
     
     static {
-        connectionManager = new PoolingHttpClientConnectionManager();
+        try {
+            initializeConnectionManager();
+        } catch(Exception e) {
+            connectionManager = new PoolingHttpClientConnectionManager();
+            connectionManager.setMaxTotal(2000);
+            connectionManager.setDefaultMaxPerRoute(500);
+        }
+    }
+    
+    private static void initializeConnectionManager()
+            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (certificate, authType) -> true)
+                .build();
+        SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext,
+                new NoopHostnameVerifier());
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                .register("https", sslConnectionFactory)
+                .build();
+        connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
         connectionManager.setMaxTotal(2000);
         connectionManager.setDefaultMaxPerRoute(500);
     }
@@ -67,46 +78,6 @@ public class HttpClientProxyBuilder {
     public HttpClientBuilder getClientBuilder() {
         return clientBuilder;
     }
-    
-    /**
-     * Return a {@link org.apache.http.impl.client.HttpClientBuilder} that builds HttpClientBuilder that accepts
-     * self-signed certificates
-     */
-    public HttpClientBuilder getAcceptedSelfSignedCertClientBuilder()
-            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        HttpClientBuilder anotherClientBuilder = clientBuilder;
-        return anotherClientBuilder.setSSLSocketFactory(getSslSocketFactory())
-                .setConnectionReuseStrategy(new NoConnectionReuseStrategy());
-    }
-
-    private SSLConnectionSocketFactory getSslSocketFactory()
-            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        SSLContext sslContext = getSslContext();
-        HostnameVerifier skipHostnameVerifier = new HostnameVerifier() {
-
-            @Override
-            public boolean verify(String arg0, SSLSession arg1) {
-                return true;
-            }
-        };
-        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, skipHostnameVerifier);
-        return sslSocketFactory;
-    }
-
-    private SSLContext getSslContext() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        TrustStrategy trustStrategy = new TrustStrategy() {
-            @Override
-            public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                return true;
-            }
-        };
-        sslContextBuilder.loadTrustMaterial(keyStore, trustStrategy);
-        sslContextBuilder.useProtocol("TLSv1.2");
-        SSLContext sslContext = sslContextBuilder.build();
-        return sslContext;
-    }
 
     public HttpClientContext getClientContext() {
         return clientContext;
@@ -115,20 +86,7 @@ public class HttpClientProxyBuilder {
     public static HttpClientProxyBuilder create(ProxyInformation proxyInfo)
             throws URISyntaxException, IOException, GeneralSecurityException {
         Proxy proxy = ProxyUtil.getProxy(proxyInfo);
-
-        HttpClientBuilder clientBuilder = HttpClients.custom().setSSLHostnameVerifier(new HostnameVerifier() {
-
-            @Override
-            public boolean verify(String arg0, SSLSession arg1) {
-                return true;
-            }
-        }).setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-
-            @Override
-            public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                return true;
-            }
-        }).build());
+        HttpClientBuilder clientBuilder = HttpClients.custom();
         HttpClientContext context = HttpClientContext.create();
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
             HttpHost httpHost = new HttpHost(proxyInfo.getProxyServerAddress(), proxyInfo.getProxyServerPort());
@@ -146,9 +104,8 @@ public class HttpClientProxyBuilder {
                     .setDefaultCredentialsProvider(credentialsProvider)
                     .setSSLHostnameVerifier(new NoopHostnameVerifier());
         }
-        
-        clientBuilder.setConnectionManager(connectionManager)
-            .setConnectionManagerShared(true);
+
+        clientBuilder.setConnectionManager(connectionManager).setConnectionManagerShared(true);
 
         return new HttpClientProxyBuilder(clientBuilder, context);
     }

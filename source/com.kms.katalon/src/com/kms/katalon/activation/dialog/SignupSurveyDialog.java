@@ -221,7 +221,7 @@ public class SignupSurveyDialog extends AbstractDialog {
     }
     
     private CloseableHttpClient getHttpClient() throws URISyntaxException, IOException, GeneralSecurityException {
-        return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getAcceptedSelfSignedCertClientBuilder().build();
+        return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
     }
     
     private String getHubspotAccountUpdateUrl(String email) {

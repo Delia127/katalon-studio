@@ -76,7 +76,7 @@ public class SampleRemoteProjectProvider {
     public static InputStream getInputStream(String url) throws URISyntaxException, IOException, GeneralSecurityException {
         RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(15000).setSocketTimeout(15000).build();
         HttpClientProxyBuilder builder = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation());
-        HttpClient httpClient = builder.getAcceptedSelfSignedCertClientBuilder().disableCookieManagement().setDefaultRequestConfig(requestConfig).build();
+        HttpClient httpClient = builder.getClientBuilder().disableCookieManagement().setDefaultRequestConfig(requestConfig).build();
         HttpGet get = new HttpGet(new URL(url).toURI());
         return httpClient.execute(get).getEntity().getContent();
     }

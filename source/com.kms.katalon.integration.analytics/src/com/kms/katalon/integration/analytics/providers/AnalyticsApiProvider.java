@@ -40,16 +40,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
-import com.kms.katalon.core.model.RunningMode;
-import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
+import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
-import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsPage;
@@ -65,7 +63,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.core.network.HttpClientProxyBuilder;
 
 public class AnalyticsApiProvider {
 
@@ -474,7 +471,7 @@ public class AnalyticsApiProvider {
 
     private static String executeRequest(HttpUriRequest httpRequest) throws Exception {
         HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
-        HttpClient httpClient = httpClientProxyBuilder.getAcceptedSelfSignedCertClientBuilder().build();
+        HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
         HttpResponse httpResponse = httpClient.execute(httpRequest);
         String responseString = EntityUtils.toString(httpResponse.getEntity());
         int statusCode = httpResponse.getStatusLine().getStatusCode();

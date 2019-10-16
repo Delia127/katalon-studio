@@ -65,7 +65,7 @@ public class QTestHttpRequestHelper {
             throws QTestIOException {
         CloseableHttpClient client = null;
         try {
-            client = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getAcceptedSelfSignedCertClientBuilder().build();
+            client = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
             List<NameValuePair> postParams = new ArrayList<NameValuePair>();
             postParams.add(new BasicNameValuePair("grant_type", "password"));
             postParams.add(new BasicNameValuePair("username", credential.getUsername()));
@@ -113,7 +113,7 @@ public class QTestHttpRequestHelper {
             throws QTestException {
         CloseableHttpClient client = null;
         try {
-            client = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getAcceptedSelfSignedCertClientBuilder().build();
+            client = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
 
             Map<String, String> cookies = new HashMap<String, String>();
             doLogin(credential, client, cookies);
