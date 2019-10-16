@@ -22,6 +22,8 @@ public class EditTestDataQueryDialog extends DatabaseConnectionAbstractDialog {
 
     @Override
     protected void setInput() {
+        showDriverComposite();
+
         chkGlobalDBSetting.setSelection(testData.isUsingGlobalDBSetting());
 
         chkSecureUserPassword.setSelection(testData.isSecureUserAccount());

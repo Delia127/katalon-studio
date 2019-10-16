@@ -29,7 +29,6 @@ public class ApplicationStaupHandler {
     private static String lastActivateErrorMessage;
 
     public static boolean checkActivation(boolean isStartup) throws Exception {
-        KatalonApplication.refreshUserSession();
         eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
         // if (VersionUtil.isInternalBuild()) {
         // return true;

@@ -12,14 +12,24 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.integration.qtest.constant.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
-public class UninstallQTestPluginHandler {
+public class QTestPluginEventHandler {
 
     @Inject
     private IEventBroker eventBroker;
     
     @PostConstruct
     private void registerEventHandler() {
-        eventBroker.subscribe(EventConstants.PLUGIN_PRE_DEACTIVATION, new EventServiceAdapter() {
+        eventBroker.subscribe(EventConstants.AFTER_PLUGIN_ACTIVATION, new EventServiceAdapter() {
+            @Override
+            public void handleEvent(Event event) {
+                Plugin plugin = (Plugin) EventUtil.getData(event);
+                if (plugin.getPluginId().equals(IdConstants.QTEST_PLUGIN_ID)) {
+                    eventBroker.post(EventConstants.EXPLORER_REFRESH, null); //refresh to display qTest overlay icon
+                }
+            }
+        });
+        
+        eventBroker.subscribe(EventConstants.BEFORE_PLUGIN_DEACTIVATION, new EventServiceAdapter() {
             @Override
             public void handleEvent(Event event) {
                 Plugin plugin = (Plugin) EventUtil.getData(event);

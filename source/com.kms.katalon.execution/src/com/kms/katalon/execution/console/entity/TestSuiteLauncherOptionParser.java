@@ -102,7 +102,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     private StringConsoleOption katalonStoreApiKeySecondOption = new StringConsoleOption() {
         @Override
         public String getOption() {
-            return ConsoleMain.KATALON_STORE_API_KEY_SECOND_OPTION;
+            return ConsoleMain.KATALON_API_KEY_SECOND_OPTION;
         };
 
         public boolean isRequired() {

@@ -213,8 +213,30 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_FAIL_TO_KILL_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_KILL_WEB_DRIVER;
 
     public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
-    
+
     public static final String MSG_CLEANING = MessageConstants.MSG_CLEANING;
+    
+    public static final String MSG_DEACTIVATE = MessageConstants.MSG_DEACTIVATE;
+
+    public static final String Account_LOGIN_AS = MessageConstants.Account_LOGIN_AS;
+
+    public static final String Account_VIEW_DASHBOARD = MessageConstants.Account_VIEW_DASHBOARD;
+
+    public static final String Account_PLAN_GRID_EXECUTION = MessageConstants.Account_PLAN_GRID_EXECUTION;
+
+    public static final String Account_VISIT_PLUGIN = MessageConstants.Account_VISIT_PLUGIN;
+
+    public static final String Account_RELOAD_PLUGIN = MessageConstants.Account_RELOAD_PLUGIN;
+
+    public static final String Account_MANAGE_PLUGIN = MessageConstants.Account_MANAGE_PLUGIN;
+    
+    public static final String Account_MANAGE_API_KEY = MessageConstants.Account_MANAGE_API_KEY;
+
+    public static final String Account_DEACTIVATE = MessageConstants.Account_DEACTIVATE;
+
+    public static final String Account_LOG_IN = MessageConstants.Account_LOG_IN;
+
+    public static final String Account_HELP = MessageConstants.Account_HELP;
 
     // About
     public static final String ABOUT_LBL_VERSION = MessageConstants.About_LBL_VERSION;
@@ -231,5 +253,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
     
+    // ProxyConfigurationDialog
+    public static final String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG = MessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
+
     public static final String ABOUT_LBL_CHECKING_VERSION = MessageConstants.About_LBL_CHECKING_VERSION;
 }

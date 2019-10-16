@@ -38,9 +38,7 @@ public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
-    public static final String EXPIRED_MESSAGE = "This session has been terminated. \n" + "Reason: ";
-
-    public static final String DEFAULT_REASON = "Invalid license.";
+    public static final String DEFAULT_REASON = ApplicationMessageConstants.LICENSE_INVALID;
 
     private static boolean activated = false;
 
@@ -85,7 +83,7 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             activated = false;
-            LogUtil.logError(ex, "Fail to activate for GUI mode");
+            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_GUI_FAIL);
         }
 
         return activated;
@@ -116,7 +114,7 @@ public class ActivationInfoCollector {
             }
         } catch (Exception ex) {
             activated = false;
-            LogUtil.logError(ex, "Fail to activate for console mode");
+            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_CLI_FAIL);
         }
 
         return activated;
@@ -206,6 +204,21 @@ public class ActivationInfoCollector {
         }
         return host;
     }
+    
+    public static void deactivate(String userName, String password, String machineId) throws Exception {
+        String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        Long orgId = null;
+        if (StringUtils.isNotBlank(jwsCode)) {
+            License license = parseLicense(jwsCode);
+            if (license == null) {
+                license = getLastUsedLicense();
+            }
+            orgId = license.getOrganizationId();
+        }
+        String serverUrl = ApplicationInfo.getTestOpsServer();
+        String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
+        KatalonApplicationActivator.getFeatureActivator().deactivate(serverUrl, token, machineId, orgId);
+    }
 
     public static License activate(String serverUrl, String userName, String password, String machineId,
             StringBuilder errorMessage) {
@@ -268,7 +281,7 @@ public class ActivationInfoCollector {
                 KatalonApplication.USER_SESSION_ID, hostname, machineId);
         return license;
     }
-
+    
     public static String getOrganization(String userName, String password, long orgId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
@@ -293,7 +306,7 @@ public class ActivationInfoCollector {
                 return activated;
             }
         } catch (Exception ex) {
-            LogUtil.logError(ex, "Fail to activate offline");
+            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
         }
         errorMessage.append(ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         activated = false;
@@ -314,11 +327,11 @@ public class ActivationInfoCollector {
             LogUtil.logError(DEFAULT_REASON);
         } else {
             if (!isValidMachineId) {
-                LogUtil.logError("Invalid Machine ID.");
+                LogUtil.logError(ApplicationMessageConstants.LICENSE_INVALID_MACHINE_ID);
             }
 
             if (isExpired) {
-                LogUtil.logError("Expired License.");
+                LogUtil.logError(ApplicationMessageConstants.LICENSE_EXPIRED);
             }
         }
         return false;
@@ -363,36 +376,42 @@ public class ActivationInfoCollector {
     }
 
     public static void releaseLicense() throws Exception {
-        String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-        if (StringUtils.isNotBlank(jwsCode)) {
-            License license = parseLicense(jwsCode);
-            if (license == null) {
-                license = getLastUsedLicense();
-            }
-            boolean isOffline = isOffline(license);
-            if (!isOffline) {
-                String serverUrl = ApplicationInfo.getTestOpsServer();
-                String machineId = MachineUtil.getMachineId();
-                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-                Long orgId = license.getOrganizationId();
-                String token;
-                if (StringUtils.isBlank(apiKey)) {
-                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                    token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
-                } else {
-                    token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
+        try {
+            String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+            if (StringUtils.isNotBlank(jwsCode)) {
+                License license = parseLicense(jwsCode);
+                if (license == null) {
+                    license = getLastUsedLicense();
                 }
-               KatalonApplicationActivator.getFeatureActivator().releaseLicense(
-                       serverUrl,
-                       machineId,
-                       ksVersion,
-                       KatalonApplication.USER_SESSION_ID,
-                       orgId,
-                       token
-               );
+                boolean isOffline = isOffline(license);
+                if (!isOffline) {
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    String machineId = MachineUtil.getMachineId();
+                    String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                    Long orgId = license.getOrganizationId();
+                    String token;
+                    if (StringUtils.isBlank(apiKey)) {
+                        String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                        String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                        token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
+                    } else {
+                        token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
+                    }
+                    KatalonApplicationActivator.getFeatureActivator().releaseLicense(
+                            serverUrl,
+                            machineId,
+                            ksVersion,
+                            KatalonApplication.USER_SESSION_ID,
+                            orgId,
+                            token
+                            );
+                }
             }
+        } catch (Exception ex) {
+            throw ex;
+        } finally {
+            KatalonApplication.refreshUserSession();
         }
     }
 
@@ -453,7 +472,7 @@ public class ActivationInfoCollector {
                             renewHandler.run();
                             license = getValidLicense();
                         } catch (Exception e) {
-                            LogUtil.logError(e, "Can't renew license");
+                            LogUtil.logError(e, ApplicationMessageConstants.LICENSE_UNABLE_RENEW);
                         }
                     }
                 }
@@ -462,7 +481,7 @@ public class ActivationInfoCollector {
                     expiredHandler.run();
                 }
             } catch (Exception e) {
-                LogUtil.logError(e, "Error when check license");
+                LogUtil.logError(e, ApplicationMessageConstants.LICENSE_ERROR_RENEW);
             }
         }, 0, 30, TimeUnit.SECONDS);
     }

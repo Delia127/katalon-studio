@@ -147,7 +147,7 @@ public class GroovyUtil {
     }
 
     public static void initGroovyProject(ProjectEntity projectEntity, List<File> customKeywordPluginFiles,
-            IProgressMonitor monitor) throws CoreException, IOException, BundleException {
+            boolean isEnterpriseAccount, IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         SubProgressMonitor subProgressDescription = null;
         SubProgressMonitor subProgressClasspath = null;
         if (monitor != null) {
@@ -157,7 +157,7 @@ public class GroovyUtil {
             subProgressClasspath = new SubProgressMonitor(monitor, 9, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
         }
         initGroovyProjectDescription(projectEntity, subProgressDescription);
-        initGroovyProjectClassPath(projectEntity, customKeywordPluginFiles, true, subProgressClasspath);
+        initGroovyProjectClassPath(projectEntity, customKeywordPluginFiles, true, isEnterpriseAccount, subProgressClasspath);
     }
 
     private static void cleanDirectory(File folder) {
@@ -193,7 +193,7 @@ public class GroovyUtil {
     }
 
     public static void initGroovyProjectClassPath(ProjectEntity projectEntity, List<File> pluginFiles, boolean isNew,
-            IProgressMonitor monitor) throws CoreException, IOException, BundleException {
+            boolean isEnterpriseAccount, IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         IProject groovyProject = getGroovyProject(projectEntity);
         groovyProject.clearHistory(new NullProgressMonitor());
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
@@ -330,7 +330,7 @@ public class GroovyUtil {
             }
         }
 
-        addClassPathOfCoreBundleToJavaProject(entries);
+        addClassPathOfCoreBundleToJavaProject(entries, isEnterpriseAccount);
 
         // Add class path for external jars
         File driversDir = driversFolder.getRawLocation().toFile();
@@ -363,24 +363,24 @@ public class GroovyUtil {
         GroovyRuntime.addGroovyClasspathContainer(javaProject);
     }
 
-    private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries)
+    private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, boolean isEnterpriseAccount)
             throws IOException, BundleException {
-        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle(IdConstants.KATALON_CORE_BUNDLE_ID));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle(IdConstants.KATALON_CORE_BUNDLE_ID), isEnterpriseAccount);
 
-        addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(TempClass.class));
-        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.core.appium"));
-        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.constant"));
-        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.util"));
-        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("org.eclipse.equinox.common"));
-        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.netlightbody"));
-        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.poi"));
+        addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(TempClass.class), isEnterpriseAccount);
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.core.appium"), isEnterpriseAccount);
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.constant"), isEnterpriseAccount);
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.util"), isEnterpriseAccount);
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("org.eclipse.equinox.common"), isEnterpriseAccount);
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.netlightbody"), isEnterpriseAccount);
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.poi"), isEnterpriseAccount);
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());
-            addClassPathOfCoreBundleToJavaProject(entries, coreBundle);
+            addClassPathOfCoreBundleToJavaProject(entries, coreBundle, isEnterpriseAccount);
         }
     }
 
-    private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, Bundle coreBundle)
+    private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, Bundle coreBundle, boolean isEnterpriseAccount)
             throws IOException, BundleException {
         if (coreBundle == null)
             return;
@@ -393,7 +393,7 @@ public class GroovyUtil {
         if (customBundleFile.isDirectory()) { // built by IDE
             addSourceFolderToClassPath(customBundleFile, entries);
         } else {
-            addJarFileToClasspath(customBundleFile, entries, coreBundle);
+            addJarFileToClasspath(customBundleFile, entries, coreBundle, isEnterpriseAccount);
 
             File libDir = getPlatformLibDir();
 
@@ -417,7 +417,7 @@ public class GroovyUtil {
                 File requiredBundleLocation = FileLocator.getBundleFile(requiredBundle).getAbsoluteFile();
                 if (requiredBundleLocation != null && requiredBundleLocation.exists()) {
                     if (requiredBundleLocation.isFile()) {
-                        addJarFileToClasspath(requiredBundleLocation, entries, requiredBundle);
+                        addJarFileToClasspath(requiredBundleLocation, entries, requiredBundle, isEnterpriseAccount);
                     }
                 }
             }
@@ -516,7 +516,7 @@ public class GroovyUtil {
      * @param bundle
      * @throws IOException
      */
-    private static void addJarFileToClasspath(File jarFile, List<IClasspathEntry> entries, Bundle bundle)
+    private static void addJarFileToClasspath(File jarFile, List<IClasspathEntry> entries, Bundle bundle, boolean isEnterpriseAccount)
             throws IOException {
         if (checkRequiredBundleLocation(jarFile, entries)) {
             File javaDocDir = new File(getPlatformAPIDocDir(), bundle.getSymbolicName());
@@ -531,7 +531,8 @@ public class GroovyUtil {
             if (FileLocator.getBundleFile(bundle).isFile() && 
                     javaSourceDir.isDirectory() && 
                     javaSourceDir.exists() && 
-                    bundle.getSymbolicName().startsWith("com.kms.katalon.core")) {
+                    bundle.getSymbolicName().startsWith("com.kms.katalon.core")
+                    && isEnterpriseAccount) {
                 javaSourceDir = new File(javaSourceDir, bundle.getSymbolicName() + API_SOURCE_EXTENSION);
                 sourcePath = new Path(javaSourceDir.getAbsolutePath());
             }
@@ -682,9 +683,9 @@ public class GroovyUtil {
         return groovyClassFiles;
     }
 
-    public static void openGroovyProject(ProjectEntity projectEntity, List<File> customKeywordPluginFiles)
+    public static void openGroovyProject(ProjectEntity projectEntity, List<File> customKeywordPluginFiles, boolean isEnterpriseAccount)
             throws CoreException, IOException, BundleException {
-        initGroovyProject(projectEntity, customKeywordPluginFiles, null);
+        initGroovyProject(projectEntity, customKeywordPluginFiles, isEnterpriseAccount, null);
         IProject groovyProject = getGroovyProject(projectEntity);
         if (groovyProject.exists() && !groovyProject.isOpen()) {
             groovyProject.open(null);

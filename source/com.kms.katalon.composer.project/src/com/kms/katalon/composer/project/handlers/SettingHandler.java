@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -42,6 +41,8 @@ import com.katalon.platform.api.Extension;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.extension.PluginPreferencePage;
 import com.katalon.platform.api.service.ApplicationManager;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -57,6 +58,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.preferences.PreferenceNodeDescription;
 import com.kms.katalon.preferences.internal.PreferenceNodeDescriptionImpl;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
@@ -152,6 +154,7 @@ public class SettingHandler {
                 pluginPreferences);
 
         hideQTestIntegrationPageIfQTestPluginNotInstalled(pm);
+        hidePagesIfNotEnterpriseAccount(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
@@ -300,6 +303,39 @@ public class SettingHandler {
         } catch (MissingProjectSettingPageException e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    /**
+     * Hides enterprise setting pages for users who are not enterprise account.
+     * <p>Pages:
+     * <ul>
+     * <li>Test Design/ Web Locator</li>
+     * <li>API/Web Service Method</li>
+     * </ul>
+     * 
+     * @param pm
+     * The preference manager that allows to retrieve enterprise settings page
+     */
+    private void hidePagesIfNotEnterpriseAccount(PreferenceManager pm) {
+        boolean isEnterpriseAccount = LicenseType.valueOf(
+                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        if (isEnterpriseAccount) {
+            return;
+        }
+        IPreferenceNode testDesignSettings = null;
+        for (IPreferenceNode node : pm.getRootSubNodes()) {
+            if (StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID.equals(node.getId())) {
+                testDesignSettings = node;
+                break;
+            }
+        }
+        
+        if (testDesignSettings == null) {
+            return;
+        }
+
+        testDesignSettings.remove(StringConstants.WEB_LOCATORS_SETTING_PAGE_ID);
+        testDesignSettings.remove(StringConstants.WS_METHOD_SETTING_PAGE_ID);
     }
 
     public static SettingHandler getInstance() {

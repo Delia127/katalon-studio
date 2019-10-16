@@ -410,5 +410,7 @@ public class EventConstants {
 
     public static final String REPORT_EXPORT_PROVIDERS_COLLECTED = "PLUGIN/EXPORT_PROVIDER_COLLECTED";
     
-    public static final String PLUGIN_PRE_DEACTIVATION = "KATALON_PLUGIN/BEFORE_DEACTIVATION";
+    public static final String AFTER_PLUGIN_ACTIVATION = "KATALON_PLUGIN/AFTER_ACTIVATION";
+    
+    public static final String BEFORE_PLUGIN_DEACTIVATION = "KATALON_PLUGIN/BEFORE_DEACTIVATION";
 };

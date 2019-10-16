@@ -532,6 +532,8 @@ public class MessageConstants extends NLS {
     public static String MSG_ACTIVATING;
 
     public static String MSG_CLEANING;
+    
+    public static String MSG_DEACTIVATE;
 
     // About
     public static String About_LBL_VERSION;
@@ -547,8 +549,32 @@ public class MessageConstants extends NLS {
     public static String About_BTN_OK;
 
     public static String About_LBL_TRIAL;
+    
+    // ProxyConfigurationDialog
+    public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
 
     public static String About_LBL_CHECKING_VERSION;
+
+    // Account
+    public static String Account_LOGIN_AS;
+
+    public static String Account_VIEW_DASHBOARD;
+
+    public static String Account_PLAN_GRID_EXECUTION;
+
+    public static String Account_VISIT_PLUGIN;
+
+    public static String Account_RELOAD_PLUGIN;
+
+    public static String Account_MANAGE_PLUGIN;
+
+    public static String Account_MANAGE_API_KEY;
+
+    public static String Account_DEACTIVATE;
+
+    public static String Account_LOG_IN;
+
+    public static String Account_HELP;
 
     static {
         // initialize resource bundle
