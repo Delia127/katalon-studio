@@ -43,17 +43,15 @@ public class HttpClientProxyBuilder {
     private static PoolingHttpClientConnectionManager connectionManager;
     
     static {
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = null;
         try {
-            socketFactoryRegistry = initializeConnectionManager();
-        } catch (Exception e) {
-            connectionManager = (socketFactoryRegistry == null) ? new PoolingHttpClientConnectionManager()
-                    : new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+            initializeConnectionManager();
+        } catch(Exception e) {
+            connectionManager = new PoolingHttpClientConnectionManager();
             connectionManager.setMaxTotal(2000);
             connectionManager.setDefaultMaxPerRoute(500);
         }
     }
-    
+
     /**
      * This method initializes a {@link PoolingHttpClientConnectionManager} which registers to HTTPS
      * a SSL socket factory that trusts all certificates (including self-signed). We set the trust strategy
@@ -65,7 +63,7 @@ public class HttpClientProxyBuilder {
      * @throws KeyStoreException
      * @throws KeyManagementException
      */
-    private static Registry<ConnectionSocketFactory> initializeConnectionManager()
+    private static void initializeConnectionManager()
             throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (certificate, authType) -> true)
                 .build();
@@ -74,7 +72,9 @@ public class HttpClientProxyBuilder {
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
                 .register("https", sslConnectionFactory)
                 .build();
-        return socketFactoryRegistry;
+        connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        connectionManager.setMaxTotal(2000);
+        connectionManager.setDefaultMaxPerRoute(500);
     }
     
     private final HttpClientBuilder clientBuilder;
