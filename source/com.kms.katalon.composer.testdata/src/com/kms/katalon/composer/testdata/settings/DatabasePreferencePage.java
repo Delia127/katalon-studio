@@ -26,19 +26,21 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
+import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
-import com.kms.katalon.controller.DatabaseController;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.license.models.LicenseType;
 
 public class DatabasePreferencePage extends PreferencePageWithHelp {
 
@@ -64,9 +66,13 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
 
     private DatabaseSettings dbSettings;
 
+    private GridData gdCompositeDriver;
+
+    private Composite compContainer;
+
     @Override
     protected Control createContents(Composite parent) {
-        Composite compContainer = new Composite(parent, SWT.NONE);
+        compContainer = new Composite(parent, SWT.NONE);
         compContainer.setLayout(new GridLayout());
         compContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -92,12 +98,20 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
 
         txtPassword = new Text(compDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
-        Label lblOptionsDB = new Label(compDatabase, SWT.NONE);
+
+        Composite compositeDriver = new Composite(compDatabase, SWT.NONE);
+        gdCompositeDriver = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+        compositeDriver.setLayoutData(gdCompositeDriver);
+        GridLayout glCompositeDriver = new GridLayout(2, false);
+        glCompositeDriver.marginWidth = 0;
+        glCompositeDriver.marginHeight = 0;
+        compositeDriver.setLayout(glCompositeDriver);
+
+        Label lblOptionsDB = new Label(compositeDriver, SWT.NONE);
         lblOptionsDB.setText("JDBC driver");
-        lblOptionsDB.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
-        
-        txtDriverClassName = new Text(compDatabase, SWT.BORDER);
+        lblOptionsDB.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+
+        txtDriverClassName = new Text(compositeDriver, SWT.BORDER);
         txtDriverClassName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblConnectionURL = new Label(compDatabase, SWT.NONE);
@@ -279,6 +293,12 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             txtConnectionURL.setText(StringUtils.defaultString(dbSettings.getUrl()));
             txtDriverClassName.setText(StringUtils.defaultString(dbSettings.getDriverClassName()));
             enableUserPassword(chkSecureUserPassword.getSelection());
+            
+            // Hide this feature for normal users
+            if (!isEnterpriseAccount()) {
+                gdCompositeDriver.heightHint = 0;
+                compContainer.layout(true);
+            }
         } catch (IOException e) {
             setStatusLabel(e.getMessage(), ColorUtil.getTextErrorColor());
         }
@@ -308,8 +328,23 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         dbSettings.setSecureUserAccount(chkSecureUserPassword.getSelection());
         dbSettings.setUser(txtUser.getText());
         dbSettings.setPassword(txtPassword.getText());
-        dbSettings.setUrl(txtConnectionURL.getText());
+        String connectionUrl = txtConnectionURL.getText();
+        dbSettings.setUrl(connectionUrl);
         dbSettings.setDriverClassName(txtDriverClassName.getText());
+        if (!isEnterpriseAccount()) {
+            if (isOracleSql(connectionUrl)) {
+                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
+                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_ORACLE_SQL);
+                return false;
+            }
+
+            if (isMicrosoftSqlServer(connectionUrl)) {
+                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
+                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
+                return false;
+            }
+        }
+
         try {
             PropertySettingStoreUtil.saveExternalSettings(PROJECT_DIR, SETTING_NAME, dbSettings.getSettings(),
                     com.kms.katalon.composer.testdata.constants.StringConstants.DIA_DB_SETTING_COMMENT);
@@ -329,5 +364,24 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
     @Override
     public String getDocumentationUrl() {
         return DocumentationMessageConstants.SETTINGS_DATABASE;
+    }
+    
+    private boolean isOracleSql(String connectionUrl) {
+        if (StringUtils.isEmpty(connectionUrl)) {
+            return false;
+        }
+        return connectionUrl.startsWith("jdbc:oracle");
+    }
+
+    private boolean isMicrosoftSqlServer(String connectionUrl) {
+        if (StringUtils.isEmpty(connectionUrl)) {
+            return false;
+        }
+        return connectionUrl.startsWith("jdbc:sqlserver");
+    }
+
+    private boolean isEnterpriseAccount() {
+        return LicenseType.valueOf(
+                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
     }
 }

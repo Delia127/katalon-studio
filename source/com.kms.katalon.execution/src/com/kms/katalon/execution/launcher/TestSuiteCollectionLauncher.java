@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ReportController;
@@ -36,6 +38,7 @@ import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.launcher.result.TestSuiteCollectionLauncherResult;
 import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
@@ -178,7 +181,10 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
             suiteCollectionLogRecord.setTotalTestCases(String.valueOf(result.getExecutedTestCases()));
 
-            ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
+            if (LicenseType.valueOf(
+                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE) {
+                ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
+            }
 
             return suiteCollectionLogRecord;
         } catch(Exception e) {

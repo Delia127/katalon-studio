@@ -63,7 +63,7 @@ public class ProjectController extends EntityController {
         return newProject;
     }
 
-    public ProjectEntity openProjectForUI(String projectPk, IProgressMonitor monitor) throws Exception {
+    public ProjectEntity openProjectForUI(String projectPk, boolean isEnterpriseAccount, IProgressMonitor monitor) throws Exception {
         try {
             if (monitor == null) {
                 monitor = new NullProgressMonitor();
@@ -88,6 +88,7 @@ public class ProjectController extends EntityController {
                 try {
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
+                            isEnterpriseAccount,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                     updateProjectClassLoader(project);
                 } catch (JavaModelException e) {
@@ -95,6 +96,7 @@ public class ProjectController extends EntityController {
                     cleanupGroovyProject(project);
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
+                            isEnterpriseAccount,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 }
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
@@ -132,7 +134,7 @@ public class ProjectController extends EntityController {
         GroovyUtil.emptyProjectClasspath(projectEntity);
     }
 
-    public ProjectEntity openProject(String projectPk) throws Exception {
+    public ProjectEntity openProject(String projectPk, boolean isEnterpriseAccount) throws Exception {
         LogUtil.printOutputLine("Cleaning up workspace");
         cleanWorkspace();
         LogUtil.printOutputLine("Opening project file: " + projectPk);
@@ -150,6 +152,7 @@ public class ProjectController extends EntityController {
             // LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
             // KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
             GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
+                    isEnterpriseAccount,
                     null);
 
             LogUtil.printOutputLine("Generating global variables...");
