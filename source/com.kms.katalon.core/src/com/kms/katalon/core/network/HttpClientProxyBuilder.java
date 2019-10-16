@@ -43,10 +43,12 @@ public class HttpClientProxyBuilder {
     private static PoolingHttpClientConnectionManager connectionManager;
     
     static {
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = null;
         try {
-            initializeConnectionManager();
-        } catch(Exception e) {
-            connectionManager = new PoolingHttpClientConnectionManager();
+            socketFactoryRegistry = initializeConnectionManager();
+        } catch (Exception e) {
+            connectionManager = (socketFactoryRegistry == null) ? new PoolingHttpClientConnectionManager()
+                    : new PoolingHttpClientConnectionManager(socketFactoryRegistry);
             connectionManager.setMaxTotal(2000);
             connectionManager.setDefaultMaxPerRoute(500);
         }
@@ -63,7 +65,7 @@ public class HttpClientProxyBuilder {
      * @throws KeyStoreException
      * @throws KeyManagementException
      */
-    private static void initializeConnectionManager()
+    private static Registry<ConnectionSocketFactory> initializeConnectionManager()
             throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (certificate, authType) -> true)
                 .build();
@@ -72,9 +74,7 @@ public class HttpClientProxyBuilder {
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
                 .register("https", sslConnectionFactory)
                 .build();
-        connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-        connectionManager.setMaxTotal(2000);
-        connectionManager.setDefaultMaxPerRoute(500);
+        return socketFactoryRegistry;
     }
     
     private final HttpClientBuilder clientBuilder;
