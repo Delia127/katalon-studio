@@ -52,6 +52,17 @@ public class HttpClientProxyBuilder {
         }
     }
     
+    /**
+     * This method initializes a {@link PoolingHttpClientConnectionManager} which registers to HTTPS
+     * a SSL socket factory that trusts all certificates (including self-signed). We set the trust strategy
+     * and host verifder in this stage because a {@link HttpClientBuilder} when being set a
+     * {@link PoolingHttpClientConnectionManager}
+     * will ignore all custom SSLContext
+     * 
+     * @throws NoSuchAlgorithmException
+     * @throws KeyStoreException
+     * @throws KeyManagementException
+     */
     private static void initializeConnectionManager()
             throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (certificate, authType) -> true)
@@ -87,6 +98,7 @@ public class HttpClientProxyBuilder {
             throws URISyntaxException, IOException, GeneralSecurityException {
         Proxy proxy = ProxyUtil.getProxy(proxyInfo);
         HttpClientBuilder clientBuilder = HttpClients.custom();
+        // Don't bother setting a SSLContext here because when we set connectionManager it will be ignored anyway
         HttpClientContext context = HttpClientContext.create();
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
             HttpHost httpHost = new HttpHost(proxyInfo.getProxyServerAddress(), proxyInfo.getProxyServerPort());
