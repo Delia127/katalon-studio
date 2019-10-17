@@ -326,7 +326,7 @@ public class ActivationInfoCollector {
             int validOfflineLicenseSessionNumber = validActivationCodes.size();
             int runningSession =  ActivationUtil.countKatalonRunningSession();
             if (validOfflineLicenseSessionNumber < runningSession) {
-                errorMessage.append("");
+                errorMessage.append("License quota exceeded");
                 return false;
             }
             
