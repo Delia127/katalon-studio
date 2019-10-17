@@ -13,7 +13,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
@@ -23,6 +26,7 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
@@ -45,8 +49,28 @@ public class ActivationInfoCollector {
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
+    
+    private static String[] MAC_COMMAND = new String[] { "/bin/sh", "-c", "ps aux | grep -v grep | grep -i katalonc | wc -l" };
+    
+    private static String[] LINUX_COMMAND = new String[] { "/bin/sh", "-c", "ps aux | grep -v grep | grep -i katalonc | wc -l" };
+    
+    private static String[] WINDOW_COMMAND = new String[] {"tasklist.exe /fi \"imagename eq katalonc.exe\"", "find /i \"katalonc.exe\" /c" };
 
     protected ActivationInfoCollector() {
+    }
+    
+    public static long countKatalonCProcess() throws Exception {
+        String[] command = null;
+        if (SystemUtils.IS_OS_MAC) {
+            command = MAC_COMMAND;
+        } else if (SystemUtils.IS_OS_LINUX) {
+            command = LINUX_COMMAND;
+        } else if (SystemUtils.IS_OS_WINDOWS) {
+            command = WINDOW_COMMAND;
+        }
+        
+        String kataloncProcessCount = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(command);
+        return Long.valueOf(kataloncProcessCount.trim());
     }
 
     public static void setActivated(boolean activated) {
