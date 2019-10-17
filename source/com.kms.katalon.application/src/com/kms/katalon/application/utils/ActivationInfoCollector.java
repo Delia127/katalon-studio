@@ -325,7 +325,7 @@ public class ActivationInfoCollector {
             Set<String> validActivationCodes = findValidEngineOfflineLinceseCodes();
             int validOfflineLicenseSessionNumber = validActivationCodes.size();
             int runningSession =  ActivationUtil.countKatalonRunningSession();
-            if (validOfflineLicenseSessionNumber <= runningSession) {
+            if (validOfflineLicenseSessionNumber < runningSession) {
                 errorMessage.append("");
                 return false;
             }
