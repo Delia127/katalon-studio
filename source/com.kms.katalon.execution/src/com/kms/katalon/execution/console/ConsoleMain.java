@@ -113,6 +113,7 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
+            ActivationInfoCollector.countKatalonCProcess();
             boolean isDevelopmentMode = Platform.inDevelopmentMode();
             boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
             if (!isDevelopmentMode && !isRunningInKatalonC) {
