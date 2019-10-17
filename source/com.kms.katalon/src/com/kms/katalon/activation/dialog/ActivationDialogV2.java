@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -44,6 +45,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.license.models.License;
+import com.kms.katalon.license.models.LicenseResource;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialogV2 extends AbstractDialog {
@@ -84,6 +86,8 @@ public class ActivationDialogV2 extends AbstractDialog {
     private List<AnalyticsOrganization> organizations = new ArrayList<>();
 
     private String machineId;
+
+    private LicenseResource licenseResource;
 
     private License license;
 
@@ -170,25 +174,30 @@ public class ActivationDialogV2 extends AbstractDialog {
                         setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false);
                     });
                     UISynchronizeService.syncExec(() -> {
-                        StringBuilder errorMessage = new StringBuilder();
-                        license = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
-                        if (license != null) {
-                            if (license.getOrganizationId() != null) {
-                                try {
-                                    String org = ActivationInfoCollector.getOrganization(username, password, license.getOrganizationId());
-                                    save(org);
-                                } catch (Exception ex) {
-                                    LogUtil.logError(ex);
-                                    setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
-                                    enableObject(true);
+                        try {
+                            StringBuilder errorMessage = new StringBuilder();
+                            licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
+                            license = licenseResource.getLicense();
+                            if (license != null) {
+                                if (license.getOrganizationId() != null) {
+                                    try {
+                                        String org = ActivationInfoCollector.getOrganization(username, password, license.getOrganizationId());
+                                        save(org);
+                                    } catch (Exception ex) {
+                                        LogUtil.logError(ex);
+                                        setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
+                                        enableObject(true);
+                                    }
+                                } else {
+                                    getOrganizations();
+                                    setProgressMessage("", false);
                                 }
                             } else {
-                                getOrganizations();
-                                setProgressMessage("", false);
+                                enableObject(true);
+                                setProgressMessage(errorMessage.toString(), true);
                             }
-                        } else {
-                            enableObject(true);
-                            setProgressMessage(errorMessage.toString(), true);
+                        } catch (Exception ex) {
+                            LogUtil.logError(ex.getMessage());
                         }
                     });
                 });
@@ -230,6 +239,13 @@ public class ActivationDialogV2 extends AbstractDialog {
                 try {
                     ActivationInfoCollector.markActivated(email, password, JsonUtil.toJson(organization), license);
                     close();
+
+                    String message = licenseResource.getMessage();
+
+                    if (!StringUtils.isEmpty(message)) {
+                        WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
+                        warningLicenseDialog.open();
+                    }
                     Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {
                     enableObject(true);
@@ -251,6 +267,14 @@ public class ActivationDialogV2 extends AbstractDialog {
                 try {
                     ActivationInfoCollector.markActivated(email, password, org, license);
                     close();
+
+                    String message = licenseResource.getMessage();
+
+                    if (!StringUtils.isEmpty(message)) {
+                        WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
+                        warningLicenseDialog.open();
+                    }
+
                     Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {
                     enableObject(true);
