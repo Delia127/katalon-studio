@@ -1,16 +1,23 @@
 package com.kms.katalon.application.utils;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -47,7 +54,7 @@ public class ActivationInfoCollector {
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
-    
+
     private static String[] MAC_COMMAND = new String[] { "/bin/sh", "-c", "ps ux | grep -v grep | grep -i katalonc | wc -l" };
 
     private static String[] LINUX_COMMAND = new String[] { "/bin/sh", "-c", "ps ux | grep -v grep | grep -i katalonc | wc -l" };
@@ -549,5 +556,32 @@ public class ActivationInfoCollector {
             LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         }
         return null;
+    }
+    
+    public static int getOfflineLicenseSessionNumber() {
+        Set<String> activationCodes = new HashSet<>();
+        try {
+            File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
+            if (licenseFolder.exists()) {
+                Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
+                        .filter(p -> Files.isRegularFile(p)
+                                && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals("lic"))
+                        .forEach(p -> {
+                            try {
+                                File licenseFile = p.toFile();
+                                String activationCode = FileUtils.readFileToString(licenseFile);
+                                License license = parseLicense(activationCode);
+                                if (license != null) { // valid license
+                                    activationCodes.add(activationCode);
+                                }
+                            } catch (Exception e) {
+                                LogUtil.logError(e);
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        return activationCodes.size();
     }
 }
