@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.mobile.recorder.components;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -54,6 +57,9 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
@@ -79,6 +85,14 @@ public class MobileRecordedStepsView extends Composite implements ITestCasePart 
     private Dialog parentDialog;
 
     private ScriptNodeWrapper wrapper;
+
+    public ScriptNodeWrapper getWrapper() {
+        return wrapper;
+    }
+
+    public void setWrapper(ScriptNodeWrapper wrapper) {
+        this.wrapper = wrapper;
+    }
 
     private CTreeViewer treeViewer;
 
@@ -488,7 +502,7 @@ public class MobileRecordedStepsView extends Composite implements ITestCasePart 
         CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
         ExpressionStatementWrapper wrapper = (ExpressionStatementWrapper) MobileActionUtil
                 .generateMobileTestStep(newAction, converter.convert(targetElement), treeTableInput.getMainClassNode());
-        treeTableInput.addNewAstObject(wrapper, latestNode, NodeAddType.Add);
+        treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
         treeViewer.refresh();
         treeViewer.setSelection(new StructuredSelection(getLatestNode()));
     }
@@ -503,6 +517,52 @@ public class MobileRecordedStepsView extends Composite implements ITestCasePart 
             return (AstBuiltInKeywordTreeTableNode) latestItem.getData();
         }
         return null;
+    }
+
+    public AstBuiltInKeywordTreeTableNode getNodeItem(int offset) {
+        TreeItem[] items = treeViewer.getTree().getItems();
+        if (items == null || items.length == 0) {
+            return null;
+        }
+        TreeItem item = items[offset];
+        if (item.getData() instanceof AstBuiltInKeywordTreeTableNode) {
+            return (AstBuiltInKeywordTreeTableNode) item.getData();
+        }
+        return null;
+    }
+
+    public List<AstTreeTableNode> getNodes() {
+        TreeItem[] items = treeViewer.getTree().getItems();
+        if (items == null || items.length == 0) {
+            return Collections.emptyList();
+        }
+
+        List<AstTreeTableNode> nodes = new ArrayList<>();
+        for (TreeItem i : items) {
+            if (i.getData() instanceof AstTreeTableNode) {
+                nodes.add((AstTreeTableNode) i.getData());
+            }
+        }
+
+        return nodes;
+    }
+
+    public void addSimpleKeyword(String keywordName, boolean hasParam) {
+        String webUiKwAliasName = MobileActionUtil.getMobileKeywordClass().getAliasName();
+        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
+                keywordName, treeTableInput.getMainClassNode());
+        if (hasParam) {
+            ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
+            arguments.addExpression(new ConstantExpressionWrapper(""));
+        }
+        ExpressionStatementWrapper openBrowserStmt = new ExpressionStatementWrapper(methodCallExpressionWrapper);
+        treeTableInput.addNewAstObject(openBrowserStmt, null, NodeAddType.Add);
+        treeViewer.refresh();
+        treeViewer.setSelection(new StructuredSelection(getLatestNode()));
+    }
+
+    public void refreshTree() throws InvocationTargetException, InterruptedException {
+        treeTableInput.reloadTreeTableNodes();
     }
 
     @Override

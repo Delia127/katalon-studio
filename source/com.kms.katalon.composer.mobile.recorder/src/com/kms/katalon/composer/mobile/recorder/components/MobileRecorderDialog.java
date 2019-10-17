@@ -62,12 +62,14 @@ import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDi
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
@@ -81,7 +83,7 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
-    private static final int DIALOG_MARGIN_OFFSET = 5;
+    private static final int DIALOG_MARGIN_OFFSET = 15;
     
     private MobileConfigurationsComposite mobileConfigurationsComposite;
 
@@ -447,17 +449,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                             if (actionMapping == null) {
                                 return;
                             }
+                            recordedActionsComposite.getStepView().refreshTree();
                             recordedActionsComposite.getStepView().addNode(actionMapping);
-                        } catch (ClassNotFoundException e) {
-                            LoggerSingleton.logError(e);
-                            MultiStatusErrorDialog.showErrorDialog(
-                                    "Unable to perform action: " + action.getReadableName(), e.getMessage(),
-                                    ExceptionsUtil.getStackTraceForThrowable(e));
-                        } catch (StepFailedException e) {
-                            MultiStatusErrorDialog.showErrorDialog(
-                                    "Unable to perform action: " + action.getReadableName(), e.getMessage(),
-                                    ExceptionsUtil.getStackTraceForThrowable(e));
-                        } catch (MobileRecordException e) {
+                        } catch (ClassNotFoundException | StepFailedException | MobileRecordException
+                                | InvocationTargetException | InterruptedException e) {
                             LoggerSingleton.logError(e);
                             MultiStatusErrorDialog.showErrorDialog(
                                     "Unable to perform action: " + action.getReadableName(), e.getMessage(),
@@ -691,6 +686,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             btnStop.setEnabled(true);
             getButton(IDialogConstants.OK_ID).setEnabled(true);
             targetElementChanged(null);
+            recordedActionsComposite.getStepView().refreshTree();
             recordedActionsComposite.getStepView().addNode(mobileComposite.buildStartAppActionMapping());
 
             // send event for tracking
@@ -822,8 +818,15 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 if (inspectorController.getDriver() != null) {
                     try {
                         addAdditionalActions();
-                    } catch (ClassNotFoundException e) {
-                        LoggerSingleton.logError(e);
+                    } catch (ClassNotFoundException | InvocationTargetException | InterruptedException exeception) {
+                        LoggerSingleton.logError(exeception);
+                        Throwable targetException = ((InvocationTargetException) exeception).getTargetException();
+                        String message = (targetException instanceof java.util.concurrent.ExecutionException)
+                                ? targetException.getCause().getMessage() : targetException.getMessage();
+                        UISynchronizeService.syncExec(() -> {
+                            MultiStatusErrorDialog.showErrorDialog("Unable to close application", message,
+                                    ExceptionsUtil.getStackTraceForThrowable(targetException));
+                        });
                     }
                     inspectorController.closeApp();
                 }
@@ -848,10 +851,11 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
     }
 
-    private void addAdditionalActions() throws ClassNotFoundException {
+    private void addAdditionalActions() throws ClassNotFoundException, InvocationTargetException, InterruptedException {
         MobileActionMapping lastRecordAction = recordedActionsComposite.getRecordedActions().get(
                 recordedActionsComposite.getRecordedActions().size() - 1);
         if (lastRecordAction.getAction() != MobileAction.CloseApplication) {
+            recordedActionsComposite.getStepView().refreshTree();
             recordedActionsComposite.getStepView().addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
         }
     }
@@ -984,5 +988,24 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     @Override
     public MobileObjectSpyPreferencesHelper getPreferencesHelper() {
         return preferencesHelper;
+    }
+
+    public class RecordActionResult {
+        private final List<CapturedMobileElement> windowsElements;
+
+        private final ScriptNodeWrapper script;
+
+        public RecordActionResult(ScriptNodeWrapper script, List<CapturedMobileElement> windowsElements) {
+            this.script = script;
+            this.windowsElements = windowsElements;
+        }
+
+        public List<CapturedMobileElement> getWindowsElements() {
+            return windowsElements;
+        }
+
+        public ScriptNodeWrapper getScript() {
+            return script;
+        }
     }
 }

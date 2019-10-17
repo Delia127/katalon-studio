@@ -36,6 +36,7 @@ import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionParamValueT
 import com.kms.katalon.composer.mobile.recorder.constants.ImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.utils.MobileCompositeUtil;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
 
 public class MobileRecordedActionsComposite extends Composite {
@@ -51,7 +52,8 @@ public class MobileRecordedActionsComposite extends Composite {
     private List<MobileActionMapping> recordedActions = new ArrayList<>();
 
     public List<MobileActionMapping> getRecordedActions() {
-        return recordedActions;
+        List<AstTreeTableNode> zz = stepView.getNodes();
+        return new ArrayList<>();
     }
 
     private Dialog parentDialog;

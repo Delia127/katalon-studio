@@ -8,6 +8,8 @@ public class CapturedMobileElement extends BasicMobileElement {
     private static final long serialVersionUID = 9135829243722317270L;
 
     private TreeMobileElement link;
+    
+    private String name;
 
     private boolean checked;
     
@@ -48,5 +50,13 @@ public class CapturedMobileElement extends BasicMobileElement {
 
     public void setScriptId(String scriptId) {
         this.scriptId = scriptId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
