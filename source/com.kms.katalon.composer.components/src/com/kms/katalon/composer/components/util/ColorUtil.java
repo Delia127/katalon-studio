@@ -53,6 +53,8 @@ public class ColorUtil {
     private static final String COMPOSITE_HEADER_BACKGROUND_COLOR = "#43515a";
     
     private static final String DISABLED_TEXT_COLOR = "#bdbdbd";
+
+    private static final String DISABLED_TEXT_COLOR_FOR_DARK_THEME = "#616161";
     
     private static final String SELECTED_ITEM_BLUE_COLOR = "#007AFF";
 
@@ -264,9 +266,12 @@ public class ColorUtil {
     }
     
     public static Color getDisabledTextColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DISABLED_TEXT_COLOR_FOR_DARK_THEME);
+        }
         return getColor(DISABLED_TEXT_COLOR);
     }
-    
+
     public static Color getHintForegroundColor() {
         return getColor("#DC923C");
     }
