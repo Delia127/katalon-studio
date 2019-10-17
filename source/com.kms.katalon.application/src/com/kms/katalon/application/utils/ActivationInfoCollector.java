@@ -1,17 +1,24 @@
 package com.kms.katalon.application.utils;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
@@ -342,6 +349,27 @@ public class ActivationInfoCollector {
         activated = false;
         return activated;
     }
+    
+    public static boolean activateOfflineForEngine(StringBuilder errorMessage) throws Exception {
+        try {
+            Set<String> validActivationCodes = findValidEngineOfflineLinceseCodes();
+            int validOfflineLicenseSessionNumber = validActivationCodes.size();
+            int runningSession =  ProcessUtil.countKatalonRunningSession();
+
+            LogUtil.logInfo("The number of valid offline license: " + validActivationCodes.size());
+            LogUtil.logInfo("The number of Runtime Engine Running Session: " + runningSession);
+            if (validOfflineLicenseSessionNumber < runningSession) {
+                errorMessage.append("License quota exceeded");
+                return false;
+            }
+            
+            String activationCode = validActivationCodes.stream().findFirst().get();
+            return activateOffline(activationCode, errorMessage);
+        } catch (Exception e) {
+            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
+            return false;
+        }
+    }
 
     private static boolean isValidLicense(License license) {
         boolean isValidMachineId = hasValidMachineId(license);
@@ -557,5 +585,32 @@ public class ActivationInfoCollector {
             LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         }
         return null;
+    }
+    
+    public static Set<String> findValidEngineOfflineLinceseCodes() {
+        Set<String> validActivationCodes = new HashSet<>();
+        try {
+            File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
+            if (licenseFolder.exists()) {
+                Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
+                        .filter(p -> Files.isRegularFile(p)
+                                && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals("lic"))
+                        .forEach(p -> {
+                            try {
+                                File licenseFile = p.toFile();
+                                String activationCode = FileUtils.readFileToString(licenseFile);
+                                License license = parseLicense(activationCode);
+                                if (license != null && license.isEngineLicense() && isOffline(license)) {
+                                    validActivationCodes.add(activationCode);
+                                }
+                            } catch (Exception e) {
+                                LogUtil.logError(e);
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        return validActivationCodes;
     }
 }

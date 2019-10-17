@@ -30,7 +30,8 @@ Require-Bundle: com.google.gson,
  com.fasterxml.jackson.module.jackson-module-jaxb-annotations,
  com.google.http-client.google-http-client,
  com.auth0.java-jwt,
- com.google.oauth-client.google-oauth-client
+ com.google.oauth-client.google-oauth-client,
+ org.apache.commons.io
 Export-Package: com.kms.katalon.application,
  com.kms.katalon.application.constants,
  com.kms.katalon.application.preference,
