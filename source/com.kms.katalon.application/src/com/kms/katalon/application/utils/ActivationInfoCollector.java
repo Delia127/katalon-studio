@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -64,7 +65,7 @@ public class ActivationInfoCollector {
     protected ActivationInfoCollector() {
     }
     
-    public static long countKatalonCProcess() throws Exception {
+    public static int countRunningSession() throws Exception {
         String[] command = null;
         if (SystemUtils.IS_OS_MAC) {
             command = MAC_COMMAND;
@@ -75,7 +76,7 @@ public class ActivationInfoCollector {
         }
         
         String kataloncProcessCount = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(command);
-        return Long.valueOf(kataloncProcessCount.trim());
+        return Integer.valueOf(kataloncProcessCount.trim());
     }
 
     public static void setActivated(boolean activated) {
@@ -341,6 +342,24 @@ public class ActivationInfoCollector {
         activated = false;
         return activated;
     }
+    
+    public static boolean activateOfflineForEngine(StringBuilder errorMessage) throws Exception {
+        try {
+            Set<String> validActivationCodes = findValidOfflineLinceseCodes();
+            int validOfflineLicenseSessionNumber = validActivationCodes.size();
+            int runningSession =  countRunningSession();
+            if (validOfflineLicenseSessionNumber <= runningSession) {
+                errorMessage.append("");
+                return false;
+            }
+            
+            String activationCode = validActivationCodes.stream().findFirst().get();
+            return activateOffline(activationCode, errorMessage);
+        } catch (Exception e) {
+            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
+            return false;
+        }
+    }
 
     private static boolean isValidLicense(License license) {
         boolean isValidMachineId = hasValidMachineId(license);
@@ -558,8 +577,8 @@ public class ActivationInfoCollector {
         return null;
     }
     
-    public static int getOfflineLicenseSessionNumber() {
-        Set<String> activationCodes = new HashSet<>();
+    public static Set<String> findValidOfflineLinceseCodes() {
+        Set<String> validActivationCodes = new HashSet<>();
         try {
             File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
             if (licenseFolder.exists()) {
@@ -571,8 +590,8 @@ public class ActivationInfoCollector {
                                 File licenseFile = p.toFile();
                                 String activationCode = FileUtils.readFileToString(licenseFile);
                                 License license = parseLicense(activationCode);
-                                if (license != null) { // valid license
-                                    activationCodes.add(activationCode);
+                                if (license != null && license.isEngineLicense() && isOffline(license)) {
+                                    validActivationCodes.add(activationCode);
                                 }
                             } catch (Exception e) {
                                 LogUtil.logError(e);
@@ -582,6 +601,6 @@ public class ActivationInfoCollector {
         } catch (Exception e) {
             LogUtil.logError(e);
         }
-        return activationCodes.size();
+        return validActivationCodes;
     }
 }
