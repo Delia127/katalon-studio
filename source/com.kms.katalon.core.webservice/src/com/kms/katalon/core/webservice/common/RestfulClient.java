@@ -46,7 +46,7 @@ import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestfulClient extends BasicRequestor {
 
-    private static final String SSL = RequestHeaderConstants.SSL;
+    private static final String TLS = "TLS";
 
     private static final String HTTPS = RequestHeaderConstants.HTTPS;
     
@@ -74,7 +74,7 @@ public class RestfulClient extends BasicRequestor {
         clientBuilder.setConnectionManagerShared(true);
         
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            SSLContext sc = SSLContext.getInstance(SSL);
+            SSLContext sc = SSLContext.getInstance(TLS);
             sc.init(getKeyManagers(), getTrustManagers(), null);
             clientBuilder.setSSLContext(sc);
         }

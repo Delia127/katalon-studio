@@ -60,7 +60,7 @@ import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
 
 public abstract class BasicRequestor implements Requestor {
-    private static final String SSL = RequestHeaderConstants.SSL;
+    private static final String TLS = "TLS";
     
     private static final String SOCKET_FACTORY_REGISTRY = "http.socket-factory-registry";
     
@@ -312,7 +312,7 @@ public abstract class BasicRequestor implements Requestor {
     
     protected HttpContext getHttpContext() throws KeyManagementException, GeneralSecurityException, IOException {
         HttpContext httpContext = new BasicHttpContext();
-        SSLContext sc = SSLContext.getInstance(SSL);
+        SSLContext sc = SSLContext.getInstance(TLS);
         sc.init(getKeyManagers(), getTrustManagers(), null);
         Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory> create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)
