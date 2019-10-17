@@ -20,6 +20,8 @@ import java.util.TreeSet;
 import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -39,6 +41,7 @@ import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 
 public class ExecutionUtil {
