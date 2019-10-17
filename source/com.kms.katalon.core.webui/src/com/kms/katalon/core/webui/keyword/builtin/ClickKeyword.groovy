@@ -46,6 +46,8 @@ public class ClickKeyword extends WebUIAbstractKeyword {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
             try {
+                WebUiCommonHelper.checkTestObjectParameter(to)
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
                 WebDriver webDriver = DriverFactory.getWebDriver();
                 WebDriverWait wait = new WebDriverWait(webDriver, 10);
