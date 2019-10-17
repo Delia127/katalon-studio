@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -21,7 +20,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
@@ -32,7 +30,6 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
-import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
@@ -56,27 +53,7 @@ public class ActivationInfoCollector {
 
     private static String apiKey;
 
-    private static String[] MAC_COMMAND = new String[] { "/bin/sh", "-c", "ps ux | grep -v grep | grep -i katalonc | wc -l" };
-
-    private static String[] LINUX_COMMAND = new String[] { "/bin/sh", "-c", "ps ux | grep -v grep | grep -i katalonc | wc -l" };
-
-    private static String[] WINDOW_COMMAND = new String[] {"cmd", "/c", "tasklist /fi \"imagename eq katalonc.exe\" | find /i \"katalonc.exe\" /c"};
-
     protected ActivationInfoCollector() {
-    }
-    
-    public static int countKatalonCRunningSession() throws Exception {
-        String[] command = null;
-        if (SystemUtils.IS_OS_MAC) {
-            command = MAC_COMMAND;
-        } else if (SystemUtils.IS_OS_LINUX) {
-            command = LINUX_COMMAND;
-        } else if (SystemUtils.IS_OS_WINDOWS) {
-            command = WINDOW_COMMAND;
-        }
-        
-        String kataloncProcessCount = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(command);
-        return Integer.valueOf(kataloncProcessCount.trim());
     }
 
     public static void setActivated(boolean activated) {
@@ -347,7 +324,7 @@ public class ActivationInfoCollector {
         try {
             Set<String> validActivationCodes = findValidEngineOfflineLinceseCodes();
             int validOfflineLicenseSessionNumber = validActivationCodes.size();
-            int runningSession =  countKatalonCRunningSession();
+            int runningSession =  ActivationUtil.countKatalonRunningSession();
             if (validOfflineLicenseSessionNumber <= runningSession) {
                 errorMessage.append("");
                 return false;
