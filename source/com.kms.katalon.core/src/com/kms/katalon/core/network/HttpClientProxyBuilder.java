@@ -73,6 +73,7 @@ public class HttpClientProxyBuilder {
         SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext,
                 new NoopHostnameVerifier());
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                .register("http", sslConnectionFactory)
                 .register("https", sslConnectionFactory)
                 .build();
         connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
