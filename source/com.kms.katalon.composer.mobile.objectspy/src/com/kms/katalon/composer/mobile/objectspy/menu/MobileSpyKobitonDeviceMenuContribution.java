@@ -20,7 +20,7 @@ public class MobileSpyKobitonDeviceMenuContribution {
 
     private static final String KOBITON_ICON_URI = ImageManager.getImageURLString(IImageKeys.KOBITON_16);
 
-    private static final String MOBILE_SPY_KOBITON_DEVICE_COMMAND_ID = "com.kms.katalon.composer.mobile.objectspy.command.spy.mobile";
+    private static final String MOBILE_SPY_KOBITON_DEVICE_COMMAND_ID = "com.kms.katalon.composer.mobile.objectspy.command.mobile.openKobitonSpyTool";
 
     @Inject
     private ECommandService commandService;
