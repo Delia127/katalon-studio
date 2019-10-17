@@ -120,11 +120,9 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     private boolean canceledBeforeOpening;
 
-    private CapturedObjectTableViewer capturedObjectsTableViewer;
-
-    private TableColumn tblclmnCapturedObjectsSelection;
-
     private MobileElementPropertiesComposite propertiesComposite;
+    
+    private MobileCapturedObjectsComposite capturedObjectsComposite; 
 
     private MobileObjectSpyPreferencesHelper preferencesHelper;
 
@@ -205,128 +203,16 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     private void createCapturedObjectsComposite(SashForm hSashForm) {
-        Composite capturedObjectsComposite = new Composite(hSashForm, SWT.NONE);
-        capturedObjectsComposite.setLayout(new GridLayout());
-
-        Label lblCapturedObjects = new Label(capturedObjectsComposite, SWT.NONE);
-        lblCapturedObjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblCapturedObjects.setText(StringConstants.DIA_LBL_CAPTURED_OBJECTS);
-        ControlUtils.setFontToBeBold(lblCapturedObjects);
-
-        Composite capturedObjectTableComposite = new Composite(capturedObjectsComposite, SWT.NONE);
-        capturedObjectTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        TableColumnLayout tbclCapturedObjects = new TableColumnLayout();
-        capturedObjectTableComposite.setLayout(tbclCapturedObjects);
-
-        capturedObjectsTableViewer = new CapturedObjectTableViewer(capturedObjectTableComposite,
-                SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION, this);
-        Table capturedObjectsTable = capturedObjectsTableViewer.getTable();
-        capturedObjectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-        capturedObjectsTable.setHeaderVisible(true);
-        capturedObjectsTable.setLinesVisible(ControlUtils.shouldLineVisble(capturedObjectsTable.getDisplay()));
-
-        TableViewerColumn tbvclCapturedObjectsSelection = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
-        tblclmnCapturedObjectsSelection = tbvclCapturedObjectsSelection.getColumn();
-        tbvclCapturedObjectsSelection
-                .setLabelProvider(new CapturedElementLabelProvider(CapturedElementLabelProvider.SELECTION_COLUMN_IDX));
-        tbvclCapturedObjectsSelection
-                .setEditingSupport(new SelectableElementEditingSupport(capturedObjectsTableViewer));
-
-        TableViewerColumn tableViewerColumnCapturedObjects = new TableViewerColumn(capturedObjectsTableViewer,
-                SWT.NONE);
-        TableColumn tblclmnCapturedObjects = tableViewerColumnCapturedObjects.getColumn();
-        tblclmnCapturedObjects.setText(StringConstants.NAME);
-        tableViewerColumnCapturedObjects
-                .setLabelProvider(new CapturedElementLabelProvider(CapturedElementLabelProvider.ELEMENT_COLUMN_IDX));
-
-        capturedObjectsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-        int selectionColMinWidth = Platform.OS_MACOSX.equals(Platform.getOS()) ? 21 : 30;
-        tbclCapturedObjects.setColumnData(tblclmnCapturedObjectsSelection,
-                new ColumnWeightData(0, selectionColMinWidth, false));
-        tbclCapturedObjects.setColumnData(tblclmnCapturedObjects, new ColumnWeightData(60, 250 - selectionColMinWidth));
-
-        capturedObjectsTable.setToolTipText(StringUtils.EMPTY);
-        ColumnViewerToolTipSupport.enableFor(capturedObjectsTableViewer);
-
-        capturedObjectsTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-                CapturedMobileElement firstElement = (CapturedMobileElement) selection.getFirstElement();
-                propertiesComposite.setEditingElement(firstElement);
-            }
-        });
-
-        capturedObjectsTableViewer.getTable().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseDown(MouseEvent e) {
-                if (e.button != 1) {
-                    return;
-                }
-                Point pt = new Point(e.x, e.y);
-                TableItem item = capturedObjectsTableViewer.getTable().getItem(pt);
-                if (item != null) {
-                    highlightObject((CapturedMobileElement) item.getData());
-                }
-            }
-        });
-
-        capturedObjectsTable.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                CapturedMobileElement[] elements = capturedObjectsTableViewer.getSelectedElements();
-                if (elements == null || elements.length == 0) {
-                    return;
-                }
-                switch (e.keyCode) {
-                    case SWT.DEL: {
-                        removeSelectedCapturedElements(elements);
-                        break;
-                    }
-                    case SWT.F5: {
-                        verifyCapturedElementsStates(elements);
-                        break;
-                    }
-                    case SWT.F2: {
-                        if (elements.length == 1) {
-                            propertiesComposite.focusAndEditCapturedElementName();
-                        }
-                        break;
-                    }
-                }
-            }
-        });
-
-        capturedObjectsTableViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-            @Override
-            public void doubleClick(DoubleClickEvent event) {
-                CapturedMobileElement mobileElement = capturedObjectsTableViewer.getSelectedElement();
-                TreeMobileElement link = mobileElement.getLink();
-                if (link != null) {
-                    allElementTreeViewer.setSelection(new StructuredSelection(link));
-                    allElementTreeViewer.getTree().setFocus();
-                }
-            }
-        });
-
-        tblclmnCapturedObjectsSelection.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                capturedObjectsTableViewer.checkAllElements(!capturedObjectsTableViewer.isAllElementChecked());
-            }
-        });
+        capturedObjectsComposite = new MobileCapturedObjectsComposite(this, hSashForm);
     }
 
     public void updateCapturedElementSelectingColumnHeader() {
-        tblclmnCapturedObjectsSelection.setImage(capturedObjectsTableViewer.isAllElementChecked()
+        capturedObjectsComposite.getCapturedObjectsColumn().setImage(capturedObjectsComposite.getCapturedObjectsTableViewer().isAllElementChecked()
                 ? ImageConstants.IMG_16_CHECKED : ImageConstants.IMG_16_UNCHECKED);
-        btnAdd.setEnabled(capturedObjectsTableViewer.isAnyElementChecked());
+        btnAdd.setEnabled(capturedObjectsComposite.getCapturedObjectsTableViewer().isAnyElementChecked());
     }
 
-    private void verifyCapturedElementsStates(CapturedMobileElement[] elements) {
+    public void verifyCapturedElementsStates(CapturedMobileElement[] elements) {
         // clear previous state
         clearAllObjectState(elements);
 
@@ -343,14 +229,14 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
 
         allElementTreeViewer.refresh();
-        capturedObjectsTableViewer.refresh();
+        capturedObjectsComposite.getCapturedObjectsTableViewer().refresh();
     }
 
-    private void removeSelectedCapturedElements(CapturedMobileElement[] elements) {
+    public void removeSelectedCapturedElements(CapturedMobileElement[] elements) {
         clearAllObjectState(elements);
         allElementTreeViewer.refresh();
 
-        capturedObjectsTableViewer.removeCapturedElements(Arrays.asList(elements));
+        capturedObjectsComposite.getCapturedObjectsTableViewer().removeCapturedElements(Arrays.asList(elements));
 
         propertiesComposite.setEditingElement(null);
     }
@@ -424,13 +310,13 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                 if (event.getChecked()) {
                     List<CapturedMobileElement> mobileElements = new ArrayList<>();
                     mobileElements.add(selectedElement.newCapturedElement());
-                    capturedObjectsTableViewer.addMobileElements(mobileElements);
+                    capturedObjectsComposite.getCapturedObjectsTableViewer().addMobileElements(mobileElements);
 
                     propertiesComposite.focusAndEditCapturedElementName();
                 } else {
                     CapturedMobileElement capturedElement = selectedElement.getCapturedElement();
-                    if (capturedObjectsTableViewer.contains(capturedElement)) {
-                        capturedObjectsTableViewer.removeCapturedElement(capturedElement);
+                    if (capturedObjectsComposite.getCapturedObjectsTableViewer().contains(capturedElement)) {
+                        capturedObjectsComposite.getCapturedObjectsTableViewer().removeCapturedElement(capturedElement);
                         selectedElement.setCapturedElement(null);
                         propertiesComposite.setEditingElement(null);
                     }
@@ -460,7 +346,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     public void updateSelectedElement(CapturedMobileElement selectedElement) {
-        capturedObjectsTableViewer.refresh(selectedElement, true);
+        capturedObjectsComposite.getCapturedObjectsTableViewer().refresh(selectedElement, true);
         TreeMobileElement element = selectedElement.getLink();
         if (element != null) {
             allElementTreeViewer.refresh(element);
@@ -481,7 +367,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         refreshButtonsState();
 
-        capturedObjectsTableViewer.setCapturedElements(new ArrayList<CapturedMobileElement>());
+        capturedObjectsComposite.getCapturedObjectsTableViewer().setCapturedElements(new ArrayList<CapturedMobileElement>());
     }
 
     private void initializeData() {
@@ -564,7 +450,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
                     Trackings.trackSaveSpy("mobile", newTreeEntities.size());
                     removeSelectedCapturedElements(
-                            capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedMobileElement[0]));
+                            capturedObjectsComposite.getCapturedObjectsTableViewer().getAllCheckedElements().toArray(new CapturedMobileElement[0]));
                     updateExplorerState(folderTreeEntity, newTreeEntities);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
@@ -585,7 +471,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
                 ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
                 MobileDriverType currentMobileType = getCurrentMobileDriverType();
-                for (CapturedMobileElement mobileElement : capturedObjectsTableViewer.getAllCheckedElements()) {
+                for (CapturedMobileElement mobileElement : capturedObjectsComposite.getCapturedObjectsTableViewer().getAllCheckedElements()) {
                     WebElementEntity testObject = converter.convert(mobileElement, folder, currentMobileType);
                     objectRepositoryController.updateTestObject(testObject);
                     newTreeEntities.add(new WebElementTreeEntity(testObject, folderTreeEntity));
@@ -677,7 +563,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     // Highlight Selected object on captured screenshot
-    private void highlightObject(MobileElement selectedElement) {
+    public void highlightObject(MobileElement selectedElement) {
         if (selectedElement == null || deviceView == null || deviceView.isDisposed()) {
             return;
         }
@@ -830,7 +716,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                         allElementTreeViewer.refresh();
                         allElementTreeViewer.expandAll();
                         verifyCapturedElementsStates(
-                                capturedObjectsTableViewer.getCapturedElements().toArray(new CapturedMobileElement[0]));
+                                capturedObjectsComposite.getCapturedObjectsTableViewer().getCapturedElements().toArray(new CapturedMobileElement[0]));
                         dialog.setCancelable(true);
                     }
                 });
@@ -1014,8 +900,8 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             newMobileElements.add(converter.revert(webElement));
         }
 
-        capturedObjectsTableViewer.addMobileElements(newMobileElements);
-        verifyCapturedElementsStates(capturedObjectsTableViewer.getSelectedElements());
+        capturedObjectsComposite.getCapturedObjectsTableViewer().addMobileElements(newMobileElements);
+        verifyCapturedElementsStates(capturedObjectsComposite.getCapturedObjectsTableViewer().getSelectedElements());
     }
 
     @Override
@@ -1029,5 +915,19 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     public static void setInstance(MobileObjectSpyDialog instance) {
         MobileObjectSpyDialog.instance = instance;
+    }
+
+    @Override
+    public MobileElementPropertiesComposite getPropertiesComposite() {
+        return propertiesComposite;
+    }
+
+    @Override
+    public void setSelectedElement(CapturedMobileElement element) {
+        TreeMobileElement link = element.getLink();
+        if (link != null) {
+            allElementTreeViewer.setSelection(new StructuredSelection(link));
+            allElementTreeViewer.getTree().setFocus();
+        }
     }
 }

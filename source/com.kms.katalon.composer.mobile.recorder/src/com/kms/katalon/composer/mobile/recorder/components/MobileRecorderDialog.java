@@ -57,8 +57,11 @@ import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileCapturedObjectsComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementPropertiesComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
@@ -82,12 +85,14 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
-    private static final int DIALOG_MARGIN_OFFSET = 15;
+public class MobileRecorderDialog extends AbstractDialog implements MobileElementDialog, MobileElementInspectorDialog, MobileAppDialog {
+    private static final int DIALOG_MARGIN_OFFSET = 5;
     
     private MobileConfigurationsComposite mobileConfigurationsComposite;
 
     private MobileRecordedActionsComposite recordedActionsComposite;
+    
+    private MobileCapturedObjectsComposite capturedObjectsComposite;
 
     private MobileReadonlyElementPropertiesComposite propertiesComposite;
     
@@ -145,7 +150,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(1000, 800);
+        return new Point(950, 800);
     }
 
     @Override
@@ -395,16 +400,33 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         recordedActionTabItem.setText("Recorded Actions");
         recordedActionTabItem.setControl(recordedActionsComposite);
 
-        createPropertiesComposite(leftBottomTabFolder);
+        SashForm capturedObjectsSashForm = new SashForm(leftBottomTabFolder, SWT.VERTICAL);
+        createCapturedObjectsAndPropertiesComposite(capturedObjectsSashForm);
+        
+//        Composite capturedObjectsSashForm = new Composite(leftBottomTabFolder, SWT.NONE);
+        capturedObjectsSashForm.setLayout(new FillLayout());
+        capturedObjectsSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        capturedObjectsSashForm.setWeights(new int[] { 5, 5 });
+
+
         CTabItem capturedObjectsTabItem = new CTabItem(leftBottomTabFolder, SWT.NONE);
-        capturedObjectsTabItem.setControl(propertiesComposite);
         capturedObjectsTabItem.setText("Captured Objects");
+        capturedObjectsTabItem.setControl(capturedObjectsSashForm);
 
         leftBottomTabFolder.setSelection(recordedActionTabItem);
     }
 
     private void createRecordedActionComposite(Composite parent) {
         recordedActionsComposite = new MobileRecordedActionsComposite(this, parent);
+    }
+    
+    private void createCapturedObjectsAndPropertiesComposite(Composite parent) {
+        createCapturedObjectsComposite(parent);
+        createPropertiesComposite(parent);
+    }
+
+    private void createCapturedObjectsComposite(Composite parent) {
+        capturedObjectsComposite = new MobileCapturedObjectsComposite(this, parent);
     }
 
     private void createPropertiesComposite(Composite parent) {
@@ -449,7 +471,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                             if (actionMapping == null) {
                                 return;
                             }
-                            recordedActionsComposite.getStepView().refreshTree();
                             recordedActionsComposite.getStepView().addNode(actionMapping);
                         } catch (ClassNotFoundException | StepFailedException | MobileRecordException
                                 | InvocationTargetException | InterruptedException e) {
@@ -686,7 +707,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             btnStop.setEnabled(true);
             getButton(IDialogConstants.OK_ID).setEnabled(true);
             targetElementChanged(null);
-            recordedActionsComposite.getStepView().refreshTree();
             recordedActionsComposite.getStepView().addNode(mobileComposite.buildStartAppActionMapping());
 
             // send event for tracking
@@ -855,7 +875,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         MobileActionMapping lastRecordAction = recordedActionsComposite.getRecordedActions().get(
                 recordedActionsComposite.getRecordedActions().size() - 1);
         if (lastRecordAction.getAction() != MobileAction.CloseApplication) {
-            recordedActionsComposite.getStepView().refreshTree();
             recordedActionsComposite.getStepView().addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
         }
     }
@@ -1007,5 +1026,29 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         public ScriptNodeWrapper getScript() {
             return script;
         }
+    }
+
+    @Override
+    public MobileElementPropertiesComposite getPropertiesComposite() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setSelectedElement(CapturedMobileElement element) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void updateSelectedElement(CapturedMobileElement editingElement) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void updateCapturedElementSelectingColumnHeader() {
+        // TODO Auto-generated method stub
+        
     }
 }

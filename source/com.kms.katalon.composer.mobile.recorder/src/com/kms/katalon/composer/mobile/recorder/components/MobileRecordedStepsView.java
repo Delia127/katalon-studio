@@ -80,8 +80,6 @@ import com.kms.katalon.entity.variable.VariableEntity;
 
 public class MobileRecordedStepsView extends Composite implements ITestCasePart {
 
-    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-
     private Dialog parentDialog;
 
     private ScriptNodeWrapper wrapper;
@@ -493,7 +491,8 @@ public class MobileRecordedStepsView extends Composite implements ITestCasePart 
     }
 
     @SuppressWarnings("rawtypes")
-    public void addNode(MobileActionMapping newAction) throws ClassNotFoundException {
+    public void addNode(MobileActionMapping newAction) throws ClassNotFoundException, InvocationTargetException, InterruptedException {
+        refreshTree();
         AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
         SnapshotMobileElement snapshotElement = (SnapshotMobileElement) newAction.getTargetElement();
         CapturedMobileElement targetElement = snapshotElement != null

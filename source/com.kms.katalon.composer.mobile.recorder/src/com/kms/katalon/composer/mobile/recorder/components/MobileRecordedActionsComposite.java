@@ -41,6 +41,8 @@ import com.kms.katalon.execution.mobile.constants.StringConstants;
 
 public class MobileRecordedActionsComposite extends Composite {
 
+    private Dialog parentDialog;
+
     private ToolItem tltmDelete;
 
     private TableViewer actionTableViewer;
@@ -55,8 +57,6 @@ public class MobileRecordedActionsComposite extends Composite {
         List<AstTreeTableNode> zz = stepView.getNodes();
         return new ArrayList<>();
     }
-
-    private Dialog parentDialog;
     
     private MobileRecordedStepsView stepView;
     
