@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -529,8 +530,7 @@ public class TreeEntityUtil {
             return treeEntities;
         }
 
-        boolean isEnterpriseAccount = LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
 
         FolderController folderController = FolderController.getInstance();
         treeEntities.add(new ProfileRootTreeEntity(folderController.getProfileRoot(project), null));

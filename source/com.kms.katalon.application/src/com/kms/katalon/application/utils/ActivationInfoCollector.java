@@ -45,6 +45,8 @@ public class ActivationInfoCollector {
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
+    
+    private static LicenseType licenseType;
 
     protected ActivationInfoCollector() {
     }
@@ -90,7 +92,8 @@ public class ActivationInfoCollector {
     }
 
     private static void saveLicenseType(LicenseType type) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, type.toString(), true);
+//        ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, type.toString(), true);
+        licenseType = type;
     }
 
     private static void saveExpirationDate(Date date) {
@@ -106,9 +109,9 @@ public class ActivationInfoCollector {
 
             if (license != null) {
                 enableFeatures(license);
-                markActivatedLicenseCode(license.getJwtCode());
+//                markActivatedLicenseCode(license.getJwtCode());
                 saveLicenseType(license.getType());
-                saveExpirationDate(license.getExpirationDate());
+//                saveExpirationDate(license.getExpirationDate());
                 activated = true;
                 ActivationInfoCollector.apiKey = apiKey;
             }
@@ -289,18 +292,21 @@ public class ActivationInfoCollector {
         return org;
     }
 
-    public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
+    public static boolean activateOffline(String activationCode, StringBuilder errorMessage, RunningMode runningMode) {
         try {
             License license = parseLicense(activationCode);
             if (license != null) {
-                markActivatedLicenseCode(activationCode);
-                saveLicenseType(license.getType());
-                saveExpirationDate(license.getExpirationDate());
                 enableFeatures(license);
-
-                Organization org = new Organization();
-                org.setId(license.getOrganizationId());
-                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+                
+                saveLicenseType(license.getType());
+                if (runningMode == RunningMode.GUI) {
+                    markActivatedLicenseCode(activationCode);
+                    saveExpirationDate(license.getExpirationDate());
+    
+                    Organization org = new Organization();
+                    org.setId(license.getOrganizationId());
+                    ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+                }
 
                 activated = true;
                 return activated;
@@ -510,8 +516,7 @@ public class ActivationInfoCollector {
     }
     
     public static LicenseType getLicenseType() {
-        String licenseTypeValue = ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE);
-        return LicenseType.valueOf(licenseTypeValue);
+        return licenseType;
     }
 
     private static License getLastUsedLicense() {
