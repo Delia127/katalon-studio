@@ -129,11 +129,13 @@
 										includes="*" />
 								</delete>
 
-								<delete file="${product.win32OutputDirectory}/kataloc.exe"/>
-								<copy file="${product.win32OutputDirectory}/eclipsec.exe" tofile="${product.win32OutputDirectory}/katalonc.exe"/>
+								<copy file="${product.win32OutputDirectory}/eclipsec.exe" 
+									tofile="${product.win32OutputDirectory}/katalonc.exe"
+									overwrite="true"/>
 
-								<delete file="${product.win64OutputDirectory}/kataloc.exe"/>
-								<copy file="${product.win64OutputDirectory}/eclipsec.exe" tofile="${product.win64OutputDirectory}/katalonc.exe"/>
+								<copy file="${product.win64OutputDirectory}/eclipsec.exe" 
+									tofile="${product.win64OutputDirectory}/katalonc.exe"
+									overwrite="true"/>
 							</target>
 						</configuration>
 					</execution>
