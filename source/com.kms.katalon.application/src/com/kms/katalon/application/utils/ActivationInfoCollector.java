@@ -78,7 +78,7 @@ public class ActivationInfoCollector {
 
                 String message = licenseResource.getMessage();
                 if (!StringUtils.isEmpty(message)) {
-                    // Show here
+                    LogUtil.logError(message);
                 }
             }
 
@@ -116,7 +116,7 @@ public class ActivationInfoCollector {
             String message = licenseResource.getMessage();
 
             if (!StringUtils.isEmpty(message)) {
-                LogUtil.logInfo(message);
+                LogUtil.logError(message);
             }
 
             if (license != null) {
@@ -168,7 +168,7 @@ public class ActivationInfoCollector {
             String message = licenseResource.getMessage();
 
             if (!StringUtils.isEmpty(message)) {
-                LogUtil.logInfo(message);
+                LogUtil.logError(message);
             }
 
             return license != null;
