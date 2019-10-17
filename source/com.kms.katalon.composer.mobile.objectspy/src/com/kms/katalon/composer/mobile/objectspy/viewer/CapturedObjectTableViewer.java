@@ -22,6 +22,7 @@ public class CapturedObjectTableViewer extends CTableViewer {
     public CapturedObjectTableViewer(Composite parent, int style, MobileElementDialog dialog) {
         super(parent, style);
         this.dialog = dialog;
+        capturedElements = new ArrayList<CapturedMobileElement>();
     }
 
     public List<CapturedMobileElement> getCapturedElements() {

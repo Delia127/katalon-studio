@@ -64,6 +64,7 @@ import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDi
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementPropertiesComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.SnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
@@ -85,19 +86,20 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class MobileRecorderDialog extends AbstractDialog implements MobileElementDialog, MobileElementInspectorDialog, MobileAppDialog {
+public class MobileRecorderDialog extends AbstractDialog
+        implements MobileElementDialog, MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
-    
+
     private MobileConfigurationsComposite mobileConfigurationsComposite;
 
     private MobileRecordedActionsComposite recordedActionsComposite;
-    
+
     private MobileCapturedObjectsComposite capturedObjectsComposite;
 
     private MobileReadonlyElementPropertiesComposite propertiesComposite;
-    
+
     private MobileAllObjectsComposite allObjectsComposite;
-    
+
     private MobileAppComposite mobileComposite;
 
     private FolderTreeEntity targetFolderEntity;
@@ -390,7 +392,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private void createSettingComposite(Composite parent) {
         mobileConfigurationsComposite = new MobileConfigurationsComposite(this, parent, mobileComposite);
     }
-    
+
     private void createActionsAndCapturedObjectsCompostite(Composite parent) {
         CTabFolder leftBottomTabFolder = new CTabFolder(parent, SWT.NONE);
         leftBottomTabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -402,24 +404,25 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         SashForm capturedObjectsSashForm = new SashForm(leftBottomTabFolder, SWT.VERTICAL);
         createCapturedObjectsAndPropertiesComposite(capturedObjectsSashForm);
-        
-//        Composite capturedObjectsSashForm = new Composite(leftBottomTabFolder, SWT.NONE);
+
         capturedObjectsSashForm.setLayout(new FillLayout());
         capturedObjectsSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         capturedObjectsSashForm.setWeights(new int[] { 5, 5 });
-
 
         CTabItem capturedObjectsTabItem = new CTabItem(leftBottomTabFolder, SWT.NONE);
         capturedObjectsTabItem.setText("Captured Objects");
         capturedObjectsTabItem.setControl(capturedObjectsSashForm);
 
         leftBottomTabFolder.setSelection(recordedActionTabItem);
+
+        recordedActionsComposite.getStepView()
+            .setCapturedElementsTableViewer(capturedObjectsComposite.getCapturedObjectsTableViewer());
     }
 
     private void createRecordedActionComposite(Composite parent) {
         recordedActionsComposite = new MobileRecordedActionsComposite(this, parent);
     }
-    
+
     private void createCapturedObjectsAndPropertiesComposite(Composite parent) {
         createCapturedObjectsComposite(parent);
         createPropertiesComposite(parent);
@@ -432,7 +435,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private void createPropertiesComposite(Composite parent) {
         propertiesComposite = new MobileReadonlyElementPropertiesComposite(parent);
     }
-    
+
     private void createMiddlePaneComposite(SashForm sashForm) {
         Composite middlePane = new Composite(sashForm, SWT.NONE);
         middlePane.setLayout(createNoMarginGridLayout());
@@ -446,6 +449,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         hSashForm.setWeights(new int[] { 3, 7 });
     }
 
+    @SuppressWarnings("rawtypes")
     private void createActionListComposite(SashForm sashForm) {
         Composite actionListComposite = new Composite(sashForm, SWT.NONE);
         actionListComposite.setLayout(new GridLayout());
@@ -471,7 +475,18 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                             if (actionMapping == null) {
                                 return;
                             }
+                            
                             recordedActionsComposite.getStepView().addNode(actionMapping);
+                            
+                            List<CapturedMobileElement> mobileElements = new ArrayList<>();
+                            SnapshotMobileElement snapshotElement = (SnapshotMobileElement) actionMapping.getTargetElement();
+                            CapturedMobileElement targetElement = snapshotElement != null
+                                    ? snapshotElement.getCapturedElement()
+                                    : null;
+                            if (targetElement != null) {
+                                mobileElements.add(targetElement);
+                                capturedObjectsComposite.getCapturedObjectsTableViewer().addMobileElements(mobileElements);
+                            }
                         } catch (ClassNotFoundException | StepFailedException | MobileRecordException
                                 | InvocationTargetException | InterruptedException e) {
                             LoggerSingleton.logError(e);
@@ -863,7 +878,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             allObjectsComposite.getAllElementTreeViewer().setInput(new Object[] {});
             allObjectsComposite.getAllElementTreeViewer().refresh();
             targetElementChanged(null);
-//            recordedActionsComposite.getActionTableViewer().refresh();
+            // recordedActionsComposite.getActionTableViewer().refresh();
         }
 
         if (deviceView != null) {
@@ -872,10 +887,11 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     private void addAdditionalActions() throws ClassNotFoundException, InvocationTargetException, InterruptedException {
-        MobileActionMapping lastRecordAction = recordedActionsComposite.getRecordedActions().get(
-                recordedActionsComposite.getRecordedActions().size() - 1);
+        MobileActionMapping lastRecordAction = recordedActionsComposite.getRecordedActions()
+                .get(recordedActionsComposite.getRecordedActions().size() - 1);
         if (lastRecordAction.getAction() != MobileAction.CloseApplication) {
-            recordedActionsComposite.getStepView().addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
+            recordedActionsComposite.getStepView()
+                    .addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
         }
     }
 
@@ -1037,18 +1053,24 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     @Override
     public void setSelectedElement(CapturedMobileElement element) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void updateSelectedElement(CapturedMobileElement editingElement) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void updateCapturedElementSelectingColumnHeader() {
         // TODO Auto-generated method stub
-        
+
+    }
+
+    @Override
+    public void highlightElement(MobileElement selectedElement) {
+        // TODO Auto-generated method stub
+
     }
 }

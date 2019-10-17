@@ -26,14 +26,14 @@ public class MobileConfigurationsComposite extends Composite {
     }
 
     public MobileConfigurationsComposite(Dialog parentDialog, Composite parent, int style, MobileAppComposite mobileComposite) {
-        super(parent, style | SWT.NONE);
+        super(parent, style);
         this.parentDialog = parentDialog;
         this.mobileComposite = mobileComposite;
         this.createComposite(parent);
     }
 
     public MobileConfigurationsComposite(Dialog parentDialog, Composite parent, MobileAppComposite mobileComposite) {
-        this(parentDialog, parent, 0, mobileComposite);
+        this(parentDialog, parent, SWT.NONE, mobileComposite);
     }
 
     private void createComposite(Composite parent) {

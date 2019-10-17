@@ -207,7 +207,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     public void updateCapturedElementSelectingColumnHeader() {
-        capturedObjectsComposite.getCapturedObjectsColumn().setImage(capturedObjectsComposite.getCapturedObjectsTableViewer().isAllElementChecked()
+        capturedObjectsComposite.getTableSelectionColumn().setImage(capturedObjectsComposite.getCapturedObjectsTableViewer().isAllElementChecked()
                 ? ImageConstants.IMG_16_CHECKED : ImageConstants.IMG_16_UNCHECKED);
         btnAdd.setEnabled(capturedObjectsComposite.getCapturedObjectsTableViewer().isAnyElementChecked());
     }
@@ -366,8 +366,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         initializeData();
 
         refreshButtonsState();
-
-        capturedObjectsComposite.getCapturedObjectsTableViewer().setCapturedElements(new ArrayList<CapturedMobileElement>());
     }
 
     private void initializeData() {
@@ -929,5 +927,11 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             allElementTreeViewer.setSelection(new StructuredSelection(link));
             allElementTreeViewer.getTree().setFocus();
         }
+    }
+
+    @Override
+    public void highlightElement(MobileElement selectedElement) {
+        // TODO Auto-generated method stub
+        
     }
 }

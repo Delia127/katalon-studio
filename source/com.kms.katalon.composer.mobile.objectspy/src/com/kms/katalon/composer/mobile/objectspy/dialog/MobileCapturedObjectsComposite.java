@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
+import java.util.ArrayList;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
@@ -31,6 +33,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.provider.CapturedElementLabelProvider;
 import com.kms.katalon.composer.mobile.objectspy.element.provider.SelectableElementEditingSupport;
@@ -48,12 +51,12 @@ public class MobileCapturedObjectsComposite extends Composite {
 
     private Table capturedObjectsTable;
 
-    private TableColumn tableIndexColumn;
+    private TableColumn tableSelectionColumn;
 
     private Composite innerTableComposite;
 
-    public TableColumn getCapturedObjectsColumn() {
-        return tableIndexColumn;
+    public TableColumn getTableSelectionColumn() {
+        return tableSelectionColumn;
     }
 
     public MobileCapturedObjectsComposite(Dialog parentDialog, Composite parent, int style) {
@@ -70,6 +73,7 @@ public class MobileCapturedObjectsComposite extends Composite {
         setLayout(new GridLayout());
 
         createCompositeLabel();
+
         createInnerTableComposite();
         createCapturedObjectsTableViewer();
         buildCapturedObjectsTable();
@@ -104,14 +108,13 @@ public class MobileCapturedObjectsComposite extends Composite {
         capturedObjectsTable.setLinesVisible(ControlUtils.shouldLineVisble(capturedObjectsTable.getDisplay()));
         capturedObjectsTable.setToolTipText(StringUtils.EMPTY);
     }
-    
+
     private void createTableViewerColumns() {
-        TableViewerColumn tableViewerIndexColumn = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
-        tableViewerIndexColumn
+        TableViewerColumn tableViewerSelectionColumn = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
+        tableViewerSelectionColumn
                 .setLabelProvider(new CapturedElementLabelProvider(CapturedElementLabelProvider.SELECTION_COLUMN_IDX));
-        tableViewerIndexColumn
-                .setEditingSupport(new SelectableElementEditingSupport(capturedObjectsTableViewer));
-        tableIndexColumn = tableViewerIndexColumn.getColumn();
+        tableViewerSelectionColumn.setEditingSupport(new SelectableElementEditingSupport(capturedObjectsTableViewer));
+        tableSelectionColumn = tableViewerSelectionColumn.getColumn();
 
         TableViewerColumn tableViewerNameColumn = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
         tableViewerNameColumn
@@ -121,9 +124,9 @@ public class MobileCapturedObjectsComposite extends Composite {
 
         TableColumnLayout tbclCapturedObjects = new TableColumnLayout();
         int selectionColMinWidth = Platform.OS_MACOSX.equals(Platform.getOS()) ? 21 : 30;
-        tbclCapturedObjects.setColumnData(tableIndexColumn, new ColumnWeightData(0, selectionColMinWidth, false));
+        tbclCapturedObjects.setColumnData(tableSelectionColumn, new ColumnWeightData(0, selectionColMinWidth, false));
         tbclCapturedObjects.setColumnData(tableNameColumn, new ColumnWeightData(60, 250 - selectionColMinWidth));
-        
+
         innerTableComposite.setLayout(tbclCapturedObjects);
     }
 
@@ -187,7 +190,7 @@ public class MobileCapturedObjectsComposite extends Composite {
             }
         });
 
-        tableIndexColumn.addSelectionListener(new SelectionAdapter() {
+        tableSelectionColumn.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {

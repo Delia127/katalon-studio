@@ -38,13 +38,13 @@ public class MobileAllObjectsComposite extends Composite {
     }
 
     public MobileAllObjectsComposite(Dialog parentDialog, Composite parent, int style) {
-        super(parent, style | SWT.NONE);
+        super(parent, style);
         this.parentDialog = parentDialog;
         this.createComposite(parent);
     }
 
     public MobileAllObjectsComposite(Dialog parentDialog, Composite parent) {
-        this(parentDialog, parent, 0);
+        this(parentDialog, parent, SWT.NONE);
     }
     
     private void createComposite(Composite parent) {

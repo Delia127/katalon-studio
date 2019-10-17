@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
+import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 
 /**
@@ -12,6 +13,9 @@ public interface MobileElementInspectorDialog {
     MobileElementPropertiesComposite getPropertiesComposite();
     
     void setSelectedElement(CapturedMobileElement element);
+
+    void highlightElement(MobileElement selectedElement);
+
     // To Inspect we need:
     // - Captured Elements table: show info of the captured element
     // - Properties table: show details of the captured element
