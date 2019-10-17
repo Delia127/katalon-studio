@@ -15,8 +15,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
@@ -50,11 +48,11 @@ public class ActivationInfoCollector {
 
     private static String apiKey;
     
-    private static String[] MAC_COMMAND = new String[] { "/bin/sh", "-c", "ps aux | grep -v grep | grep -i katalonc | wc -l" };
-    
-    private static String[] LINUX_COMMAND = new String[] { "/bin/sh", "-c", "ps aux | grep -v grep | grep -i katalonc | wc -l" };
-    
-    private static String[] WINDOW_COMMAND = new String[] {"tasklist.exe /fi \"imagename eq katalonc.exe\"", "find /i \"katalonc.exe\" /c" };
+    private static String[] MAC_COMMAND = new String[] { "/bin/sh", "-c", "ps ux | grep -v grep | grep -i katalonc | wc -l" };
+
+    private static String[] LINUX_COMMAND = new String[] { "/bin/sh", "-c", "ps ux | grep -v grep | grep -i katalonc | wc -l" };
+
+    private static String[] WINDOW_COMMAND = new String[] {"cmd", "/c", "tasklist /fi \"imagename eq katalonc.exe\" | find /i \"katalonc.exe\" /c"};
 
     protected ActivationInfoCollector() {
     }
