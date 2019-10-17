@@ -49,6 +49,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -338,8 +339,7 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private boolean isEnterpriseAccount() {
-        return LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        return LicenseUtil.isNotFreeLicense();
     }
     
     private void initSampleProjects() {

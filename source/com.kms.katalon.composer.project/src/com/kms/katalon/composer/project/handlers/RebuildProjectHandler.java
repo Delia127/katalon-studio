@@ -11,6 +11,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -38,8 +39,7 @@ public class RebuildProjectHandler {
                         SubMonitor progress = SubMonitor.convert(monitor, 10);
                         ProjectController projectController = ProjectController.getInstance();
                         ProjectEntity currentProject = projectController.getCurrentProject();
-                        boolean allowSourceAttachment = LicenseType.valueOf(
-                                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+                        boolean allowSourceAttachment = LicenseUtil.isNotFreeLicense();
                         GroovyUtil.initGroovyProjectClassPath(currentProject,
                                 projectController.getCustomKeywordPlugins(currentProject), false,
                                 allowSourceAttachment,

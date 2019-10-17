@@ -56,6 +56,8 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 
+import com.kms.katalon.core.util.ApplicationRunningMode;
+
 public class ConsoleMain {
     public static final String ARGUMENT_SPLITTER = "=";
 
@@ -488,8 +490,7 @@ public class ConsoleMain {
             }
         }
         deleteLibFolders(projectPk);
-        boolean allowSourceAttachment = LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        boolean allowSourceAttachment = false;
         ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk, allowSourceAttachment);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
         if (projectEntity == null) {

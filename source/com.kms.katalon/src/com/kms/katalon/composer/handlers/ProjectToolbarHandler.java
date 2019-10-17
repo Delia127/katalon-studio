@@ -17,6 +17,7 @@ import org.osgi.service.event.Event;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -73,8 +74,7 @@ public class ProjectToolbarHandler {
     }
     
     private void showDebugToolitemForEnterpriseAccount() {
-        boolean isEnterpriseAccount = LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
         MToolBar executionToolBar = (MToolBar) modelService.find(ToolbarProcessor.KATALON_EXECUTION_TOOLBAR_ID,
                 application);
         MHandledToolItem executionToolItemDebug = (MHandledToolItem) modelService

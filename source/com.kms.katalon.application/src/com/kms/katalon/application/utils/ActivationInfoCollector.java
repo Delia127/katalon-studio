@@ -29,6 +29,7 @@ import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -54,6 +55,10 @@ public class ActivationInfoCollector {
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
+    
+    private static LicenseType licenseType;
+    
+    private static String activationCode;
 
     protected ActivationInfoCollector() {
     }
@@ -105,7 +110,8 @@ public class ActivationInfoCollector {
     }
 
     private static void saveLicenseType(LicenseType type) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, type.toString(), true);
+//        ApplicationInfo.setAppProperty(ApplicationStringConstants.LICENSE_TYPE, type.toString(), true);
+        licenseType = type;
     }
 
     private static void saveExpirationDate(Date date) {
@@ -128,9 +134,10 @@ public class ActivationInfoCollector {
 
             if (license != null) {
                 enableFeatures(license);
-                markActivatedLicenseCode(license.getJwtCode());
+//                markActivatedLicenseCode(license.getJwtCode());
+                activationCode = license.getJwtCode();
                 saveLicenseType(license.getType());
-                saveExpirationDate(license.getExpirationDate());
+//                saveExpirationDate(license.getExpirationDate());
                 activated = true;
                 ActivationInfoCollector.apiKey = apiKey;
             }
@@ -236,7 +243,7 @@ public class ActivationInfoCollector {
     }
     
     public static void deactivate(String userName, String password, String machineId) throws Exception {
-        String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        String jwsCode = getActivationCode();
         Long orgId = null;
         if (StringUtils.isNotBlank(jwsCode)) {
             License license = parseLicense(jwsCode);
@@ -326,18 +333,23 @@ public class ActivationInfoCollector {
         return org;
     }
 
-    public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
+    public static boolean activateOffline(String activationCode, StringBuilder errorMessage, RunningMode runningMode) {
         try {
             License license = parseLicense(activationCode);
             if (license != null) {
-                markActivatedLicenseCode(activationCode);
-                saveLicenseType(license.getType());
-                saveExpirationDate(license.getExpirationDate());
                 enableFeatures(license);
-
-                Organization org = new Organization();
-                org.setId(license.getOrganizationId());
-                ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+                
+                saveLicenseType(license.getType());
+                if (runningMode == RunningMode.GUI) {
+                    markActivatedLicenseCode(activationCode);
+                    saveExpirationDate(license.getExpirationDate());
+    
+                    Organization org = new Organization();
+                    org.setId(license.getOrganizationId());
+                    ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+                } else {
+                    ActivationInfoCollector.activationCode = activationCode;
+                }
 
                 activated = true;
                 return activated;
@@ -364,7 +376,7 @@ public class ActivationInfoCollector {
             }
             
             String activationCode = validActivationCodes.stream().findFirst().get();
-            return activateOffline(activationCode, errorMessage);
+            return activateOffline(activationCode, errorMessage, RunningMode.CONSOLE);
         } catch (Exception e) {
             LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
             return false;
@@ -435,7 +447,7 @@ public class ActivationInfoCollector {
 
     public static void releaseLicense() throws Exception {
         try {
-            String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+            String jwsCode = getActivationCode();
             if (StringUtils.isNotBlank(jwsCode)) {
                 License license = parseLicense(jwsCode);
                 if (license == null) {
@@ -562,19 +574,18 @@ public class ActivationInfoCollector {
     }
 
     private static License getValidLicense() throws Exception {
-        String jwsCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        String jwsCode = getActivationCode();
         License license = ActivationInfoCollector.parseLicense(jwsCode);
         return license;
     }
     
     public static LicenseType getLicenseType() {
-        String licenseTypeValue = ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE);
-        return LicenseType.valueOf(licenseTypeValue);
+        return licenseType;
     }
 
     private static License getLastUsedLicense() {
         try {
-            String jwtCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+            String jwtCode = getActivationCode();
             if (jwtCode != null && !jwtCode.isEmpty()) {
                 License license = LicenseService.getInstance().parseJws(jwtCode);
                 if (hasValidMachineId(license)) {
@@ -585,6 +596,15 @@ public class ActivationInfoCollector {
             LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
         }
         return null;
+    }
+    
+    private static String getActivationCode() {
+        KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+        if (katalonPackage == KatalonPackage.ENGINE) {
+            return activationCode;
+        } else {
+            return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        }
     }
     
     public static Set<String> findValidEngineOfflineLinceseCodes() {

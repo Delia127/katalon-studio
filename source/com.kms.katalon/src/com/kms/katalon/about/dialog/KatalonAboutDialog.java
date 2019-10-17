@@ -30,6 +30,7 @@ import org.eclipse.ui.internal.about.AboutBundleGroupData;
 import org.eclipse.ui.internal.about.InstallationDialog;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionInfo;
 import com.kms.katalon.application.utils.VersionUtil;
@@ -85,7 +86,7 @@ public class KatalonAboutDialog extends TrayDialog {
      */
     public KatalonAboutDialog(Shell parentShell) {
         super(parentShell);
-        licenseType = LicenseType.valueOf(ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE));
+        licenseType = ActivationInfoCollector.getLicenseType();
         expirationDate = ApplicationInfo.getAppProperty(ApplicationStringConstants.EXPIRATION_DATE);
         product = Platform.getProduct();
         if (product != null) {

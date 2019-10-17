@@ -45,6 +45,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -296,8 +297,7 @@ public class ExternalLibratiesSettingPage extends PreferencePageWithHelp {
                             removeUnusedFiles(monitor);
                             monitor.worked(TICK);
                         } finally {
-                            boolean allowSourceAttachment = LicenseType.valueOf(
-                                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+                            boolean allowSourceAttachment = LicenseUtil.isNotFreeLicense();
                             projectController.openProjectForUI(currentProject.getId(),
                                     allowSourceAttachment,
                                     new SubProgressMonitor(monitor, TICK));

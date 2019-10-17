@@ -13,6 +13,7 @@ import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ReportController;
@@ -181,8 +182,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
             suiteCollectionLogRecord.setTotalTestCases(String.valueOf(result.getExecutedTestCases()));
 
-            if (LicenseType.valueOf(
-                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE) {
+            if (LicenseUtil.isNotFreeLicense()) {
                 ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
             }
 

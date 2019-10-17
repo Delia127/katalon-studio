@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Group;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
@@ -89,8 +90,7 @@ public class GeneralPreferencePage extends PreferencePage {
         }
         chkShowHelpAtStartUp.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP));
         
-        boolean isEnterpriseAccount = LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
         if (isEnterpriseAccount) {
             if (!prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)){
                 prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING, true);

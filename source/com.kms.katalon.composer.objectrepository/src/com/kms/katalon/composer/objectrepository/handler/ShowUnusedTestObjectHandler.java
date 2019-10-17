@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
@@ -62,8 +63,7 @@ public class ShowUnusedTestObjectHandler {
     @CanExecute
     public boolean canExecute() {
         // Hide this feature for normal users
-        return LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        return LicenseUtil.isNotFreeLicense();
     }
 
     @Execute
