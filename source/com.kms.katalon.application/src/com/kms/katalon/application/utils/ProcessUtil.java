@@ -6,7 +6,7 @@ import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 
-public class ActivationUtil {
+public class ProcessUtil {
     
     private static String[] MAC_COMMAND = new String[] { "/bin/sh", "-c", "ps ux | grep -v grep | grep -i katalonc | wc -l" };
     
