@@ -65,7 +65,7 @@ public class ActivationInfoCollector {
     protected ActivationInfoCollector() {
     }
     
-    public static int countRunningSession() throws Exception {
+    public static int countKatalonCRunningSession() throws Exception {
         String[] command = null;
         if (SystemUtils.IS_OS_MAC) {
             command = MAC_COMMAND;
@@ -345,9 +345,9 @@ public class ActivationInfoCollector {
     
     public static boolean activateOfflineForEngine(StringBuilder errorMessage) throws Exception {
         try {
-            Set<String> validActivationCodes = findValidOfflineLinceseCodes();
+            Set<String> validActivationCodes = findValidEngineOfflineLinceseCodes();
             int validOfflineLicenseSessionNumber = validActivationCodes.size();
-            int runningSession =  countRunningSession();
+            int runningSession =  countKatalonCRunningSession();
             if (validOfflineLicenseSessionNumber <= runningSession) {
                 errorMessage.append("");
                 return false;
@@ -577,7 +577,7 @@ public class ActivationInfoCollector {
         return null;
     }
     
-    public static Set<String> findValidOfflineLinceseCodes() {
+    public static Set<String> findValidEngineOfflineLinceseCodes() {
         Set<String> validActivationCodes = new HashSet<>();
         try {
             File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
