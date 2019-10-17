@@ -1,7 +1,9 @@
 package com.kms.katalon.integration.analytics.providers;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,14 +47,17 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
     }
 
     @Override
-    public String getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
+    public Map<String, String> getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
             String machineId) throws Exception {
         AnalyticsLicenseKey analyticsLicenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, username, sessionId,
                 hostname, machineId, token);
         if (analyticsLicenseKey.getValue() != null) {
-            return analyticsLicenseKey.getValue();
+            Map<String, String> respond = new HashMap<String, String>();
+            respond.put("license", analyticsLicenseKey.getValue());
+            respond.put("errorMessage", analyticsLicenseKey.getErrorMessage());
+            return respond;
         }
-        return "";
+        return null;
     }
 
     @Override
