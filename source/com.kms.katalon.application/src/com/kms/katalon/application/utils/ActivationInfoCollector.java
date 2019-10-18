@@ -125,20 +125,21 @@ public class ActivationInfoCollector {
             String machineId = MachineUtil.getMachineId();
             LicenseResource licenseResource = activate(null, apiKey, machineId, errorMessage);
 
-            if (licenseResource != null) {
-                License license = licenseResource.getLicense();
-                if (license != null) {
-                    enableFeatures(license);
-                    activationCode = license.getJwtCode();
-                    saveLicenseType(license.getType());
-                    activated = true;
-                    ActivationInfoCollector.apiKey = apiKey;
-                }
-                
-                String message = licenseResource.getMessage();
-                if (StringUtils.isNotBlank(errorMessage)) {
-                    errorMessage.append(message);
-                }
+            License license = licenseResource.getLicense();
+            String message = licenseResource.getMessage();
+
+            if (!StringUtils.isEmpty(message)) {
+                LogUtil.logError(message);
+            }
+
+            if (license != null) {
+                enableFeatures(license);
+                // markActivatedLicenseCode(license.getJwtCode());
+                activationCode = license.getJwtCode();
+                saveLicenseType(license.getType());
+                // saveExpirationDate(license.getExpirationDate());
+                activated = true;
+                ActivationInfoCollector.apiKey = apiKey;
             }
         } catch (Exception ex) {
             activated = false;
