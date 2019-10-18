@@ -294,8 +294,8 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             if (!isEnterpriseAccount()) {
                 gdLblOptionsDB.heightHint = 0;
                 gdTxtDriverClassName.heightHint = 0;
-//                lblOptionsDB.setVisible(false);
-//                txtDriverClassName.setVisible(false);
+                lblOptionsDB.setVisible(false);
+                txtDriverClassName.setVisible(false);
                 compContainer.layout(true, true);
             }
         } catch (IOException e) {
