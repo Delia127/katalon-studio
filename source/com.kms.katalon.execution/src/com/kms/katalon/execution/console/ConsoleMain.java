@@ -26,7 +26,6 @@ import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -46,17 +45,13 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.LocalInformationUtil;
-import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
-import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
-
-import com.kms.katalon.core.util.ApplicationRunningMode;
 
 public class ConsoleMain {
     public static final String ARGUMENT_SPLITTER = "=";
@@ -118,10 +113,7 @@ public class ConsoleMain {
             boolean isDevelopmentMode = Platform.inDevelopmentMode();
             boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
             if (!isDevelopmentMode && !isRunningInKatalonC) {
-                String extension = OSUtil.getExecutableExtension();
-                String katalon = "katalon" + extension;
-                String katalonc = "katalonc" + extension;
-                LogUtil.printErrorLine(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_MOVE_TO_KATALONC, katalon, katalonc));
+                LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_MOVE_TO_KATALONC);
                 return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
             }
 
