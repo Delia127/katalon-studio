@@ -103,11 +103,11 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
 
         lblOptionsDB = new Label(compDatabase, SWT.NONE);
         lblOptionsDB.setText("JDBC driver");
-        gdLblOptionsDB = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+        gdLblOptionsDB = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         lblOptionsDB.setLayoutData(gdLblOptionsDB);
 
         txtDriverClassName = new Text(compDatabase, SWT.BORDER);
-        gdTxtDriverClassName = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
+        gdTxtDriverClassName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtDriverClassName.setLayoutData(gdTxtDriverClassName);
 
         Label lblConnectionURL = new Label(compDatabase, SWT.NONE);
