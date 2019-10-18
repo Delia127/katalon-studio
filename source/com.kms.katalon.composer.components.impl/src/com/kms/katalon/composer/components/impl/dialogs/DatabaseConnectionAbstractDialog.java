@@ -69,6 +69,8 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
     private GridData gdTxtDriverClassName;
 
+    private Label lblOptionsDB;
+
     public DatabaseConnectionAbstractDialog(Shell parentShell) {
         super(parentShell);
         setDialogTitle(StringConstants.DIA_TITLE_DB_CONNECTION_QUERY_SETTINGS);
@@ -124,7 +126,7 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
         txtPassword = new Text(grpDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Label lblOptionsDB = new Label(grpDatabase, SWT.NONE);
+        lblOptionsDB = new Label(grpDatabase, SWT.NONE);
         lblOptionsDB.setText("JDBC driver");
         gdLblOptionsDB = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         lblOptionsDB.setLayoutData(gdLblOptionsDB);
@@ -419,6 +421,8 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
         if (!isEnterpriseAccount()) {
             gdLblOptionsDB.heightHint = 0;
             gdTxtDriverClassName.heightHint = 0;
+            txtDriverClassName.setVisible(false);
+            lblOptionsDB.setVisible(false);
             compDatabase.layout(true);
         }
     }
