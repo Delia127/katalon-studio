@@ -174,26 +174,32 @@ public class ActivationDialogV2 extends AbstractDialog {
                         setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false);
                     });
                     UISynchronizeService.syncExec(() -> {
-                        StringBuilder errorMessage = new StringBuilder();
-                        licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
-                        license = licenseResource.getLicense();
-                        if (license != null) {
-                            if (license.getOrganizationId() != null) {
-                                try {
-                                    String org = ActivationInfoCollector.getOrganization(username, password, license.getOrganizationId());
-                                    save(org);
-                                } catch (Exception ex) {
-                                    LogUtil.logError(ex);
-                                    setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
+                        try {
+                            StringBuilder errorMessage = new StringBuilder();
+                            licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
+                            if (licenseResource != null) {
+                                license = licenseResource.getLicense();
+                                if (license != null) {
+                                    if (license.getOrganizationId() != null) {
+                                        String org = ActivationInfoCollector.getOrganization(username, password,
+                                                license.getOrganizationId());
+                                        save(org);
+                                    } else {
+                                        getOrganizations();
+                                        setProgressMessage(StringUtils.EMPTY, false);
+                                    }
+                                } else {
                                     enableObject(true);
+                                    setProgressMessage(errorMessage.toString(), true);
                                 }
                             } else {
-                                getOrganizations();
-                                setProgressMessage("", false);
+                                enableObject(true);
+                                setProgressMessage(errorMessage.toString(), true);
                             }
-                        } else {
+                        } catch (Exception ex) {
+                            LogUtil.logError(ex);
+                            setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
                             enableObject(true);
-                            setProgressMessage(errorMessage.toString(), true);
                         }
                     });
                 });
