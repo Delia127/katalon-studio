@@ -186,7 +186,11 @@ public class MobileDeviceDialog extends Dialog {
                     try {
                         Thread.sleep(200L);
                     } catch (InterruptedException e) {}
-                    UISynchronizeService.syncExec(() -> canvas.redraw());
+                    UISynchronizeService.syncExec(() -> {
+                        if (!canvas.isDisposed()) {
+                            canvas.redraw();
+                        }
+                    });
                 }
             }
         });
