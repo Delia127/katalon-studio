@@ -337,22 +337,24 @@ public class ActivationInfoCollector {
         try {
             License license = parseLicense(activationCode);
             if (license != null) {
-                enableFeatures(license);
-                
-                saveLicenseType(license.getType());
-                if (runningMode == RunningMode.GUI) {
-                    markActivatedLicenseCode(activationCode);
-                    saveExpirationDate(license.getExpirationDate());
+                if (isOffline(license)) {
+                    enableFeatures(license);
+                    
+                    saveLicenseType(license.getType());
+                    if (runningMode == RunningMode.GUI) {
+                        markActivatedLicenseCode(activationCode);
+                        saveExpirationDate(license.getExpirationDate());
+        
+                        Organization org = new Organization();
+                        org.setId(license.getOrganizationId());
+                        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+                    } else {
+                        ActivationInfoCollector.activationCode = activationCode;
+                    }
     
-                    Organization org = new Organization();
-                    org.setId(license.getOrganizationId());
-                    ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
-                } else {
-                    ActivationInfoCollector.activationCode = activationCode;
+                    activated = true;
+                    return activated;
                 }
-
-                activated = true;
-                return activated;
             }
         } catch (Exception ex) {
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
