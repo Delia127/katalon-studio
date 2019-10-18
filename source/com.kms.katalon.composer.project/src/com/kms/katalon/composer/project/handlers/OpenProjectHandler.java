@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -160,8 +161,7 @@ public class OpenProjectHandler {
                     SubMonitor progress = SubMonitor.convert(monitor, 10);
                     monitor.worked(1);
                     monitor.subTask(StringConstants.HAND_LOADING_PROJ);
-                    boolean isEnterpriseAccount = LicenseType.valueOf(
-                            ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+                    boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
                             isEnterpriseAccount,
                             progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));                    

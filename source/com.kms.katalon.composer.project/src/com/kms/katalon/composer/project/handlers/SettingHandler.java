@@ -43,6 +43,7 @@ import com.katalon.platform.api.extension.PluginPreferencePage;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -317,8 +318,7 @@ public class SettingHandler {
      * The preference manager that allows to retrieve enterprise settings page
      */
     private void hidePagesIfNotEnterpriseAccount(PreferenceManager pm) {
-        boolean isEnterpriseAccount = LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
         if (isEnterpriseAccount) {
             return;
         }

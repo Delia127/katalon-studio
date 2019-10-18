@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -132,8 +133,7 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
             txtKeyStorePassword.setText(clientCertSettings.getKeyStorePassword());
 
             // Hide this feature for normal users
-            if (LicenseType.valueOf(
-                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) == LicenseType.FREE) {
+            if (!LicenseUtil.isNotFreeLicense()) {
                 gdClientCert.heightHint = 0;
                 container.layout(true);
             }

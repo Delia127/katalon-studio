@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Display;
 import com.katalon.platform.api.model.ProjectEntity;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.artifact.constant.StringConstants;
 import com.kms.katalon.composer.artifact.core.util.PlatformUtil;
 import com.kms.katalon.composer.artifact.handler.ExportTestArtifactHandler;
@@ -18,8 +19,7 @@ import com.kms.katalon.license.models.LicenseType;
 public class ExportTestArtifactToolsHandler {
     @CanExecute
     public boolean canExecute() {
-        if (ProjectController.getInstance().getCurrentProject() != null && LicenseType
-                .valueOf(ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE) {
+        if (ProjectController.getInstance().getCurrentProject() != null && LicenseUtil.isNotFreeLicense()) {
             return true;
         }
         return false;

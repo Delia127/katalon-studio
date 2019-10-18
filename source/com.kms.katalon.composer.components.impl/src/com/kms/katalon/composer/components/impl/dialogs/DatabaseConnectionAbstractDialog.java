@@ -30,8 +30,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -39,7 +38,6 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.DatabaseController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
-import com.kms.katalon.license.models.LicenseType;
 
 public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
@@ -65,9 +63,11 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
     protected boolean isChanged;
 
-    private GridData gdCompositeDriver;
-
     private Composite compDatabase;
+
+    private GridData gdLblOptionsDB;
+
+    private GridData gdTxtDriverClassName;
 
     public DatabaseConnectionAbstractDialog(Shell parentShell) {
         super(parentShell);
@@ -124,20 +124,14 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
         txtPassword = new Text(grpDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Composite compositeDriver = new Composite(compDatabase, SWT.NONE);
-        gdCompositeDriver = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
-        compositeDriver.setLayoutData(gdCompositeDriver);
-        GridLayout glCompositeDriver = new GridLayout(2, false);
-        glCompositeDriver.marginWidth = 0;
-        glCompositeDriver.marginHeight = 0;
-        compositeDriver.setLayout(glCompositeDriver);
-
-        Label lblOptionsDB = new Label(compositeDriver, SWT.NONE);
+        Label lblOptionsDB = new Label(grpDatabase, SWT.NONE);
         lblOptionsDB.setText("JDBC driver");
-        lblOptionsDB.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        gdLblOptionsDB = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblOptionsDB.setLayoutData(gdLblOptionsDB);
 
-        txtDriverClassName = new Text(compositeDriver, SWT.BORDER);
-        txtDriverClassName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtDriverClassName = new Text(grpDatabase, SWT.BORDER);
+        gdTxtDriverClassName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        txtDriverClassName.setLayoutData(gdTxtDriverClassName);
 
         Label lblConnectionURL = new Label(grpDatabase, SWT.NONE);
         lblConnectionURL.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
@@ -404,8 +398,7 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
     }
 
     protected boolean isEnterpriseAccount() {
-        return LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        return LicenseUtil.isNotFreeLicense();
     }
 
     private boolean isOracleSql(String connectionUrl) {
@@ -424,7 +417,8 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
     protected void showDriverComposite() {
         if (!isEnterpriseAccount()) {
-            gdCompositeDriver.heightHint = 0;
+            gdLblOptionsDB.heightHint = 0;
+            gdTxtDriverClassName.heightHint = 0;
             compDatabase.layout(true);
         }
     }

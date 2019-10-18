@@ -26,8 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
@@ -40,7 +39,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
-import com.kms.katalon.license.models.LicenseType;
 
 public class DatabasePreferencePage extends PreferencePageWithHelp {
 
@@ -66,9 +64,11 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
 
     private DatabaseSettings dbSettings;
 
-    private GridData gdCompositeDriver;
-
     private Composite compContainer;
+
+    private GridData gdLblOptionsDB;
+
+    private GridData gdTxtDriverClassName;
 
     @Override
     protected Control createContents(Composite parent) {
@@ -99,20 +99,14 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         txtPassword = new Text(compDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Composite compositeDriver = new Composite(compDatabase, SWT.NONE);
-        gdCompositeDriver = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
-        compositeDriver.setLayoutData(gdCompositeDriver);
-        GridLayout glCompositeDriver = new GridLayout(2, false);
-        glCompositeDriver.marginWidth = 0;
-        glCompositeDriver.marginHeight = 0;
-        compositeDriver.setLayout(glCompositeDriver);
-
-        Label lblOptionsDB = new Label(compositeDriver, SWT.NONE);
+        Label lblOptionsDB = new Label(compDatabase, SWT.NONE);
         lblOptionsDB.setText("JDBC driver");
-        lblOptionsDB.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        gdLblOptionsDB = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblOptionsDB.setLayoutData(gdLblOptionsDB);
 
-        txtDriverClassName = new Text(compositeDriver, SWT.BORDER);
-        txtDriverClassName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtDriverClassName = new Text(compDatabase, SWT.BORDER);
+        gdTxtDriverClassName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        txtDriverClassName.setLayoutData(gdTxtDriverClassName);
 
         Label lblConnectionURL = new Label(compDatabase, SWT.NONE);
         lblConnectionURL.setLayoutData(new GridData(SWT.LEAD, SWT.TOP, false, false, 1, 1));
@@ -296,7 +290,8 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             
             // Hide this feature for normal users
             if (!isEnterpriseAccount()) {
-                gdCompositeDriver.heightHint = 0;
+                gdLblOptionsDB.heightHint = 0;
+                gdTxtDriverClassName.heightHint = 0;
                 compContainer.layout(true);
             }
         } catch (IOException e) {
@@ -381,7 +376,6 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
     }
 
     private boolean isEnterpriseAccount() {
-        return LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        return LicenseUtil.isNotFreeLicense();
     }
 }

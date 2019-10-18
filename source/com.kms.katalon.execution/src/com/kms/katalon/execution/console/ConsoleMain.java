@@ -56,6 +56,8 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 
+import com.kms.katalon.core.util.ApplicationRunningMode;
+
 public class ConsoleMain {
     public static final String ARGUMENT_SPLITTER = "=";
 
@@ -152,14 +154,13 @@ public class ConsoleMain {
             if (!ActivationInfoCollector.isActivated()) {
                 boolean isActivated = false;
                 
-                String licenseFile = getLicenseFilePath(options);
-                if (!StringUtils.isBlank(licenseFile)) {
-                    LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_PATH, licenseFile));
-                    String activationCode = FileUtils.readFileToString(new File(licenseFile));
+//                String licenseFile = getLicenseFilePath(options);
+                if (true) {
+//                    LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_PATH, licenseFile));
                     StringBuilder errorMessage = new StringBuilder();
 
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_OFFLINE);
-                    isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    isActivated = ActivationInfoCollector.activateOfflineForEngine(errorMessage);
 
                     if (!isActivated) {
                         LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
@@ -489,8 +490,7 @@ public class ConsoleMain {
             }
         }
         deleteLibFolders(projectPk);
-        boolean allowSourceAttachment = LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+        boolean allowSourceAttachment = false;
         ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk, allowSourceAttachment);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
         if (projectEntity == null) {

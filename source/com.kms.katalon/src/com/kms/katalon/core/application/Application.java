@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -20,7 +18,6 @@ import org.osgi.framework.BundleException;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
@@ -51,13 +48,6 @@ public class Application implements IApplication {
      */
     @Override
     public Object start(IApplicationContext context) {
-
-        LocalDate now = LocalDate.now();
-        LocalDate expiredDate = LocalDate.of(2019, 11, 1);
-        if (now.isAfter(expiredDate)) {
-            LogUtil.logInfo("This beta build has expired");
-            return IApplication.EXIT_OK;
-        }
 
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;

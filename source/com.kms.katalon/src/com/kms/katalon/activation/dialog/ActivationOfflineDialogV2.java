@@ -33,6 +33,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 
 public class ActivationOfflineDialogV2 extends AbstractDialog {
 
@@ -124,7 +125,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                 
                 try {
                     String activationCode = FileUtils.readFileToString(new File(licenseFilePath));
-                    boolean result = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    boolean result = ActivationInfoCollector.activateOffline(activationCode, errorMessage, ApplicationRunningMode.get());
                     if (result == true) {
                         setReturnCode(OK);
                         close();

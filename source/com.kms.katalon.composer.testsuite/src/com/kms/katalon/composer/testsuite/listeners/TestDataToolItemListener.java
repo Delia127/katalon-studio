@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -163,8 +164,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
                 return;
             }
             
-            boolean isEnterpriseAccount = LicenseType.valueOf(
-                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+            boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
             int items = getTableItems().size();
             if (!isEnterpriseAccount && items == 1) {
                 MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,

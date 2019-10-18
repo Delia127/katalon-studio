@@ -19,6 +19,7 @@ import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -373,8 +374,7 @@ public class PluginService {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();
         if (currentProject != null) {
-            boolean allowSourceAttachment = LicenseType.valueOf(
-                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+            boolean allowSourceAttachment = LicenseUtil.isNotFreeLicense();
             GroovyUtil.initGroovyProjectClassPath(currentProject,
                     projectController.getCustomKeywordPlugins(currentProject), false, allowSourceAttachment, monitor);
             projectController.updateProjectClassLoader(currentProject);

@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
@@ -357,8 +358,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         txtActionDelay.setText(String.valueOf(webSettingStore.getActionDelay()));
         txtDefaultIEHangTimeout.setText(Integer.toString(webSettingStore.getIEHangTimeout()));
 
-        if (LicenseType.valueOf(
-                ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) == LicenseType.FREE) {
+        if (!LicenseUtil.isNotFreeLicense()) {
             gdCbLogTestSteps.heightHint = 0;
             container.layout(true);
         }

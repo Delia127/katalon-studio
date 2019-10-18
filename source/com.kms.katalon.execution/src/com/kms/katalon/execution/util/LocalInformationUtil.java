@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.SystemInformationUtil;
@@ -100,6 +101,7 @@ public class LocalInformationUtil {
         LogUtil.logInfo("INFO: CPU load: " + getProcessCpuLoad());
         LogUtil.logInfo("INFO: Total memory: " + getTotalMemoryInMegabyte());
         LogUtil.logInfo("INFO: Free memory: " + getFreeMemoryInMegabyte());
+        LogUtil.logInfo("INFO: Machine ID: " + MachineUtil.getMachineId());
         LogUtil.logInfo("\n");
     }
 

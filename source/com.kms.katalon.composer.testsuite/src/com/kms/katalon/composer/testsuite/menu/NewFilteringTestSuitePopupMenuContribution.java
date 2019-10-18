@@ -12,6 +12,7 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.testsuite.handlers.NewTestSuiteHandler;
@@ -40,8 +41,7 @@ public class NewFilteringTestSuitePopupMenuContribution {
                 return;
             }
 
-            boolean isEnterpriseAccount = LicenseType.valueOf(
-                    ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE)) != LicenseType.FREE;
+            boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
             if (isEnterpriseAccount && NewTestSuiteHandler.findParentTreeEntity(selectedObjects) != null) {
                 MHandledMenuItem newTestSuitePopupMenuItem = MenuFactory.createPopupMenuItem(
                         commandService.createCommand(NEW_FILTERING_TEST_SUITE_COMMAND, null), "Dynamic Test Suite",
