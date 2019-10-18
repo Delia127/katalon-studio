@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
 import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
+import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
@@ -50,7 +51,8 @@ public class ClickKeyword extends WebUIAbstractKeyword {
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
                 WebDriver webDriver = DriverFactory.getWebDriver();
-                WebDriverWait wait = new WebDriverWait(webDriver, RunConfiguration.getTimeOut());
+                int timeout = KeywordHelper.checkTimeout(RunConfiguration.getTimeOut())
+                WebDriverWait wait = new WebDriverWait(webDriver, timeout);
                 webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()))
                 Try.ofFailable({
