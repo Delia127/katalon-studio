@@ -155,13 +155,13 @@ public class ConsoleMain {
                     StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.activateOfflineForEngine(errorMessage);
 
+                    String error = errorMessage.toString();
+                    if (StringUtils.isNotBlank(error)) {
+                        LogUtil.printErrorLine(error);
+                    }
+
                     if (!isActivated) {
                         LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
-                        
-                        String error = errorMessage.toString();
-                        if (StringUtils.isNotBlank(error)) {
-                            LogUtil.printErrorLine(error);
-                        }
                     }
                 }
                 
@@ -169,14 +169,14 @@ public class ConsoleMain {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
                     StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
-                    
+
+                    String error = errorMessage.toString();
+                    if (StringUtils.isNotBlank(error)) {
+                        LogUtil.printErrorLine(error);
+                    }
+
                     if (!isActivated) {
                         LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_ONLINE);
-                        
-                        String error = errorMessage.toString();
-                        if (StringUtils.isNotBlank(error)) {
-                            LogUtil.printErrorLine(error);
-                        }
                     }
                 }
 
