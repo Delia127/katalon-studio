@@ -125,21 +125,20 @@ public class ActivationInfoCollector {
             String machineId = MachineUtil.getMachineId();
             LicenseResource licenseResource = activate(null, apiKey, machineId, errorMessage);
 
-            License license = licenseResource.getLicense();
-            String message = licenseResource.getMessage();
-
-            if (!StringUtils.isEmpty(message)) {
-                LogUtil.logError(message);
-            }
-
-            if (license != null) {
-                enableFeatures(license);
-//                markActivatedLicenseCode(license.getJwtCode());
-                activationCode = license.getJwtCode();
-                saveLicenseType(license.getType());
-//                saveExpirationDate(license.getExpirationDate());
-                activated = true;
-                ActivationInfoCollector.apiKey = apiKey;
+            if (licenseResource != null) {
+                License license = licenseResource.getLicense();
+                if (license != null) {
+                    enableFeatures(license);
+                    activationCode = license.getJwtCode();
+                    saveLicenseType(license.getType());
+                    activated = true;
+                    ActivationInfoCollector.apiKey = apiKey;
+                }
+                
+                String message = licenseResource.getMessage();
+                if (StringUtils.isNotBlank(errorMessage)) {
+                    errorMessage.append(message);
+                }
             }
         } catch (Exception ex) {
             activated = false;
@@ -369,7 +368,7 @@ public class ActivationInfoCollector {
             int runningSession =  ProcessUtil.countKatalonRunningSession();
 
             LogUtil.logInfo("The number of valid offline license: " + validActivationCodes.size());
-            LogUtil.logInfo("The number of Runtime Engine Running Session: " + runningSession);
+            LogUtil.logInfo("The number of Runtime Engine running session: " + runningSession);
             if (validOfflineLicenseSessionNumber < runningSession) {
                 errorMessage.append("License quota exceeded");
                 return false;
@@ -611,7 +610,8 @@ public class ActivationInfoCollector {
         Set<String> validActivationCodes = new HashSet<>();
         try {
             File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
-            if (licenseFolder.exists()) {
+            LogUtil.logInfo("Finding valid offline licenses in folder: " + licenseFolder.getAbsolutePath());
+            if (licenseFolder.exists() && licenseFolder.isDirectory()) {
                 Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
                         .filter(p -> Files.isRegularFile(p)
                                 && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals("lic"))
