@@ -45,7 +45,6 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.LocalInformationUtil;
-import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.logging.LogUtil;
@@ -114,10 +113,7 @@ public class ConsoleMain {
             boolean isDevelopmentMode = Platform.inDevelopmentMode();
             boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
             if (!isDevelopmentMode && !isRunningInKatalonC) {
-                String extension = OSUtil.getExecutableExtension();
-                String katalon = "katalon" + extension;
-                String katalonc = "katalonc" + extension;
-                LogUtil.printErrorLine(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_MOVE_TO_KATALONC, katalon, katalonc));
+                LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_MOVE_TO_KATALONC);
                 return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
             }
 
