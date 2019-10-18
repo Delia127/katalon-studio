@@ -305,26 +305,26 @@ public abstract class BasicRequestor implements Requestor {
     }
     
     protected void configureProxy(HttpClientBuilder httpClientBuilder, ProxyInformation proxyInformation) {
-        HttpHost httpProxy = new HttpHost(proxyInformation.getProxyServerAddress(), proxyInformation.getProxyServerPort());
+        HttpHost httpProxy = new HttpHost(proxyInformation.getProxyServerAddress(),
+                proxyInformation.getProxyServerPort());
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         String username = proxyInformation.getUsername();
         String password = proxyInformation.getPassword();
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            credentialsProvider.setCredentials(new AuthScope(httpProxy), new UsernamePasswordCredentials(username, password));
+            credentialsProvider.setCredentials(new AuthScope(httpProxy),
+                    new UsernamePasswordCredentials(username, password));
         }
-        httpClientBuilder.setRoutePlanner(
-                new HttpRoutePlanner() {
-                    
-                    @Override
-                    public HttpRoute determineRoute(HttpHost arg0, HttpRequest arg1, HttpContext arg2) throws HttpException {
-                        if((ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.USE_SYSTEM))) {
-                                return new SystemDefaultRoutePlanner(ProxySelector.getDefault()).determineRoute(arg0, arg1, arg2);
-                        } else {
-                                return new DefaultProxyRoutePlanner(httpProxy).determineRoute(arg0, arg1, arg2);
-                        }
-                    }
-                })
-            .setDefaultCredentialsProvider(credentialsProvider);
+        httpClientBuilder.setRoutePlanner(new HttpRoutePlanner() {
+
+            @Override
+            public HttpRoute determineRoute(HttpHost arg0, HttpRequest arg1, HttpContext arg2) throws HttpException {
+                if ((ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.USE_SYSTEM))) {
+                    return new SystemDefaultRoutePlanner(ProxySelector.getDefault()).determineRoute(arg0, arg1, arg2);
+                } else {
+                    return new DefaultProxyRoutePlanner(httpProxy).determineRoute(arg0, arg1, arg2);
+                }
+            }
+        }).setDefaultCredentialsProvider(credentialsProvider);
     }
     
     protected HttpContext getHttpContext() throws KeyManagementException, GeneralSecurityException, IOException {
