@@ -26,7 +26,6 @@ import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -49,14 +48,11 @@ import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.execution.util.OSUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
-import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
-
-import com.kms.katalon.core.util.ApplicationRunningMode;
 
 public class ConsoleMain {
     public static final String ARGUMENT_SPLITTER = "=";
@@ -154,21 +150,18 @@ public class ConsoleMain {
             if (!ActivationInfoCollector.isActivated()) {
                 boolean isActivated = false;
                 
-//                String licenseFile = getLicenseFilePath(options);
-                if (true) {
-//                    LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_PATH, licenseFile));
-                    StringBuilder errorMessage = new StringBuilder();
-
+                if (!isActivated) {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_OFFLINE);
+                    StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.activateOfflineForEngine(errorMessage);
+
+                    String error = errorMessage.toString();
+                    if (StringUtils.isNotBlank(error)) {
+                        LogUtil.printErrorLine(error);
+                    }
 
                     if (!isActivated) {
                         LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
-                        
-                        String error = errorMessage.toString();
-                        if (StringUtils.isNotBlank(error)) {
-                            LogUtil.printErrorLine(error);
-                        }
                     }
                 }
                 
@@ -176,14 +169,14 @@ public class ConsoleMain {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
                     StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
-                    
+
+                    String error = errorMessage.toString();
+                    if (StringUtils.isNotBlank(error)) {
+                        LogUtil.printErrorLine(error);
+                    }
+
                     if (!isActivated) {
                         LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_ONLINE);
-                        
-                        String error = errorMessage.toString();
-                        if (StringUtils.isNotBlank(error)) {
-                            LogUtil.printErrorLine(error);
-                        }
                     }
                 }
 

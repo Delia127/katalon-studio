@@ -375,8 +375,8 @@ public class ActivationInfoCollector {
             int validOfflineLicenseSessionNumber = validActivationCodes.size();
             int runningSession =  ProcessUtil.countKatalonRunningSession();
 
-            LogUtil.logInfo("The number of valid offline license: " + validActivationCodes.size());
-            LogUtil.logInfo("The number of Runtime Engine Running Session: " + runningSession);
+            LogUtil.logInfo("The number of valid offline licenses: " + validActivationCodes.size());
+            LogUtil.logInfo("The number of Runtime Engine running sessions: " + runningSession);
             if (validOfflineLicenseSessionNumber < runningSession) {
                 errorMessage.append("License quota exceeded");
                 return false;
@@ -618,7 +618,8 @@ public class ActivationInfoCollector {
         Set<String> validActivationCodes = new HashSet<>();
         try {
             File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
-            if (licenseFolder.exists()) {
+            LogUtil.logInfo("Finding valid offline licenses in folder: " + licenseFolder.getAbsolutePath());
+            if (licenseFolder.exists() && licenseFolder.isDirectory()) {
                 Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
                         .filter(p -> Files.isRegularFile(p)
                                 && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals("lic"))
