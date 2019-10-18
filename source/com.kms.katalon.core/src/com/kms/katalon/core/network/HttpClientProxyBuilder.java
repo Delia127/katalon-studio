@@ -2,6 +2,7 @@ package com.kms.katalon.core.network;
 
 import java.io.IOException;
 import java.net.Proxy;
+import java.net.ProxySelector;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 
@@ -13,13 +14,17 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -28,6 +33,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
+import org.apache.http.protocol.HttpContext;
 
 import com.kms.katalon.core.util.internal.ProxyUtil;
 
@@ -105,7 +112,17 @@ public class HttpClientProxyBuilder {
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
             credentialsProvider.setCredentials(new AuthScope(httpProxy), new UsernamePasswordCredentials(username, password));
         }
-        httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(httpProxy))
+        httpClientBuilder.setRoutePlanner(new HttpRoutePlanner() {
+            
+            @Override
+            public HttpRoute determineRoute(HttpHost arg0, HttpRequest arg1, HttpContext arg2) throws HttpException {
+                if((ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.USE_SYSTEM))) {
+                        return new SystemDefaultRoutePlanner(ProxySelector.getDefault()).determineRoute(arg0, arg1, arg2);
+                } else {
+                        return new DefaultProxyRoutePlanner(httpProxy).determineRoute(arg0, arg1, arg2);
+                }
+            }
+        })
             .setDefaultCredentialsProvider(credentialsProvider);
     }
     
