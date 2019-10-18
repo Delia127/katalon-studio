@@ -70,6 +70,8 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
 
     private GridData gdTxtDriverClassName;
 
+    private Label lblOptionsDB;
+
     @Override
     protected Control createContents(Composite parent) {
         compContainer = new Composite(parent, SWT.NONE);
@@ -99,13 +101,13 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         txtPassword = new Text(compDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Label lblOptionsDB = new Label(compDatabase, SWT.NONE);
+        lblOptionsDB = new Label(compDatabase, SWT.NONE);
         lblOptionsDB.setText("JDBC driver");
-        gdLblOptionsDB = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdLblOptionsDB = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
         lblOptionsDB.setLayoutData(gdLblOptionsDB);
 
         txtDriverClassName = new Text(compDatabase, SWT.BORDER);
-        gdTxtDriverClassName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtDriverClassName = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
         txtDriverClassName.setLayoutData(gdTxtDriverClassName);
 
         Label lblConnectionURL = new Label(compDatabase, SWT.NONE);
@@ -292,7 +294,9 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             if (!isEnterpriseAccount()) {
                 gdLblOptionsDB.heightHint = 0;
                 gdTxtDriverClassName.heightHint = 0;
-                compContainer.layout(true);
+//                lblOptionsDB.setVisible(false);
+//                txtDriverClassName.setVisible(false);
+                compContainer.layout(true, true);
             }
         } catch (IOException e) {
             setStatusLabel(e.getMessage(), ColorUtil.getTextErrorColor());
