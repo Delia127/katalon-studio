@@ -76,6 +76,7 @@ public class ActivationInfoCollector {
     }
 
     public static boolean checkAndMarkActivatedForGUIMode(StringBuilder errorMessage) {
+        activated = false;
         try {
             License license = getValidLicense();
             boolean isOffline = isOffline(license);
@@ -83,14 +84,19 @@ public class ActivationInfoCollector {
             if (!isOffline) {
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                String machineId = MachineUtil.getMachineId();
-                LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
-                license = licenseResource.getLicense();
 
-                String message = licenseResource.getMessage();
-                if (!StringUtils.isEmpty(message)) {
-                    LogUtil.logError(message);
+                if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(encryptedPassword)) {
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    String machineId = MachineUtil.getMachineId();
+                    LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
+
+                    if (licenseResource != null) {
+                        license = licenseResource.getLicense();
+                        String message = licenseResource.getMessage();
+                        if (!StringUtils.isEmpty(message)) {
+                            LogUtil.logError(message);
+                        }
+                    }
                 }
             }
 
@@ -121,31 +127,31 @@ public class ActivationInfoCollector {
     }
 
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, StringBuilder errorMessage) {
+        activated = false;
         try {
             String machineId = MachineUtil.getMachineId();
             LicenseResource licenseResource = activate(null, apiKey, machineId, errorMessage);
 
-            License license = licenseResource.getLicense();
-            String message = licenseResource.getMessage();
+            if (licenseResource != null) {
+                License license = licenseResource.getLicense();
+                String message = licenseResource.getMessage();
 
-            if (!StringUtils.isEmpty(message)) {
-                LogUtil.logError(message);
-            }
-
-            if (license != null) {
-                enableFeatures(license);
-//                markActivatedLicenseCode(license.getJwtCode());
-                activationCode = license.getJwtCode();
-                saveLicenseType(license.getType());
-//                saveExpirationDate(license.getExpirationDate());
-                activated = true;
-                ActivationInfoCollector.apiKey = apiKey;
-            }
+                if (!StringUtils.isEmpty(message)) {
+                    LogUtil.logError(message);
+                }
+                if (license != null) {
+                    enableFeatures(license);
+//                  markActivatedLicenseCode(license.getJwtCode());
+                    activationCode = license.getJwtCode();
+                    saveLicenseType(license.getType());
+                    activated = true;
+                    ActivationInfoCollector.apiKey = apiKey;
+                }
+             }
         } catch (Exception ex) {
             activated = false;
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_CLI_FAIL);
         }
-
         return activated;
     }
 
@@ -178,14 +184,15 @@ public class ActivationInfoCollector {
             String machineId = MachineUtil.getMachineId();
             LicenseResource licenseResource = ActivationInfoCollector.activate(username, password, machineId, errorMessage);
             
-            License license = licenseResource.getLicense();
-            String message = licenseResource.getMessage();
-
-            if (!StringUtils.isEmpty(message)) {
-                LogUtil.logError(message);
+            if (licenseResource != null) {
+                License license = licenseResource.getLicense();
+                String message = licenseResource.getMessage();
+                if (!StringUtils.isEmpty(message)) {
+                    LogUtil.logError(message);
+                }
+                return license != null;
             }
 
-            return license != null;
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
