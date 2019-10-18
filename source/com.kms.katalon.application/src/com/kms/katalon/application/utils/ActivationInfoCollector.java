@@ -84,15 +84,18 @@ public class ActivationInfoCollector {
             if (!isOffline) {
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                String machineId = MachineUtil.getMachineId();
-                LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
 
-                if (licenseResource != null) {
-                    license = licenseResource.getLicense();
-                    String message = licenseResource.getMessage();
-                    if (!StringUtils.isEmpty(message)) {
-                        LogUtil.logError(message);
+                if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(encryptedPassword)) {
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    String machineId = MachineUtil.getMachineId();
+                    LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
+
+                    if (licenseResource != null) {
+                        license = licenseResource.getLicense();
+                        String message = licenseResource.getMessage();
+                        if (!StringUtils.isEmpty(message)) {
+                            LogUtil.logError(message);
+                        }
                     }
                 }
             }
