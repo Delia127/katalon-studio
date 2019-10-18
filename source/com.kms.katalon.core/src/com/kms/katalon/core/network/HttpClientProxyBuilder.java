@@ -46,7 +46,7 @@ public class HttpClientProxyBuilder {
 	
 	private static final String SOCKET_FACTORY_REGISTRY = "http.socket-factory-registry";
 
-    private static final int DEFAULT_CONNECT_TIMEOUT = 5000; //milliseconds
+    private static final int DEFAULT_CONNECT_TIMEOUT = 60000; //milliseconds
     
     private static PoolingHttpClientConnectionManager connectionManager;
     

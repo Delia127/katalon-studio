@@ -52,7 +52,7 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
 
     private static final String SDK_ELEMENT_PATTERN = "sdk:";
     
-    private static final int CONNECTION_TIMEOUT = 10000;
+    private static final int CONNECTION_TIMEOUT = 60000;
     
     private static final int READ_TIMEOUT = 10000;
 
