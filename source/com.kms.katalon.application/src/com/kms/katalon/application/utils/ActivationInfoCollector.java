@@ -134,10 +134,10 @@ public class ActivationInfoCollector {
 
             if (license != null) {
                 enableFeatures(license);
-                // markActivatedLicenseCode(license.getJwtCode());
+//                markActivatedLicenseCode(license.getJwtCode());
                 activationCode = license.getJwtCode();
                 saveLicenseType(license.getType());
-                // saveExpirationDate(license.getExpirationDate());
+//                saveExpirationDate(license.getExpirationDate());
                 activated = true;
                 ActivationInfoCollector.apiKey = apiKey;
             }
