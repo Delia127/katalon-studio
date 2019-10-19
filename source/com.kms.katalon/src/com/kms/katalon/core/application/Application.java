@@ -49,6 +49,8 @@ public class Application implements IApplication {
     @Override
     public Object start(IApplicationContext context) {
 
+        createLicenseFolder();
+        
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
         }
@@ -228,6 +230,17 @@ public class Application implements IApplication {
             return true;
         } catch (BundleException ex) {
             return false;
+        }
+    }
+    
+    private void createLicenseFolder() {
+        try {
+            File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
+            if (!licenseFolder.exists()) {
+                licenseFolder.mkdir();
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
         }
     }
 }
