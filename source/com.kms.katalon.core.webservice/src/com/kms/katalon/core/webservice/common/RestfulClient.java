@@ -78,9 +78,6 @@ public class RestfulClient extends BasicRequestor {
             sc.init(getKeyManagers(), getTrustManagers(), null);
             clientBuilder.setSSLContext(sc);
         }
-
-        // If there are some parameters, they should be append after the Service URL
-        processRequestParams(request);
         
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
         Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
@@ -92,7 +89,6 @@ public class RestfulClient extends BasicRequestor {
             clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         
-      
         BaseHttpRequest httpRequest = getHttpRequest(request);
 
         CloseableHttpClient httpClient = clientBuilder.build();
@@ -117,8 +113,9 @@ public class RestfulClient extends BasicRequestor {
     
     private static BaseHttpRequest getHttpRequest(RequestObject request) throws UnsupportedOperationException, IOException {
         BaseHttpRequest httpRequest;
+        String url = escapeUrl(request.getRestUrl());
         if (isBodySupported(request.getRestRequestMethod()) && request.getBodyContent() != null) {
-            httpRequest = new DefaultHttpEntityEnclosingRequest(request.getRestUrl());
+            httpRequest = new DefaultHttpEntityEnclosingRequest(url);
             ByteArrayOutputStream outstream = new ByteArrayOutputStream();
             request.getBodyContent().writeTo(outstream);
             byte[] bytes = outstream.toByteArray();
@@ -126,7 +123,7 @@ public class RestfulClient extends BasicRequestor {
             ((DefaultHttpEntityEnclosingRequest) httpRequest)
                     .setEntity(new InputStreamEntity(instream));
         } else {
-            httpRequest = new DefaultHttpRequest(request.getRestUrl());
+            httpRequest = new DefaultHttpRequest(url);
         }
 
         setRequestMethod(httpRequest, request.getRestRequestMethod());
@@ -134,11 +131,31 @@ public class RestfulClient extends BasicRequestor {
         return httpRequest;
     }
 
-    public static void processRequestParams(RequestObject request) throws MalformedURLException {
-        String url = UrlEscapers.urlFragmentEscaper().escape(request.getRestUrl());
-        request.setRestUrl(url);
+    private static String escapeUrl(String url) throws MalformedURLException {
+        String escapedUrl = UrlEscapers.urlFragmentEscaper().escape(url);
+        return escapedUrl;
     }
 
+    public static void processRequestParams(RequestObject request) throws MalformedURLException {
+        StringBuilder paramString = new StringBuilder();
+        for (TestObjectProperty property : request.getRestParameters()) {
+            if (StringUtils.isEmpty(property.getName())) {
+                continue;
+            }
+            if (!StringUtils.isEmpty(paramString.toString())) {
+                paramString.append("&");
+            }
+            paramString.append(UrlEncoder.encode(property.getName()));
+            paramString.append("=");
+            paramString.append(UrlEncoder.encode(property.getValue()));
+        }
+        if (!StringUtils.isEmpty(paramString.toString())) {
+            URL url = new URL(request.getRestUrl());
+            request.setRestUrl(
+                    request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&") + paramString.toString());
+        }
+    }
+    
     private ResponseObject response(CloseableHttpClient httpClient, BaseHttpRequest httpRequest) throws Exception {
         if (httpClient == null || httpRequest == null) {
             return null;
