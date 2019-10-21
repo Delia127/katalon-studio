@@ -11,11 +11,13 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.PackageFragment;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -38,6 +40,8 @@ import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
@@ -60,8 +64,10 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
+@SuppressWarnings("restriction")
 public class TreeEntityDropListener extends TreeDropTargetEffect {
     @Inject
     private IEventBroker eventBroker;
@@ -102,7 +108,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                     ICompilationUnit unit = (ICompilationUnit) treeEntities[i].getObject();
                     file = (IFile) unit.getResource();
                 }
-                moveKeyword(file, packageFragment, null);
+                moveKeyword(file, packageFragment);
                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity.getParent());
                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetTreeEntity);
                 KeywordController.getInstance().parseCustomKeywordFile(file, ProjectController.getInstance().getCurrentProject());
@@ -113,18 +119,41 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         }
     }
 
-    public static IFile moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
+    public static IFile moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment)
             throws Exception {
         if (keywordFile == null || targetPackageFragment == null) {
             return null;
         }
-        String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
 
-        GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName);
-        refactorReferencingTestSuites(ProjectController.getInstance().getCurrentProject(), keywordFile,
-                keywordFile.getLocation().toString(), cutKeywordFilePath);
+        GroovyCompilationUnit compilationUnit = (GroovyCompilationUnit) JavaCore.create(keywordFile);
+        String className = compilationUnit.getElementName().replace(".groovy", "");
+        String oldParentPackageName = compilationUnit.getParent().getElementName();
+        String oldClassQualifier = StringUtils.isNotEmpty(oldParentPackageName) ? oldParentPackageName + "." + className : className;
+        
+        GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, className);
+
+        String newParentPackageName = targetPackageFragment.getElementName();
+        String newClassQualifier = StringUtils.isNotEmpty(newParentPackageName) ? newParentPackageName + "." + className : className;
+
+        updateReferences(oldClassQualifier, newClassQualifier);
         return keywordFile;
     }
+    
+    public static void updateReferences(String oldClassQualifier, String newClassQualifier) {
+        String oldScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + oldClassQualifier + ".";
+        String newScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + newClassQualifier + ".";
+        try {
+            GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldScript, newScript, getProjectEntity());
+            PartServiceSingleton.getInstance().getPartService().saveAll(false);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    private static ProjectEntity getProjectEntity() {
+        return ProjectController.getInstance().getCurrentProject();
+    }
+
     
     private static void refactorReferencingTestSuites(ProjectEntity project, IFile keyword, String oldKeywordLocation,
             String newKeywordLocation) throws Exception {
