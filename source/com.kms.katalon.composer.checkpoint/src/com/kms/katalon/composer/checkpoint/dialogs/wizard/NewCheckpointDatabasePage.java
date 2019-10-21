@@ -1,10 +1,12 @@
 package com.kms.katalon.composer.checkpoint.dialogs.wizard;
 
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -26,9 +28,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.controller.DatabaseController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
@@ -58,6 +62,16 @@ public class NewCheckpointDatabasePage extends AbstractCheckpointWizardPage {
 
     protected Text txtQuery;
 
+    private GridData gdLblOptionsDB;
+
+    private GridData gdTxtDriverClassName;
+
+    private Label lblOptionsDB;
+
+    protected Text txtDriverClassName;
+
+    private Composite compDatabase;
+
     public NewCheckpointDatabasePage() {
         super(NewCheckpointDatabasePage.class.getSimpleName(), DATABASE, WIZ_DATABASE_SOURCE_CONFIGURATION);
     }
@@ -83,8 +97,18 @@ public class NewCheckpointDatabasePage extends AbstractCheckpointWizardPage {
         enableCustomDBConnection(!chkGlobalDBSetting.getSelection());
     }
 
+    protected void showDriverComposite() {
+        if (!LicenseUtil.isNotFreeLicense()) {
+            gdLblOptionsDB.heightHint = 0;
+            gdTxtDriverClassName.heightHint = 0;
+            txtDriverClassName.setVisible(false);
+            lblOptionsDB.setVisible(false);
+            compDatabase.layout(true);
+        }
+    }
+    
     private void createDatabasePart(Composite parent) {
-        Composite compDatabase = new Composite(parent, SWT.NONE);
+        compDatabase = new Composite(parent, SWT.NONE);
         compDatabase.setLayout(new GridLayout());
         compDatabase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
@@ -115,6 +139,15 @@ public class NewCheckpointDatabasePage extends AbstractCheckpointWizardPage {
 
         txtPassword = new Text(grpDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+        lblOptionsDB = new Label(grpDatabase, SWT.NONE);
+        lblOptionsDB.setText("JDBC driver");
+        gdLblOptionsDB = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblOptionsDB.setLayoutData(gdLblOptionsDB);
+
+        txtDriverClassName = new Text(grpDatabase, SWT.BORDER);
+        gdTxtDriverClassName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        txtDriverClassName.setLayoutData(gdTxtDriverClassName);
 
         Label lblConnectionURL = new Label(grpDatabase, SWT.NONE);
         lblConnectionURL.setLayoutData(new GridData(SWT.LEAD, SWT.TOP, false, false, 1, 1));
@@ -220,8 +253,15 @@ public class NewCheckpointDatabasePage extends AbstractCheckpointWizardPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                ClassLoader oldClassLoader = null;
                 DatabaseConnection dbConn = getDatabaseConnection();
+
                 try {
+                    oldClassLoader = Thread.currentThread().getContextClassLoader();
+                    // fetch data and load into table
+                    URLClassLoader projectClassLoader = ProjectController.getInstance()
+                            .getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+                    Thread.currentThread().setContextClassLoader(projectClassLoader);
                     if (chkGlobalDBSetting.getSelection()) {
                         dbConn = DatabaseController.getInstance().getGlobalDatabaseConnection();
                     }
@@ -237,12 +277,15 @@ public class NewCheckpointDatabasePage extends AbstractCheckpointWizardPage {
                         return;
                     }
                     setStatusLabel(StringConstants.DIA_LBL_TEST_STATUS_SUCCESS, ColorUtil.getTextSuccessfulColor());
-                } catch (SQLException | IOException ex) {
+                } catch (SQLException | IOException | CoreException ex) {
                     setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL, ex.getMessage()),
                             ColorUtil.getTextErrorColor());
                 } finally {
                     if (dbConn != null) {
                         dbConn.close();
+                    }
+                    if (oldClassLoader != null) {
+                        Thread.currentThread().setContextClassLoader(oldClassLoader);
                     }
                 }
             }
@@ -354,7 +397,7 @@ public class NewCheckpointDatabasePage extends AbstractCheckpointWizardPage {
         if (this.equals(getContainer().getCurrentPage())) {
             return new DatabaseCheckpointSourceInfo(txtConnectionURL.getText(), chkGlobalDBSetting.getSelection(),
                     chkSecureUserPassword.getSelection(), txtUser.getText(), Base64.encode(txtPassword.getText()),
-                    txtQuery.getText());
+                    txtQuery.getText(), txtDriverClassName.getText());
         }
         return new DatabaseCheckpointSourceInfo();
     }

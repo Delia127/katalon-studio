@@ -20,7 +20,7 @@ public class DatabaseCheckpointSourceController implements CheckpointSourceContr
     public DBData getSourceData(DatabaseCheckpointSourceInfo sourceInfo) throws Exception {
         DatabaseConnection dbConnection = DatabaseController.getInstance().getDatabaseConnection(
                 sourceInfo.isUsingGlobalDBSetting(), sourceInfo.isSecureUserAccount(), sourceInfo.getUser(),
-                sourceInfo.getPassword(), sourceInfo.getSourceUrl());
+                sourceInfo.getPassword(), sourceInfo.getSourceUrl(), sourceInfo.getDriverClassName());
         if (dbConnection == null) {
             throw new IllegalArgumentException(StringConstants.CTRL_EXC_DB_CONNECTION_SETTINGS_ARE_EMPTY);
         }

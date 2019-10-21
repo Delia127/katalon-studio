@@ -41,7 +41,7 @@ public class EditTestDataQueryDialog extends DatabaseConnectionAbstractDialog {
 
         txtConnectionURL.setText(testData.getDataSourceUrl());
         txtQuery.setText(testData.getQuery());
-        if(testData.getDriverClassName() != null){
+        if (testData.getDriverClassName() != null){
         	txtDriverClassName.setText(testData.getDriverClassName());
         }  
     }
