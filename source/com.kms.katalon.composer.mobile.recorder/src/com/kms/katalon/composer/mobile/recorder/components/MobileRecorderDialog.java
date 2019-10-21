@@ -54,19 +54,20 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileAction;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileCapturedObjectsComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileElementPropertiesComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
-import com.kms.katalon.composer.mobile.objectspy.dialog.MobileCapturedObjectsComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
-import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementPropertiesComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.SnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.impl.RenderedTreeSnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
@@ -96,7 +97,7 @@ public class MobileRecorderDialog extends AbstractDialog
 
     private MobileCapturedObjectsComposite capturedObjectsComposite;
 
-    private MobileReadonlyElementPropertiesComposite propertiesComposite;
+    private MobileElementPropertiesComposite propertiesComposite;
 
     private MobileAllObjectsComposite allObjectsComposite;
 
@@ -433,7 +434,7 @@ public class MobileRecorderDialog extends AbstractDialog
     }
 
     private void createPropertiesComposite(Composite parent) {
-        propertiesComposite = new MobileReadonlyElementPropertiesComposite(parent);
+        propertiesComposite = new MobileElementPropertiesComposite(this, parent);
     }
 
     private void createMiddlePaneComposite(SashForm sashForm) {
@@ -449,7 +450,6 @@ public class MobileRecorderDialog extends AbstractDialog
         hSashForm.setWeights(new int[] { 3, 7 });
     }
 
-    @SuppressWarnings("rawtypes")
     private void createActionListComposite(SashForm sashForm) {
         Composite actionListComposite = new Composite(sashForm, SWT.NONE);
         actionListComposite.setLayout(new GridLayout());
@@ -479,10 +479,7 @@ public class MobileRecorderDialog extends AbstractDialog
                             recordedActionsComposite.getStepView().addNode(actionMapping);
                             
                             List<CapturedMobileElement> mobileElements = new ArrayList<>();
-                            SnapshotMobileElement snapshotElement = (SnapshotMobileElement) actionMapping.getTargetElement();
-                            CapturedMobileElement targetElement = snapshotElement != null
-                                    ? snapshotElement.getCapturedElement()
-                                    : null;
+                            CapturedMobileElement targetElement = (CapturedMobileElement) actionMapping.getTargetElement();
                             if (targetElement != null) {
                                 mobileElements.add(targetElement);
                                 capturedObjectsComposite.getCapturedObjectsTableViewer().addMobileElements(mobileElements);
@@ -608,7 +605,7 @@ public class MobileRecorderDialog extends AbstractDialog
             progressDlg.run(true, false, processToRun);
             captureObjectAction();
             targetElementChanged(null);
-            allObjectsComposite.getAllElementTreeViewer().setSelection(StructuredSelection.EMPTY);
+            allObjectsComposite.unfocusAllElements();
             return mobileActionMapping;
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ExecutionException) {
@@ -628,7 +625,8 @@ public class MobileRecorderDialog extends AbstractDialog
         }
     }
 
-    public void targetElementChanged(MobileElement mobileElement) {
+    @Override
+    public void targetElementChanged(CapturedMobileElement mobileElement) {
         propertiesComposite.setEditingElement(mobileElement);
         updateActionButtonsVisibility(mobileElement, getCurrentMobileDriverType());
     }
@@ -797,9 +795,7 @@ public class MobileRecorderDialog extends AbstractDialog
                 UISynchronizeService.syncExec(new Runnable() {
                     @Override
                     public void run() {
-                        allObjectsComposite.getAllElementTreeViewer().setInput(new Object[] { newAppRootElement });
-                        allObjectsComposite.getAllElementTreeViewer().refresh();
-                        allObjectsComposite.getAllElementTreeViewer().expandAll();
+                        allObjectsComposite.setInput(newAppRootElement);
                     }
                 });
             }
@@ -875,8 +871,7 @@ public class MobileRecorderDialog extends AbstractDialog
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
 
-            allObjectsComposite.getAllElementTreeViewer().setInput(new Object[] {});
-            allObjectsComposite.getAllElementTreeViewer().refresh();
+            allObjectsComposite.clearAllElements();
             targetElementChanged(null);
             // recordedActionsComposite.getActionTableViewer().refresh();
         }
@@ -931,9 +926,13 @@ public class MobileRecorderDialog extends AbstractDialog
             @Override
             public void run() {
                 getShell().setFocus();
-                allObjectsComposite.getAllElementTreeViewer().getTree().setFocus();
-                allObjectsComposite.getAllElementTreeViewer().setSelection(new StructuredSelection(foundElement));
-                targetElementChanged(foundElement);
+                allObjectsComposite.focusToElementsTree();
+                allObjectsComposite.setFocusedElement(foundElement);
+
+                CapturedMobileElement element = foundElement.getCapturedElement() != null
+                        ? foundElement.getCapturedElement()
+                        : foundElement.newCapturedElement();
+                targetElementChanged(element);
             }
         });
     }
@@ -1046,8 +1045,7 @@ public class MobileRecorderDialog extends AbstractDialog
 
     @Override
     public MobileElementPropertiesComposite getPropertiesComposite() {
-        // TODO Auto-generated method stub
-        return null;
+        return propertiesComposite;
     }
 
     @Override
@@ -1063,7 +1061,7 @@ public class MobileRecorderDialog extends AbstractDialog
     }
 
     @Override
-    public void updateCapturedElementSelectingColumnHeader() {
+    public void handleCapturedObjectsTableSelectionChange() {
         // TODO Auto-generated method stub
 
     }
@@ -1072,5 +1070,22 @@ public class MobileRecorderDialog extends AbstractDialog
     public void highlightElement(MobileElement selectedElement) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public MobileCapturedObjectsComposite getCapturedObjectsComposite() {
+        return capturedObjectsComposite;
+    }
+
+    @Override
+    public void removeSelectedCapturedElements(CapturedMobileElement[] elements) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void verifyCapturedElementsStates(CapturedMobileElement[] elements) {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.objectspy.dialog;
+package com.kms.katalon.composer.mobile.objectspy.composites;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -33,19 +33,27 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementDialog;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 
-public class MobileElementPropertiesComposite {
+public class MobileElementPropertiesComposite extends Composite {
     private Text txtObjectName;
 
     private CapturedMobileElement editingElement;
 
     private TableViewer attributesTableViewer;
 
-    private MobileElementDialog dialog;
+    private MobileElementDialog parentDialog;
 
-    public MobileElementPropertiesComposite(MobileElementDialog dialog) {
-        this.dialog = dialog;
+    public MobileElementPropertiesComposite(MobileElementDialog parentDialog, Composite parent, int style) {
+        super(parent, style);
+        this.parentDialog = parentDialog;
+        createComposite();
+    }
+    
+    public MobileElementPropertiesComposite(MobileElementDialog dialog, Composite parent) {
+        this(dialog, parent, SWT.NONE);
     }
 
     public void setEditingElement(CapturedMobileElement editingElement) {
@@ -53,32 +61,35 @@ public class MobileElementPropertiesComposite {
         refreshAttributesTable();
     }
 
+    public CapturedMobileElement getEditingElement() {
+        return editingElement;
+    }
+
     /**
      * @wbp.parser.entryPoint
      */
-    public void createObjectPropertiesComposite(Composite parent) {
-        Composite objectPropertiesComposite = new Composite(parent, SWT.NONE);
+    private void createComposite() {
         GridLayout glObjectPropertiesComposite = new GridLayout(2, false);
         glObjectPropertiesComposite.horizontalSpacing = 10;
-        objectPropertiesComposite.setLayout(glObjectPropertiesComposite);
+        setLayout(glObjectPropertiesComposite);
 
-        Label lblObjectProperties = new Label(objectPropertiesComposite, SWT.NONE);
+        Label lblObjectProperties = new Label(this, SWT.NONE);
         lblObjectProperties.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         ControlUtils.setFontToBeBold(lblObjectProperties);
         lblObjectProperties.setText(StringConstants.DIA_LBL_OBJECT_PROPERTIES);
 
         // Object Name
-        Label objectNameLabel = new Label(objectPropertiesComposite, SWT.NONE);
+        Label objectNameLabel = new Label(this, SWT.NONE);
         GridData gdObjectNameLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdObjectNameLabel.widthHint = 90;
         objectNameLabel.setLayoutData(gdObjectNameLabel);
         objectNameLabel.setText(StringConstants.DIA_LBL_OBJECT_NAME);
 
-        txtObjectName = new Text(objectPropertiesComposite, SWT.BORDER);
+        txtObjectName = new Text(this, SWT.BORDER);
         txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtObjectName.setToolTipText(StringConstants.DIA_TOOLTIP_OBJECT_NAME);
 
-        Composite attributesTableComposite = new Composite(objectPropertiesComposite, SWT.NONE);
+        Composite attributesTableComposite = new Composite(this, SWT.NONE);
         attributesTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
@@ -110,7 +121,7 @@ public class MobileElementPropertiesComposite {
 
         if (isNotBlank(objectName) && !StringUtils.equals(editingElement.getName(), objectName)) {
             editingElement.setName(objectName);
-            dialog.updateSelectedElement(editingElement);
+            parentDialog.updateSelectedElement(editingElement);
         }
     }
 

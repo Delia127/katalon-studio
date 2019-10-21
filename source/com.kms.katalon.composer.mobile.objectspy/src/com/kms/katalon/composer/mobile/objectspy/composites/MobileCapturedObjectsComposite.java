@@ -1,6 +1,7 @@
-package com.kms.katalon.composer.mobile.objectspy.dialog;
+package com.kms.katalon.composer.mobile.objectspy.composites;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
@@ -32,8 +33,11 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
-import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileObjectSpyDialog;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.provider.CapturedElementLabelProvider;
 import com.kms.katalon.composer.mobile.objectspy.element.provider.SelectableElementEditingSupport;
@@ -41,7 +45,7 @@ import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewe
 
 public class MobileCapturedObjectsComposite extends Composite {
 
-    private Dialog parentDialog;
+    private MobileElementInspectorDialog parentDialog;
 
     private CapturedObjectTableViewer capturedObjectsTableViewer;
 
@@ -59,13 +63,13 @@ public class MobileCapturedObjectsComposite extends Composite {
         return tableSelectionColumn;
     }
 
-    public MobileCapturedObjectsComposite(Dialog parentDialog, Composite parent, int style) {
+    public MobileCapturedObjectsComposite(MobileElementInspectorDialog parentDialog, Composite parent, int style) {
         super(parent, style);
         this.parentDialog = parentDialog;
         this.createComposite();
     }
 
-    public MobileCapturedObjectsComposite(Dialog parentDialog, Composite parent) {
+    public MobileCapturedObjectsComposite(MobileElementInspectorDialog parentDialog, Composite parent) {
         this(parentDialog, parent, SWT.NONE);
     }
 
@@ -136,7 +140,10 @@ public class MobileCapturedObjectsComposite extends Composite {
             public void selectionChanged(SelectionChangedEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 CapturedMobileElement firstElement = (CapturedMobileElement) selection.getFirstElement();
-                ((MobileElementInspectorDialog) parentDialog).getPropertiesComposite().setEditingElement(firstElement);
+                if (firstElement == null) {
+                    return;
+                }
+                parentDialog.getPropertiesComposite().setEditingElement(firstElement);
             }
         });
 
@@ -149,7 +156,7 @@ public class MobileCapturedObjectsComposite extends Composite {
                 Point pt = new Point(e.x, e.y);
                 TableItem item = capturedObjectsTableViewer.getTable().getItem(pt);
                 if (item != null) {
-                    ((MobileObjectSpyDialog) parentDialog).highlightObject((CapturedMobileElement) item.getData());
+                    parentDialog.highlightElement((CapturedMobileElement) item.getData());
                 }
             }
         });
@@ -159,7 +166,7 @@ public class MobileCapturedObjectsComposite extends Composite {
             @Override
             public void doubleClick(DoubleClickEvent event) {
                 CapturedMobileElement mobileElement = capturedObjectsTableViewer.getSelectedElement();
-                ((MobileObjectSpyDialog) parentDialog).setSelectedElement(mobileElement);
+                parentDialog.setSelectedElement(mobileElement);
             }
         });
 
@@ -172,11 +179,11 @@ public class MobileCapturedObjectsComposite extends Composite {
                 }
                 switch (e.keyCode) {
                     case SWT.DEL: {
-                        ((MobileObjectSpyDialog) parentDialog).removeSelectedCapturedElements(elements);
+                        parentDialog.removeSelectedCapturedElements(elements);
                         break;
                     }
                     case SWT.F5: {
-                        ((MobileObjectSpyDialog) parentDialog).verifyCapturedElementsStates(elements);
+                        parentDialog.verifyCapturedElementsStates(elements);
                         break;
                     }
                     case SWT.F2: {
@@ -197,5 +204,57 @@ public class MobileCapturedObjectsComposite extends Composite {
                 capturedObjectsTableViewer.checkAllElements(!capturedObjectsTableViewer.isAllElementChecked());
             }
         });
+    }
+    
+    public void updateCheckAllCheckboxState() {
+        tableSelectionColumn.setImage(capturedObjectsTableViewer.isAllElementChecked()
+                ? ImageConstants.IMG_16_CHECKED
+                : ImageConstants.IMG_16_UNCHECKED);
+    }
+    
+    public boolean isAnyElementChecked() {
+        return capturedObjectsTableViewer.isAnyElementChecked();
+    }
+    
+    public void refresh() {
+        capturedObjectsTableViewer.refresh();
+    }
+
+    public void refresh(Object element, boolean updateLabels) {
+        capturedObjectsTableViewer.refresh(element, updateLabels);
+    }
+    
+    public void addElement(CapturedMobileElement element) {
+        List<CapturedMobileElement> elements = new ArrayList<>();
+        elements.add(element);
+        capturedObjectsTableViewer.addMobileElements(elements);
+    }
+    
+    public void addElements(List<CapturedMobileElement> elements) {
+        capturedObjectsTableViewer.addMobileElements(elements);
+    }
+    
+    public void removeElement(CapturedMobileElement element) {
+        capturedObjectsTableViewer.removeCapturedElement(element);
+    }
+
+    public void removeElements(List<CapturedMobileElement> elements) {
+        capturedObjectsTableViewer.removeCapturedElements(elements);
+    }
+    
+    public boolean containsElement(CapturedMobileElement element) {
+        return capturedObjectsTableViewer.contains(element);
+    }
+    
+    public List<CapturedMobileElement> getAllCheckedElements() {
+        return capturedObjectsTableViewer.getAllCheckedElements();
+    }
+    
+    public List<CapturedMobileElement> getCapturedElements() {
+        return capturedObjectsTableViewer.getCapturedElements();
+    }
+    
+    public CapturedMobileElement[] getSelectedElements() {
+        return capturedObjectsTableViewer.getSelectedElements();
     }
 }

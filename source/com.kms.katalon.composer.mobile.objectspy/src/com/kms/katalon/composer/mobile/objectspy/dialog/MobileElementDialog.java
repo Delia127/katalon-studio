@@ -4,5 +4,5 @@ import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElem
 
 public interface MobileElementDialog {
     void updateSelectedElement(CapturedMobileElement editingElement);
-    void updateCapturedElementSelectingColumnHeader();
+    void handleCapturedObjectsTableSelectionChange();
 }

@@ -8,10 +8,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
-import com.kms.katalon.composer.mobile.recorder.utils.MobileCompositeUtil;
 
 public class MobileConfigurationsComposite extends Composite {
 
@@ -49,7 +49,7 @@ public class MobileConfigurationsComposite extends Composite {
     private void createCompositeLabel(Composite parent) {
         Label lblConfiguration = new Label(parent, SWT.NONE);
         lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        lblConfiguration.setFont(MobileCompositeUtil.getFontBold(lblConfiguration));
+        ControlUtils.setFontToBeBold(lblConfiguration);
         lblConfiguration.setText(MobileRecoderMessagesConstants.LBL_CONFIGURATIONS);
     }
 

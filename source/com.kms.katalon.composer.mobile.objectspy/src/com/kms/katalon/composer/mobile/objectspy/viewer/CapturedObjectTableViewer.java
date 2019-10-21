@@ -155,6 +155,6 @@ public class CapturedObjectTableViewer extends CTableViewer {
     }
 
     public void notifyStateChanged() {
-        dialog.updateCapturedElementSelectingColumnHeader();
+        dialog.handleCapturedObjectsTableSelectionChange();
     }
 }

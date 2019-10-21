@@ -3,6 +3,7 @@ package com.kms.katalon.composer.mobile.recorder.components;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -20,30 +21,28 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
+import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabelProvider;
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementTreeContentProvider;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
-import com.kms.katalon.composer.mobile.recorder.utils.MobileCompositeUtil;
 
 public class MobileAllObjectsComposite extends Composite {
 
-    private Dialog parentDialog;
+    private MobileElementInspectorDialog parentDialog;
 
     private TreeViewer allElementTreeViewer;
-    
-    public TreeViewer getAllElementTreeViewer() {
-        return allElementTreeViewer;
-    }
 
-    public MobileAllObjectsComposite(Dialog parentDialog, Composite parent, int style) {
+    public MobileAllObjectsComposite(MobileElementInspectorDialog parentDialog, Composite parent, int style) {
         super(parent, style);
         this.parentDialog = parentDialog;
         this.createComposite(parent);
     }
 
-    public MobileAllObjectsComposite(Dialog parentDialog, Composite parent) {
+    public MobileAllObjectsComposite(MobileElementInspectorDialog parentDialog, Composite parent) {
         this(parentDialog, parent, SWT.NONE);
     }
     
@@ -58,7 +57,7 @@ public class MobileAllObjectsComposite extends Composite {
     private void createCompositeLabel(Composite parent) {
         Label lblAllObjects = new Label(parent, SWT.NONE);
         lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        lblAllObjects.setFont(MobileCompositeUtil.getFontBold(lblAllObjects));
+        ControlUtils.setFontToBeBold(lblAllObjects);
         lblAllObjects.setText(MobileRecoderMessagesConstants.LBL_ALL_OBJECTS);
     }
     
@@ -88,9 +87,12 @@ public class MobileAllObjectsComposite extends Composite {
                 Point pt = new Point(e.x, e.y);
                 TreeItem item = allElementTreeViewer.getTree().getItem(pt);
                 if (item != null) {
-                    MobileElement element = (MobileElement) item.getData();
-                    ((MobileRecorderDialog) parentDialog).highlightObject(element);
-                    ((MobileRecorderDialog) parentDialog).targetElementChanged(element);
+                    TreeMobileElement treeSnapshotItem = (TreeMobileElement) item.getData();
+                    CapturedMobileElement capturedElement = treeSnapshotItem.getCapturedElement() != null
+                            ? treeSnapshotItem.getCapturedElement()
+                            : treeSnapshotItem.newCapturedElement();
+                    parentDialog.highlightElement(capturedElement);
+                    parentDialog.targetElementChanged(capturedElement);
                 }
             }
         });
@@ -115,5 +117,32 @@ public class MobileAllObjectsComposite extends Composite {
         };
 
         tree.addListener(SWT.Expand, listener);
+    }
+    
+    public void setInput(TreeMobileElement rootElement) {
+        allElementTreeViewer.setInput(new Object[] { rootElement });
+        allElementTreeViewer.refresh();
+        allElementTreeViewer.expandAll();
+    }
+    
+    public void focusToElementsTree() {
+        allElementTreeViewer.getTree().setFocus();
+    }
+
+    public void setFocusedElement(TreeMobileElement selection) {
+        allElementTreeViewer.setSelection(new StructuredSelection(selection));
+    }
+
+    public void unfocusAllElements() {
+        allElementTreeViewer.setSelection(StructuredSelection.EMPTY);
+    }
+    
+    public void clearAllElements() {
+        allElementTreeViewer.setInput(new Object[] {});
+        allElementTreeViewer.refresh();
+    }
+    
+    public void refreshTree() {
+        allElementTreeViewer.refresh();
     }
 }
