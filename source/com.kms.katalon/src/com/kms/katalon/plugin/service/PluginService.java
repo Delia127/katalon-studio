@@ -268,12 +268,7 @@ public class PluginService {
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
         KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
         LicenseType licenseType = ActivationInfoCollector.getLicenseType();
-        List<KStorePlugin> latestPlugins = null;
-        try {
-            latestPlugins = restClient.getLatestPlugins(appVersion, katalonPackage, licenseType);
-        } catch (KStoreClientExceptionWithInfo e) {
-            LoggerSingleton.logError(e);
-        }
+        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion, katalonPackage, licenseType);
         latestPlugins.stream().forEach(p -> logPluginInfo(p));
         return latestPlugins;
     }
