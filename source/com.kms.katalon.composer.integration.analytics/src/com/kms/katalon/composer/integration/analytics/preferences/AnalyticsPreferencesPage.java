@@ -202,8 +202,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
         btnConnect.setEnabled(false);
 
-        lblStatus = new Link(compConnect, SWT.WRAP);
-        GridData gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
+        lblStatus = new Link(mainComposite, SWT.WRAP);
+        GridData gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdStatus.heightHint = 40;
         lblStatus.setLayoutData(gdStatus);
     }
@@ -628,9 +628,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
                             ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
                     setProgressMessage(message, true);
-                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
-                            ComposerAnalyticsStringConstants.WARN,
-                            ComposerIntegrationAnalyticsMessageConstants.REPORT_WARNING_MSG_NO_TEAM);
                 }
             });
          });

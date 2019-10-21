@@ -74,6 +74,7 @@ public abstract class BasicRequestor implements Requestor {
     
     static {
         connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setValidateAfterInactivity(1);
         connectionManager.setMaxTotal(2000);
         connectionManager.setDefaultMaxPerRoute(500);
     }
