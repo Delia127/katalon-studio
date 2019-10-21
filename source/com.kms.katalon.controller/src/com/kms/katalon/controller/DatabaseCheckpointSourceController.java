@@ -1,13 +1,7 @@
 package com.kms.katalon.controller;
 
-import java.io.IOException;
 import java.net.URLClassLoader;
-import java.sql.SQLException;
-import java.text.MessageFormat;
 
-import org.eclipse.core.runtime.CoreException;
-
-import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.testdata.DBData;
