@@ -452,7 +452,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     private boolean isNoInfo() {
-        if (email.isEmpty() || password.isEmpty() || organization.getId() == null) {
+        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || organization.getId() == null) {
             return true;
         }
         return false;
