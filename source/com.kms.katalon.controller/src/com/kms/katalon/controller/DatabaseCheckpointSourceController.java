@@ -35,7 +35,6 @@ public class DatabaseCheckpointSourceController implements CheckpointSourceContr
             URLClassLoader projectClassLoader = ProjectController.getInstance()
                     .getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
             Thread.currentThread().setContextClassLoader(projectClassLoader);
-            
 
             return new DBData(dbConnection, sourceInfo.getQuery());
         } finally {

@@ -338,7 +338,7 @@ public class NewCheckpointDatabasePage extends AbstractCheckpointWizardPage {
         if (!StringUtils.startsWithIgnoreCase(txtConnectionURL.getText(), JDBC_PROTOCOL)) {
             return null;
         }
-        return new DatabaseConnection(txtConnectionURL.getText(), user, password);
+        return new DatabaseConnection(txtConnectionURL.getText(), user, password, txtDriverClassName.getText());
     }
 
     protected void enableCustomDBConnection(boolean enabled) {
