@@ -38,16 +38,9 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
     @SuppressWarnings("restriction")
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
-        if (store == null) {
+        if (element instanceof ITreeEntity) {
             try {
                 store = new ExplorerSettingStore(ProjectController.getInstance().getCurrentProject());
-            } catch (Exception e) {
-                LoggerSingleton.getInstance().getLogger().error(e);
-            }
-        }
-
-        if (element instanceof ITreeEntity && store != null) {
-            try {
                 String entityName = ((ITreeEntity) element).getText();
                 boolean isShow = store.isItemShow(entityName);
                 if (!isShow) {
