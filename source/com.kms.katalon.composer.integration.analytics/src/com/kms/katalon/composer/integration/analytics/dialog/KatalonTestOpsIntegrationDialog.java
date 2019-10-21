@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.analytics.dialog;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -43,7 +45,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
-public class KatalonTestOpsIntegrationDialog extends Dialog {
+public class KatalonTestOpsIntegrationDialog extends AbstractDialog {
 
     public static final int REFRESH_ID = 3;
 
@@ -115,26 +117,29 @@ public class KatalonTestOpsIntegrationDialog extends Dialog {
     @Override
     public boolean close() {
         isClose = updateDataStore();
-        if (!isClose) {
-            return false;
-        }
+//        if (!isClose) {
+//            return false;
+//        }
         return super.close();
     }
 
+
     @Override
-    protected Control createDialogArea(Composite parent) {
+    protected Control createDialogContainer(Composite parent) {
         container = new Composite(parent, SWT.NONE);
-        container.setLayout(new GridLayout(1, false));
+        GridLayout glContainer = new GridLayout();
+        glContainer.verticalSpacing = 5;
+        container.setLayout(glContainer);
 
         Label lblNote = new Label(container, SWT.NONE);
         lblNote.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_TITLE_ANALYTICS_INTEGRATION);
 
         Composite recommendComposite = new Composite(container, SWT.NONE);
         recommendComposite.setLayout(new GridLayout(2, false));
-        recommendComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
+        recommendComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 
         Group grpSelect = new Group(container, SWT.NONE);
-        grpSelect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        grpSelect.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         GridLayout glGrpSelect = new GridLayout(4, false);
         grpSelect.setLayout(glGrpSelect);
         grpSelect.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SELECT_GROUP);
@@ -161,9 +166,10 @@ public class KatalonTestOpsIntegrationDialog extends Dialog {
         btnNewProject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         btnNewProject.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_NEW_PROJECT);
 
-        lnkStatus = new Link(grpSelect, SWT.NONE);
-        lnkStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-        lnkStatus.setForeground(ColorUtil.getTextErrorColor());
+        lnkStatus = new Link(container, SWT.WRAP);
+        GridData gdStatus = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdStatus.heightHint = 30;
+        lnkStatus.setLayoutData(gdStatus);
 
         Composite titleComposite = new Composite(container, SWT.NONE);
         titleComposite.setLayout(new GridLayout(1, false));
@@ -211,6 +217,7 @@ public class KatalonTestOpsIntegrationDialog extends Dialog {
                         false);
             });
             UISynchronizeService.syncExec(() -> {
+                tokenInfo = AnalyticsAuthorizationHandler.getTokenNew(serverUrl, email, password, analyticsSettingStore);
                 Long orgId = organization.getId();
                 getTeam(serverUrl, orgId, tokenInfo);
                 if (teams != null && teams.size() > 0) {
@@ -223,12 +230,13 @@ public class KatalonTestOpsIntegrationDialog extends Dialog {
                             teams);
                     cbbTeams.select(indexSelectTeam);
                     cbbTeams.setEnabled(true);
-                    setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                     enableObject(true);
+                    setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                 } else {
                     enableObject(false);
-                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
-                            true);
+                    String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
+                            ApplicationInfo.getTestOpsServer(), Long.toString(orgId));
+                    setProgressMessage(message, true);
                 }
             });
         });
@@ -282,17 +290,22 @@ public class KatalonTestOpsIntegrationDialog extends Dialog {
             cbbProjects.removeAll();
             setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_PROJECT, true);
         }
-        btnNewProject.setEnabled(true);
+        String role = team.getRole();
+        if (role.equals("USER")) {
+            btnNewProject.setEnabled(false);
+        } else {
+            btnNewProject.setEnabled(true);
+        }
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         btnRefresh = createButton(parent, REFRESH_ID, "Refresh", true);
         btnOk = createButton(parent, OK_ID, "OK", true);
-        addControlListeners();
     }
 
-    private void addControlListeners() {
+    @Override
+    protected void registerControlModifyListeners() {
         btnOk.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -364,14 +377,14 @@ public class KatalonTestOpsIntegrationDialog extends Dialog {
     private boolean updateDataStore() {
         try {
             if (cbbTeams.getSelectionIndex() == -1) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                        ComposerIntegrationAnalyticsMessageConstants.REPORT_WARNING_MSG_NO_TEAM);
+//                MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+//                        ComposerIntegrationAnalyticsMessageConstants.REPORT_WARNING_MSG_NO_TEAM);
                 return false;
             }
 
             if (cbbProjects.getSelectionIndex() == -1) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                        ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_SET_PROJECT);
+//                MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+//                        ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_SET_PROJECT);
                 return false;
             }
             analyticsSettingStore.enableIntegration(true);
@@ -392,6 +405,13 @@ public class KatalonTestOpsIntegrationDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+        Point initialSize = super.getInitialSize();
+        return new Point(Math.max(500, initialSize.x), initialSize.y + 20);
     }
+
+    @Override
+    protected void setInput() {
+
+    }
+
 }

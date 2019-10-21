@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.analytics.preferences;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -202,7 +203,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnConnect.setEnabled(false);
 
         lblStatus = new Link(compConnect, SWT.WRAP);
-        lblStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        GridData gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
+        gdStatus.heightHint = 40;
+        lblStatus.setLayoutData(gdStatus);
     }
 
     @Override
@@ -296,8 +299,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             txtEmail.setText(email);
             txtServerUrl.setText(serverUrl);
-            txtOrganization.setText(analyticsSettingStore.getOrganization().getName());
-            
+            txtOrganization.setText(organization.getName());
+
             selectProjectFromConfig = analyticsSettingStore.getProject();
             selectTeamFromConfig = analyticsSettingStore.getTeam();
             
@@ -348,7 +351,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                                     enableObject(true);
                                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                                 } else {
-                                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM, true);
+                                    String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
+                                            ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
+                                    setProgressMessage(message, true);
                                     btnConnect.setEnabled(true);
                                 }
                             }
@@ -620,7 +625,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                 } else {
                     btnConnect.setEnabled(true);
-                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM, true);
+                    String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
+                            ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
+                    setProgressMessage(message, true);
                     MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
                             ComposerAnalyticsStringConstants.WARN,
                             ComposerIntegrationAnalyticsMessageConstants.REPORT_WARNING_MSG_NO_TEAM);
