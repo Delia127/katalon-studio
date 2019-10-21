@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.components;
+package com.kms.katalon.composer.mobile.recorder.composites;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.components;
+package com.kms.katalon.composer.mobile.recorder.composites;
 
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;

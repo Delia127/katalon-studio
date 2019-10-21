@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.components;
+package com.kms.katalon.composer.mobile.recorder.composites;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
-public class MobileRecordedStepsView extends Composite implements ITestCasePart {
+public class MobileRecordedStepsViewComposite extends Composite implements ITestCasePart {
 
     private Dialog parentDialog;
 
@@ -110,7 +110,7 @@ public class MobileRecordedStepsView extends Composite implements ITestCasePart 
         this.capturedElementsTableViewer = capturedElementsTableViewer;
     }
 
-    public MobileRecordedStepsView(Dialog parentDialog, Composite parent, int style) {
+    public MobileRecordedStepsViewComposite(Dialog parentDialog, Composite parent, int style) {
         super(parent, style | SWT.NONE);
         this.parentDialog = parentDialog;
         wrapper = new ScriptNodeWrapper();
@@ -119,7 +119,7 @@ public class MobileRecordedStepsView extends Composite implements ITestCasePart 
         this.createComposite(parent);
     }
 
-    public MobileRecordedStepsView(Dialog parentDialog, Composite parent) {
+    public MobileRecordedStepsViewComposite(Dialog parentDialog, Composite parent) {
         this(parentDialog, parent, 0);
     }
 

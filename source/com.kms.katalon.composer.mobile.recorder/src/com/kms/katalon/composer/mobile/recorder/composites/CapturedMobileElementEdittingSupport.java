@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.components;
+package com.kms.katalon.composer.mobile.recorder.composites;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,9 +18,9 @@ import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
 
 public class CapturedMobileElementEdittingSupport extends TestObjectEditingSupport {
     
-    private MobileRecordedStepsView recordedStepsView;
+    private MobileRecordedStepsViewComposite recordedStepsView;
     
-    public CapturedMobileElementEdittingSupport(TreeViewer treeViewer, MobileRecordedStepsView recordedStepView) {
+    public CapturedMobileElementEdittingSupport(TreeViewer treeViewer, MobileRecordedStepsViewComposite recordedStepView) {
         super(treeViewer, recordedStepView);
         this.recordedStepsView = recordedStepView;
     }

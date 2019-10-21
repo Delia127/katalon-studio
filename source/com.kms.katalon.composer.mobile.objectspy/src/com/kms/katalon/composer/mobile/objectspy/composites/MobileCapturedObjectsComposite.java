@@ -103,6 +103,7 @@ public class MobileCapturedObjectsComposite extends Composite {
                 (MobileElementDialog) this.parentDialog);
         capturedObjectsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         ColumnViewerToolTipSupport.enableFor(capturedObjectsTableViewer);
+        capturedObjectsTableViewer.setCapturedElements(new ArrayList<CapturedMobileElement>());
     }
 
     private void buildCapturedObjectsTable() {

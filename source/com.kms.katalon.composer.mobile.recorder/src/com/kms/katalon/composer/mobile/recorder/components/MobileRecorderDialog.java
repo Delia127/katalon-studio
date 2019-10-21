@@ -70,6 +70,9 @@ import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElem
 import com.kms.katalon.composer.mobile.objectspy.element.impl.RenderedTreeSnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
+import com.kms.katalon.composer.mobile.recorder.composites.MobileAllObjectsComposite;
+import com.kms.katalon.composer.mobile.recorder.composites.MobileConfigurationsComposite;
+import com.kms.katalon.composer.mobile.recorder.composites.MobileRecordedActionsComposite;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;

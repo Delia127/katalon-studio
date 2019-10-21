@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.components;
+package com.kms.katalon.composer.mobile.recorder.composites;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,9 +57,9 @@ public class MobileRecordedActionsComposite extends Composite {
         return new ArrayList<>();
     }
     
-    private MobileRecordedStepsView stepView;
+    private MobileRecordedStepsViewComposite stepView;
     
-    public MobileRecordedStepsView getStepView() {
+    public MobileRecordedStepsViewComposite getStepView() {
         return stepView;
     }
 
@@ -80,7 +80,7 @@ public class MobileRecordedActionsComposite extends Composite {
     }
 
     private void createRecordedActionComposite(Composite parent) {
-        stepView = new MobileRecordedStepsView(this.parentDialog, parent);
+        stepView = new MobileRecordedStepsViewComposite(this.parentDialog, parent);
     }
 
     private void createCompositeLabel(Composite parent) {
