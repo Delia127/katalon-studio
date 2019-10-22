@@ -3,7 +3,7 @@
 set -xe
 
 create_github_release() {
-    if [ "$isRelease" = "true" ]
+    if [ "$isRelease" = "true" -a "$isQtest" = "false" ]
     then
         cd $katalonDir/tools/release
         npm prune && npm install
