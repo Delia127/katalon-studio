@@ -485,6 +485,7 @@ public class ActivationInfoCollector {
                             orgId,
                             token
                             );
+                    LogUtil.logInfo("License released");
                 }
             }
         } catch (Exception ex) {
@@ -551,7 +552,7 @@ public class ActivationInfoCollector {
                             renewHandler.run();
                             license = getValidLicense();
                         } catch (Exception e) {
-                            LogUtil.logError(e, ApplicationMessageConstants.LICENSE_UNABLE_RENEW);
+                            LogUtil.printAndLogError(e, ApplicationMessageConstants.LICENSE_UNABLE_RENEW);
                         }
                     }
                 }
@@ -559,8 +560,10 @@ public class ActivationInfoCollector {
                 if (license == null || !isValidLicense(license)) {
                     expiredHandler.run();
                 }
+                
+                LogUtil.logInfo("End check license task");
             } catch (Exception e) {
-                LogUtil.logError(e, ApplicationMessageConstants.LICENSE_ERROR_RENEW);
+                LogUtil.printAndLogError(e, ApplicationMessageConstants.LICENSE_ERROR_RENEW);
             }
         }, 0, 30, TimeUnit.SECONDS);
     }
