@@ -106,8 +106,8 @@ public class OpenKobitonRecoderHandler {
             if (testCaseCompositePart == null) {
                 testCaseCompositePart = createNewTestCase();
             }
-            exportRecordedActionsToScripts(recorderDialog.getRecordedActions(), recorderDialog.getTargetFolderEntity(),
-                    recorderDialog.getCurrentMobileDriverType(), testCaseCompositePart);
+//            exportRecordedActionsToScripts(recorderDialog.getRecordedActions(), recorderDialog.getTargetFolderEntity(),
+//                    recorderDialog.getCurrentMobileDriverType(), testCaseCompositePart);
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);

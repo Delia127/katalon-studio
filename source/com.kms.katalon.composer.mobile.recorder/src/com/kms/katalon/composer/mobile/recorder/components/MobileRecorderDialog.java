@@ -77,6 +77,8 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesC
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.core.exception.StepFailedException;
@@ -288,7 +290,7 @@ public class MobileRecorderDialog extends AbstractDialog
         Trackings.trackCloseRecord("mobile", "ok", recordedActionCount);
     }
 
-    public List<MobileActionMapping> getRecordedActions() {
+    public List<AstTreeTableNode> getRecordedActions() {
         return recordedActionsComposite.getRecordedActions();
     }
 
@@ -867,6 +869,7 @@ public class MobileRecorderDialog extends AbstractDialog
             }
         });
         thread.start();
+
         final Shell shell = getShell();
         if (shell != null && !shell.isDisposed()) {
             // Update UI
@@ -876,7 +879,11 @@ public class MobileRecorderDialog extends AbstractDialog
 
             allObjectsComposite.clearAllElements();
             targetElementChanged(null);
-            // recordedActionsComposite.getActionTableViewer().refresh();
+            try {
+                recordedActionsComposite.getStepView().refreshTree();
+            } catch (InvocationTargetException | InterruptedException exeception) {
+                LoggerSingleton.logError(exeception);
+            }
         }
 
         if (deviceView != null) {
@@ -885,12 +892,8 @@ public class MobileRecorderDialog extends AbstractDialog
     }
 
     private void addAdditionalActions() throws ClassNotFoundException, InvocationTargetException, InterruptedException {
-        MobileActionMapping lastRecordAction = recordedActionsComposite.getRecordedActions()
-                .get(recordedActionsComposite.getRecordedActions().size() - 1);
-        if (lastRecordAction.getAction() != MobileAction.CloseApplication) {
-            recordedActionsComposite.getStepView()
-                    .addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
-        }
+        recordedActionsComposite.getStepView()
+                .addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
     }
 
     private void validateToEnableStartButton() {
