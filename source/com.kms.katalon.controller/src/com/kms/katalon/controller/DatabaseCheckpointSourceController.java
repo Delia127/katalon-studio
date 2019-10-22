@@ -1,5 +1,7 @@
 package com.kms.katalon.controller;
 
+import java.net.URLClassLoader;
+
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.testdata.DBData;
@@ -20,11 +22,26 @@ public class DatabaseCheckpointSourceController implements CheckpointSourceContr
     public DBData getSourceData(DatabaseCheckpointSourceInfo sourceInfo) throws Exception {
         DatabaseConnection dbConnection = DatabaseController.getInstance().getDatabaseConnection(
                 sourceInfo.isUsingGlobalDBSetting(), sourceInfo.isSecureUserAccount(), sourceInfo.getUser(),
-                sourceInfo.getPassword(), sourceInfo.getSourceUrl());
+                sourceInfo.getPassword(), sourceInfo.getSourceUrl(), sourceInfo.getDriverClassName());
         if (dbConnection == null) {
             throw new IllegalArgumentException(StringConstants.CTRL_EXC_DB_CONNECTION_SETTINGS_ARE_EMPTY);
         }
-        return new DBData(dbConnection, sourceInfo.getQuery());
+        
+        ClassLoader oldClassLoader = null;
+
+        try {
+            oldClassLoader = Thread.currentThread().getContextClassLoader();
+            // fetch data and load into table
+            URLClassLoader projectClassLoader = ProjectController.getInstance()
+                    .getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+            Thread.currentThread().setContextClassLoader(projectClassLoader);
+
+            return new DBData(dbConnection, sourceInfo.getQuery());
+        } finally {
+            if (oldClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+        }
     }
 
 }

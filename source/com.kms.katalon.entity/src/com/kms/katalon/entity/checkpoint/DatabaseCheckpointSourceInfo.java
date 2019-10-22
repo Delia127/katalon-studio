@@ -31,9 +31,11 @@ public class DatabaseCheckpointSourceInfo extends CheckpointSourceInfo {
 
     /** Database query string */
     private String query;
+    
+    private String driverClassName;
 
     public DatabaseCheckpointSourceInfo() {
-        this(StringConstants.EMPTY, false, false, null, null, StringConstants.EMPTY);
+        this(StringConstants.EMPTY, false, false, null, null, StringConstants.EMPTY, null);
     }
 
     /**
@@ -47,7 +49,7 @@ public class DatabaseCheckpointSourceInfo extends CheckpointSourceInfo {
      * @param query DB SQL query
      */
     public DatabaseCheckpointSourceInfo(String sourceUrl, boolean usingGlobalDBSetting, boolean secureUserAccount, String user,
-            String password, String query) {
+            String password, String query, String driverClassName) {
         setSourceUrl(sourceUrl);
         setSourceType(DataFileDriverType.DBData);
         this.usingGlobalDBSetting = usingGlobalDBSetting;
@@ -55,6 +57,7 @@ public class DatabaseCheckpointSourceInfo extends CheckpointSourceInfo {
         this.user = user;
         this.password = password;
         this.query = query;
+        this.driverClassName = driverClassName;
     }
 
     public Boolean isUsingGlobalDBSetting() {
@@ -100,5 +103,13 @@ public class DatabaseCheckpointSourceInfo extends CheckpointSourceInfo {
     @Override
     public DatabaseCheckpointSourceInfo clone() {
         return (DatabaseCheckpointSourceInfo) super.clone();
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public void setDriverClassName(String driverClassName) {
+        this.driverClassName = driverClassName;
     }
 }

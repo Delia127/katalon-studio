@@ -41,6 +41,7 @@ public class EditCheckpointDatabaseDialog extends DatabaseConnectionAbstractDial
 
         txtConnectionURL.setText(sourceInfo.getSourceUrl());
         txtQuery.setText(sourceInfo.getQuery());
+        txtDriverClassName.setText(StringUtils.defaultString(sourceInfo.getDriverClassName()));
     }
 
     @Override
