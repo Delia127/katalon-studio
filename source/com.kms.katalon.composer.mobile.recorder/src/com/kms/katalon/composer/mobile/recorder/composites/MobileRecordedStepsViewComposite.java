@@ -48,6 +48,7 @@ import com.kms.katalon.composer.mobile.objectspy.element.SnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionUtil;
 import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewer;
+import com.kms.katalon.composer.mobile.recorder.types.CapturedMobileElementEdittingSupport;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;

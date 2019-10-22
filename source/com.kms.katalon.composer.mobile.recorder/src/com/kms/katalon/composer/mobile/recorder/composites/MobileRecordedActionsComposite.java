@@ -53,7 +53,7 @@ public class MobileRecordedActionsComposite extends Composite {
     private List<MobileActionMapping> recordedActions = new ArrayList<>();
 
     public List<MobileActionMapping> getRecordedActions() {
-        List<AstTreeTableNode> zz = stepView.getNodes();
+        List<AstTreeTableNode> recordedSteps = stepView.getNodes();
         return new ArrayList<>();
     }
     
