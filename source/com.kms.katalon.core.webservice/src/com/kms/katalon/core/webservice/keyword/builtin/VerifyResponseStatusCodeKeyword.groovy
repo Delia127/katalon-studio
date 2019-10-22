@@ -45,7 +45,7 @@ public class VerifyResponseStatusCodeKeyword extends WebserviceAbstractKeyword {
     }
 
     @CompileStatic
-    private boolean verifyStatusCode(boolean isEqual, String message, FailureHandling flowControl) {
+    private boolean verifyStatusCode(boolean isEqual, String message, FailureHandling flowControl) throws StepFailedException {
         if (isEqual) {
             logger.logPassed(CoreWebserviceMessageConstants.KW_LOG_PASSED_VERIFY_RESPONSE_STATUS_CODE_SUCCESSFULLY)
         } else {

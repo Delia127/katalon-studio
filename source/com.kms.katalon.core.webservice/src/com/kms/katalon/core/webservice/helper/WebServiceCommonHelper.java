@@ -63,7 +63,6 @@ public class WebServiceCommonHelper {
 
 		Binding binding = new Binding();
 		binding.setVariable("xmlText", xmlText);
-		logger.logDebug("groovyScript: " + groovyScript);
 		GroovyShell shell = new GroovyShell(binding);
 		return shell.evaluate(groovyScript.toString());
 	}
