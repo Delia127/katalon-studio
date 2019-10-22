@@ -456,6 +456,7 @@ public class ActivationInfoCollector {
 
     public static void releaseLicense() throws Exception {
         try {
+            LogUtil.logInfo("Start release license task");
             String jwsCode = getActivationCode();
             if (StringUtils.isNotBlank(jwsCode)) {
                 License license = parseLicense(jwsCode);
@@ -488,7 +489,9 @@ public class ActivationInfoCollector {
                     LogUtil.logInfo("License released");
                 }
             }
+            LogUtil.logInfo("End release license task");
         } catch (Exception ex) {
+            LogUtil.printAndLogError(ex, "Error when release license");
             throw ex;
         } finally {
             KatalonApplication.refreshUserSession();
@@ -540,6 +543,8 @@ public class ActivationInfoCollector {
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
+                LogUtil.logInfo("Start check license task");
+                
                 License license = getValidLicense();
                 if (license == null) {
                     license = getLastUsedLicense();
@@ -569,9 +574,11 @@ public class ActivationInfoCollector {
     }
 
     public static void postEndSession() {
+        LogUtil.logInfo("Start clean up session");
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
         }
+        LogUtil.logInfo("End clean up session");
     }
 
     public static boolean isOffline(License license) {
