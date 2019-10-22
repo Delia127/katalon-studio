@@ -20,33 +20,19 @@ import com.github.markusbernhardt.proxy.util.PlatformUtil;
 import com.github.markusbernhardt.proxy.util.PlatformUtil.Platform;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.preference.ProxyPreferences;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.logging.LogUtil;
 
 public class ApplicationProxyUtil {
     private static final String USE_SYSTEM_PROXY_PROP = "java.net.useSystemProxies";
 
-    public static void saveProxyInformation(ProxyInformation proxyInfo) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.PROXY_OPTION, proxyInfo.getProxyOption(), false);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.PROXY_SERVER_TYPE, proxyInfo.getProxyServerType(), false);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.PROXY_SERVER_ADDRESS, proxyInfo.getProxyServerAddress(),
-                false);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.PROXY_SERVER_PORT, proxyInfo.getProxyServerPort() + "",
-                false);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.PROXY_USERNAME, proxyInfo.getUsername(), false);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.PROXY_PASSWORD, proxyInfo.getPassword(), true);
+    public static void saveProxyInformation(ProxyInformation proxyInfo) throws IOException {
+        ProxyPreferences.saveProxyInformation(proxyInfo);
     }
 
     public static ProxyInformation getProxyInformation() {
-        ProxyInformation proxyInfo = new ProxyInformation();
-
-        final String proxyOption = ApplicationInfo.getAppProperty(ApplicationStringConstants.PROXY_OPTION);
-        proxyInfo.setProxyOption(StringUtils.isEmpty(proxyOption) ? ApplicationMessageConstants.NO_PROXY : proxyOption);
-        proxyInfo.setProxyServerType(ApplicationInfo.getAppProperty(ApplicationStringConstants.PROXY_SERVER_TYPE));
-        proxyInfo.setProxyServerAddress(ApplicationInfo.getAppProperty(ApplicationStringConstants.PROXY_SERVER_ADDRESS));
-        proxyInfo.setProxyServerPort(ApplicationInfo.getAppProperty(ApplicationStringConstants.PROXY_SERVER_PORT));
-        proxyInfo.setUsername(ApplicationInfo.getAppProperty(ApplicationStringConstants.PROXY_USERNAME));
-        proxyInfo.setPassword(ApplicationInfo.getAppProperty(ApplicationStringConstants.PROXY_PASSWORD));
+        ProxyInformation proxyInfo = ProxyPreferences.getProxyInformation();
 
         return proxyInfo;
     }

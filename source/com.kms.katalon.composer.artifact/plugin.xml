@@ -10,14 +10,6 @@
       </point>
    </extension>
    <extension
-         point="com.katalon.platform.extensions">
-      <point
-            extensionPointId="com.katalon.platform.api.extension.newDropdownToolItem"
-            implementationClass="com.kms.katalon.composer.artifact.plugin.PluginMenuItemDescription"
-            id="com.kms.katalon.composer.artifact.plugin.PluginMenuItemDescription">
-      </point>
-   </extension>
-   <extension
          id="com.kms.katalon.composer.artifact.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLContext;
 
@@ -30,6 +31,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 import com.google.common.net.MediaType;
+import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -39,10 +41,12 @@ import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
+import com.kms.katalon.util.URLBuilder;
+import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestfulClient extends BasicRequestor {
 
-    private static final String SSL = RequestHeaderConstants.SSL;
+    private static final String TLS = "TLS";
 
     private static final String HTTPS = RequestHeaderConstants.HTTPS;
     
@@ -70,13 +74,10 @@ public class RestfulClient extends BasicRequestor {
         clientBuilder.setConnectionManagerShared(true);
         
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            SSLContext sc = SSLContext.getInstance(SSL);
+            SSLContext sc = SSLContext.getInstance(TLS);
             sc.init(getKeyManagers(), getTrustManagers(), null);
             clientBuilder.setSSLContext(sc);
         }
-
-        // If there are some parameters, they should be append after the Service URL
-        processRequestParams(request);
         
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
         Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
@@ -88,7 +89,6 @@ public class RestfulClient extends BasicRequestor {
             clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         
-      
         BaseHttpRequest httpRequest = getHttpRequest(request);
 
         CloseableHttpClient httpClient = clientBuilder.build();
@@ -113,8 +113,9 @@ public class RestfulClient extends BasicRequestor {
     
     private static BaseHttpRequest getHttpRequest(RequestObject request) throws UnsupportedOperationException, IOException {
         BaseHttpRequest httpRequest;
+        String url = escapeUrl(request.getRestUrl());
         if (isBodySupported(request.getRestRequestMethod()) && request.getBodyContent() != null) {
-            httpRequest = new DefaultHttpEntityEnclosingRequest(request.getRestUrl());
+            httpRequest = new DefaultHttpEntityEnclosingRequest(url);
             ByteArrayOutputStream outstream = new ByteArrayOutputStream();
             request.getBodyContent().writeTo(outstream);
             byte[] bytes = outstream.toByteArray();
@@ -122,12 +123,17 @@ public class RestfulClient extends BasicRequestor {
             ((DefaultHttpEntityEnclosingRequest) httpRequest)
                     .setEntity(new InputStreamEntity(instream));
         } else {
-            httpRequest = new DefaultHttpRequest(request.getRestUrl());
+            httpRequest = new DefaultHttpRequest(url);
         }
 
         setRequestMethod(httpRequest, request.getRestRequestMethod());
 
         return httpRequest;
+    }
+
+    private static String escapeUrl(String url) throws MalformedURLException {
+        String escapedUrl = UrlEscapers.urlFragmentEscaper().escape(url);
+        return escapedUrl;
     }
 
     public static void processRequestParams(RequestObject request) throws MalformedURLException {
@@ -149,7 +155,7 @@ public class RestfulClient extends BasicRequestor {
                     request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&") + paramString.toString());
         }
     }
-
+    
     private ResponseObject response(CloseableHttpClient httpClient, BaseHttpRequest httpRequest) throws Exception {
         if (httpClient == null || httpRequest == null) {
             return null;

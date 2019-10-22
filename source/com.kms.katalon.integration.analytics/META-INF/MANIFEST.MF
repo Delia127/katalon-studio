@@ -42,7 +42,6 @@ Require-Bundle: com.kms.katalon.core,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di
 Export-Package: com.kms.katalon.integration.analytics,
- com.kms.katalon.integration.analytics.configuration,
  com.kms.katalon.integration.analytics.constants,
  com.kms.katalon.integration.analytics.entity,
  com.kms.katalon.integration.analytics.exceptions,

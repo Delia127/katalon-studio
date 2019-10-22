@@ -25,6 +25,7 @@ public class ImageProcessor {
         registerInAppSurveyImages();
         registerWalkthroughImages();
         registerResultTabImages();
+        registerAboutDialogImages();
     }
     
     private void registerWalkthroughImages(){
@@ -459,5 +460,12 @@ public class ImageProcessor {
     private void registerResultTabImages() {
         ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE);
         ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION);
+    }
+    
+    private void registerAboutDialogImages() {
+        ImageManager.registerImage(IImageKeys.LOGO_KATALON_STUDIO);
+        ImageManager.registerImage(IImageKeys.LOGO_KSE);
+        ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_DRANK);
+        ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_LIGHT);
     }
 }
