@@ -543,6 +543,8 @@ public class ActivationInfoCollector {
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
+                LogUtil.logInfo("Start check license task");
+                
                 License license = getValidLicense();
                 if (license == null) {
                     license = getLastUsedLicense();
