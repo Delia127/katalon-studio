@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.types.MobileElementMethodCallWrapper;
-import com.kms.katalon.composer.mobile.recorder.dialogs.CapturedMobileElementBrowserDialog;
+import com.kms.katalon.composer.mobile.recorder.components.CapturedMobileElementBrowserDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;

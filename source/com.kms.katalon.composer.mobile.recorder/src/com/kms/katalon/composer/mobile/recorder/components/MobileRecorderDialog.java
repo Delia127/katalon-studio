@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.dialogs;
+package com.kms.katalon.composer.mobile.recorder.components;
 
 import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog.safeRoundDouble;
 
@@ -55,6 +55,7 @@ import com.kms.katalon.composer.mobile.objectspy.actions.MobileAction;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileCapturedObjectsComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileConfigurationsComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileElementPropertiesComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
@@ -70,9 +71,7 @@ import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElem
 import com.kms.katalon.composer.mobile.objectspy.element.impl.RenderedTreeSnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
-import com.kms.katalon.composer.mobile.recorder.components.MobileActionButtonWrapper;
 import com.kms.katalon.composer.mobile.recorder.composites.MobileAllObjectsComposite;
-import com.kms.katalon.composer.mobile.recorder.composites.MobileConfigurationsComposite;
 import com.kms.katalon.composer.mobile.recorder.composites.MobileRecordedActionsComposite;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;

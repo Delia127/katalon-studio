@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.composites;
+package com.kms.katalon.composer.mobile.objectspy.composites;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
+import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
-import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 
 public class MobileConfigurationsComposite extends Composite {
 
@@ -25,7 +25,7 @@ public class MobileConfigurationsComposite extends Composite {
         return appsComposite;
     }
 
-    public MobileConfigurationsComposite(Dialog parentDialog, Composite parent, int style, MobileAppComposite mobileComposite) {
+    public MobileConfigurationsComposite(Dialog parentDialog, Composite parent, MobileAppComposite mobileComposite, int style) {
         super(parent, style);
         this.parentDialog = parentDialog;
         this.mobileComposite = mobileComposite;
@@ -33,7 +33,7 @@ public class MobileConfigurationsComposite extends Composite {
     }
 
     public MobileConfigurationsComposite(Dialog parentDialog, Composite parent, MobileAppComposite mobileComposite) {
-        this(parentDialog, parent, SWT.NONE, mobileComposite);
+        this(parentDialog, parent, mobileComposite, SWT.NONE);
     }
 
     private void createComposite(Composite parent) {
@@ -50,7 +50,7 @@ public class MobileConfigurationsComposite extends Composite {
         Label lblConfiguration = new Label(parent, SWT.NONE);
         lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         ControlUtils.setFontToBeBold(lblConfiguration);
-        lblConfiguration.setText(MobileRecoderMessagesConstants.LBL_CONFIGURATIONS);
+        lblConfiguration.setText(StringConstants.DIA_LBL_CONFIGURATIONS);
     }
 
     private void createConfigurationsComposite(Composite parent) {

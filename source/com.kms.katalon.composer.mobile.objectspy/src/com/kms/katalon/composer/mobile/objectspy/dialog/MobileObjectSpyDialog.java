@@ -76,6 +76,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileAllObjectsWithCheckboxComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileCapturedObjectsComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileConfigurationsComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileElementPropertiesComposite;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
@@ -120,6 +121,8 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     private Composite container;
 
     private boolean canceledBeforeOpening;
+    
+    private MobileConfigurationsComposite configurationsComposite;
 
     private MobileElementPropertiesComposite propertiesComposite;
     
@@ -279,22 +282,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     private void createSettingComposite(Composite parent) {
-        Composite settingComposite = new Composite(parent, SWT.NONE);
-        settingComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glSettingComposite = new GridLayout(2, false);
-        glSettingComposite.horizontalSpacing = 10;
-        settingComposite.setLayout(glSettingComposite);
-
-        Label lblConfiguration = new Label(settingComposite, SWT.NONE);
-        lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        lblConfiguration.setFont(getFontBold(lblConfiguration));
-        lblConfiguration.setText(StringConstants.DIA_LBL_CONFIGURATIONS);
-
-        appsComposite = new Composite(settingComposite, SWT.NONE);
-        appsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-        appsComposite.setLayout(new FillLayout());
-
-        mobileComposite.createComposite(appsComposite, SWT.NONE, this);
+        configurationsComposite = new MobileConfigurationsComposite(this, parent, mobileComposite);
     }
 
     public void updateSelectedElement(CapturedMobileElement selectedElement) {

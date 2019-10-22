@@ -46,7 +46,7 @@ public interface MobileElementInspectorDialog {
     // 4. Element Properties Table
     // 
     // 
-    // about communicate between components:
+    // Communicate between components:
     // 1.1 [Captured Elements Table] -> [Screen View]
     // 1.2 [Captured Elements Table] -> [Element Properties Table]
     // 1.3 [Captured Elements Table] -> [All Elements Tree]
