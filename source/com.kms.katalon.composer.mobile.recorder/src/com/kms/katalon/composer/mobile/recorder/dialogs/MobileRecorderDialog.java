@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.components;
+package com.kms.katalon.composer.mobile.recorder.dialogs;
 
 import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog.safeRoundDouble;
 
@@ -70,6 +70,7 @@ import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElem
 import com.kms.katalon.composer.mobile.objectspy.element.impl.RenderedTreeSnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
+import com.kms.katalon.composer.mobile.recorder.components.MobileActionButtonWrapper;
 import com.kms.katalon.composer.mobile.recorder.composites.MobileAllObjectsComposite;
 import com.kms.katalon.composer.mobile.recorder.composites.MobileConfigurationsComposite;
 import com.kms.katalon.composer.mobile.recorder.composites.MobileRecordedActionsComposite;
@@ -482,7 +483,7 @@ public class MobileRecorderDialog extends AbstractDialog
                             recordedActionsComposite.getStepView().addNode(actionMapping);
                             
                             List<CapturedMobileElement> mobileElements = new ArrayList<>();
-                            CapturedMobileElement targetElement = (CapturedMobileElement) actionMapping.getTargetElement();
+                            CapturedMobileElement targetElement = actionMapping.getTargetElement();
                             if (targetElement != null) {
                                 mobileElements.add(targetElement);
                                 capturedObjectsComposite.getCapturedObjectsTableViewer().addMobileElements(mobileElements);
@@ -526,7 +527,7 @@ public class MobileRecorderDialog extends AbstractDialog
         return testObject;
     }
 
-    private MobileActionMapping performAction(MobileAction action, MobileElement targetElement)
+    private MobileActionMapping performAction(MobileAction action, CapturedMobileElement targetElement)
             throws MobileRecordException {
         try {
             TestObject testObject = convertMobileElementToTestObject(targetElement, getCurrentMobileDriverType());

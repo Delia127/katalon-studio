@@ -10,6 +10,8 @@ import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
+import com.kms.katalon.composer.mobile.objectspy.types.MobileElementMethodCallWrapper;
+import com.kms.katalon.composer.mobile.recorder.dialogs.CapturedMobileElementBrowserDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
@@ -85,7 +87,7 @@ public class CapturedMobileElementEdittingSupport extends TestObjectEditingSuppo
                 webElementName = ((CapturedMobileElement) value).getName();
             }
             if (value instanceof MobileElementMethodCallWrapper) {
-                webElementName = ((MobileElementMethodCallWrapper) value).getWindowsElement().getName();
+                webElementName = ((MobileElementMethodCallWrapper) value).getMobileElement().getName();
             }
             super.updateContents(webElementName);
         }
@@ -99,7 +101,7 @@ public class CapturedMobileElementEdittingSupport extends TestObjectEditingSuppo
                 Object testObjectMethodCall = kwNode.getTestObject();
                 if (testObjectMethodCall instanceof MobileElementMethodCallWrapper) {
                     MobileElementMethodCallWrapper methodCallExprs = (MobileElementMethodCallWrapper) testObjectMethodCall;
-                    return methodCallExprs.getWindowsElement();
+                    return methodCallExprs.getMobileElement();
                 }
             }
             return null;

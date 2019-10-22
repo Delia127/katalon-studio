@@ -7,6 +7,7 @@ import com.kms.katalon.composer.mobile.objectspy.actions.IMobileAction;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionParam;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionParamValueType;
+import com.kms.katalon.composer.mobile.objectspy.types.MobileElementMethodCallWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -142,8 +143,9 @@ public class MobileActionUtil {
             Class<?> argumentClass = method.getParameters()[i].getType();
             ExpressionWrapper generatedExression = null;
             if (argumentClass.getName().equals(TestObject.class.getName())) {
-                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall(
-                        (createdTestObject != null) ? createdTestObject.getIdForDisplay() : null, parentClassNode);
+                generatedExression = new MobileElementMethodCallWrapper(parentClassNode, actionMapping.getTargetElement());
+//                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall(
+//                        (createdTestObject != null) ? createdTestObject.getIdForDisplay() : null, parentClassNode);
             } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
                 generatedExression = AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(null);
             } else {

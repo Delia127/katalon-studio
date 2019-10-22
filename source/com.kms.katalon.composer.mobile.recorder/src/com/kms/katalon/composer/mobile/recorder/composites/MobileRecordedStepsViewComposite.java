@@ -492,8 +492,7 @@ public class MobileRecordedStepsViewComposite extends Composite implements ITest
 
     public void addNode(MobileActionMapping newAction) throws ClassNotFoundException, InvocationTargetException, InterruptedException {
         refreshTree();
-        AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
-        CapturedMobileElement targetElement = (CapturedMobileElement) newAction.getTargetElement();
+        CapturedMobileElement targetElement = newAction.getTargetElement();
         CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
         ExpressionStatementWrapper wrapper = (ExpressionStatementWrapper) MobileActionUtil
                 .generateMobileTestStep(newAction, converter.convert(targetElement), treeTableInput.getMainClassNode());

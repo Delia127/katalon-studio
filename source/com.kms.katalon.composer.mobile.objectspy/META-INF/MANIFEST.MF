@@ -64,6 +64,7 @@ Export-Package: com.kms.katalon.composer.mobile.objectspy.actions,
  com.kms.katalon.composer.mobile.objectspy.element.provider,
  com.kms.katalon.composer.mobile.objectspy.element.tree,
  com.kms.katalon.composer.mobile.objectspy.preferences,
+ com.kms.katalon.composer.mobile.objectspy.types,
  com.kms.katalon.composer.mobile.objectspy.util,
  com.kms.katalon.composer.mobile.objectspy.viewer
 Import-Package: com.kms.katalon.composer.handlers,

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.composites;
+package com.kms.katalon.composer.mobile.objectspy.types;
 
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
@@ -11,7 +11,7 @@ public class MobileElementMethodCallWrapper extends MethodCallExpressionWrapper 
     private CapturedMobileElement mobileElement;
 
     public MobileElementMethodCallWrapper(ASTNodeWrapper parentNodeWrapper, CapturedMobileElement webElement) {
-        super(THIS_VARIABLE, MethodCallExpressionWrapper.FIND_WINDOWS_OBJECT_METHOD_NAME, parentNodeWrapper);
+        super(THIS_VARIABLE, MethodCallExpressionWrapper.FIND_MOBILE_OBJECT_METHOD_NAME, parentNodeWrapper);
         this.mobileElement = webElement;
     }
 
@@ -20,7 +20,7 @@ public class MobileElementMethodCallWrapper extends MethodCallExpressionWrapper 
         return mobileElement.getName();
     }
 
-    public CapturedMobileElement getWindowsElement() {
+    public CapturedMobileElement getMobileElement() {
         return mobileElement;
     }
 
