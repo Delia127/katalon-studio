@@ -102,10 +102,10 @@ steps:
   env:
     GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(TMP_DIR)'
-    ArtifactName: 'katalon-build'
-    publishLocation: 'Container'
-  displayName: Collect Artifacts
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     PathtoPublish: '$(TMP_DIR)'
+#     ArtifactName: 'katalon-build'
+#     publishLocation: 'Container'
+#   displayName: Collect Artifacts
     
