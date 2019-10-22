@@ -13,6 +13,7 @@ import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.logging.LogUtil;
 
 import static com.kms.katalon.constants.GlobalStringConstants.CR_HYPHEN;
 import static com.kms.katalon.constants.GlobalStringConstants.CR_EOL;
@@ -73,6 +74,7 @@ public class LauncherManager {
             launcher.clean();
         }
         terminatedLaunchers.clear();
+        LogUtil.logInfo("All launchers terminated");
     }
     
     public void removeAllTerminatedBut(int n){
