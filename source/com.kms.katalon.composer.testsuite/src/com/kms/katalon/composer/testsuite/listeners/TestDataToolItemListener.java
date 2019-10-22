@@ -25,6 +25,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -32,16 +35,17 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
 import com.kms.katalon.composer.testsuite.dialogs.TestDataSelectionDialog;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -51,6 +55,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.license.models.LicenseType;
 
 public class TestDataToolItemListener extends SelectionAdapter {
 
@@ -155,7 +160,17 @@ public class TestDataToolItemListener extends SelectionAdapter {
     private void performAddTestDataLink(String offset) {
         try {
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            if (currentProject == null) return;
+            if (currentProject == null) {
+                return;
+            }
+            
+            boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
+            int items = getTableItems().size();
+            if (!isEnterpriseAccount && items == 1) {
+                MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+                        ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                return;
+            }
 
             EntityProvider entityProvider = new EntityProvider();
             TestDataSelectionDialog dialog = new TestDataSelectionDialog(tableViewer.getTable().getShell(),

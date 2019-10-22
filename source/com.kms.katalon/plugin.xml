@@ -162,4 +162,16 @@
           label="Katalon Default">
     </theme>
  </extension>
+ <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="com.kms.katalon.product.engine.product"
+            application="com.kms.katalon.application">
+         <property
+               name="appName"
+               value="com.kms.katalon.console.product">
+         </property>
+      </product>
+   </extension>
 </plugin>

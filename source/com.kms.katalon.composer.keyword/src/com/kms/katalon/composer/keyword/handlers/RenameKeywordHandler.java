@@ -79,6 +79,8 @@ public class RenameKeywordHandler extends RenamePackageHandler {
                     eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
                     
                     refreshParentAndSelect(parentTreeEntity, dialog.getName() + GroovyConstants.GROOVY_FILE_EXTENSION);
+                    KeywordController.getInstance().parseCustomKeywordFile(keywordFile,
+                            ProjectController.getInstance().getCurrentProject());
                 }
             }
         } catch (Exception e) {

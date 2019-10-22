@@ -42,9 +42,9 @@ public class ProjectController extends EntityController {
             + "recent_projects";
 
     public static final int NUMBER_OF_RECENT_PROJECTS = 6;
-    
+
     private static Map<String, URLClassLoader> classLoaderLookup = new HashMap<>();
-    
+
     private ProjectController() {
         super();
     }
@@ -63,7 +63,7 @@ public class ProjectController extends EntityController {
         return newProject;
     }
 
-    public ProjectEntity openProjectForUI(String projectPk, IProgressMonitor monitor) throws Exception {
+    public ProjectEntity openProjectForUI(String projectPk, boolean isEnterpriseAccount, IProgressMonitor monitor) throws Exception {
         try {
             if (monitor == null) {
                 monitor = new NullProgressMonitor();
@@ -83,11 +83,12 @@ public class ProjectController extends EntityController {
                 SubMonitor progress = SubMonitor.convert(monitor, 100);
                 DataProviderState.getInstance().setCurrentProject(project);
 
-//                KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+                // KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
 
                 try {
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
+                            isEnterpriseAccount,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                     updateProjectClassLoader(project);
                 } catch (JavaModelException e) {
@@ -95,6 +96,7 @@ public class ProjectController extends EntityController {
                     cleanupGroovyProject(project);
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
+                            isEnterpriseAccount,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 }
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
@@ -132,7 +134,7 @@ public class ProjectController extends EntityController {
         GroovyUtil.emptyProjectClasspath(projectEntity);
     }
 
-    public ProjectEntity openProject(String projectPk) throws Exception {
+    public ProjectEntity openProject(String projectPk, boolean isEnterpriseAccount) throws Exception {
         LogUtil.printOutputLine("Cleaning up workspace");
         cleanWorkspace();
         LogUtil.printOutputLine("Opening project file: " + projectPk);
@@ -147,9 +149,10 @@ public class ProjectController extends EntityController {
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
 
-//            LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
-//            KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
-            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
+            // LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
+            // KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
+                    isEnterpriseAccount, null);
 
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
@@ -162,6 +165,12 @@ public class ProjectController extends EntityController {
     }
 
     public static void cleanWorkspace() {
+        File externalFolder = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile(),
+                ".metadata/.plugins/org.eclipse.core.resources/.projects/.org.eclipse.jdt.core.external.folders");
+
+        if (!externalFolder.exists()) {
+            externalFolder.mkdirs();
+        }
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
             try {
                 // Remote all existing projects out of workspace
@@ -185,8 +194,7 @@ public class ProjectController extends EntityController {
     }
 
     public ProjectEntity updateProject(String name, String description, String projectPk) throws Exception {
-        return getDataProviderSetting().getProjectDataProvider().updateProject(name, description,
-                projectPk, (short) 0);
+        return getDataProviderSetting().getProjectDataProvider().updateProject(name, description, projectPk, (short) 0);
     }
 
     public void updateProject(ProjectEntity projectEntity) throws Exception {
@@ -201,9 +209,9 @@ public class ProjectController extends EntityController {
                     ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
                             .getProject(projectLocation);
 
-                   if (project != null) {
-                       recentProjects.add(project);
-                   }
+                    if (project != null) {
+                        recentProjects.add(project);
+                    }
                 } catch (DALException e) {
                     LogUtil.logError(e);
                 }
@@ -315,7 +323,7 @@ public class ProjectController extends EntityController {
     public List<File> getCustomKeywordPlugins(ProjectEntity project) throws ControllerException {
         return CustomKeywordPluginFactory.getInstance().getAllPluginFiles();
     }
-    
+
     public URLClassLoader getProjectClassLoader(ProjectEntity project) throws MalformedURLException, CoreException {
         String projectLocation = project.getLocation();
         if (classLoaderLookup.containsKey(projectLocation)) {

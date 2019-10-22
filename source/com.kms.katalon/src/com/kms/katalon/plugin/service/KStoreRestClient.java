@@ -27,11 +27,12 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
@@ -50,9 +51,9 @@ public class KStoreRestClient {
         this.credentials = credentials;
     }
     
-    public List<KStorePlugin> getLatestPlugins(String appVersion) throws KStoreClientExceptionWithInfo {
+    public List<KStorePlugin> getLatestPlugins(String appVersion, KatalonPackage katalonPackage, LicenseType licenseType) throws KStoreClientExceptionWithInfo {
         AtomicReference<List<KStorePlugin>> plugins = new AtomicReference<>();
-        String url = KStoreUrls.getPluginsAPIUrl(appVersion);
+        String url = KStoreUrls.getPluginsAPIUrl(appVersion, katalonPackage, licenseType);
         try {
             executeGetRequest(url, credentials, response -> {
                 try {

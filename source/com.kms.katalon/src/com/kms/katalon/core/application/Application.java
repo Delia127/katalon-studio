@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
@@ -50,13 +49,8 @@ public class Application implements IApplication {
     @Override
     public Object start(IApplicationContext context) {
 
-        LocalDate now = LocalDate.now();
-        LocalDate expiredDate = LocalDate.of(2019, 11, 1);
-        if (now.isAfter(expiredDate)) {
-            LogUtil.logInfo("This beta build has expired");
-            return IApplication.EXIT_OK;
-        }
-
+        createLicenseFolder();
+        
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
         }
@@ -74,6 +68,9 @@ public class Application implements IApplication {
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
 
+        if (Platform.getProduct().getId().equals("com.kms.katalon.console.product")) {
+            return runConsole(context, appArgs);
+        }
         switch (runningModeParam) {
             case CONSOLE:
                 return runConsole(context, appArgs);
@@ -233,6 +230,17 @@ public class Application implements IApplication {
             return true;
         } catch (BundleException ex) {
             return false;
+        }
+    }
+    
+    private void createLicenseFolder() {
+        try {
+            File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
+            if (!licenseFolder.exists()) {
+                licenseFolder.mkdir();
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
         }
     }
 }

@@ -16,6 +16,8 @@ public class AnalyticsLicenseKey {
 	
 	private AnalyticsOrganization organization;
 	
+	private String errorMessage;
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -63,4 +65,12 @@ public class AnalyticsLicenseKey {
 	public AnalyticsOrganization getOrganization() {
 		return organization;
 	}
+	
+	public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+	
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 }

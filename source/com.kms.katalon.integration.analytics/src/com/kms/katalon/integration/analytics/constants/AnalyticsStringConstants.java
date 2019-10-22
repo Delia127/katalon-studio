@@ -19,8 +19,14 @@ public class AnalyticsStringConstants {
     public static final String ANALYTICS_API_FROM_KS = "/from-ks?";
 
     public static final String ANALYTICS_USERS_ME = "/api/v1/users/me";
-    
+
+    public static final String ANALYTICS_API_ORGANIZATION = "/api/v1/organizations";
+
+    public static final String ANALYTICS_API_ORGANIZATION_ITEM = "/api/v1/organizations/%d";
+
     public static final String ANALYTICS_API_ACTIVATE = "/api/v1/license-keys/activate";
+    
+    public static final String ANALYTICS_API_RELEASE_LICENSE = "/api/v1/license-keys/release";
     
     public static final String ANALYTICS_API_KATALON_TEST_REPORTS = "/api/v1/katalon-test-reports";
     
@@ -37,6 +43,8 @@ public class AnalyticsStringConstants {
     public static final String ANALYTICS_API_CREATE_TEST_PLAN = "/api/v1/run-configurations";
 
     public static final String ANALYTICS_API_TRACKING_ACTIVITY = "/api/v1/tracking";
+    
+    public static final String ANALYTICS_API_DEACTIVATE = "/api/v1/machine";
     
     public static final String ANALYTICS_STOREAGE = "s3";
     

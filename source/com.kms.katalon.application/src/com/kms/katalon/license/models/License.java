@@ -8,12 +8,16 @@ public class License {
     private String jwtCode;
     
     private Date expirationDate;
+    
+    private Date renewTime;
 
     private String machineId;
 
     private List<Feature> features;
 
-    private long organizationId;
+    private Long organizationId;
+
+    private LicenseType licenseType;
 
     public Date getExpirationDate() {
         return expirationDate;
@@ -21,6 +25,14 @@ public class License {
 
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
+    }
+    
+    public Date getRenewTime() {
+        return renewTime;
+    }
+
+    public void setRenewTime(Date renewTime) {
+        this.renewTime = renewTime;
     }
 
     public String getMachineId() {
@@ -39,11 +51,11 @@ public class License {
         this.features = features;
     }
 
-    public long getOrganizationId() {
+    public Long getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(long organizationId) {
+    public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
     }
 
@@ -54,5 +66,30 @@ public class License {
     public void setJwtCode(String jwtCode) {
         this.jwtCode = jwtCode;
     }
-    
+
+    public LicenseType getType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(String licenseType) {
+        this.licenseType = LicenseType.valueOf(licenseType);
+    }
+
+    public boolean isEngineLicense() {
+        for (Feature feature : features) {
+            if (feature.getKey().contains("cli")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isKSELicense() {
+        for (Feature feature : features) {
+            if (feature.getKey().contains("gui")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

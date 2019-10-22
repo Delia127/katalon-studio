@@ -355,7 +355,6 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                 CapturedWindowsElement firstElement = (CapturedWindowsElement) selection.getFirstElement();
                 propertiesComposite.setEditingElement(firstElement);
                 highlightElementComposite.setEditingElement(firstElement);
-                highlightObject(firstElement);
             }
         });
 

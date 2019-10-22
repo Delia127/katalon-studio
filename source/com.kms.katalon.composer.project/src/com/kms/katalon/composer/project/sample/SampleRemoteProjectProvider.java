@@ -24,10 +24,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.integration.analytics.providers.HttpClientProxyBuilder;
 
 public class SampleRemoteProjectProvider {
+
+    private static final int DEFAULT_TIMEOUT = 15000;
 
     private static final String SAMPLE_REMOTE_PROJECT_DESCRIPTION_URL =
             "http://download.katalon.com/resources/sample_projects.json";
@@ -74,7 +76,7 @@ public class SampleRemoteProjectProvider {
     }
 
     public static InputStream getInputStream(String url) throws URISyntaxException, IOException, GeneralSecurityException {
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(15000).setSocketTimeout(15000).build();
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(DEFAULT_TIMEOUT).setSocketTimeout(DEFAULT_TIMEOUT).build();
         HttpClientProxyBuilder builder = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation());
         HttpClient httpClient = builder.getClientBuilder().disableCookieManagement().setDefaultRequestConfig(requestConfig).build();
         HttpGet get = new HttpGet(new URL(url).toURI());

@@ -265,20 +265,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
             }
         });
 
-        capturedObjectsTableViewer.getTable().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseDown(MouseEvent e) {
-                if (e.button != 1) {
-                    return;
-                }
-                Point pt = new Point(e.x, e.y);
-                TableItem item = capturedObjectsTableViewer.getTable().getItem(pt);
-                if (item != null) {
-                    highlightObject((CapturedWindowsElement) item.getData());
-                }
-            }
-        });
-
         capturedObjectsTable.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {

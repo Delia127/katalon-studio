@@ -131,14 +131,9 @@ public class AuthenticationDialog extends Dialog {
         });
 
         try {
-            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            serverUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
-            password.setText(analyticsSettingStore.getPassword(encryptionEnabled));
-            if (StringUtils.isEmpty(analyticsSettingStore.getEmail(encryptionEnabled))) {
-                email.setText(ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL));
-            } else {
-                email.setText(analyticsSettingStore.getEmail(encryptionEnabled));
-            }
+            serverUrl.setText(analyticsSettingStore.getServerEndpoint());
+            password.setText(analyticsSettingStore.getPassword());
+            email.setText(analyticsSettingStore.getEmail());
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
@@ -155,13 +150,8 @@ public class AuthenticationDialog extends Dialog {
 
     private void updateDataStore(String email, String password) {
         try {
-            boolean encryptionEnabled = true;
             analyticsSettingStore.enableIntegration(true);
-            analyticsSettingStore.enableEncryption(encryptionEnabled);
-//            analyticsSettingStore.setServerEndPoint(serverUrl.getText(), encryptionEnabled);
-            analyticsSettingStore.setEmail(email, encryptionEnabled);
-            analyticsSettingStore.setPassword(password, encryptionEnabled);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (IOException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }

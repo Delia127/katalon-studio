@@ -43,6 +43,7 @@ import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.controller.WindowsElementController;
@@ -104,6 +105,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 moveKeyword(file, packageFragment, null);
                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity.getParent());
                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetTreeEntity);
+                KeywordController.getInstance().parseCustomKeywordFile(file, ProjectController.getInstance().getCurrentProject());
             }
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,

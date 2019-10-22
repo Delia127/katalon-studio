@@ -30,7 +30,7 @@ public class WizardTableLabelTest extends TypeCheckedStyleCellLabelProvider<IWiz
     @Override
     protected Color getBackground(Color background, IWizardPage wizardPage) {
         return (getStepNumber(wizardPage) == getCurrentStepNumber()) ? ColorUtil.getSelectedTableItemBackgroundColor()
-                : ColorUtil.getWhiteBackgroundColor();
+                : null;
     }
 
     private int getCurrentStepNumber() {
