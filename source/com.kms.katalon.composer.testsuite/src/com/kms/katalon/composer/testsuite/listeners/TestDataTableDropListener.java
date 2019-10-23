@@ -92,11 +92,11 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
                         }
                     }
 
-					if (!isEnterpriseAccount && (addedTestDataLinkTreeNodes.size() + inputs.size()) > 1) {
-						MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
-								ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
-						return;
-					}
+                    if (!isEnterpriseAccount && (addedTestDataLinkTreeNodes.size() + inputs.size()) > 1) {
+                        MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+                                ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                        return;
+                    }
                     
                     for (int i = 0; i < addedTestDataLinkTreeNodes.size(); i++) {
                         inputs.add(destIndex + i, addedTestDataLinkTreeNodes.get(i));

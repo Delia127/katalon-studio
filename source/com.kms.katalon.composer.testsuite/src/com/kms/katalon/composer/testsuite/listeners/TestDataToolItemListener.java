@@ -191,11 +191,11 @@ public class TestDataToolItemListener extends SelectionAdapter {
                     }
                 }
                 
-				if (!isEnterpriseAccount && (items + dataFileEntities.size()) > 1) {
-					MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
-							ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
-					return;
-				}
+                if (!isEnterpriseAccount && (items + dataFileEntities.size()) > 1) {
+                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+                            ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                    return;
+                }
 
                 List<TestCaseTestDataLink> addedTestDataLinkTreeNodes = addTestDataToTreeView(dataFileEntities, offset);
 
