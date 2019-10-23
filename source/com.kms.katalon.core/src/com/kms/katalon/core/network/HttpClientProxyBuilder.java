@@ -106,6 +106,7 @@ public class HttpClientProxyBuilder {
         clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
             @Override
             public long getKeepAliveDuration(final HttpResponse response, final HttpContext context) {
+		// copied from source
                 Args.notNull(response, "HTTP response");
                 final HeaderElementIterator it = new BasicHeaderElementIterator(
                         response.headerIterator(HTTP.CONN_KEEP_ALIVE));
@@ -119,7 +120,7 @@ public class HttpClientProxyBuilder {
                         } catch (final NumberFormatException ignore) {}
                     }
                 }
-                // If the server indicates no timeout, then let it be 1 so that connection is not kept alive
+                // If the server indicates no timeout, then let it be 1ms so that connection is not kept alive
                 // indefinitely
                 return 1;
             }
