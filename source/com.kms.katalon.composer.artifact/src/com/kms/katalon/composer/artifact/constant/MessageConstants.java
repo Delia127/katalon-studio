@@ -73,4 +73,40 @@ public class MessageConstants {
     public static String MSG_FAILED_TO_IMPORT_TEST_ARTIFACTS;
     
     public static String MSG_OPEN_A_PROJECT;
+    
+    public static String MSG_EXPORTING_TEST_ARTIFACTS;
+    
+    public static String MSG_EXPORTING_TEST_CASES;
+    
+    public static String MSG_EXPORTING_TEST_SCRIPTS;
+    
+    public static String MSG_EXPORTING_TEST_OBJECTS;
+    
+    public static String MSG_EXPORTING_PROFILES;
+    
+    public static String MSG_EXPORTING_KEYWORDS;
+    
+    public static String MSG_COMPRESSING_FILES;
+    
+    public static String MSG_ERROR_EXPORTING_TEST_ARTIFACTS;
+    
+    public static String MSG_IMPORTING_TEST_ARTIFACTS;
+    
+    public static String MSG_ERROR_IMPORTING_TEST_ARTIFACTS;
+    
+    public static String IMPORT_EXPORT_EXPORT_TEMP_FOLDER;
+    
+    public static String IMPORT_EXPORT_IMPORT_TEMP_FOLDER;
+    
+    public static String IMPORT_EXPORT_EXPORT_FILE_NAME;
+
+    public static String IMPORT_EXPORT_TEST_CASES_FOLDER;
+
+    public static String IMPORT_EXPORT_TEST_SCRIPTS_FOLDER;
+
+    public static String IMPORT_EXPORT_TEST_OBJECTS_FOLDER;
+
+    public static String IMPORT_EXPORT_PROFILES_FOLDER;
+
+    public static String IMPORT_EXPORT_KEYWORDS_FOLDER;
 }

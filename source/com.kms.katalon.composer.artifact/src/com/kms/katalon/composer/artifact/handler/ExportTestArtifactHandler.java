@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -83,11 +84,11 @@ public class ExportTestArtifactHandler {
             return;
         }
 
-        Job exportArtifactsJob = new Job("Exporting test artifacts...") {
+        Job exportArtifactsJob = new Job(StringConstants.MSG_EXPORTING_TEST_ARTIFACTS) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    File exportTempFolder = Files.createTempDirectory("export-test-artifacts-").toFile();
+                    File exportTempFolder = Files.createTempDirectory(StringConstants.IMPORT_EXPORT_EXPORT_TEMP_FOLDER).toFile();
 
                     SubMonitor subMonitor = SubMonitor.convert(monitor);
                     subMonitor.beginTask("", 100);
@@ -102,7 +103,7 @@ public class ExportTestArtifactHandler {
                     
                     int exportTestCaseWork = Math.round((float) testCases.size() * 90 / totalWork);
                     SubMonitor exportTestCaseMonitor = subMonitor.split(exportTestCaseWork, SubMonitor.SUPPRESS_NONE);
-                    exportTestCaseMonitor.beginTask("Exporting test cases...", 100);
+                    exportTestCaseMonitor.beginTask(StringConstants.MSG_EXPORTING_TEST_CASES, 100);
                     
                     exportTestCases(testCases, exportTempFolder, exportTestCaseMonitor);
                     
@@ -110,7 +111,7 @@ public class ExportTestArtifactHandler {
 
                     int exportTestScriptWork = Math.round((float) testCases.size() * 90 / totalWork);
                     SubMonitor exportTestScriptMonitor = subMonitor.split(exportTestScriptWork, SubMonitor.SUPPRESS_NONE);
-                    exportTestScriptMonitor.beginTask("Exporting test scripts...", 100);
+                    exportTestScriptMonitor.beginTask(StringConstants.MSG_EXPORTING_TEST_SCRIPTS, 100);
                     
                     exportTestScripts(testCases, exportTempFolder, exportTestScriptMonitor);
                     
@@ -118,7 +119,7 @@ public class ExportTestArtifactHandler {
 
                     int exportTestObjectWork = Math.round((float) testObjects.size() * 90 / totalWork);
                     SubMonitor exportTestObjectMonitor = subMonitor.split(exportTestObjectWork, SubMonitor.SUPPRESS_NONE);
-                    exportTestObjectMonitor.beginTask("Exporting test objects...", 100);
+                    exportTestObjectMonitor.beginTask(StringConstants.MSG_EXPORTING_TEST_OBJECTS, 100);
                     
                     exportTestObjects(testObjects, exportTempFolder, exportTestObjectMonitor);
                     
@@ -126,7 +127,7 @@ public class ExportTestArtifactHandler {
                     
                     int exportProfileWork = Math.round((float) profiles.size() * 90 / totalWork);
                     SubMonitor exportProfileMonitor = subMonitor.split(exportProfileWork, SubMonitor.SUPPRESS_NONE);
-                    exportProfileMonitor.beginTask("Exporting profiles...", 100);
+                    exportProfileMonitor.beginTask(StringConstants.MSG_EXPORTING_PROFILES, 100);
                     
                     exportProfiles(profiles, exportTempFolder, exportProfileMonitor);
                     
@@ -134,16 +135,17 @@ public class ExportTestArtifactHandler {
                     
                     int exportKeywordWork = Math.round((float) keywords.size() * 90 / totalWork);
                     SubMonitor exportKeywordMonitor = subMonitor.split(exportKeywordWork, SubMonitor.SUPPRESS_NONE);
-                    exportKeywordMonitor.beginTask("Exporting keywords...", 100);
+                    exportKeywordMonitor.beginTask(StringConstants.MSG_EXPORTING_KEYWORDS, 100);
                     
                     exportKeywords(keywords, exportTempFolder, exportKeywordMonitor);
                     
                     exportKeywordMonitor.done();
 
                     SubMonitor zipMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
-                    zipMonitor.beginTask("Compressing files...",  100);
+                    zipMonitor.beginTask(StringConstants.MSG_COMPRESSING_FILES,  100);
                     
-                    File result = new File(exportFolder, "shared-" + System.currentTimeMillis() + ".zip");
+                    String exportedPackageName = MessageFormat.format(StringConstants.IMPORT_EXPORT_EXPORT_FILE_NAME, System.currentTimeMillis());
+                    File result = new File(exportFolder, exportedPackageName);
                     result.createNewFile();
                     ZipUtil.getZipFile(result, exportTempFolder);
                     
@@ -154,7 +156,7 @@ public class ExportTestArtifactHandler {
                     subMonitor.done();
                 } catch (Exception e) {
                     LoggerSingleton.logError(e, e.getMessage());
-                    return new Status(Status.ERROR, "com.katalon.plugin.katashare", "Error exporting test artifacts",
+                    return new Status(Status.ERROR, "com.katalon.plugin.katashare", StringConstants.MSG_ERROR_EXPORTING_TEST_ARTIFACTS,
                             e);
                 }
                 return Status.OK_STATUS;
@@ -190,7 +192,7 @@ public class ExportTestArtifactHandler {
     private void exportTestCases(List<TestCaseEntity> testCases, File exportFolder, SubMonitor monitor) throws IOException {
         ProjectEntity project = PlatformUtil.getCurrentProject();
 
-        File sharedTestCaseFolder = new File(exportFolder, "Shared-Test-Cases");
+        File sharedTestCaseFolder = new File(exportFolder, StringConstants.IMPORT_EXPORT_TEST_CASES_FOLDER);
         sharedTestCaseFolder.mkdirs();
 
         int progress = 0;
@@ -214,7 +216,7 @@ public class ExportTestArtifactHandler {
     private void exportTestScripts(List<TestCaseEntity> testCases, File exportFolder, SubMonitor monitor) throws IOException {
         ProjectEntity project = PlatformUtil.getCurrentProject();
 
-        File sharedTestScriptFolder = new File(exportFolder, "Shared-Test-Scripts");
+        File sharedTestScriptFolder = new File(exportFolder, StringConstants.IMPORT_EXPORT_TEST_SCRIPTS_FOLDER);
         sharedTestScriptFolder.mkdirs();
 
         int progress = 0;
@@ -240,7 +242,7 @@ public class ExportTestArtifactHandler {
     private void exportTestObjects(List<TestObjectEntity> testObjects, File exportFolder, SubMonitor monitor) throws IOException {
         ProjectEntity project = PlatformUtil.getCurrentProject();
 
-        File sharedTestObjectFolder = new File(exportFolder, "Shared-Test-Objects");
+        File sharedTestObjectFolder = new File(exportFolder, StringConstants.IMPORT_EXPORT_TEST_OBJECTS_FOLDER);
         sharedTestObjectFolder.mkdirs();
 
         int progress = 0;
@@ -263,7 +265,7 @@ public class ExportTestArtifactHandler {
     }
     
     private void exportProfiles(List<ExecutionProfileEntity> profiles, File exportFolder, SubMonitor monitor) throws IOException {
-        File sharedProfileFolder = new File(exportFolder, "Shared-Profiles");
+        File sharedProfileFolder = new File(exportFolder, StringConstants.IMPORT_EXPORT_PROFILES_FOLDER);
         sharedProfileFolder.mkdirs();
         
         int progress = 0;
@@ -281,7 +283,7 @@ public class ExportTestArtifactHandler {
     private void exportKeywords(List<File> keywords, File exportFolder, SubMonitor monitor) throws IOException {
         ProjectEntity project = PlatformUtil.getCurrentProject();
 
-        File sharedKeywordFolder = new File(exportFolder, "Shared-Keywords");
+        File sharedKeywordFolder = new File(exportFolder, StringConstants.IMPORT_EXPORT_KEYWORDS_FOLDER);
         sharedKeywordFolder.mkdirs();
 
         int progress = 0;
