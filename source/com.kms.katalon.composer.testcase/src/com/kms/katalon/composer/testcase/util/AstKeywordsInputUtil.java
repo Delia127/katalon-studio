@@ -422,7 +422,7 @@ public class AstKeywordsInputUtil {
 
     private static ExpressionWrapper generateArgumentForWindowsObjectParam(ExpressionWrapper existingParam,
             ASTNodeWrapper parentNode) {
-        if (isFindWindowsTestObjectMethodCall(existingParam) || (isUnknowTypeParam(existingParam))) {
+        if (isFindWindowsObjectMethodCall(existingParam) || (isUnknowTypeParam(existingParam))) {
             return existingParam;
         }
         return AstEntityInputUtil.createNewFindWindowsObjectMethodCall(null, parentNode);
@@ -441,9 +441,9 @@ public class AstKeywordsInputUtil {
                 && ((MethodCallExpressionWrapper) existingParam).isFindTestObjectMethodCall();
     }
 
-    private static boolean isFindWindowsTestObjectMethodCall(ExpressionWrapper existingParam) {
+    private static boolean isFindWindowsObjectMethodCall(ExpressionWrapper existingParam) {
         return existingParam instanceof MethodCallExpressionWrapper
-                && ((MethodCallExpressionWrapper) existingParam).isFindTestObjectMethodCall();
+                && ((MethodCallExpressionWrapper) existingParam).isFindWindowsObjectMethodCall();
     }
 
     private static boolean isFindCheckpointMethodCall(ExpressionWrapper existingParam) {
