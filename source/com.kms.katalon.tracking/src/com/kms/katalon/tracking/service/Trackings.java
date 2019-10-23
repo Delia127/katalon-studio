@@ -5,13 +5,17 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
+import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.constant.TrackEvents;
 import com.kms.katalon.tracking.model.ProjectStatistics;
@@ -69,6 +73,13 @@ public class Trackings {
             JsonObject properties = new JsonObject();
             properties.addProperty("triggeredBy", triggeredBy);
             properties.addProperty("runningMode", runningMode);
+            
+            KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+            properties.addProperty("katalonPackage", katalonPackage.getPackageName());
+            
+            LicenseType licenseType = ActivationInfoCollector.getLicenseType();
+            properties.addProperty("licenseType", licenseType.name());
+            
             JsonUtil.mergeJsonObject(statisticsObject, properties);
 
             TrackInfo trackInfo = TrackInfo.create().eventName(TrackEvents.KATALON_STUDIO_TRACK).anonymous(isAnonymous)
@@ -364,6 +375,12 @@ public class Trackings {
             propertiesObject.addProperty("projectId", currentProject.getUUID());
             propertiesObject.addProperty("projectType", currentProject.getType().toString());
         }
+        
+        KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+        propertiesObject.addProperty("katalonPackage", katalonPackage.getPackageName());
+        
+        LicenseType licenseType = ActivationInfoCollector.getLicenseType();
+        propertiesObject.addProperty("licenseType", licenseType.name());
 
         if (properties != null) {
             JsonUtil.mergeJsonObject(createJsonObject(properties), propertiesObject);
