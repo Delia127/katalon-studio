@@ -26,8 +26,8 @@ public class TrackingService {
         IPreferenceStore prefStore = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
         boolean checkAllowUsage = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
                 ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
-        boolean isNotFreeLicense = LicenseUtil.isNotFreeLicense();
-        if (isNotFreeLicense && !checkAllowUsage) {
+        boolean isPaidLicense = LicenseUtil.isPaidLicense();
+        if (isPaidLicense && !checkAllowUsage) {
             return;
         } else {
             executor.submit(() -> {
