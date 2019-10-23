@@ -334,6 +334,7 @@ public class NewProjectDialog extends TitleAreaDialog {
     private void hideGenericProjectTypeIfNotEnterprise() {
         if (!isEnterpriseAccount()) {
             gdGenericProjectType.exclude = true;
+            rbGenericProjectType.setVisible(false);
             container.layout(true);
         }
     }
