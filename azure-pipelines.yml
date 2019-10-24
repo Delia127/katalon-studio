@@ -4,12 +4,12 @@
 # https://aka.ms/yaml
 
 trigger: 
-- staging-*
+# - staging-*
 - release-*
 
-pr:
-- staging-*
-- release-*
+# pr:
+# - staging-*
+# - release-*
 
 variables:
   BRANCH: $(Build.SourceBranchName)
