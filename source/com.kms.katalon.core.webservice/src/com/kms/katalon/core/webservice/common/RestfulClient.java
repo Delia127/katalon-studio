@@ -28,6 +28,7 @@ import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -149,9 +150,10 @@ public class RestfulClient extends BasicRequestor {
             ByteArrayOutputStream outstream = new ByteArrayOutputStream();
             request.getBodyContent().writeTo(outstream);
             byte[] bytes = outstream.toByteArray();
-            ByteArrayInputStream instream = new ByteArrayInputStream(bytes);
+            ByteArrayEntity entity = new ByteArrayEntity(bytes);
+            entity.setChunked(false);
             ((DefaultHttpEntityEnclosingRequest) httpRequest)
-                    .setEntity(new InputStreamEntity(instream));
+                    .setEntity(entity);
         } else {
             httpRequest = new DefaultHttpRequest(url);
         }

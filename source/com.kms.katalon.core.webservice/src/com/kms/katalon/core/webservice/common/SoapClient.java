@@ -31,6 +31,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -218,9 +219,9 @@ public class SoapClient extends BasicRequestor {
             }
         });
 
-        InputStreamEntity reqStream = new InputStreamEntity(
-                new ByteArrayInputStream(request.getSoapBody().getBytes(StandardCharsets.UTF_8)));
-        post.setEntity(reqStream);
+        ByteArrayEntity entity = new ByteArrayEntity(request.getSoapBody().getBytes(StandardCharsets.UTF_8));
+        entity.setChunked(false);
+        post.setEntity(entity);
         
         CloseableHttpClient httpClient = clientBuilder.build();
         
@@ -386,7 +387,7 @@ public class SoapClient extends BasicRequestor {
             setHttpConnectionHeaders(get, requestObject);
 
             CloseableHttpClient httpClient = clientBuilder.build();
-            CloseableHttpResponse response = httpClient.execute(get);
+            CloseableHttpResponse response = httpClient.execute(get, getHttpContext());
             InputStream is = response.getEntity().getContent();
             
             IOUtils.closeQuietly(httpClient);
