@@ -133,6 +133,8 @@ public class DocumentationMessageConstants extends NLS {
 	
 	public static String KSTORE_API_KEYS_USAGE;
 	
+	public static String RUNTIME_ENGINE_INTRODUCTION;
+	
 	public static String ADVANCED_SEARCH;
 
     static {
