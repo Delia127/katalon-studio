@@ -93,7 +93,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Link lnkAgreeTerm;
     
-    private Link lnkLearnAboutKSEandHowToActivate;
+    private Link lnkLearnAboutKSE;
 
     private Composite organizationComposite;
     
@@ -150,7 +150,7 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
         
-        lnkLearnAboutKSEandHowToActivate.addSelectionListener(new SelectionAdapter() {
+        lnkLearnAboutKSE.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch(e.text);
@@ -530,8 +530,8 @@ public class ActivationDialogV2 extends AbstractDialog {
         gdBottomBarTerm.marginHeight = 0;
         bottomTerm.setLayout(gdBottomBarTerm);
         
-        lnkLearnAboutKSEandHowToActivate = new Link(bottomTerm, SWT.WRAP);
-        lnkLearnAboutKSEandHowToActivate.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KSE);
+        lnkLearnAboutKSE = new Link(bottomTerm, SWT.WRAP);
+        lnkLearnAboutKSE.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KSE);
         
         lnkAgreeTerm = new Link(bottomTerm, SWT.WRAP);
         lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);
