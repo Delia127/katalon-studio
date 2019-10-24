@@ -282,9 +282,6 @@ public class InspectSession implements Runnable {
             case IE_DRIVER:
                 return createIEDesiredCapabilities(capabilities);
             default:
-                if (!WebDriverProxyUtil.isNoProxy(RunConfiguration.getProxyInformation())) {
-                    capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
-                }
                 return capabilities;
         }
     }
