@@ -355,11 +355,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
     }
 
-    private Font getFontBold(Label label) {
-        FontDescriptor boldDescriptor = FontDescriptor.createFrom(label.getFont()).setStyle(SWT.BOLD);
-        return boldDescriptor.createFont(label.getDisplay());
-    }
-
     private void addElementTreeToolbar(Composite explorerComposite) {
         ToolBar elementTreeToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
         elementTreeToolbar.setForeground(ColorUtil.getToolBarForegroundColor());

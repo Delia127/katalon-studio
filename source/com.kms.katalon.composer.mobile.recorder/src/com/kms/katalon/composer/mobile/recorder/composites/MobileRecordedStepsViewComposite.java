@@ -89,10 +89,6 @@ public class MobileRecordedStepsViewComposite extends Composite implements ITest
         return wrapper;
     }
 
-    public void setWrapper(ScriptNodeWrapper wrapper) {
-        this.wrapper = wrapper;
-    }
-
     private CTreeViewer treeViewer;
 
     private TestCaseTreeTableInput treeTableInput;

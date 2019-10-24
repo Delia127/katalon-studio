@@ -11,7 +11,7 @@ public class MobileElementMethodCallWrapper extends MethodCallExpressionWrapper 
     private CapturedMobileElement mobileElement;
 
     public MobileElementMethodCallWrapper(ASTNodeWrapper parentNodeWrapper, CapturedMobileElement webElement) {
-        super(THIS_VARIABLE, MethodCallExpressionWrapper.FIND_MOBILE_OBJECT_METHOD_NAME, parentNodeWrapper);
+        super(THIS_VARIABLE, MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME, parentNodeWrapper);
         this.mobileElement = webElement;
     }
 

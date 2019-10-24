@@ -54,7 +54,6 @@ public enum InputValueType implements InputValueEditorProvider {
     TestCase,
     TestObject,
     WindowsObject,
-    MobileObject,
     TestData,
     Checkpoint,
     Class,
@@ -256,9 +255,6 @@ public enum InputValueType implements InputValueEditorProvider {
         }
         if (methodCall.isFindWindowsObjectMethodCall()) {
             return AstEntityInputUtil.getTextValueForWindowsObjectArgument(methodCall);
-        }
-        if (methodCall.isFindMobileObjectMethodCall()) {
-            return AstEntityInputUtil.getTextValueForMobileObjectArgument(methodCall);
         }
         if (methodCall.isFindTestDataMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestDataArgument(methodCall);

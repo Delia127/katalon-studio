@@ -36,8 +36,6 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     public static final String FIND_TEST_OBJECT_METHOD_NAME = GroovyConstants.FIND_TEST_OBJECT_METHOD_NAME;
     
     public static final String FIND_WINDOWS_OBJECT_METHOD_NAME = GroovyConstants.FIND_WINDOWS_OBJECT_METHOD_NAME;
-    
-    public static final String FIND_MOBILE_OBJECT_METHOD_NAME = GroovyConstants.FIND_MOBILE_OBJECT_METHOD_NAME;
 
     public static final String FIND_CHECKPOINT_METHOD_NAME = GroovyConstants.FIND_CHECKPOINT_METHOD_NAME;
 
@@ -331,10 +329,6 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     
     public boolean isFindWindowsObjectMethodCall() {
         return isFindTestArtifactMethodCall(ObjectRepository.class, FIND_WINDOWS_OBJECT_METHOD_NAME);
-    }
-    
-    public boolean isFindMobileObjectMethodCall() {
-        return isFindTestArtifactMethodCall(ObjectRepository.class, FIND_MOBILE_OBJECT_METHOD_NAME);
     }
 
     public boolean isFindCheckpointMethodCall() {

@@ -124,6 +124,12 @@ public class MobileRecorderDialog extends AbstractDialog
 
     private Composite container;
 
+    private RecordActionResult recordActionResult;
+
+    public RecordActionResult getRecordActionResult() {
+        return recordActionResult;
+    }
+
     public MobileRecorderDialog(Shell parentShell, MobileAppComposite appComposite) {
         super(parentShell);
         setShellStyle(SWT.SHELL_TRIM | SWT.RESIZE);
@@ -277,20 +283,23 @@ public class MobileRecorderDialog extends AbstractDialog
 
     @Override
     protected void okPressed() {
-        AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(getParentShell());
-        if (dialog.open() != Dialog.OK) {
-            return;
-        }
-        targetFolderEntity = dialog.getSelectedFolderTreeEntity();
+//        AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(getParentShell());
+//        if (dialog.open() != Dialog.OK) {
+//            return;
+//        }
+//        targetFolderEntity = dialog.getSelectedFolderTreeEntity();
 
         int recordedActionCount = getRecordedActions().size();
+
+        recordActionResult = new RecordActionResult(recordedActionsComposite.getStepView().getWrapper(),
+                capturedObjectsComposite.getCapturedElements());
 
         super.okPressed();
 
         Trackings.trackCloseRecord("mobile", "ok", recordedActionCount);
     }
 
-    public List<AstTreeTableNode> getRecordedActions() {
+    private List<AstTreeTableNode> getRecordedActions() {
         return recordedActionsComposite.getRecordedActions();
     }
 
@@ -852,18 +861,6 @@ public class MobileRecorderDialog extends AbstractDialog
             public void run() {
                 // Quit Driver
                 if (inspectorController.getDriver() != null) {
-                    try {
-                        addAdditionalActions();
-                    } catch (ClassNotFoundException | InvocationTargetException | InterruptedException exeception) {
-                        LoggerSingleton.logError(exeception);
-                        Throwable targetException = ((InvocationTargetException) exeception).getTargetException();
-                        String message = (targetException instanceof java.util.concurrent.ExecutionException)
-                                ? targetException.getCause().getMessage() : targetException.getMessage();
-                        UISynchronizeService.syncExec(() -> {
-                            MultiStatusErrorDialog.showErrorDialog("Unable to close application", message,
-                                    ExceptionsUtil.getStackTraceForThrowable(targetException));
-                        });
-                    }
                     inspectorController.closeApp();
                 }
             }
@@ -889,6 +886,19 @@ public class MobileRecorderDialog extends AbstractDialog
         if (deviceView != null) {
             deviceView.closeApp();
         }
+
+        try {
+            addAdditionalActions();
+        } catch (ClassNotFoundException | InvocationTargetException | InterruptedException exeception) {
+            LoggerSingleton.logError(exeception);
+            Throwable targetException = ((InvocationTargetException) exeception).getTargetException();
+            String message = (targetException instanceof java.util.concurrent.ExecutionException)
+                    ? targetException.getCause().getMessage() : targetException.getMessage();
+            UISynchronizeService.syncExec(() -> {
+                MultiStatusErrorDialog.showErrorDialog("Unable to close application", message,
+                        ExceptionsUtil.getStackTraceForThrowable(targetException));
+            });
+        }
     }
 
     private void addAdditionalActions() throws ClassNotFoundException, InvocationTargetException, InterruptedException {
@@ -905,7 +915,8 @@ public class MobileRecorderDialog extends AbstractDialog
     }
 
     // Highlight Selected object on captured screenshot
-    public void highlightObject(MobileElement selectedElement) {
+    @Override
+    public void highlightElement(MobileElement selectedElement) {
         if (selectedElement == null || deviceView == null || deviceView.isDisposed()) {
             return;
         }
@@ -927,7 +938,7 @@ public class MobileRecorderDialog extends AbstractDialog
         if (foundElement == null) {
             return;
         }
-        highlightObject(foundElement);
+        highlightElement(foundElement);
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
@@ -1030,25 +1041,6 @@ public class MobileRecorderDialog extends AbstractDialog
         return preferencesHelper;
     }
 
-    public class RecordActionResult {
-        private final List<CapturedMobileElement> windowsElements;
-
-        private final ScriptNodeWrapper script;
-
-        public RecordActionResult(ScriptNodeWrapper script, List<CapturedMobileElement> windowsElements) {
-            this.script = script;
-            this.windowsElements = windowsElements;
-        }
-
-        public List<CapturedMobileElement> getWindowsElements() {
-            return windowsElements;
-        }
-
-        public ScriptNodeWrapper getScript() {
-            return script;
-        }
-    }
-
     @Override
     public MobileElementPropertiesComposite getPropertiesComposite() {
         return propertiesComposite;
@@ -1073,12 +1065,6 @@ public class MobileRecorderDialog extends AbstractDialog
     }
 
     @Override
-    public void highlightElement(MobileElement selectedElement) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public MobileCapturedObjectsComposite getCapturedObjectsComposite() {
         return capturedObjectsComposite;
     }
@@ -1093,5 +1079,24 @@ public class MobileRecorderDialog extends AbstractDialog
     public void verifyCapturedElementsStates(CapturedMobileElement[] elements) {
         // TODO Auto-generated method stub
         
+    }
+
+    public class RecordActionResult {
+        private final List<CapturedMobileElement> mobileElements;
+
+        private final ScriptNodeWrapper script;
+
+        public RecordActionResult(ScriptNodeWrapper script, List<CapturedMobileElement> mobileElements) {
+            this.script = script;
+            this.mobileElements = mobileElements;
+        }
+
+        public List<CapturedMobileElement> getMobileElements() {
+            return mobileElements;
+        }
+
+        public ScriptNodeWrapper getScript() {
+            return script;
+        }
     }
 }

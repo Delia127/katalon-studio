@@ -355,10 +355,6 @@ public class AstEntityInputUtil {
         return getTextValueForTestArtifaceArgument(methodCall);
     }
 
-    public static String getTextValueForMobileObjectArgument(MethodCallExpressionWrapper methodCall) {
-        return getTextValueForTestArtifaceArgument(methodCall);
-    }
-
     public static String getTextValueForTestDataArgument(MethodCallExpressionWrapper methodCall) {
         return getTextValueForTestArtifaceArgument(methodCall);
     }

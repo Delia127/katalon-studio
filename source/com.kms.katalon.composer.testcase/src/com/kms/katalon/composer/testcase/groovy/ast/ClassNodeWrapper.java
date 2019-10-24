@@ -368,7 +368,6 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         }
         addImportStaticMethod(ObjectRepository.class, MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME);
         addImportStaticMethod(ObjectRepository.class, MethodCallExpressionWrapper.FIND_WINDOWS_OBJECT_METHOD_NAME);
-        addImportStaticMethod(ObjectRepository.class, MethodCallExpressionWrapper.FIND_MOBILE_OBJECT_METHOD_NAME);
         addImportStaticMethod(TestDataFactory.class, MethodCallExpressionWrapper.FIND_TEST_DATA_METHOD_NAME);
         addImportStaticMethod(TestCaseFactory.class, MethodCallExpressionWrapper.FIND_TEST_CASE_METHOD_NAME);
         addImportStaticMethod(CheckpointFactory.class, MethodCallExpressionWrapper.FIND_CHECKPOINT_METHOD_NAME);
