@@ -541,10 +541,9 @@ public class ActivationInfoCollector {
     }
 
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
+        LogUtil.logInfo("Start check license task");
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-            try {
-                LogUtil.logInfo("Start check license task");
-                
+            try {  
                 License license = getValidLicense();
                 if (license == null) {
                     license = getLastUsedLicense();
@@ -565,8 +564,7 @@ public class ActivationInfoCollector {
                 if (license == null || !isValidLicense(license)) {
                     expiredHandler.run();
                 }
-                
-                LogUtil.logInfo("End check license task");
+
             } catch (Exception e) {
                 LogUtil.printAndLogError(e, ApplicationMessageConstants.LICENSE_ERROR_RENEW);
             }
@@ -577,6 +575,7 @@ public class ActivationInfoCollector {
         LogUtil.logInfo("Start clean up session");
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
+            LogUtil.logInfo("End check license task");
         }
         LogUtil.logInfo("End clean up session");
     }
