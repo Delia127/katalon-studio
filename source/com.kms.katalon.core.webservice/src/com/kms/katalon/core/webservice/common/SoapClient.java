@@ -220,6 +220,7 @@ public class SoapClient extends BasicRequestor {
         });
 
         ByteArrayEntity entity = new ByteArrayEntity(request.getSoapBody().getBytes(StandardCharsets.UTF_8));
+        entity.setChunked(false);
         post.setEntity(entity);
         
         CloseableHttpClient httpClient = clientBuilder.build();
