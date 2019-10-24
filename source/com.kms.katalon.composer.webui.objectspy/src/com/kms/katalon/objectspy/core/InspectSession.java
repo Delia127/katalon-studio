@@ -281,6 +281,8 @@ public class InspectSession implements Runnable {
                 return createChromDriverOptions(capabilities);
             case IE_DRIVER:
                 return createIEDesiredCapabilities(capabilities);
+            case FIREFOX_DRIVER:
+                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             default:
                 return capabilities;
         }
