@@ -374,10 +374,11 @@ public class ActivationInfoCollector {
     public static boolean activateOfflineForEngine(StringBuilder errorMessage) throws Exception {
         try {
             Set<String> validActivationCodes = findValidEngineOfflineLinceseCodes();
+            LogUtil.logInfo("The number of valid offline licenses: " + validActivationCodes.size());
+            
             int validOfflineLicenseSessionNumber = validActivationCodes.size();
             int runningSession =  ProcessUtil.countKatalonRunningSession();
 
-            LogUtil.logInfo("The number of valid offline licenses: " + validActivationCodes.size());
             LogUtil.logInfo("The number of Runtime Engine running sessions: " + runningSession);
             if (validOfflineLicenseSessionNumber < runningSession) {
                 errorMessage.append("License quota exceeded");

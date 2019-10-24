@@ -29,6 +29,7 @@ public class ConsoleCommandExecutor {
         }
         Map<String, String> existingEnvironmentVariables = pb.environment();
         existingEnvironmentVariables.putAll(addtionalEnvironmentVariables);
+        pb.redirectErrorStream(true);
 
         Process process = pb.start();
         process.waitFor();
