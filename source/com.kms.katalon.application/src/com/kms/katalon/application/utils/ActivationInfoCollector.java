@@ -379,7 +379,7 @@ public class ActivationInfoCollector {
             int validOfflineLicenseSessionNumber = validActivationCodes.size();
             int runningSession = 0;
             if (validOfflineLicenseSessionNumber > 0) {
-                runningSession =  ProcessUtil.countKatalonRunningSession();
+                runningSession = ProcessUtil.countKatalonRunningSession();
             }
 
             LogUtil.logInfo("The number of Runtime Engine running sessions: " + runningSession);
