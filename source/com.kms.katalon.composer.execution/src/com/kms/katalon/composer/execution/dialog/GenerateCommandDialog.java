@@ -1013,7 +1013,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         @Override
         protected Point getInitialSize() {
-            return new Point(500, 300);
+            return new Point(550, 300);
         }
 
         @Override
