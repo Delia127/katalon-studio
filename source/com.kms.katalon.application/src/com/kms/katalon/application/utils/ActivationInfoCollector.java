@@ -377,7 +377,10 @@ public class ActivationInfoCollector {
             LogUtil.logInfo("The number of valid offline licenses: " + validActivationCodes.size());
             
             int validOfflineLicenseSessionNumber = validActivationCodes.size();
-            int runningSession =  ProcessUtil.countKatalonRunningSession();
+            int runningSession = 0;
+            if (validOfflineLicenseSessionNumber > 0) {
+                runningSession =  ProcessUtil.countKatalonRunningSession();
+            }
 
             LogUtil.logInfo("The number of Runtime Engine running sessions: " + runningSession);
             if (validOfflineLicenseSessionNumber < runningSession) {
