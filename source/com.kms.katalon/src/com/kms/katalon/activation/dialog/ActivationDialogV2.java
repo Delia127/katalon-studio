@@ -248,7 +248,6 @@ public class ActivationDialogV2 extends AbstractDialog {
                         WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
                         warningLicenseDialog.open();
                     }
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
@@ -276,8 +275,6 @@ public class ActivationDialogV2 extends AbstractDialog {
                         WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
                         warningLicenseDialog.open();
                     }
-
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
