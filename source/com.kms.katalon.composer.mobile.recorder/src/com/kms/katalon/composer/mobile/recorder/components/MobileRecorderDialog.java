@@ -871,9 +871,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         try {
             addAdditionalActions();
-        } catch (ClassNotFoundException | InvocationTargetException | InterruptedException exeception) {
-            LoggerSingleton.logError(exeception);
-            Throwable targetException = ((InvocationTargetException) exeception).getTargetException();
+        } catch (ClassNotFoundException | InvocationTargetException | InterruptedException exception) {
+            if (exception instanceof InterruptedException) {
+                return;
+            }
+            LoggerSingleton.logError(exception);
+            Throwable targetException = ((InvocationTargetException) exception).getTargetException();
             String message = (targetException instanceof java.util.concurrent.ExecutionException)
                     ? targetException.getCause().getMessage() : targetException.getMessage();
             UISynchronizeService.syncExec(() -> {
@@ -884,11 +887,11 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     private void addAdditionalActions() throws ClassNotFoundException, InvocationTargetException, InterruptedException {
-        int numRecoredActions = recordedActionsComposite.getRecordedActions().size();
-        if (numRecoredActions <= 0) {
+        int numRecordedActions = recordedActionsComposite.getRecordedActions().size();
+        if (numRecordedActions <= 0) {
             return;
         }
-        AstTreeTableNode lastRecordAction = recordedActionsComposite.getRecordedActions().get(numRecoredActions - 1);
+        AstTreeTableNode lastRecordAction = recordedActionsComposite.getRecordedActions().get(numRecordedActions - 1);
         ExpressionStatementWrapper lastExpressionWrapper = (ExpressionStatementWrapper) lastRecordAction.getASTObject();
         MethodCallExpressionWrapper lastMethodCallExpression = (MethodCallExpressionWrapper) lastExpressionWrapper.getExpression();
         if (((ConstantExpressionWrapper) lastMethodCallExpression.getMethod()).getValue()

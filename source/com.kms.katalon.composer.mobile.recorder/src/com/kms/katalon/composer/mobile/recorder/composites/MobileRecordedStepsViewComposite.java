@@ -40,6 +40,7 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
@@ -313,6 +314,11 @@ public class MobileRecordedStepsViewComposite extends Composite implements ITest
                 getTreeTableInput().disable();
                 break;
             default:
+                try {
+                    refreshTree();
+                } catch (InvocationTargetException | InterruptedException exception) {
+                    LoggerSingleton.logError(exception);
+                }
                 getTreeTableInput().addNewAstObject(menuItem.getID(), getTreeTableInput().getSelectedNode(), addType);
                 break;
         }
