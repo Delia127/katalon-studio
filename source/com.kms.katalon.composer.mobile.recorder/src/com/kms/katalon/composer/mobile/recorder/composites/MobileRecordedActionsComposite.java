@@ -3,7 +3,6 @@ package com.kms.katalon.composer.mobile.recorder.composites;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -53,9 +52,5 @@ public class MobileRecordedActionsComposite extends Composite {
         lblRecordedActions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         ControlUtils.setFontToBeBold(lblRecordedActions);
         lblRecordedActions.setText(MobileRecoderMessagesConstants.LBL_RECORDED_ACTIONS);
-    }
-    
-    private void refresh() {
-        
     }
 }

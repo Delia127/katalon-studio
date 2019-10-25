@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.mobile.recorder.composites;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -35,6 +34,10 @@ public class MobileAllObjectsComposite extends Composite {
     private MobileElementInspectorDialog parentDialog;
 
     private TreeViewer allElementTreeViewer;
+
+    public TreeViewer getAllElementTreeViewer() {
+        return allElementTreeViewer;
+    }
 
     public MobileAllObjectsComposite(MobileElementInspectorDialog parentDialog, Composite parent, int style) {
         super(parent, style);
@@ -91,8 +94,7 @@ public class MobileAllObjectsComposite extends Composite {
                     CapturedMobileElement capturedElement = treeSnapshotItem.getCapturedElement() != null
                             ? treeSnapshotItem.getCapturedElement()
                             : treeSnapshotItem.newCapturedElement();
-                    parentDialog.highlightElement(capturedElement);
-                    parentDialog.targetElementChanged(capturedElement);
+                    parentDialog.setSelectedElement(capturedElement);
                 }
             }
         });
@@ -129,11 +131,13 @@ public class MobileAllObjectsComposite extends Composite {
         allElementTreeViewer.getTree().setFocus();
     }
 
-    public void setFocusedElement(TreeMobileElement selection) {
-        allElementTreeViewer.setSelection(new StructuredSelection(selection));
+    public void setSelection(TreeMobileElement selection) {
+        allElementTreeViewer.setSelection(selection != null
+                ? new StructuredSelection(selection)
+                : StructuredSelection.EMPTY);
     }
 
-    public void unfocusAllElements() {
+    public void clearAllSelections() {
         allElementTreeViewer.setSelection(StructuredSelection.EMPTY);
     }
     
@@ -144,5 +148,9 @@ public class MobileAllObjectsComposite extends Composite {
     
     public void refreshTree() {
         allElementTreeViewer.refresh();
+    }
+    
+    public void refreshTree(TreeMobileElement element) {
+        allElementTreeViewer.refresh(element);
     }
 }

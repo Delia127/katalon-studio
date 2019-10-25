@@ -1,20 +1,15 @@
 package com.kms.katalon.composer.mobile.objectspy.composites;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -103,18 +98,50 @@ public class MobileAllObjectsWithCheckboxComposite extends Composite {
             public void checkStateChanged(CheckStateChangedEvent event) {
                 TreeMobileElement selectedElement = (TreeMobileElement) event.getElement();
                 if (event.getChecked()) {
-                    parentDialog.getCapturedObjectsComposite().addElement(selectedElement.newCapturedElement());
-                    parentDialog.getPropertiesComposite().focusAndEditCapturedElementName();
+                    parentDialog.addCapturedElement(selectedElement.newCapturedElement());
                 } else {
                     CapturedMobileElement capturedElement = selectedElement.getCapturedElement();
-                    if (parentDialog.getCapturedObjectsComposite().containsElement(capturedElement)) {
-                        parentDialog.getCapturedObjectsComposite().removeElement(capturedElement);
+                    if (parentDialog.isAddedCapturedElement(capturedElement)) {
+                        parentDialog.removeCapturedElement(capturedElement);
+                        parentDialog.setSelectedElement(null);
                         selectedElement.setCapturedElement(null);
-                        parentDialog.getPropertiesComposite().setEditingElement(null);
                     }
                 }
                 allElementTreeViewer.refresh(selectedElement);
             }
         });
+    }
+    
+    public void setInput(TreeMobileElement rootElement) {
+        allElementTreeViewer.setInput(new Object[] { rootElement });
+        allElementTreeViewer.refresh();
+        allElementTreeViewer.expandAll();
+    }
+    
+    public void focusToElementsTree() {
+        allElementTreeViewer.getTree().setFocus();
+    }
+
+    public void setSelection(TreeMobileElement selection) {
+        allElementTreeViewer.setSelection(selection != null
+                ? new StructuredSelection(selection)
+                : StructuredSelection.EMPTY);
+    }
+
+    public void clearAllSelections() {
+        allElementTreeViewer.setSelection(StructuredSelection.EMPTY);
+    }
+    
+    public void clearAllElements() {
+        allElementTreeViewer.setInput(new Object[] {});
+        allElementTreeViewer.refresh();
+    }
+    
+    public void refreshTree() {
+        allElementTreeViewer.refresh();
+    }
+    
+    public void refreshTree(TreeMobileElement element) {
+        allElementTreeViewer.refresh(element);
     }
 }

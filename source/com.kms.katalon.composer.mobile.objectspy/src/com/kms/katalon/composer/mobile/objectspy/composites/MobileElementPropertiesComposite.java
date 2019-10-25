@@ -33,8 +33,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
-import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementDialog;
-import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 
 public class MobileElementPropertiesComposite extends Composite {
@@ -44,15 +43,15 @@ public class MobileElementPropertiesComposite extends Composite {
 
     private TableViewer attributesTableViewer;
 
-    private MobileElementDialog parentDialog;
+    private MobileElementInspectorDialog parentDialog;
 
-    public MobileElementPropertiesComposite(MobileElementDialog parentDialog, Composite parent, int style) {
+    public MobileElementPropertiesComposite(MobileElementInspectorDialog parentDialog, Composite parent, int style) {
         super(parent, style);
         this.parentDialog = parentDialog;
         createComposite();
     }
     
-    public MobileElementPropertiesComposite(MobileElementDialog dialog, Composite parent) {
+    public MobileElementPropertiesComposite(MobileElementInspectorDialog dialog, Composite parent) {
         this(dialog, parent, SWT.NONE);
     }
 

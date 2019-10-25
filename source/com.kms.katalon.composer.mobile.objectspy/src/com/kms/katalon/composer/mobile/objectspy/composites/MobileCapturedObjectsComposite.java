@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -15,6 +14,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -35,9 +35,8 @@ import org.eclipse.swt.widgets.TableItem;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
-import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
-import com.kms.katalon.composer.mobile.objectspy.dialog.MobileObjectSpyDialog;
+import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.provider.CapturedElementLabelProvider;
 import com.kms.katalon.composer.mobile.objectspy.element.provider.SelectableElementEditingSupport;
@@ -100,7 +99,7 @@ public class MobileCapturedObjectsComposite extends Composite {
     private void createCapturedObjectsTableViewer() {
         capturedObjectsTableViewer = new CapturedObjectTableViewer(innerTableComposite,
                 SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION,
-                (MobileElementDialog) this.parentDialog);
+                this.parentDialog);
         capturedObjectsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         ColumnViewerToolTipSupport.enableFor(capturedObjectsTableViewer);
         capturedObjectsTableViewer.setCapturedElements(new ArrayList<CapturedMobileElement>());
@@ -144,7 +143,7 @@ public class MobileCapturedObjectsComposite extends Composite {
                 if (firstElement == null) {
                     return;
                 }
-                parentDialog.getPropertiesComposite().setEditingElement(firstElement);
+                parentDialog.setEdittingElement(firstElement);
             }
         });
 
@@ -189,8 +188,7 @@ public class MobileCapturedObjectsComposite extends Composite {
                     }
                     case SWT.F2: {
                         if (elements.length == 1) {
-                            ((MobileElementInspectorDialog) parentDialog).getPropertiesComposite()
-                                    .focusAndEditCapturedElementName();
+                            parentDialog.focusAndEditCapturedElementName();
                         }
                         break;
                     }
@@ -257,5 +255,22 @@ public class MobileCapturedObjectsComposite extends Composite {
     
     public CapturedMobileElement[] getSelectedElements() {
         return capturedObjectsTableViewer.getSelectedElements();
+    }
+    
+    public void setSelection(CapturedMobileElement element) {
+        IStructuredSelection selection = (IStructuredSelection) capturedObjectsTableViewer.getSelection();
+        CapturedMobileElement firstElement = (CapturedMobileElement) selection.getFirstElement();
+        if (element == firstElement) {
+            return;
+        }
+        capturedObjectsTableViewer.setSelection(element != null
+                ? new StructuredSelection(element)
+                : StructuredSelection.EMPTY);
+    }
+    
+    public void setSelections(List<CapturedMobileElement> elements) {
+        capturedObjectsTableViewer.setSelection(elements != null
+                ? new StructuredSelection(elements)
+                : StructuredSelection.EMPTY);
     }
 }

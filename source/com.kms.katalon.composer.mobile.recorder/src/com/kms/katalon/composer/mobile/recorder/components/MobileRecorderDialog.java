@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -57,18 +56,14 @@ import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileCapturedObjectsComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileConfigurationsComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileElementPropertiesComposite;
-import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog;
-import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
-import com.kms.katalon.composer.mobile.objectspy.element.SnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
-import com.kms.katalon.composer.mobile.objectspy.element.impl.RenderedTreeSnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
 import com.kms.katalon.composer.mobile.recorder.composites.MobileAllObjectsComposite;
@@ -78,9 +73,10 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageCon
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
-import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
@@ -92,8 +88,7 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class MobileRecorderDialog extends AbstractDialog
-        implements MobileElementDialog, MobileElementInspectorDialog, MobileAppDialog {
+public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
 
     private MobileConfigurationsComposite mobileConfigurationsComposite;
@@ -154,7 +149,6 @@ public class MobileRecorderDialog extends AbstractDialog
         super.create();
         initializeData();
         validateToEnableStartButton();
-        targetElementChanged(null);
         updateActionButtonsVisibility(null, getCurrentMobileDriverType());
         getButton(IDialogConstants.OK_ID).setEnabled(false);
     }
@@ -612,8 +606,8 @@ public class MobileRecorderDialog extends AbstractDialog
             };
             progressDlg.run(true, false, processToRun);
             captureObjectAction();
-            targetElementChanged(null);
-            allObjectsComposite.unfocusAllElements();
+            setSelectedElement(null);
+            allObjectsComposite.clearAllSelections();
             return mobileActionMapping;
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ExecutionException) {
@@ -631,12 +625,6 @@ public class MobileRecorderDialog extends AbstractDialog
         } catch (Exception e) {
             throw new MobileRecordException(e);
         }
-    }
-
-    @Override
-    public void targetElementChanged(CapturedMobileElement mobileElement) {
-        propertiesComposite.setEditingElement(mobileElement);
-        updateActionButtonsVisibility(mobileElement, getCurrentMobileDriverType());
     }
 
     public MobileDriverType getCurrentMobileDriverType() {
@@ -727,7 +715,7 @@ public class MobileRecorderDialog extends AbstractDialog
             btnCapture.setEnabled(true);
             btnStop.setEnabled(true);
             getButton(IDialogConstants.OK_ID).setEnabled(true);
-            targetElementChanged(null);
+            setSelectedElement(null);
             recordedActionsComposite.getStepView().addNode(mobileComposite.buildStartAppActionMapping());
 
             // send event for tracking
@@ -869,7 +857,7 @@ public class MobileRecorderDialog extends AbstractDialog
             btnCapture.setEnabled(false);
 
             allObjectsComposite.clearAllElements();
-            targetElementChanged(null);
+            setSelectedElement(null);
             try {
                 recordedActionsComposite.getStepView().refreshTree();
             } catch (InvocationTargetException | InterruptedException exeception) {
@@ -896,8 +884,19 @@ public class MobileRecorderDialog extends AbstractDialog
     }
 
     private void addAdditionalActions() throws ClassNotFoundException, InvocationTargetException, InterruptedException {
+        int numRecoredActions = recordedActionsComposite.getRecordedActions().size();
+        if (numRecoredActions <= 0) {
+            return;
+        }
+        AstTreeTableNode lastRecordAction = recordedActionsComposite.getRecordedActions().get(numRecoredActions - 1);
+        ExpressionStatementWrapper lastExpressionWrapper = (ExpressionStatementWrapper) lastRecordAction.getASTObject();
+        MethodCallExpressionWrapper lastMethodCallExpression = (MethodCallExpressionWrapper) lastExpressionWrapper.getExpression();
+        if (((ConstantExpressionWrapper) lastMethodCallExpression.getMethod()).getValue()
+                .equals(MobileAction.CloseApplication.getMappedKeywordMethod())) {
+            return;
+        }
         recordedActionsComposite.getStepView()
-                .addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
+            .addNode(new MobileActionMapping(MobileAction.CloseApplication, null));
     }
 
     private void validateToEnableStartButton() {
@@ -938,12 +937,12 @@ public class MobileRecorderDialog extends AbstractDialog
             public void run() {
                 getShell().setFocus();
                 allObjectsComposite.focusToElementsTree();
-                allObjectsComposite.setFocusedElement(foundElement);
+                allObjectsComposite.setSelection(foundElement);
 
                 CapturedMobileElement element = foundElement.getCapturedElement() != null
                         ? foundElement.getCapturedElement()
                         : foundElement.newCapturedElement();
-                targetElementChanged(element);
+                setSelectedElement(element);
             }
         });
     }
@@ -1036,31 +1035,60 @@ public class MobileRecorderDialog extends AbstractDialog
     }
 
     @Override
-    public MobileElementPropertiesComposite getPropertiesComposite() {
-        return propertiesComposite;
-    }
-
-    @Override
     public void setSelectedElement(CapturedMobileElement element) {
-        // TODO Auto-generated method stub
-
+        if (element != null) {
+            TreeMobileElement link = element.getLink();
+            if (link != null) {
+                allObjectsComposite.setSelection(link);
+            }
+        } else {
+            allObjectsComposite.setSelection(null);
+        }
+        capturedObjectsComposite.setSelection(element);
+        propertiesComposite.setEditingElement(element);
+        highlightElement(element);
+        updateActionButtonsVisibility(element, getCurrentMobileDriverType());
     }
 
     @Override
-    public void updateSelectedElement(CapturedMobileElement editingElement) {
-        // TODO Auto-generated method stub
-
+    public void updateSelectedElement(CapturedMobileElement element) {
+        capturedObjectsComposite.refresh(element, true);
+        TreeMobileElement treeElement = element.getLink();
+        if (treeElement != null) {
+            allObjectsComposite.getAllElementTreeViewer().refresh(treeElement);
+            allObjectsComposite.getAllElementTreeViewer().setSelection(new StructuredSelection(treeElement));
+        }
     }
 
     @Override
     public void handleCapturedObjectsTableSelectionChange() {
-        // TODO Auto-generated method stub
-
+        capturedObjectsComposite.updateCheckAllCheckboxState();
     }
 
     @Override
-    public MobileCapturedObjectsComposite getCapturedObjectsComposite() {
-        return capturedObjectsComposite;
+    public void setEdittingElement(CapturedMobileElement element) {
+        propertiesComposite.setEditingElement(element);
+    }
+
+    @Override
+    public void addCapturedElement(CapturedMobileElement element) {
+        capturedObjectsComposite.addElement(element);
+        propertiesComposite.focusAndEditCapturedElementName();
+    }
+
+    @Override
+    public boolean isAddedCapturedElement(CapturedMobileElement element) {
+        return capturedObjectsComposite.containsElement(element);
+    }
+
+    @Override
+    public void removeCapturedElement(CapturedMobileElement element) {
+        capturedObjectsComposite.removeElement(element);
+    }
+
+    @Override
+    public void focusAndEditCapturedElementName() {
+        propertiesComposite.focusAndEditCapturedElementName();
     }
 
     @Override
