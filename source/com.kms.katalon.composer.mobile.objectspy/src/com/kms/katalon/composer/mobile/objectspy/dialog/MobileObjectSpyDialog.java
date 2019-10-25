@@ -460,7 +460,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
 
         deviceView.highlightElement(selectedElement);
-        LoggerSingleton.logInfo("highlight");
     }
 
     private boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {

@@ -855,9 +855,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             btnStart.setEnabled(true);
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
+            updateActionButtonsVisibility(null, getCurrentMobileDriverType());
 
             allObjectsComposite.clearAllElements();
-            setSelectedElement(null);
             try {
                 recordedActionsComposite.getStepView().refreshTree();
             } catch (InvocationTargetException | InterruptedException exeception) {

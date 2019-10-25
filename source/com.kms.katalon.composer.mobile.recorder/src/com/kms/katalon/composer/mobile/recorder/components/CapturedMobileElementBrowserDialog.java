@@ -85,7 +85,7 @@ public class CapturedMobileElementBrowserDialog extends AbstractDialog implement
 
     @Override
     public String getDialogTitle() {
-        return "Captured Mobile Object";
+        return "Captured Mobile Objects";
     }
 
     private class MobileElementLabelProvider extends TypeCheckStyleCellTableLabelProvider<CapturedMobileElement> {

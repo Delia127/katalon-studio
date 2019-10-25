@@ -10,13 +10,13 @@ import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElem
 public interface MobileElementInspectorDialog {
     void setSelectedElementByLocation(int x, int y);
 
-    /**
+    /** What this method do:
      * <ul>
-     *  <li>Focus to Element on `All Elements Tree`
-     *  <li>Focus to Element on `Captured Elements Table`
-     *  <li>Show Element's properties on `Properties Table`
-     *  <li>Highlight Element on `Screen View`
-     *  <li>Update button states base on Element type (Recorder Dialog only)
+     *  <li>Focus to Selected Element on `All Elements Tree`
+     *  <li>Focus to Selected Element on `Captured Elements Table`
+     *  <li>Show Selected Element's properties on `Properties Table`
+     *  <li>Highlight Selected Element on `Screen View`
+     *  <li>Update action button states (Recorder Dialog only)
      * </ul>
      * @param element
      */
