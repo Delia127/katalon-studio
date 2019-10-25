@@ -396,7 +396,7 @@ public class SoapClient extends BasicRequestor {
             HttpEntity responseEntity = response.getEntity();
             InputStream is = null;
             if (responseEntity != null) {
-                is = response.getEntity().getContent();
+                is = responseEntity.getContent();
             }
             
             IOUtils.closeQuietly(httpClient);
