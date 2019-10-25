@@ -52,7 +52,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -205,7 +204,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
         sashForm.setWeights(new int[] { 5, 5, 6 });
 
-        new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_OBJECT_SPY_MOBILE);
+        new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_WINDOWS_SPY);
 
         return container;
     }

@@ -20,6 +20,10 @@ public class DocumentationMessageConstants extends NLS {
     public static String DIALOG_OBJECT_SPY_WEB_UI_SELECTION_METHOD;
 
     public static String DIALOG_OBJECT_SPY_MOBILE;
+    
+    public static String DIALOG_WINDOWS_SPY;
+    
+    public static String DIALOG_WINDOWS_RECORDER;
 
     public static String DIALOG_RECORDER_WEB_UI;
 
