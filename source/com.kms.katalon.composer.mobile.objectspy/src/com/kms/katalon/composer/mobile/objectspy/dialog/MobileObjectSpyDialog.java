@@ -132,8 +132,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     private MobileObjectSpyPreferencesHelper preferencesHelper;
 
-    private Composite appsComposite;
-
     private MobileAppComposite mobileComposite;
     
     private static MobileObjectSpyDialog instance;

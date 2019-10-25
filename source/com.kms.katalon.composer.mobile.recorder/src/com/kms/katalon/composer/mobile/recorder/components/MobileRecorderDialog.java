@@ -283,12 +283,6 @@ public class MobileRecorderDialog extends AbstractDialog
 
     @Override
     protected void okPressed() {
-//        AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(getParentShell());
-//        if (dialog.open() != Dialog.OK) {
-//            return;
-//        }
-//        targetFolderEntity = dialog.getSelectedFolderTreeEntity();
-
         int recordedActionCount = getRecordedActions().size();
 
         recordActionResult = new RecordActionResult(recordedActionsComposite.getStepView().getWrapper(),

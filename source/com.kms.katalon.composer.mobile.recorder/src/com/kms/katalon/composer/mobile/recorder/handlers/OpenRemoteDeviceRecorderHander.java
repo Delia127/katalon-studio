@@ -1,27 +1,17 @@
 package com.kms.katalon.composer.mobile.recorder.handlers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.codehaus.groovy.control.CompilationFailedException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
@@ -29,30 +19,37 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.composer.mobile.objectspy.components.RemoteAppComposite;
-import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
-import com.kms.katalon.composer.mobile.objectspy.util.MobileActionUtil;
+import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.SaveTestCaseDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.SaveTestCaseDialog.ExportTestCaseOption;
+import com.kms.katalon.composer.mobile.objectspy.dialog.SaveTestCaseDialog.ExportTestCaseSelectionResult;
+import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.recorder.components.MobileRecorderDialog;
+import com.kms.katalon.composer.mobile.recorder.components.MobileRecorderDialog.RecordActionResult;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
-import com.kms.katalon.composer.mobile.recorder.utils.MobileElementConverter;
-import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
-import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
+import com.kms.katalon.composer.testcase.handlers.OpenTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -63,12 +60,6 @@ public class OpenRemoteDeviceRecorderHander {
     private MobileRecorderDialog recorderDialog;
 
     private Shell activeShell;
-
-    @Inject
-    private MApplication application;
-
-    @Inject
-    private EModelService modelService;
 
     @Inject
     private IEventBroker eventBroker;
@@ -87,6 +78,11 @@ public class OpenRemoteDeviceRecorderHander {
         });
     }
 
+    @CanExecute
+    public boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
+    }
+
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
         openRecorderDialog(activeShell);
@@ -97,21 +93,20 @@ public class OpenRemoteDeviceRecorderHander {
             if (this.activeShell == null) {
                 this.activeShell = activeShell;
             }
-            TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
-            if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
-                return false;
-            }
             recorderDialog = new MobileRecorderDialog(activeShell, 
                     new RemoteAppComposite());
             Trackings.trackOpenMobileRecord();
             if (recorderDialog.open() != Window.OK) {
                 return false;
             }
-            if (testCaseCompositePart == null) {
-                testCaseCompositePart = createNewTestCase();
+
+            RecordActionResult recordActionResult = recorderDialog.getRecordActionResult();
+            if (recordActionResult.getScript().getBlock().getAstChildren().isEmpty()) {
+                return true;
             }
-//            exportRecordedActionsToScripts(recorderDialog.getRecordedActions(), recorderDialog.getTargetFolderEntity(),
-//                    recorderDialog.getCurrentMobileDriverType(), testCaseCompositePart);
+
+            saveTestObject(activeShell, recordActionResult, recorderDialog.getCurrentMobileDriverType());
+            saveToTestCase(activeShell, recorderDialog.getRecordActionResult());
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -120,70 +115,30 @@ public class OpenRemoteDeviceRecorderHander {
         }
     }
 
-    private TestCaseCompositePart createNewTestCase() throws Exception {
-        TestCaseEntity testCase = NewTestCaseHandler.doCreateNewTestCase(
-                new FolderTreeEntity(FolderController.getInstance()
-                        .getTestCaseRoot(ProjectController.getInstance().getCurrentProject()), null),
-                EventBrokerSingleton.getInstance().getEventBroker());
-        if (testCase == null) {
-            return null;
-        }
-
-        return getTestCasePartByTestCase(testCase);
-    }
-
-    private TestCaseCompositePart getTestCasePartByTestCase(TestCaseEntity testCase) throws Exception {
-        MPart selectedPart = (MPart) modelService.find(EntityPartUtil.getTestCaseCompositePartId(testCase.getId()),
-                application);
-        if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
-            return null;
-        }
-        return (TestCaseCompositePart) selectedPart.getObject();
-    }
-
-    private TestCaseCompositePart getSelectedTestCasePart() {
-        MPart selectedPart = getSelectedPart();
-        if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
-            return null;
-        }
-        final TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
-        return testCaseCompositePart;
-    }
-
-    private void exportRecordedActionsToScripts(List<MobileActionMapping> recordedActions,
-            FolderTreeEntity targetFolderTreeEntity, MobileDriverType mobileDriverType,
-            TestCaseCompositePart testCaseCompositePart) {
-        if (testCaseCompositePart == null) {
+    private void saveTestObject(Shell activeShell, RecordActionResult recordResult, MobileDriverType driverType)
+            throws ControllerException {
+        if (recordResult.getScript().getBlock().getAstChildren().isEmpty()) {
             return;
         }
-        Job job = new Job(MobileRecoderMessagesConstants.MSG_TASK_GENERATE_SCRIPT) {
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
+        if (!recordResult.getMobileElements().isEmpty()) {
+            AddElementToObjectRepositoryDialog objectRepositoryDialog = new AddElementToObjectRepositoryDialog(
+                    activeShell);
+            if (objectRepositoryDialog.open() != AddElementToObjectRepositoryDialog.OK) {
+                return;
+            }
+            FolderTreeEntity selectedTreeFolder = objectRepositoryDialog.getSelectedFolderTreeEntity();
+            FolderEntity folder = getFolder(selectedTreeFolder);
+
+            CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
+            List<ITreeEntity> selectedTreeEntities = new ArrayList<ITreeEntity>();
+            for (CapturedMobileElement capturedElement : recordResult.getMobileElements()) {
+                WebElementEntity mobileElement;
                 try {
-                    UISynchronizeService.syncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
-                                final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
-                                        recordedActions, testCaseCompositePart, testCasePart, targetFolderTreeEntity,
-                                        mobileDriverType, monitor);
-                                testCasePart.addDefaultImports();
-                                testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
-                                testCaseCompositePart.refreshScript();
-                                testCaseCompositePart.save();
-                            } catch (Exception e) {
-                                LoggerSingleton.logError(e);
-                            }
-                        }
-                    });
-
-                    eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetFolderTreeEntity.getParent());
-                    eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
-                    eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
-
-                    return Status.OK_STATUS;
-                } catch (final Exception e) {
+                    mobileElement = converter.convert(capturedElement, folder, driverType);
+                    ObjectRepositoryController.getInstance().updateTestObject(mobileElement);
+                    capturedElement.setScriptId(mobileElement.getIdForDisplay());
+                    selectedTreeEntities.add(new WebElementTreeEntity(mobileElement, selectedTreeFolder));
+                } catch (Exception e) {
                     UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
@@ -194,85 +149,75 @@ public class OpenRemoteDeviceRecorderHander {
                         }
                     });
                     LoggerSingleton.logError(e);
-                    return Status.CANCEL_STATUS;
-                } finally {
-                    monitor.done();
                 }
             }
-        };
-
-        job.setUser(true);
-        job.schedule();
+            ExplorerPart.getInstance().setSelectedItems(selectedTreeEntities.toArray());
+        }
     }
 
-    private boolean verifyTestCase(TestCaseCompositePart testCaseCompositePart) throws Exception {
-        if (testCaseCompositePart.getDirty().isDirty()) {
-            if (!MessageDialog.openConfirm(activeShell, MobileRecorderStringConstants.WARN,
-                    MobileRecoderMessagesConstants.MSG_ERR_TEST_CASE_HAVE_UNSAVE_CHANGES)) {
-                return false;
-            }
-            testCaseCompositePart.save();
-        }
+    private FolderEntity getFolder(FolderTreeEntity selectedTreeFolder) {
+        FolderEntity folder = null;
         try {
-            testCaseCompositePart.getAstNodesFromScript();
-        } catch (CompilationFailedException compilationFailedExcption) {
-            MessageDialog.openWarning(activeShell, MobileRecorderStringConstants.WARN,
-                    MobileRecoderMessagesConstants.MSG_ERR_TEST_CASE_HAVE_ERRORS);
-            return false;
-        }
-        return true;
+            folder = selectedTreeFolder.getObject();
+        } catch (Exception ignored) {}
+        return folder;
     }
 
-    private WebElementEntity addRecordedElement(MobileElement element, FolderEntity parentFolder,
-            MobileDriverType mobileDriverType, Map<MobileElement, WebElementEntity> entitySavedMap) throws Exception {
-        if (element == null) {
-            return null;
+    private void saveToTestCase(Shell activeShell, RecordActionResult actionResult)
+            throws ControllerException, Exception {
+        SaveTestCaseDialog dialog = new SaveTestCaseDialog(activeShell);
+        if (dialog.open() != SaveTestCaseDialog.OK) {
+            return;
         }
-        if (entitySavedMap != null && entitySavedMap.get(element) != null) {
-            return entitySavedMap.get(element);
+
+        ExportTestCaseSelectionResult exportResult = dialog.getResult();
+
+        FolderEntity selectedFolder = exportResult.getFolder();
+        FolderTreeEntity selectedFolderTreeEntity = TreeEntityUtil.getFolderTreeEntity(selectedFolder);
+
+        TestCaseEntity testCaseEntity = getTestCase(exportResult);
+        TestCaseTreeEntity testCaseTreeEntity = new TestCaseTreeEntity(testCaseEntity, selectedFolderTreeEntity);
+
+        ExplorerPart.getInstance().refreshTreeEntity(selectedFolderTreeEntity);
+        ExplorerPart.getInstance().setSelectedItems(new Object[] { testCaseTreeEntity });
+
+        MCompositePart part = OpenTestCaseHandler.getInstance().openTestCase(testCaseEntity);
+
+        boolean shouldOverride = false;
+        if (exportResult
+                .getOption() == ExportTestCaseOption.OVERWRITE_TEST_CASE) {
+            shouldOverride = true;
         }
-        WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                new MobileElementConverter().convert(element, parentFolder, mobileDriverType), parentFolder);
-        entitySavedMap.put(element, importedElement);
-        return importedElement;
+        TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) part.getObject();
+        TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
+        testCaseCompositePart.setScriptContentToManual();
+        StringBuilder stringBuilder = new StringBuilder();
+        new GroovyWrapperParser(stringBuilder).parseGroovyAstIntoScript(actionResult.getScript());
+        ScriptNodeWrapper script = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(stringBuilder.toString());
+        @SuppressWarnings("unchecked")
+        List<StatementWrapper> children = (List<StatementWrapper>) script.getBlock().getAstChildren();
+        if (shouldOverride) {
+            testCasePart.clearAndAddStatementsToMainBlock(children, NodeAddType.Add, true);
+        } else {
+            testCasePart.addStatementsToMainBlock(children, NodeAddType.Add, true);
+        }
+        testCasePart.addImports(script.getImports());
+        testCasePart.getTreeTableInput().setChanged(true);
+        testCaseCompositePart.changeScriptNode(testCasePart.getTreeTableInput().getMainClassNode());
+        testCaseCompositePart.save();
     }
 
-    private List<StatementWrapper> generateStatementWrappersFromRecordedActions(
-            List<MobileActionMapping> recordedActions, TestCaseCompositePart testCaseCompositePart,
-            TestCasePart testCasePart, FolderTreeEntity folderSelectionResult, MobileDriverType mobileDriverType,
-            IProgressMonitor monitor) throws Exception {
-        Map<MobileElement, WebElementEntity> entitySavedMap = new HashMap<>();
-        FolderEntity targetFolder = folderSelectionResult.getObject();
-
-        monitor.beginTask(MobileRecoderMessagesConstants.MSG_TASK_GENERATE_SCRIPT, recordedActions.size());
-
-        if (testCasePart.getTreeTableInput() == null) {
-            testCaseCompositePart.loadTreeTableInput();
+    private TestCaseEntity getTestCase(ExportTestCaseSelectionResult result)
+            throws ControllerException {
+        switch (result.getOption()) {
+            case APPEND_TO_TEST_CASE:
+            case OVERWRITE_TEST_CASE:
+                return TestCaseController.getInstance()
+                        .getTestCaseByDisplayId(result.getFolder().getIdForDisplay() + "/" + result.getTestCaseName());
+            case EXPORT_TO_NEW_TEST_CASE:
+                return TestCaseController.getInstance().newTestCase(result.getFolder(), result.getTestCaseName());
+            default:
+                return null;
         }
-        ASTNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
-        List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
-        for (MobileActionMapping action : recordedActions) {
-            WebElementEntity createdTestObject = addRecordedElement(action.getTargetElement(), targetFolder,
-                    mobileDriverType, entitySavedMap);
-            StatementWrapper generatedStatementWrapper = MobileActionUtil.generateMobileTestStep(action,
-                    createdTestObject, mainClassNode);
-            monitor.worked(1);
-            resultStatementWrappers.add(generatedStatementWrapper);
-        }
-        return resultStatementWrappers;
-    }
-
-    @CanExecute
-    public boolean canExecute() {
-        return ProjectController.getInstance().getCurrentProject() != null;
-    }
-
-    protected MPart getSelectedPart() {
-        MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
-                application);
-        if (!composerStack.isVisible() || !(composerStack.getSelectedElement() instanceof MPart)) {
-            return null;
-        }
-        return (MPart) composerStack.getSelectedElement();
     }
 }
