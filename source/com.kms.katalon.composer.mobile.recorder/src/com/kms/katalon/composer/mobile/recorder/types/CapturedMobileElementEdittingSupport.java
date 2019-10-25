@@ -74,7 +74,7 @@ public class CapturedMobileElementEdittingSupport extends TestObjectEditingSuppo
             List<CapturedMobileElement> webElements = input != null ? (List<CapturedMobileElement>) input
                     : Collections.emptyList();
             CapturedMobileElementBrowserDialog dialog = new CapturedMobileElementBrowserDialog(getParentShell(),
-                    webElements, getSelectedCapturedWindowsElement());
+                    webElements, getSelectedCapturedMobileElement());
             if (dialog.open() == CapturedMobileElementBrowserDialog.OK) {
                 return dialog.getReturnValue();
             }
@@ -93,7 +93,7 @@ public class CapturedMobileElementEdittingSupport extends TestObjectEditingSuppo
             super.updateContents(webElementName);
         }
 
-        private CapturedMobileElement getSelectedCapturedWindowsElement() {
+        private CapturedMobileElement getSelectedCapturedMobileElement() {
             if (selectedNode == null) {
                 return null;
             }

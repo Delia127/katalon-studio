@@ -350,7 +350,7 @@ public class AstEntityInputUtil {
     public static String getTextValueForTestObjectArgument(MethodCallExpressionWrapper methodCall) {
         return getTextValueForTestArtifaceArgument(methodCall);
     }
-
+    
     public static String getTextValueForWindowsObjectArgument(MethodCallExpressionWrapper methodCall) {
         return getTextValueForTestArtifaceArgument(methodCall);
     }

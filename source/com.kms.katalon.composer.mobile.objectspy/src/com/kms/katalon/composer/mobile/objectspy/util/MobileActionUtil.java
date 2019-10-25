@@ -144,8 +144,6 @@ public class MobileActionUtil {
             ExpressionWrapper generatedExression = null;
             if (argumentClass.getName().equals(TestObject.class.getName())) {
                 generatedExression = new MobileElementMethodCallWrapper(parentClassNode, actionMapping.getTargetElement());
-//                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall(
-//                        (createdTestObject != null) ? createdTestObject.getIdForDisplay() : null, parentClassNode);
             } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
                 generatedExression = AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(null);
             } else {

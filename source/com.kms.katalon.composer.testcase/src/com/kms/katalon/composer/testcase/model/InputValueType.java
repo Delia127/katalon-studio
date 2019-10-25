@@ -252,7 +252,7 @@ public enum InputValueType implements InputValueEditorProvider {
         }
         if (methodCall.isFindTestObjectMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestObjectArgument(methodCall);
-        }
+        }       
         if (methodCall.isFindWindowsObjectMethodCall()) {
             return AstEntityInputUtil.getTextValueForWindowsObjectArgument(methodCall);
         }

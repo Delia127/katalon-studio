@@ -43,8 +43,6 @@ public class GroovyConstants {
 
     public static final String FIND_WINDOWS_OBJECT_METHOD_NAME = "findWindowsObject";
 
-    public static final String FIND_MOBILE_OBJECT_METHOD_NAME = "findMobileObject";
-
     public static final String FIND_CHECKPOINT_METHOD_NAME = "findCheckpoint";
 
     public static Map<String, String> DEFAULT_STATIC_METHOD_IMPORTS = new HashMap<>();

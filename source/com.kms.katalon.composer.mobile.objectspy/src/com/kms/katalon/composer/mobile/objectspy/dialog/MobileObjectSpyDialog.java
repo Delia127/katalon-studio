@@ -214,7 +214,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             }
         }
 
-        allObjectsComposite.getAllElementTreeViewer().refresh();
+        allObjectsComposite.refreshTree();
         capturedObjectsComposite.refresh();
     }
 
