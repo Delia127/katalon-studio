@@ -45,7 +45,10 @@ public class WebDriverManagerRunConfiguration {
         if (StringUtils.isNotEmpty(proxyCommand)) {
             commands.add(proxyCommand);
         }
-        commands.add(getArchitecture(webUIDriverType));
+        String architecture = getArchitecture(webUIDriverType);
+        if (StringUtils.isNotEmpty(architecture)) {
+            commands.add(architecture);
+        }
         commands.add("-jar");
         commands.add(webdriverFatJarFile.getName());
         commands.add(getDriverName(webUIDriverType));
