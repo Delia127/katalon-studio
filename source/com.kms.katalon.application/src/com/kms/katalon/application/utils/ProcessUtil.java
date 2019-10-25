@@ -33,7 +33,7 @@ public class ProcessUtil {
             command = WINDOW_COMMAND;
         }
         
-        String kataloncProcessCount = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(command);
+        String kataloncProcessCount = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(command, true);
         return Integer.valueOf(kataloncProcessCount.trim());
     }
 

@@ -92,6 +92,8 @@ public class ActivationDialogV2 extends AbstractDialog {
     private License license;
 
     private Link lnkAgreeTerm;
+    
+    private Link lnkLearnAboutKSE;
 
     private Composite organizationComposite;
     
@@ -145,6 +147,13 @@ public class ActivationDialogV2 extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch(StringConstants.AGREE_TERM_URL);
+            }
+        });
+        
+        lnkLearnAboutKSE.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
             }
         });
         
@@ -248,7 +257,6 @@ public class ActivationDialogV2 extends AbstractDialog {
                         WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
                         warningLicenseDialog.open();
                     }
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
@@ -276,8 +284,6 @@ public class ActivationDialogV2 extends AbstractDialog {
                         WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
                         warningLicenseDialog.open();
                     }
-
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
@@ -519,10 +525,13 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         Composite bottomTerm = new Composite(buttonBar, SWT.NONE);
         bottomTerm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridLayout gdBottomBarTerm = new GridLayout(2, false);
+        GridLayout gdBottomBarTerm = new GridLayout(1, false);
         gdBottomBarTerm.marginWidth = 10;
         gdBottomBarTerm.marginHeight = 0;
         bottomTerm.setLayout(gdBottomBarTerm);
+        
+        lnkLearnAboutKSE = new Link(bottomTerm, SWT.WRAP);
+        lnkLearnAboutKSE.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KSE);
         
         lnkAgreeTerm = new Link(bottomTerm, SWT.WRAP);
         lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);

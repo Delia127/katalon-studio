@@ -303,6 +303,8 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String DIA_LBL_API_KEY_USAGE = ComposerExecutionMessageConstants.API_KEY_USAGE;
     
+    public static final String MSG_CONSOLE_MODE_REQUIREMENT = ComposerExecutionMessageConstants.MSG_CONSOLE_MODE_REQUIREMENT;
+    
     public static final String DIA_API_KEY = ComposerExecutionMessageConstants.DIA_API_KEY;
     
     public static final String DIA_ANALYTICS_PROJECT = ComposerExecutionMessageConstants.DIA_ANALYTICS_PROJECT;

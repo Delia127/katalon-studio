@@ -374,10 +374,15 @@ public class ActivationInfoCollector {
     public static boolean activateOfflineForEngine(StringBuilder errorMessage) throws Exception {
         try {
             Set<String> validActivationCodes = findValidEngineOfflineLinceseCodes();
-            int validOfflineLicenseSessionNumber = validActivationCodes.size();
-            int runningSession =  ProcessUtil.countKatalonRunningSession();
-
             LogUtil.logInfo("The number of valid offline licenses: " + validActivationCodes.size());
+            
+            int validOfflineLicenseSessionNumber = validActivationCodes.size();
+            
+            if (validOfflineLicenseSessionNumber == 0) {
+                return false;
+            }
+            
+            int runningSession =  ProcessUtil.countKatalonRunningSession();
             LogUtil.logInfo("The number of Runtime Engine running sessions: " + runningSession);
             if (validOfflineLicenseSessionNumber < runningSession) {
                 errorMessage.append("License quota exceeded");
@@ -541,10 +546,9 @@ public class ActivationInfoCollector {
     }
 
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
+        LogUtil.logInfo("Start check license task");
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-            try {
-                LogUtil.logInfo("Start check license task");
-                
+            try {  
                 License license = getValidLicense();
                 if (license == null) {
                     license = getLastUsedLicense();
@@ -565,8 +569,7 @@ public class ActivationInfoCollector {
                 if (license == null || !isValidLicense(license)) {
                     expiredHandler.run();
                 }
-                
-                LogUtil.logInfo("End check license task");
+
             } catch (Exception e) {
                 LogUtil.printAndLogError(e, ApplicationMessageConstants.LICENSE_ERROR_RENEW);
             }
@@ -577,6 +580,7 @@ public class ActivationInfoCollector {
         LogUtil.logInfo("Start clean up session");
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
+            LogUtil.logInfo("End check license task");
         }
         LogUtil.logInfo("End clean up session");
     }

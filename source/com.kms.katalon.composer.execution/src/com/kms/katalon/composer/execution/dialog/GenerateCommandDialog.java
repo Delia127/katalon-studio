@@ -32,20 +32,20 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.common.base.Strings;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -90,11 +90,11 @@ import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -110,7 +110,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String KATALON_EXECUTABLE_WIN32 = "katalonc";
 
-    private static final String KATALON_EXECUTABLE_MACOS = "./Katalon\\ Studio.app/Contents/MacOS/katalonc";
+    private static final String KATALON_EXECUTABLE_MACOS = "./katalonc";
 
     private static final int GENERATE_PROPERTY_ID = 22;
 
@@ -402,15 +402,43 @@ public class GenerateCommandDialog extends AbstractDialog {
         gdTxtAPIKey.widthHint = 600;
         txtAPIKey.setLayoutData(gdTxtAPIKey);
         
-        Composite pluginOptionsComposite = new Composite(grpOptionsContainer, SWT.NONE);
-        pluginOptionsComposite.setLayout(new GridLayout(2, false));
-        pluginOptionsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
+        createNoticesComposite(grpOptionsContainer);
+    }
+    
+    private void createNoticesComposite(Composite parent) {
+        Composite noticesComposite = new Composite(parent, SWT.NONE);
+        noticesComposite.setLayout(new GridLayout(1, false));
+        noticesComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
         
-        Label lblApiKeyUsage = new Label(pluginOptionsComposite, SWT.NONE);
+        Link lblApiKeyUsage = new Link(noticesComposite, SWT.WRAP);
+        lblApiKeyUsage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         ControlUtils.setFontStyle(lblApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
         lblApiKeyUsage.setText(StringConstants.DIA_LBL_API_KEY_USAGE);
-
-        new HelpComposite(pluginOptionsComposite, DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
+        lblApiKeyUsage.addSelectionListener(new SelectionAdapter()  {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    Program.launch(DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
+        });
+        
+        Link lblConsoleModeRequirement = new Link(noticesComposite, SWT.WRAP);
+        lblConsoleModeRequirement.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        ControlUtils.setFontStyle(lblConsoleModeRequirement, SWT.BOLD | SWT.ITALIC, -1);
+        lblConsoleModeRequirement.setText(StringConstants.MSG_CONSOLE_MODE_REQUIREMENT);
+        lblConsoleModeRequirement.addSelectionListener(new SelectionAdapter()  {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    Program.launch(DocumentationMessageConstants.RUNTIME_ENGINE_INTRODUCTION);
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
+        });
     }
     
     @Override
@@ -959,6 +987,8 @@ public class GenerateCommandDialog extends AbstractDialog {
             txtCommand.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
             txtCommand.setText(getCommand());
 
+            createNoticesComposite(main);
+
             return main;
         }
 
@@ -983,7 +1013,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         @Override
         protected Point getInitialSize() {
-            return new Point(500, 300);
+            return new Point(550, 300);
         }
 
         @Override
