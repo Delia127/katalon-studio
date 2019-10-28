@@ -48,4 +48,13 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     
     // Server
     public static final String KA_SERVER_PRODUCTION = "https://analytics.katalon.com";
+
+    // Report On-Premise
+    public static final String ARG_ON_PREMISE_EMAIL = "onpremise.email";
+
+    public static final String ARG_ON_PREMISE_PASSWORD = "onpremise.password";
+
+    public static final String ARG_ON_PREMISE_ORGANIZATION = "onpremise.organization";
+
+    public static final String ARG_ON_PREMISE_SERVER = "onpremise.server";
 }

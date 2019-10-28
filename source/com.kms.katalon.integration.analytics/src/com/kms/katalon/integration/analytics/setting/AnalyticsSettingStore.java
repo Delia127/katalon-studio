@@ -34,25 +34,43 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getServerEndpoint() throws IOException, GeneralSecurityException {
-        return ApplicationInfo.getTestOpsServer();
+        String server = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_SERVER);
+        if (StringUtils.isEmpty(server)) {
+            server = ApplicationInfo.getTestOpsServer();
+        }
+        return server;
     }
 
     public void setServerEndPoint(String serverEndpoint) throws IOException, GeneralSecurityException {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_SERVER, serverEndpoint, true);
     }
 
     public String getEmail() throws IOException, GeneralSecurityException {
-        return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_EMAIL);
+        if (StringUtils.isEmpty(email)) {
+            email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        }
+        return email;
     }
 
     public void setEmail(String email) throws IOException, GeneralSecurityException {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_EMAIL, email, true);
     }
 
     public String getPassword() throws IOException, GeneralSecurityException {
-        String passwordDecode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-        return CryptoUtil.decode(CryptoUtil.getDefault(passwordDecode));
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD);
+        if (StringUtils.isEmpty(encryptedPassword)) {
+            encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        }
+
+        if (!StringUtils.isEmpty(encryptedPassword)) {
+            return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+        }
+        return null;
     }
 
     public void setPassword(String rawPassword) throws IOException, GeneralSecurityException {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD, rawPassword, true);
     }
 
     public AnalyticsProject getProject() throws IOException {

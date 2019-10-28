@@ -64,7 +64,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button enableAnalyticsIntegration;
 
-    private Text txtServerUrl, txtEmail, txtOrganization;
+    private Button enableOverrideAuthentication;
+
+    private Text txtServerUrl, txtEmail, txtOrganization, txtPassword;
 
     private Link lblStatus;
 
@@ -141,26 +143,37 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         grpAuthentication.setLayout(glGrpAuthentication);
         grpAuthentication.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_AUTHENTICATE_GROUP);
 
+        enableOverrideAuthentication = new Button(grpAuthentication, SWT.CHECK);
+        enableOverrideAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+        enableOverrideAuthentication
+                .setText("Override authentication");
+
         Label lblServerUrl = new Label(grpAuthentication, SWT.NONE);
         lblServerUrl.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SERVER_URL);
 
         txtServerUrl = new Text(grpAuthentication, SWT.BORDER);
         txtServerUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtServerUrl.setEnabled(false);
 
         Label lblOrganization = new Label(grpAuthentication, SWT.NONE);
         lblOrganization.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ORGANIZATION);
         
         txtOrganization = new Text(grpAuthentication, SWT.BORDER);
         txtOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtOrganization.setEnabled(false);
 
         Label lblEmail = new Label(grpAuthentication, SWT.NONE);
         lblEmail.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_EMAIL);
 
         txtEmail = new Text(grpAuthentication, SWT.BORDER);
         txtEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtEmail.setEnabled(false);
+        
+        Label lblPassword = new Label(grpAuthentication, SWT.NONE);
+        lblPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PASSWORD);
+        
+        txtPassword = new Text(grpAuthentication, SWT.PASSWORD);
+        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtPassword.setText("Password");
+
+        enableAuthentiacation(false);
     }
 
     private void createSelectGroup() {
@@ -480,6 +493,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         return false;
     }
 
+    private void enableAuthentiacation(boolean isEnable) {
+        txtEmail.setEnabled(isEnable);
+        txtPassword.setEnabled(isEnable);
+        txtServerUrl.setEnabled(isEnable);
+        txtOrganization.setEnabled(isEnable);
+    }
+    
     private void addListeners() {
         enableAnalyticsIntegration.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -493,6 +513,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                        connect();
                     }
                 }
+            }
+        });
+
+        enableOverrideAuthentication.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                enableAuthentiacation(enableOverrideAuthentication.getSelection());
             }
         });
 
