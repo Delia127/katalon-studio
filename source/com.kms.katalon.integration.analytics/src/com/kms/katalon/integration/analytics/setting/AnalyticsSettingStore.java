@@ -1,6 +1,7 @@
 package com.kms.katalon.integration.analytics.setting;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_INTEGRATION_ENABLE, enabled);
     }
 
-    public String getServerEndpoint() throws IOException, GeneralSecurityException {
+    public String getServerEndpoint() {
         String server = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_SERVER);
         if (StringUtils.isEmpty(server)) {
             server = ApplicationInfo.getTestOpsServer();
@@ -41,11 +42,11 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         return server;
     }
 
-    public void setServerEndPoint(String serverEndpoint) throws IOException, GeneralSecurityException {
+    public void setServerEndPoint(String serverEndpoint) {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_SERVER, serverEndpoint, true);
     }
 
-    public String getEmail() throws IOException, GeneralSecurityException {
+    public String getEmail() {
         String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_EMAIL);
         if (StringUtils.isEmpty(email)) {
             email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
@@ -53,7 +54,7 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         return email;
     }
 
-    public void setEmail(String email) throws IOException, GeneralSecurityException {
+    public void setEmail(String email) {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_EMAIL, email, true);
     }
 
@@ -69,8 +70,9 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         return null;
     }
 
-    public void setPassword(String rawPassword) throws IOException, GeneralSecurityException {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD, rawPassword, true);
+    public void setPassword(String rawPassword) throws UnsupportedEncodingException, GeneralSecurityException {
+        String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(rawPassword));
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD, encryptedPassword, true);
     }
 
     public AnalyticsProject getProject() throws IOException {

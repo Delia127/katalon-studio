@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.integration.analytics.preferences;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -169,7 +171,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         Label lblPassword = new Label(grpAuthentication, SWT.NONE);
         lblPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PASSWORD);
         
-        txtPassword = new Text(grpAuthentication, SWT.PASSWORD);
+        txtPassword = new Text(grpAuthentication, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtPassword.setText("Password");
 
@@ -242,6 +244,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             return;
         }
         changeEnabled();
+        uploadDataOnPremise();
         updateDataStore();
     }
 
@@ -277,7 +280,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION);
             return false;
         }
-
+        uploadDataOnPremise();
         updateDataStore();
         return super.performOk();
     }
@@ -445,6 +448,19 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         return isAnalyticsIntegrated && !teams.isEmpty();
     }
 
+    private void uploadDataOnPremise() {
+        try {
+            if (enableOverrideAuthentication.getSelection()) {
+                analyticsSettingStore.setEmail(txtEmail.getText());
+                analyticsSettingStore.setPassword(txtPassword.getText());
+                analyticsSettingStore.setServerEndPoint(txtServerUrl.getText());
+            }
+        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
+        }
+    }
+    
     private void updateDataStore() {
         try {
             analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
@@ -497,7 +513,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         txtEmail.setEnabled(isEnable);
         txtPassword.setEnabled(isEnable);
         txtServerUrl.setEnabled(isEnable);
-        txtOrganization.setEnabled(isEnable);
+        txtOrganization.setEnabled(false);
     }
     
     private void addListeners() {
