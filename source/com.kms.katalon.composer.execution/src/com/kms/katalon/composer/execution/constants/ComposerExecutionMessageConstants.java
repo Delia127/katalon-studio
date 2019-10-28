@@ -282,8 +282,6 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_TITLE_TEAM;
     
     public static String DIA_TITLE_PROJECT;
-    
-    public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
 
     // LogViewerPart
     public static String DIA_WARN_TEST_CASE_NOT_FOUND;
