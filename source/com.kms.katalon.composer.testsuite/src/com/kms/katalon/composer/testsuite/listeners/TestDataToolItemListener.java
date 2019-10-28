@@ -166,7 +166,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
             
             boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
             int items = getTableItems().size();
-            if (!isEnterpriseAccount && items == 1) {
+            if (!isEnterpriseAccount && items >= 1) {
                 MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
                         ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
                 return;
@@ -189,6 +189,12 @@ public class TestDataToolItemListener extends SelectionAdapter {
                     } else if (childResult instanceof FolderTreeEntity) {
                         dataFileEntities.addAll(getTestDatasFromFolderTree((FolderTreeEntity) childResult));
                     }
+                }
+                
+                if (!isEnterpriseAccount && (items + dataFileEntities.size()) > 1) {
+                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+                            ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                    return;
                 }
 
                 List<TestCaseTestDataLink> addedTestDataLinkTreeNodes = addTestDataToTreeView(dataFileEntities, offset);
