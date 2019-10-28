@@ -940,9 +940,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private boolean isValidInput() {
-        if (isRetrievingApi) {
-            return false;
-        }
+//        if (isRetrievingApi) {
+//            return false;
+//        }
         String entityId = txtTestSuite.getText();
         if (isBlank(entityId)) {
             return false;
