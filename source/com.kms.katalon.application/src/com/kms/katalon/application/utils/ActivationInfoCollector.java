@@ -374,10 +374,15 @@ public class ActivationInfoCollector {
     public static boolean activateOfflineForEngine(StringBuilder errorMessage) throws Exception {
         try {
             Set<String> validActivationCodes = findValidEngineOfflineLinceseCodes();
-            int validOfflineLicenseSessionNumber = validActivationCodes.size();
-            int runningSession =  ProcessUtil.countKatalonRunningSession();
-
             LogUtil.logInfo("The number of valid offline licenses: " + validActivationCodes.size());
+            
+            int validOfflineLicenseSessionNumber = validActivationCodes.size();
+            
+            if (validOfflineLicenseSessionNumber == 0) {
+                return false;
+            }
+            
+            int runningSession =  ProcessUtil.countKatalonRunningSession();
             LogUtil.logInfo("The number of Runtime Engine running sessions: " + runningSession);
             if (validOfflineLicenseSessionNumber < runningSession) {
                 errorMessage.append("License quota exceeded");
@@ -456,6 +461,7 @@ public class ActivationInfoCollector {
 
     public static void releaseLicense() throws Exception {
         try {
+            LogUtil.logInfo("Start release license task");
             String jwsCode = getActivationCode();
             if (StringUtils.isNotBlank(jwsCode)) {
                 License license = parseLicense(jwsCode);
@@ -485,9 +491,12 @@ public class ActivationInfoCollector {
                             orgId,
                             token
                             );
+                    LogUtil.logInfo("License released");
                 }
             }
+            LogUtil.logInfo("End release license task");
         } catch (Exception ex) {
+            LogUtil.printAndLogError(ex, "Error when release license");
             throw ex;
         } finally {
             KatalonApplication.refreshUserSession();
@@ -537,8 +546,9 @@ public class ActivationInfoCollector {
     }
 
     public static void scheduleCheckLicense(Runnable expiredHandler, Runnable renewHandler) {
+        LogUtil.logInfo("Start check license task");
         checkLicenseTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-            try {
+            try {  
                 License license = getValidLicense();
                 if (license == null) {
                     license = getLastUsedLicense();
@@ -551,7 +561,7 @@ public class ActivationInfoCollector {
                             renewHandler.run();
                             license = getValidLicense();
                         } catch (Exception e) {
-                            LogUtil.logError(e, ApplicationMessageConstants.LICENSE_UNABLE_RENEW);
+                            LogUtil.printAndLogError(e, ApplicationMessageConstants.LICENSE_UNABLE_RENEW);
                         }
                     }
                 }
@@ -559,16 +569,20 @@ public class ActivationInfoCollector {
                 if (license == null || !isValidLicense(license)) {
                     expiredHandler.run();
                 }
+
             } catch (Exception e) {
-                LogUtil.logError(e, ApplicationMessageConstants.LICENSE_ERROR_RENEW);
+                LogUtil.printAndLogError(e, ApplicationMessageConstants.LICENSE_ERROR_RENEW);
             }
         }, 0, 30, TimeUnit.SECONDS);
     }
 
     public static void postEndSession() {
+        LogUtil.logInfo("Start clean up session");
         if (checkLicenseTask != null) {
             checkLicenseTask.cancel(true);
+            LogUtil.logInfo("End check license task");
         }
+        LogUtil.logInfo("End clean up session");
     }
 
     public static boolean isOffline(License license) {

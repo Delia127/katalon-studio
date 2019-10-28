@@ -23,12 +23,20 @@ import javax.net.ssl.SSLContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.Args;
+import org.apache.http.message.BasicHeaderElementIterator;
 
 import com.google.common.net.MediaType;
 import com.google.common.net.UrlEscapers;
@@ -89,6 +97,29 @@ public class RestfulClient extends BasicRequestor {
             clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         
+        clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration(final HttpResponse response, final HttpContext context) {
+        // copied from source
+                Args.notNull(response, "HTTP response");
+                final HeaderElementIterator it = new BasicHeaderElementIterator(
+                        response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+                while (it.hasNext()) {
+                    final HeaderElement he = it.nextElement();
+                    final String param = he.getName();
+                    final String value = he.getValue();
+                    if (value != null && param.equalsIgnoreCase("timeout")) {
+                        try {
+                            return Long.parseLong(value) * 1000;
+                        } catch (final NumberFormatException ignore) {}
+                    }
+                }
+                // If the server indicates no timeout, then let it be 1ms so that connection is not kept alive
+                // indefinitely
+                return 1;
+            }
+        });
+        
         BaseHttpRequest httpRequest = getHttpRequest(request);
 
         CloseableHttpClient httpClient = clientBuilder.build();
@@ -119,9 +150,10 @@ public class RestfulClient extends BasicRequestor {
             ByteArrayOutputStream outstream = new ByteArrayOutputStream();
             request.getBodyContent().writeTo(outstream);
             byte[] bytes = outstream.toByteArray();
-            ByteArrayInputStream instream = new ByteArrayInputStream(bytes);
+            ByteArrayEntity entity = new ByteArrayEntity(bytes);
+            entity.setChunked(false);
             ((DefaultHttpEntityEnclosingRequest) httpRequest)
-                    .setEntity(new InputStreamEntity(instream));
+                    .setEntity(entity);
         } else {
             httpRequest = new DefaultHttpRequest(url);
         }

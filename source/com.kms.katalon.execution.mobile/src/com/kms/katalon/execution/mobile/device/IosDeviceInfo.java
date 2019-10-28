@@ -48,7 +48,7 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     public static List<String> executeCommand(String command) throws IOException, InterruptedException {
         Map<String, String> env = new HashMap<>();
         env.putAll(getIosAdditionalEnvironmentVariables());
-        return ConsoleCommandExecutor.runConsoleCommandAndCollectResults(new String[] { "sh", "-c", command }, env, "");
+        return ConsoleCommandExecutor.runConsoleCommandAndCollectResults(new String[] { "sh", "-c", command }, env, "", false);
     }
 
     protected void initDeviceInfos(String deviceId) throws IOException, InterruptedException {
