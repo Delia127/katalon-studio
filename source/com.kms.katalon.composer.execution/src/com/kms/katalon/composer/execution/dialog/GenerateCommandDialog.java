@@ -30,8 +30,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -978,17 +981,20 @@ public class GenerateCommandDialog extends AbstractDialog {
             Composite main = (Composite) super.createDialogArea(parent);
             GridLayout glMain = (GridLayout) main.getLayout();
             glMain.numColumns = 1;
+            GridData gdMain = (GridData) main.getLayoutData();
+            gdMain.widthHint = 500;
 
             Label message = new Label(main, SWT.NONE);
             message.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
             message.setText(StringConstants.DIA_LBL_GENERATED_COMMAND_MESSAGE);
 
             txtCommand = new Text(main, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
-            txtCommand.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            GridData gdCommand = new GridData(SWT.FILL, SWT.FILL, true, true);
+            gdCommand.minimumHeight = 100;
+            txtCommand.setLayoutData(gdCommand);
             txtCommand.setText(getCommand());
 
             createNoticesComposite(main);
-
             return main;
         }
 
@@ -1012,8 +1018,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
 
         @Override
-        protected Point getInitialSize() {
-            return new Point(550, 300);
+        protected boolean isResizable() {
+            return true;
         }
 
         @Override
