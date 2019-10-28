@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -236,16 +237,20 @@ public class SoapClient extends BasicRequestor {
 
         char[] buffer = new char[1024];
         long bodyLength = 0L;
-        try (InputStream inputStream = response.getEntity().getContent()) {
-            if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                int len = 0;
-                startTime = System.currentTimeMillis();
-                while ((len = reader.read(buffer)) != -1) {
-                    contentDownloadTime += System.currentTimeMillis() - startTime;
-                    sb.append(buffer, 0, len);
-                    bodyLength += len;
+        
+        HttpEntity responseEntity = response.getEntity();
+        if (responseEntity != null) {
+            try (InputStream inputStream = responseEntity.getContent()) {
+                if (inputStream != null) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                    int len = 0;
                     startTime = System.currentTimeMillis();
+                    while ((len = reader.read(buffer)) != -1) {
+                        contentDownloadTime += System.currentTimeMillis() - startTime;
+                        sb.append(buffer, 0, len);
+                        bodyLength += len;
+                        startTime = System.currentTimeMillis();
+                    }
                 }
             }
         }
@@ -388,7 +393,11 @@ public class SoapClient extends BasicRequestor {
 
             CloseableHttpClient httpClient = clientBuilder.build();
             CloseableHttpResponse response = httpClient.execute(get, getHttpContext());
-            InputStream is = response.getEntity().getContent();
+            HttpEntity responseEntity = response.getEntity();
+            InputStream is = null;
+            if (responseEntity != null) {
+                is = responseEntity.getContent();
+            }
             
             IOUtils.closeQuietly(httpClient);
             
