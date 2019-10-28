@@ -702,7 +702,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         @Override
         protected void setInput() {
-            txtText.setText(StringUtils.defaultIfEmpty(text, "<empty>"));
+            txtText.setText(StringUtils.defaultIfEmpty(text, ""));
         }
 
         @Override
@@ -711,7 +711,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             composite.setLayout(new GridLayout());
 
             Label lblText = new Label(composite, SWT.NONE);
-            lblText.setText("Text is:");
+            lblText.setText(MobileRecoderMessagesConstants.DLG_GET_TEXT_INPUT_LABEL);
 
             txtText = new Text(composite, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER | SWT.WRAP);
             txtText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -720,8 +720,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         @Override
         protected void createButtonsForButtonBar(Composite parent) {
-            createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
-            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+            createButton(parent, IDialogConstants.OK_ID, MobileRecoderMessagesConstants.BTN_APPLY_ACTION, true);
+            createButton(parent, IDialogConstants.CANCEL_ID, MobileRecoderMessagesConstants.BTN_CANCEL_ACTION, false);
         }
 
         @Override
@@ -731,7 +731,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         @Override
         public String getDialogTitle() {
-            return "Get Text action";
+            return MobileRecoderMessagesConstants.DLG_GET_TEXT_TITLE;
         }
     }
 
