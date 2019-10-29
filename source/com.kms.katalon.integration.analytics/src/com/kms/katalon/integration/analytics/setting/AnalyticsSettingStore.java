@@ -34,14 +34,14 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_INTEGRATION_ENABLE, enabled);
     }
 
-    public String getServerEndpoint() {
+    public String getServerEndpoint() throws IOException {
         if (isOverrideAuthentication()) {
-            try {
-                return getServerEndpointOnPremise();
-            } catch (IOException e) {
-                ApplicationInfo.getTestOpsServer();
-            }
+            return getServerEndpointOnPremise();
         }
+        return ApplicationInfo.getTestOpsServer();
+    }
+
+    public String getServerEndpointCloud() throws IOException {
         return ApplicationInfo.getTestOpsServer();
     }
 
@@ -57,6 +57,10 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         if (isOverrideAuthentication()) {
             return getEmailOnPremise();
         }
+        return getEmailCloud();
+    }
+
+    public String getEmailCloud() {
         return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
     }
 
@@ -72,15 +76,19 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         if (isOverrideAuthentication()) {
             return getPasswordOnPremise();
         }
-        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        return getPasswordCloud();
+    }
+
+    public String getPasswordOnPremise() throws IOException, GeneralSecurityException {
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD);
         if (!StringUtils.isEmpty(encryptedPassword)) {
             return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
         }
         return null;
     }
 
-    public String getPasswordOnPremise() throws IOException, GeneralSecurityException {
-        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD);
+    public String getPasswordCloud() throws IOException, GeneralSecurityException {
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
         if (!StringUtils.isEmpty(encryptedPassword)) {
             return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
         }
@@ -169,7 +177,14 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS, capturedVideos);
     }
 
-    public AnalyticsOrganization getOrganization() {
+    public AnalyticsOrganization getOrganization() throws IOException, GeneralSecurityException {
+        if (isOverrideAuthentication()) {
+            return getOrganizationOnPremise();
+        }
+        return getOrganizationCloud();
+    }
+
+    public AnalyticsOrganization getOrganizationCloud() {
         AnalyticsOrganization organization = new AnalyticsOrganization();
         String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
         if (StringUtils.isNotBlank(jsonObject)) {
@@ -190,12 +205,17 @@ public class AnalyticsSettingStore extends BundleSettingStore {
                 org = JsonUtil.fromJson(orgJson, AnalyticsOrganization.class);
                 return org;
             } catch (IllegalArgumentException e) {
-                // do nothing
+                LogUtil.logError(e);
             }
         }
         return null;
     }
 
+
+    public void setOrganization(AnalyticsOrganization organization) throws IOException {
+        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_ORGANIZATION_ONPREMISE, JsonUtil.toJson(organization));
+    }
+    
     public void removeProperties() {
         List<String> properties = new ArrayList<>();
         properties.add(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT);

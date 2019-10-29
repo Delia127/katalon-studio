@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.integration.analytics.preferences;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -62,6 +61,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Composite mainComposite;
 
+    private Button btnRefresh;
+
     private Button btnConnect;
 
     private Button enableAnalyticsIntegration;
@@ -79,11 +80,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private List<AnalyticsProject> projects = new ArrayList<>();
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
-    
+
     private AnalyticsProject selectProjectFromConfig;
-    
+
     private AnalyticsTeam selectTeamFromConfig;
-    
+
     private boolean canAccessProject = true;
 
     private Button btnCreate;
@@ -92,12 +93,15 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private String email, password, serverUrl;
 
+    private boolean isUseOnPremise = false;
+
     private AnalyticsOrganization organization;
 
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {
+            isUseOnPremise = analyticsSettingStore.isOverrideAuthentication();
             serverUrl = analyticsSettingStore.getServerEndpoint();
             email = analyticsSettingStore.getEmail();
             password = analyticsSettingStore.getPassword();
@@ -149,6 +153,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         enableOverrideAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
         enableOverrideAuthentication
                 .setText("Override authentication");
+        enableOverrideAuthentication.setEnabled(false);
 
         Label lblServerUrl = new Label(grpAuthentication, SWT.NONE);
         lblServerUrl.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SERVER_URL);
@@ -170,10 +175,17 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         
         Label lblPassword = new Label(grpAuthentication, SWT.NONE);
         lblPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PASSWORD);
-        
+
         txtPassword = new Text(grpAuthentication, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtPassword.setText("Password");
+
+        GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gdBtn.widthHint = 100;
+
+        btnConnect = new Button(grpAuthentication, SWT.NONE);
+        btnConnect.setLayoutData(gdBtn);
+        btnConnect.setText("Connect");
+        btnConnect.setEnabled(false);
 
         enableAuthentiacation(false);
     }
@@ -209,13 +221,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         GridLayout glConnect = new GridLayout(4, false);
         compConnect.setLayout(glConnect);
 
-        GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        GridData gdBtn = new GridData(SWT.FILL, SWT.RIGHT, false, false, 1, 1);
         gdBtn.widthHint = 100;
-        
-        btnConnect = new Button(compConnect, SWT.NONE);
-        btnConnect.setLayoutData(gdBtn);
-        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
-        btnConnect.setEnabled(false);
+
+        btnRefresh = new Button(compConnect, SWT.NONE);
+        btnRefresh.setLayoutData(gdBtn);
+        btnRefresh.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
+        btnRefresh.setEnabled(false);
 
         lblStatus = new Link(mainComposite, SWT.WRAP);
         GridData gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -313,13 +325,16 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             cbbTeams.setItems();
             cbbProjects.setItems();
 
+            if (isUseOnPremise) {
+                enableOverrideAuthentication.setSelection(true);
+            }
             txtEmail.setText(email);
             txtServerUrl.setText(serverUrl);
             txtOrganization.setText(organization.getName());
 
             selectProjectFromConfig = analyticsSettingStore.getProject();
             selectTeamFromConfig = analyticsSettingStore.getTeam();
-            
+
             teams.clear();
             projects.clear();
 
@@ -370,7 +385,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                                     String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
                                             ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
                                     setProgressMessage(message, true);
-                                    btnConnect.setEnabled(true);
+                                    btnRefresh.setEnabled(true);
                                 }
                             }
                         } catch (Exception e) {
@@ -429,7 +444,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void changeEnabled() {
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
-        btnConnect.setEnabled(isAnalyticsIntegrated);
+        enableOverrideAuthentication.setEnabled(isAnalyticsIntegrated);
+        btnRefresh.setEnabled(isAnalyticsIntegrated);
         cbbProjects.setEnabled(isAnalyticsIntegrated);
         cbbTeams.setEnabled(isAnalyticsIntegrated);
         if (canAccessProject && isAnalyticsIntegrated) {
@@ -455,7 +471,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 analyticsSettingStore.setPassword(txtPassword.getText());
                 analyticsSettingStore.setServerEndPoint(txtServerUrl.getText());
             }
-        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+        } catch (GeneralSecurityException | IOException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
@@ -514,6 +530,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         txtPassword.setEnabled(isEnable);
         txtServerUrl.setEnabled(isEnable);
         txtOrganization.setEnabled(false);
+        btnConnect.setEnabled(isEnable);
     }
     
     private void addListeners() {
@@ -539,9 +556,19 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             }
         });
 
+        btnRefresh.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                connect();
+            }
+        });
+
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                serverUrl = txtServerUrl.getText();
+                email = txtEmail.getText();
+                password = txtPassword.getText();
                 connect();
             }
         });
@@ -667,7 +694,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     enableObject(true);
                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                 } else {
-                    btnConnect.setEnabled(true);
+                    btnRefresh.setEnabled(true);
                     String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
                             ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
                     setProgressMessage(message, true);
@@ -679,7 +706,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private void enableObject(boolean isEnable) {
         cbbTeams.setEnabled(isEnable);
         cbbProjects.setEnabled(isEnable);
-        btnConnect.setEnabled(isEnable);
+        btnRefresh.setEnabled(isEnable);
         btnCreate.setEnabled(isEnable);
     }
 
