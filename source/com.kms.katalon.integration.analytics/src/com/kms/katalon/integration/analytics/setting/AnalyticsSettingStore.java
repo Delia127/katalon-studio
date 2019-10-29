@@ -35,6 +35,13 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getServerEndpoint() {
+        if (isOverrideAuthentication()) {
+            try {
+                return getServerEndpointOnPremise();
+            } catch (IOException e) {
+                ApplicationInfo.getTestOpsServer();
+            }
+        }
         return ApplicationInfo.getTestOpsServer();
     }
 
@@ -47,6 +54,9 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getEmail() {
+        if (isOverrideAuthentication()) {
+            return getEmailOnPremise();
+        }
         return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
     }
 
@@ -59,6 +69,9 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getPassword() throws IOException, GeneralSecurityException {
+        if (isOverrideAuthentication()) {
+            return getPasswordOnPremise();
+        }
         String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
         if (!StringUtils.isEmpty(encryptedPassword)) {
             return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
@@ -204,7 +217,11 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_ENABLE_ONPREMISE, isEnableOverride);
     }
     
-    public boolean isOverrideAuthentication() throws IOException {
-        return getBoolean(AnalyticsSettingStoreConstants.ANALYTICS_ENABLE_ONPREMISE, false);
+    public boolean isOverrideAuthentication() {
+        try {
+            return getBoolean(AnalyticsSettingStoreConstants.ANALYTICS_ENABLE_ONPREMISE, false);
+        } catch (IOException e) {
+            return false;
+        }
     }
 }
