@@ -176,8 +176,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     
     private AnalyticsSettingStore analyticsSettingStore;
 
-    private boolean isRetrievingApi;
-
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
         setDialogTitle(StringConstants.DIA_TITLE_GENERATE_COMMAND_FOR_CONSOLE);
@@ -940,9 +938,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private boolean isValidInput() {
-//        if (isRetrievingApi) {
-//            return false;
-//        }
         String entityId = txtTestSuite.getText();
         if (isBlank(entityId)) {
             return false;
@@ -1076,7 +1071,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private void getApiKey() {
-        isRetrievingApi = true;
         Thread getApiKey = new Thread(() -> {
             AnalyticsApiKey apiKey = null;
             try {
@@ -1094,13 +1088,11 @@ public class GenerateCommandDialog extends AbstractDialog {
             } catch (Exception ex) {
                 LoggerSingleton.logError(ex);
             } finally {
-                isRetrievingApi = false;
                 if (apiKey != null) {
                     String key = apiKey.getKey();
                     UISynchronizeService.asyncExec(() -> {
                         if (!txtAPIKey.isDisposed()) {
                             txtAPIKey.setText(key);
-                            setGenerateCommandButtonStates();
                         }
                     });
                 }
