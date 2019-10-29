@@ -554,7 +554,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Performs a long press action on a mobile element
+     * Performs a long-press action on a mobile element
      * @param to
      *      represent a mobile element
      * @param timeout
@@ -569,7 +569,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Performs a long press action on a mobile element
+     * Performs a long-press action on a mobile element
      * @param to
      *      represent a mobile element
      * @param timeout
