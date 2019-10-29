@@ -177,7 +177,7 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS, capturedVideos);
     }
 
-    public AnalyticsOrganization getOrganization() throws IOException, GeneralSecurityException {
+    public AnalyticsOrganization getOrganization() {
         if (isOverrideAuthentication()) {
             return getOrganizationOnPremise();
         }
@@ -197,16 +197,17 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         return organization;
     }
 
-    public AnalyticsOrganization getOrganizationOnPremise() throws IOException {
-        String orgJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_ORGANIZATION_ONPREMISE, StringUtils.EMPTY);
-        if (StringUtils.isNotBlank(orgJson)) {
-            try {
+    public AnalyticsOrganization getOrganizationOnPremise() {
+        try {
+            String orgJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_ORGANIZATION_ONPREMISE,
+                    StringUtils.EMPTY);
+            if (StringUtils.isNotBlank(orgJson)) {
                 AnalyticsOrganization org = new AnalyticsOrganization();
                 org = JsonUtil.fromJson(orgJson, AnalyticsOrganization.class);
                 return org;
-            } catch (IllegalArgumentException e) {
-                LogUtil.logError(e);
             }
+        } catch (IOException e) {
+            LogUtil.logError(e);
         }
         return null;
     }

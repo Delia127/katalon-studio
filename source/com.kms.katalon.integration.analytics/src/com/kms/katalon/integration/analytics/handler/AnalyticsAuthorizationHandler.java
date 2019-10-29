@@ -14,6 +14,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -57,6 +58,20 @@ public class AnalyticsAuthorizationHandler {
         return null;
     }
 
+    public static List<AnalyticsOrganization> getOrganizations(final String serverUrl, AnalyticsTokenInfo tokenInfo) {
+        final List<AnalyticsOrganization> organizations = new ArrayList<>();
+        List<AnalyticsOrganization> loaded;
+        try {
+            loaded = AnalyticsApiProvider.getOrganizations(serverUrl, tokenInfo.getAccess_token());
+            if (loaded != null && !loaded.isEmpty()) {
+                organizations.addAll(loaded);
+            }
+        } catch (AnalyticsApiExeception e) {
+            LoggerSingleton.logError(e);
+        }
+        return organizations;
+    }
+    
     public static List<AnalyticsProject> getProjects(final String serverUrl, final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
         final List<AnalyticsProject> projects = new ArrayList<>();
         List<AnalyticsProject> loaded;
@@ -182,6 +197,11 @@ public class AnalyticsAuthorizationHandler {
     
     public static List<String> getTeamNames(List<AnalyticsTeam> teams) {
         List<String> names = teams.stream().map(t -> t.getName()).collect(Collectors.toList());
+        return names;
+    }
+    
+    public static List<String> getOrganizationNames(List<AnalyticsOrganization> orgs) {
+        List<String> names = orgs.stream().map(t -> t.getName()).collect(Collectors.toList());
         return names;
     }
     
