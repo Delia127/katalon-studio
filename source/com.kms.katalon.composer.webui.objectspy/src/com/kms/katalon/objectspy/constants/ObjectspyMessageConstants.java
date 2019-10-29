@@ -124,8 +124,6 @@ public class ObjectspyMessageConstants extends NLS {
     public static String PREF_LBL_LOAD_DOM_MAP;
 
     public static String PREF_LBL_ACTIVE_BROWSER_PORT;
-
-    public static String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
     
     public static String PREF_LBL_PIN_OBJECT_SPY_WINDOW;
 
