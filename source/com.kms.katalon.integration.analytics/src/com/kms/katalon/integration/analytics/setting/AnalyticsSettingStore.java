@@ -35,23 +35,23 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getServerEndpoint() {
-        String server = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_SERVER);
-        if (StringUtils.isEmpty(server)) {
-            server = ApplicationInfo.getTestOpsServer();
-        }
-        return server;
+        return ApplicationInfo.getTestOpsServer();
     }
 
-    public void setServerEndPoint(String serverEndpoint) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_SERVER, serverEndpoint, true);
+    public String getServerEndpointOnPremise() throws IOException {
+        return getString(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT_ONPREMISE, StringUtils.EMPTY);
+    }
+
+    public void setServerEndPoint(String serverEndpoint) throws IOException {
+        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT_ONPREMISE, serverEndpoint);
     }
 
     public String getEmail() {
-        String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_EMAIL);
-        if (StringUtils.isEmpty(email)) {
-            email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-        }
-        return email;
+        return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+    }
+
+    public String getEmailOnPremise() {
+        return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_EMAIL);
     }
 
     public void setEmail(String email) {
@@ -59,11 +59,15 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getPassword() throws IOException, GeneralSecurityException {
-        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD);
-        if (StringUtils.isEmpty(encryptedPassword)) {
-            encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        if (!StringUtils.isEmpty(encryptedPassword)) {
+            return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
         }
+        return null;
+    }
 
+    public String getPasswordOnPremise() throws IOException, GeneralSecurityException {
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD);
         if (!StringUtils.isEmpty(encryptedPassword)) {
             return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
         }
@@ -164,7 +168,21 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         }
         return organization;
     }
-    
+
+    public AnalyticsOrganization getOrganizationOnPremise() throws IOException {
+        String orgJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_ORGANIZATION_ONPREMISE, StringUtils.EMPTY);
+        if (StringUtils.isNotBlank(orgJson)) {
+            try {
+                AnalyticsOrganization org = new AnalyticsOrganization();
+                org = JsonUtil.fromJson(orgJson, AnalyticsOrganization.class);
+                return org;
+            } catch (IllegalArgumentException e) {
+                // do nothing
+            }
+        }
+        return null;
+    }
+
     public void removeProperties() {
         List<String> properties = new ArrayList<>();
         properties.add(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT);
@@ -180,5 +198,13 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         } catch (IOException e) {
             //ignore
         }
+    }
+    
+    public void setOverrideAuthentication(boolean isEnableOverride) throws IOException {
+        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_ENABLE_ONPREMISE, isEnableOverride);
+    }
+    
+    public boolean isOverrideAuthentication() throws IOException {
+        return getBoolean(AnalyticsSettingStoreConstants.ANALYTICS_ENABLE_ONPREMISE, false);
     }
 }
