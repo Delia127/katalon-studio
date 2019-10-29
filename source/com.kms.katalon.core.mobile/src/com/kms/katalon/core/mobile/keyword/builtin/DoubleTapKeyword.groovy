@@ -67,7 +67,7 @@ public class DoubleTapKeyword extends MobileAbstractKeyword {
                 .press(PointOption.point(tapX, tapY)).release().perform()
                 .press(PointOption.point(tapX, tapY)).release().perform();
 
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_ON_ELEMENT, to.getObjectId()))
-        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT)
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DOUBLE_TAPPED_ON_ELEMENT, to.getObjectId()))
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_DOUBLE_TAP_ON_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT)
     }
 }

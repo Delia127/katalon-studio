@@ -95,6 +95,12 @@ public class CoreMobileMessageConstants extends NLS {
 
     public static String KW_MSG_FAILED_TO_TAP_ON_ELEMENT;
 
+    public static String KW_LOG_PASSED_DOUBLE_TAPPED_ON_ELEMENT;
+    
+    public static String KW_MSG_FAILED_TO_DOUBLE_TAP_ON_ELEMENT_X;
+
+    public static String KW_MSG_FAILED_TO_DOUBLE_TAP_ON_ELEMENT;
+
     public static String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y;
 
     public static String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y;
