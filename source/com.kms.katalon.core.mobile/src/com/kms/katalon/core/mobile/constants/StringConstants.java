@@ -399,4 +399,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X = CoreMobileMessageConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X;
 
     public static final String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT = CoreMobileMessageConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT;
+
+    public static final String KW_LOG_PASSED_EXECUTE_MOBILE_COMMAND = CoreMobileMessageConstants.KW_LOG_PASSED_EXECUTE_MOBILE_COMMAND;
+
+    public static final String KW_LOG_FAILED_TO_EXECUTE_MOBILE_COMMAND = CoreMobileMessageConstants.KW_LOG_FAILED_TO_EXECUTE_MOBILE_COMMAND;
 }

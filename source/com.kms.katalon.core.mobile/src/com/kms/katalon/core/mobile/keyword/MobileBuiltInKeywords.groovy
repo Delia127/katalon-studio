@@ -1833,4 +1833,35 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void sendKeys(TestObject to, String strokeKeys) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "sendKeys", to, strokeKeys)
     }
+
+    /**
+     * Executes a native mobile command
+     *
+     * @param command
+     *          mobile command name
+     * @param args
+     *          the provided arguments that the command requires for
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void executeMobileCommand(String command, Map args, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "executeMobileCommand", command, args, flowControl)
+    }
+
+    /**
+     * Executes a native mobile command
+     *
+     * @param command
+     *          mobile command name
+     * @param args
+     *          the provided arguments that the command requires for
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static Object executeMobileCommand(String command, Map args) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "executeMobileCommand", command, args)
+    }
 }
