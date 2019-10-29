@@ -521,6 +521,37 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Double Tap on a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void doubleTap(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "doubleTap", to, timeout, flowControl)
+    }
+
+    /**
+     * Double Tap on a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void doubleTap(TestObject to, int timeout) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "doubleTap", to, timeout)
+    }
+
+    /**
      * Tap and hold on a mobile element for a duration
      * @param to
      *      represent a mobile element
