@@ -42,6 +42,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.kms.katalon.constants,
+ com.kms.katalon.logging,
  org.apache.commons.io,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.ui.services,

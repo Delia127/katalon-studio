@@ -50,6 +50,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -327,8 +328,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private void fillData() {
         try {
             enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
-            enableOverrideAuthentication.setEnabled(true);
-            
+
             cbbTeams.setItems();
             cbbProjects.setItems();
 
@@ -403,7 +403,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                             }
                         } catch (Exception e) {
                             LoggerSingleton.logError(e);
-                        } 
+                        } finally {
+                            enableOverrideAuthentication.setEnabled(true);
+                        }
                     });
                 });
             }
@@ -423,7 +425,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void getTeam(String serverUrl, Long orgId, AnalyticsTokenInfo tokenInfo) {
         try {
-            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(), orgId, tokenInfo);
+            teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo);
         } catch (Exception e) {
             setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
         }
@@ -501,8 +503,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void updateDataStore() {
         try {
-            analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
-            analyticsSettingStore.setOverrideAuthentication(enableOverrideAuthentication.getSelection());
+            boolean isIntegrated = isIntegratedSuccessfully();
+            analyticsSettingStore.enableIntegration(isIntegrated);
+            if (isIntegrated) {
+                analyticsSettingStore.setOverrideAuthentication(enableOverrideAuthentication.getSelection());
+            } else {
+                analyticsSettingStore.setOverrideAuthentication(false);
+            }
             if (!teams.isEmpty()) {
                 analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
                 if (!projects.isEmpty()) {
@@ -576,6 +583,27 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         enableOverrideAuthentication.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                isUseOnPremise = enableOverrideAuthentication.getSelection();
+                try {
+                    if (isUseOnPremise) {
+                        email = analyticsSettingStore.getEmailOnPremise();
+                        password = analyticsSettingStore.getPasswordOnPremise();
+                        serverUrl = analyticsSettingStore.getServerEndpointOnPremise();
+                        organization = analyticsSettingStore.getOrganizationOnPremise();
+                    } else {
+                        email = analyticsSettingStore.getEmailCloud();
+                        password = analyticsSettingStore.getPasswordCloud();
+                        serverUrl = analyticsSettingStore.getServerEndpointCloud();
+                        organization = analyticsSettingStore.getOrganizationCloud();
+                    }
+                } catch (IOException | GeneralSecurityException ex) {
+                    LogUtil.logError(ex);
+                }
+                txtEmail.setText(email);
+                txtServerUrl.setText(serverUrl);
+                txtPassword.setText(password);
+                cbbOrganization.setItems(organization.getName());
+                cbbOrganization.select(0);
                 enableAuthentiacation(enableOverrideAuthentication.getSelection());
             }
         });
@@ -583,7 +611,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnRefresh.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                organization = organizationsOnPremise.get(cbbOrganization.getSelectionIndex());
+                if (isUseOnPremise) {
+                    organization = organizationsOnPremise.get(cbbOrganization.getSelectionIndex());
+                }
                 connect();
             }
         });
