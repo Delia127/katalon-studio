@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,6 +42,7 @@ import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.console.entity.TestSuiteLauncherOptionParser;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
@@ -163,6 +166,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                         && newConfig instanceof AbstractRunConfiguration) {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
                 }
+                newConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
                 rerunLauncher.getManager().addLauncher(rerunLauncher);
@@ -174,6 +178,19 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
     
+    public Map<String, Object> getOverridingGlobalVariables() {
+        Map<String, Object> overridingGlobalVariables = new HashMap<>();
+        TestSuiteLauncherOptionParser.overridingOptions.forEach(a -> {
+            if (a.getOption().startsWith(TestSuiteLauncherOptionParser.OVERRIDING_GLOBAL_VARIABLE_PREFIX)
+                    && a.getValue() != null) {
+                overridingGlobalVariables.put(
+                        a.getOption().replace(TestSuiteLauncherOptionParser.OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
+                        String.valueOf(a.getValue()));
+            }
+        });
+        return overridingGlobalVariables;
+    }
+
     protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {
     	String projectFolder = reportEntity.getProject().getFolderLocation();
     	List<String> paths = new ArrayList<>();

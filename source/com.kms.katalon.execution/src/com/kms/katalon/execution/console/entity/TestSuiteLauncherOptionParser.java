@@ -34,9 +34,9 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
     private static final String EXECUTION_PROFILE_OPTION = "executionProfile";
 
-    private static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
+    public static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
 
-    private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
+    public static List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
 
     protected StringConsoleOption testSuitePathOption = new StringConsoleOption() {
 
