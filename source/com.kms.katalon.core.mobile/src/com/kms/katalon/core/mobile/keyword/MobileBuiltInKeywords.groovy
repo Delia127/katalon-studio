@@ -554,6 +554,35 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Performs a long press action on a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void longPress(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "longPress", to, timeout, flowControl)
+    }
+
+    /**
+     * Performs a long press action on a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void longPress(TestObject to, int timeout) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "longPress", to, timeout)
+    }
+
+    /**
      * Get a specific attribute of a mobile element
      * @param to
      *      represent a mobile element
