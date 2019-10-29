@@ -521,7 +521,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Double Tap on a mobile element
+     * Performs a double tap action on a mobile element
      * @param to
      *      represent a mobile element
      * @param timeout
@@ -537,7 +537,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Double Tap on a mobile element
+     * Performs a double tap action on a mobile element
      * @param to
      *      represent a mobile element
      * @param timeout
