@@ -35,6 +35,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String LBL_TEAM;
 
+    public static String LBL_INTEGRATION;
+
     public static String MSG_DLG_PRG_CONNECTING_TO_SERVER;
 
     public static String MSG_DLG_PRG_GETTING_PROJECTS;
