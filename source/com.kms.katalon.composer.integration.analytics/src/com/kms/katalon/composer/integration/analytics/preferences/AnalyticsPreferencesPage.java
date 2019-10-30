@@ -357,13 +357,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(() -> {
                         enableObject(false);
-                        setProgressMessage(
-                                ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
                     });
                     UISynchronizeService.syncExec(() -> {
                         try {
-                            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
-                                    password, analyticsSettingStore);
+                            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
                             if (tokenInfo == null) {
                                 setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
                                 enableObject(true);
@@ -381,7 +379,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                                     setProgressMessage(StringUtils.EMPTY, false);
                                 }
                                 cbbTeams.setItems(
-                                    AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                                        AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
                                 int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
                                 cbbTeams.select(indexSelectTeam);
                                 enableObject(true);
@@ -393,7 +391,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                                     projects.add(selectProjectFromConfig);
                                     setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT, true);
                                     cbbTeams.setItems(
-                                        AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                                            AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
                                     int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
                                     cbbTeams.select(indexSelectTeam);
                                     enableObject(true);
@@ -463,7 +461,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
             }
             return false;
-        }
+        } 
         return true;
     }
 
@@ -510,7 +508,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
                 analyticsSettingStore.setOverrideAuthentication(enableOverrideAuthentication.getSelection());
             }
-            
         } catch (GeneralSecurityException | IOException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
@@ -560,11 +557,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
                 dialog.close();
-                
                 if (analyticsSettingStore.isOverrideAuthentication()) {
                     analyticsSettingStore.setOverrideAuthentication(false);
                 }
-
                 fillData(true);
                 return true;
             }
@@ -682,23 +677,20 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                                 return;
                             } else {
                                 teams.remove(selectTeamFromConfig);
-                                cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams)
-                                        .toArray(new String[teams.size()]));
+                                cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
                                 int indexSelectTeam = teams.indexOf(selectTeamFromUser);
                                 cbbTeams.select(indexSelectTeam);
                                 canAccessProject = true;
                             }
                         }
-                        AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
-                                password, analyticsSettingStore);
+                        AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
                         if (tokenInfo != null) {
                             getProject(serverUrl, selectTeamFromUser, tokenInfo);
                             cbbProjects.setEnabled(true);
                             setProgressMessage(StringUtils.EMPTY, false);
                             setProjectsBasedOnTeam(selectTeamFromUser, projects);
                         } else {
-                            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR,
-                                    true);
+                            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
                             cbbProjects.setEnabled(true);
                         }
                     });
@@ -722,19 +714,14 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         cbbProjects.setEnabled(false);
                         cbbProjects.setItems();
                         Executors.newFixedThreadPool(1).submit(() -> {
-                            UISynchronizeService.syncExec(() -> setProgressMessage(
-                                    ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS,
-                                    false));
+                            UISynchronizeService.syncExec(() -> setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS, false));
                             UISynchronizeService.syncExec(() -> {
-                                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
-                                        password, analyticsSettingStore);
+                                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
                                 if (tokenInfo != null) {
                                     getProject(serverUrl, teams.get(cbbTeams.getSelectionIndex()), tokenInfo);
                                     if (projects == null) {
                                         cbbProjects.setEnabled(true);
-                                        setProgressMessage(
-                                                ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR,
-                                                true);
+                                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
                                         return;
                                     }
                                     cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects)
@@ -744,8 +731,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                                     cbbProjects.setEnabled(true);
                                     setProgressMessage(StringUtils.EMPTY, false);
                                 } else {
-                                    setProgressMessage(
-                                            ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+                                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
                                     cbbProjects.setEnabled(true);
                                 }
                             });
@@ -754,7 +740,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
             }
         });
-
+        
         lblStatus.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -794,8 +780,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbbProjects.setItems();
 
         Executors.newFixedThreadPool(1).submit(() -> {
-            UISynchronizeService.syncExec(() -> setProgressMessage(
-                    ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
+            UISynchronizeService.syncExec(() -> 
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
             UISynchronizeService.syncExec(() -> {
                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
                         analyticsSettingStore);
@@ -813,16 +799,14 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
                     cbbTeams.setItems(
                             AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-                    int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore,
-                            teams);
+                    int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
                     cbbTeams.select(indexSelectTeam);
                     setProgressMessage(StringUtils.EMPTY, false);
                     enableObject(true);
                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                 } else {
                     btnRefresh.setEnabled(true);
-                    String message = MessageFormat.format(
-                            ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
+                    String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
                             ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
                     setProgressMessage(message, true);
                 }
