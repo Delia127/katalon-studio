@@ -20,6 +20,7 @@
 		<product.linux32OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86</product.linux32OutputDirectory>
 		<product.linux64OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
 
+
 		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
 		<product.mac64ResourcesDirectory>configuration/macosx64_resources</product.mac64ResourcesDirectory>
 		<product.linux32ResourcesDirectory>configuration/linux32_resources</product.linux32ResourcesDirectory>
@@ -29,6 +30,7 @@
 
 
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
+		<product.apisourceDirectory>${product.resourcesDirectory}/source</product.apisourceDirectory>
 
 		<product.archiveFileName>katalon-studio</product.archiveFileName>
 		<product.name>Katalon_Studio</product.name>
@@ -204,7 +206,7 @@
 							</resources>
 						</configuration>
 					</execution>					
-					<execution>						
+					<execution>
 						<id>copy-resources-linux32</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -223,7 +225,7 @@
 						</configuration>
 					</execution>
 					
-					<execution>						
+					<execution>
 						<id>copy-resources-linux64</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -259,7 +261,6 @@
 							</resources>
 						</configuration>
 					</execution>
-		
 				</executions>
 			</plugin>
 			<plugin>

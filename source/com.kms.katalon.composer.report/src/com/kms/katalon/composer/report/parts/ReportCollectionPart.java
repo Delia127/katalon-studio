@@ -1,7 +1,10 @@
 package com.kms.katalon.composer.report.parts;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -20,15 +23,20 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -36,6 +44,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -45,21 +55,28 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDialog;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
+import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.platform.ExportReportProviderPlugin;
 import com.kms.katalon.composer.report.platform.ExportReportProviderReflection;
 import com.kms.katalon.composer.report.provider.ReportActionColumnLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportCollectionTableLabelProvider;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -67,6 +84,14 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
+import com.kms.katalon.execution.entity.ReportFolder;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
+import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.util.CryptoUtil;
 
 public class ReportCollectionPart extends EventServiceAdapter implements IComposerPartEvent {
 
@@ -79,43 +104,71 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
     @Inject
     private MPart mpart;
-    
+
     @Inject
     private Shell shell;
-    
+
     private boolean isInitialized;
-    
+
     private Composite mainComposite;
 
     private Composite reportCollectionMainComposite;
 
+    private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
+
     private ToolBar tbExportReport;
 
     private Composite exportReportToolbarComposite;
+
+    MenuItem uploadMenuItem;
 
     @PostConstruct
     public void initialize(Composite parent, ReportCollectionEntity reportCollectionEntity, MPart mpart) {
         this.reportCollectionEntity = reportCollectionEntity;
         this.mainComposite = parent;
         this.mpart = mpart;
-        
+        // report
+        Composite reportComposite = new Composite(parent, SWT.NONE);
+        GridLayout glMessageComposite = new GridLayout();
+        glMessageComposite.marginTop = 20;
+        reportComposite.setLayout(glMessageComposite);
+        reportComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        Composite controlComposite = new Composite(parent, SWT.NONE);
+        GridLayout glComposite = new GridLayout();
+        glComposite.marginTop = 0;
+        controlComposite.setLayout(glComposite);
+        controlComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+        StackLayout layout = new StackLayout();
+        parent.setLayout(layout);
+
         if (this.reportCollectionEntity == null) {
-            return;
+            layout.topControl = reportComposite;
+
+            Image imgReportEmpty = ImageConstants.IMG_REPORT_EMPRY_TEST_SUITE_COLLECTION;
+            Label lblReport = new Label(reportComposite, SWT.NONE);
+            lblReport.setImage(imgReportEmpty);
+            lblReport.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+        } else {
+
+            layout.topControl = controlComposite;
+            parent.layout();
+            new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
+
+            createControls(controlComposite);
+
+            updateInput();
+
+            // setPartLabel(reportCollectionEntity.getDisplayName());
+
+            eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
+            eventBroker.subscribe(EventConstants.REPORT_COLLECTION_RENAMED, this);
+
+            isInitialized = true;
         }
 
-        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
-        
-        createControls(parent);
-
-        updateInput();
-
-//        setPartLabel(reportCollectionEntity.getDisplayName());
-
-        eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
-        eventBroker.subscribe(EventConstants.REPORT_COLLECTION_RENAMED, this);
-        eventBroker.subscribe(EventConstants.REPORT_EXPORT_PROVIDERS_COLLECTED, this);
-        
-        isInitialized = true;
     }
 
     private void updateInput() {
@@ -200,14 +253,15 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     }
 
     private void createExportReportToolbar(Composite parent) {
-        if(tbExportReport != null) {
+        if (tbExportReport != null) {
             tbExportReport.dispose();
         }
-        
+
         tbExportReport = new ToolBar(parent, SWT.RIGHT);
         tbExportReport.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
         createExportReportMenu(tbExportReport);
-        
+        createKatalonTestOpsMenu(tbExportReport);
+
         parent.requestLayout();
     }
 
@@ -244,6 +298,134 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         });
     }
     
+    private void createKatalonTestOpsMenu(ToolBar toolBar) {
+        ToolItem btnTestOps = new ToolItem(toolBar, SWT.DROP_DOWN);
+        btnTestOps.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
+        btnTestOps.setImage(ImageManager.getImage(IImageKeys.KATALON_TESTOPS_16));
+
+        Menu testOpsMenu = new Menu(btnTestOps.getParent().getShell());
+        MenuItem accessTestOpsMenuItem = new MenuItem(testOpsMenu, SWT.PUSH);
+        uploadMenuItem = new MenuItem(testOpsMenu, SWT.PUSH);
+
+        accessTestOpsMenuItem.setText(ComposerReportMessageConstants.BTN_ACCESSKA);
+        accessTestOpsMenuItem.setID(0);
+        accessTestOpsMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Trackings.trackOpenKAIntegration("report");
+                Program.launch(ApplicationInfo.getTestOpsServer());
+            }
+        });
+        uploadMenuItem.setText(ComposerTestcaseMessageConstants.BTN_UPLOAD);
+        uploadMenuItem.setID(1);
+        uploadMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Trackings.trackOpenKAIntegration("report");
+                startIntegrating();
+            }
+        });
+
+        btnTestOps.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Rectangle rect = btnTestOps.getBounds();
+                Point pt = btnTestOps.getParent().toDisplay(new Point(rect.x, rect.y));
+                testOpsMenu.setLocation(pt.x, pt.y + rect.height);
+                testOpsMenu.setVisible(true);
+            }
+        });
+    }
+    
+    private void startIntegrating() {
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        try {
+            String email = analyticsSettingStore.getEmail();
+            String password = analyticsSettingStore.getPassword();
+            
+            if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password)) {
+                Shell shell = Display.getCurrent().getActiveShell();
+                KStoreLoginDialog dialog = new KStoreLoginDialog(shell);
+                if (dialog.open() == Dialog.OK) {
+                    email = dialog.getUsername();
+                    password = dialog.getPassword();
+
+                    ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, email, true);
+                    String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
+                    ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
+                    dialog.close();
+                    uploadReportHandle(analyticsSettingStore);
+                }
+            } else {
+                uploadReportHandle(analyticsSettingStore);
+            }
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+                    ex.getMessage());
+            try {
+                analyticsSettingStore.enableIntegration(false);
+            } catch (IOException e1) {
+                LoggerSingleton.logError(e1);
+            }
+        }
+    }
+    
+    private void uploadReportHandle(AnalyticsSettingStore analyticsSettingStore) throws IOException {
+        analyticsSettingStore.enableIntegration(true);
+        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell);
+        int returnCode = uploadSelectionDialog.open();
+        if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
+            uploadReportToKatalonTestOps();
+        } else {
+            analyticsSettingStore.enableIntegration(false);
+        }
+    }
+    
+    private List<String> getReportFolder() {
+        List<ReportItemDescription> reports = reportCollectionEntity.getReportItemDescriptions();
+        String reportCollectionFile = reportCollectionEntity.getParentFolder().getLocation();
+        String projectFolder = reportCollectionEntity.getProject().getFolderLocation();
+        List<String> paths = new ArrayList<>();
+        for (ReportItemDescription reportItemDescription : reports) {
+            String path = projectFolder + File.separator + reportItemDescription.getReportLocation();
+            paths.add(path);
+        }
+        paths.add(reportCollectionFile);
+        return paths;
+    }
+    
+    private void uploadReportToKatalonTestOps() {
+        ProgressMonitorDialog monitor = new ProgressMonitorDialog(shell);
+        try {
+            monitor.run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 3);
+                        monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
+                        monitor.worked(1);
+                        ReportFolder reportFolder = new ReportFolder(getReportFolder());
+                        analyticsReportService.upload(reportFolder);
+                        monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
+                        monitor.worked(2);
+                    } catch (final AnalyticsApiExeception ex) {
+                        LoggerSingleton.logError(ex);
+                        UISynchronizeService.syncExec(() -> {
+                            MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+                                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
+                        });
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
+        }
+    }
+
     private MenuItem createExportReportMenuItem(String reportType, Menu exportReportMenu,
             ExportReportProviderPlugin provider) {
         MenuItem menuItem = new MenuItem(exportReportMenu, SWT.PUSH);

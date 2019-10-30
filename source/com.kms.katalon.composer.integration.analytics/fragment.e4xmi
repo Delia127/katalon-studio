@@ -21,7 +21,7 @@
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_SLEMQIPpEeaJTZfureYSqg" elementId="com.kms.katalon.composer.integration.kobiton.dynamicmenucontribution.run" label="Run" contributionURI="bundleclass://com.kms.katalon.composer.integration.kobiton/com.kms.katalon.composer.integration.kobiton.menu.KobitonDebugExecutionDynamicContribution"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Os9j4EYNEem9yuiaRu88FQ" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:1">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_Tad00EYNEem9yuiaRu88FQ" elementId="com.kms.katalon.composer.integration.analytics.handledtoolitem" label="Katalon Analytics" iconURI="platform:/plugin/com.kms.katalon/icons/KA_32x24px.png" tooltip="Katalon Analytics" command="_-fzYwEYMEem9yuiaRu88FQ"/>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_Tad00EYNEem9yuiaRu88FQ" elementId="com.kms.katalon.composer.integration.analytics.handledtoolitem" label="Katalon TestOps" iconURI="platform:/plugin/com.kms.katalon/icons/Testops_icon_32x24.png" tooltip="Katalon TestOps" command="_-fzYwEYMEem9yuiaRu88FQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__axycG1MEemLsdQmea1a5A" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.execution">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_B_cuoG1NEemLsdQmea1a5A" elementId="com.kms.katalon.composer.integration.analytics.handledtoolitem.uploadProject" label="Store Project Code to Cloud" iconURI="platform:/plugin/com.kms.katalon/icons/upload_16.png" tooltip="Store Project Code to Cloud" command="_vCrYEG1LEemLsdQmea1a5A">

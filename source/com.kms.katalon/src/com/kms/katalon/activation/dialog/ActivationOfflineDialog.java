@@ -30,6 +30,7 @@ import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 
 public class ActivationOfflineDialog extends Dialog {
 
@@ -139,7 +140,7 @@ public class ActivationOfflineDialog extends Dialog {
                 @Override
                 public void run() {
                     StringBuilder errorMessage = new StringBuilder();
-                    boolean result = ActivationInfoCollector.activateOffline(txtActivationCode.getText().trim(), errorMessage);
+                    boolean result = ActivationInfoCollector.activateOffline(txtActivationCode.getText().trim(), errorMessage, ApplicationRunningMode.get());
                     lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
                     if (result == true) {
                         setReturnCode(Window.OK);

@@ -44,10 +44,10 @@ Require-Bundle: com.kms.katalon.composer.preferences,
  com.google.gson,
  com.kms.katalon.application,
  com.kms.katalon,
- org.eclipse.e4.core.contexts
+ org.eclipse.e4.core.contexts,
+ com.katalon.platform
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.integration.qtest.credential,
  com.kms.katalon.integration.qtest.helper,
  org.qas.qtest.api.services.project.model
-Service-Component: OSGI-INF/component.xml
 Bundle-ActivationPolicy: lazy

@@ -10,10 +10,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class GeneralPreferencePage extends PreferencePage {
@@ -22,6 +26,8 @@ public class GeneralPreferencePage extends PreferencePage {
     private Button radioAutoCleanPrevSession;
 
     private Button chkCheckNewVersion;
+    
+    private Button chkCheckAllowUsageTracking;
 
     private Button chkShowHelpAtStartUp;
 
@@ -51,6 +57,9 @@ public class GeneralPreferencePage extends PreferencePage {
 
         chkCheckNewVersion = new Button(parentComposite, SWT.CHECK);
         chkCheckNewVersion.setText(MessageConstants.PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE);
+
+        chkCheckAllowUsageTracking = new Button(parentComposite,  SWT.CHECK);
+        chkCheckAllowUsageTracking.setText(MessageConstants.PAGE_PREF_AUTO_ALLOW_USAGE_TRACKING);
         
         initialize();
 
@@ -80,6 +89,17 @@ public class GeneralPreferencePage extends PreferencePage {
             prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
         }
         chkShowHelpAtStartUp.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP));
+        
+        boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
+        if (isEnterpriseAccount) {
+            if (!prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)){
+                prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING, true);
+            }
+            chkCheckAllowUsageTracking.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING));    
+        } else {
+            chkCheckAllowUsageTracking.setSelection(true);
+            chkCheckAllowUsageTracking.setVisible(false);
+        }
     }
 
     @Override
@@ -88,6 +108,7 @@ public class GeneralPreferencePage extends PreferencePage {
             return;
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION);
+        getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING);
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP);
         initialize();
         super.performDefaults();
@@ -103,6 +124,8 @@ public class GeneralPreferencePage extends PreferencePage {
                 chkCheckNewVersion.getSelection());
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP,
                 chkShowHelpAtStartUp.getSelection());
+        getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING,
+                chkCheckAllowUsageTracking.getSelection());
     }
 
     @Override

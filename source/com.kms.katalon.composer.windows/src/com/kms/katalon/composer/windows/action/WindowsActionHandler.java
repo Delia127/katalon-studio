@@ -3,8 +3,10 @@ package com.kms.katalon.composer.windows.action;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,10 +22,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.openqa.selenium.Keys;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
+import com.kms.katalon.composer.testcase.ast.dialogs.KeysInputBuilderDialog;
+import com.kms.katalon.composer.testcase.groovy.ast.AnnonatedNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.element.SnapshotWindowsElement;
 import com.kms.katalon.composer.windows.exception.WindowsComposerException;
@@ -85,6 +94,10 @@ public class WindowsActionHandler {
             }
             case SetText: {
                 SetTextActionHandler handler = new SetTextActionHandler();
+                return handler.perform(element, activeShell);
+            }
+            case SendKeys: {
+                SendKeysActionHandler handler = new SendKeysActionHandler();
                 return handler.perform(element, activeShell);
             }
             case SwitchToApplication: {
@@ -149,6 +162,7 @@ public class WindowsActionHandler {
             try {
                 this.element = element;
                 this.activeShell = activeShell;
+                action.setCanceled(false);
 
                 performActionBeforeProgress();
                 final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(activeShell) {
@@ -157,10 +171,11 @@ public class WindowsActionHandler {
                         super.cancelPressed();
                         finishedRun();
                         getProgressMonitor().done();
+                        action.setCanceled(true);
                     }
                 };
                 IRunnableWithProgress runnable = getActionMappingProgress();
-                progressDlg.run(true, false, runnable);
+                progressDlg.run(true, true, runnable);
                 performActionAfterProgress();
 
                 return getActionMapping();
@@ -241,6 +256,7 @@ public class WindowsActionHandler {
             try {
                 this.element = element;
                 this.activeShell = activeShell;
+                action.setCanceled(false);
 
                 performActionBeforeProgress();
                 final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(activeShell) {
@@ -249,10 +265,11 @@ public class WindowsActionHandler {
                         super.cancelPressed();
                         finishedRun();
                         getProgressMonitor().done();
+                        action.setCanceled(true);
                     }
                 };
                 IRunnableWithProgress runnable = getActionMappingProgress();
-                progressDlg.run(true, false, runnable);
+                progressDlg.run(true, true, runnable);
                 performActionAfterProgress();
 
                 return getActionMapping();
@@ -298,6 +315,70 @@ public class WindowsActionHandler {
             actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
             return actionMapping;
         }
+    }
+
+    public class SendKeysActionHandler extends BaseActionObjectHandler {
+        private MethodCallExpressionWrapper keysExpression = (MethodCallExpressionWrapper) GroovyWrapperParser
+                .parseGroovyScriptAndGetFirstExpression("Keys.chord()");
+
+        @Override
+        protected void performActionBeforeProgress() throws InterruptedException {
+            KeysInputBuilderDialog inputDialog = new KeysInputBuilderDialog(activeShell,
+                    (MethodCallExpressionWrapper) getValue());
+            if (inputDialog.open() != InputDialog.OK) {
+                throw new InterruptedException();
+            }
+            keysExpression = inputDialog.getReturnValue();
+        }
+
+        private MethodCallExpressionWrapper getValue() {
+            return keysExpression;
+        }
+
+        @Override
+        protected void performAction(WindowsTestObject testObject) {
+            WindowsActionHelper.create(windowsSession).sendKeys(testObject, getKeys());
+        }
+
+        @SuppressWarnings("unchecked")
+        private String getKeys() {
+            String keys = new String();
+            ArgumentListExpressionWrapper arguments = keysExpression.getArguments();
+
+            List<AnnonatedNodeWrapper> children;
+            boolean isSpecialKey = false;
+            for (ExpressionWrapper expr : arguments.getExpressions()) {
+                children = (List<AnnonatedNodeWrapper>) expr.getAstChildren();
+                isSpecialKey = children.size() > 0;
+                if (isSpecialKey) {
+                    keys += children.stream().map(child -> {
+                        if (child instanceof ConstantExpressionWrapper) {
+                            String keyName = ((ConstantExpressionWrapper) child).getValue().toString();
+                            return Keys.valueOf(keyName).toString();
+                        }
+                        return "";
+                    }).collect(Collectors.joining());
+                } else {
+                    children = (List<AnnonatedNodeWrapper>) expr.getParent().getAstChildren();
+                    keys += children.stream().map(child -> {
+                        if (child instanceof ConstantExpressionWrapper) {
+                            return ((ConstantExpressionWrapper) child).getValue().toString();
+                        }
+                        return "";
+                    }).collect(Collectors.joining());
+                }
+            }
+
+            return Keys.chord(keys);
+        }
+
+        @Override
+        public WindowsActionMapping getActionMapping() {
+            WindowsActionMapping actionMapping = super.getActionMapping();
+            actionMapping.getData()[0].setValue(keysExpression);
+            return actionMapping;
+        }
+
     }
 
     public class ClearTextActionHandler extends BaseActionObjectHandler {
@@ -373,6 +454,7 @@ public class WindowsActionHandler {
     private class GetTextDialog extends AbstractDialog {
 
         private Text txtText;
+
         private String text;
 
         protected GetTextDialog(Shell parentShell, String text) {
@@ -412,16 +494,17 @@ public class WindowsActionHandler {
         protected Point getInitialSize() {
             return new Point(400, 250);
         }
-        
+
         @Override
         public String getDialogTitle() {
             return "Get Text action";
         }
     }
-    
+
     private class SetTextDialog extends AbstractDialog {
 
         private Text txtText;
+
         private String text;
 
         protected SetTextDialog(Shell parentShell) {
@@ -465,7 +548,7 @@ public class WindowsActionHandler {
         public String getDialogTitle() {
             return "Set Text action";
         }
-        
+
         @Override
         protected void okPressed() {
             this.text = txtText.getText();

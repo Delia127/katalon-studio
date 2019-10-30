@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.SessionNotCreatedException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.http.HttpClient;
@@ -50,7 +51,7 @@ public class WindowsDriverFactory {
             throws SeleniumException, IOException, URISyntaxException {
         Map<String, Object> userConfigProperties = RunConfiguration.getDriverPreferencesProperties("Windows");
         if (userConfigProperties == null) {
-            userConfigProperties = new HashMap<>();
+            userConfigProperties = new HashMap<String, Object>();
         }
 
         String remoteAddressURLAsString = (String) userConfigProperties.getOrDefault(WIN_APP_DRIVER_PROPERTY,
@@ -88,8 +89,11 @@ public class WindowsDriverFactory {
 
             windowsSession.setApplicationDriver(windowsDriver);
             return windowsSession;
-        } catch (NoSuchWindowException | SessionNotCreatedException e) {
-            if (e.getMessage().contains("The system cannot find the file specified")) {
+        } catch (WebDriverException e) {
+            if (!(e instanceof NoSuchWindowException) && !(e instanceof SessionNotCreatedException)) {
+                throw e;
+            }
+            if (e.getMessage() != null && e.getMessage().contains("The system cannot find the file specified")) {
                 // appFile is not correct
                 throw e;
             }

@@ -24,6 +24,8 @@ public class ImageProcessor {
         registerApiQuickStartImages();
         registerInAppSurveyImages();
         registerWalkthroughImages();
+        registerResultTabImages();
+        registerAboutDialogImages();
     }
     
     private void registerWalkthroughImages(){
@@ -80,7 +82,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.JIRA_INACTIVE_16);
         ImageManager.registerImage(IImageKeys.KEYWORD_WIKI_16);
         ImageManager.registerImage(IImageKeys.KOBITON_16);
-        ImageManager.registerImage(IImageKeys.KATALON_ANALYTICS_16);
+        ImageManager.registerImage(IImageKeys.KATALON_TESTOPS_16);
         ImageManager.registerImage(IImageKeys.NEW_PROJECT_16);
         ImageManager.registerImage(IImageKeys.OPEN_PROJECT_16);
         ImageManager.registerImage(IImageKeys.PROGRESS_16);
@@ -162,6 +164,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.UNWATCH_16);
         ImageManager.registerImage(IImageKeys.MAP_ALL_16);
         ImageManager.registerImage(IImageKeys.RECENT_16);
+        ImageManager.registerImage(IImageKeys.EXPORT_CSV_16);
 
         // Sub-toolbar disabled icons
         ImageManager.registerImage(IImageKeys.CLEAR_DISABLED_16);
@@ -304,6 +307,11 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.PROFILE_16);
         ImageManager.registerImage(IImageKeys.KATALON_STORE_24);
         ImageManager.registerImage(IImageKeys.KATALON_ACCOUNT_24);
+        ImageManager.registerImage(IImageKeys.KATALON_COMMUNITY_24);
+        ImageManager.registerImage(IImageKeys.KATALON_FORUM_24);
+        ImageManager.registerImage(IImageKeys.KATALON_CHAT_24);
+        ImageManager.registerImage(IImageKeys.KATALON_TWEETABOUTUS_24);
+        ImageManager.registerImage(IImageKeys.KATALON_FEEDBACK_24);
 
         // Toolbar disabled icons
         ImageManager.registerImage(IImageKeys.BUG_DISABLED_24);
@@ -447,5 +455,17 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_PLUGIN_STORE);
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_DESKTOP_APPS_TESTING);
         
+    }
+
+    private void registerResultTabImages() {
+        ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE);
+        ImageManager.registerImage(IImageKeys.IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION);
+    }
+    
+    private void registerAboutDialogImages() {
+        ImageManager.registerImage(IImageKeys.LOGO_KATALON_STUDIO);
+        ImageManager.registerImage(IImageKeys.LOGO_KSE);
+        ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_DRANK);
+        ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_LIGHT);
     }
 }

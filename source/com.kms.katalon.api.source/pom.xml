@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001 XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.kms</groupId>
+    <artifactId>com.kms.katalon.source</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0.qualifier</version>
+    <name>Katalon Studio API Source</name>
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <gmavenplus.version>1.5</gmavenplus.version>
+        <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+        <maven.resources.overwrite>true</maven.resources.overwrite>
+        <resourcesDiretory>resources</resourcesDiretory>
+        <coreModule>com.kms.katalon.core</coreModule>
+        <coreMobileModule>com.kms.katalon.core.mobile</coreMobileModule>
+        <coreWebserviceModule>com.kms.katalon.core.webservice</coreWebserviceModule>
+        <coreWebUiModule>com.kms.katalon.core.webui</coreWebUiModule>
+        <apisourceDirectory>${project.build.directory}/${resourcesDiretory}/source</apisourceDirectory>
+        <apisourceSourcePath>${project.basedir}/../${coreModule}/src${path.separator}${project.basedir}/../${coreMobileModule}/src${path.separator}${project.basedir}/../${coreWebserviceModule}/src${path.separator}${project.basedir}/../${coreWebUiModule}/src</apisourceSourcePath>
+        <apisourcePackageNames>com.kms.katalon.core.annotation,com.kms.katalon.core.checkpoint,com.kms.katalon.core.configuration,com.kms.katalon.core.driver,com.kms.katalon.core.keyword,com.kms.katalon.core.model,com.kms.katalon.core.testcase,com.kms.katalon.core.testdata,com.kms.katalon.core.testobject,com.kms.katalon.core.util,com.kms.katalon.core.mobile.driver,com.kms.katalon.core.mobile.keyword,com.kms.katalon.core.webservice.keyword,com.kms.katalon.core.webui.driver,com.kms.katalon.core.webui.keyword</apisourcePackageNames>
+        <apisourceFooter>
+            <![CDATA[
+        <script type="text/javascript">
+            !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="4.0.0";
+                analytics.load("proIcumd26BFWrpzUR3lpXa7b6hXnWki");
+                analytics.page();
+            }}();
+        </script>
+        ]]>
+        </apisourceFooter>
+        <apisourceHeader>${project.name}</apisourceHeader>
+    </properties>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.gmavenplus</groupId>
+                    <artifactId>gmavenplus-plugin</artifactId>
+                    <version>${gmavenplus.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <!--These dependencies used for generating groovy document -->
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.4.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.11</version>
+        </dependency>
+    </dependencies>
+</project>

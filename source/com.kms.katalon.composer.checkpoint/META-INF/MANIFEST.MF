@@ -33,6 +33,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.composer.folder,
  org.eclipse.ui.workbench,
  com.kms.katalon,
- org.eclipse.ui.forms
+ org.eclipse.ui.forms,
+ com.kms.katalon.application
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0"

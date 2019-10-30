@@ -36,8 +36,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     @Override
     public boolean isIntegrationActive(TestSuiteEntity testSuite) {
         try {
-            return getSettingStore().isIntegrationEnabled()
-                    && getSettingStore().isAutoSubmit();
+            return getSettingStore().isIntegrationEnabled();
         } catch (IOException e) {
             LogUtil.logError(e);
             return false;
@@ -62,7 +61,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     @Override
     public void notifyProccess(Object event, ExecutionEntityResult result) {
     	try {
-			boolean integrationActive = getSettingStore().isIntegrationEnabled() && getSettingStore().isAutoSubmit();
+			boolean integrationActive = getSettingStore().isIntegrationEnabled();
 			if (integrationActive) {
 				IExecutedEntity executedEntity = result.getExecutedEntity();
 				if (executedEntity instanceof TestSuiteExecutedEntity) {
@@ -102,10 +101,4 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
             LogUtil.logError(e);
         }
     }
-
-	@Override
-	public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 }

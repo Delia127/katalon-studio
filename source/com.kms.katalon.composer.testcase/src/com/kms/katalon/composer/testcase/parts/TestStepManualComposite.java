@@ -33,7 +33,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -59,7 +58,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -258,17 +256,17 @@ public class TestStepManualComposite {
 			
 			btnViewHistory = new Button(compositeTableButtons, SWT.NONE);
 			btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
-			btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
+			btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_TESTOPS_16));
 			btnViewHistory.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					try {
 						if (analyticsReportService.isIntegrationEnabled()
 								&& analyticsSettingStore.getProject() != null) {
-							Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()), 
+							Program.launch(createPath(analyticsSettingStore.getServerEndpoint(), 
 									analyticsSettingStore.getTeam(),
 									analyticsSettingStore.getProject(), parentPart.getTestCase().getIdForDisplay(),
-									analyticsSettingStore.getToken(true)));
+									analyticsSettingStore.getToken()));
 						} else {
 							Program.launch(ApplicationInfo.getTestOpsServer());
 						}

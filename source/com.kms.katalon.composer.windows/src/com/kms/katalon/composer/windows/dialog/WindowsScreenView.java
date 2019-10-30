@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.windows.dialog;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -37,8 +39,10 @@ public class WindowsScreenView {
     private Image currentScreenShot;
 
     private Canvas canvas;
-
-    private double currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
+    
+    private List<Rectangle> highlightRects = new ArrayList<>();
+    
+    private boolean highlightPhase = false;
 
     private double hRatio;
 
@@ -72,24 +76,24 @@ public class WindowsScreenView {
 
         canvas = new Canvas(container, SWT.NONE);
         canvas.pack();
-
+        
         canvas.addPaintListener(new PaintListener() {
 
             public void paintControl(PaintEvent e) {
                 if (currentScreenShot != null && !currentScreenShot.isDisposed()) {
                     e.gc.drawImage(currentScreenShot, 0, 0);
 
-                    if (currentWidth != 0 && currentHeight != 0) {
+                    if (highlightPhase && highlightRects != null && highlightRects.size() > 0) {
                         Color oldForegroundColor = e.gc.getForeground();
                         e.gc.setForeground(ColorUtil.getColor("#76BF42"));
-                        int x = safeRoundDouble(currentX);
-                        int y = safeRoundDouble(currentY);
-                        int width = safeRoundDouble(currentWidth);
-                        int height = safeRoundDouble(currentHeight);
+                        int oldLineWidth = e.gc.getLineWidth();
 
-                        e.gc.drawRectangle(x, y, width, height);
-                        e.gc.drawRectangle(x + 1, Math.max(y + 1, 0), Math.max(width - 2, 0), Math.max(height - 2, 0));
+                        e.gc.setLineWidth(2);
+                        highlightRects.forEach(rect -> {
+                            e.gc.drawRectangle(rect.x, rect.y, rect.width, rect.height);
+                        });
 
+                        e.gc.setLineWidth(oldLineWidth);
                         e.gc.setForeground(oldForegroundColor);
                     }
                 }
@@ -115,7 +119,7 @@ public class WindowsScreenView {
         parentDialog.setSelectedElementByLocation(safeRoundDouble(realX), safeRoundDouble(realY));
     }
 
-    private boolean isElementOnScreen(final Double x, final Double y, final Double width, final Double height) {
+    public boolean isElementOnScreen(final Double x, final Double y, final Double width, final Double height) {
         Rectangle elementRect = new Rectangle(x.intValue(), y.intValue(), width.intValue(), height.intValue());
         return elementRect.intersects(getCurrentViewportRect());
     }
@@ -135,14 +139,38 @@ public class WindowsScreenView {
     }
 
     public void highlight(final double x, final double y, final double width, final double height) {
-        // Scale the coordinator depend on the ratio between scaled image / source image
+        Rectangle newHighlightRect = new Rectangle(
+                safeRoundDouble(x * hRatio),
+                safeRoundDouble(y * hRatio),
+                safeRoundDouble(width * hRatio),
+                safeRoundDouble(height * hRatio));
+        highlightRect(newHighlightRect);
+    }
+
+    public void highlightRect(Rectangle rect) {
+        List<Rectangle> newHighlightRects = new ArrayList<Rectangle>();
+        newHighlightRects.add(rect);
+        highlightRects(newHighlightRects);
+    }
+    
+    public void highlightRects(List<Rectangle> rects) {
+        if (rects == null || rects.size() == 0) {
+            return;
+        }
+        this.highlightRects.addAll(rects);
+
         Display.getCurrent().syncExec(new Runnable() {
+
             @Override
             public void run() {
-                double currentX = x * hRatio;
-                double currentY = y * hRatio;
-                double currentWidth = width * hRatio;
-                double currentHeight = height * hRatio;
+                Rectangle firstRect = rects.size() > 0 ? rects.get(0) : null;
+                if (firstRect == null) {
+                    return;
+                }
+                double currentX = firstRect.x * hRatio;
+                double currentY = firstRect.y * hRatio;
+                double currentWidth = firstRect.width * hRatio;
+                double currentHeight = firstRect.height * hRatio;
                 if (!isElementOnScreen(currentX, currentY, currentWidth, currentHeight)) {
                     scrollToElement(currentX, currentY);
                 }
@@ -154,17 +182,7 @@ public class WindowsScreenView {
             @Override
             public void run() {
                 for (int i = 0; i < 9; i++) {
-                    if (i % 2 == 1) {
-                        WindowsScreenView.this.currentX = x * hRatio;
-                        WindowsScreenView.this.currentY = y * hRatio;
-                        WindowsScreenView.this.currentWidth = width * hRatio;
-                        WindowsScreenView.this.currentHeight = height * hRatio;
-                    } else {
-                        WindowsScreenView.this.currentX = 0;
-                        WindowsScreenView.this.currentY = 0;
-                        WindowsScreenView.this.currentWidth = 0;
-                        WindowsScreenView.this.currentHeight = 0;
-                    }
+                    highlightPhase = i % 2 == 1;
                     try {
                         Thread.sleep(200L);
                     } catch (InterruptedException e) {}
@@ -174,8 +192,10 @@ public class WindowsScreenView {
                         }
                     });
                 }
+                highlightRects.removeAll(rects);
             }
         });
+
         highlightThread.start();
     }
 

@@ -49,6 +49,12 @@ public class ExecutionUtil {
     private static final String OS_NAME_PROPERTY = "os.name";
 
     private static final String UNKNOW_HOST = "Unknow host";
+    
+    public static boolean isRunningInKatalonC() {
+        Properties props = System.getProperties();
+        String launcherName = props.getProperty("eclipse.launcher.name");
+        return launcherName.equalsIgnoreCase("katalonc");
+    }
 
     public static String getLocalHostAddress() {
         try {

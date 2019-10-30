@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         point="com.katalon.platform.extensions">
+      <point
+            extensionPointId="com.katalon.platform.api.extension.pluginActivationListener"
+            implementationClass="com.kms.katalon.composer.artifact.plugin.KatasharePluginActivationListener"
+            id="com.kms.katalon.composer.artifact.plugin.KatasharePluginActivationListener">
+      </point>
+   </extension>
+   <extension
+         id="com.kms.katalon.composer.artifact.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+
+</plugin>

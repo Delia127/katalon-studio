@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
 import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
@@ -12,12 +14,26 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class KobitonPreferencesProvider {
-    private static ScopedPreferenceStore getPreferencetStore() {
+    private static final String KOBITON_PLUGIN_ID = "com.katalon.katalon-studio-kobiton";
+    
+    public static ScopedPreferenceStore getPreferencetStore() {
         return PreferenceStoreManager.getPreferenceStore(KobitonPreferenceConstants.KOBITON_QUALIFIER);
     }
 
+   /*
+    * Return true if Kobiton plugin is installed <b>and</b> Kobiton integration is enabled
+    */
+    public static boolean isKobitonIntegrationAvailable() {
+        return isKobitonIntegrationEnabled() && isKobitonPluginInstalled();
+    }
+    
     public static boolean isKobitonIntegrationEnabled() {
         return getPreferencetStore().getBoolean(KobitonPreferenceConstants.KOBITON_INTEGRATION_ENABLE);
+    }
+    
+    public static boolean isKobitonPluginInstalled() {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(KOBITON_PLUGIN_ID);
+        return plugin != null;
     }
 
     public static String getKobitonUserName() {

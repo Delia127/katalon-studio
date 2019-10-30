@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_r1tIsOWPEemDQJN2QfizAQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_r1tIseWPEemDQJN2QfizAQ" featurename="visibleWhen" parentElementId="com.kms.katalon.handledmenuitem.2">
+    <elements xsi:type="ui:CoreExpression" xmi:id="_r1tIsuWPEemDQJN2QfizAQ"/>
+  </fragments>
+</fragment:ModelFragments>

@@ -8,6 +8,8 @@ public interface PreferenceConstants {
     public static final String GENERAL_APP_CLOSE_SUDDENLY = "general.appCloseSuddenly";
 
     public static final String GENERAL_AUTO_CHECK_NEW_VERSION = "general.autoCheckNewVersion";
+    
+    public static final String GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING = "general.autoCheckAllowUsage_Tracking";
 
     public static final String GENERAL_SHOW_HELP_AT_START_UP = "general.showHelpAtStartUp";
 
@@ -31,4 +33,6 @@ public interface PreferenceConstants {
     public static final String WEBUI_QUALIFIER = "com.kms.katalon.composer.webui";
 
     public static final String PREF_FIRST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
+
+    public static final String CANCLE_DEBUG_UI = "org.eclipse.debug.ui.cancel_launch_with_compile_errors";
 }

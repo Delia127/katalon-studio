@@ -18,4 +18,8 @@ public interface IWindowsAction {
     public String getDescription();
 
     public WindowsActionParam[] getParams();
+    
+    public boolean isCanceled();
+
+    public void setCanceled(boolean isCanceled);
 }

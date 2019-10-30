@@ -155,10 +155,10 @@ public class ReportUtil {
         JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
 
         String testSuiteName = suiteLogEntity.getName();
-        String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
+        String totalTests = suiteLogEntity.getTotalTestCases() + "";
         String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
         String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
-        String duration = ((suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
+        String duration = ((float)(suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
 
         JUnitProperties properties = factory.createProperties();
         List<JUnitProperty> propertyList = properties.getProperty();
@@ -180,7 +180,7 @@ public class ReportUtil {
         ts.setSystemErr(suiteLogEntity.getSystemErrorMsg().trim());
 
         // tests: The total number of tests in the suite, required
-        ts.setTests(totalPass);
+        ts.setTests(totalTests);
         // errors: The total number of tests in the suite that error
         ts.setErrors(totalError);
         // failures: The total number of tests in the suite that failed
@@ -188,9 +188,12 @@ public class ReportUtil {
 
         Arrays.asList(suiteLogEntity.getChildRecords()).stream().forEach(item -> {
             JUnitTestCase tc = factory.createTestCase();
+            String time = ((float) (item.getEndTime() - item.getStartTime()) / 1000) + "";
+
             tc.setClassname(item.getId());
             tc.setName(item.getName());
-
+            tc.setTime(time);
+            
             TestStatus status = item.getStatus();
             TestStatusValue statusValue = status.getStatusValue();
             String statusName = statusValue.name();
@@ -229,18 +232,19 @@ public class ReportUtil {
         }
 
         String testSuiteCollectionName = suiteCollectionLogRecord.getTestSuiteCollectionId();
-        String testSuiteCollectionTotalPass = suiteCollectionLogRecord.getTotalPassedTestCases();
+        String testSuiteCollectionTotalTests = suiteCollectionLogRecord.getTotalTestCases();
         String testSuiteCollectiontotalError = suiteCollectionLogRecord.getTotalErrorTestCases();
         String testSuiteCollectionTotalFailure = suiteCollectionLogRecord.getTotalFailedTestCases();
-        String testSuiteCollectionDuration = ((suiteCollectionLogRecord.getEndTime() - suiteCollectionLogRecord.getStartTime()) / 1000) + "";;
+        String testSuiteCollectionDuration = ((float) (suiteCollectionLogRecord.getEndTime()
+                - suiteCollectionLogRecord.getStartTime()) / 1000) + "";
 
         JUnitTestSuites tss = factory.createTestSuites();
         // errors: total number of tests with error result from all test suite
         tss.setErrors(testSuiteCollectiontotalError);
         // failures: total number of failed tests from all test suite
         tss.setFailures(testSuiteCollectionTotalFailure);
-        // tests: total number of successful tests from all test suite
-        tss.setTests(testSuiteCollectionTotalPass);
+        // tests: total number of tests from all test suite
+        tss.setTests(testSuiteCollectionTotalTests);
         // time: in seconds to execute all test suites
         tss.setTime(testSuiteCollectionDuration);
         // name
@@ -268,7 +272,7 @@ public class ReportUtil {
         tss.setErrors(ts.getErrors());
         // failures: total number of failed tests from all test suite
         tss.setFailures(ts.getFailures());
-        // tests: total number of successful tests from all test suite
+        // tests: total number of tests from all test suite
         tss.setTests(ts.getTests());
         // time: in seconds to execute all test suites
         tss.setTime(ts.getTime());

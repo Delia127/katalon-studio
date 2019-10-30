@@ -118,6 +118,7 @@ public class SnapshotWindowsElement implements TreeWindowsElement {
         capturedWindowsElement.setChecked(true);
         capturedWindowsElement.setName(name);
         capturedWindowsElement.setProperties(new HashMap<>(properties));
+        capturedWindowsElement.setSnapshotWindowsElement(this);
 
         buildLocator(windowsDriver);
         capturedWindowsElement.setLocator(locator);
@@ -162,7 +163,7 @@ public class SnapshotWindowsElement implements TreeWindowsElement {
         return;
     }
 
-    protected String getXPath() {
+    public String getXPath() {
         if (isXpathBuilt) {
             return xpath;
         }
@@ -204,7 +205,7 @@ public class SnapshotWindowsElement implements TreeWindowsElement {
         return index;
     }
 
-    private String getPropertyValue(String propertyName) {
+    public String getPropertyValue(String propertyName) {
         Optional<String> optProperty = properties.entrySet()
                 .stream()
                 .filter(e -> e.getKey().equals(propertyName))

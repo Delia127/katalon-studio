@@ -53,3 +53,4 @@ Require-Bundle: org.eclipse.e4.core.services,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.composer.testcase.providers,
  com.kms.katalon.dal.fileservice.manager
+Export-Package: com.kms.katalon.composer.keyword.dialogs

@@ -6,10 +6,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -129,5 +132,22 @@ public class KeysInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(argumentListExpression.getExpressions());
         tableViewer.refresh();
+    }
+    
+    @Override
+    public void create() {
+        super.create();
+        addUnfocusEventListener();
+    }
+    
+    private void addUnfocusEventListener() {
+        Table table = tableViewer.getTable();
+        table.addListener(SWT.MouseDown, event -> {
+            Point pt = new Point(event.x, event.y);
+            TableItem item = table.getItem(pt);
+            if (item == null) {
+                table.setSelection(-1);
+            }
+        });
     }
 }
