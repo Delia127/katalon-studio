@@ -1836,13 +1836,27 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Executes a native mobile command
-     *
+     * 
      * @param command
-     *          mobile command name
+     *          Mobile command name
+     * 
      * @param args
-     *          the provided arguments that the command requires for
+     *          The provided arguments that the command requires for
+     * 
      * @param flowControl
+     *          Optional parameter: Used to control the step if the step failed.
+     *          <ul>
+     *              <li>STOP_ON_FAILURE: throws a StepFailedException if the step failed (default).</li>
+     *              <li>CONTINUE_ON_FAILURE: continue the test if the test failed but the test result is still failed.</li>
+     *              <li>OPTIONAL: continue the test and ignore the test result.</li>
+     *          </ul>
+     * 
+     * @return The command result
+     * 
      * @throws StepFailedException
+     *          If failed to execute the mobile command (invalid command, invalid arguments...)
+     * 
+     * @since 7.2.0
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
@@ -1854,10 +1868,17 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * Executes a native mobile command
      *
      * @param command
-     *          mobile command name
+     *          Mobile command name
+     * 
      * @param args
-     *          the provided arguments that the command requires for
+     *          The provided arguments that the command requires for
+     * 
+     * @return The command result
+     * 
      * @throws StepFailedException
+     *          If failed to execute the mobile command (invalid command, invalid arguments...)
+     * 
+     * @since 7.2.0
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)

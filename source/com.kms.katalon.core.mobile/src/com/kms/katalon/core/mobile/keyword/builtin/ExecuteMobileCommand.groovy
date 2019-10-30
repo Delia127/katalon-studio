@@ -1,20 +1,18 @@
 package com.kms.katalon.core.mobile.keyword.builtin
 
-import org.codehaus.groovy.transform.tailrec.VariableReplacedListener.*
+import java.text.MessageFormat
 
 import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.mobile.constants.StringConstants
-import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 import com.kms.katalon.core.model.FailureHandling
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
-import java.text.MessageFormat
 
 @Action(value = "executeMobileCommand")
 public class ExecuteMobileCommand extends MobileAbstractKeyword {
