@@ -268,6 +268,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         boolean integrationEnabled = enableAnalyticsIntegration.getSelection();
 
         if (!integrationEnabled) {
+            uploadDataOnPremise();
             updateDataStore();
             return true;
         }
@@ -487,12 +488,19 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void uploadDataOnPremise() {
         try {
-            if (enableOverrideAuthentication.getSelection()) {
-                analyticsSettingStore.setEmail(txtEmail.getText());
-                analyticsSettingStore.setPassword(txtPassword.getText());
-                analyticsSettingStore.setServerEndPoint(txtServerUrl.getText());
-                analyticsSettingStore.setOrganization(organizationsOnPremise.get(cbbOrganization.getSelectionIndex()));
+            boolean isOverrideAuthentication = enableOverrideAuthentication.getSelection();
+            if (isOverrideAuthentication && isNoInfo()) {
+                setProgressMessage("Make sure you input your credential", true);
+            } else {
+                if (enableOverrideAuthentication.getSelection()) {
+                    analyticsSettingStore.setEmail(txtEmail.getText());
+                    analyticsSettingStore.setPassword(txtPassword.getText());
+                    analyticsSettingStore.setServerEndPoint(txtServerUrl.getText());
+                    analyticsSettingStore.setOrganization(organizationsOnPremise.get(cbbOrganization.getSelectionIndex()));
+                }
+                analyticsSettingStore.setOverrideAuthentication(enableOverrideAuthentication.getSelection());
             }
+            
         } catch (GeneralSecurityException | IOException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
@@ -503,11 +511,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         try {
             boolean isIntegrated = isIntegratedSuccessfully();
             analyticsSettingStore.enableIntegration(isIntegrated);
-            if (isIntegrated) {
-                analyticsSettingStore.setOverrideAuthentication(enableOverrideAuthentication.getSelection());
-            } else {
-                analyticsSettingStore.setOverrideAuthentication(false);
-            }
             if (!teams.isEmpty()) {
                 analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
                 if (!projects.isEmpty()) {
@@ -560,27 +563,24 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         enableAnalyticsIntegration.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean isNoInfo = isNoInfo();
-                if (enableOverrideAuthentication.getSelection()) {
-                    if (isNoInfo) {
+                if (enableAnalyticsIntegration.getSelection()) {
+                    boolean isNoInfo = isNoInfo();
+                    if (isNoInfo && enableOverrideAuthentication.getSelection()) {
                         setProgressMessage("Make sure you input your credential", true);
                         enableAnalyticsIntegration.setSelection(false);
                     } else {
-                        enableIntegration();
-                        if (enableAnalyticsIntegration.getSelection()) {
-                            connect();
+                        if (isNoInfo) {
+                            boolean result = katalonLogin();
+                            enableAnalyticsIntegration.setSelection(result);
+                        } else {
+                            enableIntegration();
+                            if (enableAnalyticsIntegration.getSelection()) {
+                                connect();
+                            }
                         }
                     }
                 } else {
-                    if (isNoInfo) {
-                        boolean result = katalonLogin();
-                        enableAnalyticsIntegration.setSelection(result);
-                    } else {
-                        enableIntegration();
-                        if (enableAnalyticsIntegration.getSelection()) {
-                            connect();
-                        }
-                    }
+                    enableIntegration();
                 }
             }
         });
@@ -622,6 +622,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     txtPassword.setText(StringUtils.EMPTY);
                     txtServerUrl.setText(StringUtils.EMPTY);
                     cbbOrganization.setItems();
+                    
+                    enableAnalyticsIntegration.setSelection(false);
+                    enableIntegration();
                 }
                 enableAuthentiacation(enableOverrideAuthentication.getSelection());
             }
