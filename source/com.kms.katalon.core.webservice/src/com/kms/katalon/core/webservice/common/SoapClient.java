@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
@@ -41,6 +42,7 @@ import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
+import org.apache.http.util.EntityUtils;
 import org.xml.sax.InputSource;
 
 import com.ibm.wsdl.BindingOperationImpl;
@@ -233,51 +235,35 @@ public class SoapClient extends BasicRequestor {
         
         long headerLength = WebServiceCommonHelper.calculateHeaderLength(response);
         long contentDownloadTime = 0L;
-        StringBuffer sb = new StringBuffer();
+        String responseBody = StringUtils.EMPTY;
 
-        char[] buffer = new char[1024];
         long bodyLength = 0L;
         
         HttpEntity responseEntity = response.getEntity();
         if (responseEntity != null) {
-            try (InputStream inputStream = responseEntity.getContent()) {
-                if (inputStream != null) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                    int len = 0;
-                    startTime = System.currentTimeMillis();
-                    while ((len = reader.read(buffer)) != -1) {
-                        contentDownloadTime += System.currentTimeMillis() - startTime;
-                        sb.append(buffer, 0, len);
-                        bodyLength += len;
-                        startTime = System.currentTimeMillis();
-                    }
-                }
+            bodyLength = responseEntity.getContentLength();
+            startTime = System.currentTimeMillis();
+            try {
+                responseBody = EntityUtils.toString(responseEntity);
+            } catch (Exception e) {
+                responseBody = ExceptionUtils.getFullStackTrace(e);
             }
+            contentDownloadTime = System.currentTimeMillis() - startTime;
         }
+
+        ResponseObject responseObject = new ResponseObject(responseBody);
         
-        ResponseObject responseObject = new ResponseObject(sb.toString());
-        
-        String bodyLengthHeader = responseObject.getHeaderFields()
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().equals("Content-Length"))
-                .map(entry -> entry.getValue().get(0))
-                .findFirst()
-                .orElse("");
-        
-        if (!StringUtils.isEmpty(bodyLengthHeader)) {
-            bodyLength =  Long.parseLong(bodyLengthHeader, 10); 
-        }
         // SOAP is HTTP-XML protocol
 
         responseObject.setContentType(APPLICATION_XML);
+        responseObject.setHeaderFields(getResponseHeaderFields(response));
         responseObject.setStatusCode(statusCode);
         responseObject.setResponseBodySize(bodyLength);
         responseObject.setResponseHeaderSize(headerLength);
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
-        setBodyContent(response, sb, responseObject);
+        setBodyContent(response, responseBody, responseObject);
         
         return responseObject;
     }
