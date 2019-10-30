@@ -237,9 +237,15 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     protected void initialize() {
         super.initialize();
         if (isNoInfo()) {
-            katalonLogin();
+            try {
+                if (analyticsSettingStore.isIntegrationEnabled()) {
+                    katalonLogin();
+                }
+            } catch (IOException e) {
+                //ignore
+            }
         } else {
-            fillData();
+            fillData(false);
         }
     }
 
@@ -316,9 +322,14 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         }
     }
 
-    private void fillData() {
+    private void fillData(boolean fromKatalonLogin) {
         try {
-            enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
+            if (fromKatalonLogin) {
+                enableAnalyticsIntegration.setSelection(fromKatalonLogin);
+            } else {
+                enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
+            }
+            
 
             cbbTeams.setItems();
             cbbProjects.setItems();
@@ -550,7 +561,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
                 dialog.close();
-                fillData();
+                
+                if (analyticsSettingStore.isOverrideAuthentication()) {
+                    analyticsSettingStore.setOverrideAuthentication(false);
+                }
+
+                fillData(true);
                 return true;
             }
         } catch (Exception e) {
