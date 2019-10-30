@@ -853,13 +853,22 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         MenuItem accessKAMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
         uploadMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
 
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        
         accessKAMenuItem.setText(ComposerReportMessageConstants.BTN_ACCESSKA);
         accessKAMenuItem.setID(0);
         accessKAMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Trackings.trackOpenKAIntegration("report");
-                Program.launch(ApplicationInfo.getTestOpsServer());
+                try {
+                    String serverUrl = analyticsSettingStore.getServerEndpoint();
+                    Program.launch(serverUrl);
+                } catch (IOException ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
+                }
             }
         });
 

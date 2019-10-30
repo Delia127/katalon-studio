@@ -38,7 +38,7 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         if (isOverrideAuthentication()) {
             return getServerEndpointOnPremise();
         }
-        return ApplicationInfo.getTestOpsServer();
+        return getServerEndpointCloud();
     }
 
     public String getServerEndpointCloud() throws IOException {
