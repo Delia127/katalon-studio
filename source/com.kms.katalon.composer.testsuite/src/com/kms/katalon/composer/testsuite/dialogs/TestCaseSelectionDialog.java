@@ -165,7 +165,6 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
      * @throws Exception
      */
     public void updateTestCaseTableViewer() throws Exception {
-        List<TestSuiteTestCaseLink> links = tableViewer.getInput();
         // add new checked items
         new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, true, new IRunnableWithProgress() {
             @Override
@@ -175,17 +174,6 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
         });
         // finally, update test case tree entity list
         updateTestCaseTreeEntities();
-    }
-
-    @SuppressWarnings("unused")
-    private Job getAddTestCasesToTestSuiteJob() {
-        return new Job("Adding test cases to test suite ...") {
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                addTestCasesToTestSuite(monitor);
-                return Status.OK_STATUS;
-            }
-        };
     }
     
     private void addTestCasesToTestSuite(IProgressMonitor monitor) {
@@ -206,8 +194,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                     addTestCaseFolderToTable(fEntity);
                 } else if (treeEntity instanceof TestCaseTreeEntity) {
                     TestCaseEntity tcEntity = (TestCaseEntity) treeEntity.getObject();
-                    subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite",
-                            1);
+                    subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite", 1);
                     UISynchronizeService.syncExec(() -> {
                         try {
                             tableViewer.addTestCase(tcEntity);
