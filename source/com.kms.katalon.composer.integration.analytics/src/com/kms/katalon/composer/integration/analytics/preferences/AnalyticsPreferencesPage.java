@@ -145,7 +145,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         enableOverrideAuthentication = new Button(grpAuthentication, SWT.CHECK);
         enableOverrideAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
-        enableOverrideAuthentication.setText("Override authentication");
+        enableOverrideAuthentication.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_OVERRIDE_AUTHENTICATION);
 
         Label lblServerUrl = new Label(grpAuthentication, SWT.NONE);
         lblServerUrl.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SERVER_URL);
@@ -177,7 +177,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         btnConnect = new Button(grpAuthentication, SWT.NONE);
         btnConnect.setLayoutData(gdBtn);
-        btnConnect.setText("Connect");
+        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
         btnConnect.setEnabled(false);
 
         enableAuthentiacation(false);
@@ -219,12 +219,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         GridLayout glConnect = new GridLayout(4, false);
         compConnect.setLayout(glConnect);
 
-        GridData gdBtn = new GridData(SWT.FILL, SWT.RIGHT, false, false, 1, 1);
+        GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
         gdBtn.widthHint = 100;
 
         btnRefresh = new Button(compConnect, SWT.NONE);
         btnRefresh.setLayoutData(gdBtn);
-        btnRefresh.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
+        btnRefresh.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_REFRESH);
         btnRefresh.setEnabled(false);
 
         lblStatus = new Link(mainComposite, SWT.WRAP);
@@ -329,7 +329,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             } else {
                 enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
             }
-            
 
             cbbTeams.setItems();
             cbbProjects.setItems();
@@ -341,13 +340,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             txtEmail.setText(email);
             txtServerUrl.setText(serverUrl);
             txtPassword.setText(password);
-            
+
             organizationsOnPremise.clear();
             organizationsOnPremise.add(organization);
             cbbOrganization.setItems(
                     AnalyticsAuthorizationHandler.getOrganizationNames(organizationsOnPremise).toArray(new String[organizationsOnPremise.size()]));
             cbbOrganization.select(0);
-            
+
             selectProjectFromConfig = analyticsSettingStore.getProject();
             selectTeamFromConfig = analyticsSettingStore.getTeam();
 
@@ -501,7 +500,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         try {
             boolean isOverrideAuthentication = enableOverrideAuthentication.getSelection();
             if (isOverrideAuthentication && isNoInfo()) {
-                setProgressMessage("Make sure you input your credential", true);
+                setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
             } else {
                 if (enableOverrideAuthentication.getSelection()) {
                     analyticsSettingStore.setEmail(txtEmail.getText());
@@ -582,7 +581,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 if (enableAnalyticsIntegration.getSelection()) {
                     boolean isNoInfo = isNoInfo();
                     if (isNoInfo && enableOverrideAuthentication.getSelection()) {
-                        setProgressMessage("Make sure you input your credential", true);
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
                         enableAnalyticsIntegration.setSelection(false);
                     } else {
                         if (isNoInfo) {
@@ -782,7 +781,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     organization = organizationsOnPremise.get(0);
                     setProgressMessage(StringUtils.EMPTY, false);
                 } else {
-                    setProgressMessage("Please join to organization.", true);
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_NO_ORGANIZATION, true);
                 }
             });
          });
