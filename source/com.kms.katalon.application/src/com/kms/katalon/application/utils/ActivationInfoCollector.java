@@ -78,6 +78,12 @@ public class ActivationInfoCollector {
     public static boolean checkAndMarkActivatedForGUIMode(StringBuilder errorMessage) {
         activated = false;
         try {
+            Organization org = ApplicationInfo.getOrganization();
+            if (org.getId() == null) {
+                activated = false;
+                return activated;
+            }
+
             License license = getValidLicense();
             boolean isOffline = isOffline(license);
 
