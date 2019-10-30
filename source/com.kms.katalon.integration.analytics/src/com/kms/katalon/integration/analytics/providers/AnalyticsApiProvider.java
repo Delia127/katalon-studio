@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -98,8 +100,7 @@ public class AnalyticsApiProvider {
             nameValuePairs.add(new BasicNameValuePair(LOGIN_PARAM_GRANT_TYPE_NAME, LOGIN_PARAM_GRANT_TYPE_VALUE));
 
             
-            HttpEntity entity = new UrlEncodedFormEntity(nameValuePairs);
-
+            HttpEntity entity = new UrlEncodedFormEntity(nameValuePairs, Charsets.UTF_8);
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setEntity(entity);
             String clientCredentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
