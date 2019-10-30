@@ -1835,7 +1835,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Executes a native mobile command
+     * Executes a native mobile command<br><br>
+     * 
+     * <b>Sample of usage:</b><br>
+     * <ul>
+     *  <li><i>Scroll down the element or the whole screen</i><br>
+     *      {@code Mobile.executeMobileCommand("mobile:scroll", ImmutableMap.of("direction", "down"))}</li>
+     * </ul>
      * 
      * @param command
      *          Mobile command name
@@ -1854,7 +1860,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @return The command result
      * 
      * @throws StepFailedException
-     *          If failed to execute the mobile command (invalid command, invalid arguments...)
+     *          On failed to execute the mobile command (invalid command, invalid arguments...)
      * 
      * @since 7.2.0
      */
@@ -1865,8 +1871,14 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Executes a native mobile command
-     *
+     * Executes a native mobile command<br><br>
+     * 
+     * <b>Sample of usage:</b><br>
+     * <ul>
+     *  <li><i>Scroll down the element or the whole screen</i><br>
+     *      {@code Mobile.executeMobileCommand("mobile:scroll", ImmutableMap.of("direction", "down"))}</li>
+     * </ul>
+     * 
      * @param command
      *          Mobile command name
      * 
@@ -1876,7 +1888,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @return The command result
      * 
      * @throws StepFailedException
-     *          If failed to execute the mobile command (invalid command, invalid arguments...)
+     *          On failed to execute the mobile command (invalid command, invalid arguments...)
      * 
      * @since 7.2.0
      */
