@@ -555,7 +555,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             if (dialog.open() == Dialog.OK) {
                 email = dialog.getUsername();
                 password = dialog.getPassword();
-                organization = analyticsSettingStore.getOrganization();
+                organization = analyticsSettingStore.getOrganizationCloud();
 
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, email, true);
                 String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
