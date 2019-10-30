@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
@@ -242,7 +243,11 @@ public class SoapClient extends BasicRequestor {
         if (responseEntity != null) {
             bodyLength = responseEntity.getContentLength();
             startTime = System.currentTimeMillis();
-            responseBody = EntityUtils.toString(responseEntity);
+            try {
+                responseBody = EntityUtils.toString(responseEntity);
+            } catch (Exception e) {
+                responseBody = ExceptionUtils.getFullStackTrace(e);
+            }
             contentDownloadTime = System.currentTimeMillis() - startTime;
         }
 
