@@ -210,30 +210,21 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
     }
     
 
-	/**
-	 * Add test case folder into test case table viewer
-	 * 
-	 * @param folderEntity 
-	 * @throws Exception
-	 */
+    /**
+     * Add test case folder into test case table viewer
+     * 
+     * @param folderEntity
+     * @throws Exception
+     */
     private void addTestCaseFolderToTable(FolderEntity folderEntity) throws Exception {
         if (folderEntity.getFolderType() == FolderType.TESTCASE) {
             FolderController folderController = FolderController.getInstance();
-            List<FileEntity> childObjects = folderController.getChildren(folderEntity);
-            for (Object childObject : childObjects) {
-                UISynchronizeService.syncExec(() -> {
-                    try {
-                        if (childObject instanceof TestCaseEntity) {
-
-                            tableViewer.addTestCase((TestCaseEntity) childObject);
-
-                        } else if (childObject instanceof FolderEntity) {
-                            addTestCaseFolderToTable((FolderEntity) childObject);
-                        }
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
-                });
+            for (Object childObject : folderController.getChildren(folderEntity)) {
+                if (childObject instanceof TestCaseEntity) {
+                    tableViewer.addTestCase((TestCaseEntity) childObject);
+                } else if (childObject instanceof FolderEntity) {
+                    addTestCaseFolderToTable((FolderEntity) childObject);
+                }
             }
         }
     }
