@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -111,21 +112,40 @@ public class ProjectController extends EntityController {
             }
         }
     }
+    
+    public void closeAndCleanupProject(ProjectEntity project) throws Exception {
+        try {
+            closeProject(project.getId(), new NullProgressMonitor());
+            cleanupGroovyProject(project);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
+    }
 
     private void cleanupGroovyProject(ProjectEntity project) {
         File classpathFile = new File(project.getFolderLocation(), ".classpath");
         if (classpathFile.exists()) {
-            classpathFile.delete();
+            FileUtils.deleteQuietly(classpathFile);
         }
 
         File binFolder = new File(project.getFolderLocation(), "bin");
         if (binFolder.exists()) {
-            binFolder.delete();
+            FileUtils.deleteQuietly(binFolder);
         }
 
         File projectFile = new File(project.getFolderLocation(), ".project");
         if (projectFile.exists()) {
-            projectFile.delete();
+            FileUtils.deleteQuietly(projectFile);
+        }
+        
+        File libsFolder = new File(project.getFolderLocation(), "Libs");
+        if (libsFolder.exists()) {
+            FileUtils.deleteQuietly(libsFolder);
+        }
+
+        File eclipseSettingsFolder = new File(project.getFolderLocation(), ".settings");
+        if (eclipseSettingsFolder.exists()) {
+            FileUtils.deleteQuietly(eclipseSettingsFolder);
         }
     }
 
@@ -184,13 +204,18 @@ public class ProjectController extends EntityController {
                 .openProjectWithoutClasspath(projectPk);
         if (project != null) {
             IProject groovyProject = GroovyUtil.getGroovyProject(project);
-            groovyProject.clearHistory(monitor);
-            groovyProject.close(monitor);
+            try {
+                groovyProject.clearHistory(monitor);
+                groovyProject.close(monitor);
+            } catch (CoreException e) {
+                LogUtil.logError(e);
+            }
+
+            if (classLoaderLookup.containsKey(project.getLocation())) {
+                classLoaderLookup.remove(project.getLocation());
+            }
         }
         DataProviderState.getInstance().setCurrentProject(null);
-        if (classLoaderLookup.containsKey(project.getLocation())) {
-            classLoaderLookup.remove(project.getLocation());
-        }
     }
 
     public ProjectEntity updateProject(String name, String description, String projectPk) throws Exception {
