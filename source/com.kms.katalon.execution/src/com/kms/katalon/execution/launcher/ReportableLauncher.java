@@ -77,7 +77,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
     
-    public static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
+    private  static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
     
     private TestSuiteLogRecord suiteLogRecord;
 
