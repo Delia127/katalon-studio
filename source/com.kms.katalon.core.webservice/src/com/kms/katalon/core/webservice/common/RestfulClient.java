@@ -23,6 +23,7 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
@@ -39,6 +40,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
+import org.apache.http.util.EntityUtils;
 import org.apache.http.message.BasicHeaderElementIterator;
 
 import com.google.common.net.MediaType;
@@ -201,42 +203,25 @@ public class RestfulClient extends BasicRequestor {
         int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         long contentDownloadTime = 0L;
-        StringBuffer sb = new StringBuffer();
+        String responseBody = StringUtils.EMPTY;
 
-        char[] buffer = new char[1024];
         long bodyLength = 0L;
-        
-        Charset charset = StandardCharsets.UTF_8;
-        try {
-	        String contentType = getResponseContentType(response);
-	        if (StringUtils.isNotBlank(contentType)) {
-	        	MediaType mediaType = MediaType.parse(contentType);
-	        	charset = mediaType.charset().or(StandardCharsets.UTF_8);
-	        }
-        } catch (Exception e) {
-        	// ignored - don't let tests fail just because charset could not be detected
-        }
         
         HttpEntity responseEntity = response.getEntity();
         if (responseEntity != null) {
-            try (InputStream inputStream = responseEntity.getContent()) {
-                if (inputStream != null) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
-                    int len = 0;
-                    startTime = System.currentTimeMillis();
-                    while ((len = reader.read(buffer)) != -1) {
-                        contentDownloadTime += System.currentTimeMillis() - startTime;
-                        sb.append(buffer, 0, len);
-                        bodyLength += len;
-                        startTime = System.currentTimeMillis();
-                    }
-                }
+            bodyLength = responseEntity.getContentLength();
+            startTime = System.currentTimeMillis();
+            try {
+                responseBody = EntityUtils.toString(responseEntity);
+            } catch (Exception e) {
+                responseBody = ExceptionUtils.getFullStackTrace(e);
             }
+            contentDownloadTime = System.currentTimeMillis() - startTime;
         }
-
+        
         long headerLength = WebServiceCommonHelper.calculateHeaderLength(response);
 
-        ResponseObject responseObject = new ResponseObject(sb.toString());
+        ResponseObject responseObject = new ResponseObject(responseBody);
         responseObject.setContentType(getResponseContentType(response));
         responseObject.setHeaderFields(getResponseHeaderFields(response));
         responseObject.setStatusCode(statusCode);
@@ -245,28 +230,10 @@ public class RestfulClient extends BasicRequestor {
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
-        setBodyContent(response, sb, responseObject);
+        setBodyContent(response, responseBody, responseObject);
 
         IOUtils.closeQuietly(response);
         
         return responseObject;
     }
-    
-    private Map<String, List<String>> getResponseHeaderFields(HttpResponse httpResponse) {
-        Map<String, List<String>> headerFields = new HashMap<>();
-        Header[] headers = httpResponse.getAllHeaders();
-        for (Header header : headers) {
-            String name = header.getName();
-            if (!headerFields.containsKey(name)) {
-                headerFields.put(name, new ArrayList<>());
-            }
-            headerFields.get(name).add(header.getValue());
-        }
-        StatusLine statusLine = httpResponse.getStatusLine();
-        if (statusLine != null) {
-            headerFields.put("#status#", Arrays.asList(String.valueOf(statusLine)));
-        }
-        return headerFields;
-    }
-
 }
