@@ -88,6 +88,7 @@ import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
 import com.kms.katalon.composer.windows.spy.WindowsElementTreeContentProvider;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
@@ -226,7 +227,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     @Override
     protected String getDocumentationUrl() {
-        return "";
+        return DocumentationMessageConstants.DIALOG_WINDOWS_RECORDER;
     }
 
     @Override
@@ -355,7 +356,6 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                 CapturedWindowsElement firstElement = (CapturedWindowsElement) selection.getFirstElement();
                 propertiesComposite.setEditingElement(firstElement);
                 highlightElementComposite.setEditingElement(firstElement);
-                highlightObject(firstElement);
             }
         });
 

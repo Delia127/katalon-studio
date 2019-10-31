@@ -2,11 +2,9 @@ package com.kms.katalon.composer.report.handlers;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -32,16 +30,14 @@ public class AnalyticsAuthorizationHandler {
     
     public static AnalyticsTokenInfo getToken(String serverUrl, String email, String password, AnalyticsSettingStore settingStore) {
         try {
-            boolean encryptionEnabled = true;
             AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-            settingStore.setToken(tokenInfo.getAccess_token(), encryptionEnabled);
+            settingStore.setToken(tokenInfo.getAccess_token());
             return tokenInfo;
         } catch(Exception ex) {
             LoggerSingleton.logError(ex);
             try {
-                settingStore.setPassword(StringUtils.EMPTY, true);
                 settingStore.enableIntegration(false);
-            } catch (IOException | GeneralSecurityException e) {
+            } catch (IOException e) {
                 LoggerSingleton.logError(e);
             }
             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,

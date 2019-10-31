@@ -35,4 +35,6 @@ public interface PreferenceConstants {
     public static final String PREF_FIRST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
     
     public static final String LINE_NUMBER_RULER = "lineNumberRuler";
+
+    public static final String CANCLE_DEBUG_UI = "org.eclipse.debug.ui.cancel_launch_with_compile_errors";
 }

@@ -17,11 +17,11 @@ public class ConsoleCommandExecutor {
 
     public static List<String> runConsoleCommandAndCollectResults(String[] command,
             Map<String, String> addtionalEnvironmentVariables) throws IOException, InterruptedException {
-        return runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables, StringUtils.EMPTY);
+        return runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables, StringUtils.EMPTY, false);
     }
 
     public static List<String> runConsoleCommandAndCollectResults(String[] command,
-            Map<String, String> addtionalEnvironmentVariables, String directory)
+            Map<String, String> addtionalEnvironmentVariables, String directory, boolean redirectErrorStream)
             throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder(command);
         if (StringUtils.isNotEmpty(directory)) {
@@ -29,6 +29,7 @@ public class ConsoleCommandExecutor {
         }
         Map<String, String> existingEnvironmentVariables = pb.environment();
         existingEnvironmentVariables.putAll(addtionalEnvironmentVariables);
+        pb.redirectErrorStream(redirectErrorStream);
 
         Process process = pb.start();
         process.waitFor();
@@ -77,7 +78,7 @@ public class ConsoleCommandExecutor {
             Map<String, String> addtionalEnvironmentVariables,
             String directory) throws IOException, InterruptedException {
         List<String> resultLines = runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables,
-                directory);
+                directory, false);
         if (!resultLines.isEmpty()) {
             return resultLines.get(0);
         }
@@ -97,6 +98,15 @@ public class ConsoleCommandExecutor {
     public static String runConsoleCommandAndCollectFirstResult(String[] command)
             throws IOException, InterruptedException {
         List<String> resultLines = runConsoleCommandAndCollectResults(command);
+        if (!resultLines.isEmpty()) {
+            return resultLines.get(0);
+        }
+        return "";
+    }
+    
+    public static String runConsoleCommandAndCollectFirstResult(String[] command, boolean redirectErrorStream)
+            throws IOException, InterruptedException {
+        List<String> resultLines = runConsoleCommandAndCollectResults(command, new HashMap<String, String>(), StringUtils.EMPTY, redirectErrorStream);
         if (!resultLines.isEmpty()) {
             return resultLines.get(0);
         }

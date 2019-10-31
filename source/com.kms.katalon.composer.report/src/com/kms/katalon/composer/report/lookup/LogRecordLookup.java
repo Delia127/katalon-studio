@@ -53,6 +53,20 @@ public class LogRecordLookup implements EventHandler {
         }
     }
 
+    public TestSuiteLogRecord getTestSuiteLogRecordByFullPath(String reportFullpath) {
+        if (StringUtils.isEmpty(reportFullpath)) {
+            return null;
+        }
+        try {
+            ReportEntity report = ReportController.getInstance().getReportEntityByFullPath(reportFullpath);
+
+            return report != null ? getTestSuiteLogRecord(report) : null;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
+    }
+
     public synchronized TestSuiteLogRecord getTestSuiteLogRecord(ReportEntity reportEntity) {
         TestSuiteLogRecord suiteLogRecord = suiteLogRecordMap.get(reportEntity.getId());
         if (suiteLogRecord == null) {

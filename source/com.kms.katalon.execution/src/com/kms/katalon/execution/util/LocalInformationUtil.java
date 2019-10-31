@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.MachineUtil;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.SystemInformationUtil;
 
@@ -90,6 +92,8 @@ public class LocalInformationUtil {
         LogUtil.logInfo("INFO: Katalon Version: " + getKatalonVersion());
         LogUtil.logInfo("INFO: Command-line arguments: " + maskSensitiveArgs());
         LogUtil.logInfo("INFO: User working dir: " + getUserDir());
+        LogUtil.logInfo("INFO: TestOps server URL: " + ApplicationInfo.getTestOpsServer());
+        LogUtil.logInfo("INFO: Katalon Store server URL: " + getKatalonStoreUrl());
         LogUtil.logInfo("INFO: User home: " + getUserHome());
         LogUtil.logInfo("INFO: Java vendor: " + javaVendor);
         LogUtil.logInfo("INFO: Java version: " + javaVersion);
@@ -97,6 +101,7 @@ public class LocalInformationUtil {
         LogUtil.logInfo("INFO: CPU load: " + getProcessCpuLoad());
         LogUtil.logInfo("INFO: Total memory: " + getTotalMemoryInMegabyte());
         LogUtil.logInfo("INFO: Free memory: " + getFreeMemoryInMegabyte());
+        LogUtil.logInfo("INFO: Machine ID: " + MachineUtil.getMachineId());
         LogUtil.logInfo("\n");
     }
 
@@ -122,5 +127,30 @@ public class LocalInformationUtil {
             markedArgs.add(arg);
         }
         return StringUtils.join(markedArgs.toArray(new String[0]), " ");
+    }
+    
+    
+    /**
+     * TODO: Duplicated from KStoreUrls. These code will be removed in KS v7.1.0 
+     */
+    private static final String STORE_URL_PROPERTY_KEY = "storeUrl";
+
+    private static final String DEVELOPMENT_URL = "https://store-staging.katalon.com";
+
+    private static final String PRODUCTION_URL = "https://store.katalon.com";
+
+    public static String getKatalonStoreUrl() {
+        String storeUrlArgument = getStoreUrlArgument();
+        if (!StringUtils.isBlank(storeUrlArgument)) {
+            return storeUrlArgument;
+        } else if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
+            return DEVELOPMENT_URL;
+        } else {
+            return PRODUCTION_URL;
+        }
+    }
+
+    private static String getStoreUrlArgument() {
+        return System.getProperty(STORE_URL_PROPERTY_KEY);
     }
 }
