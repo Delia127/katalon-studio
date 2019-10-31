@@ -16,6 +16,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -32,24 +34,34 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.composer.parts.CPart;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
@@ -167,7 +179,30 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 Object element = selection.getFirstElement();
                 eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, element);
+            }
+        });
 
+        
+        tableViewer.getTable().addListener(SWT.MenuDetect, new Listener() {
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                Table table = tableViewer.getTable();
+                Menu menu = table.getMenu();
+                if (menu != null) {
+                    menu.dispose();
+                }
+                menu = new Menu(table);
+                MenuItem openTestObjectMenuItem = new MenuItem(menu, SWT.PUSH);
+                openTestObjectMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_OPEN_TEST_OBJECT);
+                openTestObjectMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+                        Object element = selection.getFirstElement();
+                        eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, element);
+                    }
+                });
+                table.setMenu(menu);
             }
         });
     }
