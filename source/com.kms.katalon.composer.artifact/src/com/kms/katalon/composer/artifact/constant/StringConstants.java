@@ -65,4 +65,40 @@ public class StringConstants {
     public static final String MSG_FAILED_TO_IMPORT_TEST_ARTIFACTS = MessageConstants.MSG_FAILED_TO_IMPORT_TEST_ARTIFACTS;
     
     public static final String MSG_OPEN_A_PROJECT = MessageConstants.MSG_OPEN_A_PROJECT;
+    
+    public static final String MSG_EXPORTING_TEST_ARTIFACTS = MessageConstants.MSG_EXPORTING_TEST_ARTIFACTS;
+    
+    public static final String MSG_EXPORTING_TEST_CASES = MessageConstants.MSG_EXPORTING_TEST_CASES;
+    
+    public static final String MSG_EXPORTING_TEST_SCRIPTS = MessageConstants.MSG_EXPORTING_TEST_SCRIPTS;
+    
+    public static final String MSG_EXPORTING_TEST_OBJECTS = MessageConstants.MSG_EXPORTING_TEST_OBJECTS;
+    
+    public static final String MSG_EXPORTING_PROFILES = MessageConstants.MSG_EXPORTING_PROFILES;
+    
+    public static final String MSG_EXPORTING_KEYWORDS = MessageConstants.MSG_EXPORTING_KEYWORDS;
+    
+    public static final String MSG_COMPRESSING_FILES = MessageConstants.MSG_COMPRESSING_FILES;
+    
+    public static final String MSG_ERROR_EXPORTING_TEST_ARTIFACTS = MessageConstants.MSG_ERROR_EXPORTING_TEST_ARTIFACTS;
+    
+    public static final String MSG_IMPORTING_TEST_ARTIFACTS = MessageConstants.MSG_IMPORTING_TEST_ARTIFACTS;
+    
+    public static final String MSG_ERROR_IMPORTING_TEST_ARTIFACTS = MessageConstants.MSG_ERROR_IMPORTING_TEST_ARTIFACTS;
+    
+    public static final String IMPORT_EXPORT_EXPORT_TEMP_FOLDER = MessageConstants.IMPORT_EXPORT_EXPORT_TEMP_FOLDER;
+    
+    public static final String IMPORT_EXPORT_IMPORT_TEMP_FOLDER = MessageConstants.IMPORT_EXPORT_IMPORT_TEMP_FOLDER;
+    
+    public static final String IMPORT_EXPORT_EXPORT_FILE_NAME = MessageConstants.IMPORT_EXPORT_EXPORT_FILE_NAME;
+    
+    public static final String IMPORT_EXPORT_TEST_CASES_FOLDER = MessageConstants.IMPORT_EXPORT_TEST_CASES_FOLDER;
+    
+    public static final String IMPORT_EXPORT_TEST_SCRIPTS_FOLDER = MessageConstants.IMPORT_EXPORT_TEST_SCRIPTS_FOLDER;
+    
+    public static final String IMPORT_EXPORT_TEST_OBJECTS_FOLDER = MessageConstants.IMPORT_EXPORT_TEST_OBJECTS_FOLDER;
+    
+    public static final String IMPORT_EXPORT_PROFILES_FOLDER = MessageConstants.IMPORT_EXPORT_PROFILES_FOLDER;
+    
+    public static final String IMPORT_EXPORT_KEYWORDS_FOLDER = MessageConstants.IMPORT_EXPORT_KEYWORDS_FOLDER;
 }

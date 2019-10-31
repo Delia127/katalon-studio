@@ -174,6 +174,10 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     
     public static String DIA_MSG_RENAME_FILE;
 
+    public static String PREF_WARN_KSE_SQL_SERVER;
+
+    public static String PREF_WARN_KSE_ORACLE_SQL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerComponentsImplMessageConstants.class);

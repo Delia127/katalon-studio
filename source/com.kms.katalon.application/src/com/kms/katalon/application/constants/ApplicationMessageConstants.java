@@ -43,6 +43,28 @@ public class ApplicationMessageConstants {
 
     public static String ACTIVATION_ONLINE_INVALID;
 
+    public static String ACTIVATION_GUI_FAIL;
+
+    public static String ACTIVATION_CLI_FAIL;
+
+    public static String ACTIVATION_OFFLINE_FAIL;
+
+    public static String LICENSE_INVALID;
+
+    public static String LICENSE_INVALID_MACHINE_ID;
+
+    public static String LICENSE_EXPIRED;
+
+    public static String LICENSE_UNABLE_RENEW;
+
+    public static String LICENSE_EXPIRED_MESSAGE;
+
+    public static String LICENSE_ERROR_RENEW;
+
+    public static String AUTO_CLOSE;
+
+    public static String BTN_ACKNOWLEDGE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ApplicationMessageConstants.class);

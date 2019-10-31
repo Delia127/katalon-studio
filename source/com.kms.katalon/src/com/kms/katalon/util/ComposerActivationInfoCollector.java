@@ -18,6 +18,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
@@ -40,7 +41,15 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 if (isStartup) {
                     monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
                 } else {
+                    //Logout
                     monitor.beginTask(StringConstants.MSG_CLEANING, IProgressMonitor.UNKNOWN);
+                    try {
+                        ActivationInfoCollector.postEndSession();
+                        ActivationInfoCollector.releaseLicense();
+                    } catch (Exception e) {
+                        LogUtil.logError(e);
+                    }
+                    ApplicationInfo.cleanAll();
                 }
                 isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                 monitor.done();

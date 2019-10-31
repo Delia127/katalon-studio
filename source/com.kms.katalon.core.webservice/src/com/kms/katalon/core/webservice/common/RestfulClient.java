@@ -13,6 +13,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +24,22 @@ import javax.net.ssl.SSLContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.Args;
+import org.apache.http.message.BasicHeaderElementIterator;
 
 import com.google.common.net.MediaType;
 import com.google.common.net.UrlEscapers;
@@ -46,7 +57,7 @@ import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestfulClient extends BasicRequestor {
 
-    private static final String SSL = RequestHeaderConstants.SSL;
+    private static final String TLS = "TLS";
 
     private static final String HTTPS = RequestHeaderConstants.HTTPS;
     
@@ -74,13 +85,10 @@ public class RestfulClient extends BasicRequestor {
         clientBuilder.setConnectionManagerShared(true);
         
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            SSLContext sc = SSLContext.getInstance(SSL);
+            SSLContext sc = SSLContext.getInstance(TLS);
             sc.init(getKeyManagers(), getTrustManagers(), null);
             clientBuilder.setSSLContext(sc);
         }
-
-        // If there are some parameters, they should be append after the Service URL
-        processRequestParams(request);
         
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
         Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
@@ -92,7 +100,29 @@ public class RestfulClient extends BasicRequestor {
             clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         
-      
+        clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration(final HttpResponse response, final HttpContext context) {
+        // copied from source
+                Args.notNull(response, "HTTP response");
+                final HeaderElementIterator it = new BasicHeaderElementIterator(
+                        response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+                while (it.hasNext()) {
+                    final HeaderElement he = it.nextElement();
+                    final String param = he.getName();
+                    final String value = he.getValue();
+                    if (value != null && param.equalsIgnoreCase("timeout")) {
+                        try {
+                            return Long.parseLong(value) * 1000;
+                        } catch (final NumberFormatException ignore) {}
+                    }
+                }
+                // If the server indicates no timeout, then let it be 1ms so that connection is not kept alive
+                // indefinitely
+                return 1;
+            }
+        });
+        
         BaseHttpRequest httpRequest = getHttpRequest(request);
 
         CloseableHttpClient httpClient = clientBuilder.build();
@@ -117,16 +147,18 @@ public class RestfulClient extends BasicRequestor {
     
     private static BaseHttpRequest getHttpRequest(RequestObject request) throws UnsupportedOperationException, IOException {
         BaseHttpRequest httpRequest;
+        String url = escapeUrl(request.getRestUrl());
         if (isBodySupported(request.getRestRequestMethod()) && request.getBodyContent() != null) {
-            httpRequest = new DefaultHttpEntityEnclosingRequest(request.getRestUrl());
+            httpRequest = new DefaultHttpEntityEnclosingRequest(url);
             ByteArrayOutputStream outstream = new ByteArrayOutputStream();
             request.getBodyContent().writeTo(outstream);
             byte[] bytes = outstream.toByteArray();
-            ByteArrayInputStream instream = new ByteArrayInputStream(bytes);
+            ByteArrayEntity entity = new ByteArrayEntity(bytes);
+            entity.setChunked(false);
             ((DefaultHttpEntityEnclosingRequest) httpRequest)
-                    .setEntity(new InputStreamEntity(instream));
+                    .setEntity(entity);
         } else {
-            httpRequest = new DefaultHttpRequest(request.getRestUrl());
+            httpRequest = new DefaultHttpRequest(url);
         }
 
         setRequestMethod(httpRequest, request.getRestRequestMethod());
@@ -134,11 +166,31 @@ public class RestfulClient extends BasicRequestor {
         return httpRequest;
     }
 
-    public static void processRequestParams(RequestObject request) throws MalformedURLException {
-        String url = UrlEscapers.urlFragmentEscaper().escape(request.getRestUrl());
-        request.setRestUrl(url);
+    private static String escapeUrl(String url) throws MalformedURLException {
+        String escapedUrl = UrlEscapers.urlFragmentEscaper().escape(url);
+        return escapedUrl;
     }
 
+    public static void processRequestParams(RequestObject request) throws MalformedURLException {
+        StringBuilder paramString = new StringBuilder();
+        for (TestObjectProperty property : request.getRestParameters()) {
+            if (StringUtils.isEmpty(property.getName())) {
+                continue;
+            }
+            if (!StringUtils.isEmpty(paramString.toString())) {
+                paramString.append("&");
+            }
+            paramString.append(UrlEncoder.encode(property.getName()));
+            paramString.append("=");
+            paramString.append(UrlEncoder.encode(property.getValue()));
+        }
+        if (!StringUtils.isEmpty(paramString.toString())) {
+            URL url = new URL(request.getRestUrl());
+            request.setRestUrl(
+                    request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&") + paramString.toString());
+        }
+    }
+    
     private ResponseObject response(CloseableHttpClient httpClient, BaseHttpRequest httpRequest) throws Exception {
         if (httpClient == null || httpRequest == null) {
             return null;
@@ -165,16 +217,19 @@ public class RestfulClient extends BasicRequestor {
         	// ignored - don't let tests fail just because charset could not be detected
         }
         
-        try (InputStream inputStream = response.getEntity().getContent()) {
-            if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
-                int len = 0;
-                startTime = System.currentTimeMillis();
-                while ((len = reader.read(buffer)) != -1) {
-                    contentDownloadTime += System.currentTimeMillis() - startTime;
-                    sb.append(buffer, 0, len);
-                    bodyLength += len;
+        HttpEntity responseEntity = response.getEntity();
+        if (responseEntity != null) {
+            try (InputStream inputStream = responseEntity.getContent()) {
+                if (inputStream != null) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
+                    int len = 0;
                     startTime = System.currentTimeMillis();
+                    while ((len = reader.read(buffer)) != -1) {
+                        contentDownloadTime += System.currentTimeMillis() - startTime;
+                        sb.append(buffer, 0, len);
+                        bodyLength += len;
+                        startTime = System.currentTimeMillis();
+                    }
                 }
             }
         }
@@ -206,6 +261,10 @@ public class RestfulClient extends BasicRequestor {
                 headerFields.put(name, new ArrayList<>());
             }
             headerFields.get(name).add(header.getValue());
+        }
+        StatusLine statusLine = httpResponse.getStatusLine();
+        if (statusLine != null) {
+            headerFields.put("#status#", Arrays.asList(String.valueOf(statusLine)));
         }
         return headerFields;
     }

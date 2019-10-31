@@ -30,11 +30,13 @@ import org.eclipse.ui.internal.about.AboutBundleGroupData;
 import org.eclipse.ui.internal.about.InstallationDialog;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionInfo;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
@@ -75,6 +77,8 @@ public class KatalonAboutDialog extends TrayDialog {
 
     private Button btnInstalltionDetails, btnOk;
 
+    private Label lblNotice, notice;
+
     /**
      * Create an instance of the AboutDialog for the given window.
      * 
@@ -82,7 +86,7 @@ public class KatalonAboutDialog extends TrayDialog {
      */
     public KatalonAboutDialog(Shell parentShell) {
         super(parentShell);
-        licenseType = LicenseType.valueOf(ApplicationInfo.getAppProperty(ApplicationStringConstants.LICENSE_TYPE));
+        licenseType = ActivationInfoCollector.getLicenseType();
         expirationDate = ApplicationInfo.getAppProperty(ApplicationStringConstants.EXPIRATION_DATE);
         product = Platform.getProduct();
         if (product != null) {
@@ -91,7 +95,6 @@ public class KatalonAboutDialog extends TrayDialog {
         if (productName == null) {
             productName = WorkbenchMessages.AboutDialog_defaultProductName;
         }
-        updateVersionInfo();
 
         // create a descriptive object for each BundleGroup
         IBundleGroupProvider[] providers = Platform.getBundleGroupProviders();
@@ -166,14 +169,26 @@ public class KatalonAboutDialog extends TrayDialog {
     }
 
     private void updateVersionInfo() {
-        VersionInfo lastestVersion = VersionUtil.getLatestVersion();
-        if (VersionUtil.isNewer(lastestVersion.getVersion(), VersionUtil.getCurrentVersion().getVersion())) {
-            isLatestVersion = false;
-            latestVersion = lastestVersion.getVersion();
-        } else {
-            isLatestVersion = true;
-            latestVersion = MessageConstants.HAND_MSG_UP_TO_DATE;
-        }
+        Thread checkLastestVersion = new Thread(() -> {
+            VersionInfo lastestVersion = VersionUtil.getLatestVersion();
+            if (VersionUtil.isNewer(lastestVersion.getVersion(), VersionUtil.getCurrentVersion().getVersion())) {
+                isLatestVersion = false;
+                latestVersion = lastestVersion.getVersion();
+            } else {
+                isLatestVersion = true;
+                latestVersion = MessageConstants.HAND_MSG_UP_TO_DATE;
+            }
+            UISynchronizeService.asyncExec(() -> {
+                notice.setForeground(ColorUtil.getDefaultTextColor());
+                notice.setText(latestVersion);
+                ControlUtils.setFontStyle(notice, SWT.ITALIC, 10);
+                if (!isLatestVersion) {
+                    lblNotice.setText(MessageConstants.NEW_VERSION_AVAIABLE);
+                    ControlUtils.setFontStyle(notice, SWT.NONE, 10);
+                }
+            });
+        });
+        checkLastestVersion.start();
     }
 
     /**
@@ -208,9 +223,9 @@ public class KatalonAboutDialog extends TrayDialog {
         lblLogo.setImage(logo);
 
         Composite contentComposite = new Composite(parent, SWT.TRANSPARENT);
-        GridLayout contentContent = new GridLayout(2, false);
+        GridLayout contentContent = new GridLayout(1, false);
         contentContent.marginTop = 50;
-        contentContent.marginLeft = 20;
+        contentContent.marginLeft = 0;
         contentComposite.setLayout(contentContent);
 
         Composite titleComposite = new Composite(contentComposite, SWT.TRANSPARENT);
@@ -220,7 +235,7 @@ public class KatalonAboutDialog extends TrayDialog {
         glTitle.marginRight = 0;
         glTitle.marginBottom = 0;
         titleComposite.setLayout(glTitle);
-        GridData gdTitle = new GridData(SWT.LEFT, SWT.CENTER, true, true, 2, 1);
+        GridData gdTitle = new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1);
         titleComposite.setLayoutData(gdTitle);
 
         Label lblProductName = new Label(titleComposite, SWT.NONE);
@@ -234,60 +249,63 @@ public class KatalonAboutDialog extends TrayDialog {
         lblTrial.setLayoutData(gdTrial);
         ControlUtils.setFontStyle(lblTrial, SWT.ITALIC, 10);
         if (isTrial) {
-            lblTrial.setText(StringConstants.ABOUT_LBL_TRAIL);
+            lblTrial.setText(StringConstants.ABOUT_LBL_TRIAL);
         }
 
+        Composite infoComposite = new Composite(contentComposite, SWT.TRANSPARENT);
+        GridLayout infoContent = new GridLayout(2, false);
+        infoContent.marginTop = 0;
+        infoContent.marginLeft = 0;
+        infoComposite.setLayout(infoContent);
+        
         GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, true, true);
         gdLabel.widthHint = 200;
 
-        Label lblversion = new Label(contentComposite, SWT.NONE);
+        Label lblversion = new Label(infoComposite, SWT.NONE);
         lblversion.setText(StringConstants.ABOUT_LBL_VERSION);
         lblversion.setLayoutData(gdLabel);
         ControlUtils.setFontStyle(lblversion, SWT.BOLD, 10);
 
-        Label version = new Label(contentComposite, SWT.NONE);
+        Label version = new Label(infoComposite, SWT.NONE);
         version.setText(VersionUtil.getCurrentVersion().getVersion());
         ControlUtils.setFontStyle(version, SWT.NONE, 10);
 
-        Label lblBuild = new Label(contentComposite, SWT.NONE);
+        Label lblBuild = new Label(infoComposite, SWT.NONE);
         lblBuild.setLayoutData(gdLabel);
         lblBuild.setText(StringConstants.ABOUT_LBL_BUILD);
         ControlUtils.setFontStyle(lblBuild, SWT.BOLD, 10);
 
-        Label build = new Label(contentComposite, SWT.NONE);
+        Label build = new Label(infoComposite, SWT.NONE);
         build.setText(Integer.toString(VersionUtil.getCurrentVersion().getBuildNumber()));
         ControlUtils.setFontStyle(version, SWT.NONE, 10);
 
         if (isKSE) {
-            Label lblExpirationDate = new Label(contentComposite, SWT.NONE);
+            Label lblExpirationDate = new Label(infoComposite, SWT.NONE);
             lblExpirationDate.setLayoutData(gdLabel);
             lblExpirationDate.setText(StringConstants.ABOUT_LBL_EXPIRATION_DATE);
             ControlUtils.setFontStyle(lblExpirationDate, SWT.BOLD, 10);
 
-            Label expiration = new Label(contentComposite, SWT.NONE);
+            Label expiration = new Label(infoComposite, SWT.NONE);
             expiration.setText(expirationDate);
             ControlUtils.setFontStyle(expiration, SWT.NONE, 10);
         }
 
-        Label lblNotice = new Label(contentComposite, SWT.NONE);
+        lblNotice = new Label(infoComposite, SWT.NONE);
         lblNotice.setLayoutData(gdLabel);
         ControlUtils.setFontStyle(lblNotice, SWT.BOLD, 10);
-        
-        Label notice = new Label(contentComposite, SWT.NONE);
-        notice.setText(latestVersion);
-        ControlUtils.setFontStyle(notice, SWT.ITALIC, 10);
-        if (!isLatestVersion) {
-            lblNotice.setText(MessageConstants.NEW_VERSION_AVAIABLE);
-            ControlUtils.setFontStyle(notice, SWT.NONE, 10);
-        }
+
+        notice = new Label(infoComposite, SWT.NONE);
+        notice.setForeground(ColorUtil.getTextRunningColor());
+        notice.setText(StringConstants.ABOUT_LBL_CHECKING_VERSION);
+        updateVersionInfo();
 
 
-        Label lblCopyright = new Label(contentComposite, SWT.NONE);
+        Label lblCopyright = new Label(infoComposite, SWT.NONE);
         lblCopyright.setLayoutData(gdLabel);
         lblCopyright.setText(StringConstants.ABOUT_LBL_COPYRIGHT);
         ControlUtils.setFontStyle(lblCopyright, SWT.BOLD, 10);
 
-        lnkCopyright = new Link(contentComposite, SWT.NONE);
+        lnkCopyright = new Link(infoComposite, SWT.NONE);
         lnkCopyright.setText(String.format("<a>%s</a>", "https://www.katalon.com"));
         ControlUtils.setFontStyle(lnkCopyright, SWT.NONE, 10);
 

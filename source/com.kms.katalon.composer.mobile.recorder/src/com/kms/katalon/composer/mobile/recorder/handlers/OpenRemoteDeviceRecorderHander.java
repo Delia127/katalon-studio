@@ -160,13 +160,14 @@ public class OpenRemoteDeviceRecorderHander {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
-                    final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
-                            recordedActions, testCasePart, targetFolderTreeEntity, mobileDriverType, monitor);
                     UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
                             try {
+                                final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
+                                final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
+                                        recordedActions, testCaseCompositePart, testCasePart, targetFolderTreeEntity,
+                                        mobileDriverType, monitor);
                                 testCasePart.addDefaultImports();
                                 testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
                                 testCaseCompositePart.refreshScript();
@@ -237,14 +238,17 @@ public class OpenRemoteDeviceRecorderHander {
     }
 
     private List<StatementWrapper> generateStatementWrappersFromRecordedActions(
-            List<MobileActionMapping> recordedActions, TestCasePart testCasePart,
-            FolderTreeEntity folderSelectionResult, MobileDriverType mobileDriverType, IProgressMonitor monitor)
-            throws Exception {
+            List<MobileActionMapping> recordedActions, TestCaseCompositePart testCaseCompositePart,
+            TestCasePart testCasePart, FolderTreeEntity folderSelectionResult, MobileDriverType mobileDriverType,
+            IProgressMonitor monitor) throws Exception {
         Map<MobileElement, WebElementEntity> entitySavedMap = new HashMap<>();
         FolderEntity targetFolder = folderSelectionResult.getObject();
 
         monitor.beginTask(MobileRecoderMessagesConstants.MSG_TASK_GENERATE_SCRIPT, recordedActions.size());
 
+        if (testCasePart.getTreeTableInput() == null) {
+            testCaseCompositePart.loadTreeTableInput();
+        }
         ASTNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
         List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
         for (MobileActionMapping action : recordedActions) {

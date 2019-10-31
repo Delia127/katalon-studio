@@ -6,7 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.validator.UrlValidator;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -44,6 +45,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.license.models.License;
+import com.kms.katalon.license.models.LicenseResource;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialogV2 extends AbstractDialog {
@@ -85,9 +87,13 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private String machineId;
 
+    private LicenseResource licenseResource;
+
     private License license;
 
     private Link lnkAgreeTerm;
+    
+    private Link lnkLearnAboutKSE;
 
     private Composite organizationComposite;
     
@@ -144,6 +150,13 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
         
+        lnkLearnAboutKSE.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+        
         lnkOfflineActivation2.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -170,25 +183,32 @@ public class ActivationDialogV2 extends AbstractDialog {
                         setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false);
                     });
                     UISynchronizeService.syncExec(() -> {
-                        StringBuilder errorMessage = new StringBuilder();
-                        license = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
-                        if (license != null) {
-                            if (license.getOrganizationId() != null) {
-                                try {
-                                    String org = ActivationInfoCollector.getOrganization(username, password, license.getOrganizationId());
-                                    save(org);
-                                } catch (Exception ex) {
-                                    LogUtil.logError(ex);
-                                    setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
+                        try {
+                            StringBuilder errorMessage = new StringBuilder();
+                            licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
+                            if (licenseResource != null) {
+                                license = licenseResource.getLicense();
+                                if (license != null) {
+                                    if (license.getOrganizationId() != null) {
+                                        String org = ActivationInfoCollector.getOrganization(username, password,
+                                                license.getOrganizationId());
+                                        save(org);
+                                    } else {
+                                        getOrganizations();
+                                        setProgressMessage(StringUtils.EMPTY, false);
+                                    }
+                                } else {
                                     enableObject(true);
+                                    setProgressMessage(errorMessage.toString(), true);
                                 }
                             } else {
-                                getOrganizations();
-                                setProgressMessage("", false);
+                                enableObject(true);
+                                setProgressMessage(errorMessage.toString(), true);
                             }
-                        } else {
+                        } catch (Exception ex) {
+                            LogUtil.logError(ex);
+                            setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
                             enableObject(true);
-                            setProgressMessage(errorMessage.toString(), true);
                         }
                     });
                 });
@@ -230,7 +250,13 @@ public class ActivationDialogV2 extends AbstractDialog {
                 try {
                     ActivationInfoCollector.markActivated(email, password, JsonUtil.toJson(organization), license);
                     close();
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+
+                    String message = licenseResource.getMessage();
+
+                    if (!StringUtils.isEmpty(message)) {
+                        WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
+                        warningLicenseDialog.open();
+                    }
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
@@ -251,7 +277,13 @@ public class ActivationDialogV2 extends AbstractDialog {
                 try {
                     ActivationInfoCollector.markActivated(email, password, org, license);
                     close();
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+
+                    String message = licenseResource.getMessage();
+
+                    if (!StringUtils.isEmpty(message)) {
+                        WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
+                        warningLicenseDialog.open();
+                    }
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
@@ -350,6 +382,9 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
 
     private boolean validateServer() {
+//        String[] schemes = {"http","https"};
+//        UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+//        return urlValidator.isValid(txtServerUrl.getText());
         return true;
     }
 
@@ -490,10 +525,13 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         Composite bottomTerm = new Composite(buttonBar, SWT.NONE);
         bottomTerm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridLayout gdBottomBarTerm = new GridLayout(2, false);
+        GridLayout gdBottomBarTerm = new GridLayout(1, false);
         gdBottomBarTerm.marginWidth = 10;
         gdBottomBarTerm.marginHeight = 0;
         bottomTerm.setLayout(gdBottomBarTerm);
+        
+        lnkLearnAboutKSE = new Link(bottomTerm, SWT.WRAP);
+        lnkLearnAboutKSE.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KSE);
         
         lnkAgreeTerm = new Link(bottomTerm, SWT.WRAP);
         lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);
