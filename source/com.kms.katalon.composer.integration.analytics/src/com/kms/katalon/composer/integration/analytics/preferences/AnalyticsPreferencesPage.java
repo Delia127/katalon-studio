@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -50,7 +51,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
-import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -100,17 +100,24 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private AnalyticsOrganization organization;
 
+    private GridData gdEnableOverrideAuthentication, gdBtnConnect;
+    
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
-        try {
-            isUseOnPremise = analyticsSettingStore.isOverrideAuthentication();
-            serverUrl = analyticsSettingStore.getServerEndpoint();
-            email = analyticsSettingStore.getEmail();
-            password = analyticsSettingStore.getPassword();
-            organization = analyticsSettingStore.getOrganization();
-        } catch (Exception e) {
-            //ignore
+        isUseOnPremise = analyticsSettingStore.isOverrideAuthentication();
+        serverUrl = analyticsSettingStore.getServerEndpoint();
+        email = analyticsSettingStore.getEmail();
+        password = analyticsSettingStore.getPassword();
+        organization = analyticsSettingStore.getOrganization();
+        if (email == null) {
+            email = StringUtils.EMPTY;
+        }
+        if (password == null) {
+            password = StringUtils.EMPTY;
+        }
+        if (serverUrl == null) {
+            serverUrl = StringUtils.EMPTY;
         }
     }
 
@@ -144,7 +151,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         grpAuthentication.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_AUTHENTICATE_GROUP);
 
         enableOverrideAuthentication = new Button(grpAuthentication, SWT.CHECK);
-        enableOverrideAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+        gdEnableOverrideAuthentication = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
+        enableOverrideAuthentication.setLayoutData(gdEnableOverrideAuthentication);
         enableOverrideAuthentication.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_OVERRIDE_AUTHENTICATION);
 
         Label lblServerUrl = new Label(grpAuthentication, SWT.NONE);
@@ -170,15 +178,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         cbbOrganization = new Combo(grpAuthentication, SWT.READ_ONLY);
         cbbOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbbOrganization.setEnabled(false);
-
-        GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdBtn.widthHint = 100;
 
         btnConnect = new Button(grpAuthentication, SWT.NONE);
-        btnConnect.setLayoutData(gdBtn);
+        gdBtnConnect = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gdBtnConnect.widthHint = 100;
+        btnConnect.setLayoutData(gdBtnConnect);
         btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
-        btnConnect.setEnabled(false);
 
         enableAuthentiacation(false);
     }
@@ -192,8 +197,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         enableAnalyticsIntegration = new Button(grpSelect, SWT.CHECK);
         enableAnalyticsIntegration.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 4, 1));
-        enableAnalyticsIntegration
-                .setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_ANALYTICS_INTEGRATION);
+        enableAnalyticsIntegration.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_ANALYTICS_INTEGRATION);
 
         Label lblTeam = new Label(grpSelect, SWT.NONE);
         lblTeam.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEAM);
@@ -235,15 +239,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     @Override
     protected void initialize() {
+        hideOverrideAuthenticationIfNotEnterprise();
         super.initialize();
-        if (isNoInfo()) {
-            try {
-                if (analyticsSettingStore.isIntegrationEnabled()) {
-                    katalonLogin();
-                }
-            } catch (IOException e) {
-                //ignore
-            }
+        if (isUseOnPremise) {
+            fillData(false);
+        } else if (isNoInfo() && analyticsSettingStore.isIntegrationEnabled()) {
+            katalonLogin();
         } else {
             fillData(false);
         }
@@ -409,7 +410,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     });
                 });
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
@@ -599,25 +600,24 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 isUseOnPremise = enableOverrideAuthentication.getSelection();
-                try {
-                    if (isUseOnPremise) {
-                        email = analyticsSettingStore.getEmailOnPremise();
-                        password = analyticsSettingStore.getPasswordOnPremise();
-                        serverUrl = analyticsSettingStore.getServerEndpointOnPremise();
-                        organization = analyticsSettingStore.getOrganizationOnPremise();
-                    } else {
-                        email = analyticsSettingStore.getEmailCloud();
-                        password = analyticsSettingStore.getPasswordCloud();
-                        serverUrl = analyticsSettingStore.getServerEndpointCloud();
-                        organization = analyticsSettingStore.getOrganizationCloud();
-                    }
-                } catch (IOException | GeneralSecurityException ex) {
-                    LogUtil.logError(ex);
+                if (isUseOnPremise) {
+                    getInfoFromOnPremise();
+                } else {
+                    getInfoFromCloud();
                 }
-                if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(password) && !StringUtils.isEmpty(serverUrl)) {
-                    txtEmail.setText(email);
-                    txtPassword.setText(password);
-                    txtServerUrl.setText(serverUrl);
+                if (email == null) {
+                    email = StringUtils.EMPTY;
+                }
+                if (password == null) {
+                    password = StringUtils.EMPTY;
+                }
+                if (serverUrl == null) {
+                    serverUrl = StringUtils.EMPTY;
+                }
+                txtEmail.setText(email);
+                txtPassword.setText(password);
+                txtServerUrl.setText(serverUrl);
+                if (!StringUtils.isEmpty(organization.getName())) {
                     organizationsOnPremise.clear();
                     organizationsOnPremise.add(organization);
                     if (!StringUtils.isEmpty(organization.getName())) {
@@ -627,15 +627,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     } else {
                         cbbOrganization.setItems();
                     }
-                } else {
-                    txtEmail.setText(StringUtils.EMPTY);
-                    txtPassword.setText(StringUtils.EMPTY);
-                    txtServerUrl.setText(StringUtils.EMPTY);
-                    cbbOrganization.setItems();
-                    
-                    enableAnalyticsIntegration.setSelection(false);
-                    enableIntegration();
                 }
+                if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
+                    enableIntegration();
+                    enableAnalyticsIntegration.setSelection(false);
+                } 
                 enableAuthentiacation(enableOverrideAuthentication.getSelection());
             }
         });
@@ -656,7 +652,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 serverUrl = txtServerUrl.getText();
                 email = txtEmail.getText();
                 password = txtPassword.getText();
-                connectOnPremise();
+                if (isNoInfo()) {
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
+                } else {
+                    connectOnPremise();
+                }
             }
         });
 
@@ -837,6 +837,38 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         } else {
             btnCreate.setEnabled(true);
         }
+    }
+
+    private void getInfoFromCloud() {
+        email = analyticsSettingStore.getEmailCloud();
+        password = analyticsSettingStore.getPasswordCloud();
+        serverUrl = analyticsSettingStore.getServerEndpointCloud();
+        organization = analyticsSettingStore.getOrganizationCloud();
+    }
+
+    private void getInfoFromOnPremise() {
+        email = analyticsSettingStore.getEmailOnPremise();
+        password = analyticsSettingStore.getPasswordOnPremise();
+        serverUrl = analyticsSettingStore.getServerEndpointOnPremise();
+        organization = analyticsSettingStore.getOrganizationOnPremise();
+    }
+
+    private void hideOverrideAuthenticationIfNotEnterprise() {
+        if (!isEnterpriseAccount()) {
+            enableOverrideAuthentication.setVisible(false);
+            gdEnableOverrideAuthentication.exclude = true;
+            enableOverrideAuthentication.setSelection(false);
+
+            btnConnect.setVisible(false);
+            gdBtnConnect.exclude = true;
+
+            isUseOnPremise = false;
+            getInfoFromCloud();
+        }
+    }
+
+    private boolean isEnterpriseAccount() {
+        return LicenseUtil.isNotFreeLicense();
     }
 
     protected boolean isInitialized() {

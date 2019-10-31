@@ -44,7 +44,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
         boolean isIntegrationEnabled = false;
         try {
             isIntegrationEnabled = getSettingStore().isIntegrationEnabled();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             // do nothing
         }
         return isIntegrationEnabled;

@@ -865,7 +865,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 try {
                     String serverUrl = analyticsSettingStore.getServerEndpoint();
                     Program.launch(serverUrl);
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
                     MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
                 }

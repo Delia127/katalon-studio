@@ -26,27 +26,37 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         super(projectDir, AnalyticsStringConstants.ANALYTICS_BUNDLE_ID, false);
     }
 
-    public boolean isIntegrationEnabled() throws IOException {
-        return getBoolean(AnalyticsSettingStoreConstants.ANALYTICS_INTEGRATION_ENABLE, false);
+    public boolean isIntegrationEnabled() {
+        try {
+            return getBoolean(AnalyticsSettingStoreConstants.ANALYTICS_INTEGRATION_ENABLE, false);
+        } catch (IOException e) {
+            LogUtil.logError(e);
+        }
+        return false;
     }
 
     public void enableIntegration(boolean enabled) throws IOException {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_INTEGRATION_ENABLE, enabled);
     }
 
-    public String getServerEndpoint() throws IOException {
+    public String getServerEndpoint() {
         if (isOverrideAuthentication()) {
             return getServerEndpointOnPremise();
         }
         return getServerEndpointCloud();
     }
 
-    public String getServerEndpointCloud() throws IOException {
+    public String getServerEndpointCloud() {
         return ApplicationInfo.getTestOpsServer();
     }
 
-    public String getServerEndpointOnPremise() throws IOException {
-        return getString(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT_ONPREMISE, StringUtils.EMPTY);
+    public String getServerEndpointOnPremise() {
+        try {
+            return getString(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT_ONPREMISE, StringUtils.EMPTY);
+        } catch (IOException e) {
+            LogUtil.logError(e);
+        }
+        return StringUtils.EMPTY;
     }
 
     public void setServerEndPoint(String serverEndpoint) throws IOException {
@@ -72,27 +82,35 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_EMAIL, email, true);
     }
 
-    public String getPassword() throws IOException, GeneralSecurityException {
+    public String getPassword() {
         if (isOverrideAuthentication()) {
             return getPasswordOnPremise();
         }
         return getPasswordCloud();
     }
 
-    public String getPasswordOnPremise() throws IOException, GeneralSecurityException {
-        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD);
-        if (!StringUtils.isEmpty(encryptedPassword)) {
-            return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+    public String getPasswordOnPremise() {
+        try {
+            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD);
+            if (!StringUtils.isEmpty(encryptedPassword)) {
+                return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+            }
+        } catch (GeneralSecurityException | IOException e) {
+            LogUtil.logError(e);
         }
-        return null;
+        return StringUtils.EMPTY;
     }
 
-    public String getPasswordCloud() throws IOException, GeneralSecurityException {
-        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-        if (!StringUtils.isEmpty(encryptedPassword)) {
-            return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+    public String getPasswordCloud() {
+        try {
+            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+            if (!StringUtils.isEmpty(encryptedPassword)) {
+                return CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+            }
+        } catch (GeneralSecurityException | IOException e) {
+            LogUtil.logError(e);
         }
-        return null;
+        return StringUtils.EMPTY;
     }
 
     public void setPassword(String rawPassword) throws UnsupportedEncodingException, GeneralSecurityException {
@@ -100,16 +118,16 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ON_PREMISE_PASSWORD, encryptedPassword, true);
     }
 
-    public AnalyticsProject getProject() throws IOException {
-        String projectJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_PROJECT, StringUtils.EMPTY);
-        if (StringUtils.isNotBlank(projectJson) || !StringUtils.contains(projectJson, "null")) {
-            try {
+    public AnalyticsProject getProject() {
+        try {
+            String projectJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_PROJECT, StringUtils.EMPTY);
+            if (StringUtils.isNotBlank(projectJson) || !StringUtils.contains(projectJson, "null")) {
                 AnalyticsProject project = new AnalyticsProject();
                 project = JsonUtil.fromJson(projectJson, AnalyticsProject.class);
                 return project;
-            } catch (IllegalArgumentException e) {
-                // do nothing
             }
+        } catch (IOException e) {
+            LogUtil.logError(e);
         }
         return null;
     }
@@ -118,16 +136,17 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_PROJECT, JsonUtil.toJson(project));
     }
 
-    public AnalyticsTeam getTeam() throws IOException {
-        String teamJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_TEAM, StringUtils.EMPTY);
-        if (StringUtils.isNotBlank(teamJson)) {
-            try {
+    public AnalyticsTeam getTeam() {
+        try {
+            String teamJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_TEAM, StringUtils.EMPTY);
+            if (StringUtils.isNotBlank(teamJson)) {
+
                 AnalyticsTeam team = new AnalyticsTeam();
                 team = JsonUtil.fromJson(teamJson, AnalyticsTeam.class);
                 return team;
-            } catch (IllegalArgumentException e) {
-                // do nothing
             }
+        } catch (IOException e) {
+            LogUtil.logError(e);
         }
         return null;
     }

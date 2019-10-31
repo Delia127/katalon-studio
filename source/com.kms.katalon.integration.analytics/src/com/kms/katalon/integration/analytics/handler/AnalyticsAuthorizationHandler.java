@@ -189,7 +189,7 @@ public class AnalyticsAuthorizationHandler {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
         return selectionIndex;
@@ -244,7 +244,7 @@ public class AnalyticsAuthorizationHandler {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
         return selectionIndex;
