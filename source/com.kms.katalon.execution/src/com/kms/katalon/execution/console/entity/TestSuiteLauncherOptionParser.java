@@ -36,7 +36,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 
     public static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
 
-    public static List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
+    private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
 
     protected StringConsoleOption testSuitePathOption = new StringConsoleOption() {
 

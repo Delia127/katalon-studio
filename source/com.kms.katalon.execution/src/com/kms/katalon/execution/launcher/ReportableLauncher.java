@@ -37,12 +37,14 @@ import com.kms.katalon.core.testdata.reader.CSVReader;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.console.entity.TestSuiteLauncherOptionParser;
+import com.kms.katalon.execution.console.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
@@ -72,6 +74,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     private Date startTime;
 
     private Date endTime;
+    
+    private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
+    
+    public static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
     
     private TestSuiteLogRecord suiteLogRecord;
 
@@ -180,11 +186,15 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     public Map<String, Object> getOverridingGlobalVariables() {
         Map<String, Object> overridingGlobalVariables = new HashMap<>();
-        TestSuiteLauncherOptionParser.overridingOptions.forEach(a -> {
-            if (a.getOption().startsWith(TestSuiteLauncherOptionParser.OVERRIDING_GLOBAL_VARIABLE_PREFIX)
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject != null && overridingOptions.isEmpty()) {
+            overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
+        }
+        overridingOptions.forEach(a -> {
+            if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX)
                     && a.getValue() != null) {
                 overridingGlobalVariables.put(
-                        a.getOption().replace(TestSuiteLauncherOptionParser.OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
+                        a.getOption().replace(OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
                         String.valueOf(a.getValue()));
             }
         });
