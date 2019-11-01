@@ -23,6 +23,7 @@ import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.util.ApiKey;
+import com.kms.katalon.execution.util.ApiKeyOnPremise;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
@@ -75,8 +76,14 @@ public class AnalyticsReportService implements AnalyticsComponent {
 
         RunningMode runMode = ApplicationRunningMode.get();
         if (runMode == RunningMode.CONSOLE) {
-            String apiKey = ApiKey.get();
-            if (apiKey != null && !apiKey.isEmpty()) {
+            String apiKey = null;
+            if (getSettingStore().isOverrideAuthentication()) {
+                apiKey = ApiKeyOnPremise.get();
+            }
+            if (StringUtils.isEmpty(apiKey)) {
+                apiKey = ApiKey.get();
+            }
+            if (!StringUtils.isEmpty(apiKey)) {
                 return AnalyticsApiProvider.requestToken(serverUrl, "", apiKey);
             } else {
                 LogUtil.printErrorLine(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_SPECIFY_KATALON_API_KEY);
@@ -199,7 +206,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
     }
     
     public void updateExecutionProccess(AnalyticsTestRun testRun) throws AnalyticsApiExeception {
-    	try {
+        try {
             AnalyticsTokenInfo token = getKAToken();
             if (token != null) {
                 String serverUrl = getSettingStore().getServerEndpoint();
