@@ -286,6 +286,11 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     }
     
     @Override
+    public Map<String, Object> getOverridingGlobalVariables() {
+       return overridingParameters;
+    }
+    
+    @Override
     public Map<String, String> getTestSuiteAdditionalData() {
         return Collections.unmodifiableMap(additionalData);
     }
