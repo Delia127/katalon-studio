@@ -23,6 +23,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.google.common.net.UrlEscapers;
 import com.google.common.reflect.TypeToken;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
@@ -396,12 +397,7 @@ public class ObjectRepository {
             requestObject.setSoapBody(substitutor.replace(reqElement.elementText("soapBody")));
         } else if ("RESTful".equals(serviceType)) {
             String rawUrl = reqElement.elementText("restUrl");
-            String url;
-            try {
-                url = buildUrlFromRaw(rawUrl, substitutor);
-            } catch (URISyntaxException e) {
-                url = rawUrl;
-            }
+            String url = buildUrlFromRaw(rawUrl, substitutor);
             requestObject.setRestUrl(url);
             String requestMethod = reqElement.elementText("restRequestMethod");
             requestObject.setRestRequestMethod(requestMethod);
@@ -444,22 +440,28 @@ public class ObjectRepository {
         return requestObject;
     }
     
-    private static String buildUrlFromRaw(String rawUrl, StrSubstitutor substitutor) throws URISyntaxException {
+    private static String buildUrlFromRaw(String rawUrl, StrSubstitutor substitutor) {
         URLBuilder urlBuilder = new URLBuilder(rawUrl);
-        String rawPath = urlBuilder.getPath();
-        List<NameValuePair> rawQueryParams = urlBuilder.getQueryParams();
         
-        URIBuilder uriBuilder = new URIBuilder();
-        String variableExpandedPath = substitutor.replace(rawPath);
-        uriBuilder.setPath(variableExpandedPath);
+        List<NameValuePair> rawQueryParams = urlBuilder.getQueryParams();
+
+        List<NameValuePair> processedQueryParams = new ArrayList<>();
+
         rawQueryParams.stream()
             .forEach(p -> {
                 String variableExpandedName = substitutor.replace(p.getName());
                 String variableExpandedValue = substitutor.replace(p.getValue());
-                uriBuilder.addParameter(variableExpandedName, variableExpandedValue);
+                String escapedName = UrlEscapers.urlFormParameterEscaper().escape(variableExpandedName);
+                String escapedValue = UrlEscapers.urlFormParameterEscaper().escape(variableExpandedValue);
+                processedQueryParams.add(new NameValuePair(escapedName, escapedValue));
             });
         
-        return uriBuilder.build().toString();
+        urlBuilder.setParameters(processedQueryParams);
+        
+        String url = urlBuilder.buildString();
+        url = substitutor.replace(url); //replace the last time if there is still variable expansions in other parts of the URL
+        
+        return url;
     }
     
     @SuppressWarnings("unchecked")
