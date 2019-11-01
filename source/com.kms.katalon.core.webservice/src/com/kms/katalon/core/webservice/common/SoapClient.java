@@ -236,7 +236,6 @@ public class SoapClient extends BasicRequestor {
 
         char[] buffer = new char[1024];
         long bodyLength = 0L;
-        
         try (InputStream inputStream = response.getEntity().getContent()) {
             if (inputStream != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
