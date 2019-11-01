@@ -158,11 +158,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 writeLine(MessageFormat.format(StringConstants.LAU_RPT_RERUN_TEST_SUITE,
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
-                IRunConfiguration newConfig = getRunConfig();
-                newConfig.cloneConfig();
+                IRunConfiguration newConfig = getRunConfig().cloneConfig();
                 if (getRunConfig() instanceof AbstractRunConfiguration
                         && newConfig instanceof AbstractRunConfiguration) {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
+                    ((AbstractRunConfiguration) newConfig)
+                            .setOverridingGlobalVariables(getRunConfig().getOverridingGlobalVariables());
                 }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
