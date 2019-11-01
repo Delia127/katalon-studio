@@ -654,7 +654,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 serverUrl = txtServerUrl.getText();
                 email = txtEmail.getText();
                 password = txtPassword.getText();
-                if (isNoInfo()) {
+                if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
                     setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
                 } else {
                     connectOnPremise();
