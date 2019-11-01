@@ -617,15 +617,17 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 txtEmail.setText(email);
                 txtPassword.setText(password);
                 txtServerUrl.setText(serverUrl);
-                if (!StringUtils.isEmpty(organization.getName())) {
-                    organizationsOnPremise.clear();
-                    organizationsOnPremise.add(organization);
+                if (organization != null) {
                     if (!StringUtils.isEmpty(organization.getName())) {
-                        cbbOrganization.setItems(
-                                AnalyticsAuthorizationHandler.getOrganizationNames(organizationsOnPremise).toArray(new String[organizationsOnPremise.size()]));
-                        cbbOrganization.select(0);
-                    } else {
-                        cbbOrganization.setItems();
+                        organizationsOnPremise.clear();
+                        organizationsOnPremise.add(organization);
+                        if (!StringUtils.isEmpty(organization.getName())) {
+                            cbbOrganization.setItems(
+                                    AnalyticsAuthorizationHandler.getOrganizationNames(organizationsOnPremise).toArray(new String[organizationsOnPremise.size()]));
+                            cbbOrganization.select(0);
+                        } else {
+                            cbbOrganization.setItems();
+                        }
                     }
                 }
                 if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
