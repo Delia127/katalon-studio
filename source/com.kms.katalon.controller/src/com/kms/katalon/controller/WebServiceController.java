@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 
+import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.HttpBodyContent;
@@ -69,12 +70,7 @@ public class WebServiceController extends EntityController {
             requestObject.setSoapBody(substitutor.replace(entity.getSoapBody()));
         } else if ("RESTful".equals(serviceType)) {
             String rawUrl = entity.getRestUrl();
-            String url;
-            try {
-                url = buildUrlFromRaw(rawUrl, substitutor);
-            } catch (URISyntaxException e) {
-                url = rawUrl;
-            }
+            String url = buildUrlFromRaw(rawUrl, substitutor);
             requestObject.setRestUrl(url);
             requestObject.setRestRequestMethod(entity.getRestRequestMethod());
             requestObject.setRestParameters(parseProperties(entity.getRestParameters(), new StrSubstitutor()));
@@ -105,22 +101,28 @@ public class WebServiceController extends EntityController {
         return requestObject;
     }
     
-    private static String buildUrlFromRaw(String rawUrl, StrSubstitutor substitutor) throws URISyntaxException {
+    private static String buildUrlFromRaw(String rawUrl, StrSubstitutor substitutor) {
         URLBuilder urlBuilder = new URLBuilder(rawUrl);
-        String rawPath = urlBuilder.getPath();
-        List<NameValuePair> rawQueryParams = urlBuilder.getQueryParams();
         
-        URIBuilder uriBuilder = new URIBuilder();
-        String variableExpandedPath = substitutor.replace(rawPath);
-        uriBuilder.setPath(variableExpandedPath);
+        List<NameValuePair> rawQueryParams = urlBuilder.getQueryParams();
+
+        List<NameValuePair> processedQueryParams = new ArrayList<>();
+
         rawQueryParams.stream()
             .forEach(p -> {
                 String variableExpandedName = substitutor.replace(p.getName());
                 String variableExpandedValue = substitutor.replace(p.getValue());
-                uriBuilder.addParameter(variableExpandedName, variableExpandedValue);
+                String escapedName = UrlEscapers.urlFormParameterEscaper().escape(variableExpandedName);
+                String escapedValue = UrlEscapers.urlFormParameterEscaper().escape(variableExpandedValue);
+                processedQueryParams.add(new NameValuePair(escapedName, escapedValue));
             });
         
-        return uriBuilder.build().toString();
+        urlBuilder.setParameters(processedQueryParams);
+        
+        String url = urlBuilder.buildString();
+        url = substitutor.replace(url); //replace the last time if there is still variable expansions in other parts of the URL
+        
+        return url;
     }
 
     private static boolean isBodySupported(RequestObject requestObject) {
