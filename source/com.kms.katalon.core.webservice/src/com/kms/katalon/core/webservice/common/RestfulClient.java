@@ -13,7 +13,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.ByteArrayEntity;
@@ -217,19 +214,16 @@ public class RestfulClient extends BasicRequestor {
         	// ignored - don't let tests fail just because charset could not be detected
         }
         
-        HttpEntity responseEntity = response.getEntity();
-        if (responseEntity != null) {
-            try (InputStream inputStream = responseEntity.getContent()) {
-                if (inputStream != null) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
-                    int len = 0;
+        try (InputStream inputStream = response.getEntity().getContent()) {
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
+                int len = 0;
+                startTime = System.currentTimeMillis();
+                while ((len = reader.read(buffer)) != -1) {
+                    contentDownloadTime += System.currentTimeMillis() - startTime;
+                    sb.append(buffer, 0, len);
+                    bodyLength += len;
                     startTime = System.currentTimeMillis();
-                    while ((len = reader.read(buffer)) != -1) {
-                        contentDownloadTime += System.currentTimeMillis() - startTime;
-                        sb.append(buffer, 0, len);
-                        bodyLength += len;
-                        startTime = System.currentTimeMillis();
-                    }
                 }
             }
         }
@@ -261,10 +255,6 @@ public class RestfulClient extends BasicRequestor {
                 headerFields.put(name, new ArrayList<>());
             }
             headerFields.get(name).add(header.getValue());
-        }
-        StatusLine statusLine = httpResponse.getStatusLine();
-        if (statusLine != null) {
-            headerFields.put("#status#", Arrays.asList(String.valueOf(statusLine)));
         }
         return headerFields;
     }
