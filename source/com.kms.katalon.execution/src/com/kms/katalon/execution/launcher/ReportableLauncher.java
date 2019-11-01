@@ -75,10 +75,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     private Date endTime;
     
-    private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
-    
-    private  static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
-    
     private TestSuiteLogRecord suiteLogRecord;
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
@@ -167,12 +163,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 writeLine(MessageFormat.format(StringConstants.LAU_RPT_RERUN_TEST_SUITE,
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
-                IRunConfiguration newConfig = getRunConfig().cloneConfig();
+                IRunConfiguration newConfig = getRunConfig();
+                newConfig.cloneConfig();
                 if (getRunConfig() instanceof AbstractRunConfiguration
                         && newConfig instanceof AbstractRunConfiguration) {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
                 }
-                newConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
                 rerunLauncher.getManager().addLauncher(rerunLauncher);
@@ -182,23 +178,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 LogUtil.logError(e);
             }
         }
-    }
-    
-    public Map<String, Object> getOverridingGlobalVariables() {
-        Map<String, Object> overridingGlobalVariables = new HashMap<>();
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        if (currentProject != null && overridingOptions.isEmpty()) {
-            overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
-        }
-        overridingOptions.forEach(a -> {
-            if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX)
-                    && a.getValue() != null) {
-                overridingGlobalVariables.put(
-                        a.getOption().replace(OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
-                        String.valueOf(a.getValue()));
-            }
-        });
-        return overridingGlobalVariables;
     }
 
     protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {
