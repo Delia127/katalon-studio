@@ -631,8 +631,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     }
                 }
                 if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
-                    enableIntegration();
                     enableAnalyticsIntegration.setSelection(false);
+                    enableIntegration();
                 } 
                 enableAuthentiacation(enableOverrideAuthentication.getSelection());
             }
