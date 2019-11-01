@@ -107,13 +107,13 @@ public class WebServiceController extends EntityController {
     
     private static String buildUrlFromRaw(String rawUrl, StrSubstitutor substitutor) throws URISyntaxException {
         URLBuilder urlBuilder = new URLBuilder(rawUrl);
-        String path = urlBuilder.getPath();
-        List<NameValuePair> queryParams = urlBuilder.getQueryParams();
+        String rawPath = urlBuilder.getPath();
+        List<NameValuePair> rawQueryParams = urlBuilder.getQueryParams();
         
         URIBuilder uriBuilder = new URIBuilder();
-        String variableExpandedPath = substitutor.replace(path);
+        String variableExpandedPath = substitutor.replace(rawPath);
         uriBuilder.setPath(variableExpandedPath);
-        queryParams.stream()
+        rawQueryParams.stream()
             .forEach(p -> {
                 String variableExpandedName = substitutor.replace(p.getName());
                 String variableExpandedValue = substitutor.replace(p.getValue());
