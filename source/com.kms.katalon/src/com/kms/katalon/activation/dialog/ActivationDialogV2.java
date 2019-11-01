@@ -168,7 +168,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String serverUrl = txtServerUrl.getText();
+                String serverUrl = txtServerUrl.getText().replace(" ", "");
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
 
@@ -369,7 +369,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     @Override
     protected void setInput() {
-        txtServerUrl.setText(ApplicationInfo.getTestOpsServer());
+        txtServerUrl.setText(ApplicationInfo.getDefaultTestOpsServer());
         btnActivate.setEnabled(validateInput());
     }
 
@@ -420,6 +420,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         txtEmail = new Text(contentComposite, SWT.BORDER);
         txtEmail.setLayoutData(gdText);
+        txtEmail.setFocus();
 
         Label lblPassword = new Label(contentComposite, SWT.NONE);
         lblPassword.setLayoutData(gdLabel);
