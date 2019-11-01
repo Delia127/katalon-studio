@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.constants.CoreConstants;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
@@ -28,7 +29,7 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     
     public static final Boolean DEFAULT_SMART_WAIT_MODE = true;
     
-    public static final Boolean DEFAULT_LOG_TEST_STEPS = true;
+    public static final Boolean DEFAULT_LOG_TEST_STEPS = CoreConstants.DEFAULT_LOG_TEST_STEPS;
 
     public static ExecutionDefaultSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();

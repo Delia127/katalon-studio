@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.CoreConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.main.ScriptEngine;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
@@ -75,7 +76,7 @@ public class KeywordLogger {
 		} else {
 			shouldLogTestSteps = (boolean) Optional
 	                .ofNullable(executionProperties.get(RunConfiguration.LOG_TEST_STEPS))
-	                .orElse(false);
+	                .orElse(CoreConstants.DEFAULT_LOG_TEST_STEPS);
 		}
 	}
     
