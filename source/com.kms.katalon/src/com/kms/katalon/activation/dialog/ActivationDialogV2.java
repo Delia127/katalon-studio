@@ -168,7 +168,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String serverUrl = txtServerUrl.getText().replace(" ", "");
+                String serverUrl = txtServerUrl.getText().trim();
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
 
