@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.List;
@@ -156,7 +157,7 @@ public class KStoreRestClient {
             addAuthenticationHeaders(credentials, post);
             
             String content = JsonUtil.toJson(credentials);
-            StringEntity requestEntity = new StringEntity(content);
+            StringEntity requestEntity = new StringEntity(content, StandardCharsets.UTF_8.name());
             post.setEntity(requestEntity);
             post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
