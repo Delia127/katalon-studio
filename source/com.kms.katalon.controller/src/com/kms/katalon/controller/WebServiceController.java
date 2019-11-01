@@ -2,6 +2,7 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
@@ -28,6 +30,8 @@ import com.kms.katalon.core.webservice.common.ServiceRequestFactory;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
+import com.kms.katalon.util.URLBuilder;
+import com.kms.katalon.util.collections.NameValuePair;
 
 import groovy.text.GStringTemplateEngine;
 
@@ -64,7 +68,14 @@ public class WebServiceController extends EntityController {
             requestObject.setHttpHeaderProperties(parseProperties(entity.getHttpHeaderProperties(), substitutor));
             requestObject.setSoapBody(substitutor.replace(entity.getSoapBody()));
         } else if ("RESTful".equals(serviceType)) {
-            requestObject.setRestUrl(substitutor.replace(entity.getRestUrl()));
+            String rawUrl = entity.getRestUrl();
+            String url;
+            try {
+                url = buildUrlFromRaw(rawUrl, substitutor);
+            } catch (URISyntaxException e) {
+                url = rawUrl;
+            }
+            requestObject.setRestUrl(url);
             requestObject.setRestRequestMethod(entity.getRestRequestMethod());
             requestObject.setRestParameters(parseProperties(entity.getRestParameters(), new StrSubstitutor()));
             requestObject
@@ -92,6 +103,24 @@ public class WebServiceController extends EntityController {
         requestObject.setFollowRedirects(followRedirects);
         
         return requestObject;
+    }
+    
+    private static String buildUrlFromRaw(String rawUrl, StrSubstitutor substitutor) throws URISyntaxException {
+        URLBuilder urlBuilder = new URLBuilder(rawUrl);
+        String rawPath = urlBuilder.getPath();
+        List<NameValuePair> rawQueryParams = urlBuilder.getQueryParams();
+        
+        URIBuilder uriBuilder = new URIBuilder();
+        String variableExpandedPath = substitutor.replace(rawPath);
+        uriBuilder.setPath(variableExpandedPath);
+        rawQueryParams.stream()
+            .forEach(p -> {
+                String variableExpandedName = substitutor.replace(p.getName());
+                String variableExpandedValue = substitutor.replace(p.getValue());
+                uriBuilder.addParameter(variableExpandedName, variableExpandedValue);
+            });
+        
+        return uriBuilder.build().toString();
     }
 
     private static boolean isBodySupported(RequestObject requestObject) {
