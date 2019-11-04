@@ -342,4 +342,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE = ComposerExecutionMessageConstants.DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
     
     public static final String REPORT_MSG_MUST_ENTER_API_KEY = ComposerExecutionMessageConstants.REPORT_MSG_MUST_ENTER_API_KEY;
+
+    public static final String PREF_LBL_VIEWPORT_ITERATION_NUMBER = ComposerExecutionMessageConstants.PREF_LBL_VIEWPORT_ITERATION_NUMBER;
+    
+    public static final String PREF_LBL_VIEWPORT_SCROLL_FACTOR = ComposerExecutionMessageConstants.PREF_LBL_VIEWPORT_SCROLL_FACTOR;
+    
 }

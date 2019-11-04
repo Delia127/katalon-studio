@@ -371,6 +371,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     public static String REPORT_MSG_MUST_ENTER_API_KEY;
 
+    public static String PREF_LBL_VIEWPORT_ITERATION_NUMBER;
+
+    public static String PREF_LBL_VIEWPORT_SCROLL_FACTOR;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);

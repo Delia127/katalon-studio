@@ -39,7 +39,9 @@ public class ImageLocatorController {
     /**
      * Retrieve image at the given path, then look for similar images using
      * Sikuli. Given a matched image's position, use the coordinates to retrieve
-     * the corresponding web element and add it to the resulting list
+     * the corresponding web element and add it to the resulting list. Scroll the page
+     * using specs specified by user in Project > Settings > Execution and 
+     * apply the above procedure.
      * 
      * @param webDriver
      * @param pathToScreenshot
@@ -47,19 +49,19 @@ public class ImageLocatorController {
      */
     public static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot) {
         ScreenUtil screen = new ScreenUtil(0.2);
-        logger.logInfo("Attempting to find element by its screenshot !");
+        logger.logInfo("Finding element by its screenshot !");
         Map<ScreenRegion, List<WebElement>> mapOfCandidates = new HashMap<ScreenRegion, List<WebElement>>();
         int iterationCount = 0;
         int iterationNumber = RunConfiguration.getViewportIterationNumber();
-        int viewPortHeight = ((Number) ((JavascriptExecutor) webDriver)
+        int viewPortScrolLFactor = ((Number) ((JavascriptExecutor) webDriver)
                 .executeScript("return window.innerHeight")).intValue();
-        viewPortHeight = 100;
+        viewPortScrolLFactor = RunConfiguration.getViewPortHeightScrollFactor();
         do {
             File screenshotFile = new File(pathToScreenshot);
             String path = screenshotFile.getParent() + "/sikuli-generated";
             File tmpFile = new File(path);
             try {
-                if (!scroll(webDriver, iterationCount * viewPortHeight)) {
+                if (!scroll(webDriver, iterationCount * viewPortScrolLFactor)) {
                     break;
                 }
                 List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
@@ -69,7 +71,6 @@ public class ImageLocatorController {
                 }
                 ScreenRegion matchedRegion = matchedRegions.get(0);
                 Point coordinatesRelativeToDriver = getCoordinatesRelativeToWebDriver(webDriver, matchedRegion);
-                logger.logInfo("Highest matched region: " + matchedRegion.getScore());
                 double xRelativeToDriver = coordinatesRelativeToDriver.getX();
                 double yRelativeToDriver = coordinatesRelativeToDriver.getY();
                 List<WebElement> elementsAtPointXandY = elementsFromPoint(webDriver, xRelativeToDriver,

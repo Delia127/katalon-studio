@@ -116,6 +116,10 @@ public class RunConfiguration {
     
     private static String settingFilePath;
 
+    public static String VIEWPORT_SCROLL_FACTOR = "viewPortScrollFactor";
+    
+    public static String VIEWPORT_ITERATION_NUMBER = "viewPortIterationNumber";
+
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>(){
         @Override
         protected Map<String, Object> initialValue() {
@@ -582,6 +586,18 @@ public class RunConfiguration {
     }
 
     public static int getViewportIterationNumber() {
-        return 13;
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return 100;
+        }
+        return (int) generalProperties.getOrDefault(RunConfiguration.VIEWPORT_ITERATION_NUMBER, 100);
+    }
+
+    public static int getViewPortHeightScrollFactor() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return 10;
+        }
+        return (int) generalProperties.getOrDefault(RunConfiguration.VIEWPORT_SCROLL_FACTOR, 10);
     }
 }
