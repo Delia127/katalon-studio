@@ -209,7 +209,7 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     public void setViewPortScrolLFactor(int value) throws IOException {
         setProperty(ExecutionDefaultSettingConstants.WEB_UI_VIEWPORT_SCROLL_FACTOR, value);
     }
-    
+
     public int getViewPortIterationNumber() {
         try {
             return getInt(ExecutionDefaultSettingConstants.WEB_UI_VIEWPORT_ITERATION_NUMBER,

@@ -40,7 +40,7 @@ public class ImageLocatorController {
      * Retrieve image at the given path, then look for similar images using
      * Sikuli. Given a matched image's position, use the coordinates to retrieve
      * the corresponding web element and add it to the resulting list. Scroll the page
-     * using specs specified by user in Project > Settings > Execution and 
+     * using specs specified by user in Project > Settings > Execution and
      * apply the above procedure.
      * 
      * @param webDriver
@@ -102,9 +102,10 @@ public class ImageLocatorController {
             return 0;
         }).map(entry -> entry.getValue()).orElse(Collections.emptyList());
     }
-    
+
     /**
      * Scroll the current page by the provided distance
+     * 
      * @param webDriver
      * @param heightPos
      * @return
@@ -121,7 +122,8 @@ public class ImageLocatorController {
         return false;
     }
 
-    private static void sortMinimizingDifferencesInSize(List<WebElement> elementsAtPointXandY, ScreenRegion matchedRegion) {
+    private static void sortMinimizingDifferencesInSize(List<WebElement> elementsAtPointXandY,
+            ScreenRegion matchedRegion) {
         elementsAtPointXandY.sort((ele1, ele2) -> {
             double ele1H = getDifferenceInSizeHeuristic(ele1, matchedRegion);
             double ele2H = getDifferenceInSizeHeuristic(ele2, matchedRegion);
@@ -251,7 +253,8 @@ public class ImageLocatorController {
      * @throws IOException
      */
     @SuppressWarnings("unused")
-    private static void sikuliDebug(File screenshotFile, List<ScreenRegion> matchedRegions, int iter) throws IOException {
+    private static void sikuliDebug(File screenshotFile, List<ScreenRegion> matchedRegions, int iter)
+            throws IOException {
         String imageFolderPath = screenshotFile.getParent() + "/sikuli-" + iter + "/"
                 + screenshotFile.getName().replaceAll(".png", "");
         File imageFolder = new File(imageFolderPath + "/target.png");

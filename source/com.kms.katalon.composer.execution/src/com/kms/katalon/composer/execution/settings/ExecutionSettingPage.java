@@ -163,12 +163,12 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         lblViewPortScrollFactor.setText(StringConstants.PREF_LBL_VIEWPORT_SCROLL_FACTOR);
         GridData gdlViewPortScrollFactor = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         lblViewPortScrollFactor.setLayoutData(gdlViewPortScrollFactor);
-        
+
         txtViewPortScrollFactor = new Text(comp, SWT.BORDER);
         GridData gdTxtViewPortScrollFactor = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdTxtViewPortScrollFactor.widthHint = INPUT_WIDTH * 2;
         txtViewPortScrollFactor.setLayoutData(gdTxtViewPortScrollFactor);
-        
+
         Label lblViewPortIterationNumber = new Label(comp, SWT.NONE);
         lblViewPortIterationNumber.setText(StringConstants.PREF_LBL_VIEWPORT_ITERATION_NUMBER);
         GridData gdLblViewPortIterationNumber = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -360,7 +360,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         Boolean selectedLogTestSteps = defaultSettingStore.getLogTestSteps();
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(selectedLogTestSteps.booleanValue() ? 0 : 1);
-        
+
         txtViewPortScrollFactor.setText(Integer.toString(defaultSettingStore.getViewPortScrollFactor()));
         txtViewPortIterationNumber.setText(Integer.toString(defaultSettingStore.getViewPortIterationNumber()));
         
