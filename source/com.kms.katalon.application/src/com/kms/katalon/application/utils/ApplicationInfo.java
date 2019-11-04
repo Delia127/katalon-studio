@@ -202,10 +202,26 @@ public class ApplicationInfo {
 
     public static void setTestOpsServer(String serverUrl) {
         setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, serverUrl, true);
+        TestOpsServerURL.set(serverUrl);
+    }
+
+    public static String getDefaultTestOpsServer() {
+        String server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+        if (StringUtils.isEmpty(server)) {
+            server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
+        }
+        if (server.endsWith("/")) {
+            server = server.substring(0, server.length() - 1);
+        }
+        return server;
     }
 
     public static String getTestOpsServer() {
-        String server = getAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+        String serverFromMemory = TestOpsServerURL.get();
+        String server = serverFromMemory;
+        if (StringUtils.isEmpty(serverFromMemory)) {
+            server = getAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+        }
         if (StringUtils.isEmpty(server)) {
             server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
         }
@@ -214,6 +230,12 @@ public class ApplicationInfo {
         }
         if (server.endsWith("/")) {
             server = server.substring(0, server.length() - 1);
+        }
+
+        // If server from memory is null
+        // make sure that after the server URL is always received from memory 
+        if (StringUtils.isEmpty(serverFromMemory)) {
+            TestOpsServerURL.set(server);
         }
         return server;
     }

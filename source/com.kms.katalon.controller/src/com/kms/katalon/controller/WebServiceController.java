@@ -2,6 +2,7 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 
+import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.HttpBodyContent;
@@ -28,6 +31,8 @@ import com.kms.katalon.core.webservice.common.ServiceRequestFactory;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
+import com.kms.katalon.util.URLBuilder;
+import com.kms.katalon.util.collections.NameValuePair;
 
 import groovy.text.GStringTemplateEngine;
 
@@ -64,7 +69,9 @@ public class WebServiceController extends EntityController {
             requestObject.setHttpHeaderProperties(parseProperties(entity.getHttpHeaderProperties(), substitutor));
             requestObject.setSoapBody(substitutor.replace(entity.getSoapBody()));
         } else if ("RESTful".equals(serviceType)) {
-            requestObject.setRestUrl(substitutor.replace(entity.getRestUrl()));
+            String rawUrl = entity.getRestUrl();
+            String url = buildUrlFromRaw(rawUrl, substitutor);
+            requestObject.setRestUrl(url);
             requestObject.setRestRequestMethod(entity.getRestRequestMethod());
             requestObject.setRestParameters(parseProperties(entity.getRestParameters(), new StrSubstitutor()));
             requestObject
@@ -92,6 +99,30 @@ public class WebServiceController extends EntityController {
         requestObject.setFollowRedirects(followRedirects);
         
         return requestObject;
+    }
+    
+    private static String buildUrlFromRaw(String rawUrl, StrSubstitutor substitutor) {
+        URLBuilder urlBuilder = new URLBuilder(rawUrl);
+        
+        List<NameValuePair> rawQueryParams = urlBuilder.getQueryParams();
+
+        List<NameValuePair> processedQueryParams = new ArrayList<>();
+
+        rawQueryParams.stream()
+            .forEach(p -> {
+                String variableExpandedName = substitutor.replace(p.getName());
+                String variableExpandedValue = substitutor.replace(p.getValue());
+                String escapedName = UrlEscapers.urlFormParameterEscaper().escape(variableExpandedName);
+                String escapedValue = UrlEscapers.urlFormParameterEscaper().escape(variableExpandedValue);
+                processedQueryParams.add(new NameValuePair(escapedName, escapedValue));
+            });
+        
+        urlBuilder.setParameters(processedQueryParams);
+        
+        String url = urlBuilder.buildString();
+        url = substitutor.replace(url); //replace the last time if there is still variable expansions in other parts of the URL
+        
+        return url;
     }
 
     private static boolean isBodySupported(RequestObject requestObject) {

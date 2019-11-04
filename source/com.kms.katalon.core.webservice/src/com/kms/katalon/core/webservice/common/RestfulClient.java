@@ -149,7 +149,7 @@ public class RestfulClient extends BasicRequestor {
     
     private static BaseHttpRequest getHttpRequest(RequestObject request) throws UnsupportedOperationException, IOException {
         BaseHttpRequest httpRequest;
-        String url = escapeUrl(request.getRestUrl());
+        String url = request.getRestUrl();
         if (isBodySupported(request.getRestRequestMethod()) && request.getBodyContent() != null) {
             httpRequest = new DefaultHttpEntityEnclosingRequest(url);
             ByteArrayOutputStream outstream = new ByteArrayOutputStream();
