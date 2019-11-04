@@ -50,5 +50,6 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.custom,
  com.kms.katalon.groovy,
  com.kms.katalon.util,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ com.kms.katalon.composer.objectrepository
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

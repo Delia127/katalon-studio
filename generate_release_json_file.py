@@ -9,31 +9,25 @@ def generate_release_json_file(file_path, version):
     "os": "macOS (app)",
     "version": "${version}",
     "filename": "Katalon.Studio.app.zip",
-    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.app.zip"
-},
-{
-    "os": "macOS (dmg)",
-    "version": "${version}",
-    "filename": "Katalon.Studio.dmg",
-    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg"
+    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Engine_MacOS-${version}.tar.gz"
 },
 {
     "os": "Linux",
     "version": "${version}",
     "filename": "Katalon_Studio_Linux_64-${version}.tar.gz",
-    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Linux_64-${version}.tar.gz"
+    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Engine_Linux_64-${version}.tar.gz"
 },
 {
     "os": "Windows 32",
     "version": "${version}",
     "filename": "Katalon_Studio_Windows_32-${version}.zip",
-    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_32-${version}.zip"
+    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Engine_Windows_32-${version}.zip"
 },
 {
     "os": "Windows 64",
     "version": "${version}",
     "filename": "Katalon_Studio_Windows_64-${version}.zip",
-    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip"
+    "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Engine_Windows_64-${version}.zip"
 },
 """)
     releases = releases_template.substitute(version = version)

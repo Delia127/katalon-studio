@@ -20,7 +20,7 @@ public class OpenPlanGridExecutionHandler {
         try {
             AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                     ProjectController.getInstance().getCurrentProject().getFolderLocation());
-            String serverUrl = analyticsSettingStore.getServerEndpoint(true);
+            String serverUrl = analyticsSettingStore.getServerEndpoint();
             long teamId = analyticsSettingStore.getTeam().getId();
             long projectId = analyticsSettingStore.getProject().getId();
 

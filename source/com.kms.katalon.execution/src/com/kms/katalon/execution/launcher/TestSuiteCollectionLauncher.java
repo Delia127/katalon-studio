@@ -1,20 +1,26 @@
 package com.kms.katalon.execution.launcher;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
+import com.kms.katalon.core.reporting.ReportUtil;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
@@ -30,9 +36,10 @@ import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
-import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.execution.launcher.result.TestSuiteCollectionLauncherResult;
 import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
@@ -41,7 +48,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     protected List<ReportableLauncher> subLaunchers;
 
-    private LauncherResult result;
+    private TestSuiteCollectionLauncherResult result;
 
     protected TestSuiteCollectionLauncherManager subLauncherManager;
 
@@ -71,7 +78,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         for (ReportableLauncher subLauncher : subLaunchers) {
             subLauncher.setExecutionUUID(super.getExecutionUUID());
         }
-        this.result = new LauncherResult(executedEntity.getTotalTestCases());
+        this.result = new TestSuiteCollectionLauncherResult(this, executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
         this.executedEntity = executedEntity;
         this.executionMode = executionMode;
@@ -139,20 +146,59 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                         return;
                     }
                 }
+                
+                endTime = new Date();
+                
+                prepareReport();
+                
                 setStatus(LauncherStatus.UPLOAD_REPORT);
-                reportLauncher.uploadReportTestSuiteCollection(reportCollection.getReportItemDescriptions(),
-                        reportCollection.getLocation());
+                reportLauncher.uploadReportTestSuiteCollection(
+                        reportCollection.getReportItemDescriptions(),
+                        reportCollection.getParentFolder().getLocation());
                 setStatus(LauncherStatus.DONE);
                 postExecution();
             }
         });
         watchDog.start();
     }
+    
+    private TestSuiteCollectionLogRecord prepareReport() {
+        try {
+            List<TestSuiteLogRecord> suiteLogRecords = new ArrayList<>();
+            for (ReportableLauncher subLauncher : subLaunchers) {
+                TestSuiteLogRecord suiteLogRecord = subLauncher.getTestSuiteLogRecord();
+                if (suiteLogRecord != null) {
+                   suiteLogRecords.add(suiteLogRecord); 
+                }
+            }
+
+            TestSuiteCollectionLogRecord suiteCollectionLogRecord = new TestSuiteCollectionLogRecord();
+            suiteCollectionLogRecord.setTestSuiteCollectionId(executedEntity.getEntity().getName());
+            suiteCollectionLogRecord.setTestSuiteRecords(suiteLogRecords);
+            suiteCollectionLogRecord.setStartTime(startTime != null ? startTime.getTime() : 0L);
+            suiteCollectionLogRecord.setEndTime(endTime != null ? endTime.getTime() : 0L);
+            suiteCollectionLogRecord.setTotalPassedTestCases(String.valueOf(result.getNumPasses()));
+            suiteCollectionLogRecord.setTotalFailedTestCases(String.valueOf(result.getNumFailures()));
+            suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
+            suiteCollectionLogRecord.setTotalTestCases(String.valueOf(result.getExecutedTestCases()));
+
+            if (LicenseUtil.isNotFreeLicense()) {
+                ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
+            }
+
+            return suiteCollectionLogRecord;
+        } catch(Exception e) {
+            LogUtil.printAndLogError(e);
+            return null;
+        }
+    }
+    
+    protected File getReportFolder() {
+        return new File(reportCollection.getParentFolder().getLocation());
+    }
 
     protected void postExecution() {
         schedule();
-
-        endTime = new Date();
         
         sendTrackingActivity();
         
@@ -253,7 +299,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         subReportableLauncher.setParentLauncher(this);
 
         ILauncherResult subLauncherResult = subLauncher.getResult();
-        LauncherResult newResult = new LauncherResult(
+        TestSuiteCollectionLauncherResult newResult = new TestSuiteCollectionLauncherResult(this,
                 result.getTotalTestCases() + subLauncherResult.getTotalTestCases());
         newResult.setNumPasses(result.getNumPasses() + subLauncherResult.getNumPasses());
         newResult.setNumFailures(result.getNumFailures() + subLauncherResult.getNumFailures());

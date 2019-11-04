@@ -4,8 +4,14 @@
 # https://aka.ms/yaml
 
 trigger: 
-- staging-*
+# - staging-*
 - release-*
+
+# pr:
+# - staging-*
+# - release-*
+
+pr: none
 
 variables:
   BRANCH: $(Build.SourceBranchName)
@@ -98,10 +104,10 @@ steps:
   env:
     GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(TMP_DIR)'
-    ArtifactName: 'katalon-build'
-    publishLocation: 'Container'
-  displayName: Collect Artifacts
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     PathtoPublish: '$(TMP_DIR)'
+#     ArtifactName: 'katalon-build'
+#     publishLocation: 'Container'
+#   displayName: Collect Artifacts
     

@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -51,7 +52,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -81,6 +81,7 @@ import com.kms.katalon.composer.windows.element.CapturedWindowsElementConverter;
 import com.kms.katalon.composer.windows.element.TreeWindowsElement;
 import com.kms.katalon.composer.windows.spy.CapturedWindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.spy.CapturedWindowsObjectTableViewer;
+import com.kms.katalon.composer.windows.spy.HighlightElementComposite;
 import com.kms.katalon.composer.windows.spy.SelectableWindowsElementEditingSupport;
 import com.kms.katalon.composer.windows.spy.WindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
@@ -97,11 +98,9 @@ import com.kms.katalon.tracking.service.Trackings;
 
 public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialog {
 
-    public static final Point DIALOG_SIZE = new Point(800, 800);
+    public static final Point DIALOG_SIZE = new Point(1200, 800);
 
     private static final String DIALOG_TITLE = "Spy Windows Objects";
-
-    private static final int DIALOG_MARGIN_OFFSET = 5;
 
     private CheckboxTreeViewer allElementTreeViewer;
 
@@ -113,7 +112,10 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
     private WindowsInspectorController inspectorController;
 
-    private WindowsDeviceDialog deviceView;
+    @Override
+    public WindowsInspectorController getInspectorController() {
+        return this.inspectorController;
+    }
 
     private Composite container;
 
@@ -128,6 +130,10 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
     private Composite appsComposite;
 
     private WindowsAppComposite mobileComposite;
+
+    private HighlightElementComposite highlightElementComposite;
+
+    private WindowsScreenView screenComposite;
 
     private static WindowsSpyObjectDialog instance;
 
@@ -174,16 +180,17 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
         propertiesComposite = new WindowsElementPropertiesComposite(this);
         propertiesComposite.createObjectPropertiesComposite(hSashForm);
+        
+        createHighlightElementComposite(hSashForm);
 
-        hSashForm.setWeights(new int[] { 1, 1 });
+        hSashForm.setWeights(new int[] { 4, 6, 1 });
         leftSashForm.setContent(explorerComposite);
 
-        ScrolledComposite rightSashForm = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
-        rightSashForm.setExpandHorizontal(true);
-        rightSashForm.setExpandVertical(true);
-        rightSashForm.setMinSize(280, 400);
+        ScrolledComposite middleSashForm = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+        middleSashForm.setExpandHorizontal(true);
+        middleSashForm.setExpandVertical(true);
 
-        Composite contentComposite = new Composite(rightSashForm, SWT.BORDER);
+        Composite contentComposite = new Composite(middleSashForm, SWT.BORDER);
         contentComposite.setLayout(layout);
 
         addStartStopToolbar(contentComposite);
@@ -191,11 +198,13 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         createSettingComposite(contentComposite);
 
         createAllObjectsComposite(contentComposite);
-        rightSashForm.setContent(contentComposite);
+        middleSashForm.setContent(contentComposite);
 
-        sashForm.setWeights(new int[] { 5, 5 });
+        createScreenViewComposite(sashForm);
 
-        new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_OBJECT_SPY_MOBILE);
+        sashForm.setWeights(new int[] { 5, 5, 6 });
+
+        new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_WINDOWS_SPY);
 
         return container;
     }
@@ -251,20 +260,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 CapturedWindowsElement firstElement = (CapturedWindowsElement) selection.getFirstElement();
                 propertiesComposite.setEditingElement(firstElement);
-            }
-        });
-
-        capturedObjectsTableViewer.getTable().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseDown(MouseEvent e) {
-                if (e.button != 1) {
-                    return;
-                }
-                Point pt = new Point(e.x, e.y);
-                TableItem item = capturedObjectsTableViewer.getTable().getItem(pt);
-                if (item != null) {
-                    highlightObject((CapturedWindowsElement) item.getData());
-                }
+                highlightElementComposite.setEditingElement(firstElement);
             }
         });
 
@@ -349,6 +345,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         capturedObjectsTableViewer.removeCapturedElements(Arrays.asList(elements));
 
         propertiesComposite.setEditingElement(null);
+        highlightElementComposite.setEditingElement(null);
     }
 
     private void clearAllObjectState(CapturedWindowsElement[] elements) {
@@ -426,6 +423,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
                         capturedObjectsTableViewer.removeCapturedElement(capturedElement);
                         selectedElement.setCapturedElement(null);
                         propertiesComposite.setEditingElement(null);
+                        highlightElementComposite.setEditingElement(null);
                     }
                 }
                 allElementTreeViewer.refresh(selectedElement);
@@ -481,6 +479,17 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         appsComposite.setLayout(new FillLayout());
 
         mobileComposite.createComposite(appsComposite, SWT.NONE, this);
+    }
+
+    private Control createHighlightElementComposite(Composite parent) {
+        highlightElementComposite = new HighlightElementComposite(this);
+        Control control = highlightElementComposite.createComposite(parent);
+        return control;
+    }
+    
+    private Control createScreenViewComposite(Composite parent) {
+        screenComposite = new WindowsScreenView(this);
+        return screenComposite.createControls(parent);
     }
 
     public void updateSelectedElement(CapturedWindowsElement selectedElement) {
@@ -553,45 +562,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
         btnAdd.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(
-                            getParentShell());
-                    if (dialog.open() != Dialog.OK) {
-                        return;
-                    }
-                    FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
-                    FolderEntity folder = folderTreeEntity.getObject();
-                    List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
-                    Trackings.trackSaveSpy("windows", newTreeEntities.size());
-                    removeSelectedCapturedElements(
-                            capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedWindowsElement[0]));
-                    updateExplorerState(folderTreeEntity, newTreeEntities);
-                } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
-                    MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
-                }
-            }
-
-            private void updateExplorerState(FolderTreeEntity folderTreeEntity, List<ITreeEntity> newTreeEntities) {
-                IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-                eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, folderTreeEntity);
-                eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newTreeEntities.toArray());
-            }
-
-            private List<ITreeEntity> addElementsToRepository(FolderTreeEntity folderTreeEntity, FolderEntity folder)
-                    throws Exception {
-                CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
-                List<ITreeEntity> newTreeEntities = new ArrayList<>();
-
-                WindowsElementController objectRepositoryController = WindowsElementController.getInstance();
-                for (CapturedWindowsElement mobileElement : capturedObjectsTableViewer.getAllCheckedElements()) {
-                    WindowsElementEntity testObject = converter.convert(mobileElement);
-                    testObject.setParentFolder(folder);
-                    testObject.setProject(folder.getProject());
-                    objectRepositoryController.updateWindowsElementEntity(testObject);
-                    newTreeEntities.add(new WindowsElementTreeEntity(testObject, folderTreeEntity));
-                }
-                return newTreeEntities;
+                saveCapturedObjectsToObjectRepository();
             }
         });
     }
@@ -646,6 +617,56 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
             }
         });
     }
+    
+    @Override
+    protected void okPressed() {
+        saveCapturedObjectsToObjectRepository();
+        super.okPressed();
+    }
+    
+    private void saveCapturedObjectsToObjectRepository() {
+        if (capturedObjectsTableViewer.getAllCheckedElements().size() > 0) {
+            try {
+                AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(
+                        getParentShell());
+                if (dialog.open() != Dialog.OK) {
+                    return;
+                }
+                FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
+                FolderEntity folder = folderTreeEntity.getObject();
+                List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
+                Trackings.trackSaveSpy("windows", newTreeEntities.size());
+                removeSelectedCapturedElements(
+                        capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedWindowsElement[0]));
+                updateExplorerState(folderTreeEntity, newTreeEntities);
+            } catch (Exception ex) {
+                LoggerSingleton.logError(ex);
+                MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
+            }
+        }
+    }
+    
+    private void updateExplorerState(FolderTreeEntity folderTreeEntity, List<ITreeEntity> newTreeEntities) {
+        IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, folderTreeEntity);
+        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newTreeEntities.toArray());
+    }
+
+    private List<ITreeEntity> addElementsToRepository(FolderTreeEntity folderTreeEntity, FolderEntity folder)
+            throws Exception {
+        CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
+        List<ITreeEntity> newTreeEntities = new ArrayList<>();
+
+        WindowsElementController objectRepositoryController = WindowsElementController.getInstance();
+        for (CapturedWindowsElement mobileElement : capturedObjectsTableViewer.getAllCheckedElements()) {
+            WindowsElementEntity testObject = converter.convert(mobileElement);
+            testObject.setParentFolder(folder);
+            testObject.setProject(folder.getProject());
+            objectRepositoryController.updateWindowsElementEntity(testObject);
+            newTreeEntities.add(new WindowsElementTreeEntity(testObject, folderTreeEntity));
+        }
+        return newTreeEntities;
+    }
 
     @Override
     protected void handleShellCloseEvent() {
@@ -674,27 +695,16 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
     // Highlight Selected object on captured screenshot
     private void highlightObject(BasicWindowsElement selectedElement) {
-        if (selectedElement == null || deviceView == null || deviceView.isDisposed()) {
+        if (selectedElement == null || screenComposite == null || screenComposite.isDisposed()) {
             return;
         }
 
-        deviceView.highlightElement(selectedElement);
+        screenComposite.highlightElement(selectedElement);
     }
 
-    private boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
-        return startX < 0 || startX + dialogSize.x > displayBounds.width + displayBounds.x;
-    }
-
-    private int getDeviceViewStartXIfPlaceRight(Rectangle objectSpyViewBounds) {
-        return objectSpyViewBounds.x + objectSpyViewBounds.width + DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDeviceViewStartXIfPlaceLeft(Rectangle objectSpyViewBounds, Point dialogSize) {
-        return objectSpyViewBounds.x - dialogSize.x - DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDefaultDeviceViewDialogStartX(Rectangle displayBounds, Point dialogSize) {
-        return displayBounds.width - dialogSize.x;
+    @Override
+    public void highlightElementRects(List<Rectangle> rects) {
+        screenComposite.highlightRects(rects);
     }
 
     private int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
@@ -706,31 +716,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
     private int calculateObjectSpyDialogStartY(Rectangle displayBounds, Point dialogSize) {
         int startY = displayBounds.height - dialogSize.y;
         return Math.max(startY, 0) / 2;
-    }
-
-    private Point calculateInitPositionForDeviceViewDialog() {
-        Rectangle displayBounds = getShell().getMonitor().getBounds();
-        Point dialogSize = new Point(WindowsDeviceDialog.DIALOG_WIDTH, WindowsDeviceDialog.DIALOG_HEIGHT);
-        Rectangle objectSpyViewBounds = getShell().getBounds();
-        int startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
-        if (isOutOfBound(displayBounds, dialogSize, startX)) {
-            startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
-            if (isOutOfBound(displayBounds, dialogSize, startX)) {
-                startX = getDefaultDeviceViewDialogStartX(displayBounds, dialogSize);
-            }
-        }
-        return new Point(startX, objectSpyViewBounds.y);
-    }
-
-    private void openDeviceView() {
-        if (deviceView != null && !deviceView.isDisposed()) {
-            return;
-        }
-        deviceView = new WindowsDeviceDialog(getParentShell(), this, calculateInitPositionForDeviceViewDialog());
-
-        deviceView.setBlockOnOpen(false);
-        deviceView.open();
-        setDeviceView(deviceView);
     }
 
     public void setSelectedElementByLocation(int x, int y) {
@@ -804,12 +789,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
                 refreshDeviceView(imgPath);
 
-                UISynchronizeService.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceView.getShell().forceActive();
-                    }
-                });
                 monitor.done();
             }
 
@@ -834,7 +813,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
             private void refreshDeviceView(String imgPath) {
                 File imgFile = new File(imgPath);
                 if (imgFile.exists()) {
-                    deviceView.refreshDialog(imgFile);
+                    screenComposite.refreshDialog(imgFile);
                 }
             }
 
@@ -850,7 +829,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
         try {
             btnCapture.setEnabled(false);
-            openDeviceView();
             dialog.run(true, true, runnable);
         } catch (InterruptedException ignored) {
             // User canceled
@@ -947,8 +925,8 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
             }
         }
 
-        if (deviceView != null) {
-            deviceView.closeApp();
+        if (screenComposite != null) {
+            screenComposite.refreshDialog(null);
         }
 
         dispose();
@@ -980,10 +958,6 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
                 calculateObjectSpyDialogStartY(displayBounds, initialSize));
     }
 
-    private void setDeviceView(WindowsDeviceDialog deviceView) {
-        this.deviceView = deviceView;
-    }
-
     public void addElements(List<WindowsElementEntity> webElements) {
         if (webElements == null) {
             return;
@@ -1006,5 +980,11 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
     public static int safeRoundDouble(double d) {
         long rounded = Math.round(d);
         return (int) Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, rounded));
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 }

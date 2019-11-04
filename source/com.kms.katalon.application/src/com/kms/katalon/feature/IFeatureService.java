@@ -27,4 +27,10 @@ public interface IFeatureService {
      * @return true if the feature is available, false otherwise
      */
     boolean canUse(String featureKey);
+
+    
+    /**
+     * Clear all available features
+     */
+    void clear();
 }

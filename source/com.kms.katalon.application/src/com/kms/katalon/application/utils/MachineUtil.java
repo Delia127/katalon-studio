@@ -1,13 +1,16 @@
 package com.kms.katalon.application.utils;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
-import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.hardware.Hardware;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.logging.LogUtil;
 
@@ -37,26 +40,77 @@ public class MachineUtil {
 
     public static String getMachineId() {
         // Only load machine id if not loaded or previous attempt failed
-        if (!machineId.equals(StringUtils.EMPTY) && !machineId.equals(UNAVAILABLE)) {
+        if (!machineId.equals(StringUtils.EMPTY) && !machineId.equals(hash(UNAVAILABLE))) {
             return machineId;
         }
 
         if (SystemUtils.IS_OS_MAC) {
             machineId = parseMachineIdForMac();
-            return machineId.matches(UUID_REGEX) ? appendMacAddress(machineId) : UNAVAILABLE;
+            machineId = hash(machineId.matches(UUID_REGEX) ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_LINUX) {
             machineId = parseMachineIdForLinux();
             // machine id on a linux is not a UUID
-            return machineId.length() != 32 ? UNAVAILABLE : appendMacAddress(machineId);
+            machineId = hash(machineId.length() == 32 ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_WINDOWS) {
             machineId = parseMachineIdForWindows();
-            return machineId.matches(UUID_REGEX) ? appendMacAddress(machineId) : UNAVAILABLE;
+            machineId = hash(machineId.matches(UUID_REGEX) ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
         }
-        return UNAVAILABLE;
+        return machineId;
+    }
+    
+    /**
+     * Use Reflection to find OS-dependent {@link com.sun.security.auth.module} class
+     * and run the method get OS user name. Using System.getProperty('user.name') as the last resort
+     * because the user can use argument -Duser.name={thanhto} to make System.getProperty('user.name') returns 'thanhto'
+     */
+    public static String getOsDependentUsername() {
+        String result = Optional.ofNullable(System.getProperty("user.name")).orElse("");
+        try {
+            String className = null;
+            String methodName = "getUsername";
+            if (SystemUtils.IS_OS_WINDOWS) {
+                className = "com.sun.security.auth.module.NTSystem";
+                methodName = "getName";
+            } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
+                className = "com.sun.security.auth.module.UnixSystem";
+            }
+
+            if (className != null) {
+                Class<?> c = Class.forName(className);
+                Method method = c.getDeclaredMethod(methodName);
+                Object o = c.newInstance();
+                result = (String) method.invoke(o);
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        return result;
     }
 
-    private static String appendMacAddress(String str) {
-        return str + "_" + KatalonApplication.getMacAddress();
+    private static String appendAdditionalSignatures(String str) {
+        return str + "_" + Hardware.getSerialNumber().toLowerCase() + "_" + getOsDependentUsername().toLowerCase();
+    }
+
+    private static String hash(String str) {
+        MessageDigest md1;
+        try {
+            md1 = MessageDigest.getInstance("MD5");
+            md1.update(str.getBytes());
+            byte[] bd1 = md1.digest();
+
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < bd1.length; i++) {
+                String hex = Integer.toHexString(0xff & bd1[i]);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString().substring(0, 32);
+        } catch (Exception e) {
+            LogUtil.logError(" Cannot hash the Machine ID because: " + e.getMessage());
+        }
+        return str;
     }
 
     private static String parseMachineIdForWindows() {

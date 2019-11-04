@@ -558,16 +558,16 @@ public class TestSuitePartTestCaseView {
         kaComposite.setLayout(new GridLayout(1, false));
 
         btnViewHistory = new Button(kaComposite, SWT.NONE);
-        btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
+        btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_TESTOPS_16));
         btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
         btnViewHistory.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
                     if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
-                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()),
+                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(),
                                 analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
-                                testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                                testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken()));
                     } else {
                         Program.launch(ApplicationInfo.getTestOpsServer());
                     }

@@ -56,6 +56,7 @@ import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.FieldNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
@@ -1005,6 +1006,10 @@ public class TestCaseTreeTableInput {
 			return;
 		}
 		mainClassNodeWrapper.addDefaultImports();
+	}
+
+	public void addImports(List<ImportNodeWrapper> imports) {
+	    mainClassNodeWrapper.addImportNodes(imports);
 	}
 
 	public void addNewCustomKeyword(AstTreeTableNode destinationNode, NodeAddType addType) {

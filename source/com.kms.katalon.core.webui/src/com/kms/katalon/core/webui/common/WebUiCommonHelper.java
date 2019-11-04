@@ -1035,7 +1035,22 @@ public class WebUiCommonHelper extends KeywordHelper {
         return webElements;
     }
 
+    /**
+     * If the TestObject has a cached WebElement then return this object,
+     * otherwise retrieve WebElement from TestObject's properties.
+     * 
+     * @param testObject
+     * @param timeOut
+     * @return {@link WebElement}
+     * @throws WebElementNotFoundException
+     */
     public static WebElement findWebElement(TestObject testObject, int timeOut) throws WebElementNotFoundException {
+        WebElement cachedWebElement = testObject.getCachedWebElement();
+        if (cachedWebElement != null) {
+            logger.logDebug("Using cached web element");
+            return cachedWebElement;
+        }
+        logger.logDebug("Finding web element from Test Object's properties");
         List<WebElement> elements = findWebElements(testObject, timeOut);
         if (elements != null && elements.size() > 0) {
             return elements.get(0);

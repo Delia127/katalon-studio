@@ -45,6 +45,10 @@ public class WebDriverManagerRunConfiguration {
         if (StringUtils.isNotEmpty(proxyCommand)) {
             commands.add(proxyCommand);
         }
+        String architecture = getArchitecture(webUIDriverType);
+        if (StringUtils.isNotEmpty(architecture)) {
+            commands.add(architecture);
+        }
         commands.add("-jar");
         commands.add(webdriverFatJarFile.getName());
         commands.add(getDriverName(webUIDriverType));
@@ -53,6 +57,13 @@ public class WebDriverManagerRunConfiguration {
         if (!builder.start().waitFor(120, TimeUnit.SECONDS)) {
             throw new IOException("Process Timeout");
         }
+    }
+
+    private String getArchitecture(WebUIDriverType webUIDriverType) {
+        if (webUIDriverType == WebUIDriverType.IE_DRIVER) {
+            return "-Dwdm.architecture=32";
+        }
+        return "";
     }
 
     private String getDriverName(WebUIDriverType webUIDriverType) {

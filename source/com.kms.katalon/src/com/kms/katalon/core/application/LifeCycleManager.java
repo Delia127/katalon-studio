@@ -32,6 +32,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
 import com.kms.katalon.composer.handlers.QuitHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
@@ -203,12 +204,19 @@ public class LifeCycleManager {
 
                     ApplicationStaupHandler.scheduleCollectingStatistics();
 
-                    if (ApplicationStaupHandler.checkActivation()) {
-                        eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
-                    }
-
                 } catch (Exception e) {
                     logError(e);
+                }
+
+                try {
+                    if (ApplicationStaupHandler.checkActivation(true)) {
+                        eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
+                    }
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                    if (PlatformUI.getWorkbench() != null && !PlatformUI.getWorkbench().isClosing()) {
+                        PlatformUI.getWorkbench().close();
+                    }
                 }
             }
 
@@ -216,7 +224,7 @@ public class LifeCycleManager {
                 // if (VersionUtil.isInternalBuild()) {
                 // return true;
                 // }
-                if (!(ComposerActivationInfoCollector.checkActivation())) {
+                if (!(ComposerActivationInfoCollector.checkActivation(true))) {
                     eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                     PlatformUI.getWorkbench().close();
                     return false;

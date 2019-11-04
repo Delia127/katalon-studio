@@ -15,12 +15,18 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
+import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -31,6 +37,7 @@ import com.kms.katalon.execution.constants.PluginOptions;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
@@ -42,6 +49,7 @@ import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResolutionItem;
+import com.kms.katalon.plugin.util.KStoreCredentialsHelper;
 import com.kms.katalon.plugin.util.PlatformHelper;
 import com.kms.katalon.plugin.util.PluginFactory;
 import com.kms.katalon.plugin.util.PluginSettings;
@@ -77,7 +85,7 @@ public class PluginService {
             SubMonitor getOnlinePluginsMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
             
             List<KStorePlugin> onlinePlugins;
-            if (shouldReloadPluginsOnline()) {
+            if (shouldReloadPluginsOnline() && KStoreCredentialsHelper.isValidCredential(credentials)) {
                 getOnlinePluginsMonitor.beginTask("Fetching latest plugins info from Katalon Store...", 100);
     
                 onlinePlugins = getOnlinePlugins(credentials);
@@ -207,7 +215,7 @@ public class PluginService {
                 installWork++;
                 markWork(installWork, totalInstallWork, installPluginMonitor);
             }
-
+            
             installPluginMonitor.done();
 
             SubMonitor refreshClasspathMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
@@ -240,12 +248,17 @@ public class PluginService {
         }
     }
     
-    private boolean shouldReloadPluginsOnline() throws IOException {
+    public boolean shouldReloadPluginsOnline() throws IOException {
         PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
         return reloadOption == PluginOptions.ONLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;
     }
+
+    public boolean shouldReloadPluginsOnlineOnly() throws IOException {
+        PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
+        return reloadOption == PluginOptions.ONLINE;
+    }
     
-    private boolean shouldReloadPluginsOffline() throws IOException {
+    public boolean shouldReloadPluginsOffline() throws IOException {
         PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
         return reloadOption == PluginOptions.OFFLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;
     }
@@ -253,12 +266,9 @@ public class PluginService {
     private List<KStorePlugin> getOnlinePlugins(KStoreCredentials credentials) throws KStoreClientExceptionWithInfo {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
-        List<KStorePlugin> latestPlugins = null;
-        try {
-            latestPlugins = restClient.getLatestPlugins(appVersion);
-        } catch (KStoreClientExceptionWithInfo e) {
-            LoggerSingleton.logError(e);
-        }
+        KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+        LicenseType licenseType = ActivationInfoCollector.getLicenseType();
+        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion, katalonPackage, licenseType);
         latestPlugins.stream().forEach(p -> logPluginInfo(p));
         return latestPlugins;
     }
@@ -359,8 +369,9 @@ public class PluginService {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();
         if (currentProject != null) {
+            boolean allowSourceAttachment = LicenseUtil.isNotFreeLicense();
             GroovyUtil.initGroovyProjectClassPath(currentProject,
-                    projectController.getCustomKeywordPlugins(currentProject), false, monitor);
+                    projectController.getCustomKeywordPlugins(currentProject), false, allowSourceAttachment, monitor);
             projectController.updateProjectClassLoader(currentProject);
             KeywordController.getInstance().parseAllCustomKeywords(currentProject, null);
             if (ApplicationRunningMode.get() == RunningMode.GUI) {

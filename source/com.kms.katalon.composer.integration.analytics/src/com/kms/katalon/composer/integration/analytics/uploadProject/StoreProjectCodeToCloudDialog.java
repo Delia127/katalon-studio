@@ -71,7 +71,8 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, ComposerIntegrationAnalyticsMessageConstants.BTN_UPLOAD, true);
+        createButton(parent, IDialogConstants.OK_ID, ComposerIntegrationAnalyticsMessageConstants.BTN_UPLOAD, true)
+            .setEnabled(false);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
@@ -144,10 +145,9 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         try {
             analyticsSettingStore = new AnalyticsSettingStore(
                     ProjectController.getInstance().getCurrentProject().getFolderLocation());
-            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            password = analyticsSettingStore.getPassword(encryptionEnabled);
-            serverUrl = analyticsSettingStore.getServerEndpoint(encryptionEnabled);
-            email = analyticsSettingStore.getEmail(encryptionEnabled);
+            password = analyticsSettingStore.getPassword();
+            serverUrl = analyticsSettingStore.getServerEndpoint();
+            email = analyticsSettingStore.getEmail();
 
             Executors.newFixedThreadPool(1).submit(() -> {
                 UISynchronizeService.syncExec(() -> {
@@ -158,9 +158,10 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                             analyticsSettingStore);
                     if (tokenInfo == null) {
                         setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+                        enableUpload(false);
                         return;
                     }
-                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS, false);
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_TEAMS, false);
                     Long orgId = analyticsSettingStore.getOrganization().getId();
                     teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo);
                     if (teams != null && !teams.isEmpty()) {
@@ -169,9 +170,11 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                                 AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
                         cbbTeams.select(defaultTeamIndex);
 
-                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false);
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS, false);
                         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, teams.get(defaultTeamIndex), tokenInfo);
                         setProjectsBasedOnTeam(projects);
+                    } else {
+                        enableUpload(false);
                     }
                     cbbTeams.setEnabled(true);
                     cbbProjects.setEnabled(true);
@@ -181,6 +184,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
+            enableUpload(false);
         }
     }
 
@@ -189,9 +193,11 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             cbbProjects.setItems(
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+            enableUpload(true);
         } else {
             cbbProjects.clearSelection();
             cbbProjects.removeAll();
+            enableUpload(false);
         }
     }
 
@@ -201,9 +207,10 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             public void widgetSelected(SelectionEvent e) {
                 cbbTeams.setEnabled(false);
                 cbbProjects.setEnabled(false);
+                enableUpload(false);
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(() -> {
-                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false);
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS, false);
                     });
                     UISynchronizeService.syncExec(() -> {
                         AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
@@ -218,6 +225,10 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                  });
             }
         });
+    }
+    
+    private void enableUpload(boolean isEnable) {
+        getButton(IDialogConstants.OK_ID).setEnabled(isEnable);
     }
 
     @Override

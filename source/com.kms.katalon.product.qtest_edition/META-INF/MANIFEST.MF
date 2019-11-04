@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Qtest Edition Product
-Bundle-SymbolicName: com.kms.katalon.product.qtest_edition;singleton:=true
-Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: KMS
-Require-Bundle: org.eclipse.core.runtime,
- com.kms.katalon

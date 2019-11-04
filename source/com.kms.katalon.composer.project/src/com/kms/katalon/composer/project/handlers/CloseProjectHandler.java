@@ -13,6 +13,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.IPresentationEngine;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -22,6 +23,7 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -103,6 +105,8 @@ public class CloseProjectHandler {
             //update window title
             MWindow win = (MWindow) modelService.find(IdConstants.MAIN_WINDOW_ID, application);
             win.setLabel(GlobalStringConstants.APP_NAME);
+
+            eventBroker.post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
         }
     }
 
@@ -124,6 +128,7 @@ public class CloseProjectHandler {
                 eventBroker.send(EventConstants.PROJECT_CLOSED, project.getId());
             }
         } catch (Exception e) {
+            LoggerSingleton.logError(e);
             MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
                     StringConstants.HAND_WARN_MSG_UNABLE_TO_CLOSE_CURRENT_PROJ);
         }

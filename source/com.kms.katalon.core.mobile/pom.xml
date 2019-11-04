@@ -13,6 +13,7 @@
   
   <properties>
 		<groovydocOutputDirectory>${mainBuildDirectory}/${apidocDirectory}/${project.artifactId}</groovydocOutputDirectory>
+		<sourcecodeOutputDirectory>${mainBuildDirectory}/${apisourceDirectory}/${project.artifactId}</sourcecodeOutputDirectory>
   </properties>
   
 	<build>
@@ -137,6 +138,23 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${sourcecodeOutputDirectory}</outputDirectory>
+              <finalName>${project.artifactId}</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -153,24 +171,17 @@
               <target>
                 <taskdef name="groovydoc"
                   classname="org.codehaus.groovy.ant.Groovydoc" 
-                  classpathref="maven.compile.classpath"
-                />
+                  classpathref="maven.compile.classpath"/>
                 <groovydoc destdir="${groovydocOutputDirectory}"
                   sourcepath="${project.basedir}/src" use="true"
                   windowtitle="${project.name}"
                   doctitle="${project.name}" 
-                  packagenames="com.kms.katalon.core.mobile.driver,com.kms.katalon.core.mobile.keyword"
-                >
-                  <link packages="java.,org.xml.,javax.,org.xml."
-                    href="http://download.oracle.com/javase/6/docs/api" />
-                  <link packages="org.apache.tools.ant." 
-                    href="http://evgeny-goldin.org/javadoc/ant/api" />
-                  <link packages="org.junit.,junit.framework."
-                    href="http://kentbeck.github.com/junit/javadoc/latest" />
-                  <link packages="groovy.,org.codehaus.groovy."
-                    href="http://groovy.codehaus.org/api/" />
-                  <link packages="org.codehaus.gmaven."
-                    href="http://evgeny-goldin.org/javadoc/gmaven" />
+				  packagenames="**.*">
+                  <link packages="java.,org.xml.,javax.,org.xml." href="http://docs.oracle.com/javase/8/docs/api/" />
+			      <link packages="org.apache.tools.ant." href="http://docs.groovy-lang.org/docs/ant/api/" />
+				  <link packages="org.junit.,junit.framework." href="http://junit.org/junit4/javadoc/latest/" />
+			      <link packages="groovy.,org.codehaus.groovy." href="http://docs.groovy-lang.org/latest/html/api/" />
+				  <link packages="org.codehaus.gmaven." href="http://groovy.github.io/gmaven/apidocs/" />
                 </groovydoc>
               </target>
             </configuration>

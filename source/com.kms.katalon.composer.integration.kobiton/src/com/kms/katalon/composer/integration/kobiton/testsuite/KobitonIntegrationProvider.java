@@ -13,7 +13,7 @@ public class KobitonIntegrationProvider implements MobileIntegrationProvider {
 
     @Override
     public MobileTestExecutionDriverEntry getExecutionEntry(String groupName) {
-        return KobitonPreferencesProvider.isKobitonIntegrationEnabled() ? new KobitonTestExecutionDriverEntry(groupName)
+        return KobitonPreferencesProvider.isKobitonIntegrationAvailable() ? new KobitonTestExecutionDriverEntry(groupName)
                 : null;
     }
 

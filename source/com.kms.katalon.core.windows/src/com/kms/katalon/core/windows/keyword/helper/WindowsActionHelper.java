@@ -18,6 +18,7 @@ import com.kms.katalon.core.testobject.WindowsTestObject;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.core.windows.driver.WindowsSession;
 import com.kms.katalon.core.windows.keyword.exception.DriverNotStartedException;
+import com.kms.katalon.core.windows.keyword.exception.SessionNotStartedException;
 
 import io.appium.java_client.windows.WindowsDriver;
 
@@ -46,6 +47,10 @@ public class WindowsActionHelper {
         if (StringUtils.isEmpty(locator)) {
             throw new IllegalArgumentException(String.format("Test object %s does not have locator for strategy: %s. ",
                     testObject.getObjectId(), selectedLocator));
+        }
+        
+        if (windowsSession == null) {
+            throw new SessionNotStartedException("Windows Session has not started yet!");
         }
 
         WindowsDriver<WebElement> windowsDriver = windowsSession.getRunningDriver();
@@ -172,7 +177,7 @@ public class WindowsActionHelper {
         action.perform();
     }
 
-    public void sendKeys(WindowsTestObject testObject, String[] keys) {
+    public void sendKeys(WindowsTestObject testObject, CharSequence... keys) {
         WebElement windowElement = findElement(testObject);
         windowElement.sendKeys(keys);
     }
@@ -201,7 +206,7 @@ public class WindowsActionHelper {
         if (windowsSession.getDesktopDriver() == null) {
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
-            WindowsDriver<WebElement> desktopDriver = new WindowsDriver<>(WindowsDriverFactory
+            WindowsDriver<WebElement> desktopDriver = new WindowsDriver<WebElement>(WindowsDriverFactory
                     .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxy()),
                     desiredCapabilities);
             windowsSession.setDesktopDriver(desktopDriver);

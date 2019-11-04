@@ -9,11 +9,12 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.logging.LogManager;
 import com.kms.katalon.logging.LogMode;
 import com.kms.katalon.logging.LogUtil;
@@ -40,8 +41,6 @@ public class ApplicationInfo {
     private static final String ABOUT_VERSION_TAG = "3";
     
     private static final String PROFILE_PROPERTY_KEY = "katalonProfile";
-
-    private static final String KATALON_ANALYTICS_SERVER = "testOps.serverUrl";
 
     private static Properties aboutMappingsProperties;
 
@@ -187,12 +186,63 @@ public class ApplicationInfo {
             saveAppProperties();
         }
     }
+    
+    public static Organization getOrganization() {
+        Organization organization = new Organization();
+        String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
+        if (StringUtils.isNotBlank(jsonObject)) {
+            try {
+                organization = JsonUtil.fromJson(jsonObject, Organization.class);
+            } catch (IllegalArgumentException e) {
+                LogUtil.logError(e);
+            }
+        }
+        return organization;
+    }
 
-    public static String getTestOpsServer() {
-        String server = System.getProperty(KATALON_ANALYTICS_SERVER);
-        if (server == null) {
+    public static void setTestOpsServer(String serverUrl) {
+        setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, serverUrl, true);
+        TestOpsServerURL.set(serverUrl);
+    }
+
+    public static String getDefaultTestOpsServer() {
+        String server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+        if (StringUtils.isEmpty(server)) {
             server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
         }
+        if (server.endsWith("/")) {
+            server = server.substring(0, server.length() - 1);
+        }
         return server;
+    }
+
+    public static String getTestOpsServer() {
+        String serverFromMemory = TestOpsServerURL.get();
+        String server = serverFromMemory;
+        if (StringUtils.isEmpty(serverFromMemory)) {
+            server = getAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+        }
+        if (StringUtils.isEmpty(server)) {
+            server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+        }
+        if (StringUtils.isEmpty(server)) {
+            server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
+        }
+        if (server.endsWith("/")) {
+            server = server.substring(0, server.length() - 1);
+        }
+
+        // If server from memory is null
+        // make sure that after the server URL is always received from memory 
+        if (StringUtils.isEmpty(serverFromMemory)) {
+            TestOpsServerURL.set(server);
+        }
+        return server;
+    }
+
+    public static void cleanAll() {
+        Properties appProps = getAppProperties();
+        appProps.clear();
+        saveAppProperties();
     }
 }

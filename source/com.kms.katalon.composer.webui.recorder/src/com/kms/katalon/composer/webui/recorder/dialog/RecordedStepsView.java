@@ -249,9 +249,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     }
 
     private void addNode(HTMLActionMapping newAction) throws ClassNotFoundException {
+        beforeNodeAdded(newAction);
         ExpressionStatementWrapper wrapper = shouldAddNewNode(newAction);
         if (wrapper != null) {
-            beforeNodeAdded(newAction);
             treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
             treeViewer.refresh();
             treeViewer.setSelection(new StructuredSelection(getLatestNode()));
@@ -343,12 +343,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         String newActionName = newAction.getAction().getName();
         if (objectId.equals(targetElement.getName())) {
             if (preventAddMultiSetTextAction(latestKeywordName, newActionName)) {
-
-                WebElementPropertyEntity property = targetElement.getProperty("type");
-                if (property != null && "password".equals(property.getValue())) {
-                    secureSetTextAction(newAction);
-                }
-
                 modifyStep(wrapper, latestNode);
                 return true;
             }

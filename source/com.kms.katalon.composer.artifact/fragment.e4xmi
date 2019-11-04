@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_eD9SMOjTEem2Y49cg2c9IQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_gbo7QOjTEem2Y49cg2c9IQ" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_77Y08OjTEem2Y49cg2c9IQ" elementId="com.kms.katalon.composer.artifact.command.importTestArtifact" commandName="Import Test Artifact"/>
+    <elements xsi:type="commands:Command" xmi:id="_8fjR8OjTEem2Y49cg2c9IQ" elementId="com.kms.katalon.composer.artifact.command.exportTestArtifact" commandName="Export Test Artifact"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_g3qv8OjTEem2Y49cg2c9IQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_GJK3kOjUEem2Y49cg2c9IQ" elementId="com.kms.katalon.composer.artifact.handler.importTestArtifact" contributionURI="bundleclass://com.kms.katalon.composer.artifact/com.kms.katalon.composer.artifact.menu.ImportTestArtifactToolsHandler" command="_77Y08OjTEem2Y49cg2c9IQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_GnXPcOjUEem2Y49cg2c9IQ" elementId="com.kms.katalon.composer.artifact.handler.exportTestArtifact" contributionURI="bundleclass://com.kms.katalon.composer.artifact/com.kms.katalon.composer.artifact.menu.ExportTestArtifactToolsHandler" command="_8fjR8OjTEem2Y49cg2c9IQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hL4FYOjTEem2Y49cg2c9IQ" featurename="children" parentElementId="com.kms.katalon.menu.tools">
+    <elements xsi:type="menu:Menu" xmi:id="_rKaLEOjTEem2Y49cg2c9IQ" elementId="com.kms.katalon.composer.artifact.menu.testArtifact" label="Utility">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_yyWz4OjTEem2Y49cg2c9IQ" elementId="com.kms.katalon.composer.artifact.handledmenuitem.exportTestArtifact" label="Export Test Artifact" command="_8fjR8OjTEem2Y49cg2c9IQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_2M62QOjTEem2Y49cg2c9IQ" elementId="com.kms.katalon.composer.artifact.handledmenuitem.importTestArtifact" label="Import Test Artifact" command="_77Y08OjTEem2Y49cg2c9IQ"/>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

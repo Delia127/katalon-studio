@@ -1,5 +1,7 @@
 package com.kms.katalon.plugin.models;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +40,8 @@ public class KStoreBasicCredentials implements KStoreCredentials {
     @Override
     public Map<String, String> getAuthHeaders() {
         Map<String, String> headers = new HashMap<>();
-        headers.put("username", username);
-        headers.put("password", password);
+        String encodedCredentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+        headers.put("Authorization", "Basic " + encodedCredentials);
         return headers;
     }
 }

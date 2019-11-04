@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class AnalyticsTracking {
 
-    private long organizationId;
+    private Long organizationId;
 
     private String machineId;
 
@@ -16,11 +16,11 @@ public class AnalyticsTracking {
 
     private String ksVersion;
 
-    public long getOrganizationId() {
+    public Long getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(long organizationId) {
+    public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
     }
 

@@ -19,7 +19,13 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     
     public static final String ARG_ACTIVATION_CODE = "activationCode";
     
+    public static final String LICENSE_TYPE = "licenseType";
+    
+    public static final String EXPIRATION_DATE = "expirationDate";
+    
     public static final String ARG_OFFLINE_ACTIVATION = "offlineActivation";
+
+    public static final String KATALON_TESTOPS_SERVER = "testOps.serverUrl";
 
     // Proxy Configuration
     public static final String PROXY_OPTION = "proxy.option";

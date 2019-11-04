@@ -2,7 +2,7 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_5GpRoCHzEeSY6sHPoV18tA">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_xoJUMCH9EeSY6sHPoV18tA" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_xoJUMSH9EeSY6sHPoV18tA" elementId="com.kms.katalon.composer.testsuite.command.add" commandName="New Test Suite" description="New Test Suite"/>
-    <elements xsi:type="commands:Command" xmi:id="_dIycQPeVEeiUfeLQy3RRIg" elementId="com.kms.katalon.composer.testsuite.command.newFilteringTestSuite" commandName="Dynamic Querying Test Suite"/>
+    <elements xsi:type="commands:Command" xmi:id="_dIycQPeVEeiUfeLQy3RRIg" elementId="com.kms.katalon.composer.testsuite.command.newFilteringTestSuite" commandName="Dynamic Test Suite"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1bHPgCH9EeSY6sHPoV18tA" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_1bHPgSH9EeSY6sHPoV18tA" elementId="com.kms.katalon.composer.testsuite.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.testsuite/com.kms.katalon.composer.testsuite.handlers.NewTestSuiteHandler" command="_xoJUMSH9EeSY6sHPoV18tA"/>

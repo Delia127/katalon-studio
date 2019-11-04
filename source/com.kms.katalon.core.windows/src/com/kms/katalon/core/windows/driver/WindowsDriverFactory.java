@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.SessionNotCreatedException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.http.HttpClient;
@@ -20,6 +21,7 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.ProxyUtil;
+import com.kms.katalon.core.windows.constants.WindowsDriverConstants;
 import com.thoughtworks.selenium.SeleniumException;
 
 import io.appium.java_client.MobileCommand;
@@ -49,18 +51,19 @@ public class WindowsDriverFactory {
             throws SeleniumException, IOException, URISyntaxException {
         Map<String, Object> userConfigProperties = RunConfiguration.getDriverPreferencesProperties("Windows");
         if (userConfigProperties == null) {
-            userConfigProperties = new HashMap<>();
+            userConfigProperties = new HashMap<String, Object>();
         }
 
-        String remoteAddressURLAsString = (String) userConfigProperties.getOrDefault(WIN_APP_DRIVER_PROPERTY, "");
-        URL remoteAddressURL = StringUtils.isNotEmpty(remoteAddressURLAsString) ? new URL(remoteAddressURLAsString)
-                : null;
-        if (remoteAddressURL != null) {
+        String remoteAddressURLAsString = (String) userConfigProperties.getOrDefault(WIN_APP_DRIVER_PROPERTY,
+                WindowsDriverConstants.DEFAULT_WIN_APP_DRIVER_URL);
+        URL remoteAddressURL = new URL(remoteAddressURLAsString);
+        if (!remoteAddressURLAsString.equals(WindowsDriverConstants.DEFAULT_WIN_APP_DRIVER_URL)) {
             logger.logInfo(String.format("Starting application %s on the test machine at address %s", appFile,
                     remoteAddressURL.toString()));
             logger.logRunData(WIN_APP_DRIVER_PROPERTY, remoteAddressURL.toString());
         } else {
-            logger.logInfo(String.format("Starting application %s on local machine", appFile));
+            logger.logInfo(String.format("Starting application %s on the local machine at address %s", appFile,
+                    remoteAddressURL.toString()));
         }
 
         Object desiredCapabilitiesAsObject = userConfigProperties.getOrDefault(DESIRED_CAPABILITIES_PROPERTY, null);
@@ -86,8 +89,11 @@ public class WindowsDriverFactory {
 
             windowsSession.setApplicationDriver(windowsDriver);
             return windowsSession;
-        } catch (NoSuchWindowException | SessionNotCreatedException e) {
-            if (e.getMessage().contains("The system cannot find the file specified")) {
+        } catch (WebDriverException e) {
+            if (!(e instanceof NoSuchWindowException) && !(e instanceof SessionNotCreatedException)) {
+                throw e;
+            }
+            if (e.getMessage() != null && e.getMessage().contains("The system cannot find the file specified")) {
                 // appFile is not correct
                 throw e;
             }

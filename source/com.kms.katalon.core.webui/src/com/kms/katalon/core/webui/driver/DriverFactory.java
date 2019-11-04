@@ -89,9 +89,9 @@ import io.appium.java_client.remote.AppiumCommandExecutor;
 
 public class DriverFactory {
 
-    private static final String SMART_WAIT_ADDON_CHROME_RELATIVE_PATH = File.separator + "chrome" + File.separator + "Smart Wait";
+    private static final String SMART_WAIT_ADDON_CHROME_RELATIVE_PATH = File.separator + "Chrome" + File.separator + "Smart Wait";
 
-    private static final String SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH = File.separator + "firefox" + File.separator + "smartwait.xpi";
+    private static final String SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH = File.separator + "Firefox" + File.separator + "smartwait.xpi";
 
     private static final KeywordLogger logger = KeywordLogger.getInstance(DriverFactory.class);
 
@@ -150,8 +150,6 @@ public class DriverFactory {
     public static final String REMOTE_WEB_DRIVER_URL = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_URL;
 
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
-
-    public static final String AUTOMATION_FRAMEWORK_PROPERTY = "automationFramework";
 
     public static final String REMOTE_MOBILE_DRIVER = "remoteMobileDriver";
 
@@ -419,7 +417,6 @@ public class DriverFactory {
         if (!desiredCapabilities.getCapabilityNames().contains("proxy") && !isEdgeBrowser(desiredCapabilities)) {
             desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
-        desiredCapabilities.setCapability(AUTOMATION_FRAMEWORK_PROPERTY, "Katalon");
 
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
                 remoteWebServerUrl, remoteWebServerType));

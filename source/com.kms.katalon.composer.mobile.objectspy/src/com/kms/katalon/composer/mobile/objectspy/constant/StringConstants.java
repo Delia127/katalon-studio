@@ -57,6 +57,10 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_ERROR_MSG_HAVE_NOT_SUPPORT_MOBILE_WEB = ComposerMobileObjectspyMessageConstants.DIA_ERROR_MSG_HAVE_NOT_SUPPORT_MOBILE_WEB;
 
+    public static final String DIA_MSG_ELEMENT_FOUND = ComposerMobileObjectspyMessageConstants.DIA_MSG_ELEMENT_FOUND;
+
+    public static final String DIA_MSG_ELEMENT_NOT_FOUND = ComposerMobileObjectspyMessageConstants.DIA_MSG_ELEMENT_NOT_FOUND;
+
     public static final String DIA_LBL_ALL_OBJECTS = ComposerMobileObjectspyMessageConstants.DIA_LBL_ALL_OBJECTS;
 
     public static final String DIA_LBL_CAPTURED_OBJECTS = ComposerMobileObjectspyMessageConstants.DIA_LBL_CAPTURED_OBJECTS;
@@ -68,6 +72,14 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_OBJECT_NAME = ComposerMobileObjectspyMessageConstants.DIA_LBL_OBJECT_NAME;
 
     public static final String DIA_TOOLTIP_OBJECT_NAME = ComposerMobileObjectspyMessageConstants.DIA_TOOLTIP_OBJECT_NAME;
+    
+    public static final String DIA_BTN_GENERATE = ComposerMobileObjectspyMessageConstants.DIA_BTN_GENERATE;
+    
+    public static final String DIA_TOOLTIP_GENERATE_LOCATOR = ComposerMobileObjectspyMessageConstants.DIA_TOOLTIP_GENERATE_LOCATOR;
+
+    public static final String DIA_BTN_HIGHLIGHT = ComposerMobileObjectspyMessageConstants.DIA_BTN_HIGHLIGHT;
+
+    public static final String DIA_TOOLTIP_HIGHLIGHT_BUTTON = ComposerMobileObjectspyMessageConstants.DIA_TOOLTIP_HIGHLIGHT_BUTTON;
 
     public static final String DIA_JOB_TASK_LOADING_DEVICES = ComposerMobileObjectspyMessageConstants.DIA_JOB_TASK_LOADING_DEVICES;
 

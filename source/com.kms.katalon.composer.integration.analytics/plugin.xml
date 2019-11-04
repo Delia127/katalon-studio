@@ -9,7 +9,7 @@
       <page
             class="com.kms.katalon.composer.integration.analytics.preferences.AnalyticsPreferencesPage"
             id="com.kms.katalon.composer.integration.analytics.page"
-            name="Katalon Analytics">
+            name="Katalon TestOps">
       </page>
    </extension>
 

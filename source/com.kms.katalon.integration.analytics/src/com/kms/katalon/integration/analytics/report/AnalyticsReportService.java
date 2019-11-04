@@ -50,16 +50,6 @@ public class AnalyticsReportService implements AnalyticsComponent {
         return isIntegrationEnabled;
     }
     
-    private boolean isEncryptionEnabled() {
-        boolean isEncryptionEnabled = false;
-        try {
-            isEncryptionEnabled = getSettingStore().isEncryptionEnabled();
-        } catch (IOException ex) {
-            // do nothing
-        }
-        return isEncryptionEnabled;
-    }
-    
     public void upload(ReportFolder reportFolder) throws AnalyticsApiExeception {
         if (isIntegrationEnabled()) {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
@@ -81,7 +71,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
     }
 
     private AnalyticsTokenInfo getKAToken() throws IOException, GeneralSecurityException, AnalyticsApiExeception {
-        String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+        String serverUrl = getSettingStore().getServerEndpoint();
 
         RunningMode runMode = ApplicationRunningMode.get();
         if (runMode == RunningMode.CONSOLE) {
@@ -94,8 +84,8 @@ public class AnalyticsReportService implements AnalyticsComponent {
             }
         }
 
-        String email = getSettingStore().getEmail(isEncryptionEnabled());
-        String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
+        String email = getSettingStore().getEmail();
+        String password = getSettingStore().getPassword();
         return AnalyticsApiProvider.requestToken(serverUrl, email, password);
     }
 
@@ -105,7 +95,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
     	} else {
             LogUtil.printOutputLine("Uploading log files of test suite collection");
     	}
-        String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+        String serverUrl = getSettingStore().getServerEndpoint();
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         Long projectId = getSettingStore().getProject().getId();
         List<Path> files = scanFiles(reportFolder);
@@ -212,9 +202,9 @@ public class AnalyticsReportService implements AnalyticsComponent {
     	try {
             AnalyticsTokenInfo token = getKAToken();
             if (token != null) {
-            	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
-            	long projectId = getSettingStore().getProject().getId();
-            	AnalyticsApiProvider.updateTestRunResult(serverUrl, projectId, token.getAccess_token(), testRun);
+                String serverUrl = getSettingStore().getServerEndpoint();
+                long projectId = getSettingStore().getProject().getId();
+                AnalyticsApiProvider.updateTestRunResult(serverUrl, projectId, token.getAccess_token(), testRun);
             } else {
                 LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
             }
@@ -226,18 +216,16 @@ public class AnalyticsReportService implements AnalyticsComponent {
     
     public void sendTrackingActivity(AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
         try {
-            String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+            String serverUrl = getSettingStore().getServerEndpoint();
             String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
             String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
             AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
             if (token != null) {
                 AnalyticsApiProvider.sendTrackingActivity(serverUrl, token.getAccess_token(), trackingInfo);
-            } else {
-                LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
             }
         } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
-            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
+//            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
         }
     }
 

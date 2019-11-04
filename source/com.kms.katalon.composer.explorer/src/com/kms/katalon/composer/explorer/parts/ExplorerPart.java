@@ -3,6 +3,7 @@ package com.kms.katalon.composer.explorer.parts;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +66,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -79,7 +79,6 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -307,6 +306,12 @@ public class ExplorerPart {
 
         // loadSavedState(part);
         registerEventListeners();
+
+        if (ProjectController.getInstance().getCurrentProject() != null) {
+            setTopControlTreeComposite();
+        } else {
+            setTopControlGettingStarted();
+        }
     }
     
     private void registerEventListeners() {
@@ -314,9 +319,7 @@ public class ExplorerPart {
             
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
-                stackLayout.topControl = gettingStartComposite;
-                gettingStartView.refreshRecentProjects();
-                stackComposite.layout(true);
+                setTopControlGettingStarted();
             }
         });
 
@@ -324,10 +327,20 @@ public class ExplorerPart {
             
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
-                stackLayout.topControl = treeComposite;
-                stackComposite.layout(true);
+                setTopControlTreeComposite();
             }
         });
+    }
+
+    private void setTopControlTreeComposite() {
+        stackLayout.topControl = treeComposite;
+        stackComposite.layout(true);
+    }
+    
+    private void setTopControlGettingStarted() {
+        stackLayout.topControl = gettingStartComposite;
+        gettingStartView.refreshRecentProjects();
+        stackComposite.layout(true);
     }
 
     private void createExplorerTreeViewerIfDisposed() {
@@ -609,7 +622,7 @@ public class ExplorerPart {
                     || (!((boolean) isForcingReload) && (treeEntities == null || treeEntities.isEmpty()))) {
                 List<ITreeEntity> treeEntities = TreeEntityUtil.getAllTreeEntity(ProjectController.getInstance()
                         .getCurrentProject());
-                eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
+                reloadTreeInputEventHandler(Arrays.asList(treeEntities.stream().toArray()));
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -647,8 +660,6 @@ public class ExplorerPart {
             getViewer().setExpandedElements(visibleExpandedElements);
             // --- IMPORTANT for saving and restore session ---
             part.getTransientData().put(CTreeViewer.class.getSimpleName(), treeViewer);
-            
-           
             // --- END ---
         } catch (Exception e) {
             LoggerSingleton.logError(e);

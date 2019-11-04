@@ -48,6 +48,9 @@ public class Application implements IApplication {
      */
     @Override
     public Object start(IApplicationContext context) {
+
+        createLicenseFolder();
+        
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
         }
@@ -65,6 +68,9 @@ public class Application implements IApplication {
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
 
+        if (Platform.getProduct().getId().equals("com.kms.katalon.console.product")) {
+            return runConsole(context, appArgs);
+        }
         switch (runningModeParam) {
             case CONSOLE:
                 return runConsole(context, appArgs);
@@ -224,6 +230,17 @@ public class Application implements IApplication {
             return true;
         } catch (BundleException ex) {
             return false;
+        }
+    }
+    
+    private void createLicenseFolder() {
+        try {
+            File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
+            if (!licenseFolder.exists()) {
+                licenseFolder.mkdir();
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
         }
     }
 }

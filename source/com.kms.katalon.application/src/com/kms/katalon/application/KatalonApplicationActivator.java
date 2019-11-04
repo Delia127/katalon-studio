@@ -16,12 +16,15 @@ import com.kms.katalon.application.preference.ProjectSettingPreference;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.feature.TestOpsConfiguration;
 import com.kms.katalon.feature.TestOpsFeatureActivator;
 import com.kms.katalon.logging.LogUtil;
 
 public class KatalonApplicationActivator implements BundleActivator {
     
     private static TestOpsFeatureActivator featureActivator;
+
+    private static TestOpsConfiguration testOpsConfiguration;
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -51,6 +54,18 @@ public class KatalonApplicationActivator implements BundleActivator {
                 }
             }
         });
+
+        context.addServiceListener(new ServiceListener() {
+
+            @Override
+            public void serviceChanged(ServiceEvent event) {
+                Object service = context.getService(event.getServiceReference());
+                if (service instanceof TestOpsConfiguration) {
+                    testOpsConfiguration = (TestOpsConfiguration) service;
+                    context.removeServiceListener(this);
+                }
+            }
+        });
     }
 
     @Override
@@ -61,4 +76,7 @@ public class KatalonApplicationActivator implements BundleActivator {
         return featureActivator;
     }
 
+    public static TestOpsConfiguration getTestOpsConfiguration() {
+        return testOpsConfiguration;
+    }
 }

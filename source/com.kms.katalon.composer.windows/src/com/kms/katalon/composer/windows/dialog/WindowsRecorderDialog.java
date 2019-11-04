@@ -82,15 +82,19 @@ import com.kms.katalon.composer.windows.element.TreeWindowsElement;
 import com.kms.katalon.composer.windows.exception.WindowsComposerException;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementTableViewer;
+import com.kms.katalon.composer.windows.spy.HighlightElementComposite;
 import com.kms.katalon.composer.windows.spy.WindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
 import com.kms.katalon.composer.windows.spy.WindowsElementTreeContentProvider;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.windows.driver.WindowsSession;
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class WindowsRecorderDialog extends AbstractDialog implements WindowsObjectDialog {
@@ -109,9 +113,15 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     private WindowsInspectorController inspectorController = new WindowsInspectorController();
 
+    public WindowsInspectorController getInspectorController() {
+        return inspectorController;
+    }
+
     private Composite container;
 
     private WindowsElementPropertiesComposite propertiesComposite;
+
+    private HighlightElementComposite highlightElementComposite;
 
     private Composite appsComposite;
 
@@ -217,7 +227,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     @Override
     protected String getDocumentationUrl() {
-        return "";
+        return DocumentationMessageConstants.DIALOG_WINDOWS_RECORDER;
     }
 
     @Override
@@ -299,6 +309,12 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         return control;
     }
 
+    private Control createHighlightElementComposite(Composite parent) {
+        highlightElementComposite = new HighlightElementComposite(this);
+        Control control = highlightElementComposite.createComposite(parent);
+        return control;
+    }
+
     private Composite createCapturedObjectsComposite(Composite parent) {
         Composite capturedObjectsComposite = new Composite(parent, SWT.NONE);
         capturedObjectsComposite.setLayout(new GridLayout());
@@ -339,7 +355,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 CapturedWindowsElement firstElement = (CapturedWindowsElement) selection.getFirstElement();
                 propertiesComposite.setEditingElement(firstElement);
-                highlightObject(firstElement);
+                highlightElementComposite.setEditingElement(firstElement);
             }
         });
 
@@ -379,7 +395,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                                     : null;
 
                             WindowsActionMapping actionMapping = performAction(action, element);
-                            if (actionMapping == null) {
+                            if (actionMapping == null || actionMapping.getAction().isCanceled()) {
                                 return;
                             }
                             if (actionMapping.getTargetElement() != null) {
@@ -458,7 +474,8 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         createCapturedObjectsComposite(hSashForm);
         createPropertiesComposite(hSashForm);
-        hSashForm.setWeights(new int[] { 4, 6 });
+        createHighlightElementComposite(hSashForm);
+        hSashForm.setWeights(new int[] { 4, 6, 1 });
 
         capturedObjectsTabItem.setControl(hSashForm);
         capturedObjectsTabItem.setText("Captured Objects");
@@ -516,22 +533,25 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                 super.cancelPressed();
                 finishedRun();
                 getProgressMonitor().done();
-                btnStart.setEnabled(true);
-                btnStop.setEnabled(false);
-                btnCapture.setEnabled(false);
+                setStartStopButtonsState(true);
             }
         };
         inspectorController.setStreamHandler(progressDlg);
         try {
             WindowsActionMapping actionMapping = mobileComposite.startApp(inspectorController, progressDlg);
-            captureObjectAction();
-
-            btnCapture.setEnabled(true);
-            btnStop.setEnabled(true);
-            getButton(IDialogConstants.OK_ID).setEnabled(true);
-            stepView.refreshTree();
             try {
-                stepView.addNode(actionMapping);
+                if (!progressDlg.getProgressMonitor().isCanceled()) {
+                    captureObjectAction();
+
+                    setStartStopButtonsState(false);
+                    getButton(IDialogConstants.OK_ID).setEnabled(true);
+                    stepView.refreshTree();
+                    
+                    stepView.addNode(actionMapping);
+                } else {
+                    stopObjectInspectorAction();
+                    setStartStopButtonsState(true);
+                }
             } catch (ClassNotFoundException e) {
                 throw new InvocationTargetException(e);
             }
@@ -553,11 +573,21 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
             }
 
             // Enable start button and show error dialog if application cannot start
+            setStartStopButtonsState(true);
+        } finally {
+            inspectorController.setStreamHandler(null);
+        }
+    }
+    
+    private void setStartStopButtonsState(boolean isReadyToStart) {
+        if (isReadyToStart) {
             btnStart.setEnabled(true);
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
-        } finally {
-            inspectorController.setStreamHandler(null);
+        } else {
+            btnStart.setEnabled(false);
+            btnStop.setEnabled(true);
+            btnCapture.setEnabled(true);
         }
     }
 
@@ -656,6 +686,15 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     private void stopObjectInspectorAction() {
         // Close application
+        try {
+            WindowsSession appSession = inspectorController.getWindowsSession();
+            if (appSession != null) {
+                WindowsActionHelper actionHelper = new WindowsActionHelper(appSession);
+                actionHelper.closeApp();
+            }
+        } catch (NoSuchWindowException exception) {
+            // The application is already closed
+        }
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -676,7 +715,6 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
             allElementTreeViewer.setInput(new Object[] {});
             allElementTreeViewer.refresh();
-            propertiesComposite.setEditingElement(null);
             targetElementChanged(null);
             try {
                 stepView.refreshTree();
@@ -764,7 +802,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         allObjectsTreeComposite.setLayout(new FillLayout());
 
         allElementTreeViewer = new CTreeViewer(allObjectsTreeComposite,
-                SWT.FULL_SELECTION | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
         allElementTreeViewer.setLabelProvider(new WindowsElementLabelProvider());
         allElementTreeViewer.setContentProvider(new WindowsElementTreeContentProvider());
 
@@ -820,6 +858,11 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         screenComposite.highlightElement(selectedElement);
     }
 
+    @Override
+    public void highlightElementRects(List<Rectangle> rects) {
+        screenComposite.highlightRects(rects);
+    }
+
     private Font getFontBold(Label label) {
         FontDescriptor boldDescriptor = FontDescriptor.createFrom(label.getFont()).setStyle(SWT.BOLD);
         return boldDescriptor.createFont(label.getDisplay());
@@ -855,6 +898,9 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
      * @return element that were found
      */
     private TreeWindowsElement recursivelyFindElementByLocation(TreeWindowsElement currentElement, int x, int y) {
+        if (!screenComposite.isElementOnScreen((double) x, (double) y, (double) 1, (double) 1)) {
+            return null;
+        }
         for (TreeWindowsElement childElement : currentElement.getChildren()) {
             Map<String, String> attributes = childElement.getProperties();
             Double elementX = Double.parseDouble(attributes.get(GUIObject.X));
