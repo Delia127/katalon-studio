@@ -9,7 +9,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -22,6 +24,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.sikuli.api.ScreenRegion;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.common.ScreenUtil;
 
@@ -45,54 +48,91 @@ public class ImageLocatorController {
     public static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot) {
         ScreenUtil screen = new ScreenUtil(0.2);
         logger.logInfo("Attempting to find element by its screenshot !");
-        File screenshotFile = new File(pathToScreenshot);
-        String path = screenshotFile.getParent() + "/sikuli-generated";
-        File tmpFile = new File(path);
-
-        try {
-            List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
-            // Uncomment the following line to see intermediate artifacts
-            // sikuliDebug(screenshotFile, matchedRegions);
-            if (matchedRegions.size() == 0) {
-                return Collections.emptyList();
+        Map<ScreenRegion, List<WebElement>> mapOfCandidates = new HashMap<ScreenRegion, List<WebElement>>();
+        int iterationCount = 0;
+        int iterationNumber = RunConfiguration.getViewportIterationNumber();
+        int viewPortHeight = ((Number) ((JavascriptExecutor) webDriver)
+                .executeScript("return window.innerHeight")).intValue();
+        viewPortHeight = 100;
+        do {
+            File screenshotFile = new File(pathToScreenshot);
+            String path = screenshotFile.getParent() + "/sikuli-generated";
+            File tmpFile = new File(path);
+            try {
+                if (!scroll(webDriver, iterationCount * viewPortHeight)) {
+                    break;
+                }
+                List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
+                // sikuliDebug(screenshotFile, matchedRegions, iterationCount);
+                if (matchedRegions.size() == 0) {
+                    break;
+                }
+                ScreenRegion matchedRegion = matchedRegions.get(0);
+                Point coordinatesRelativeToDriver = getCoordinatesRelativeToWebDriver(webDriver, matchedRegion);
+                logger.logInfo("Highest matched region: " + matchedRegion.getScore());
+                double xRelativeToDriver = coordinatesRelativeToDriver.getX();
+                double yRelativeToDriver = coordinatesRelativeToDriver.getY();
+                List<WebElement> elementsAtPointXandY = elementsFromPoint(webDriver, xRelativeToDriver,
+                        yRelativeToDriver);
+                sortMinimizingDifferencesInSize(elementsAtPointXandY, matchedRegion);
+                mapOfCandidates.put(matchedRegion, elementsAtPointXandY);
+            } catch (Exception e) {
+                logger.logInfo("Unable to find element within the current viewport !");
+            } finally {
+                if (tmpFile.exists()) {
+                    tmpFile.delete();
+                }
             }
-            ScreenRegion matchedRegion = matchedRegions.get(0);
-
-            Point coordinatesRelativeToDriver = getCoordinatesRelativeToWebDriver(webDriver, matchedRegion);
-
-            double xRelativeToDriver = coordinatesRelativeToDriver.getX();
-            double yRelativeToDriver = coordinatesRelativeToDriver.getY();
-            logger.logDebug("Web Element found at position (relative to browser's viewport)" + xRelativeToDriver + " , "
-                    + yRelativeToDriver);
-
-            List<WebElement> elementsAtPointXandY = elementsFromPoint(webDriver, xRelativeToDriver, yRelativeToDriver);
-
-            // Find the element whose sizes are closest to that of the matched region
-            WebElement elementAtPointXandY = null;
-            double min = Double.MAX_VALUE;
-
-            // Sort ascending with respect to the difference in size between the element and the matched region
-            elementsAtPointXandY.sort((ele1, ele2) -> {
-                double ele1H = getSizeHeuristic(ele1, matchedRegion);
-                double ele2H = getSizeHeuristic(ele2, matchedRegion);
-                if (ele1H < ele2H)
-                    return -1;
-                if (ele1H > ele2H)
-                    return 1;
-                return 0;
-            });
-            return elementsAtPointXandY;
-        } catch (Exception e) {
-            logger.logError(ExceptionUtils.getFullStackTrace(e));
-        } finally {
-            if (tmpFile.exists()) {
-                tmpFile.delete();
-            }
-        }
-        return Collections.emptyList();
+            iterationCount++;
+        } while (iterationCount < iterationNumber);
+        ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0, 0);");
+        return getWebElementsOfHighestMatchedRegion(mapOfCandidates);
     }
 
-    private static double getSizeHeuristic(WebElement element, ScreenRegion matchedRegion) {
+    private static List<WebElement> getWebElementsOfHighestMatchedRegion(
+            Map<ScreenRegion, List<WebElement>> mapOfCandidates) {
+        return mapOfCandidates.entrySet().stream().max((entry1, entry2) -> {
+            double reg1Score = entry1.getKey().getScore();
+            double reg2Score = entry2.getKey().getScore();
+            if (reg1Score < reg2Score)
+                return -1;
+            if (reg1Score > reg2Score)
+                return 1;
+            return 0;
+        }).map(entry -> entry.getValue()).orElse(Collections.emptyList());
+    }
+    
+    /**
+     * Scroll the current page by the provided distance
+     * @param webDriver
+     * @param heightPos
+     * @return
+     * @throws InterruptedException
+     */
+    private static boolean scroll(WebDriver webDriver, int heightPos) throws InterruptedException {
+        Thread.sleep(250);
+        try {
+            ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0," + heightPos + ")");
+            return true;
+        } catch (Exception e) {
+            logger.logInfo("Cannot scroll viewport anymore !");
+        }
+        return false;
+    }
+
+    private static void sortMinimizingDifferencesInSize(List<WebElement> elementsAtPointXandY, ScreenRegion matchedRegion) {
+        elementsAtPointXandY.sort((ele1, ele2) -> {
+            double ele1H = getDifferenceInSizeHeuristic(ele1, matchedRegion);
+            double ele2H = getDifferenceInSizeHeuristic(ele2, matchedRegion);
+            if (ele1H < ele2H)
+                return -1;
+            if (ele1H > ele2H)
+                return 1;
+            return 0;
+        });
+    }
+
+    private static double getDifferenceInSizeHeuristic(WebElement element, ScreenRegion matchedRegion) {
         double widthDiff = Math.abs(element.getRect().getWidth() - matchedRegion.getBounds().getWidth());
         double heightDiff = Math.abs(element.getRect().getHeight() - matchedRegion.getBounds().getHeight());
         return widthDiff + heightDiff;
@@ -122,12 +162,10 @@ public class ImageLocatorController {
      */
     private static Point getCoordinatesRelativeToWebDriver(WebDriver webDriver, ScreenRegion matchedRegion) {
         JavascriptExecutor js = (JavascriptExecutor) webDriver;
-
         double viewHeight = ((Number) js.executeScript("return window.innerHeight")).doubleValue();
         double driverHeight = webDriver.manage().window().getSize().getHeight();
         double driverX = webDriver.manage().window().getPosition().getX();
         double driverY = webDriver.manage().window().getPosition().getY();
-
         double X = matchedRegion.getBounds().getCenterX();
         double Y = matchedRegion.getBounds().getCenterY();
         double xRelativeToDriver = X - driverX;
@@ -148,7 +186,6 @@ public class ImageLocatorController {
      * @return A list of @{link WebElement} returned from calling the above browser API
      */
     private static List<WebElement> elementsFromPoint(WebDriver webDriver, double x, double y) {
-
         @SuppressWarnings("unchecked")
         List<Object> objectsAtPointXandY = (List<Object>) ((JavascriptExecutor) webDriver)
                 .executeScript("return document.elementsFromPoint(arguments[0], arguments[1])", (int) x, (int) y);
@@ -213,8 +250,8 @@ public class ImageLocatorController {
      * @throws IOException
      */
     @SuppressWarnings("unused")
-    private static void sikuliDebug(File screenshotFile, List<ScreenRegion> matchedRegions) throws IOException {
-        String imageFolderPath = screenshotFile.getParent() + "/sikuli/"
+    private static void sikuliDebug(File screenshotFile, List<ScreenRegion> matchedRegions, int iter) throws IOException {
+        String imageFolderPath = screenshotFile.getParent() + "/sikuli-" + iter + "/"
                 + screenshotFile.getName().replaceAll(".png", "");
         File imageFolder = new File(imageFolderPath + "/target.png");
         imageFolder.mkdirs();

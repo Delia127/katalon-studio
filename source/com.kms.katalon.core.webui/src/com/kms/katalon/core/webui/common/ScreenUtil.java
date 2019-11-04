@@ -143,7 +143,13 @@ public class ScreenUtil {
             regions.sort(new Comparator<ScreenRegion>() {
                 @Override
                 public int compare(ScreenRegion o1, ScreenRegion o2) {
-                    return Double.compare(o2.getScore(), o1.getScore());
+                    double reg1Score = o1.getScore();
+                    double reg2Score = o2.getScore();
+                    if (reg1Score > reg2Score)
+                        return -1;
+                    if (reg1Score < reg2Score)
+                        return 1;
+                    return 0;
                 }
             });
             return regions;
