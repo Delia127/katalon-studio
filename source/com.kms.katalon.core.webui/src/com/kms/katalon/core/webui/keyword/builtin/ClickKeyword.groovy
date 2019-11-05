@@ -57,15 +57,17 @@ public class ClickKeyword extends WebUIAbstractKeyword {
                     Actions builder = new Actions(webDriver);
                     builder.moveToElement(webElement);
                     builder.build().perform();
+                    
                     WebDriverWait wait = new WebDriverWait(webDriver, timeout);
                     webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
                     webElement.click();
+                    
                     return Boolean.TRUE;
                 }).orElseTry({
                     Actions builder = new Actions(webDriver);
-                    builder.moveToElement(webElement);
-                    builder.build().perform();
+                    builder.moveToElement(webElement);                    
                     builder.click();
+                    builder.build().perform();
                     return Boolean.TRUE;
                 }).orElseTry({
                     JavascriptExecutor executor = (JavascriptExecutor) webDriver;
