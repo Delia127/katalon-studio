@@ -52,11 +52,14 @@ public class ClickKeyword extends WebUIAbstractKeyword {
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
                 WebDriver webDriver = DriverFactory.getWebDriver();
                 int timeout = KeywordHelper.checkTimeout(RunConfiguration.getTimeOut())
-                WebDriverWait wait = new WebDriverWait(webDriver, timeout);
-                webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()))
                 Try.ofFailable({
-                    webElement.click()
+                    Actions builder = new Actions(webDriver);
+                    builder.moveToElement(webElement);
+                    builder.build().perform();
+                    WebDriverWait wait = new WebDriverWait(webDriver, timeout);
+                    webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
+                    webElement.click();
                     return Boolean.TRUE;
                 }).orElseTry({
                     Actions builder = new Actions(webDriver);

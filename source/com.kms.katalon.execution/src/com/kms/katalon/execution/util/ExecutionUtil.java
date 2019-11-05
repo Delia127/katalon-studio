@@ -119,14 +119,6 @@ public class ExecutionUtil {
     public static boolean isQuitDriversAfterExecutingTestSuite() {
         return getStore().isPostTestSuiteExecQuitDriver();
     }
-    
-    public static int getViewPortScrollFactor() {
-        return getStore().getViewPortScrollFactor();
-    }
-    
-    public static int getViewPortIterationNumber() {
-        return getStore().getViewPortIterationNumber();
-    }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {
         for (Entry<String, Object> entry : propertiesMap.entrySet()) {
@@ -157,9 +149,6 @@ public class ExecutionUtil {
         
         executionProperties.put(RunConfiguration.LOG_TEST_STEPS,
         		ExecutionUtil.getLogTestSteps().booleanValue());
-        
-        executionProperties.put(RunConfiguration.VIEWPORT_SCROLL_FACTOR, ExecutionUtil.getViewPortScrollFactor());
-        executionProperties.put(RunConfiguration.VIEWPORT_ITERATION_NUMBER, ExecutionUtil.getViewPortIterationNumber());                
 
         propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
 

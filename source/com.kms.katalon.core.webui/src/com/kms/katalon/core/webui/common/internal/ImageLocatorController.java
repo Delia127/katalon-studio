@@ -39,9 +39,7 @@ public class ImageLocatorController {
     /**
      * Retrieve image at the given path, then look for similar images using
      * Sikuli. Given a matched image's position, use the coordinates to retrieve
-     * the corresponding web element and add it to the resulting list. Scroll the page
-     * using specs specified by user in Project > Settings > Execution and
-     * apply the above procedure.
+     * the corresponding web element and add it to the resulting list
      * 
      * @param webDriver
      * @param pathToScreenshot
@@ -49,19 +47,22 @@ public class ImageLocatorController {
      */
     public static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot) {
         ScreenUtil screen = new ScreenUtil(0.2);
-        logger.logInfo("Finding element by its screenshot !");
+        logger.logInfo("Attempting to find element by its screenshot !");
         Map<ScreenRegion, List<WebElement>> mapOfCandidates = new HashMap<ScreenRegion, List<WebElement>>();
         int iterationCount = 0;
-        int iterationNumber = RunConfiguration.getViewportIterationNumber();
-        int viewPortScrolLFactor = ((Number) ((JavascriptExecutor) webDriver)
-                .executeScript("return window.innerHeight")).intValue();
-        viewPortScrolLFactor = RunConfiguration.getViewPortHeightScrollFactor();
+        int viewPortHeight = ((Number) ((JavascriptExecutor) webDriver).executeScript("return window.innerHeight"))
+                .intValue();
+        viewPortHeight = 100;
+        double largestMatchedRegionScore = 0.0;
+        int scrolledAmount = 0;
+        int pageScrollHeight = getPageScrollHeight(webDriver);
         do {
             File screenshotFile = new File(pathToScreenshot);
             String path = screenshotFile.getParent() + "/sikuli-generated";
             File tmpFile = new File(path);
             try {
-                if (!scroll(webDriver, iterationCount * viewPortScrolLFactor)) {
+                scrolledAmount = iterationCount * viewPortHeight;
+                if (!scroll(webDriver, scrolledAmount)) {
                     break;
                 }
                 List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
@@ -75,7 +76,21 @@ public class ImageLocatorController {
                 double yRelativeToDriver = coordinatesRelativeToDriver.getY();
                 List<WebElement> elementsAtPointXandY = elementsFromPoint(webDriver, xRelativeToDriver,
                         yRelativeToDriver);
+                
                 sortMinimizingDifferencesInSize(elementsAtPointXandY, matchedRegion);
+                
+//                if (matchedRegion.getScore() >= largestMatchedRegionScore) {
+//                    largestMatchedRegionScore = matchedRegion.getScore();
+//                    Robot robot = new Robot();
+//                    BufferedImage image = robot.createScreenCapture(matchedRegion.getBounds());
+//                    File imageFile = new File(screenshotFile.getParentFile().getAbsolutePath() + "/reg-"
+//                            + screenshotFile.getName() + ".png");
+//                    ImageIO.write(image, "png", imageFile);
+//                    
+//                    saveWebElementScreenshot(webDriver, elementsAtPointXandY.get(0), "we-" + screenshotFile.getName(),
+//                            screenshotFile.getParentFile().getAbsolutePath());
+//                }
+                
                 mapOfCandidates.put(matchedRegion, elementsAtPointXandY);
             } catch (Exception e) {
                 logger.logInfo("Unable to find element within the current viewport !");
@@ -85,7 +100,7 @@ public class ImageLocatorController {
                 }
             }
             iterationCount++;
-        } while (iterationCount < iterationNumber);
+        } while (scrolledAmount <= pageScrollHeight);
         ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0, 0);");
         return getWebElementsOfHighestMatchedRegion(mapOfCandidates);
     }
@@ -115,11 +130,17 @@ public class ImageLocatorController {
         Thread.sleep(250);
         try {
             ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0," + heightPos + ")");
+            logger.logInfo("" + (((Number) ((JavascriptExecutor) webDriver).executeScript("return document.body.scrollHeight")).intValue()));
             return true;
         } catch (Exception e) {
             logger.logInfo("Cannot scroll viewport anymore !");
         }
         return false;
+    }
+    
+    private static int getPageScrollHeight(WebDriver webDriver) {
+        return (((Number) ((JavascriptExecutor) webDriver).executeScript("return document.body.scrollHeight"))
+                .intValue());
     }
 
     private static void sortMinimizingDifferencesInSize(List<WebElement> elementsAtPointXandY,
@@ -136,8 +157,8 @@ public class ImageLocatorController {
     }
 
     private static double getDifferenceInSizeHeuristic(WebElement element, ScreenRegion matchedRegion) {
-        double widthDiff = Math.abs(element.getRect().getWidth() - matchedRegion.getBounds().getWidth());
-        double heightDiff = Math.abs(element.getRect().getHeight() - matchedRegion.getBounds().getHeight());
+        double widthDiff = Math.abs(element.getSize().getWidth() - matchedRegion.getBounds().getWidth());
+        double heightDiff = Math.abs(element.getSize().getHeight() - matchedRegion.getBounds().getHeight());
         return widthDiff + heightDiff;
     }
 

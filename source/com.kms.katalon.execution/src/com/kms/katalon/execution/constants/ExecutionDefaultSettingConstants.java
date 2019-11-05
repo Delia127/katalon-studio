@@ -16,8 +16,4 @@ public class ExecutionDefaultSettingConstants {
     public static final String WEB_UI_DEFAULT_SMART_WAIT_MODE = "execution.default.smartWaitMode";
 
     public static final String WEB_UI_LOG_TEST_STEPS = "execution.logTestSteps";
-
-    public static final String WEB_UI_VIEWPORT_SCROLL_FACTOR = "execution.viewPortScrollFactor";
-    
-    public static final String WEB_UI_VIEWPORT_ITERATION_NUMBER = "execution.viewPortIterationNumber";
 }

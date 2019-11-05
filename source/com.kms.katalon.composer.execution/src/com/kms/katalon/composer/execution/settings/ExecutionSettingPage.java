@@ -66,8 +66,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
 
     private Combo cbLogTestSteps;
     
-    private Text txtDefaultElementTimeout, txtDefaultPageLoadTimeout, txtActionDelay, txtDefaultIEHangTimeout,
-    txtViewPortScrollFactor, txtViewPortIterationNumber;
+    private Text txtDefaultElementTimeout, txtDefaultPageLoadTimeout, txtActionDelay, txtDefaultIEHangTimeout;
 
     @SuppressWarnings("unused")
 	private Button chckApplyNeighborXpaths, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
@@ -158,26 +157,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         gdCbLogTestSteps = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdCbLogTestSteps.widthHint = INPUT_WIDTH * 2;
         cbLogTestSteps.setLayoutData(gdCbLogTestSteps);
-        
-        Label lblViewPortScrollFactor = new Label(comp, SWT.NONE);
-        lblViewPortScrollFactor.setText(StringConstants.PREF_LBL_VIEWPORT_SCROLL_FACTOR);
-        GridData gdlViewPortScrollFactor = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblViewPortScrollFactor.setLayoutData(gdlViewPortScrollFactor);
-
-        txtViewPortScrollFactor = new Text(comp, SWT.BORDER);
-        GridData gdTxtViewPortScrollFactor = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdTxtViewPortScrollFactor.widthHint = INPUT_WIDTH * 2;
-        txtViewPortScrollFactor.setLayoutData(gdTxtViewPortScrollFactor);
-
-        Label lblViewPortIterationNumber = new Label(comp, SWT.NONE);
-        lblViewPortIterationNumber.setText(StringConstants.PREF_LBL_VIEWPORT_ITERATION_NUMBER);
-        GridData gdLblViewPortIterationNumber = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblViewPortIterationNumber.setLayoutData(gdLblViewPortIterationNumber);
-        
-        txtViewPortIterationNumber = new Text(comp, SWT.BORDER);
-        GridData gdTxtViewPortIterationNumber = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdTxtViewPortIterationNumber.widthHint = INPUT_WIDTH * 2;
-        txtViewPortIterationNumber.setLayoutData(gdTxtViewPortIterationNumber);
         
         /* 	// Smart XPath's related functionality - only supported in commercial ver
          * 	Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
@@ -282,8 +261,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         addNumberVerification(txtDefaultIEHangTimeout, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
         addNumberVerification(txtDefaultPageLoadTimeout, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
         addNumberVerification(txtDefaultElementTimeout, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
-        addNumberVerification(txtViewPortIterationNumber, 0, 1000);
-        addNumberVerification(txtViewPortScrollFactor, 0, 1000);
     }
     
     private void addNumberVerification(Text txtInput, final int min, final int max) {
@@ -360,9 +337,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         Boolean selectedLogTestSteps = defaultSettingStore.getLogTestSteps();
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(selectedLogTestSteps.booleanValue() ? 0 : 1);
-
-        txtViewPortScrollFactor.setText(Integer.toString(defaultSettingStore.getViewPortScrollFactor()));
-        txtViewPortIterationNumber.setText(Integer.toString(defaultSettingStore.getViewPortIterationNumber()));
         
         txtDefaultElementTimeout.setText(Integer.toString(defaultSettingStore.getElementTimeout()));
         
@@ -413,9 +387,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(0);
-        txtViewPortIterationNumber
-                .setText(Integer.toString(ExecutionDefaultSettingStore.DEFAULT_VIEW_PORT_ITERATION_NUMBER));
-        txtViewPortScrollFactor.setText(Integer.toString(ExecutionDefaultSettingStore.DEFAULT_VIEW_PORT_SCROLL_FACTOR));
+        
         txtDefaultElementTimeout
                 .setText(Integer.toString(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_TIMEOUT_VALUE));
         chckOpenReport.setSelection(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_OPEN_REPORT_REPORT_VALUE);

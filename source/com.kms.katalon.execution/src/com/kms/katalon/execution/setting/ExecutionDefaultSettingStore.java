@@ -29,10 +29,6 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     public static final Boolean DEFAULT_SMART_WAIT_MODE = true;
     
     public static final Boolean DEFAULT_LOG_TEST_STEPS = true;
-    
-    public static final int DEFAULT_VIEW_PORT_SCROLL_FACTOR = 100;
-    
-    public static final int DEFAULT_VIEW_PORT_ITERATION_NUMBER = 13;
 
     public static ExecutionDefaultSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -195,31 +191,5 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     
     public void setLogTestSteps(Boolean value) throws IOException {
         setProperty(ExecutionDefaultSettingConstants.WEB_UI_LOG_TEST_STEPS, value);
-    }
-    
-    public int getViewPortScrollFactor() {
-        try {
-            return getInt(ExecutionDefaultSettingConstants.WEB_UI_VIEWPORT_SCROLL_FACTOR,
-                    DEFAULT_VIEW_PORT_SCROLL_FACTOR);
-        } catch (IOException e) {
-            return DEFAULT_VIEW_PORT_SCROLL_FACTOR;
-        }
-    }
-
-    public void setViewPortScrolLFactor(int value) throws IOException {
-        setProperty(ExecutionDefaultSettingConstants.WEB_UI_VIEWPORT_SCROLL_FACTOR, value);
-    }
-
-    public int getViewPortIterationNumber() {
-        try {
-            return getInt(ExecutionDefaultSettingConstants.WEB_UI_VIEWPORT_ITERATION_NUMBER,
-                    DEFAULT_VIEW_PORT_ITERATION_NUMBER);
-        } catch (IOException e) {
-            return DEFAULT_VIEW_PORT_ITERATION_NUMBER;
-        }
-    }
-
-    public void setViewPortScrollIterationNumber(int value) throws IOException {
-        setProperty(ExecutionDefaultSettingConstants.WEB_UI_VIEWPORT_ITERATION_NUMBER, value);
     }
 }

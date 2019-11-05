@@ -276,7 +276,7 @@ public class WebElementUtils {
         By selectorMethod = WebUiCommonHelper.buildLocator(testObject);
         return Optional.ofNullable(driver.findElement(selectorMethod)).map(element -> {
             try {
-                return WebUiCommonHelper.saveWebElementScreenshotAndResize(driver, element, el.getName(),
+                return WebUiCommonHelper.saveWebElementScreenshot(driver, element, el.getName(),
                         imageFolder.getAbsolutePath());
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
