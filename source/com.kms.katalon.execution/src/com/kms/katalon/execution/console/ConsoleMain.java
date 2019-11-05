@@ -99,9 +99,9 @@ public class ConsoleMain {
 
     public static final String KATALON_TESTOP_SERVER = "serverUrl";
 
-    public static final String KATALON_API_KEY_ON_PREMISE_OPTION = "apiKeyOP";
+    public static final String KATALON_API_KEY_ON_PREMISE_OPTION = "apiKeyOnPremise";
 
-    public static final String KATALON_API_KEY_ON_PREMISE_SECOND_OPTION = "apikeyop";
+    public static final String KATALON_API_KEY_ON_PREMISE_SECOND_OPTION = "apiKeyOP";
 
     private ConsoleMain() {
         // hide constructor
