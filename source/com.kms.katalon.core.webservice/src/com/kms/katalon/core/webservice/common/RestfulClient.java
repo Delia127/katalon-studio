@@ -86,20 +86,10 @@ public class RestfulClient extends BasicRequestor {
         clientBuilder.setConnectionManager(connectionManager);
         clientBuilder.setConnectionManagerShared(true);
         
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            SSLContext sc = SSLContext.getInstance(TLS);
-            sc.init(getKeyManagers(), getTrustManagers(), null);
-            clientBuilder.setSSLContext(sc);
-        }
-        
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
         Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
             configureProxy(clientBuilder, proxyInfo);
-        }
-
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         
         clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
