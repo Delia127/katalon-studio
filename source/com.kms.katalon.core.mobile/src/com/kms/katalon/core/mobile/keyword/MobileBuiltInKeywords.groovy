@@ -1833,4 +1833,150 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void sendKeys(TestObject to, String strokeKeys) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "sendKeys", to, strokeKeys)
     }
+    
+    /**
+     * Finds the mobile element that is recognized by the given image.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @return
+     * The first found WebElement that is recognized by the given image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static WebElement findImageElement(String imageFilePath, FailureHandling flowControl) throws StepFailedException {
+        return (WebElement) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "findImageElement", imageFilePath, flowControl)
+    }
+
+    /**
+     * Finds the mobile element that is recognized by the given image.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @return
+     * The first found WebElement that is recognized by the given image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static WebElement findImageElement(String imageFilePath) throws StepFailedException {
+        return (WebElement) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "findImageElement", imageFilePath)
+    }
+    
+    /**
+     * Finds all mobile elements that are recognized by the given image.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @return
+     * A list of WebElement that is recognized by the given image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static List findImageElements(String imageFilePath, FailureHandling flowControl) throws StepFailedException {
+        return (List) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "findImageElements", imageFilePath, flowControl)
+    }
+
+    /**
+     * Finds all mobile elements that are recognized by the given image.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @return
+     * A list of WebElement that is recognized by the given image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static List findImageElements(String imageFilePath) throws StepFailedException {
+        return (List) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "findImageElements", imageFilePath)
+    }
+
+    /**
+     * Finds the webElement that is recognized by the given image then taps on the found element's location.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void tapOnImage(String imageFilePath, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "tapOnImage", imageFilePath, flowControl)
+    }
+
+    /**
+     * Finds the mobile element that is recognized by the given image and taps on the found element's location.
+     *  
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void tapOnImage(String imageFilePath) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "tapOnImage", imageFilePath)
+    }
+   
+    /**
+     * Verifies the given image that presents on the device screen or not.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @return
+     * true if the image presents. Otherwise, false.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyImagePresent(String imageFilePath) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyImagePresent", imageFilePath)
+    }
 }
