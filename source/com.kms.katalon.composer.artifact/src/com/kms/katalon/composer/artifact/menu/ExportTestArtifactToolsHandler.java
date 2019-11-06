@@ -14,7 +14,6 @@ import com.kms.katalon.composer.artifact.constant.StringConstants;
 import com.kms.katalon.composer.artifact.core.util.PlatformUtil;
 import com.kms.katalon.composer.artifact.handler.ExportTestArtifactHandler;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.license.models.LicenseType;
 
 public class ExportTestArtifactToolsHandler {
     @CanExecute
