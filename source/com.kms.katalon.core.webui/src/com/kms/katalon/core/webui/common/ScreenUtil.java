@@ -125,6 +125,12 @@ public class ScreenUtil {
         }
     }
     
+    /**
+     * Call {@link DesktopScreenRegion#capture()} to
+     * capture the screenshot of the current screen
+     * 
+     * @return
+     */
     public BufferedImage getScreenRegionImage() {
         return mainScreen.capture();
     }
