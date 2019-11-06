@@ -65,6 +65,14 @@ public class ImageLocatorController {
                 if (!scroll(webDriver, scrolledAmount)) {
                     break;
                 }
+                
+//                File screenshotFolder = new File(screenshotFile.getParentFile().getAbsolutePath() + "/screenshots");
+//                screenshotFolder.mkdirs();                
+//                BufferedImage image = screen.getScreenRegionImage();
+//                File imageFile = new File(screenshotFolder.getAbsolutePath() + "/screenshot-at-" + iterationCount
+//                        + screenshotFile.getName() + ".png");
+//                ImageIO.write(image, "png", imageFile);
+                
                 List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
                 // sikuliDebug(screenshotFile, matchedRegions, iterationCount);
                 if (matchedRegions.size() == 0) {
@@ -79,17 +87,19 @@ public class ImageLocatorController {
                 
                 sortMinimizingDifferencesInSize(elementsAtPointXandY, matchedRegion);
                 
-//                if (matchedRegion.getScore() >= largestMatchedRegionScore) {
-//                    largestMatchedRegionScore = matchedRegion.getScore();
-//                    Robot robot = new Robot();
-//                    BufferedImage image = robot.createScreenCapture(matchedRegion.getBounds());
-//                    File imageFile = new File(screenshotFile.getParentFile().getAbsolutePath() + "/reg-"
+                if (matchedRegion.getScore() >= largestMatchedRegionScore) {
+                    largestMatchedRegionScore = matchedRegion.getScore();
+//                    Robot robot1 = new Robot();
+//                    File targetFolder = new File(screenshotFile.getParentFile().getAbsolutePath() + "/targets");
+//                    targetFolder.mkdirs();
+//                    BufferedImage image1 = robot1.createScreenCapture(matchedRegion.getBounds());
+//                    File imageFile1 = new File(targetFolder.getAbsolutePath() + "/reg-"
 //                            + screenshotFile.getName() + ".png");
-//                    ImageIO.write(image, "png", imageFile);
-//                    
+//                    ImageIO.write(image1, "png", imageFile1);
+                    
 //                    saveWebElementScreenshot(webDriver, elementsAtPointXandY.get(0), "we-" + screenshotFile.getName(),
 //                            screenshotFile.getParentFile().getAbsolutePath());
-//                }
+                }
                 
                 mapOfCandidates.put(matchedRegion, elementsAtPointXandY);
             } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.kms.katalon.core.webui.common;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
@@ -122,6 +123,10 @@ public class ScreenUtil {
         } else {
             throw new Exception(StringConstants.COMM_EXC_IMG_FILE_DOES_NOT_EXIST);
         }
+    }
+    
+    public BufferedImage getScreenRegionImage() {
+        return mainScreen.capture();
     }
 
     /**
