@@ -190,6 +190,10 @@ public class SoapClient extends BasicRequestor {
         }
         
 //        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
+        if (StringUtils.defaultString(endPoint).toLowerCase().startsWith(HTTPS)) {
+            //this will be overridden by setting connection manager for clientBuilder
+            clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
+        }
         HttpPost post = new HttpPost(endPoint);
         post.addHeader(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
         post.addHeader(SOAP_ACTION, actionUri);
@@ -329,11 +333,23 @@ public class SoapClient extends BasicRequestor {
 
             clientBuilder.setConnectionManager(connectionManager);
             clientBuilder.setConnectionManagerShared(true);
+            
+            boolean isHttps = isHttps(url);
+            if (isHttps) {
+                SSLContext sc = SSLContext.getInstance(SSL);
+                sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            }
 
             ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
             Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
             if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
                 configureProxy(clientBuilder, proxyInfo);
+            }
+            
+            if (StringUtils.defaultString(url).toLowerCase().startsWith(HTTPS)) {
+                //this will be overridden by setting connection manager for clientBuilder
+                clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
             }
             
             clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
@@ -374,6 +390,11 @@ public class SoapClient extends BasicRequestor {
             IOUtils.closeQuietly(httpClient);
             
             return is;
+        }
+
+        private boolean isHttps(String url) {
+            url = url.toLowerCase();
+            return url.startsWith("https");
         }
 
         @Override
