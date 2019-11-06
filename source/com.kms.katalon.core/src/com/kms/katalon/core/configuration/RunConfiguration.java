@@ -580,8 +580,4 @@ public class RunConfiguration {
     	}
     	return null;
     }
-
-    public static int getViewportIterationNumber() {
-        return 15;
-    }
 }
