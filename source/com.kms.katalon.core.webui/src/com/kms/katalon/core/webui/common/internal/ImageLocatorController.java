@@ -141,7 +141,6 @@ public class ImageLocatorController {
         Thread.sleep(250);
         try {
             ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0," + heightPos + ")");
-            logger.logInfo("" + (((Number) ((JavascriptExecutor) webDriver).executeScript("return document.body.scrollHeight")).intValue()));
             return true;
         } catch (Exception e) {
             logger.logInfo("Cannot scroll viewport anymore !");
