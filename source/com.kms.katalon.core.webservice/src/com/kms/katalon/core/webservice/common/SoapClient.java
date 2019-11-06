@@ -191,6 +191,7 @@ public class SoapClient extends BasicRequestor {
         
 //        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
         if (StringUtils.defaultString(endPoint).toLowerCase().startsWith(HTTPS)) {
+            //this will be overridden by setting connection manager for clientBuilder
             clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         HttpPost post = new HttpPost(endPoint);
@@ -347,6 +348,7 @@ public class SoapClient extends BasicRequestor {
             }
             
             if (StringUtils.defaultString(url).toLowerCase().startsWith(HTTPS)) {
+                //this will be overridden by setting connection manager for clientBuilder
                 clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
             }
             

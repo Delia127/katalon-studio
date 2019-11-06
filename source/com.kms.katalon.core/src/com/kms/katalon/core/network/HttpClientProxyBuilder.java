@@ -63,7 +63,7 @@ public class HttpClientProxyBuilder {
     		sc.init(getKeyManagers(), getTrustManagers(), null);
     		Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory> create()
     				.register("http", PlainConnectionSocketFactory.INSTANCE)
-    				.register("https", new SSLConnectionSocketFactory(sc))
+    				.register("https", new SSLConnectionSocketFactory(sc, getHostnameVerifier()))
     				.build();
 	        connectionManager = new PoolingHttpClientConnectionManager(reg);
     	} catch (Exception e) {
