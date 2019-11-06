@@ -919,19 +919,19 @@ public class WebUiCommonHelper extends KeywordHelper {
      * be under PNG extension.
      * 
      * @param driver
-     * A WebDriver instance that's being used at the time calling
-     * this function
+     *            A WebDriver instance that's being used at the time calling
+     *            this function
      * @param ele
-     * The web element to be taken screenshot of
+     *            The web element to be taken screenshot of
      * @param name
-     * Name of the screenshot
+     *            Name of the screenshot
      * @param path
-     * An absolute path to a folder to which the image will be saved
+     *            An absolute path to a folder to which the image will be saved
      * @return Path to the newly taken screenshot if exists, an empty string
-     * otherwise
+     *         otherwise
      * @throws IOException
-     * If an exception during I/O occurs
-     * @throws InterruptedException
+     *             If an exception during I/O occurs
+     * @throws InterruptedException 
      */
     public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
             throws IOException {
