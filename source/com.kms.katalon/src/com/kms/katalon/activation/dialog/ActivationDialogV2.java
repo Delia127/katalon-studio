@@ -200,15 +200,18 @@ public class ActivationDialogV2 extends AbstractDialog {
                                 } else {
                                     enableObject(true);
                                     setProgressMessage(errorMessage.toString(), true);
+                                    ActivationInfoCollector.sendTrackingForActivate(username, false, errorMessage);
                                 }
                             } else {
                                 enableObject(true);
                                 setProgressMessage(errorMessage.toString(), true);
+                                ActivationInfoCollector.sendTrackingForActivate(username, false, errorMessage);
                             }
                         } catch (Exception ex) {
                             LogUtil.logError(ex);
                             setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
                             enableObject(true);
+                            ActivationInfoCollector.sendTrackingForActivate(username, false, new StringBuilder().append(ex));
                         }
                     });
                 });
@@ -252,15 +255,18 @@ public class ActivationDialogV2 extends AbstractDialog {
                     close();
 
                     String message = licenseResource.getMessage();
-
+                    StringBuilder errorMessage = new StringBuilder();
                     if (!StringUtils.isEmpty(message)) {
+                        errorMessage.append(message);
                         WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
                         warningLicenseDialog.open();
                     }
+                    ActivationInfoCollector.sendTrackingForActivate(email, true, errorMessage);
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
                     LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                    ActivationInfoCollector.sendTrackingForActivate(email, false, new StringBuilder().append(e));
                 }
             });
         });
@@ -277,17 +283,19 @@ public class ActivationDialogV2 extends AbstractDialog {
                 try {
                     ActivationInfoCollector.markActivated(email, password, org, license);
                     close();
-
                     String message = licenseResource.getMessage();
-
+                    StringBuilder errorMessage = new StringBuilder();
                     if (!StringUtils.isEmpty(message)) {
+                        errorMessage.append(message);
                         WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
                         warningLicenseDialog.open();
                     }
+                    ActivationInfoCollector.sendTrackingForActivate(email, true, errorMessage);
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
                     LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                    ActivationInfoCollector.sendTrackingForActivate(email, false, new StringBuilder().append(e));
                 }
             });
         });
@@ -330,6 +338,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                             break;
                     }
                 } catch (Exception e) {
+                    ActivationInfoCollector.sendTrackingForActivate(txtEmail.getText(), false, new StringBuilder().append(e));
                     LogUtil.logError(e);
                     setProgressMessage("", false);
                     MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),

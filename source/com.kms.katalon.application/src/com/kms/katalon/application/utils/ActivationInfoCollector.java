@@ -1,10 +1,12 @@
 package com.kms.katalon.application.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -217,20 +219,29 @@ public class ActivationInfoCollector {
         return Objects.hash(hostName);
     }
 
-    private static String collectActivationInfo(String userName, String pass) {
+    private static String collectActivationInfo(String userName, boolean isActivateSuccess, StringBuilder errorMessage) {
         JsonObject traits = traitsWithAppInfo();
-        traits.addProperty("password", pass);
+        traits.addProperty("activated", isActivateSuccess);
 
         JsonObject activationObject = new JsonObject();
         activationObject.addProperty("userId", userName);
         activationObject.add("traits", traits);
+
+        if (isActivateSuccess) {
+            LicenseType licenseType = ActivationInfoCollector.getLicenseType();
+            activationObject.addProperty("licenseType", licenseType.name());
+        } 
+        activationObject.addProperty("errorMessage", errorMessage.toString());
+
+        KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+        activationObject.addProperty("katalonPackage", katalonPackage.getPackageName());
 
         return activationObject.toString();
     }
 
     public static JsonObject traitsWithAppInfo() {
         JsonObject traits = new JsonObject();
-        String katVersion = ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo();
+        String katVersion = ApplicationInfo.versionNo() + " build " + VersionUtil.getCurrentVersion().getBuildNumber();
         String osType = Platform.getOSArch().contains("64") ? "64" : "32";
         String host = "";
         host = getHostname();
@@ -276,16 +287,19 @@ public class ActivationInfoCollector {
         return activate(userName, password, machineId, errorMessage);
     }
 
+    public static void sendTrackingForActivate(String userName, boolean isActivatedSuccess, StringBuilder errorMessage) {
+        Thread sendTracking = new Thread(() -> {
+            try {
+                String userInfo = collectActivationInfo(userName, isActivatedSuccess, errorMessage);
+                ServerAPICommunicationUtil.post("/activation-tracking", userInfo);
+            } catch (IOException | GeneralSecurityException e) {
+                //ignore
+            }
+        });
+        sendTracking.start();
+    }
+
     public static LicenseResource activate(String userName, String password, String machineId, StringBuilder errorMessage) {
-//        try {
-//            String userInfo = collectActivationInfo(userName, password);
-//            ServerAPICommunicationUtil.post("/segment/identify", userInfo);
-//            if (errorMessage != null) {
-//                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
-//            }
-//        } catch (Exception e) {
-//            LogUtil.logError(e);
-//        }
         License license;
         if (!StringUtils.isBlank(password) && !StringUtils.isBlank(machineId)) {
             try {

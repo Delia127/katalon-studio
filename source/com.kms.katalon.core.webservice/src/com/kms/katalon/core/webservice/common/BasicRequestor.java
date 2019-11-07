@@ -337,7 +337,7 @@ public abstract class BasicRequestor implements Requestor {
         sc.init(getKeyManagers(), getTrustManagers(), null);
         Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory> create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)
-                .register("https", new SSLConnectionSocketFactory(sc))
+                .register("https", new SSLConnectionSocketFactory(sc, getHostnameVerifier()))
                 .build();
         httpContext.setAttribute(SOCKET_FACTORY_REGISTRY, reg);
         return httpContext;
