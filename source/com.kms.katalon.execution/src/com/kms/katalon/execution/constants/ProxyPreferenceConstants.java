@@ -13,6 +13,8 @@ public interface ProxyPreferenceConstants {
     
     public static final String PROXY_PASSWORD = "proxy.password";
     
+    public static final String PROXY_EXCEPTION_LIST = "proxy.excludes";
+    
     public static final String PROXY_PREFERENCE_SET = "proxy.preferences.set";
 
 	public static final String DISABLE_MOB_BROWSER_PROXY = "proxy.preferences.disableMobRowserProxy";

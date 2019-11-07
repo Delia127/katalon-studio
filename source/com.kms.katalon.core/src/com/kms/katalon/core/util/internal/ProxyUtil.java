@@ -11,6 +11,8 @@ import java.net.ProxySelector;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -49,6 +51,32 @@ public class ProxyUtil {
             case USE_SYSTEM:
                 return getSystemProxy();
             case MANUAL_CONFIG:
+                return getProxyForManualConfig(proxyInfo);
+            default:
+                return Proxy.NO_PROXY;
+        }
+    }
+    
+    public static Proxy getProxy(ProxyInformation proxyInfo, String url) throws URISyntaxException, IOException {
+        if (proxyInfo == null) {
+            throw new IllegalArgumentException("proxyInfo cannot be null");
+        }
+        List<String> exceptionList = new ArrayList<String>();
+
+        String[] output = proxyInfo.getExceptionList().split(",");
+        String[] p = url.split("http://");
+        Arrays.stream(output).forEach(part -> exceptionList.add(part));
+        switch (ProxyOption.valueOf(proxyInfo.getProxyOption())) {
+            case NO_PROXY:
+                return Proxy.NO_PROXY;
+            case USE_SYSTEM:
+                return getSystemProxy();
+            case MANUAL_CONFIG:
+                for (int i = 0; i < exceptionList.size(); i++) {
+                    if (exceptionList.get(i).equals(p[1])) {
+                        return Proxy.NO_PROXY;
+                    }
+                }
                 return getProxyForManualConfig(proxyInfo);
             default:
                 return Proxy.NO_PROXY;
