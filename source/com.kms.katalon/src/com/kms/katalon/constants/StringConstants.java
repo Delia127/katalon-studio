@@ -197,6 +197,16 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String MSG_PLUGIN_HAS_BEEN_UNINSTALLED = MessageConstants.MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
 
+    public static final String KStore_ERROR_INVALID_CREDENTAILS = MessageConstants.KStore_ERROR_INVALID_CREDENTAILS;
+
+    public static final String KStore_MSG_INVALID_CREDENTAILS = MessageConstants.KStore_MSG_INVALID_CREDENTAILS;
+
+    public static final String TITLE_WARNING = MessageConstants.TITLE_WARNING;
+
+    public static final String BTN_CANCEL = MessageConstants.BTN_CANCEL;
+
+    public static final String BTN_REACTIVATE = MessageConstants.BTN_REACTIVATE;
+
     // PluginPreferencePage
     public static final String PAGE_LBL_PLUGIN_DIRECTORY = MessageConstants.PAGE_LBL_PLUGIN_DIRECTORY;
     

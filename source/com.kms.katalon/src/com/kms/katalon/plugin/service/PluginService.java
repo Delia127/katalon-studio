@@ -14,7 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.activation.dialog.WarningReactivateDialog;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
@@ -24,6 +26,7 @@ import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.KatalonPackage;
@@ -233,6 +236,9 @@ public class PluginService {
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
+            if (StringUtils.containsIgnoreCase(e.getMessage(), StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
+                throw new ReloadPluginsException(StringConstants.KStore_ERROR_INVALID_CREDENTAILS, e);
+            }
             if (StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)) {
                 throw new ReloadPluginsException("Error occurs during executing reload plugins due to invalid API Key",
                         e);
