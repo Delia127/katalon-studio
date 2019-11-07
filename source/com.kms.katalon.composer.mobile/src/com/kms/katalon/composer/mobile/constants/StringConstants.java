@@ -33,4 +33,11 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LBL_IOS_EXECUTION_MENU_ITEM = ComposerMobileMessageConstants.LBL_IOS_EXECUTION_MENU_ITEM;
 
     public static final String WARNING_TITLE = ComposerMobileMessageConstants.WARNING_TITLE;
+    
+    // iOS
+    public static final String MSG_IOS_INSTALLING_DEPENDENCIES = ComposerMobileMessageConstants.MSG_IOS_INSTALLING_DEPENDENCIES;
+    
+    public static final String MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY;
+    
+    public static final String MSG_IOS_INSTALL_DEPENDENCIES_FAILED = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES_FAILED;
 }

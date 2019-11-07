@@ -41,6 +41,13 @@ public class ComposerMobileMessageConstants extends NLS {
     public static String DIA_TITLE_ANDROID_DEVICES;
     
     public static String DIA_TITLE_IOS_DEVICES;
+    
+    // iOS
+    public static String MSG_IOS_INSTALLING_DEPENDENCIES;
+
+    public static String MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY;
+
+    public static String MSG_IOS_INSTALL_DEPENDENCIES_FAILED;
 
     static {
         // initialize resource bundle
