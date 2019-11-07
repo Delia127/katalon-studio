@@ -60,4 +60,5 @@ public class StringConstants extends GlobalStringConstants {
 	// Record Session
     public static final String DIALOG_CANNOT_START_IE_MESSAGE = ComposerWebuiRecorderMessageConstants.DIALOG_CANNOT_START_IE_MESSAGE;
     public static final String DIALOG_RUNNING_INSTANT_IE_MESSAGE = ComposerWebuiRecorderMessageConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE;
+    public static final String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG = ComposerWebuiRecorderMessageConstants.PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
 }
