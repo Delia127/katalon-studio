@@ -49,7 +49,10 @@ public class TapOnImageKeyword extends MobileAbstractKeyword {
 
             List elements = driver.findElementsByImage(encodedString)
             logger.logInfo(MessageFormat.format("Found {0} element(s) on screen", elements.size()))
-
+            if (elements.isEmpty()) {
+                throw new StepFailedException("No image element found")
+            }
+            
             WebElement element = elements.get(0)
             int x = element.getLocation().x
             int y = element.getLocation().y
