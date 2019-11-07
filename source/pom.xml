@@ -93,6 +93,7 @@
         <module>com.kms.katalon.poi</module>
 		<module>com.kms.katalon.platform.internal</module>
 		<module>com.kms.katalon.composer.artifact</module>
+		<module>com.kms.katalon.proxyvole</module>
 	</modules>
 
 	<properties>

@@ -184,10 +184,7 @@ public class SoapClient extends BasicRequestor {
         parseWsdl();
        
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
-        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
-        if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
-            configureProxy(clientBuilder, proxyInfo);
-        }
+        configureProxy(clientBuilder, proxyInfo);
         
 //        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
         if (StringUtils.defaultString(endPoint).toLowerCase().startsWith(HTTPS)) {
@@ -341,10 +338,7 @@ public class SoapClient extends BasicRequestor {
             }
 
             ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
-            Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
-            if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
-                configureProxy(clientBuilder, proxyInfo);
-            }
+            configureProxy(clientBuilder, proxyInfo);
             
             if (StringUtils.defaultString(url).toLowerCase().startsWith(HTTPS)) {
                 clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());

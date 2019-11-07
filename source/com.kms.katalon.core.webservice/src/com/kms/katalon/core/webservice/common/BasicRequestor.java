@@ -3,7 +3,6 @@ package com.kms.katalon.core.webservice.common;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
-import java.net.ProxySelector;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
@@ -309,6 +308,14 @@ public abstract class BasicRequestor implements Requestor {
     }
     
     protected void configureProxy(HttpClientBuilder httpClientBuilder, ProxyInformation proxyInformation) {
+        if (proxyInformation == null) {
+            return;
+        }
+        
+        if (ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.NO_PROXY)) {
+            return;
+        }
+        
         HttpHost httpProxy = new HttpHost(proxyInformation.getProxyServerAddress(),
                 proxyInformation.getProxyServerPort());
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -323,7 +330,7 @@ public abstract class BasicRequestor implements Requestor {
             @Override
             public HttpRoute determineRoute(HttpHost arg0, HttpRequest arg1, HttpContext arg2) throws HttpException {
                 if ((ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.USE_SYSTEM))) {
-                    return new SystemDefaultRoutePlanner(ProxySelector.getDefault()).determineRoute(arg0, arg1, arg2);
+                    return new SystemDefaultRoutePlanner(ProxyUtil.getAutoProxySelector()).determineRoute(arg0, arg1, arg2);
                 } else {
                     return new DefaultProxyRoutePlanner(httpProxy).determineRoute(arg0, arg1, arg2);
                 }
