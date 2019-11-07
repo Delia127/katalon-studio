@@ -89,6 +89,7 @@ public class RestfulClient extends BasicRequestor {
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
             SSLContext sc = SSLContext.getInstance(TLS);
             sc.init(getKeyManagers(), getTrustManagers(), null);
+            //this will be overridden by setting connection manager for clientBuilder
             clientBuilder.setSSLContext(sc);
         }
         
@@ -96,6 +97,7 @@ public class RestfulClient extends BasicRequestor {
         configureProxy(clientBuilder, proxyInfo);
 
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
+            //this will be overridden by setting connection manager for clientBuilder
             clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         

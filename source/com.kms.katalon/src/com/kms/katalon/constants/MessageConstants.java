@@ -125,6 +125,10 @@ public class MessageConstants extends NLS {
 
     public static String BTN_SAVE;
 
+    public static String BTN_CANCEL;
+
+    public static String BTN_REACTIVATE;
+
     public static String WAITTING_MESSAGE;
 
     public static String LINK_OPEN_ACTIVATE_FORM_OFFLINE;
@@ -493,6 +497,12 @@ public class MessageConstants extends NLS {
     public static String KStorePluginsDialog_LBL_WARNING;
     
     public static String KStorePluginsDialog_LBL_HELP;
+
+    public static String KStore_ERROR_INVALID_CREDENTAILS;
+
+    public static String KStore_MSG_INVALID_CREDENTAILS;
+
+    public static String TITLE_WARNING;
 
     public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 
