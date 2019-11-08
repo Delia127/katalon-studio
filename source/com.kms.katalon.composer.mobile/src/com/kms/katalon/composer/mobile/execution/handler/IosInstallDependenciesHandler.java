@@ -60,7 +60,7 @@ public class IosInstallDependenciesHandler {
 
     @Execute
     public void execute(Shell shell) {
-        Job installDependencies = new Job(StringConstants.MSG_IOS_INSTALLING_DEPENDENCIES) {
+        Job installDependencies = new Job(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES) {
 
             private int totalWork = 9;
 
@@ -80,64 +80,60 @@ public class IosInstallDependenciesHandler {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                monitor.beginTask(StringConstants.MSG_IOS_INSTALLING_DEPENDENCIES, totalWork);
+                monitor.beginTask(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES, totalWork);
                 try {
 
-                    Map<String, String> iosAdditionalEnvironmentVariables = IosDeviceInfo
-                            .getIosAdditionalEnvironmentVariables();
+                    Map<String, String> iosEnvs = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
                     List<String> results;
 
                     notifyStartNextSubtask(monitor, "Installing Homebrew...");
-                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_HOMEBREW,
-                            iosAdditionalEnvironmentVariables, true);
+                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_HOMEBREW, iosEnvs,
+                            true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 
                     notifyStartNextSubtask(monitor, "Installing NodeJS...");
-                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_NODE,
-                            iosAdditionalEnvironmentVariables, true);
+                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_NODE, iosEnvs, true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 
                     notifyStartNextSubtask(monitor, "Installing Xcode command line tool...");
                     results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_XCODE_COMMAND_LINE_TOOL,
-                            iosAdditionalEnvironmentVariables, true);
+                            iosEnvs, true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 
                     notifyStartNextSubtask(monitor, "Installing Appium...");
-                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_APPIUM,
-                            iosAdditionalEnvironmentVariables, true);
+                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_APPIUM, iosEnvs, true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 
                     notifyStartNextSubtask(monitor, "Installing Carthage...");
-                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_CARTHAGE,
-                            iosAdditionalEnvironmentVariables, true);
+                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_CARTHAGE, iosEnvs,
+                            true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 
                     notifyStartNextSubtask(monitor, "Installing iOS-Deploy...");
-                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_IOS_DEPLOY,
-                            iosAdditionalEnvironmentVariables, true);
+                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_IOS_DEPLOY, iosEnvs,
+                            true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 
                     notifyStartNextSubtask(monitor, "Installing usbmuxd...");
-                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_USBMUXD,
-                            iosAdditionalEnvironmentVariables, true);
+                    results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_USBMUXD, iosEnvs, true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 
                     notifyStartNextSubtask(monitor, "Install libimobiledevice...");
                     results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_LIBIMOBILEDEVICE,
-                            iosAdditionalEnvironmentVariables, true);
+                            iosEnvs, true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 
                     notifyStartNextSubtask(monitor, "Installing iOS-Webkit-Debug-Proxy...");
                     results = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(INSTALL_IOS_WEBKIT_DEBUG_PROXY,
-                            iosAdditionalEnvironmentVariables, true);
+                            iosEnvs, true);
                     LoggerSingleton.logInfo(String.join("\r\n", results));
                     updateProgressAndCheckForCanceled(monitor);
 

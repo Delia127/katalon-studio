@@ -35,9 +35,15 @@ public class StringConstants extends GlobalStringConstants {
     public static final String WARNING_TITLE = ComposerMobileMessageConstants.WARNING_TITLE;
     
     // iOS
-    public static final String MSG_IOS_INSTALLING_DEPENDENCIES = ComposerMobileMessageConstants.MSG_IOS_INSTALLING_DEPENDENCIES;
+    public static final String MSG_IOS_INSTALL_DEPENDENCIES = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES;
     
     public static final String MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY;
     
     public static final String MSG_IOS_INSTALL_DEPENDENCIES_FAILED = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES_FAILED;
+
+    public static final String MSG_IOS_INSTALL_WEB_DRIVER_AGENT = ComposerMobileMessageConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT;
+
+    public static final String MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY = ComposerMobileMessageConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY;
+
+    public static final String MSG_IOS_INSTALL_WEB_DRIVER_AGENT_FAILED = ComposerMobileMessageConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_FAILED;
 }

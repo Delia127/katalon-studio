@@ -42,4 +42,5 @@ Export-Package: com.kms.katalon.execution.mobile.configuration,
  com.kms.katalon.execution.mobile.device,
  com.kms.katalon.execution.mobile.driver,
  com.kms.katalon.execution.mobile.exception,
+ com.kms.katalon.execution.mobile.identity,
  com.kms.katalon.execution.mobile.util
