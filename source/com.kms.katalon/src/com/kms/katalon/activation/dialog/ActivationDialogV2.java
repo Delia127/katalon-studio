@@ -358,7 +358,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         int selectionIndex = 0;
         for (int i = 0; i < organizations.size(); i++) {
             AnalyticsOrganization organization = organizations.get(i);
-            if (organization.getRole().equals(AnalyticsOrganizationRole.USER)) {
+            if (organization.getRole().equals("USER")) {
                 selectionIndex = i;
                 return selectionIndex;
             }
