@@ -100,8 +100,15 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
                 if (StringUtils.containsIgnoreCase(reloadPluginsJob.getResult().getMessage(),
                         StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
-                    UISynchronizeService.syncExec(() -> {
-                        openWarningDialog();
+                    LoggerSingleton.logError(StringConstants.KStore_ERROR_INVALID_CREDENTAILS);
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        try {
+                            // wait for Reloading Plugins dialog to close
+                            TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
+                        } catch (InterruptedException ignored) {}
+                        UISynchronizeService.syncExec(() -> {
+                            openWarningDialog();
+                        });
                     });
                     return;
                 }
