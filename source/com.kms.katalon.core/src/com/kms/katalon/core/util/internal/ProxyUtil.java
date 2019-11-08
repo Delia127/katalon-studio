@@ -11,6 +11,7 @@ import java.net.ProxySelector;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,9 +63,11 @@ public class ProxyUtil {
             throw new IllegalArgumentException("proxyInfo cannot be null");
         }
         List<String> exceptionList = new ArrayList<String>();
-
-        String[] output = proxyInfo.getExceptionList().split(",");
-        String[] p = url.split("http://");
+        String exclude = proxyInfo.getExceptionList().replaceAll("\\s+","");
+        String[] output = exclude.split(",");
+        URL newUrl = new URL(url);
+        
+        
         Arrays.stream(output).forEach(part -> exceptionList.add(part));
         switch (ProxyOption.valueOf(proxyInfo.getProxyOption())) {
             case NO_PROXY:
@@ -73,14 +76,54 @@ public class ProxyUtil {
                 return getSystemProxy();
             case MANUAL_CONFIG:
                 for (int i = 0; i < exceptionList.size(); i++) {
-                    if (exceptionList.get(i).equals(p[1])) {
-                        return Proxy.NO_PROXY;
+                    if (exceptionList.get(i).contains(":")) {
+                        url = newUrl.getAuthority();
+                    } else {
+                        url = newUrl.getHost();
+                    }
+                    if (exceptionList.get(i).contains("*")) {
+                        boolean match = strmatch(url, exceptionList.get(i), url.length(),
+                                exceptionList.get(i).length());
+                        if (exceptionList.get(i).equals(url) || match) {
+                            return Proxy.NO_PROXY;
+                        }
+                    } else {
+                        if (exceptionList.get(i).equals(url)) {
+                            return Proxy.NO_PROXY;
+                        }
                     }
                 }
                 return getProxyForManualConfig(proxyInfo);
             default:
                 return Proxy.NO_PROXY;
         }
+    }
+    
+    public static boolean strmatch(String url, String exceptionList, int n, int m) {
+        // case empty exception list content
+        if (m == 0)
+            return (n == 0);
+        boolean[][] lookup = new boolean[n + 1][m + 1];
+        // initailze lookup to false
+        for (int i = 0; i < n + 1; i++)
+            Arrays.fill(lookup[i], false);
+        // empty exception list can match with url
+        lookup[0][0] = true;
+        // Only '*' can match with empty url
+        for (int j = 1; j <= m; j++)
+            if (exceptionList.charAt(j - 1) == '*')
+                lookup[0][j] = lookup[0][j - 1];
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (exceptionList.charAt(j - 1) == '*')
+                    lookup[i][j] = lookup[i][j - 1] || lookup[i - 1][j];
+                else if (url.charAt(i - 1) == exceptionList.charAt(j - 1))
+                    lookup[i][j] = lookup[i - 1][j - 1];
+                else lookup[i][j] = false;
+            }
+        }
+        return lookup[n][m];
     }
 
     public static Proxy getSystemProxy() throws URISyntaxException, IOException {
