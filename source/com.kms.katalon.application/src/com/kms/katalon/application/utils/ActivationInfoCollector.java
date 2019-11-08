@@ -240,7 +240,7 @@ public class ActivationInfoCollector {
         if (isActivateSuccess) {
             LicenseType licenseType = ActivationInfoCollector.getLicenseType();
             activationObject.addProperty("licenseType", licenseType.name());
-            traits.addProperty("licenseType", licenseType.name());
+            traits.addProperty("license", licenseType.name());
 
             Organization organization = ActivationInfoCollector.getOrganzation();
             traits.addProperty("organizationID", organization.getId());
@@ -263,7 +263,7 @@ public class ActivationInfoCollector {
         traits.addProperty("host_name", host);
         traits.addProperty("os", Platform.getOS());
         traits.addProperty("os_type", osType);
-        traits.addProperty("kat_version", katVersion);
+        traits.addProperty("katVersion", katVersion);
         traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
         traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.USER_SESSION_ID);
         traits.addProperty(UsagePropertyConstant.PROPERTY_USER_KEY, KatalonApplication.USER_KEY);
