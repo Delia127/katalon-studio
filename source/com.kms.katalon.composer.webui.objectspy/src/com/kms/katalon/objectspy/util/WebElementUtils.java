@@ -48,7 +48,7 @@ import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.util.collections.Pair;
 
 public class WebElementUtils {
-    private static final String SCREENSHOT_PATH = "/screenshots";
+    private static final String SCREENSHOT_PATH = "/screenshots/targets";
 
     private static final String PAGE_ELEMENT_NAME_PREFIX = "Page_";
 
@@ -255,7 +255,7 @@ public class WebElementUtils {
 	/**
 	 * Take screenshot of the given
 	 * {@link com.kms.katalon.objectspy.element.WebElement} and store it in the
-	 * default folder ProjectFolder/screenshots.
+	 * default folder ProjectFolder/screenshots/targets.
 	 * 
 	 * Note that this has a different signature than
 	 * {@link WebUiCommonHelper#saveWebElementScreenshot(WebDriver, org.openqa.selenium.WebElement, String, String)}
@@ -268,7 +268,7 @@ public class WebElementUtils {
 	 * @return An absolute path to the screenshot if available, otherwise empty
 	 *         string
 	 */
-    public static String takeScreenShot(WebDriver driver, WebElement el) {
+    public static String takeScreenShotForImageBasedObjectRecognition(WebDriver driver, WebElement el) {
         String currentProjectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         File imageFolder = new File(currentProjectLocation + SCREENSHOT_PATH);
         imageFolder.mkdirs();

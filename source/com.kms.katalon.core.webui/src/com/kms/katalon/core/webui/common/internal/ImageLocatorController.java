@@ -1,10 +1,8 @@
 package com.kms.katalon.core.webui.common.internal;
 
-import java.awt.AWTException;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +10,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
@@ -28,7 +27,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.common.ScreenUtil;
 
 /**
- * A controller contains logic relating to finding a {@link WebElement} by its Test Object's screenshot property
+ * A controller contains logic relating to Image-based Object Recognition
  * 
  */
 public class ImageLocatorController {
@@ -38,33 +37,31 @@ public class ImageLocatorController {
     /**
      * Retrieve image at the given path, then look for similar images using
      * Sikuli. Given a matched image's position, use the coordinates to retrieve
-     * the corresponding web element and add it to the resulting list
+     * the corresponding web elements, then sort ascending in size differences
+     * with the target image.
      * 
      * @param webDriver
      * @param pathToScreenshot
-     * @return A list of {@link WebElement} whose visuals match the specified image
+     * @return A list of {@link WebElement} whose visuals match the specified image and are sorted ascending in size
+     * differences with the target image
      */
     public static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot) {
         ScreenUtil screen = new ScreenUtil(0.2);
         logger.logInfo("Attempting to find element by its screenshot !");
         Map<ScreenRegion, List<WebElement>> mapOfCandidates = new HashMap<ScreenRegion, List<WebElement>>();
         int iterationCount = 0;
-        int viewPortHeight = ((Number) ((JavascriptExecutor) webDriver).executeScript("return window.innerHeight"))
-                .intValue();
-        viewPortHeight = 100;
-        Double largestMatchedRegionScore = 0.0;
+        int viewPortHeight = 100;
         int scrolledAmount = 0;
         int pageScrollHeight = getPageScrollHeight(webDriver);
-        File screenshotFile = new File(pathToScreenshot);
+        logger.logDebug("Page Scroll Height: " + pageScrollHeight);
         do {
             try {
                 scrolledAmount = iterationCount * viewPortHeight;
                 if (!scroll(webDriver, scrolledAmount)) {
                     break;
                 }
-                // printScreenshots(screenshotFile, screen, iterationCount);
+                Thread.sleep(500);
                 List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
-                // sikuliDebug(screenshotFile, matchedRegions, iterationCount);
                 if (matchedRegions.size() == 0) {
                     break;
                 }
@@ -72,50 +69,67 @@ public class ImageLocatorController {
                 Point coordinatesRelativeToDriver = getCoordinatesRelativeToWebDriver(webDriver, matchedRegion);
                 double xRelativeToDriver = coordinatesRelativeToDriver.getX();
                 double yRelativeToDriver = coordinatesRelativeToDriver.getY();
+                logger.logDebug("Coordinates of matched region relative to driver: (" + xRelativeToDriver + " , "
+                        + yRelativeToDriver + ")");
                 List<WebElement> elementsAtPointXandY = elementsFromPoint(webDriver, xRelativeToDriver,
                         yRelativeToDriver);
-                sortMinimizingDifferencesInSize(elementsAtPointXandY, matchedRegion);                
-                if (matchedRegion.getScore() >= largestMatchedRegionScore) {
-                    largestMatchedRegionScore = matchedRegion.getScore();
-                    File targetFolder = new File(screenshotFile.getParentFile().getAbsolutePath() + "/targets");
-                    targetFolder.mkdirs();
-                    
-                }
+                sortMinimizingDifferencesInSize(elementsAtPointXandY, matchedRegion);
                 mapOfCandidates.put(matchedRegion, elementsAtPointXandY);
             } catch (Exception e) {
                 logger.logInfo("Unable to find element within the current viewport !");
             }
             iterationCount++;
         } while (scrolledAmount <= pageScrollHeight);
-        ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0, 0);");
-        File targetFolder = new File(screenshotFile.getParentFile().getAbsolutePath() + "/targets");
+        logger.logDebug("Highest matched region's score: " + getHighestMatchedRegionScore(mapOfCandidates));
+        debug_printChosenWebElement(pathToScreenshot, webDriver, mapOfCandidates);
+        try {
+            scroll(webDriver, 0);
+        } catch (InterruptedException e) {
+            logger.logError(e.getMessage());
+        }
+        return getHighestMatchedRegionWebElements(mapOfCandidates);
+    }
+
+    private static void debug_printChosenWebElement(String pathToScreenshot, WebDriver webDriver,
+            Map<ScreenRegion, List<WebElement>> mapOfCandidates) {
+        File screenshotFile = new File(pathToScreenshot);
+        File targetFolder = new File(screenshotFile.getParentFile().getAbsolutePath() + "/matched-web-elements");
         targetFolder.mkdirs();
         try {
             saveWebElementScreenshot(webDriver, getWebElementOfHighestMatchedRegion(mapOfCandidates),
-                    "we-" + screenshotFile.getName(), targetFolder.getAbsolutePath());
+                    screenshotFile.getName(), targetFolder.getAbsolutePath());
         } catch (IOException e) {
             logger.logInfo(e.getMessage());
         }
-        return getWebElementsOfHighestMatchedRegion(mapOfCandidates);
     }
-   
-    @SuppressWarnings("unused")
-    private static void printScreenshots(File screenshotFile, ScreenUtil screen, int iterationCount) throws IOException {
-        File screenshotFolder = new File(screenshotFile.getParentFile().getAbsolutePath() + "/screenshots");
-        screenshotFolder.mkdirs();
-        BufferedImage image = screen.getScreenRegionImage();
-        File imageFile = new File(screenshotFolder.getAbsolutePath() + "/screenshot-at-" + iterationCount
-                + screenshotFile.getName() + ".png");
-        ImageIO.write(image, "png", imageFile);
-    }
-    
-    @SuppressWarnings("unused")
-    private static void printSelectedElement(WebDriver webDriver, WebElement element, File screenshotFile,
-            ScreenRegion matchedRegion, Double largestMatchedRegionScore) throws IOException, AWTException {
 
+    private static WebElement getWebElementOfHighestMatchedRegion(Map<ScreenRegion, List<WebElement>> mapOfCandidates) {
+        return getHighestMatchedRegionWebElements(mapOfCandidates).stream().findFirst().orElse(null);
     }
-    
-    private static WebElement getWebElementOfHighestMatchedRegion(
+
+    /**
+     * Get the list of web elements of the highest matched region in the map
+     * 
+     * @param mapOfCandidates
+     * @return
+     */
+    private static List<WebElement> getHighestMatchedRegionWebElements(
+            Map<ScreenRegion, List<WebElement>> mapOfCandidates) {
+        return getHighestMatchedRegionEntry(mapOfCandidates).map(entry -> entry.getValue())
+                .orElse(Collections.emptyList());
+    }
+
+    /**
+     * Get the score of the highest matched region in the map
+     * 
+     * @param mapOfCandidates
+     * @return
+     */
+    private static double getHighestMatchedRegionScore(Map<ScreenRegion, List<WebElement>> mapOfCandidates) {
+        return getHighestMatchedRegionEntry(mapOfCandidates).map(entry -> entry.getKey().getScore()).orElse(-1.0);
+    }
+
+    private static Optional<Entry<ScreenRegion, List<WebElement>>> getHighestMatchedRegionEntry(
             Map<ScreenRegion, List<WebElement>> mapOfCandidates) {
         return mapOfCandidates.entrySet().stream().max((entry1, entry2) -> {
             double reg1Score = entry1.getKey().getScore();
@@ -125,20 +139,7 @@ public class ImageLocatorController {
             if (reg1Score > reg2Score)
                 return 1;
             return 0;
-        }).map(entry -> entry.getValue().get(0)).orElse(null);
-    }
-
-    private static List<WebElement> getWebElementsOfHighestMatchedRegion(
-            Map<ScreenRegion, List<WebElement>> mapOfCandidates) {
-        return mapOfCandidates.entrySet().stream().max((entry1, entry2) -> {
-            double reg1Score = entry1.getKey().getScore();
-            double reg2Score = entry2.getKey().getScore();
-            if (reg1Score < reg2Score)
-                return -1;
-            if (reg1Score > reg2Score)
-                return 1;
-            return 0;
-        }).map(entry -> entry.getValue()).orElse(Collections.emptyList());
+        });
     }
 
     /**
@@ -150,16 +151,16 @@ public class ImageLocatorController {
      * @throws InterruptedException
      */
     private static boolean scroll(WebDriver webDriver, int heightPos) throws InterruptedException {
-        Thread.sleep(500);
         try {
             ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0," + heightPos + ")");
+            logger.logDebug("Scrolled to (0 , " + heightPos + ")");
             return true;
         } catch (Exception e) {
             logger.logInfo("Cannot scroll viewport anymore !");
         }
         return false;
     }
-    
+
     private static int getPageScrollHeight(WebDriver webDriver) {
         return (((Number) ((JavascriptExecutor) webDriver).executeScript("return document.body.scrollHeight"))
                 .intValue());
@@ -178,6 +179,13 @@ public class ImageLocatorController {
         });
     }
 
+    /**
+     * Return the sum of differences between height and width of the matched region versus the size of the web element
+     * 
+     * @param element
+     * @param matchedRegion
+     * @return
+     */
     private static double getDifferenceInSizeHeuristic(WebElement element, ScreenRegion matchedRegion) {
         double widthDiff = Math.abs(element.getRect().getWidth() - matchedRegion.getBounds().getWidth());
         double heightDiff = Math.abs(element.getRect().getHeight() - matchedRegion.getBounds().getHeight());
@@ -214,6 +222,9 @@ public class ImageLocatorController {
         double driverY = webDriver.manage().window().getPosition().getY();
         double X = matchedRegion.getBounds().getCenterX();
         double Y = matchedRegion.getBounds().getCenterY();
+        logger.logDebug("Viewport Height: " + viewHeight);
+        logger.logDebug("Driver coordinates: " + driverX + " , " + driverY + ")");
+        logger.logDebug("Matched Region center coordinates: (" + X + " , " + Y + ")");
         double xRelativeToDriver = X - driverX;
         double yRelativeToDriver = Y - driverY - (driverHeight - viewHeight);
         return new Point((int) xRelativeToDriver, (int) yRelativeToDriver);
@@ -284,35 +295,5 @@ public class ImageLocatorController {
         g2d.drawImage(tmp, 0, 0, null);
         g2d.dispose();
         return resized;
-    }
-
-    /**
-     * Create a <b>sikuli</b> folder that contains target and candidate images
-     * 
-     * @param screenshotFile
-     * A {@link File} containing the screenshot
-     * @param matchedRegions
-     * A list of {@link ScreenRegion} of matched regions
-     * @throws IOException
-     */
-    @SuppressWarnings("unused")
-    private static void sikuliDebug(File screenshotFile, List<ScreenRegion> matchedRegions, int iter)
-            throws IOException {
-        String imageFolderPath = screenshotFile.getParent() + "/sikuli-" + iter + "/"
-                + screenshotFile.getName().replaceAll(".png", "");
-        File imageFolder = new File(imageFolderPath + "/target.png");
-        imageFolder.mkdirs();
-        imageFolder.createNewFile();
-        FileUtils.copyFileToDirectory(screenshotFile, imageFolder);
-        matchedRegions.forEach(a -> {
-            try {
-                Robot robot = new Robot();
-                BufferedImage image = robot.createScreenCapture(a.getBounds());
-                File imageFile = new File(imageFolderPath + "/candidate_" + a.getScore() + ".png");
-                ImageIO.write(image, "png", imageFile);
-            } catch (IOException | AWTException e) {
-                logger.logError(ExceptionUtils.getFullStackTrace(e));
-            }
-        });
     }
 }
