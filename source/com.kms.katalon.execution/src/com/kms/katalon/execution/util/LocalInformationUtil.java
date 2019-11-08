@@ -124,6 +124,14 @@ public class LocalInformationUtil {
                 markedArgs.add("-password=******");
                 continue;
             }
+            if (arg.startsWith("-apiKeyOP=")) {
+                markedArgs.add("-apiKeyOP=******");
+                continue;
+            }
+            if (arg.startsWith("-apikeyop=")) {
+                markedArgs.add("-apikeyop=******");
+                continue;
+            }
             markedArgs.add(arg);
         }
         return StringUtils.join(markedArgs.toArray(new String[0]), " ");

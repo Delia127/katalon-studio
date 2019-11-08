@@ -28,4 +28,10 @@ public interface AnalyticsSettingStoreConstants {
     public static final String ANALYTICS_TEST_RESULT_ATTACH_LOG = "analytics.testresult.attach.log";
     
     public static final String ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS = "analytics.testresult.attach.capturedvideos";
+    
+    public static final String ANALYTICS_SERVER_ENDPOINT_ONPREMISE = "analytics.onpremise.server";
+
+    public static final String ANALYTICS_ORGANIZATION_ONPREMISE = "analytics.onpremise.organization";
+
+    public static final String ANALYTICS_ENABLE_ONPREMISE = "analytics.onpremise.enable";
 }

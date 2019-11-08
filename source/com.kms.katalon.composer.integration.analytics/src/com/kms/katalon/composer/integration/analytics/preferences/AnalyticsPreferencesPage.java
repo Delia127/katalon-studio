@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.analytics.preferences;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -56,17 +58,21 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Composite container;
 
-    private Composite enablerComposite;
-
     private Composite mainComposite;
+
+    private Button btnRefresh;
 
     private Button btnConnect;
 
     private Button enableAnalyticsIntegration;
 
-    private Text txtServerUrl, txtEmail, txtOrganization;
+    private Button enableOverrideAuthentication;
+
+    private Text txtServerUrl, txtEmail, txtPassword;
 
     private Link lblStatus;
+
+    private Combo cbbOrganization;
 
     private Combo cbbProjects;
 
@@ -75,11 +81,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private List<AnalyticsProject> projects = new ArrayList<>();
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
-    
+
+    private List<AnalyticsOrganization> organizationsOnPremise = new ArrayList<>();
+
     private AnalyticsProject selectProjectFromConfig;
-    
+
     private AnalyticsTeam selectTeamFromConfig;
-    
+
     private boolean canAccessProject = true;
 
     private Button btnCreate;
@@ -88,18 +96,28 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private String email, password, serverUrl;
 
+    private boolean isUseOnPremise = false;
+
     private AnalyticsOrganization organization;
 
+    private GridData gdEnableOverrideAuthentication, gdBtnConnect;
+    
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
-        try {
-            serverUrl = analyticsSettingStore.getServerEndpoint();
-            email = analyticsSettingStore.getEmail();
-            password = analyticsSettingStore.getPassword();
-            organization = analyticsSettingStore.getOrganization();
-        } catch (Exception e) {
-            //ignore
+        isUseOnPremise = analyticsSettingStore.isOverrideAuthentication();
+        serverUrl = analyticsSettingStore.getServerEndpoint();
+        email = analyticsSettingStore.getEmail();
+        password = analyticsSettingStore.getPassword();
+        organization = analyticsSettingStore.getOrganization();
+        if (email == null) {
+            email = StringUtils.EMPTY;
+        }
+        if (password == null) {
+            password = StringUtils.EMPTY;
+        }
+        if (serverUrl == null) {
+            serverUrl = StringUtils.EMPTY;
         }
     }
 
@@ -107,15 +125,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     protected Control createContents(Composite parent) {
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout(1, false));
-
-        enablerComposite = new Composite(container, SWT.NONE);
-        enablerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        enablerComposite.setLayout(new GridLayout());
-
-        enableAnalyticsIntegration = new Button(enablerComposite, SWT.CHECK);
-        enableAnalyticsIntegration.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        enableAnalyticsIntegration
-                .setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_ANALYTICS_INTEGRATION);
 
         mainComposite = new Composite(container, SWT.NONE);
         mainComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -141,26 +150,42 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         grpAuthentication.setLayout(glGrpAuthentication);
         grpAuthentication.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_AUTHENTICATE_GROUP);
 
+        enableOverrideAuthentication = new Button(grpAuthentication, SWT.CHECK);
+        gdEnableOverrideAuthentication = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
+        enableOverrideAuthentication.setLayoutData(gdEnableOverrideAuthentication);
+        enableOverrideAuthentication.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_OVERRIDE_AUTHENTICATION);
+
         Label lblServerUrl = new Label(grpAuthentication, SWT.NONE);
         lblServerUrl.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SERVER_URL);
 
         txtServerUrl = new Text(grpAuthentication, SWT.BORDER);
         txtServerUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtServerUrl.setEnabled(false);
-
-        Label lblOrganization = new Label(grpAuthentication, SWT.NONE);
-        lblOrganization.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ORGANIZATION);
-        
-        txtOrganization = new Text(grpAuthentication, SWT.BORDER);
-        txtOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtOrganization.setEnabled(false);
 
         Label lblEmail = new Label(grpAuthentication, SWT.NONE);
         lblEmail.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_EMAIL);
 
         txtEmail = new Text(grpAuthentication, SWT.BORDER);
         txtEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtEmail.setEnabled(false);
+
+        Label lblPassword = new Label(grpAuthentication, SWT.NONE);
+        lblPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PASSWORD);
+
+        txtPassword = new Text(grpAuthentication, SWT.BORDER | SWT.PASSWORD);
+        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+        Label lblOrganization = new Label(grpAuthentication, SWT.NONE);
+        lblOrganization.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ORGANIZATION);
+
+        cbbOrganization = new Combo(grpAuthentication, SWT.READ_ONLY);
+        cbbOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+        btnConnect = new Button(grpAuthentication, SWT.NONE);
+        gdBtnConnect = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gdBtnConnect.widthHint = 100;
+        btnConnect.setLayoutData(gdBtnConnect);
+        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
+
+        enableAuthentiacation(false);
     }
 
     private void createSelectGroup() {
@@ -168,7 +193,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         grpSelect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glGrpSelect = new GridLayout(4, false);
         grpSelect.setLayout(glGrpSelect);
-        grpSelect.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SELECT_GROUP);
+        grpSelect.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_INTEGRATION);
+
+        enableAnalyticsIntegration = new Button(grpSelect, SWT.CHECK);
+        enableAnalyticsIntegration.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 4, 1));
+        enableAnalyticsIntegration.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_ANALYTICS_INTEGRATION);
 
         Label lblTeam = new Label(grpSelect, SWT.NONE);
         lblTeam.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEAM);
@@ -196,11 +225,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
         gdBtn.widthHint = 100;
-        
-        btnConnect = new Button(compConnect, SWT.NONE);
-        btnConnect.setLayoutData(gdBtn);
-        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
-        btnConnect.setEnabled(false);
+
+        btnRefresh = new Button(compConnect, SWT.NONE);
+        btnRefresh.setLayoutData(gdBtn);
+        btnRefresh.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_REFRESH);
+        btnRefresh.setEnabled(false);
 
         lblStatus = new Link(mainComposite, SWT.WRAP);
         GridData gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -210,11 +239,14 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     @Override
     protected void initialize() {
+        hideOverrideAuthenticationIfNotEnterprise();
         super.initialize();
-        if (isNoInfo()) {
+        if (isUseOnPremise) {
+            fillData(false);
+        } else if (isNoInfo() && analyticsSettingStore.isIntegrationEnabled()) {
             katalonLogin();
         } else {
-            fillData();
+            fillData(false);
         }
     }
 
@@ -228,20 +260,22 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         if (!isInitialized()) {
             return;
         }
-        changeEnabled();
+        enableIntegration();
+        uploadDataOnPremise();
         updateDataStore();
     }
 
     @Override
     public boolean performOk() {
-        
+
         if (!isInitialized()) {
             return true;
         }
-        
+
         boolean integrationEnabled = enableAnalyticsIntegration.getSelection();
-        
+
         if (!integrationEnabled) {
+            uploadDataOnPremise();
             updateDataStore();
             return true;
         }
@@ -258,13 +292,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             return false;
         }
 
-        if (StringUtils.isEmpty(txtEmail.getText())
-                || StringUtils.isEmpty(txtServerUrl.getText())) {
+        if (StringUtils.isEmpty(txtEmail.getText()) || StringUtils.isEmpty(txtServerUrl.getText())) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
                     ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION);
             return false;
         }
-
+        uploadDataOnPremise();
         updateDataStore();
         return super.performOk();
     }
@@ -286,24 +319,38 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void handleFieldEditorValueChanged(PropertyChangeEvent event) {
         if (event.getSource() == enableAnalyticsIntegration) {
-            changeEnabled();
+            enableIntegration();
         }
     }
 
-    private void fillData() {
+    private void fillData(boolean fromKatalonLogin) {
         try {
-            enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
+            if (fromKatalonLogin) {
+                enableAnalyticsIntegration.setSelection(fromKatalonLogin);
+            } else {
+                enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
+            }
 
             cbbTeams.setItems();
             cbbProjects.setItems();
 
+            if (isUseOnPremise) {
+                enableOverrideAuthentication.setSelection(true);
+                enableAuthentiacation(true);
+            }
             txtEmail.setText(email);
             txtServerUrl.setText(serverUrl);
-            txtOrganization.setText(organization.getName());
+            txtPassword.setText(password);
+
+            organizationsOnPremise.clear();
+            organizationsOnPremise.add(organization);
+            cbbOrganization.setItems(
+                    AnalyticsAuthorizationHandler.getOrganizationNames(organizationsOnPremise).toArray(new String[organizationsOnPremise.size()]));
+            cbbOrganization.select(0);
 
             selectProjectFromConfig = analyticsSettingStore.getProject();
             selectTeamFromConfig = analyticsSettingStore.getTeam();
-            
+
             teams.clear();
             projects.clear();
 
@@ -354,7 +401,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                                     String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
                                             ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
                                     setProgressMessage(message, true);
-                                    btnConnect.setEnabled(true);
+                                    btnRefresh.setEnabled(true);
                                 }
                             }
                         } catch (Exception e) {
@@ -363,20 +410,28 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     });
                 });
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
     }
 
-    private void getTeam(String serverUrl, Long orgId, AnalyticsTokenInfo tokenInfo) {
+    private void getOrganizations(String serverUrl, AnalyticsTokenInfo tokenInfo) {
         try {
-            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(), orgId, tokenInfo);
+            organizationsOnPremise = AnalyticsAuthorizationHandler.getOrganizations(serverUrl, tokenInfo);
         } catch (Exception e) {
             setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
         }
     }
-    
+
+    private void getTeam(String serverUrl, Long orgId, AnalyticsTokenInfo tokenInfo) {
+        try {
+            teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo);
+        } catch (Exception e) {
+            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+        }
+    }
+
     private void getProject(final String serverUrl, final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
         try {
             projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo);
@@ -384,14 +439,14 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
         }
     }
-    
+
     private void setProgressMessage(String message, boolean isError) {
-        lblStatus.setText(message);
         if (isError) {
             lblStatus.setForeground(ColorUtil.getTextErrorColor());
         } else {
             lblStatus.setForeground(ColorUtil.getTextRunningColor());
         }
+        lblStatus.setText(message);
         lblStatus.getParent().layout();
     }
 
@@ -411,9 +466,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         return true;
     }
 
-    private void changeEnabled() {
+    private void enableIntegration() {
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
-        btnConnect.setEnabled(isAnalyticsIntegrated);
+        btnRefresh.setEnabled(isAnalyticsIntegrated);
         cbbProjects.setEnabled(isAnalyticsIntegrated);
         cbbTeams.setEnabled(isAnalyticsIntegrated);
         if (canAccessProject && isAnalyticsIntegrated) {
@@ -421,6 +476,14 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         } else {
             btnCreate.setEnabled(false);
         }
+    }
+
+    private void enableAuthentiacation(boolean isEnable) {
+        txtEmail.setEnabled(isEnable);
+        txtPassword.setEnabled(isEnable);
+        txtServerUrl.setEnabled(isEnable);
+        cbbOrganization.setEnabled(isEnable);
+        btnConnect.setEnabled(isEnable);
     }
 
     private boolean isIntegratedSuccessfully() {
@@ -432,9 +495,30 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         return isAnalyticsIntegrated && !teams.isEmpty();
     }
 
+    private void uploadDataOnPremise() {
+        try {
+            boolean isOverrideAuthentication = enableOverrideAuthentication.getSelection();
+            if (isOverrideAuthentication && isNoInfo()) {
+                setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
+            } else {
+                if (enableOverrideAuthentication.getSelection()) {
+                    analyticsSettingStore.setEmail(txtEmail.getText());
+                    analyticsSettingStore.setPassword(txtPassword.getText());
+                    analyticsSettingStore.setServerEndPoint(txtServerUrl.getText());
+                    analyticsSettingStore.setOrganization(organizationsOnPremise.get(cbbOrganization.getSelectionIndex()));
+                }
+                analyticsSettingStore.setOverrideAuthentication(enableOverrideAuthentication.getSelection());
+            }
+        } catch (GeneralSecurityException | IOException e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
+        }
+    }
+
     private void updateDataStore() {
         try {
-            analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
+            boolean isIntegrated = isIntegratedSuccessfully();
+            analyticsSettingStore.enableIntegration(isIntegrated);
             if (!teams.isEmpty()) {
                 analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
                 if (!projects.isEmpty()) {
@@ -452,6 +536,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     private boolean isNoInfo() {
+        if (organization == null) {
+            return true;
+        }
         if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || organization.getId() == null) {
             return true;
         }
@@ -465,13 +552,16 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             if (dialog.open() == Dialog.OK) {
                 email = dialog.getUsername();
                 password = dialog.getPassword();
-                organization = analyticsSettingStore.getOrganization();
+                organization = analyticsSettingStore.getOrganizationCloud();
 
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, email, true);
                 String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
                 dialog.close();
-                fillData();
+                if (analyticsSettingStore.isOverrideAuthentication()) {
+                    analyticsSettingStore.setOverrideAuthentication(false);
+                }
+                fillData(true);
                 return true;
             }
         } catch (Exception e) {
@@ -484,22 +574,91 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         enableAnalyticsIntegration.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (isNoInfo()) {
-                    boolean result = katalonLogin();
-                    enableAnalyticsIntegration.setSelection(result);
+                if (enableAnalyticsIntegration.getSelection()) {
+                    boolean isNoInfo = isNoInfo();
+                    if (isNoInfo && enableOverrideAuthentication.getSelection()) {
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
+                        enableAnalyticsIntegration.setSelection(false);
+                    } else {
+                        if (isNoInfo) {
+                            boolean result = katalonLogin();
+                            enableAnalyticsIntegration.setSelection(result);
+                        } else {
+                            enableIntegration();
+                            if (enableAnalyticsIntegration.getSelection()) {
+                                connect();
+                            }
+                        }
+                    }
                 } else {
-                    changeEnabled();
-                    if (enableAnalyticsIntegration.getSelection()) {
-                       connect();
+                    enableIntegration();
+                }
+            }
+        });
+
+        enableOverrideAuthentication.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                isUseOnPremise = enableOverrideAuthentication.getSelection();
+                if (isUseOnPremise) {
+                    getInfoFromOnPremise();
+                } else {
+                    getInfoFromCloud();
+                }
+                if (email == null) {
+                    email = StringUtils.EMPTY;
+                }
+                if (password == null) {
+                    password = StringUtils.EMPTY;
+                }
+                if (serverUrl == null) {
+                    serverUrl = StringUtils.EMPTY;
+                }
+                txtEmail.setText(email);
+                txtPassword.setText(password);
+                txtServerUrl.setText(serverUrl);
+                if (organization != null) {
+                    if (!StringUtils.isEmpty(organization.getName())) {
+                        organizationsOnPremise.clear();
+                        organizationsOnPremise.add(organization);
+                        if (!StringUtils.isEmpty(organization.getName())) {
+                            cbbOrganization.setItems(
+                                    AnalyticsAuthorizationHandler.getOrganizationNames(organizationsOnPremise).toArray(new String[organizationsOnPremise.size()]));
+                            cbbOrganization.select(0);
+                        } else {
+                            cbbOrganization.setItems();
+                        }
                     }
                 }
+                if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
+                    enableAnalyticsIntegration.setSelection(false);
+                    enableIntegration();
+                } 
+                enableAuthentiacation(enableOverrideAuthentication.getSelection());
+            }
+        });
+
+        btnRefresh.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (isUseOnPremise) {
+                    organization = organizationsOnPremise.get(cbbOrganization.getSelectionIndex());
+                }
+                connect();
             }
         });
 
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                connect();
+                serverUrl = txtServerUrl.getText();
+                email = txtEmail.getText();
+                password = txtPassword.getText();
+                if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
+                } else {
+                    connectOnPremise();
+                }
             }
         });
 
@@ -591,7 +750,31 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             }
         });
     }
-    
+
+    private void connectOnPremise() {
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService.syncExec(
+                    () ->  setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
+            UISynchronizeService.syncExec(() -> {
+                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+                if (tokenInfo == null) {
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+                    return;
+                }
+                getOrganizations(serverUrl, tokenInfo);
+                if (!organizationsOnPremise.isEmpty()) {
+                    cbbOrganization.setItems(
+                            AnalyticsAuthorizationHandler.getOrganizationNames(organizationsOnPremise).toArray(new String[organizationsOnPremise.size()]));
+                    cbbOrganization.select(0);
+                    organization = organizationsOnPremise.get(0);
+                    setProgressMessage(StringUtils.EMPTY, false);
+                } else {
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_NO_ORGANIZATION, true);
+                }
+            });
+         });
+    }
+
     private void connect() {
         enableObject(false);
 
@@ -600,7 +783,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         Executors.newFixedThreadPool(1).submit(() -> {
             UISynchronizeService.syncExec(
-                    () ->  setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
+                    () -> setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
             UISynchronizeService.syncExec(() -> {
                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
                         analyticsSettingStore);
@@ -624,19 +807,19 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     enableObject(true);
                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                 } else {
-                    btnConnect.setEnabled(true);
+                    btnRefresh.setEnabled(true);
                     String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
                             ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
                     setProgressMessage(message, true);
                 }
             });
-         });
+        });
     }
-    
+
     private void enableObject(boolean isEnable) {
         cbbTeams.setEnabled(isEnable);
         cbbProjects.setEnabled(isEnable);
-        btnConnect.setEnabled(isEnable);
+        btnRefresh.setEnabled(isEnable);
         btnCreate.setEnabled(isEnable);
     }
 
@@ -656,6 +839,38 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         } else {
             btnCreate.setEnabled(true);
         }
+    }
+
+    private void getInfoFromCloud() {
+        email = analyticsSettingStore.getEmailCloud();
+        password = analyticsSettingStore.getPasswordCloud();
+        serverUrl = analyticsSettingStore.getServerEndpointCloud();
+        organization = analyticsSettingStore.getOrganizationCloud();
+    }
+
+    private void getInfoFromOnPremise() {
+        email = analyticsSettingStore.getEmailOnPremise();
+        password = analyticsSettingStore.getPasswordOnPremise();
+        serverUrl = analyticsSettingStore.getServerEndpointOnPremise();
+        organization = analyticsSettingStore.getOrganizationOnPremise();
+    }
+
+    private void hideOverrideAuthenticationIfNotEnterprise() {
+        if (!isEnterpriseAccount()) {
+            enableOverrideAuthentication.setVisible(false);
+            gdEnableOverrideAuthentication.exclude = true;
+            enableOverrideAuthentication.setSelection(false);
+
+            btnConnect.setVisible(false);
+            gdBtnConnect.exclude = true;
+
+            isUseOnPremise = false;
+            getInfoFromCloud();
+        }
+    }
+
+    private boolean isEnterpriseAccount() {
+        return LicenseUtil.isNotFreeLicense();
     }
 
     protected boolean isInitialized() {

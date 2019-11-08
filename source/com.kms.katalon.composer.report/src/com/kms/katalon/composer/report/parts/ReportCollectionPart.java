@@ -307,13 +307,22 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         MenuItem accessTestOpsMenuItem = new MenuItem(testOpsMenu, SWT.PUSH);
         uploadMenuItem = new MenuItem(testOpsMenu, SWT.PUSH);
 
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        
         accessTestOpsMenuItem.setText(ComposerReportMessageConstants.BTN_ACCESSKA);
         accessTestOpsMenuItem.setID(0);
         accessTestOpsMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Trackings.trackOpenKAIntegration("report");
-                Program.launch(ApplicationInfo.getTestOpsServer());
+                try {
+                    String serverUrl = analyticsSettingStore.getServerEndpoint();
+                    Program.launch(serverUrl);
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
+                }
             }
         });
         uploadMenuItem.setText(ComposerTestcaseMessageConstants.BTN_UPLOAD);

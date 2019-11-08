@@ -74,7 +74,7 @@ public class UploadSelectionDialog extends Dialog {
             password = analyticsSettingStore.getPassword();
             serverUrl = analyticsSettingStore.getServerEndpoint();
             organization = analyticsSettingStore.getOrganization();
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             // ignore
         }
     }

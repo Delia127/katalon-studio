@@ -37,7 +37,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     public boolean isIntegrationActive(TestSuiteEntity testSuite) {
         try {
             return getSettingStore().isIntegrationEnabled();
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogUtil.logError(e);
             return false;
         }

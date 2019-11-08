@@ -40,6 +40,7 @@ import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
+import com.kms.katalon.execution.handler.ApiKeyOnPremiseHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -98,6 +99,10 @@ public class ConsoleMain {
 
     public static final String KATALON_TESTOP_SERVER = "serverUrl";
 
+    public static final String KATALON_API_KEY_ON_PREMISE_OPTION = "apiKeyOnPremise";
+
+    public static final String KATALON_API_KEY_ON_PREMISE_SECOND_OPTION = "apiKeyOP";
+
     private ConsoleMain() {
         // hide constructor
     }
@@ -140,6 +145,16 @@ public class ConsoleMain {
             if (options.has(KATALON_API_KEY_SECOND_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_SECOND_OPTION));
             }
+
+            String apiKeyOnPremiseValue = null;
+            if (options.has(KATALON_API_KEY_ON_PREMISE_OPTION)) {
+                apiKeyOnPremiseValue = String.valueOf(options.valueOf(KATALON_API_KEY_ON_PREMISE_OPTION));
+            }
+
+            if (options.has(KATALON_API_KEY_ON_PREMISE_SECOND_OPTION)) {
+                apiKeyOnPremiseValue = String.valueOf(options.valueOf(KATALON_API_KEY_ON_PREMISE_SECOND_OPTION));
+            }
+            ApiKeyOnPremiseHandler.setApiKeyOnPremiseToProject(apiKeyOnPremiseValue);
 
             LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_IN_ACTIVATING);
             
