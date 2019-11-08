@@ -31,7 +31,8 @@ Require-Bundle: com.google.gson,
  com.google.http-client.google-http-client,
  com.auth0.java-jwt,
  com.google.oauth-client.google-oauth-client,
- org.apache.commons.io
+ org.apache.commons.io,
+ com.kms.katalon.proxyvole
 Export-Package: com.kms.katalon.application,
  com.kms.katalon.application.constants,
  com.kms.katalon.application.preference,
@@ -42,7 +43,6 @@ Export-Package: com.kms.katalon.application,
  com.kms.katalon.license,
  com.kms.katalon.license.constants,
  com.kms.katalon.license.models
-Bundle-ClassPath: resources/lib/proxy-vole-1.0.4-SNAPSHOT-jar-with-dependencies.jar,
- .
+Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.kms.katalon.application.KatalonApplicationActivator
