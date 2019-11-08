@@ -59,6 +59,8 @@ public class ApplicationMessageConstants {
 
     public static String LICENSE_EXPIRED_MESSAGE;
 
+    public static String LICENSE_EXPIRED_NO_MESSAGE;
+
     public static String LICENSE_ERROR_RENEW;
 
     public static String AUTO_CLOSE;

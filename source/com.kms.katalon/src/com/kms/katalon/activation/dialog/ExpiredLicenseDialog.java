@@ -37,8 +37,15 @@ public class ExpiredLicenseDialog extends AbstractDialog {
         composite.setLayout(new GridLayout());
 
         Label lblText = new Label(composite, SWT.NONE);
-        lblText.setText(MessageFormat.format(ApplicationMessageConstants.LICENSE_EXPIRED_MESSAGE, message) + "\n"
-                + ApplicationMessageConstants.AUTO_CLOSE);
+
+        if (StringUtils.contains(message, ApplicationMessageConstants.ACTIVATION_ONLINE_INVALID)) {
+            //Cannot connect to server, no response
+            lblText.setText(ApplicationMessageConstants.LICENSE_EXPIRED_NO_MESSAGE + "\n"
+                    + ApplicationMessageConstants.AUTO_CLOSE);
+        } else {
+            lblText.setText(MessageFormat.format(ApplicationMessageConstants.LICENSE_EXPIRED_MESSAGE, message) + "\n"
+                    + ApplicationMessageConstants.AUTO_CLOSE);
+        }
         return composite;
     }
 
