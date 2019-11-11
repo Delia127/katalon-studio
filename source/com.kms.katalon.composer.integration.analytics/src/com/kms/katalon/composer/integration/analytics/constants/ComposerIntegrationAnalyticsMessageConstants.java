@@ -55,6 +55,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String MSG_MUST_ENTER_CREDENTIAL;
 
+    public static String MSG_CONNECT_SUCCESS;
+
     public static String MSG_NO_ORGANIZATION;
     
     public static String TITLE_DLG_AUTHENTICATE;

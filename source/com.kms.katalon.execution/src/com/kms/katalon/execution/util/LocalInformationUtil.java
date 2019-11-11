@@ -128,8 +128,8 @@ public class LocalInformationUtil {
                 markedArgs.add("-apiKeyOP=******");
                 continue;
             }
-            if (arg.startsWith("-apikeyop=")) {
-                markedArgs.add("-apikeyop=******");
+            if (arg.startsWith("-apiKeyOnPremise=")) {
+                markedArgs.add("-apiKeyOnPremise=******");
                 continue;
             }
             markedArgs.add(arg);

@@ -72,6 +72,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Link lblStatus;
 
+    private Label lblStatusOnPremise;
+
     private Combo cbbOrganization;
 
     private Combo cbbProjects;
@@ -184,6 +186,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         gdBtnConnect.widthHint = 100;
         btnConnect.setLayoutData(gdBtnConnect);
         btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
+
+        lblStatusOnPremise = new Label(grpAuthentication, SWT.WRAP);
 
         enableAuthentiacation(false);
     }
@@ -450,6 +454,16 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         lblStatus.getParent().layout();
     }
 
+    private void setProgressMessageOnPremise(String message, boolean isError) {
+        if (isError) {
+            lblStatusOnPremise.setForeground(ColorUtil.getTextErrorColor());
+        } else {
+            lblStatusOnPremise.setForeground(ColorUtil.getTextRunningColor());
+        }
+        lblStatusOnPremise.setText(message);
+        lblStatusOnPremise.getParent().layout();
+    }
+
     private boolean checkUserCanAccessProject() throws IOException {
         AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
 
@@ -655,7 +669,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 email = txtEmail.getText();
                 password = txtPassword.getText();
                 if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
-                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
+                    setProgressMessageOnPremise(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
                 } else {
                     connectOnPremise();
                 }
@@ -754,11 +768,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private void connectOnPremise() {
         Executors.newFixedThreadPool(1).submit(() -> {
             UISynchronizeService.syncExec(
-                    () ->  setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
+                    () ->  setProgressMessageOnPremise(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
             UISynchronizeService.syncExec(() -> {
                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
                 if (tokenInfo == null) {
-                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+                    setProgressMessageOnPremise(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+                    organizationsOnPremise.clear();
+                    cbbOrganization.setItems();
                     return;
                 }
                 getOrganizations(serverUrl, tokenInfo);
@@ -767,9 +783,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                             AnalyticsAuthorizationHandler.getOrganizationNames(organizationsOnPremise).toArray(new String[organizationsOnPremise.size()]));
                     cbbOrganization.select(0);
                     organization = organizationsOnPremise.get(0);
-                    setProgressMessage(StringUtils.EMPTY, false);
+                    setProgressMessageOnPremise(ComposerIntegrationAnalyticsMessageConstants.MSG_CONNECT_SUCCESS, false);
                 } else {
-                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_NO_ORGANIZATION, true);
+                    organizationsOnPremise.clear();
+                    cbbOrganization.setItems();
+                    setProgressMessageOnPremise(ComposerIntegrationAnalyticsMessageConstants.MSG_NO_ORGANIZATION, true);
                 }
             });
          });
