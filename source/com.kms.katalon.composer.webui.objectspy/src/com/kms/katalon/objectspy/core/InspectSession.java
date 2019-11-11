@@ -25,6 +25,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -34,11 +35,14 @@ import com.google.gson.Gson;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
+import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -95,6 +99,8 @@ public class InspectSession implements Runnable {
     
     protected static final String CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
             + "Smart Wait";
+    
+    private static final String CAP_IE_USE_PER_PROCESS_PROXY = "ie.usePerProcessProxy";
 
     protected String projectDir;
 
@@ -275,6 +281,8 @@ public class InspectSession implements Runnable {
                 return createChromDriverOptions(capabilities);
             case IE_DRIVER:
                 return createIEDesiredCapabilities(capabilities);
+            case FIREFOX_DRIVER:
+                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             default:
                 return capabilities;
         }
@@ -282,6 +290,10 @@ public class InspectSession implements Runnable {
 
     private DesiredCapabilities createIEDesiredCapabilities(DesiredCapabilities capabilities) {
         capabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, ABOUT_BLANK);
+        capabilities.setCapability(CAP_IE_USE_PER_PROCESS_PROXY, "true");
+        if (!WebDriverProxyUtil.isNoProxy(RunConfiguration.getProxyInformation())) {
+            capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        }
         return capabilities;
     }
 
@@ -294,6 +306,17 @@ public class InspectSession implements Runnable {
 
     protected DesiredCapabilities createChromDriverOptions(DesiredCapabilities capabilities)
             throws IOException, ExtensionNotFoundException {
+        
+        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
+        if (ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
+            if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
+                WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
+                        "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
+            } else {
+                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+            }
+        }
+        
         File chromeRecordSpyExtensionFolder = getRecordSpyExtensionFile();
         if (chromeRecordSpyExtensionFolder == null || !chromeRecordSpyExtensionFolder.isDirectory()
                 || !chromeRecordSpyExtensionFolder.exists()) {
@@ -310,6 +333,10 @@ public class InspectSession implements Runnable {
                 LOAD_EXTENSION_CHROME_PREFIX + chromeRecordSpyExtensionFolder.getCanonicalPath() + ","
                         + chromeSmartWaitExtensionFolder.getCanonicalPath());
         return capabilities;
+    }
+    
+    private static Map<String, Object> getDefaultProxy() {
+        return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
     }
 
     private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {
