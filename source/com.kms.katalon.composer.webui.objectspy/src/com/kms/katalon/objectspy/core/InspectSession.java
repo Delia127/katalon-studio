@@ -10,6 +10,7 @@ import java.nio.file.InvalidPathException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -193,15 +194,19 @@ public class InspectSession implements Runnable {
                 httpRecordSpyInstallPost.setEntity(new StringEntity(recordSpyInstallBodyContent));
                 recordSpyInstallclient.execute(httpRecordSpyInstallPost);
                 
-                // Install Smart Wait extension
-                CloseableHttpClient smartWaitInstallclient = HttpClientBuilder.create().build();
-                HttpPost smartWaitHttpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
-                        + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
-                String smartWaitBodyContent = String.format("{\"path\": \"%s\"}",
-                        StringEscapeUtils.escapeJava(getFirefoxSmartWaitAddonFile().getAbsolutePath()));
-                smartWaitHttpPost.setEntity(new StringEntity(smartWaitBodyContent));
-                smartWaitInstallclient.execute(smartWaitHttpPost);
-                
+                boolean globalSmartWaitEnabled = (boolean) Optional
+                        .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                        .orElse(false);
+                if (globalSmartWaitEnabled) {
+                    // Install Smart Wait extension
+                    CloseableHttpClient smartWaitInstallclient = HttpClientBuilder.create().build();
+                    HttpPost smartWaitHttpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
+                            + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
+                    String smartWaitBodyContent = String.format("{\"path\": \"%s\"}",
+                            StringEscapeUtils.escapeJava(getFirefoxSmartWaitAddonFile().getAbsolutePath()));
+                    smartWaitHttpPost.setEntity(new StringEntity(smartWaitBodyContent));
+                    smartWaitInstallclient.execute(smartWaitHttpPost);
+                }
 
                 handleForFirefoxAddon();
             }
@@ -288,7 +293,12 @@ public class InspectSession implements Runnable {
     protected FirefoxProfile createFireFoxProfile() throws IOException {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
         firefoxProfile.addExtension(getFirefoxRecordSpyAddonFile());
-        firefoxProfile.addExtension(getFirefoxSmartWaitAddonFile());
+        boolean globalSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                .orElse(false);
+        if (globalSmartWaitEnabled) {
+            firefoxProfile.addExtension(getFirefoxSmartWaitAddonFile());
+        }
         return firefoxProfile;
     }
 
@@ -298,7 +308,8 @@ public class InspectSession implements Runnable {
         if (chromeRecordSpyExtensionFolder == null || !chromeRecordSpyExtensionFolder.isDirectory()
                 || !chromeRecordSpyExtensionFolder.exists()) {
             throw new ExtensionNotFoundException(getChromeRecordSpyExtensionPath(), WebUIDriverType.CHROME_DRIVER);
-        }
+        }        
+      
         File chromeSmartWaitExtensionFolder = getSmartWaitExtensionFile();
         if (chromeSmartWaitExtensionFolder == null || !chromeSmartWaitExtensionFolder.isDirectory()
                 || !chromeSmartWaitExtensionFolder.exists()) {
@@ -306,9 +317,19 @@ public class InspectSession implements Runnable {
         }
         generateVariableInitFileForChrome(chromeRecordSpyExtensionFolder);
         WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
-        WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
-                LOAD_EXTENSION_CHROME_PREFIX + chromeRecordSpyExtensionFolder.getCanonicalPath() + ","
-                        + chromeSmartWaitExtensionFolder.getCanonicalPath());
+        
+        boolean globalSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                .orElse(false);
+        String extensions = "";
+        if (globalSmartWaitEnabled) {
+            extensions = LOAD_EXTENSION_CHROME_PREFIX + chromeRecordSpyExtensionFolder.getCanonicalPath() + ","
+                    + chromeSmartWaitExtensionFolder.getCanonicalPath();
+        } else {
+            extensions = LOAD_EXTENSION_CHROME_PREFIX + chromeRecordSpyExtensionFolder.getCanonicalPath();
+        }
+
+        WebDriverPropertyUtil.addArgumentsForChrome(capabilities, extensions);
         return capabilities;
     }
 

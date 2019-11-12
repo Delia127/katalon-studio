@@ -14,6 +14,7 @@ import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -364,13 +365,18 @@ public class DriverFactory {
     }
 
     private static DesiredCapabilities addSmartWaitExtensionToChrome(DesiredCapabilities capabilities) {
-        try {
-            File chromeExtensionFolder = getChromeExtensionFile();
-            WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
-            WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
-                    LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
-        } catch (Exception e) {
-            logger.logError(ExceptionUtils.getFullStackTrace(e));
+        boolean globalSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                .orElse(false);
+        if (globalSmartWaitEnabled) {
+            try {
+                File chromeExtensionFolder = getChromeExtensionFile();
+                WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
+                WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
+                        LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
+            } catch (Exception e) {
+                logger.logError(ExceptionUtils.getFullStackTrace(e));
+            }
         }
         return capabilities;
     }
@@ -559,9 +565,14 @@ public class DriverFactory {
     }
     
     private static void addSmartWaitExtensionToFirefox(DesiredCapabilities desiredCapabilities) {
-        FirefoxProfile firefoxProfile = new FirefoxProfile();
-        firefoxProfile.addExtension(getFirefoxAddonFile());
-        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
+        boolean globalSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                .orElse(false);
+        if (globalSmartWaitEnabled) {
+            FirefoxProfile firefoxProfile = new FirefoxProfile();
+            firefoxProfile.addExtension(getFirefoxAddonFile());
+            desiredCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
+        }
     }
 
     private static File getFirefoxAddonFile() {
