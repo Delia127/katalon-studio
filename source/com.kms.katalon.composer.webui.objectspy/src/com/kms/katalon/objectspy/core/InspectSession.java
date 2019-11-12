@@ -193,11 +193,8 @@ public class InspectSession implements Runnable {
                         StringEscapeUtils.escapeJava(getFirefoxRecordSpyAddonFile().getAbsolutePath()));
                 httpRecordSpyInstallPost.setEntity(new StringEntity(recordSpyInstallBodyContent));
                 recordSpyInstallclient.execute(httpRecordSpyInstallPost);
-                
-                boolean globalSmartWaitEnabled = (boolean) Optional
-                        .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
-                        .orElse(false);
-                if (globalSmartWaitEnabled) {
+
+                if (shouldInstallSmartWait()) {
                     // Install Smart Wait extension
                     CloseableHttpClient smartWaitInstallclient = HttpClientBuilder.create().build();
                     HttpPost smartWaitHttpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
@@ -293,10 +290,7 @@ public class InspectSession implements Runnable {
     protected FirefoxProfile createFireFoxProfile() throws IOException {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
         firefoxProfile.addExtension(getFirefoxRecordSpyAddonFile());
-        boolean globalSmartWaitEnabled = (boolean) Optional
-                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
-                .orElse(false);
-        if (globalSmartWaitEnabled) {
+        if (shouldInstallSmartWait()) {
             firefoxProfile.addExtension(getFirefoxSmartWaitAddonFile());
         }
         return firefoxProfile;
@@ -317,12 +311,9 @@ public class InspectSession implements Runnable {
         }
         generateVariableInitFileForChrome(chromeRecordSpyExtensionFolder);
         WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
-        
-        boolean globalSmartWaitEnabled = (boolean) Optional
-                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
-                .orElse(false);
+
         String extensions = "";
-        if (globalSmartWaitEnabled) {
+        if (shouldInstallSmartWait()) {
             extensions = LOAD_EXTENSION_CHROME_PREFIX + chromeRecordSpyExtensionFolder.getCanonicalPath() + ","
                     + chromeSmartWaitExtensionFolder.getCanonicalPath();
         } else {
@@ -444,6 +435,14 @@ public class InspectSession implements Runnable {
 
     public WebUIDriverType getWebUiDriverType() {
         return webUiDriverType;
+    }
+    
+    private boolean shouldInstallSmartWait() {
+        // Default to false if previously an error occurs in writing the value in RunConfiguration
+        boolean globalSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                .orElse(false);
+        return globalSmartWaitEnabled;
     }
 
 }

@@ -365,10 +365,7 @@ public class DriverFactory {
     }
 
     private static DesiredCapabilities addSmartWaitExtensionToChrome(DesiredCapabilities capabilities) {
-        boolean globalSmartWaitEnabled = (boolean) Optional
-                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
-                .orElse(false);
-        if (globalSmartWaitEnabled) {
+        if (shouldInstallSmartWait()) {
             try {
                 File chromeExtensionFolder = getChromeExtensionFile();
                 WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
@@ -564,11 +561,17 @@ public class DriverFactory {
         return CGeckoDriver.from(desiredCapabilities, actionDelay);
     }
     
-    private static void addSmartWaitExtensionToFirefox(DesiredCapabilities desiredCapabilities) {
+    private static boolean shouldInstallSmartWait() {
+        // Default to false if previously an error occurs in writing the value in RunConfiguration
         boolean globalSmartWaitEnabled = (boolean) Optional
                 .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
                 .orElse(false);
-        if (globalSmartWaitEnabled) {
+        return globalSmartWaitEnabled;
+    }
+
+    
+    private static void addSmartWaitExtensionToFirefox(DesiredCapabilities desiredCapabilities) {
+        if (shouldInstallSmartWait()) {
             FirefoxProfile firefoxProfile = new FirefoxProfile();
             firefoxProfile.addExtension(getFirefoxAddonFile());
             desiredCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
