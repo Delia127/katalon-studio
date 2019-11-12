@@ -135,7 +135,8 @@ public class Application implements IApplication {
         }
 
         if (isKSRE()) {
-            configRelativePath += "-" + KatalonApplication.SESSION_ID.substring(0, 8); 
+            configRelativePath = configRelativePath + "/session-" + KatalonApplication.SESSION_ID.substring(0, 8);
+            return new File(installLocation.getAbsolutePath(), configRelativePath);
         }
         return new File(installLocation.getAbsolutePath(), configRelativePath);
     }
