@@ -104,7 +104,10 @@ public class WebMobileDriverFactory {
             capabilities.setPlatform(Platform.ANDROID);
             capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, CHROME);
         }
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "test");
+        String deviceName = getDeviceName();
+        if (StringUtils.isNotEmpty(deviceName)) {
+            capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
+        }
         if (deviceId != null) {
             capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
         }
