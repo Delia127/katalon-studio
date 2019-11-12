@@ -102,7 +102,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private AnalyticsOrganization organization;
 
-    private GridData gdEnableOverrideAuthentication, gdBtnConnect;
+    private GridData gdEnableOverrideAuthentication, gdBtnConnect, gdLblStatus;
     
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
@@ -162,7 +162,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         txtServerUrl = new Text(grpAuthentication, SWT.BORDER);
         txtServerUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
+        txtServerUrl.setToolTipText("abc");
+        
         Label lblEmail = new Label(grpAuthentication, SWT.NONE);
         lblEmail.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_EMAIL);
 
@@ -175,19 +176,21 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         txtPassword = new Text(grpAuthentication, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
+        btnConnect = new Button(grpAuthentication, SWT.NONE);
+        gdBtnConnect = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gdBtnConnect.widthHint = 120;
+        btnConnect.setLayoutData(gdBtnConnect);
+        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
+
+        lblStatusOnPremise = new Label(grpAuthentication, SWT.WRAP);
+        gdLblStatus = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        lblStatusOnPremise.setLayoutData(gdLblStatus);
+
         Label lblOrganization = new Label(grpAuthentication, SWT.NONE);
         lblOrganization.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ORGANIZATION);
 
         cbbOrganization = new Combo(grpAuthentication, SWT.READ_ONLY);
         cbbOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        btnConnect = new Button(grpAuthentication, SWT.NONE);
-        gdBtnConnect = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdBtnConnect.widthHint = 100;
-        btnConnect.setLayoutData(gdBtnConnect);
-        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
-
-        lblStatusOnPremise = new Label(grpAuthentication, SWT.WRAP);
 
         enableAuthentiacation(false);
     }
@@ -228,7 +231,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         compConnect.setLayout(glConnect);
 
         GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdBtn.widthHint = 100;
+        gdBtn.widthHint = 120;
 
         btnRefresh = new Button(compConnect, SWT.NONE);
         btnRefresh.setLayoutData(gdBtn);
@@ -338,13 +341,18 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             cbbTeams.setItems();
             cbbProjects.setItems();
 
-            if (isUseOnPremise) {
-                enableOverrideAuthentication.setSelection(true);
-                enableAuthentiacation(true);
-            }
             txtEmail.setText(email);
             txtServerUrl.setText(serverUrl);
             txtPassword.setText(password);
+
+            if (isUseOnPremise) {
+                enableOverrideAuthentication.setSelection(true);
+                enableAuthentiacation(true);
+                if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
+                    setProgressMessageOnPremise(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
+                    return;
+                }
+            }
 
             organizationsOnPremise.clear();
             organizationsOnPremise.add(organization);
@@ -881,6 +889,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             btnConnect.setVisible(false);
             gdBtnConnect.exclude = true;
+
+            lblStatusOnPremise.setVisible(false);
+            gdLblStatus.exclude = true;
 
             isUseOnPremise = false;
             getInfoFromCloud();
