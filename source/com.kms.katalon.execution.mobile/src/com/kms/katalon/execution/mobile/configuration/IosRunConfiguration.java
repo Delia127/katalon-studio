@@ -3,10 +3,12 @@ package com.kms.katalon.execution.mobile.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
@@ -30,8 +32,10 @@ public class IosRunConfiguration extends MobileRunConfiguration {
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException {
         try {
-            return IosDeviceInfo.getIosAdditionalEnvironmentVariables();
-        } catch (InterruptedException e) {
+            Map<String, String> environmentVariables = new HashMap<String, String>(super.getAdditionalEnvironmentVariables());
+            environmentVariables.putAll(IosDeviceInfo.getIosAdditionalEnvironmentVariables());
+            return environmentVariables;
+        } catch (InterruptedException | ExecutionException e) {
             LogUtil.logError(e);
             return Collections.emptyMap();
         }
