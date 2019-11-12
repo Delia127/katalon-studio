@@ -202,6 +202,12 @@ public class AppiumDriverManager {
             return false;
         }
     }
+    
+    public static URL getURL() throws MalformedURLException {
+        return new URL("http://" + DEFAULT_APPIUM_SERVER_ADDRESS + ":" + localStorageAppiumPort.get()
+                + APPIUM_SERVER_URL_SUFFIX + "/status");
+
+    }
 
     private static boolean isWebProxyServerStarted(int timeOut) {
         if (localStorageWebProxyProcess.get() == null) {
@@ -559,7 +565,7 @@ public class AppiumDriverManager {
     
     private static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl) throws URISyntaxException, IOException {
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo));
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo, remoteWebServerUrl));
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, remoteWebServerUrl, clientFactory);
         return executor;
     }

@@ -3,8 +3,6 @@ package com.kms.katalon.core.webui.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openqa.selenium.Proxy;
-
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.network.ProxyServerType;
@@ -18,6 +16,8 @@ public class WebDriverProxyUtil {
     private static final String PROP_SOCKS_PROXY = "socksProxy";
 
     private static final String PROP_HTTP_PROXY = "httpProxy";
+    
+    private static final String PROP_NO_PROXY = "noProxy";
 
     private static final String PROP_SSL_PROXY = "sslProxy";
 
@@ -45,6 +45,7 @@ public class WebDriverProxyUtil {
                         proxyMap.put(PROP_HTTP_PROXY, proxyString);
                         proxyMap.put(PROP_FTP_PROXY, proxyString);
                         proxyMap.put(PROP_SSL_PROXY, proxyString);
+                        proxyMap.put(PROP_NO_PROXY, proxyInformation.getExceptionList());
                         break;
                     case SOCKS:
                         proxyMap.put(PROP_SOCKS_PROXY, proxyString);

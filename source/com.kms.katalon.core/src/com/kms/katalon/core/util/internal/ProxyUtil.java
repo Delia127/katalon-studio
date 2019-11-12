@@ -58,15 +58,14 @@ public class ProxyUtil {
         }
     }
     
-    public static Proxy getProxy(ProxyInformation proxyInfo, String url) throws URISyntaxException, IOException {
+    public static Proxy getProxy(ProxyInformation proxyInfo, URL url) throws URISyntaxException, IOException {
         if (proxyInfo == null) {
             throw new IllegalArgumentException("proxyInfo cannot be null");
         }
         List<String> exceptionList = new ArrayList<String>();
         String exclude = proxyInfo.getExceptionList().replaceAll("\\s+","");
         String[] output = exclude.split(",");
-        URL newUrl = new URL(url);
-        
+        String newUrl = null;
         
         Arrays.stream(output).forEach(part -> exceptionList.add(part));
         switch (ProxyOption.valueOf(proxyInfo.getProxyOption())) {
@@ -77,18 +76,18 @@ public class ProxyUtil {
             case MANUAL_CONFIG:
                 for (int i = 0; i < exceptionList.size(); i++) {
                     if (exceptionList.get(i).contains(":")) {
-                        url = newUrl.getAuthority();
+                        newUrl = url.getAuthority();
                     } else {
-                        url = newUrl.getHost();
+                        newUrl = url.getHost();
                     }
                     if (exceptionList.get(i).contains("*")) {
-                        boolean match = strmatch(url, exceptionList.get(i), url.length(),
+                        boolean match = strmatch(newUrl, exceptionList.get(i), newUrl.length(),
                                 exceptionList.get(i).length());
-                        if (exceptionList.get(i).equals(url) || match) {
+                        if (exceptionList.get(i).equals(newUrl) || match) {
                             return Proxy.NO_PROXY;
                         }
                     } else {
-                        if (exceptionList.get(i).equals(url)) {
+                        if (exceptionList.get(i).equals(newUrl)) {
                             return Proxy.NO_PROXY;
                         }
                     }
