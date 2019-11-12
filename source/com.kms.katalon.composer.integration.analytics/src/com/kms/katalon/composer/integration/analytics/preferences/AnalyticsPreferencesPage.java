@@ -621,6 +621,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         enableOverrideAuthentication.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                setProgressMessageOnPremise(StringUtils.EMPTY, false);
                 isUseOnPremise = enableOverrideAuthentication.getSelection();
                 if (isUseOnPremise) {
                     getInfoFromOnPremise();
@@ -680,6 +681,15 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     setProgressMessageOnPremise(ComposerIntegrationAnalyticsMessageConstants.MSG_MUST_ENTER_CREDENTIAL, true);
                 } else {
                     connectOnPremise();
+                }
+            }
+        });
+
+        cbbOrganization.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (isUseOnPremise) {
+                    organization = organizationsOnPremise.get(cbbOrganization.getSelectionIndex());
                 }
             }
         });
@@ -835,7 +845,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 } else {
                     btnRefresh.setEnabled(true);
                     String message = MessageFormat.format(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM,
-                            ApplicationInfo.getTestOpsServer(), Long.toString(organization.getId()));
+                            analyticsSettingStore.getServerEndpoint(), Long.toString(organization.getId()));
                     setProgressMessage(message, true);
                 }
             });
