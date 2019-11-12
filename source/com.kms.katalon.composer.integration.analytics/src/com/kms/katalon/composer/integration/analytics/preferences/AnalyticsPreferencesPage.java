@@ -665,11 +665,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (isUseOnPremise) {
-                    if (cbbOrganization.getSelectionIndex() != -1) {
-                        organization = organizationsOnPremise.get(cbbOrganization.getSelectionIndex());
-                    } else {
+                    if (cbbOrganization.getSelectionIndex() == -1) {
                         setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_NO_ORGANIZATION, true);
                         return;
+                    } else {
+                        organization = organizationsOnPremise.get(cbbOrganization.getSelectionIndex());
                     }
                 }
                 connect();

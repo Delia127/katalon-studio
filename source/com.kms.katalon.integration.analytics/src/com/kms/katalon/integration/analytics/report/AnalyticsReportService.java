@@ -223,7 +223,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
     
     public void sendTrackingActivity(AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
         try {
-            String serverUrl = getSettingStore().getServerEndpoint();
+            String serverUrl = ApplicationInfo.getTestOpsServer();
             String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
             String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
