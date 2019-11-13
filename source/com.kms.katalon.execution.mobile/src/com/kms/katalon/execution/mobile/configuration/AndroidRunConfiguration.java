@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Platform;
+
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -29,8 +31,6 @@ public class AndroidRunConfiguration extends MobileRunConfiguration {
 
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
-        Map<String, String> environmentVariables = new HashMap<>(super.getAdditionalEnvironmentVariables());
-        environmentVariables.putAll(AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables());
-        return environmentVariables;
+        return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();
     }
 }
