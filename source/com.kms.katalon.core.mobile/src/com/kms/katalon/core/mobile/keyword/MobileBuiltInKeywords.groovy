@@ -37,6 +37,7 @@ import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
+import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 
@@ -1961,6 +1962,32 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void tapOnImage(String imageFilePath) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "tapOnImage", imageFilePath)
     }
+    
+    /**
+     * Verifies the given image that presents on the device screen or not.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @return
+     * true if the image presents. Otherwise, false in-case flowControl is OPTIONAL
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyImagePresent(String imageFilePath, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyImagePresent", imageFilePath, flowControl)
+    }
    
     /**
      * Verifies the given image that presents on the device screen or not.
@@ -1968,9 +1995,9 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param imageFilePath
      * Absolute path of the image.
      * @return
-     * true if the image presents. Otherwise, false.
+     * true if the image presents. Otherwise, false in-case the default FailureHandling is OPTIONAL
      * @throws StepFailedException
-     * If the image file doesn't exist on system file.
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
      *
      * @since 7.2.0
      */

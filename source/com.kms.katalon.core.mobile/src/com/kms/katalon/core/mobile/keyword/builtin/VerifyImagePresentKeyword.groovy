@@ -47,8 +47,7 @@ public class VerifyImagePresentKeyword extends MobileAbstractKeyword {
             try {
                 List<WebElement> elements = driver.findElementsByImage(encodedString)
                 if (elements.size() == 0) {
-                    logger.logInfo(MessageFormat.format("Image ''{0}'' doesn't present on screen", imageFilePath))
-                    return false;
+                    throw new StepFailedException(MessageFormat.format("Image ''{0}'' does not present on screen", imageFilePath))
                 }
                 if (elements.size() == 1) {
                     WebElement element = elements.get(0)
@@ -60,8 +59,7 @@ public class VerifyImagePresentKeyword extends MobileAbstractKeyword {
                 }
                 return true;
             } catch (WebDriverException e) {
-                logger.logInfo(MessageFormat.format("Image ''{0}'' doesn't present on screen", imageFilePath))
-                return false;
+                throw new StepFailedException(MessageFormat.format("Image ''{0}'' doesn not present on screen", imageFilePath), e)
             }
         }, flowControl, true, "Failed to verify image present")
     }
