@@ -1,9 +1,7 @@
 package com.kms.katalon.composer.toolbar;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -18,9 +16,6 @@ import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 
 public class SubscriptionToolControl {
-
-    @Inject
-    IEventBroker eventBroker;
 
     @PostConstruct
     void createWidget(Composite parent, MToolControl toolControl) {
