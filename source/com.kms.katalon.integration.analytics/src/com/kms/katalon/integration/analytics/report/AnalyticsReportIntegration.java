@@ -98,7 +98,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
             trackingInfo.setOrganizationId(organizationId);
             reportService.sendTrackingActivity(trackingInfo);
         } catch (Exception e) {
-            LogUtil.logError(e);
+//            LogUtil.logError(e);
         }
     }
 }
