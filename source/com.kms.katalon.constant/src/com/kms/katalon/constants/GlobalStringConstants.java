@@ -297,7 +297,10 @@ public class GlobalStringConstants {
 
     public static final String APP_INFO_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
             + "application.properties";
-    
+
+    public static final String APP_LICENSE_SERVER_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
+            + "licenseServer.properties";
+
     public static final String APP_BUILD_NUMBER_KEY = "katalon.buildNumber";
 
     public static final String APP_VERSION_NUMBER_KEY = "katalon.versionNumber";

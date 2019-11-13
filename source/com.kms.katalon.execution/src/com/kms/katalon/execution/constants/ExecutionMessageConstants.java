@@ -150,6 +150,8 @@ public class ExecutionMessageConstants extends NLS {
 
     public static String ACTIVATE_START_ACTIVATE_ONLINE;
 
+    public static String ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER;
+
     public static String ACTIVATE_FAIL_OFFLINE;
 
     public static String ACTIVATE_FAIL_ONLINE;

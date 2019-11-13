@@ -28,6 +28,7 @@ import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -175,7 +176,7 @@ public class ConsoleMain {
                         LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
                     }
                 }
-                
+
                 if (!isActivated) {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
                     StringBuilder errorMessage = new StringBuilder();
@@ -184,6 +185,22 @@ public class ConsoleMain {
                     String error = errorMessage.toString();
                     if (StringUtils.isNotBlank(error)) {
                         LogUtil.printErrorLine(error);
+                    }
+
+                    if (!isActivated) {
+                        String server = LicenseInfo.getServerURL();
+                        String apiKey = LicenseInfo.getApiKey();
+
+                        if (!StringUtils.isEmpty(server) && !StringUtils.isEmpty(apiKey)) {
+                            LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER);
+                            ApplicationInfo.setTestOpsServer(server);
+                            errorMessage = new StringBuilder();
+                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                            error = errorMessage.toString();
+                            if (StringUtils.isNotBlank(error)) {
+                                LogUtil.printErrorLine(error);
+                            }
+                        }
                     }
 
                     if (!isActivated) {
