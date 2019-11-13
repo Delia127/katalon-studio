@@ -287,6 +287,10 @@ public class MessageConstants extends NLS {
 
     public static String HAND_IMPORT_SELENIUM_IDE_MSG_ERROR;
 
+    public static String URL_KATALON_PRICING;
+
+    public static String TOOLTIP_SUBSCRIPTION;
+
     // CheckForUpdateHandler
     public static String HAND_MSG_UP_TO_DATE;
 

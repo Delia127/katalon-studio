@@ -12,7 +12,9 @@ public class ImageConstants {
     public static final Image IMG_FAQ = ImageManager.getImage(IImageKeys.FAQ_34);
 
     public static final Image IMG_USER_GUIDE = ImageManager.getImage(IImageKeys.USER_GUIDE_34);
-    
+
+    public static final Image IMG_KATALON_SUBSCRIPTION_24 = ImageManager.getImage(IImageKeys.KATALON_SUBSCRIPTION_24);
+
     public static final Image IMG_KATALON_ACCOUNT_24 = ImageManager.getImage(IImageKeys.KATALON_ACCOUNT_24);
     
     public static final Image IMG_KATALON_COMMUNITY_24 = ImageManager.getImage(IImageKeys.KATALON_COMMUNITY_24);

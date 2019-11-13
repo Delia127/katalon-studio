@@ -315,7 +315,9 @@ public interface IImageKeys {
     public static final String SAVE_ALL_DISABLED_16 = "toolbar/save_all_disabled_16.png"; //$NON-NLS-1$
     
     public static final String PROFILE_16 = "toolbar/profile_16.png";
-    
+
+    public static final String KATALON_SUBSCRIPTION_24 = "toolbar/pricing_32x24.png";
+
     public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
     
     public static final String KATALON_ACCOUNT_24 = "toolbar/account_32x24.png"; //$NON-NLS-1$
