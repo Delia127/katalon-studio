@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.logging.LogUtil;
 
@@ -61,11 +63,11 @@ public class LicenseInfo {
     public static String getServerURL() {
         String server = getLicenseProperty(LICENSE_SERVER_URL);
 
-        if (server == null) {
+        if (StringUtils.isEmpty(server)) {
             server = getLicenseProperty(LICENSE_SERVER_URL_SECOND_OPTION);
         }
 
-        if (server == null) {
+        if (StringUtils.isEmpty(server)) {
             server = getLicenseProperty(LICENSE_SERVER_URL_THIRD_OPTION);
         }
 
@@ -75,7 +77,7 @@ public class LicenseInfo {
     public static String getApiKey() {
         String apiKey = getLicenseProperty(LICENSE_API_KEY);
 
-        if (apiKey == null) {
+        if (StringUtils.isEmpty(apiKey)) {
             apiKey = getLicenseProperty(LICENSE_API_KEY_SECOND_OPTION);
         }
 
