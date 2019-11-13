@@ -179,7 +179,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         gdBtnConnect = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
         gdBtnConnect.widthHint = 120;
         btnConnect.setLayoutData(gdBtnConnect);
-        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_CONNECT);
+        btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_FETCH_ORGANIZATION);
 
         lblStatusOnPremise = new Label(grpAuthentication, SWT.WRAP);
         gdLblStatus = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
@@ -234,7 +234,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         btnRefresh = new Button(compConnect, SWT.NONE);
         btnRefresh.setLayoutData(gdBtn);
-        btnRefresh.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_REFRESH);
+        btnRefresh.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_FETCH_PROJECT);
         btnRefresh.setEnabled(false);
 
         lblStatus = new Link(mainComposite, SWT.WRAP);
