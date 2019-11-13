@@ -2,6 +2,7 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.text.DateFormat;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +24,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.util.ApplicationRunningMode;
-import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.core.util.LogbackUtil;
 import com.kms.katalon.custom.factory.PluginTestListenerFactory;
 import com.kms.katalon.entity.file.FileEntity;
@@ -268,9 +267,6 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
-        if (!Platform.getOS().equals(Platform.OS_WIN32)) {
-            environmentVariables.put(PATH, StringUtils.defaultString(System.getenv(PATH)) + ":/usr/local/bin");
-        }
         return Collections.unmodifiableMap(environmentVariables);
     }
 

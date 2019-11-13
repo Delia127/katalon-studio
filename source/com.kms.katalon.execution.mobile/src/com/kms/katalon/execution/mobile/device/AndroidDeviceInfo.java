@@ -223,10 +223,13 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         addtionalEnvironmentVariables.put(ANDROID_HOME_ENVIRONMENT_VARIABLE_NAME, androidSDKFolder);
         File jreFolder = getJREFolder();
         addtionalEnvironmentVariables.put(JAVA_HOME, jreFolder.getAbsolutePath());
-        addtionalEnvironmentVariables.put(PATH,
-                System.getenv(PATH)
-                        + ((Platform.getOS() == Platform.OS_WIN32) ? WIN32_PATH_SEPARATOR : UNIX_PATH_SEPARATOR)
-                        + jreFolder + File.separator + BIN);
+        String path = System.getenv(PATH)
+                + ((Platform.getOS() == Platform.OS_WIN32) ? WIN32_PATH_SEPARATOR : UNIX_PATH_SEPARATOR)
+                + jreFolder + File.separator + BIN;
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            path += UNIX_PATH_SEPARATOR + "/usr/local/bin/";
+        }
+        addtionalEnvironmentVariables.put(PATH, path);
         return addtionalEnvironmentVariables;
     }
 
