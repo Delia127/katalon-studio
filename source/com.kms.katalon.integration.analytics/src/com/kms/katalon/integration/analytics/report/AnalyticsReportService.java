@@ -221,7 +221,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
         }
     }
     
-    public void sendTrackingActivity(AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
+    public void sendTrackingActivity(AnalyticsTracking trackingInfo) {
         try {
             String serverUrl = getSettingStore().getServerEndpoint();
             String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);

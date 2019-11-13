@@ -274,7 +274,7 @@ public class AnalyticsApiProvider {
             StringEntity entity = new StringEntity(gson.toJson(trackingInfo));
             httpPost.setEntity(entity);
 
-            executeRequest(httpPost, Object.class);
+            executeRequest(httpPost, true, Object.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
@@ -472,7 +472,7 @@ public class AnalyticsApiProvider {
         }
     }
 
-    private static String executeRequest(HttpUriRequest httpRequest) throws Exception {
+    private static String executeRequest(HttpUriRequest httpRequest, boolean isSilent) throws Exception {
         HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
         HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
         HttpResponse httpResponse = httpClient.execute(httpRequest);
@@ -488,20 +488,35 @@ public class AnalyticsApiProvider {
             return responseString;
         }
 
-        LogUtil.logError(MessageFormat.format(
-                "TestOps: Unexpected response code from Katalon TestOps server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
-                httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
+        if (!isSilent) {
+            LogUtil.logError(MessageFormat.format(
+                    "TestOps: Unexpected response code from Katalon TestOps server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
+                    httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
+        }
+
         throw new AnalyticsApiExeception(new Throwable(responseString));
     }
 
-    private static <T> T executeRequest(HttpUriRequest httpRequest, Class<T> returnType) throws Exception {
-        String responseString = executeRequest(httpRequest);
+    private static <T> T executeRequest(HttpUriRequest httpRequest, boolean isSilent, Class<T> returnType) throws Exception {
+        String responseString = executeRequest(httpRequest, isSilent);
         Gson gson = new GsonBuilder().create();
         return gson.fromJson(responseString, returnType);
     }
-    
+
+    private static <T> T executeRequest(HttpUriRequest httpRequest, Class<T> returnType) throws Exception {
+        String responseString = executeRequest(httpRequest, false);
+        Gson gson = new GsonBuilder().create();
+        return gson.fromJson(responseString, returnType);
+    }
+
+    private static <T> T executeRequest(HttpUriRequest httpRequest, boolean isSilent, TypeToken<T> typeToken) throws Exception {
+        String responseString = executeRequest(httpRequest, isSilent);
+        Gson gson = new GsonBuilder().create();
+        return gson.fromJson(responseString, typeToken.getType());
+    }
+
     private static <T> T executeRequest(HttpUriRequest httpRequest, TypeToken<T> typeToken) throws Exception {
-        String responseString = executeRequest(httpRequest);
+        String responseString = executeRequest(httpRequest, false);
         Gson gson = new GsonBuilder().create();
         return gson.fromJson(responseString, typeToken.getType());
     }
