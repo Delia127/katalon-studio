@@ -186,7 +186,7 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
     }
 
     private List<IosIdentityInfo> getIdentities() throws MobileSetupException, IOException, InterruptedException {
-        List<IosIdentityInfo> appleIdentities = new ArrayList<IosIdentityInfo>();
+        List<IosIdentityInfo> teamIdentities = new ArrayList<IosIdentityInfo>();
         Map<String, String> iosAdditionalEnvironmentVariables = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
 
         List<String> identityLines = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(
@@ -200,8 +200,8 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
             }
             try {
                 IosIdentityInfo team = SystemCertificationUtil.getTeamInfoByCertificateName(identity.getName());
-                if (team != null && !appleIdentities.contains(team)) {
-                    appleIdentities.add(team);
+                if (team != null && !teamIdentities.contains(team)) {
+                    teamIdentities.add(team);
                 }
             } catch (CertificateException error) {
                 LoggerSingleton.logError(error);
@@ -210,7 +210,7 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
                 });
             }
         }
-        return appleIdentities;
+        return teamIdentities;
     }
 
     private IosIdentityInfo parseIdentityFromIdentityLine(String identityLine) {
