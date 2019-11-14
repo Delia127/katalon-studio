@@ -117,7 +117,7 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
         });
     }
 
-    private boolean devicesChanged(List<IosIdentityInfo> newIdentities, List<IosIdentityInfo> oldIdentities) {
+    private boolean identitiesChanged(List<IosIdentityInfo> newIdentities, List<IosIdentityInfo> oldIdentities) {
         if (newIdentities == null || oldIdentities == null) {
             return true;
         }
@@ -138,11 +138,11 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
             try {
                 while (!interrupted) {
                     List<IosIdentityInfo> newIdentities = getIdentities();
-                    boolean devicesChanged = devicesChanged(newIdentities, identities);
+                    boolean identitiesChanged = identitiesChanged(newIdentities, identities);
                     if (interrupted) {
                         return;
                     }
-                    if (devicesChanged) {
+                    if (identitiesChanged) {
                         identities = newIdentities;
 
                         UISynchronizeService.syncExec(() -> {
@@ -163,7 +163,7 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
                             cleanNotifications();
 
                             if (identities.isEmpty()) {
-                                addNoDeviceNotification();
+                                addNoIdentityNotification();
                             }
 
                             notificationComposite.getParent().setRedraw(true);
@@ -205,17 +205,17 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
         }
     }
 
-    private void addNoDeviceNotification() {
-        Composite noDeviceNotificationComposite = new Composite(notificationComposite, SWT.NONE);
-        noDeviceNotificationComposite.setLayout(new GridLayout(2, false));
-        noDeviceNotificationComposite.setBackground(ColorUtil.getWarningLogBackgroundColor());
-        noDeviceNotificationComposite.setBackgroundMode(SWT.INHERIT_FORCE);
+    private void addNoIdentityNotification() {
+        Composite noIdentityNotificationComposite = new Composite(notificationComposite, SWT.NONE);
+        noIdentityNotificationComposite.setLayout(new GridLayout(2, false));
+        noIdentityNotificationComposite.setBackground(ColorUtil.getWarningLogBackgroundColor());
+        noIdentityNotificationComposite.setBackgroundMode(SWT.INHERIT_FORCE);
 
-        Label lblNoDeviceNotification = new Label(noDeviceNotificationComposite, SWT.NONE);
+        Label lblNoDeviceNotification = new Label(noIdentityNotificationComposite, SWT.NONE);
         lblNoDeviceNotification.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
         lblNoDeviceNotification.setText(ComposerMobileMessageConstants.DIA_LBL_IDENTITY_TROUBLESHOOT);
 
-        Link lnkNoDeviceTroubleshoot = new Link(noDeviceNotificationComposite, SWT.NONE);
+        Link lnkNoDeviceTroubleshoot = new Link(noIdentityNotificationComposite, SWT.NONE);
         lnkNoDeviceTroubleshoot.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
         lnkNoDeviceTroubleshoot
                 .setText(String.format("<a>%s</a>", ComposerMobileMessageConstants.DIA_LNK_IDENTITY_TROUBLESHOOT));
@@ -255,15 +255,15 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
             connectingLabel.setGifImage(loadingImgInputStream);
         } catch (IOException ignored) {}
 
-        Label lblLoadingDevice = new Label(loadingIdentitiesComposite, SWT.NONE);
-        lblLoadingDevice.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        lblLoadingDevice.setText(ComposerMobileMessageConstants.DIA_LBL_LOADING_IDENTITIES);
+        Label lblLoadingIdentities = new Label(loadingIdentitiesComposite, SWT.NONE);
+        lblLoadingIdentities.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        lblLoadingIdentities.setText(ComposerMobileMessageConstants.DIA_LBL_LOADING_IDENTITIES);
 
         noIdentityComposite = new Composite(identitySelectionMainComposite, SWT.NONE);
         noIdentityComposite.setLayout(new GridLayout());
-        Label lblNoDeviceConnected = new Label(noIdentityComposite, SWT.NONE);
-        lblNoDeviceConnected.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        lblNoDeviceConnected.setText(ComposerMobileMessageConstants.DIA_MSG_NO_IDENTITY_FOUND);
+        Label lblNoIdentityFound = new Label(noIdentityComposite, SWT.NONE);
+        lblNoIdentityFound.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        lblNoIdentityFound.setText(ComposerMobileMessageConstants.DIA_MSG_NO_IDENTITY_FOUND);
 
         tableComposite = new Composite(identitySelectionMainComposite, SWT.NONE);
         TableColumnLayout tableLayout = new TableColumnLayout();
@@ -271,9 +271,9 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
 
         identityTableViewer = new CTableViewer(tableComposite, SWT.BORDER);
         identityTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        TableViewerColumn deviceColumnViewer = new TableViewerColumn(identityTableViewer, SWT.NONE);
-        tableLayout.setColumnData(deviceColumnViewer.getColumn(), new ColumnWeightData(98, 300));
-        deviceColumnViewer.setLabelProvider(new IosIdentityColumnLabelProvider(0));
+        TableViewerColumn identityColumnViewer = new TableViewerColumn(identityTableViewer, SWT.NONE);
+        tableLayout.setColumnData(identityColumnViewer.getColumn(), new ColumnWeightData(98, 300));
+        identityColumnViewer.setLabelProvider(new IosIdentityColumnLabelProvider(0));
 
         stackLayout.topControl = tableComposite;
         identitySelectionMainComposite.layout();

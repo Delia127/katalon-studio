@@ -36,14 +36,32 @@ public class StringConstants extends GlobalStringConstants {
     
     // iOS
     public static final String MSG_IOS_INSTALL_DEPENDENCIES = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES;
-    
+
+    public static final String MSG_IOS_INSTALL_DEPENDENCIES_TITLE = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES_TITLE;
+
     public static final String MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY;
-    
+
     public static final String MSG_IOS_INSTALL_DEPENDENCIES_FAILED = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES_FAILED;
+
+    public static final String MSG_IOS_FAILED_TO_CHECK_NODE_INSTALLED = ComposerMobileMessageConstants.MSG_IOS_FAILED_TO_CHECK_NODE_INSTALLED;
 
     public static final String MSG_IOS_INSTALL_WEB_DRIVER_AGENT = ComposerMobileMessageConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT;
 
     public static final String MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY = ComposerMobileMessageConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY;
 
     public static final String MSG_IOS_INSTALL_WEB_DRIVER_AGENT_FAILED = ComposerMobileMessageConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_FAILED;
+
+    public static final String MSG_IOS_INSTALL_WEB_DRIVER_AGENT_TITLE = ComposerMobileMessageConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_TITLE;
+
+    public static final String MSG_IOS_INSTALLING_WEB_DRIVER_AGENT = ComposerMobileMessageConstants.MSG_IOS_INSTALLING_WEB_DRIVER_AGENT;
+
+    public static final String MSG_IOS_RUN_BOOTSTRAP = ComposerMobileMessageConstants.MSG_IOS_RUN_BOOTSTRAP;
+
+    public static final String MSG_IOS_BUILD_WEB_DRIVER_AGENT_LIB = ComposerMobileMessageConstants.MSG_IOS_BUILD_WEB_DRIVER_AGENT_LIB;
+
+    public static final String MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER = ComposerMobileMessageConstants.MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER;
+
+    public static final String MSG_IOS_CANCELLED_WEB_DRIVER_AGENT_INSTALLATION = ComposerMobileMessageConstants.MSG_IOS_CANCELLED_WEB_DRIVER_AGENT_INSTALLATION;
+
+    public static final String MSG_IOS_CANCELLED_DEPENDENCIES_INSTALLATION = ComposerMobileMessageConstants.MSG_IOS_CANCELLED_DEPENDENCIES_INSTALLATION;
 }
