@@ -2,11 +2,13 @@ package com.kms.katalon.composer.mobile.dialog;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -38,6 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.constants.ComposerMobileMessageConstants;
@@ -48,13 +51,12 @@ import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 import com.kms.katalon.execution.mobile.identity.IosIdentityInfo;
+import com.kms.katalon.execution.mobile.util.SystemCertificationUtil;
 
 public class IosIdentitySelectionDialog extends AbstractDialog {
 
-    private final String[] LISTING_DEVELOPERS_COMMAND = new String[] { "/bin/sh", "-c",
+    private final String[] LISTING_IDENTITIES_COMMAND = new String[] { "/bin/sh", "-c",
             "security find-identity -v -p codesigning" };
-
-    private final String DEVELOPMENT_TEAM_SIGNAL = "Apple Distribution: ";
 
     private List<IosIdentityInfo> identities;
 
@@ -188,15 +190,46 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
         Map<String, String> iosAdditionalEnvironmentVariables = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
 
         List<String> identityLines = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(
-                LISTING_DEVELOPERS_COMMAND, iosAdditionalEnvironmentVariables, true);
+                LISTING_IDENTITIES_COMMAND, iosAdditionalEnvironmentVariables, true);
 
-        for (String developer : identityLines) {
-            if (StringUtils.isEmpty(developer) || !developer.contains(DEVELOPMENT_TEAM_SIGNAL)) {
+        for (String identityLine : identityLines) {
+            LoggerSingleton.logInfo(identityLine);
+            IosIdentityInfo identity = parseIdentityFromIdentityLine(identityLine);
+            if (identity == null) {
                 continue;
             }
-            appleIdentities.add(new IosIdentityInfo(developer));
+            try {
+                IosIdentityInfo team = SystemCertificationUtil.getTeamInfoByCertificateName(identity.getName());
+                if (team != null && !appleIdentities.contains(team)) {
+                    appleIdentities.add(team);
+                }
+            } catch (CertificateException error) {
+                LoggerSingleton.logError(error);
+                UISynchronizeService.syncExec(() -> {
+                    MessageDialog.openError(getShell(), StringConstants.ERROR, error.getMessage());
+                });
+            }
         }
         return appleIdentities;
+    }
+
+    private IosIdentityInfo parseIdentityFromIdentityLine(String identityLine) {
+        String name = null, id = null;
+        Matcher fullnameMatcher = Pattern.compile(".+? \"(.+?)\"").matcher(identityLine);
+        if (fullnameMatcher.find()) {
+            name = fullnameMatcher.group(1);
+        } else {
+            return null;
+        }
+
+        Matcher idMatcher = Pattern.compile("\\((\\w+?)\\)").matcher(name);
+        if (idMatcher.find()) {
+            id = idMatcher.group(1);
+        } else {
+            return null;
+        }
+
+        return new IosIdentityInfo(name, id);
     }
 
     private void cleanNotifications() {

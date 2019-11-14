@@ -1,32 +1,26 @@
 package com.kms.katalon.execution.mobile.identity;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class IosIdentityInfo {
 
-    private String fullname;
+    private String name;
     
     private String id;
-
-    public IosIdentityInfo(String identityLine) {
-        Matcher fullnameMatcher = Pattern.compile(".+? \"(.+)\"$").matcher(identityLine);
-        if (fullnameMatcher.find()) {
-            this.setFullname(fullnameMatcher.group(1));
-        }
+    
+    public IosIdentityInfo() {
         
-        Matcher idMatcher = Pattern.compile("\\((\\w+)\\)\"$").matcher(identityLine);
-        if (idMatcher.find()) {
-            this.setId(idMatcher.group(1));
-        }
     }
 
-    public String getFullname() {
-        return fullname;
+    public IosIdentityInfo(String name, String id) {
+        this.setName(name);
+        this.setId(id);
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getId() {
@@ -35,5 +29,10 @@ public class IosIdentityInfo {
 
     public void setId(String id) {
         this.id = id;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return this.id.equals(((IosIdentityInfo) obj).getId());
     }
 }

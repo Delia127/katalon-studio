@@ -24,6 +24,6 @@ public class IosIdentityColumnLabelProvider extends TypeCheckStyleCellTableLabel
 
     @Override
     protected String getText(IosIdentityInfo element) {
-        return element.getFullname();
+        return element.getName();
     }
 }
