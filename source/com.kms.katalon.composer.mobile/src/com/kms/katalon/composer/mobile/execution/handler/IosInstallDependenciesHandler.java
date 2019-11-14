@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;
@@ -43,7 +44,7 @@ public class IosInstallDependenciesHandler {
 
     @CanExecute
     public boolean canExecute() {
-        return true;
+        return SystemUtils.IS_OS_MAC;
     }
 
     @Execute
