@@ -527,9 +527,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     analyticsSettingStore.setPassword(txtPassword.getText());
 
                     String server = txtServerUrl.getText().trim();
-                    if (server.endsWith("/")) {
-                        server = server.substring(0, server.length() - 1);
-                    }
                     analyticsSettingStore.setServerEndPoint(server);
 
                     analyticsSettingStore.setOrganization(organizationsOnPremise.get(cbbOrganization.getSelectionIndex()));
@@ -685,9 +682,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 serverUrl = txtServerUrl.getText().trim();
-                if (serverUrl.endsWith("/")) {
-                    serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
-                }
                 email = txtEmail.getText();
                 password = txtPassword.getText();
                 if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
