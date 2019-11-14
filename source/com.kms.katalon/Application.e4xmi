@@ -226,6 +226,7 @@
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_1yN1YAbFEemu-rQeuokE_A" elementId="com.kms.katalon.toolbarseparator.1"/>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_yoThQOW4EemxuKxJ6O0ikA" elementId="com.kms.katalon.toolcontrol.community" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.CommunityToolControl"/>
+      <children xsi:type="menu:ToolControl" xmi:id="_pDN8QAX3Eeqx6r8DmoiDVA" elementId="com.kms.katalon.toolcontrol.subscription" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.SubscriptionToolControl"/>
       <children xsi:type="menu:ToolControl" xmi:id="_p-mLQHbwEemVl_JFsJ2xNQ" elementId="com.kms.katalon.toolcontrol.account" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.PluginStoreToolControl"/>
     </trimBars>
     <trimBars xmi:id="_D8Z7cNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.trimbar.right" side="Right">
