@@ -2,6 +2,7 @@ package com.kms.katalon.composer.mobile.installer;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class InstallationCommandStep extends InstallationStep {
             processBuilder.directory(new File(workingDirectory));
         }
         if (logFile != null) {
-            processBuilder.redirectOutput(getLogFile());
+            processBuilder.redirectOutput(Redirect.appendTo(logFile));
         }
         processBuilder.redirectErrorStream(true);
 
