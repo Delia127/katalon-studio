@@ -211,15 +211,15 @@ public class IosIdentitySelectionDialog extends AbstractDialog {
         noIdentityNotificationComposite.setBackground(ColorUtil.getWarningLogBackgroundColor());
         noIdentityNotificationComposite.setBackgroundMode(SWT.INHERIT_FORCE);
 
-        Label lblNoDeviceNotification = new Label(noIdentityNotificationComposite, SWT.NONE);
-        lblNoDeviceNotification.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-        lblNoDeviceNotification.setText(ComposerMobileMessageConstants.DIA_LBL_IDENTITY_TROUBLESHOOT);
+        Label lblNoIdentityNotification = new Label(noIdentityNotificationComposite, SWT.NONE);
+        lblNoIdentityNotification.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+        lblNoIdentityNotification.setText(ComposerMobileMessageConstants.DIA_LBL_IDENTITY_TROUBLESHOOT);
 
-        Link lnkNoDeviceTroubleshoot = new Link(noIdentityNotificationComposite, SWT.NONE);
-        lnkNoDeviceTroubleshoot.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
-        lnkNoDeviceTroubleshoot
+        Link lnkNoIdentityTroubleshoot = new Link(noIdentityNotificationComposite, SWT.NONE);
+        lnkNoIdentityTroubleshoot.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+        lnkNoIdentityTroubleshoot
                 .setText(String.format("<a>%s</a>", ComposerMobileMessageConstants.DIA_LNK_IDENTITY_TROUBLESHOOT));
-        lnkNoDeviceTroubleshoot.addSelectionListener(new SelectionAdapter() {
+        lnkNoIdentityTroubleshoot.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
