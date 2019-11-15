@@ -23,7 +23,7 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
 
     private static String DEFAULT_TASKNAME = JFaceResources.getString("ProgressMonitorDialog.message"); //$NON-NLS-1$
 
-    private static int BAR_DLUS = 9;
+    private static int BAR_DLUS = 5;
     
     private String successfulMessage = "The installation has been finished!";
 

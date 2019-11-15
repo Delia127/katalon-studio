@@ -22,7 +22,7 @@ public class IosInstallDependenciesHandler {
 
     private static final String INSTALL_HOMEBREW = "/usr/bin/ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"";
 
-    private static final String CHECK_FOR_NODE_INSTALLED = "brew info node | grep -i \"not installed\"";
+    private static final String CHECK_FOR_NODE_INSTALLED = "which node | grep -i node";
 
     private static final String INSTALL_NODE = "brew install node && brew unlink node && brew link node";
 
