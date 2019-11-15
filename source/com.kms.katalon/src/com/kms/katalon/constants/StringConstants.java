@@ -262,9 +262,13 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ABOUT_BTN_OK = MessageConstants.About_BTN_OK;
 
     public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
-    
+
+    public static final String ABOUT_MSG_CHECKING_VERSION = MessageConstants.About_MSG_CHECKING_VERSION;
+
+    public static final String About_MSG_CHECKING_EXPIRATION_DATE = MessageConstants.About_MSG_CHECKING_EXPIRATION_DATE;
+
+    public static final String About_MSG_CANNOT_GET_EXPIRATION_DATE = MessageConstants.About_MSG_CANNOT_GET_EXPIRATION_DATE;
+
     // ProxyConfigurationDialog
     public static final String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG = MessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
-
-    public static final String ABOUT_LBL_CHECKING_VERSION = MessageConstants.About_LBL_CHECKING_VERSION;
 }

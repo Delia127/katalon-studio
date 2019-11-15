@@ -1,7 +1,14 @@
 package com.kms.katalon.about.dialog;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.IProduct;
@@ -29,6 +36,7 @@ import org.eclipse.ui.internal.WorkbenchMessages;
 import org.eclipse.ui.internal.about.AboutBundleGroupData;
 import org.eclipse.ui.internal.about.InstallationDialog;
 
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
@@ -42,7 +50,13 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.CryptoUtil;
 
 /**
  * Displays information about the product.
@@ -77,7 +91,7 @@ public class KatalonAboutDialog extends TrayDialog {
 
     private Button btnInstalltionDetails, btnOk;
 
-    private Label lblNotice, notice;
+    private Label lblNotice, notice, expiration;
 
     /**
      * Create an instance of the AboutDialog for the given window.
@@ -87,7 +101,7 @@ public class KatalonAboutDialog extends TrayDialog {
     public KatalonAboutDialog(Shell parentShell) {
         super(parentShell);
         licenseType = ActivationInfoCollector.getLicenseType();
-        expirationDate = ApplicationInfo.getAppProperty(ApplicationStringConstants.EXPIRATION_DATE);
+        expirationDate = ActivationInfoCollector.getExpirationDate();
         product = Platform.getProduct();
         if (product != null) {
             productName = getProductNameBasedOnLicenseType();
@@ -166,6 +180,66 @@ public class KatalonAboutDialog extends TrayDialog {
         super.configureShell(newShell);
         newShell.setText(NLS.bind(WorkbenchMessages.AboutDialog_shellTitle, productName));
         PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell, IWorkbenchHelpContextIds.ABOUT_DIALOG);
+    }
+
+    private String getExpirationDate() {
+        try {
+            if (productName.equals(KSE_NAME_INFO)) {
+                if (ActivationInfoCollector.isOfflineLicense()) {
+                    return ActivationInfoCollector.getExpirationDate();
+                }
+
+                String serverUrl = ApplicationInfo.getTestOpsServer();
+                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+
+                if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(encryptedPassword)) {
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                    if (token != null) {
+                        Date expDate = null;
+                        if (!isTrial) {
+                            Long orgId = ApplicationInfo.getOrganization().getId();
+                            expDate = AnalyticsApiProvider.getExpirationOnline(serverUrl, token.getAccess_token(), orgId);
+                        } else if (isTrial) {
+                            expDate = AnalyticsApiProvider.getExpirationTrial(serverUrl, token.getAccess_token());
+                        }
+                        DateFormat formatter = new SimpleDateFormat("MMMMM dd, yyyy HH:mm");
+                        return formatter.format(expDate);
+                    }
+                }
+            } 
+        } catch (GeneralSecurityException | IOException | AnalyticsApiExeception e) {
+            if (e instanceof AnalyticsApiExeception) {
+                try {
+                    String message = KatalonApplicationActivator.getFeatureActivator().getTestOpsMessage(e.getMessage());
+                    LogUtil.logError(MessageFormat.format(IntegrationAnalyticsMessages.MSG_ERROR_WITH_REASON, message));
+                } catch (Exception ex) {
+                    //ignore ex
+                    LogUtil.logError(e);
+                }
+            } else {
+                LogUtil.logError(e);
+            }
+        }
+        return StringConstants.About_MSG_CANNOT_GET_EXPIRATION_DATE;
+    }
+
+    private void updateExpirationDate() {
+        Thread getExpiration = new Thread(() -> {
+            expirationDate = getExpirationDate();
+            UISynchronizeService.asyncExec(() -> {
+                if (expirationDate.equals(StringConstants.About_MSG_CANNOT_GET_EXPIRATION_DATE)) {
+                    expiration.setForeground(ColorUtil.getTextErrorColor());
+                    ControlUtils.setFontStyle(expiration, SWT.ITALIC, 10);
+                } else {
+                    expiration.setForeground(ColorUtil.getDefaultTextColor());
+                    ControlUtils.setFontStyle(expiration, SWT.NONE, 10);
+                }
+                expiration.setText(expirationDate);
+            });
+        });
+        getExpiration.start();
     }
 
     private void updateVersionInfo() {
@@ -285,9 +359,14 @@ public class KatalonAboutDialog extends TrayDialog {
             lblExpirationDate.setText(StringConstants.ABOUT_LBL_EXPIRATION_DATE);
             ControlUtils.setFontStyle(lblExpirationDate, SWT.BOLD, 10);
 
-            Label expiration = new Label(infoComposite, SWT.NONE);
-            expiration.setText(expirationDate);
-            ControlUtils.setFontStyle(expiration, SWT.NONE, 10);
+            expiration = new Label(infoComposite, SWT.NONE);
+            expiration.setForeground(ColorUtil.getTextRunningColor());
+            GridData gdExpiration = new GridData(SWT.FILL, SWT.FILL, true, false);
+            gdExpiration.widthHint = 200;
+            expiration.setLayoutData(gdExpiration);
+            expiration.setText(StringConstants.About_MSG_CHECKING_EXPIRATION_DATE);
+
+            updateExpirationDate();
         }
 
         lblNotice = new Label(infoComposite, SWT.NONE);
@@ -296,7 +375,7 @@ public class KatalonAboutDialog extends TrayDialog {
 
         notice = new Label(infoComposite, SWT.NONE);
         notice.setForeground(ColorUtil.getTextRunningColor());
-        notice.setText(StringConstants.ABOUT_LBL_CHECKING_VERSION);
+        notice.setText(StringConstants.ABOUT_MSG_CHECKING_VERSION);
         updateVersionInfo();
 
 
