@@ -88,6 +88,18 @@ public class AnalyticsApiProvider {
 
     private static final String OAUTH2_CLIENT_SECRET = "kit_uploader";
 
+    public static boolean testConnection(String serverUrl) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_PUBLIC_INFO);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            Object object = executeRequest(httpGet, Object.class);
+            return true;
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
     public static AnalyticsTokenInfo requestToken(String serverUrl, String email, String password)
             throws AnalyticsApiExeception {
         try {
