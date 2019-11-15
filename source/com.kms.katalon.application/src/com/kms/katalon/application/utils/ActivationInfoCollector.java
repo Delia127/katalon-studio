@@ -134,7 +134,7 @@ public class ActivationInfoCollector {
         licenseType = type;
     }
 
-    public static boolean isOfflineLicense() {
+    public static boolean isLicenseOffline() {
         return isLicenseOffline;
     }
 

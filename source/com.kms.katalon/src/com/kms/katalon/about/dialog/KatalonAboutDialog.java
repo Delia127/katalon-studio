@@ -185,7 +185,7 @@ public class KatalonAboutDialog extends TrayDialog {
     private String getExpirationDate() {
         try {
             if (productName.equals(KSE_NAME_INFO)) {
-                if (ActivationInfoCollector.isOfflineLicense()) {
+                if (ActivationInfoCollector.isLicenseOffline()) {
                     return ActivationInfoCollector.getExpirationDate();
                 }
 
