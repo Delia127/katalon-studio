@@ -43,8 +43,8 @@ public class InstallationManager {
         setInstallationDialog(new CustomInstallationDialog(shell));
     }
 
-    public void appendStep(InstallationStep task) {
-        getInstallationSteps().add(task);
+    public void appendStep(InstallationStep step) {
+        getInstallationSteps().add(step);
     }
 
     public void startInstallation() throws InvocationTargetException, InterruptedException {
@@ -59,15 +59,12 @@ public class InstallationManager {
                     while (!getInstallationSteps().isEmpty()) {
                         runStep(getInstallationSteps().poll());
                     }
-                    monitor.done();
+                    UISynchronizeService.syncExec(() -> monitor.done());
                 };
             });
         } catch (InterruptedException | InvocationTargetException error) {
             getInstallationDialog().close();
             throw error;
-        }
-        while (!getInstallationSteps().isEmpty()) {
-            runStep(getInstallationSteps().poll());
         }
     }
 
