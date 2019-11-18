@@ -27,8 +27,6 @@ public class IosInstallDependenciesHandler {
 
     private static final String INSTALL_NODE = "brew install node && brew unlink node && brew link node";
 
-    private static final String INSTALL_XCODE_COMMAND_LINE_TOOL = "xcode-select --install";
-
     private static final String INSTALL_APPIUM = "npm install -g appium";
 
     private static final String INSTALL_CARTHAGE = "brew install carthage";
@@ -66,8 +64,6 @@ public class IosInstallDependenciesHandler {
             appendStep(installationManager, installationLog, installationErrorLog, "Installing NodeJS...", INSTALL_NODE);
         }
 
-        appendStep(installationManager, installationLog, installationErrorLog, "Installing Xcode Command Line Tools...",
-                INSTALL_XCODE_COMMAND_LINE_TOOL);
         appendStep(installationManager, installationLog, installationErrorLog, "Installing Appium...", INSTALL_APPIUM);
         appendStep(installationManager, installationLog, installationErrorLog, "Installing Carthage...", INSTALL_CARTHAGE);
         appendStep(installationManager, installationLog, installationErrorLog, "Installing iOS-Deploy...", INSTALL_IOS_DEPLOY);

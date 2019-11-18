@@ -76,8 +76,8 @@ public class InstallationManager {
     
     private void handleFailedStep(InstallationStep step, RunInstallationStepException error) {
         UISynchronizeService.syncExec(() -> {
-            getInstallationDialog().appendWarning("\r\nFailed to run installation step: " + step.getTitle() + "\r\n\r\n");
-            getInstallationDialog().appendWarning(error.getTargetException().getMessage() + "\r\n\r\n");
+            getInstallationDialog().appendWarning("\r\nFailed to run the installation step: " + step.getTitle() + "\r\n");
+            getInstallationDialog().appendWarning(error.getTargetException().getMessage() + "\r\n");
             getInstallationDialog().setFailedMessage(error.getMessage());
         });
     }

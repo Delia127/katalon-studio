@@ -6,6 +6,7 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
@@ -18,7 +19,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
-import com.kms.katalon.composer.mobile.util.ComposerUtil;
+import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.mobile.util.RichTextUtil;
 
 public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
 
@@ -30,9 +32,9 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
     
     private boolean isSucceeded = true;
     
-    private int SUCCEEDED_COLOR = SWT.COLOR_DARK_GREEN;
+    private Color SUCCESS_COLOR = ColorUtil.getTextSuccessfulColor();
     
-    private int FAILED_COLOR = SWT.COLOR_RED;
+    private Color FAILURE_COLOR = ColorUtil.getTextErrorColor();
 
     private StyledText txtDetails;
 
@@ -126,9 +128,9 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
         Font bigFont = bigDescriptor.createFont(messageLabel.getDisplay());
         lblEndMessage.setFont(bigFont);
         if (isSucceeded) {
-            lblEndMessage.setForeground(getShell().getDisplay().getSystemColor(SUCCEEDED_COLOR));
+            lblEndMessage.setForeground(SUCCESS_COLOR);
         } else {
-            lblEndMessage.setForeground(getShell().getDisplay().getSystemColor(FAILED_COLOR));
+            lblEndMessage.setForeground(FAILURE_COLOR);
         }
     }
 
@@ -170,7 +172,7 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
         if (txtDetails.isDisposed()) {
             return;
         }
-        ComposerUtil.appendErrorText(txtDetails, text);
+        RichTextUtil.appendErrorText(txtDetails, text);
         txtDetails.setTopIndex(txtDetails.getLineCount() - 1);
     }
 
@@ -178,7 +180,7 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
         if (txtDetails.isDisposed()) {
             return;
         }
-        ComposerUtil.appendWarningText(txtDetails, text);
+        RichTextUtil.appendWarningText(txtDetails, text);
         txtDetails.setTopIndex(txtDetails.getLineCount() - 1);
     }
 
@@ -186,7 +188,7 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
         if (txtDetails.isDisposed()) {
             return;
         }
-        ComposerUtil.appendSuccessText(txtDetails, text);
+        RichTextUtil.appendSuccessText(txtDetails, text);
         txtDetails.setTopIndex(txtDetails.getLineCount() - 1);
     }
 
@@ -233,7 +235,7 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
 
     public void setSucceededMessage(String successMessage) {
         if (lblEndMessage != null) {
-            lblEndMessage.setForeground(getShell().getDisplay().getSystemColor(SUCCEEDED_COLOR));
+            lblEndMessage.setForeground(SUCCESS_COLOR);
         }
         this.isSucceeded = true;
         this.endMessage = successMessage;
@@ -245,7 +247,7 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
 
     public void setFailedMessage(String failedMessage) {
         if (lblEndMessage != null) {
-            lblEndMessage.setForeground(getShell().getDisplay().getSystemColor(FAILED_COLOR));
+            lblEndMessage.setForeground(FAILURE_COLOR);
         }
         this.isSucceeded = false;
         this.endMessage = failedMessage;
