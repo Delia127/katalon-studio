@@ -536,6 +536,14 @@ public class AnalyticsApiProvider {
     }
 
     private static URI getApiURI(String host, String path) throws URISyntaxException {
+        if (host.endsWith("/")) {
+            host = host.substring(0, host.length() - 1);
+        }
+
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+
         return new URIBuilder().setPath(host + path).build();
     }
 
