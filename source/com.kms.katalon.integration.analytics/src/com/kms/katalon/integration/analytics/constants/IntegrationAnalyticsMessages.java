@@ -27,6 +27,8 @@ public class IntegrationAnalyticsMessages extends NLS {
 
     public static String MSG_DLG_PRG_CREATE_TEST_PLAN;
 
+    public static String MSG_ERROR_WITH_REASON;
+
     public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
 
     public static String MSG_INTEGRATE_WITH_KA;
