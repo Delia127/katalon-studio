@@ -349,7 +349,9 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
     
     public static String ActivationDialogV2_MSG_GETTING_LICENSE_KEY;
-    
+
+    public static String ActivationDialogV2_MSG_CANNOT_CONNECT_TESTOPS;
+
     public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;

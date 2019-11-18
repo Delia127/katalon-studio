@@ -10,6 +10,8 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_SERVER_URL_SEPARATOR = "@";
 
+    public static final String ANALYTICS_API_PUBLIC_INFO = "/info";
+
     public static final String ANALYTICS_API_TOKEN = "/oauth/token";
 
     public static final String ANALYTICS_API_PROJECTS = "/api/v1/projects";
