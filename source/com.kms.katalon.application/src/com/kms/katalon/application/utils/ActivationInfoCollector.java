@@ -355,6 +355,47 @@ public class ActivationInfoCollector {
         return null;
     }
 
+    public static boolean checkTestingLicense(String activationCode, StringBuilder errorMessage) throws Exception {
+        License testingLicense = parseTestingLicense(activationCode);
+        if (testingLicense != null) {
+            if (testingLicense.isTesting()) {
+                boolean isValidMachineId = hasValidMachineId(testingLicense);
+                if (isValidMachineId) {
+                    RunningMode runMode = ApplicationRunningMode.get();
+                    if (runMode == RunningMode.CONSOLE && testingLicense.isEngineLicense()) { 
+                        errorMessage.append(ApplicationMessageConstants.LICENSE_MACHINE_ID_CORRECT);
+                        return true;
+                    }
+                    if (runMode == RunningMode.GUI && testingLicense.isKSELicense()) { 
+                        errorMessage.append(ApplicationMessageConstants.LICENSE_MACHINE_ID_CORRECT);
+                        return true;
+                    }
+                } else {
+                    errorMessage.append(ApplicationMessageConstants.LICENSE_MACHINE_ID_INCORRECT);
+                    return true;
+                }
+                errorMessage.append(ApplicationMessageConstants.LICENSE_INVALID);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static License parseTestingLicense(String jwtCode) throws Exception {
+        try {
+            if (jwtCode != null && !jwtCode.isEmpty()) {
+                License license = LicenseService.getInstance().parseJws(jwtCode);
+                if (license.isTesting()) {
+                    return license;
+                }
+            }
+        } catch (Exception ex) {
+            LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+            throw ex;
+        }
+        return null;
+    }
+
     private static License parseLicense(String jwtCode) throws Exception {
         try {
             if (jwtCode != null && !jwtCode.isEmpty()) {
@@ -448,7 +489,7 @@ public class ActivationInfoCollector {
     private static boolean isValidLicense(License license) {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
-        if (isValidMachineId && !isExpired) {
+        if (isValidMachineId && !isExpired && !license.isTesting()) {
             RunningMode runMode = ApplicationRunningMode.get();
             if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) { 
                 return true;

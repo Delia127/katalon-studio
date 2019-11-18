@@ -13,7 +13,9 @@ public class LicenseConstants {
 	public static final String ORGANIZATION_ID = "organizationId";
 	
 	public static final String FEATURES = "features";
-	
+
+    public static final String TESTING = "testing";
+
     public static final String LICENSE_PUBLIC_KEY = 
     "-----BEGIN PUBLIC KEY-----\n"
     + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAljznsPZafPzlRo+NyyVT"

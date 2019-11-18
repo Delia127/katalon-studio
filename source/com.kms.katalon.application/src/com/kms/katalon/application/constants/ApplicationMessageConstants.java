@@ -63,6 +63,10 @@ public class ApplicationMessageConstants {
 
     public static String LICENSE_ERROR_RENEW;
 
+    public static String LICENSE_MACHINE_ID_CORRECT;
+
+    public static String LICENSE_MACHINE_ID_INCORRECT;
+
     public static String AUTO_CLOSE;
 
     public static String BTN_ACKNOWLEDGE;
