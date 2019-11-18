@@ -25,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
@@ -178,6 +179,15 @@ public class ConsoleMain {
                 
                 if (!isActivated) {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
+
+                    //Test connection
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    boolean testConnection = KatalonApplicationActivator.getFeatureActivator().testConnection(serverUrl);
+                    if (!testConnection) {
+                        LogUtil.logError(ExecutionMessageConstants.ACTIVATE_CANNOT_CONNECT_TO_SERVER);
+                        return LauncherResult.RETURN_CODE_FAILED_AND_ERROR;
+                    }
+
                     StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
 

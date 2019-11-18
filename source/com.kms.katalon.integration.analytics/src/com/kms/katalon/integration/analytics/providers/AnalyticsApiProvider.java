@@ -93,7 +93,7 @@ public class AnalyticsApiProvider {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_PUBLIC_INFO);
             URIBuilder uriBuilder = new URIBuilder(uri);
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
-            Object object = executeRequest(httpGet, Object.class);
+            executeRequest(httpGet, Object.class);
             return true;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
