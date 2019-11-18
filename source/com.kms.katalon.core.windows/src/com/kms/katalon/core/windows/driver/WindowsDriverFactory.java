@@ -133,7 +133,7 @@ public class WindowsDriverFactory {
         }
     }
 
-    private static WindowsDriver<WebElement> newWindowsDriver(URL remoteAddressURL,
+    public static WindowsDriver<WebElement> newWindowsDriver(URL remoteAddressURL,
             DesiredCapabilities desiredCapabilities, Proxy proxy) throws IOException, URISyntaxException {
         if (remoteAddressURL != null) {
             return new WindowsDriver<WebElement>(getAppiumExecutorForRemoteDriver(remoteAddressURL, proxy),
