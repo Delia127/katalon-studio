@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.installer.exception;
+package com.kms.katalon.composer.components.impl.exception;
 
 import java.lang.reflect.InvocationTargetException;
 

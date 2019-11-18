@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -12,12 +13,13 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.installer.InstallationCommandStep;
+import com.kms.katalon.composer.components.impl.installer.InstallationManager;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
-import com.kms.katalon.composer.mobile.installer.InstallationManager;
-import com.kms.katalon.composer.mobile.installer.model.InstallationCommandStep;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 
 public class IosInstallDependenciesHandler {
 
@@ -48,33 +50,40 @@ public class IosInstallDependenciesHandler {
 
     @Execute
     public void execute(Shell shell) {
-        InstallationManager installationManager = new InstallationManager(shell,
-                StringConstants.MSG_IOS_INSTALL_DEPENDENCIES);
-        installationManager.getInstallationDialog().setDialogTitle(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES_TITLE);
-        installationManager.getInstallationDialog()
-                .setSucceededMessage(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY);
-        File installationLog = getLogFile(INSTALL_DEPENDENCIES_LOG_NAME);
-        File installationErrorLog = getLogFile(INSTALL_DEPENDENCIES_LOG_NAME + "Error");
-
-        if (!isBrewInstalled()) {
-            appendStep(installationManager, installationLog, installationErrorLog, "Installing Homebrew...", INSTALL_HOMEBREW);
-        }
-
-        if (!isNodeInstalled()) {
-            appendStep(installationManager, installationLog, installationErrorLog, "Installing NodeJS...", INSTALL_NODE);
-        }
-
-        appendStep(installationManager, installationLog, installationErrorLog, "Installing Appium...", INSTALL_APPIUM);
-        appendStep(installationManager, installationLog, installationErrorLog, "Installing Carthage...", INSTALL_CARTHAGE);
-        appendStep(installationManager, installationLog, installationErrorLog, "Installing iOS-Deploy...", INSTALL_IOS_DEPLOY);
-        appendStep(installationManager, installationLog, installationErrorLog, "Installing usbmuxd...", INSTALL_USBMUXD);
-        appendStep(installationManager, installationLog, installationErrorLog, "Installing libimobiledevice...", INSTALL_LIBIMOBILEDEVICE);
-        appendStep(installationManager, installationLog, installationErrorLog, "Installing iOS-Webkit-Debug-Proxy...",
-                INSTALL_IOS_WEBKIT_DEBUG_PROXY);
-
         try {
+            InstallationManager installationManager = new InstallationManager(shell,
+                    StringConstants.MSG_IOS_INSTALL_DEPENDENCIES);
+            installationManager.getInstallationDialog()
+                    .setDialogTitle(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES_TITLE);
+            installationManager.getInstallationDialog()
+                    .setSucceededMessage(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY);
+            File installationLog = getLogFile(INSTALL_DEPENDENCIES_LOG_NAME);
+            File installationErrorLog = getLogFile(INSTALL_DEPENDENCIES_LOG_NAME + "Error");
+
+            if (!isBrewInstalled()) {
+                appendStep(installationManager, installationLog, installationErrorLog, "Installing Homebrew...",
+                        INSTALL_HOMEBREW);
+            }
+
+            if (!isNodeInstalled()) {
+                appendStep(installationManager, installationLog, installationErrorLog, "Installing NodeJS...",
+                        INSTALL_NODE);
+            }
+
+            appendStep(installationManager, installationLog, installationErrorLog, "Installing Appium...",
+                    INSTALL_APPIUM);
+            appendStep(installationManager, installationLog, installationErrorLog, "Installing Carthage...",
+                    INSTALL_CARTHAGE);
+            appendStep(installationManager, installationLog, installationErrorLog, "Installing iOS-Deploy...",
+                    INSTALL_IOS_DEPLOY);
+            appendStep(installationManager, installationLog, installationErrorLog, "Installing usbmuxd...",
+                    INSTALL_USBMUXD);
+            appendStep(installationManager, installationLog, installationErrorLog, "Installing libimobiledevice...",
+                    INSTALL_LIBIMOBILEDEVICE);
+            appendStep(installationManager, installationLog, installationErrorLog,
+                    "Installing iOS-Webkit-Debug-Proxy...", INSTALL_IOS_WEBKIT_DEBUG_PROXY);
             installationManager.startInstallation();
-        } catch (InvocationTargetException error) {
+        } catch (IOException | InvocationTargetException error) {
             LoggerSingleton.logError(error);
             MultiStatusErrorDialog.showErrorDialog(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES_FAILED,
                     error.getMessage(), ExceptionsUtil.getStackTraceForThrowable(error));
@@ -83,9 +92,13 @@ public class IosInstallDependenciesHandler {
         }
     }
 
-    private void appendStep(InstallationManager installationManager, File logFile, File errorLogFile, String title, String command) {
-        InstallationCommandStep installHomebrewStep = new InstallationCommandStep(title, logFile, errorLogFile, command);
-        installationManager.appendStep(installHomebrewStep);
+    private void appendStep(InstallationManager installationManager, File logFile, File errorLogFile, String title,
+            String command) throws IOException, InterruptedException {
+        InstallationCommandStep installationStep = new InstallationCommandStep(title, logFile, errorLogFile,
+                command);
+        Map<String, String> envs = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
+        installationStep.setEnvironments(envs);
+        installationManager.appendStep(installationStep);
     }
 
     private boolean isNodeInstalled() {
@@ -99,11 +112,12 @@ public class IosInstallDependenciesHandler {
     private boolean isModuleInstalled(String moduleName) {
         String result = null;
         try {
-            result = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(new String[] { "/bin/sh", "-c",
-                    MessageFormat.format(CHECK_FOR_MODULE_IS_INSTALLED, moduleName) });
+            result = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(
+                    new String[] { "/bin/sh", "-c", MessageFormat.format(CHECK_FOR_MODULE_IS_INSTALLED, moduleName) });
         } catch (IOException | InterruptedException error) {
             LoggerSingleton.logError(error);
-            MultiStatusErrorDialog.showErrorDialog(MessageFormat.format(StringConstants.MSG_IOS_FAILED_TO_CHECK_MODULE_IS_INSTALLED, moduleName),
+            MultiStatusErrorDialog.showErrorDialog(
+                    MessageFormat.format(StringConstants.MSG_IOS_FAILED_TO_CHECK_MODULE_IS_INSTALLED, moduleName),
                     error.getMessage(), ExceptionsUtil.getStackTraceForThrowable(error));
             return false;
         }

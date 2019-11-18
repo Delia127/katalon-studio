@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.installer.model;
+package com.kms.katalon.composer.components.impl.installer;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,15 +9,16 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.kms.katalon.composer.components.impl.exception.RunInstallationStepException;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.mobile.installer.exception.RunInstallationStepException;
-import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 
 public class InstallationCommandStep extends InstallationStep {
 
     private String command;
 
     private String workingDirectory;
+
+    private Map<String, String> envs;
 
     public InstallationCommandStep(String title, File logFile, File errorLogFile, String command, String workingDirectory) {
         super(title, logFile, errorLogFile);
@@ -48,9 +49,8 @@ public class InstallationCommandStep extends InstallationStep {
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         try {
-            Map<String, String> envs = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
             String[] commands = new String[] { "/bin/sh", "-c", command };
-            if (runCommand(commands, envs, workingDirectory, getLogFile(), getErrorLogFile()) != 0) {
+            if (runCommand(commands, getEnvs(), workingDirectory, getLogFile(), getErrorLogFile()) != 0) {
                 throw new RunInstallationStepException("Failed to run the installation command.", new Throwable(String.format("Command: \"%s\"", command)));
             }
         } catch (IOException error) {
@@ -63,7 +63,9 @@ public class InstallationCommandStep extends InstallationStep {
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
 
         Map<String, String> existingEnvironmentVariables = processBuilder.environment();
-        existingEnvironmentVariables.putAll(envs);
+        if (envs != null) {
+            existingEnvironmentVariables.putAll(envs);
+        }
 
         if (StringUtils.isNotEmpty(workingDirectory)) {
             processBuilder.directory(new File(workingDirectory));
@@ -74,9 +76,16 @@ public class InstallationCommandStep extends InstallationStep {
         if (logFile != null) {
             processBuilder.redirectError(Redirect.appendTo(errorLogFile));
         }
-//        processBuilder.redirectErrorStream(true);
 
         Process process = processBuilder.start();
         return process.waitFor();
+    }
+
+    public Map<String, String> getEnvs() {
+        return envs;
+    }
+
+    public void setEnvironments(Map<String, String> envs) {
+        this.envs = envs;
     }
 }

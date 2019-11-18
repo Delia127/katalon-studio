@@ -34,5 +34,4 @@ Require-Bundle: org.eclipse.osgi,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.kms.katalon.composer.mobile.execution.testsuite,
  com.kms.katalon.composer.mobile.util
-Import-Package: org.apache.commons.io.input,
- org.apache.commons.lang3;version="3.6.0"
+Import-Package: org.apache.commons.lang3

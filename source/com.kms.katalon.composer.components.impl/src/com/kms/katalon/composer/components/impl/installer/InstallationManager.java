@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.installer;
+package com.kms.katalon.composer.components.impl.installer;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -13,11 +13,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.impl.dialogs.ComponentInstallerDialog;
+import com.kms.katalon.composer.components.impl.exception.RunInstallationStepException;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.mobile.installer.dialog.ComponentInstallerDialog;
-import com.kms.katalon.composer.mobile.installer.exception.RunInstallationStepException;
-import com.kms.katalon.composer.mobile.installer.model.InstallationStep;
 
 public class InstallationManager {
 

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.installer.dialog;
+package com.kms.katalon.composer.components.impl.dialogs;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressIndicator;
@@ -18,9 +18,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
+import com.kms.katalon.composer.components.impl.util.RichTextUtil;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.mobile.installer.util.RichTextUtil;
 
 public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
 
