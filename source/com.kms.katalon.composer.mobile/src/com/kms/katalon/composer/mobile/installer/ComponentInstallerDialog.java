@@ -22,13 +22,17 @@ import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWit
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.util.RichTextUtil;
 
-public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
+public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
 
     private static String DEFAULT_TASKNAME = JFaceResources.getString("ProgressMonitorDialog.message"); //$NON-NLS-1$
 
+    private static String DEFAULT_DIALOG_TITLE = "Component Installer";
+    
+    private static String DEFAULT_END_MESSAGE = "The installation has been finished!";
+
     private static int BAR_DLUS = 5;
     
-    private String endMessage = "The installation has been finished!";
+    private String endMessage = DEFAULT_END_MESSAGE;
     
     private boolean isSucceeded = true;
     
@@ -40,13 +44,13 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
 
     private Label lblSubtask;
 
-    private String dialogTitle = DEFAULT_TASKNAME;
+    private String dialogTitle = DEFAULT_DIALOG_TITLE;
 
     private Button btnFinish;
     
     private Label lblEndMessage;
 
-    public CustomInstallationDialog(Shell parentShell) {
+    public ComponentInstallerDialog(Shell parentShell) {
         super(parentShell);
     }
     
@@ -124,9 +128,10 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
         GridData gdStatus = new GridData(GridData.FILL_HORIZONTAL);
         gdStatus.horizontalSpan = 2;
         lblEndMessage.setLayoutData(gdStatus);
-        FontDescriptor bigDescriptor = FontDescriptor.createFrom(parent.getFont()).setHeight(13);
-        Font bigFont = bigDescriptor.createFont(messageLabel.getDisplay());
-        lblEndMessage.setFont(bigFont);
+//        FontDescriptor bigDescriptor = FontDescriptor.createFrom(parent.getFont()).setHeight(13);
+//        Font bigFont = bigDescriptor.createFont(messageLabel.getDisplay());
+//        lblEndMessage.setFont(bigFont);
+        lblEndMessage.setFont(parent.getFont());
         if (isSucceeded) {
             lblEndMessage.setForeground(SUCCESS_COLOR);
         } else {

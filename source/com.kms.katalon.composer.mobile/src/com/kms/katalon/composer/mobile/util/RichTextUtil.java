@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.mobile.util;
 
-import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
@@ -20,7 +19,7 @@ public class RichTextUtil {
     }
     
     static public StyleRange appendErrorText(StyledText styledText, String text) {
-        return appendStyledText(styledText, text, JFaceColors.getErrorText(styledText.getDisplay()));
+        return appendStyledText(styledText, text, ColorUtil.getTextErrorColor());
     }
     
     static public StyleRange appendWarningText(StyledText styledText, String text) {

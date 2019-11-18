@@ -18,7 +18,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 
 public class InstallationManager {
 
-    private CustomInstallationDialog installationDialog;
+    private ComponentInstallerDialog installationDialog;
 
     private Queue<InstallationStep> installationSteps;
 
@@ -40,7 +40,7 @@ public class InstallationManager {
         if (title != null) {
             this.title = title;
         }
-        setInstallationDialog(new CustomInstallationDialog(shell));
+        setInstallationDialog(new ComponentInstallerDialog(shell));
     }
 
     public void appendStep(InstallationStep step) {
@@ -171,11 +171,11 @@ public class InstallationManager {
         }
     }
 
-    public CustomInstallationDialog getInstallationDialog() {
+    public ComponentInstallerDialog getInstallationDialog() {
         return installationDialog;
     }
 
-    public void setInstallationDialog(CustomInstallationDialog installationDialog) {
+    public void setInstallationDialog(ComponentInstallerDialog installationDialog) {
         this.installationDialog = installationDialog;
     }
 
