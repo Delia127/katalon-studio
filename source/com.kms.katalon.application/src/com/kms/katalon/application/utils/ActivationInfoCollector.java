@@ -363,15 +363,15 @@ public class ActivationInfoCollector {
                 if (isValidMachineId) {
                     RunningMode runMode = ApplicationRunningMode.get();
                     if (runMode == RunningMode.CONSOLE && testingLicense.isEngineLicense()) { 
-                        errorMessage.append(ApplicationMessageConstants.LICENSE_MACHINE_ID_CORRECT);
+                        errorMessage.append(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_CORRECT);
                         return true;
                     }
                     if (runMode == RunningMode.GUI && testingLicense.isKSELicense()) { 
-                        errorMessage.append(ApplicationMessageConstants.LICENSE_MACHINE_ID_CORRECT);
+                        errorMessage.append(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_CORRECT);
                         return true;
                     }
                 } else {
-                    errorMessage.append(ApplicationMessageConstants.LICENSE_MACHINE_ID_INCORRECT);
+                    errorMessage.append(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_INCORRECT);
                     return true;
                 }
                 errorMessage.append(ApplicationMessageConstants.LICENSE_INVALID);

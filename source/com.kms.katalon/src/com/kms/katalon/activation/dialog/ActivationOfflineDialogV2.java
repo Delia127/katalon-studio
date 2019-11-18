@@ -130,7 +130,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                     StringBuilder messageTestingLicense = new StringBuilder();
                     if (ActivationInfoCollector.checkTestingLicense(activationCode, messageTestingLicense)) {
                         String message = messageTestingLicense.toString();
-                        if (ApplicationMessageConstants.LICENSE_MACHINE_ID_CORRECT.equals(message)) {
+                        if (ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_CORRECT.equals(message)) {
                             setProgressMessage(message, false);
                         } else {
                             setProgressMessage(message, true);
