@@ -34,7 +34,7 @@ public class UpdateFirefoxWebdriverHandler {
         installationManager.getInstallationDialog().setDialogTitle(MessageFormat.format(StringConstants.DIA_TITLE_UPDATE_WEBDRIVER, "FireFox"));
         installationManager.getInstallationDialog().setSucceededMessage(StringConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY);
 
-        InstallationStep installHomebrewStep = new InstallationStep(StringConstants.MSG_UPDATING_WEB_DRIVER) {
+        InstallationStep installationStep = new InstallationStep(StringConstants.MSG_UPDATING_WEB_DRIVER) {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
@@ -44,7 +44,7 @@ public class UpdateFirefoxWebdriverHandler {
                 }
             }
         };
-        installationManager.appendStep(installHomebrewStep);
+        installationManager.appendStep(installationStep);
 
         try {
             installationManager.startInstallation();
