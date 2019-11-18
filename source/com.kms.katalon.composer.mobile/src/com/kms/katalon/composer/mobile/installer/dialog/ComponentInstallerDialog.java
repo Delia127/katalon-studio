@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.installer;
+package com.kms.katalon.composer.mobile.installer.dialog;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressIndicator;
@@ -128,9 +128,6 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
         GridData gdStatus = new GridData(GridData.FILL_HORIZONTAL);
         gdStatus.horizontalSpan = 2;
         lblEndMessage.setLayoutData(gdStatus);
-//        FontDescriptor bigDescriptor = FontDescriptor.createFrom(parent.getFont()).setHeight(13);
-//        Font bigFont = bigDescriptor.createFont(messageLabel.getDisplay());
-//        lblEndMessage.setFont(bigFont);
         lblEndMessage.setFont(parent.getFont());
         if (isSucceeded) {
             lblEndMessage.setForeground(SUCCESS_COLOR);

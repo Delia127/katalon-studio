@@ -14,8 +14,8 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.dialog.IosIdentitySelectionDialog;
-import com.kms.katalon.composer.mobile.installer.InstallationCommandStep;
 import com.kms.katalon.composer.mobile.installer.InstallationManager;
+import com.kms.katalon.composer.mobile.installer.model.InstallationCommandStep;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.execution.mobile.identity.IosIdentityInfo;
 

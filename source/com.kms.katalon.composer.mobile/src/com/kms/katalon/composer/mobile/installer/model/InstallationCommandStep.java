@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.installer;
+package com.kms.katalon.composer.mobile.installer.model;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.mobile.installer.exception.RunInstallationStepException;
 import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 
 public class InstallationCommandStep extends InstallationStep {
@@ -50,7 +51,7 @@ public class InstallationCommandStep extends InstallationStep {
             Map<String, String> envs = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
             String[] commands = new String[] { "/bin/sh", "-c", command };
             if (runCommand(commands, envs, workingDirectory, getLogFile(), getErrorLogFile()) != 0) {
-                throw new RunInstallationStepException("Failed to run the installation command.", String.format("Command: \"%s\"", command));
+                throw new RunInstallationStepException("Failed to run the installation command.", new Throwable(String.format("Command: \"%s\"", command)));
             }
         } catch (IOException error) {
             LoggerSingleton.logError(error);

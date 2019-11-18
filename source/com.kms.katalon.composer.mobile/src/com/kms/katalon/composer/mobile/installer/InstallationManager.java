@@ -15,6 +15,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.mobile.installer.dialog.ComponentInstallerDialog;
+import com.kms.katalon.composer.mobile.installer.exception.RunInstallationStepException;
+import com.kms.katalon.composer.mobile.installer.model.InstallationStep;
 
 public class InstallationManager {
 

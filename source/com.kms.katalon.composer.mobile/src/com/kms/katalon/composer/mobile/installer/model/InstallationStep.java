@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.installer;
+package com.kms.katalon.composer.mobile.installer.model;
 
 import java.io.File;
 import java.io.IOException;

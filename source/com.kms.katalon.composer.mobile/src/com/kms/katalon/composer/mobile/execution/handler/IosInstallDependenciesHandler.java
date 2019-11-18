@@ -14,8 +14,8 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
-import com.kms.katalon.composer.mobile.installer.InstallationCommandStep;
 import com.kms.katalon.composer.mobile.installer.InstallationManager;
+import com.kms.katalon.composer.mobile.installer.model.InstallationCommandStep;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
