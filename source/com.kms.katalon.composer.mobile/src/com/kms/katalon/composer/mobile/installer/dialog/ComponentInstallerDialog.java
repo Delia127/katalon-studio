@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.mobile.util.RichTextUtil;
+import com.kms.katalon.composer.mobile.installer.util.RichTextUtil;
 
 public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
 

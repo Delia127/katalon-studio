@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.util;
+package com.kms.katalon.composer.mobile.installer.util;
 
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
