@@ -27,7 +27,7 @@ public class IosInstallDependenciesHandler {
 
     private static final String INSTALL_NODE = "brew install node && brew unlink node && brew link node";
 
-    private static final String INSTALL_XCODE_COMMAND_LINE_TOOL = "brew list appium && xcode-select --install";
+    private static final String INSTALL_XCODE_COMMAND_LINE_TOOL = "xcode-select --install";
 
     private static final String INSTALL_APPIUM = "npm install -g appium";
 
