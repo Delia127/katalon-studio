@@ -185,6 +185,13 @@ public class ActivationDialogV2 extends AbstractDialog {
                     UISynchronizeService.syncExec(() -> {
                         try {
                             StringBuilder errorMessage = new StringBuilder();
+                            boolean testConnection = KatalonApplicationActivator.getFeatureActivator().testConnection(serverUrl);
+                            if (!testConnection) {
+                                setProgressMessage(MessageConstants.ActivationDialogV2_MSG_CANNOT_CONNECT_TESTOPS, true);
+                                enableObject(true);
+                                return;
+                            }
+
                             licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
                             if (licenseResource != null) {
                                 license = licenseResource.getLicense();
@@ -455,7 +462,9 @@ public class ActivationDialogV2 extends AbstractDialog {
         activateComposite.setLayout(gdLogInComposite);
 
         lblProgressMessage = new Label(activateComposite, SWT.NONE);
-        lblProgressMessage.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+        GridData gdStatus = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        gdStatus.heightHint = 40;
+        lblProgressMessage.setLayoutData(gdStatus);
 
         Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
         activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));

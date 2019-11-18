@@ -177,7 +177,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         btnConnect = new Button(grpAuthentication, SWT.NONE);
         gdBtnConnect = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdBtnConnect.widthHint = 120;
+//        gdBtnConnect.widthHint = 120;
         btnConnect.setLayoutData(gdBtnConnect);
         btnConnect.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_FETCH_ORGANIZATION);
 
@@ -525,7 +525,10 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 if (enableOverrideAuthentication.getSelection()) {
                     analyticsSettingStore.setEmail(txtEmail.getText());
                     analyticsSettingStore.setPassword(txtPassword.getText());
-                    analyticsSettingStore.setServerEndPoint(txtServerUrl.getText());
+
+                    String server = txtServerUrl.getText().trim();
+                    analyticsSettingStore.setServerEndPoint(server);
+
                     analyticsSettingStore.setOrganization(organizationsOnPremise.get(cbbOrganization.getSelectionIndex()));
                 }
                 analyticsSettingStore.setOverrideAuthentication(enableOverrideAuthentication.getSelection());
@@ -678,7 +681,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                serverUrl = txtServerUrl.getText();
+                serverUrl = txtServerUrl.getText().trim();
                 email = txtEmail.getText();
                 password = txtPassword.getText();
                 if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password) || StringUtils.isEmpty(serverUrl)) {
@@ -805,6 +808,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                             AnalyticsAuthorizationHandler.getOrganizationNames(organizationsOnPremise).toArray(new String[organizationsOnPremise.size()]));
                     cbbOrganization.select(0);
                     organization = organizationsOnPremise.get(0);
+
+                    if (enableAnalyticsIntegration.getSelection()) {
+                        btnRefresh.setEnabled(true);
+                    }
+
                     setProgressMessageOnPremise(ComposerIntegrationAnalyticsMessageConstants.MSG_CONNECT_SUCCESS, false);
                 } else {
                     organizationsOnPremise.clear();

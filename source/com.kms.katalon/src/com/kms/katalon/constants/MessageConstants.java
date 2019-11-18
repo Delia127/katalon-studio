@@ -349,7 +349,9 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
     
     public static String ActivationDialogV2_MSG_GETTING_LICENSE_KEY;
-    
+
+    public static String ActivationDialogV2_MSG_CANNOT_CONNECT_TESTOPS;
+
     public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;
@@ -565,11 +567,15 @@ public class MessageConstants extends NLS {
     public static String About_BTN_OK;
 
     public static String About_LBL_TRIAL;
-    
+
+    public static String About_MSG_CHECKING_VERSION;
+
+    public static String About_MSG_CHECKING_EXPIRATION_DATE;
+
+    public static String About_MSG_CANNOT_GET_EXPIRATION_DATE;
+
     // ProxyConfigurationDialog
     public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
-
-    public static String About_LBL_CHECKING_VERSION;
 
     // Account
     public static String Account_LOGIN_AS;

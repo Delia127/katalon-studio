@@ -2,6 +2,7 @@ package com.kms.katalon.integration.analytics.handler;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
@@ -21,6 +23,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsAuthorizationHandler {
     
@@ -46,14 +49,22 @@ public class AnalyticsAuthorizationHandler {
             settingStore.setToken(tokenInfo.getAccess_token());
             return tokenInfo;
         } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
             try {
                 settingStore.enableIntegration(false);
             } catch (IOException e) {
-                LoggerSingleton.logError(e);
+                LogUtil.logError(e);
             }
-            MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
-                    IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            try {
+                String message = KatalonApplicationActivator.getFeatureActivator().getTestOpsMessage(ex.getMessage());
+                LogUtil.logError(MessageFormat.format(IntegrationAnalyticsMessages.MSG_ERROR_WITH_REASON, message));
+                MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+                        message);
+            } catch (Exception e) {
+                //Cannot get message from TestOps
+                MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+                        IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            }
+            LogUtil.logError(ex);
         }
         return null;
     }

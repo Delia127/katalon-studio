@@ -81,6 +81,8 @@ public class RestfulClient extends BasicRequestor {
         
         if (!request.isFollowRedirects()) {
             clientBuilder.disableRedirectHandling();
+        } else {
+            clientBuilder.setRedirectStrategy(new WebServiceRedirectStrategy());
         }
         
         clientBuilder.setConnectionManager(connectionManager);

@@ -43,7 +43,7 @@ public class ArtifactIDCompletionProposal extends GroovyCompletionProposal {
         setTypeName(Object.class.getName().toCharArray());
         setRelevance(Relevance.VERY_HIGH.getRelavance());
 
-        String stringVariableName = "'" + variableName + "'";
+        String stringVariableName = GroovyStringUtil.toGroovyStringFormat(variableName);
 
         String replaceString = stringVariableName;
         setCompletion(replaceString.toCharArray());

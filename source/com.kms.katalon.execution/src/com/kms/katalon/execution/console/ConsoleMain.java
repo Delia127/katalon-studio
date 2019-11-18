@@ -25,9 +25,11 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -175,15 +177,40 @@ public class ConsoleMain {
                         LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
                     }
                 }
-                
+
                 if (!isActivated) {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
+
+                    //Test connection
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    boolean testConnection = KatalonApplicationActivator.getFeatureActivator().testConnection(serverUrl);
+                    if (!testConnection) {
+                        LogUtil.logError(ExecutionMessageConstants.ACTIVATE_CANNOT_CONNECT_TO_SERVER);
+                        return LauncherResult.RETURN_CODE_FAILED_AND_ERROR;
+                    }
+
                     StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
 
                     String error = errorMessage.toString();
                     if (StringUtils.isNotBlank(error)) {
                         LogUtil.printErrorLine(error);
+                    }
+
+                    if (!isActivated) {
+                        String server = LicenseInfo.getServerURL();
+                        String apiKey = LicenseInfo.getApiKey();
+
+                        if (!StringUtils.isEmpty(server) && !StringUtils.isEmpty(apiKey)) {
+                            LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER);
+                            ApplicationInfo.setTestOpsServer(server);
+                            errorMessage = new StringBuilder();
+                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                            error = errorMessage.toString();
+                            if (StringUtils.isNotBlank(error)) {
+                                LogUtil.printErrorLine(error);
+                            }
+                        }
                     }
 
                     if (!isActivated) {

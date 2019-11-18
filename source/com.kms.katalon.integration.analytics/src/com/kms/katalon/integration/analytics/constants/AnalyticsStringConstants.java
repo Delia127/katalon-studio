@@ -10,6 +10,8 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_SERVER_URL_SEPARATOR = "@";
 
+    public static final String ANALYTICS_API_PUBLIC_INFO = "/info";
+
     public static final String ANALYTICS_API_TOKEN = "/oauth/token";
 
     public static final String ANALYTICS_API_PROJECTS = "/api/v1/projects";
@@ -45,7 +47,9 @@ public class AnalyticsStringConstants {
     public static final String ANALYTICS_API_TRACKING_ACTIVITY = "/api/v1/tracking";
     
     public static final String ANALYTICS_API_DEACTIVATE = "/api/v1/machine";
-    
+
+    public static final String ANALYTICS_API_LICENSE_EXPIRATION = "/api/v1/subscription/expiration";
+
     public static final String ANALYTICS_STOREAGE = "s3";
     
     public static final String ANALYTICS_REPORT_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(log))$)";

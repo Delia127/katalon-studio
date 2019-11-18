@@ -57,12 +57,16 @@ public class ActivationInfoCollector {
     private static ScheduledFuture<?> checkLicenseTask;
 
     private static String apiKey;
-    
+
     private static LicenseType licenseType;
-    
+
+    private static boolean isLicenseOffline;
+
     private static Organization organization;
     
     private static String activationCode;
+
+    private static String expirationDate;
 
     protected ActivationInfoCollector() {
     }
@@ -90,7 +94,7 @@ public class ActivationInfoCollector {
 
             License license = getValidLicense();
             boolean isOffline = isOffline(license);
-
+            isLicenseOffline = isOffline;
             if (!isOffline) {
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
@@ -130,10 +134,18 @@ public class ActivationInfoCollector {
         licenseType = type;
     }
 
+    public static boolean isLicenseOffline() {
+        return isLicenseOffline;
+    }
+
     private static void saveExpirationDate(Date date) {
         Format formatter = new SimpleDateFormat("MMMMM dd, yyyy HH:mm");
-        String dateWithFormatter = formatter.format(date);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.EXPIRATION_DATE, dateWithFormatter, true);
+        expirationDate = formatter.format(date);
+        // ApplicationInfo.setAppProperty(ApplicationStringConstants.EXPIRATION_DATE, dateWithFormatter, true);
+    }
+
+    public static String getExpirationDate() {
+        return expirationDate;
     }
 
     private static void saveOrganization(Organization org) {
@@ -325,7 +337,7 @@ public class ActivationInfoCollector {
                 LicenseResource licenseResource = new LicenseResource();
                 licenseResource.setLicense(license);
                 licenseResource.setMessage(message);
-
+                isLicenseOffline = false;
                 return licenseResource;
             } catch (Exception ex) {
                 LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
@@ -378,7 +390,9 @@ public class ActivationInfoCollector {
         try {
             License license = parseLicense(activationCode);
             if (license != null) {
-                if (isOffline(license)) {
+                boolean isOffline = isOffline(license);
+                isLicenseOffline = isOffline;
+                if (isOffline) {
                     enableFeatures(license);
                     
                     saveLicenseType(license.getType());
