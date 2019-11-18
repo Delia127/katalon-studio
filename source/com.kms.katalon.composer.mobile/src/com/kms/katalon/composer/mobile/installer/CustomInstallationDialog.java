@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
+import com.kms.katalon.composer.mobile.util.ComposerUtil;
 
 public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
 
@@ -25,7 +26,13 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
 
     private static int BAR_DLUS = 5;
     
-    private String successfulMessage = "The installation has been finished!";
+    private String endMessage = "The installation has been finished!";
+    
+    private boolean isSucceeded = true;
+    
+    private int SUCCEEDED_COLOR = SWT.COLOR_DARK_GREEN;
+    
+    private int FAILED_COLOR = SWT.COLOR_RED;
 
     private StyledText txtDetails;
 
@@ -35,7 +42,7 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
 
     private Button btnFinish;
     
-    private Label lblStatus;
+    private Label lblEndMessage;
 
     public CustomInstallationDialog(Shell parentShell) {
         super(parentShell);
@@ -111,14 +118,18 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
     }
     
     private void createInstallationStatusLabel(Composite parent) {
-        lblStatus = new Label(parent, SWT.LEFT | SWT.WRAP);
+        lblEndMessage = new Label(parent, SWT.LEFT | SWT.WRAP);
         GridData gdStatus = new GridData(GridData.FILL_HORIZONTAL);
         gdStatus.horizontalSpan = 2;
-        lblStatus.setLayoutData(gdStatus);
+        lblEndMessage.setLayoutData(gdStatus);
         FontDescriptor bigDescriptor = FontDescriptor.createFrom(parent.getFont()).setHeight(13);
         Font bigFont = bigDescriptor.createFont(messageLabel.getDisplay());
-        lblStatus.setFont(bigFont);
-        lblStatus.setForeground(getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+        lblEndMessage.setFont(bigFont);
+        if (isSucceeded) {
+            lblEndMessage.setForeground(getShell().getDisplay().getSystemColor(SUCCEEDED_COLOR));
+        } else {
+            lblEndMessage.setForeground(getShell().getDisplay().getSystemColor(FAILED_COLOR));
+        }
     }
 
     private void setMessage(String messageString, boolean force) {
@@ -147,11 +158,35 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
         txtDetails.setText(text);
     }
 
-    public void appendDetails(String text) {
+    public void appendInfo(String text) {
         if (txtDetails.isDisposed()) {
             return;
         }
         txtDetails.append(text);
+        txtDetails.setTopIndex(txtDetails.getLineCount() - 1);
+    }
+
+    public void appendError(String text) {
+        if (txtDetails.isDisposed()) {
+            return;
+        }
+        ComposerUtil.appendErrorText(txtDetails, text);
+        txtDetails.setTopIndex(txtDetails.getLineCount() - 1);
+    }
+
+    public void appendWarning(String text) {
+        if (txtDetails.isDisposed()) {
+            return;
+        }
+        ComposerUtil.appendWarningText(txtDetails, text);
+        txtDetails.setTopIndex(txtDetails.getLineCount() - 1);
+    }
+
+    public void appendSuccess(String text) {
+        if (txtDetails.isDisposed()) {
+            return;
+        }
+        ComposerUtil.appendSuccessText(txtDetails, text);
         txtDetails.setTopIndex(txtDetails.getLineCount() - 1);
     }
 
@@ -183,7 +218,7 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
     protected void finishedRun() {
         decrementNestingDepth();
         updateButtonStatesWhenFinished();
-        lblStatus.setText(getSuccessfulMessage());
+        lblEndMessage.setText(getSucceededMessage());
     }
 
     private void updateButtonStatesWhenFinished() {
@@ -192,11 +227,27 @@ public class CustomInstallationDialog extends ProgressMonitorDialogWithThread {
         getButton(IDialogConstants.FINISH_ID).forceFocus();
     }
 
-    public String getSuccessfulMessage() {
-        return successfulMessage;
+    public String getSucceededMessage() {
+        return endMessage;
     }
 
-    public void setSuccessfulMessage(String successfulMessage) {
-        this.successfulMessage = successfulMessage;
+    public void setSucceededMessage(String successMessage) {
+        if (lblEndMessage != null) {
+            lblEndMessage.setForeground(getShell().getDisplay().getSystemColor(SUCCEEDED_COLOR));
+        }
+        this.isSucceeded = true;
+        this.endMessage = successMessage;
+    }
+
+    public String getFailedMessage() {
+        return endMessage;
+    }
+
+    public void setFailedMessage(String failedMessage) {
+        if (lblEndMessage != null) {
+            lblEndMessage.setForeground(getShell().getDisplay().getSystemColor(FAILED_COLOR));
+        }
+        this.isSucceeded = false;
+        this.endMessage = failedMessage;
     }
 }

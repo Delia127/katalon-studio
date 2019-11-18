@@ -68,14 +68,15 @@ public class IosInstallWebDriverAgent {
         installationManager.getInstallationDialog()
                 .setDialogTitle(StringConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_TITLE);
         installationManager.getInstallationDialog()
-                .setSuccessfulMessage(StringConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY);
+                .setSucceededMessage(StringConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY);
         File installationLog = getLogFile(INSTALL_WEB_DRIVER_AGENT_LOG_NAME);
+        File installationErrorLog = getLogFile(INSTALL_WEB_DRIVER_AGENT_LOG_NAME + "Error");
 
-        appendStep(installationManager, installationLog, StringConstants.MSG_IOS_RUN_BOOTSTRAP,
+        appendStep(installationManager, installationLog, installationErrorLog, StringConstants.MSG_IOS_RUN_BOOTSTRAP,
                 RUN_WEB_DRIVER_AGENT_BOOTSTRAP, WEB_DRIVER_AGENT_FOLDER);
-        appendStep(installationManager, installationLog, StringConstants.MSG_IOS_BUILD_WEB_DRIVER_AGENT_LIB,
+        appendStep(installationManager, installationLog, installationErrorLog, StringConstants.MSG_IOS_BUILD_WEB_DRIVER_AGENT_LIB,
                 generateBuildCommand(WEB_DRIVER_AGENT_LIB_TARGET_NAME, identity.getId()), WEB_DRIVER_AGENT_FOLDER);
-        appendStep(installationManager, installationLog, StringConstants.MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER,
+        appendStep(installationManager, installationLog, installationErrorLog, StringConstants.MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER,
                 generateBuildCommand(WEB_DRIVER_AGENT_RUNNER_TARGET_NAME, identity.getId()), WEB_DRIVER_AGENT_FOLDER);
 
         try {
@@ -89,9 +90,9 @@ public class IosInstallWebDriverAgent {
         }
     }
 
-    private void appendStep(InstallationManager installationManager, File logFile, String title, String command,
+    private void appendStep(InstallationManager installationManager, File logFile, File errorLogFile, String title, String command,
             String workingDirectory) {
-        InstallationCommandStep installHomebrewStep = new InstallationCommandStep(title, logFile, command,
+        InstallationCommandStep installHomebrewStep = new InstallationCommandStep(title, logFile, errorLogFile, command,
                 workingDirectory);
         installationManager.appendStep(installHomebrewStep);
     }

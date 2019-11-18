@@ -57,7 +57,13 @@ public class InstallationManager {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     UISynchronizeService.syncExec(() -> monitor.beginTask(title, totalSteps));
                     while (!getInstallationSteps().isEmpty()) {
-                        runStep(getInstallationSteps().poll());
+                        InstallationStep step = getInstallationSteps().poll();
+                        try {
+                            runStep(step);
+                        } catch (RunInstallationStepException error) {
+                            handleFailedStep(step, error);
+                            break;
+                        }
                     }
                     UISynchronizeService.syncExec(() -> monitor.done());
                 };
@@ -67,19 +73,30 @@ public class InstallationManager {
             throw error;
         }
     }
+    
+    private void handleFailedStep(InstallationStep step, RunInstallationStepException error) {
+        UISynchronizeService.syncExec(() -> {
+            getInstallationDialog().appendWarning("\r\nFailed to run installation step: " + step.getTitle() + "\r\n\r\n");
+            getInstallationDialog().appendWarning(error.getTargetException().getMessage() + "\r\n\r\n");
+            getInstallationDialog().setFailedMessage(error.getMessage());
+        });
+    }
 
     private void runStep(InstallationStep step) throws InvocationTargetException, InterruptedException {
-        Thread trackingThread = null;
+        Thread logTrackingThread = null;
+        Thread errorTrackingThread = null;
         try {
             notifyStartNextStep(step);
-            File stepLogFile = step.getLogFile();
-            trackingThread = startLogTrackingThread(stepLogFile);
+            logTrackingThread = startLogTrackingThread(step.getLogFile());
+            errorTrackingThread = startErrorLogTrackingThread(step.getErrorLogFile());
             step.run(getInstallationDialog().getProgressMonitor());
-            stopLogTrackingThread(trackingThread);
+            stopLogTrackingThread(logTrackingThread);
+            stopLogTrackingThread(errorTrackingThread);
             handleStepResults(null, step);
             Thread.sleep(1000L); // wait for the last line of the current run log to be appended
         } catch (InvocationTargetException | InterruptedException error) {
-            stopLogTrackingThread(trackingThread);
+            stopLogTrackingThread(logTrackingThread);
+            stopLogTrackingThread(errorTrackingThread);
             throw error;
         }
         
@@ -96,7 +113,7 @@ public class InstallationManager {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
                 }
-                UISynchronizeService.syncExec(() -> getInstallationDialog().appendDetails(line + "\r\n"));
+                UISynchronizeService.syncExec(() -> getInstallationDialog().appendInfo(line + "\r\n"));
             }
         }, 100L, true));
         trackingThread.start();
@@ -110,14 +127,32 @@ public class InstallationManager {
         trackingThread = null;
     }
 
+    private Thread startErrorLogTrackingThread(File logFile) {
+        if (trackedLogs.contains(logFile)) {
+            return null;
+        }
+        trackedLogs.add(logFile);
+        Thread trackingThread = new Thread(new Tailer(logFile, new TailerListenerAdapter() {
+            @Override
+            public void handle(String line) {
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+                UISynchronizeService.syncExec(() -> getInstallationDialog().appendError(line + "\r\n"));
+            }
+        }, 100L, true));
+        trackingThread.start();
+        return trackingThread;
+    }
+
     private void notifyStartNextStep(InstallationStep step) {
         UISynchronizeService.syncExec(() -> {
             getInstallationDialog().getProgressMonitor()
                     .subTask(String.format(step.getTitle() + " (%d/%d)", worked, totalSteps));
             if (worked > 0) {
-                getInstallationDialog().appendDetails("\r\n\r\n----------------------------------------------------\r\n\r\n");
+                getInstallationDialog().appendInfo("\r\n\r\n----------------------------------------------------\r\n\r\n");
             }
-            getInstallationDialog().appendDetails(step.getTitle() + "\r\n\r\n");
+            getInstallationDialog().appendInfo(step.getTitle() + "\r\n\r\n");
         });
     }
 

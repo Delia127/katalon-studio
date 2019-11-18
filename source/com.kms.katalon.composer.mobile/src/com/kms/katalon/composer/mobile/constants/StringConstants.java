@@ -43,7 +43,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String MSG_IOS_INSTALL_DEPENDENCIES_FAILED = ComposerMobileMessageConstants.MSG_IOS_INSTALL_DEPENDENCIES_FAILED;
 
-    public static final String MSG_IOS_FAILED_TO_CHECK_NODE_INSTALLED = ComposerMobileMessageConstants.MSG_IOS_FAILED_TO_CHECK_NODE_INSTALLED;
+    public static final String MSG_IOS_FAILED_TO_CHECK_MODULE_IS_INSTALLED = ComposerMobileMessageConstants.MSG_IOS_FAILED_TO_CHECK_MODULE_IS_INSTALLED;
 
     public static final String MSG_IOS_INSTALL_WEB_DRIVER_AGENT = ComposerMobileMessageConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT;
 

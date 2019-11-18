@@ -12,14 +12,21 @@ public class InstallationStep implements IRunnableWithProgress {
 
     private File logFile;
 
-    public InstallationStep(String title, File logFile) {
+    private File errorLogFile;
+
+    public InstallationStep(String title, File logFile, File errorLogFile) {
         super();
         this.title = title;
-        this.logFile = logFile != null ? logFile : createTempFile("");
+        this.setLogFile(logFile != null ? logFile : createTempFile("InstallationLog"));
+        this.setErrorLogFile(errorLogFile != null ? errorLogFile : createTempFile("InstallationErrorLog"));
+    }
+
+    public InstallationStep(String title, File logFile) {
+        this(title, logFile, null);
     }
 
     public InstallationStep(String title) {
-        this(title, createTempFile(""));
+        this(title, null, null);
     }
 
     private static File createTempFile(String name) {
@@ -44,6 +51,14 @@ public class InstallationStep implements IRunnableWithProgress {
 
     public void setLogFile(File logFile) {
         this.logFile = logFile;
+    }
+
+    public File getErrorLogFile() {
+        return errorLogFile;
+    }
+
+    public void setErrorLogFile(File errorLogFile) {
+        this.errorLogFile = errorLogFile;
     }
 
     @Override

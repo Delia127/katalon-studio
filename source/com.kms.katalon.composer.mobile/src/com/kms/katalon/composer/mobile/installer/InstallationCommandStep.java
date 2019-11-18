@@ -18,22 +18,30 @@ public class InstallationCommandStep extends InstallationStep {
 
     private String workingDirectory;
 
-    public InstallationCommandStep(String title, File logFile, String command, String workingDirectory) {
-        super(title, logFile);
+    public InstallationCommandStep(String title, File logFile, File errorLogFile, String command, String workingDirectory) {
+        super(title, logFile, errorLogFile);
         this.command = command;
         this.workingDirectory = workingDirectory;
     }
 
+    public InstallationCommandStep(String title, File logFile, String command, String workingDirectory) {
+        this(title, logFile, null, command, workingDirectory);
+    }
+
+    public InstallationCommandStep(String title, File logFile, File errorLogFile, String command) {
+        this(title, logFile, errorLogFile, command, StringUtils.EMPTY);
+    }
+
     public InstallationCommandStep(String title, File logFile, String command) {
-        this(title, logFile, command, StringUtils.EMPTY);
+        this(title, logFile, null, command, StringUtils.EMPTY);
     }
 
     public InstallationCommandStep(String title, String command, String workingDirectory) {
-        this(title, null, command, workingDirectory);
+        this(title, null, null, command, workingDirectory);
     }
 
     public InstallationCommandStep(String title, String command) {
-        this(title, null, command, StringUtils.EMPTY);
+        this(title, null, null, command, StringUtils.EMPTY);
     }
 
     @Override
@@ -41,13 +49,15 @@ public class InstallationCommandStep extends InstallationStep {
         try {
             Map<String, String> envs = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
             String[] commands = new String[] { "/bin/sh", "-c", command };
-            runCommand(commands, envs, workingDirectory, getLogFile());
+            if (runCommand(commands, envs, workingDirectory, getLogFile(), getErrorLogFile()) != 0) {
+                throw new RunInstallationStepException("Failed to run the installation command.", String.format("Command: \"%s\"", command));
+            }
         } catch (IOException error) {
             LoggerSingleton.logError(error);
         }
     }
 
-    private void runCommand(String[] commands, Map<String, String> envs, String workingDirectory, File logFile)
+    private int runCommand(String[] commands, Map<String, String> envs, String workingDirectory, File logFile, File errorLogFile)
             throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
 
@@ -60,9 +70,12 @@ public class InstallationCommandStep extends InstallationStep {
         if (logFile != null) {
             processBuilder.redirectOutput(Redirect.appendTo(logFile));
         }
-        processBuilder.redirectErrorStream(true);
+        if (logFile != null) {
+            processBuilder.redirectError(Redirect.appendTo(errorLogFile));
+        }
+//        processBuilder.redirectErrorStream(true);
 
         Process process = processBuilder.start();
-        process.waitFor();
+        return process.waitFor();
     }
 }

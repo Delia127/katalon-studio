@@ -51,7 +51,7 @@ public class ComposerMobileMessageConstants extends NLS {
 
     public static String MSG_IOS_INSTALL_DEPENDENCIES_FAILED;
 
-    public static String MSG_IOS_FAILED_TO_CHECK_NODE_INSTALLED;
+    public static String MSG_IOS_FAILED_TO_CHECK_MODULE_IS_INSTALLED;
 
     public static String MSG_IOS_INSTALL_WEB_DRIVER_AGENT;
 
