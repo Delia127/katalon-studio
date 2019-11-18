@@ -179,7 +179,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         super.postExecution();
 
         Date startTime = getStartTime();
-        Date endTime = getStartTime();
+        Date endTime = getEndTime();
         if (startTime != null && endTime != null) {
             String executionResult = getExecutionResult();
             Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(),
