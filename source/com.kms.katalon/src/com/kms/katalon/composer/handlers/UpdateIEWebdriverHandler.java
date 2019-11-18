@@ -54,7 +54,7 @@ public class UpdateIEWebdriverHandler {
             MultiStatusErrorDialog.showErrorDialog(StringConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER,
                     error.getMessage(), ExceptionsUtil.getStackTraceForThrowable(error));
         } catch (InterruptedException error) {
-            LoggerSingleton.logInfo("User canceled update Web Driver");
+            LoggerSingleton.logInfo(StringConstants.MSG_USER_CANCEL_UPDATE);
         }
     }
 }

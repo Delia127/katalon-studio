@@ -64,7 +64,6 @@ public class WebDriverManagerRunConfiguration {
         if (getErrorLogFile() != null) {
             builder.redirectError(Redirect.appendTo(getErrorLogFile()));
         }
-//        builder.inheritIO();
         if (!builder.start().waitFor(120, TimeUnit.SECONDS)) {
             throw new IOException("Process Timeout");
         }
