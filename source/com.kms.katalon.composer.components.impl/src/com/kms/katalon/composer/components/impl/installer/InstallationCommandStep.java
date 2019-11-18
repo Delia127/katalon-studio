@@ -73,7 +73,7 @@ public class InstallationCommandStep extends InstallationStep {
         if (logFile != null) {
             processBuilder.redirectOutput(Redirect.appendTo(logFile));
         }
-        if (logFile != null) {
+        if (errorLogFile != null) {
             processBuilder.redirectError(Redirect.appendTo(errorLogFile));
         }
 
