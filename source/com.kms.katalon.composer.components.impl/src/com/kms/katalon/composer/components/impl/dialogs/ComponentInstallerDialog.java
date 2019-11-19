@@ -223,7 +223,7 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
     protected void finishedRun() {
         decrementNestingDepth();
         updateButtonStatesWhenFinished();
-        lblEndMessage.setText(getSucceededMessage());
+        lblEndMessage.setText(getSuccessfulMessage());
     }
 
     private void updateButtonStatesWhenFinished() {
@@ -232,7 +232,7 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
         getButton(IDialogConstants.FINISH_ID).forceFocus();
     }
 
-    public String getSucceededMessage() {
+    public String getSuccessfulMessage() {
         return endMessage;
     }
 
