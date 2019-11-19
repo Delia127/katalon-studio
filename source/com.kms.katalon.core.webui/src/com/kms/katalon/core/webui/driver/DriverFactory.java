@@ -303,7 +303,7 @@ public class DriverFactory {
                 webDriver = createNewIEDriver(desireCapibilities, url, driver);
                 break;
             case SAFARI_DRIVER:
-                webDriver = createNewSafariDriver(desireCapibilities, url, driver);
+                webDriver = createNewSafariDriver(desireCapibilities);
                 break;
             case CHROME_DRIVER:
                 webDriver = createNewChromeDriver(desireCapibilities, url, driver);
@@ -341,10 +341,6 @@ public class DriverFactory {
     }
 
     private static CSafariDriver createNewSafariDriver(DesiredCapabilities desireCapibilities) {
-        return new CSafariDriver(desireCapibilities, getActionDelay());
-    }
-    
-    private static CSafariDriver createNewSafariDriver(DesiredCapabilities desireCapibilities, String url, DriverType driverType) {
         return new CSafariDriver(desireCapibilities, getActionDelay());
     }
 

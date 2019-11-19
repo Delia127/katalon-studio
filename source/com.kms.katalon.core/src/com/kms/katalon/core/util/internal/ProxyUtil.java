@@ -103,7 +103,7 @@ public class ProxyUtil {
         if (m == 0)
             return (n == 0);
         boolean[][] lookup = new boolean[n + 1][m + 1];
-        // initailze lookup to false
+        // initialize lookup to false
         for (int i = 0; i < n + 1; i++)
             Arrays.fill(lookup[i], false);
         // empty exception list can match with url
