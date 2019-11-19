@@ -551,7 +551,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * to the working WindowsDriver session on the current desktop. 
      * This keyword should use when:
      * <ul>
-     *  <li>The main application window has been closed and replaced by an another window.</li>
+     *  <li>The main application window has been closed and replaced by another window.</li>
      *  <li>The application has multiple working windows. We can switch among these windows.</li>
      *  <li>We already have an opened application and need to switch to without reopening requires</li>
      * </ul>
@@ -585,7 +585,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * to the working WindowsDriver session on the current desktop. 
      * This keyword should use when:
      * <ul>
-     *  <li>The main application window has been closed and replaced by an another window.</li>
+     *  <li>The main application window has been closed and replaced by another window.</li>
      *  <li>The application has multiple working windows. We can switch among these windows.</li>
      *  <li>We already have an opened application and need to switch to without reopening requires</li>
      * </ul>
@@ -606,10 +606,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop. 
+     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title. 
      * This keyword should use when:
      * <ul>
-     *  <li>The main application window has been closed and replaced by an another window.</li>
+     *  <li>The main application window has been closed and replaced by another window.</li>
      *  <li>The application has multiple working windows. We can switch among these windows.</li>
      *  <li>We already have an opened application and need to switch to without reopening requires</li>
      * </ul>
@@ -639,10 +639,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop. 
+     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title. 
      * This keyword should use when:
      * <ul>
-     *  <li>The main application window has been closed and replaced by an another window.</li>
+     *  <li>The main application window has been closed and replaced by another window.</li>
      *  <li>The application has multiple working windows. We can switch among these windows.</li>
      *  <li>We already have an opened application and need to switch to without reopening requires</li>
      * </ul>
@@ -660,5 +660,45 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     public static WindowsDriver<WebElement> switchToWindowTitle(String windowTitle) throws StepFailedException {
         return (WindowsDriver<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
                 "switchToWindowTitle", windowTitle);
+    }
+
+    /**
+     * Starts Windows driver and starts the Windows application at the given absolute path.
+     * After the application starts, if WinAppDriver may not detect the main application window correctly, Katalon Studio will use
+     * the given windowTitle to find the opened application to continue working.
+     * 
+     * @param appFile
+     * Absolute path to the Windows application.
+     * @param windowTitle
+     * Title of the opening application windows. Full text or partial text is acceptable.
+     * 
+     * @throws StepFailedException
+     * If KS could not start Windows Driver, could not start the application, the application file doesn't exist or there is no application maches
+     * with the given windowTitle
+     * @since 7.1.0
+     */
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
+    public static void startApplicationWithTitle(String appFile, String windowTitle, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "startApplicationWithTitle", appFile, windowTitle, flowControl);
+    }
+
+    /**
+     * Starts Windows driver and starts the Windows application at the given absolute path.
+     * After the application starts, if WinAppDriver may not detect the main application window correctly, Katalon Studio will use
+     * the given windowTitle to find the opened application to continue working.
+     * 
+     * @param appFile
+     * Absolute path to the Windows application.
+     * @param windowTitle
+     * Title of the opening application windows. Full text or partial text is acceptable.
+     * 
+     * @throws StepFailedException
+     * If KS could not start Windows Driver, could not start the application, the application file doesn't exist or there is no application maches
+     * with the given windowTitle
+     * @since 7.1.0
+     */
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
+    public static void startApplicationWithTitle(String appFile, String windowTitle) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "startApplicationWithTitle", appFile, windowTitle);
     }
 }

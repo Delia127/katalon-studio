@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +17,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.FluentWait;
 
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
@@ -234,28 +237,38 @@ public class WindowsActionHelper {
             windowsSession.setDesktopDriver(desktopDriver);
         }
         WindowsDriver<WebElement> desktopDriver = windowsSession.getDesktopDriver();
-        WebElement webElement = null;
-        try {
-            for (WebElement element : desktopDriver.findElementsByTagName("Window")) {
-                try {
-                    if (element.getText().contains(windowName)) {
-                        webElement = element;
-                        break;
-                    }
-                } catch (WebDriverException ignored) {}
-            }
-        } catch (NoSuchElementException ignored) {}
+        
+        FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(desktopDriver)
+                .withTimeout(Duration.ofSeconds(60))
+                .pollingEvery(Duration.ofSeconds(5))
+                .ignoring(NoSuchElementException.class);
 
-        if (webElement == null) {
-            for (WebElement element : desktopDriver.findElementsByTagName("Pane")) {
-                try {
-                    if (element.getText().contains(windowName)) {
-                        webElement = element;
-                        break;
+        WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
+            @Override
+            public WebElement apply(WindowsDriver<WebElement> driver) {
+                WebElement webElement = null;
+                for (WebElement element : desktopDriver.findElementsByTagName("Window")) {
+                    try {
+                        if (element.getText().contains(windowName)) {
+                            webElement = element;
+                            break;
+                        }
+                    } catch (WebDriverException ignored) {}
+                }
+
+                if (webElement == null) {
+                    for (WebElement element : desktopDriver.findElementsByTagName("Pane")) {
+                        try {
+                            if (element.getText().contains(windowName)) {
+                                webElement = element;
+                                break;
+                            }
+                        } catch (WebDriverException ignored) {}
                     }
-                } catch (WebDriverException ignored) {}
+                }
+                return webElement;
             }
-        }
+        });
         if (webElement == null) {
             throw new NoSuchElementException(MessageFormat.format("No such window matches with name: {0}", windowName));
         }

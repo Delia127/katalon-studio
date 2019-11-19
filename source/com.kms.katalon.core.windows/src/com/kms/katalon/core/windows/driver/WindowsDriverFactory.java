@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.NoSuchElementException;
@@ -16,6 +18,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.http.HttpClient;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
+import org.openqa.selenium.support.ui.FluentWait;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
@@ -47,7 +50,7 @@ public class WindowsDriverFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public static WindowsDriver<WebElement> startApplication(String appFile)
+    public static WindowsDriver<WebElement> startApplication(String appFile, String appTitle)
             throws SeleniumException, IOException, URISyntaxException {
         Map<String, Object> userConfigProperties = RunConfiguration.getDriverPreferencesProperties("Windows");
         if (userConfigProperties == null) {
@@ -73,11 +76,11 @@ public class WindowsDriverFactory {
         logger.logRunData(DESIRED_CAPABILITIES_PROPERTY, JsonUtil.toJson(desiredCapabilities.toJson(), false));
 
         Proxy proxy = ProxyUtil.getProxy(RunConfiguration.getProxyInformation());
-        return startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy).getRunningDriver();
+        return startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
     }
 
     public static WindowsSession startApplication(URL remoteAddressURL, String appFile,
-            DesiredCapabilities initCapabilities, Proxy proxy)
+            DesiredCapabilities initCapabilities, Proxy proxy, String appTitle)
             throws SeleniumException, IOException, URISyntaxException {
         try {
             windowsSession = new WindowsSession(remoteAddressURL, appFile, initCapabilities, proxy);
@@ -90,6 +93,9 @@ public class WindowsDriverFactory {
             windowsSession.setApplicationDriver(windowsDriver);
             return windowsSession;
         } catch (WebDriverException e) {
+            if (StringUtils.isEmpty(appTitle)) {
+                throw e;
+            }
             if (!(e instanceof NoSuchWindowException) && !(e instanceof SessionNotCreatedException)) {
                 throw e;
             }
@@ -104,14 +110,38 @@ public class WindowsDriverFactory {
             desiredCapabilities.setCapability("app", "Root");
             WindowsDriver<WebElement> desktopDriver = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxy);
 
-            long startTime = System.currentTimeMillis();
-            WebElement webElement = null;
-            while (System.currentTimeMillis() - startTime <= 20000L) {
-                try {
-                    webElement = desktopDriver.findElementByTagName("Window");
-                } catch (NoSuchElementException ignored) {}
-                break;
-            }
+            FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(desktopDriver)
+                    .withTimeout(Duration.ofSeconds(60))
+                    .pollingEvery(Duration.ofSeconds(5))
+                    .ignoring(NoSuchElementException.class);
+
+            WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
+                @Override
+                public WebElement apply(WindowsDriver<WebElement> driver) {
+                    WebElement webElement = null;
+                    for (WebElement element : desktopDriver.findElementsByTagName("Window")) {
+                        try {
+                            if (element.getText().contains(appTitle)) {
+                                webElement = element;
+                                break;
+                            }
+                        } catch (WebDriverException ignored) {}
+                    }
+
+                    if (webElement == null) {
+                        for (WebElement element : desktopDriver.findElementsByTagName("Pane")) {
+                            try {
+                                if (element.getText().contains(appTitle)) {
+                                    webElement = element;
+                                    break;
+                                }
+                            } catch (WebDriverException ignored) {}
+                        }
+                    }
+                    return webElement;
+                }
+            });
+
             if (webElement == null) {
                 throw e;
             }
