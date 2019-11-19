@@ -248,11 +248,11 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
         return endMessage;
     }
 
-    public void setFailureMessage(String failureMessage) {
+    public void setFailureMessage(String failMessage) {
         if (lblEndMessage != null) {
             lblEndMessage.setForeground(FAIL_COLOR);
         }
         this.isSucceeded = false;
-        this.endMessage = failureMessage;
+        this.endMessage = failMessage;
     }
 }
