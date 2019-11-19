@@ -1,6 +1,9 @@
 package com.kms.katalon.core.util.internal;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.lang.reflect.Field;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -61,14 +64,40 @@ public class ProcessUtil {
             }
         }
     }
-    
+
     public static void killProcessOnWindows(String processName) throws InterruptedException, IOException {
+        killProcessOnWindows(processName, null, null);
+    }
+    
+    public static void killProcessOnWindows(String processName, File logFile, File errorLogFile) throws InterruptedException, IOException {
         ProcessBuilder pb = new ProcessBuilder("taskkill", "/f", "/im", processName, "/t");
+        if (logFile != null) {
+            FileWriter writer = new FileWriter(logFile, true);
+            writer.write(String.format("Terminating process \"%s\"\r\n", processName));
+            writer.close();
+            pb.redirectOutput(Redirect.appendTo(logFile));
+        }
+        if (errorLogFile != null) {
+            pb.redirectError(Redirect.appendTo(errorLogFile));
+        }
         pb.start().waitFor();
     }
 
     public static void killProcessOnUnix(String processName) throws InterruptedException, IOException {
+        killProcessOnUnix(processName, null, null);
+    }
+
+    public static void killProcessOnUnix(String processName, File logFile, File errorLogFile) throws InterruptedException, IOException {
         ProcessBuilder pb = new ProcessBuilder("killall", processName);
+        if (logFile != null) {
+            FileWriter writer = new FileWriter(logFile, true);
+            writer.write(String.format("Terminating process \"%s\"\r\n", processName));
+            writer.close();
+            pb.redirectOutput(Redirect.appendTo(logFile));
+        }
+        if (errorLogFile != null) {
+            pb.redirectError(Redirect.appendTo(errorLogFile));
+        }
         pb.start().waitFor();
     }
 }
