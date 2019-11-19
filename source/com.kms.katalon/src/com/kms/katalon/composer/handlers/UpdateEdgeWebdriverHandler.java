@@ -33,7 +33,7 @@ public class UpdateEdgeWebdriverHandler {
     public void execute(Shell shell) {
         InstallationManager installationManager = new InstallationManager(shell, StringConstants.MSG_UPDATING_WEB_DRIVER);
         installationManager.getInstallationDialog().setDialogTitle(MessageFormat.format(StringConstants.DIA_TITLE_UPDATE_WEBDRIVER, "Edge"));
-        installationManager.getInstallationDialog().setSucceededMessage(StringConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY);
+        installationManager.getInstallationDialog().setSuccessfulMessage(StringConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY);
 
         InstallationStep installationStep = new InstallationStep(StringConstants.MSG_UPDATING_WEB_DRIVER) {
             @Override
