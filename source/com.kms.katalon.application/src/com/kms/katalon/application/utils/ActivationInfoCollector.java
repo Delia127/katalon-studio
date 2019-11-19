@@ -489,23 +489,38 @@ public class ActivationInfoCollector {
     private static boolean isValidLicense(License license) {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
-        if (isValidMachineId && !isExpired && !license.isTesting()) {
-            RunningMode runMode = ApplicationRunningMode.get();
-            if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) { 
-                return true;
-            }
-            if (runMode == RunningMode.GUI && license.isKSELicense()) { 
-                return true;
-            }
-            LogUtil.logError(DEFAULT_REASON);
-        } else {
-            if (!isValidMachineId) {
-                LogUtil.logError(ApplicationMessageConstants.LICENSE_INVALID_MACHINE_ID);
-            }
 
-            if (isExpired) {
-                LogUtil.logError(ApplicationMessageConstants.LICENSE_EXPIRED);
+        RunningMode runMode = ApplicationRunningMode.get();
+
+        if (license.isTesting()) {
+            if (isValidMachineId) {
+                if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) {
+                    LogUtil.logInfo(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_CORRECT);
+                } else  if (runMode == RunningMode.GUI && license.isKSELicense()) {
+                    LogUtil.logInfo(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_CORRECT);
+                }
+            } else {
+                LogUtil.logError(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_INCORRECT);
             }
+        } else {
+            if (isValidMachineId && !isExpired && !license.isTesting()) {
+                if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) { 
+                    return true;
+                }
+                if (runMode == RunningMode.GUI && license.isKSELicense()) { 
+                    return true;
+                }
+                LogUtil.logError(DEFAULT_REASON);
+            } else {
+                if (!isValidMachineId) {
+                    LogUtil.logError(ApplicationMessageConstants.LICENSE_INVALID_MACHINE_ID);
+                }
+
+                if (isExpired) {
+                    LogUtil.logError(ApplicationMessageConstants.LICENSE_EXPIRED);
+                }
+            }
+            return false;
         }
         return false;
     }
@@ -730,7 +745,7 @@ public class ActivationInfoCollector {
         Set<String> validActivationCodes = new HashSet<>();
         try {
             File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
-            LogUtil.logInfo("Finding valid offline licenses in folder: " + licenseFolder.getAbsolutePath());
+            LogUtil.logInfo("Offline Activation: Finding valid offline licenses in folder: " + licenseFolder.getAbsolutePath());
             if (licenseFolder.exists() && licenseFolder.isDirectory()) {
                 Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
                         .filter(p -> Files.isRegularFile(p)
@@ -738,10 +753,14 @@ public class ActivationInfoCollector {
                         .forEach(p -> {
                             try {
                                 File licenseFile = p.toFile();
+                                LogUtil.logInfo("Offline Activation: Start checking license file: " + licenseFile.getName());
                                 String activationCode = FileUtils.readFileToString(licenseFile);
                                 License license = parseLicense(activationCode);
                                 if (license != null && license.isEngineLicense() && isOffline(license)) {
+                                    LogUtil.logInfo("Offline Activation: License file: " + licenseFile.getName() + " valid.");
                                     validActivationCodes.add(activationCode);
+                                } else {
+                                    LogUtil.logError("Offline Activation: License file: " + licenseFile.getName() + " invalid.");
                                 }
                             } catch (Exception e) {
                                 LogUtil.logError(e);
