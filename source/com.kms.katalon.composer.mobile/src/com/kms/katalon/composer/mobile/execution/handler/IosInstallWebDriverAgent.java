@@ -71,7 +71,7 @@ public class IosInstallWebDriverAgent {
             installationManager.getInstallationDialog()
                     .setDialogTitle(StringConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_TITLE);
             installationManager.getInstallationDialog()
-                    .setSucceededMessage(StringConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY);
+                    .setSuccessfulMessage(StringConstants.MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY);
             File installationLog = getLogFile(INSTALL_WEB_DRIVER_AGENT_LOG_NAME);
             File installationErrorLog = getLogFile(INSTALL_WEB_DRIVER_AGENT_LOG_NAME + "Error");
 

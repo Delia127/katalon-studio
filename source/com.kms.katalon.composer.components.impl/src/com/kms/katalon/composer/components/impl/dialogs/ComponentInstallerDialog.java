@@ -37,7 +37,7 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
     
     private Color SUCCESS_COLOR = ColorUtil.getTextSuccessfulColor();
     
-    private Color FAILURE_COLOR = ColorUtil.getTextErrorColor();
+    private Color FAIL_COLOR = ColorUtil.getTextErrorColor();
 
     private StyledText txtDetails;
 
@@ -99,6 +99,8 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
         gdText.heightHint = 200;
         gdText.horizontalSpan = 2;
         txtDetails.setLayoutData(gdText);
+        txtDetails.setBackground(ColorUtil.getCompositeBackgroundColor());
+        txtDetails.setForeground(ColorUtil.getDefaultTextColor());
     }
 
     private void createProgressIndicator(Composite parent) {
@@ -131,7 +133,7 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
         if (isSucceeded) {
             lblEndMessage.setForeground(SUCCESS_COLOR);
         } else {
-            lblEndMessage.setForeground(FAILURE_COLOR);
+            lblEndMessage.setForeground(FAIL_COLOR);
         }
     }
 
@@ -221,7 +223,7 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
     protected void finishedRun() {
         decrementNestingDepth();
         updateButtonStatesWhenFinished();
-        lblEndMessage.setText(getSucceededMessage());
+        lblEndMessage.setText(getSuccessfulMessage());
     }
 
     private void updateButtonStatesWhenFinished() {
@@ -230,27 +232,27 @@ public class ComponentInstallerDialog extends ProgressMonitorDialogWithThread {
         getButton(IDialogConstants.FINISH_ID).forceFocus();
     }
 
-    public String getSucceededMessage() {
+    public String getSuccessfulMessage() {
         return endMessage;
     }
 
-    public void setSucceededMessage(String successMessage) {
+    public void setSuccessfulMessage(String successfulMessage) {
         if (lblEndMessage != null) {
             lblEndMessage.setForeground(SUCCESS_COLOR);
         }
         this.isSucceeded = true;
-        this.endMessage = successMessage;
+        this.endMessage = successfulMessage;
     }
 
-    public String getFailedMessage() {
+    public String getFailureMessage() {
         return endMessage;
     }
 
-    public void setFailedMessage(String failedMessage) {
+    public void setFailureMessage(String failureMessage) {
         if (lblEndMessage != null) {
-            lblEndMessage.setForeground(FAILURE_COLOR);
+            lblEndMessage.setForeground(FAIL_COLOR);
         }
         this.isSucceeded = false;
-        this.endMessage = failedMessage;
+        this.endMessage = failureMessage;
     }
 }

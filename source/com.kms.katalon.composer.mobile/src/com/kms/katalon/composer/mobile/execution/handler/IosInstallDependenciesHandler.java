@@ -56,7 +56,7 @@ public class IosInstallDependenciesHandler {
             installationManager.getInstallationDialog()
                     .setDialogTitle(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES_TITLE);
             installationManager.getInstallationDialog()
-                    .setSucceededMessage(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY);
+                    .setSuccessfulMessage(StringConstants.MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY);
             File installationLog = getLogFile(INSTALL_DEPENDENCIES_LOG_NAME);
             File installationErrorLog = getLogFile(INSTALL_DEPENDENCIES_LOG_NAME + "Error");
 

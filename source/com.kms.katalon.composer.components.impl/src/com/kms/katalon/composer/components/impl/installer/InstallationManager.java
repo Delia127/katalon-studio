@@ -80,7 +80,7 @@ public class InstallationManager {
         UISynchronizeService.syncExec(() -> {
             getInstallationDialog().appendWarning("\r\nFailed to run the installation step: " + step.getTitle() + "\r\n");
             getInstallationDialog().appendWarning(error.getTargetException().getMessage() + "\r\n");
-            getInstallationDialog().setFailedMessage(error.getMessage());
+            getInstallationDialog().setFailureMessage(error.getMessage());
         });
     }
 
