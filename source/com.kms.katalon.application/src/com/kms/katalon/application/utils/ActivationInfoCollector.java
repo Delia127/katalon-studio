@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.text.Format;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -745,7 +746,7 @@ public class ActivationInfoCollector {
         Set<String> validActivationCodes = new HashSet<>();
         try {
             File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
-            LogUtil.logInfo("Offline Activation: Finding valid offline licenses in folder: " + licenseFolder.getAbsolutePath());
+            LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.RE_FIND_VAILD_OFFLINE_LICENSE_IN_FOLDER, licenseFolder.getAbsolutePath()));
             if (licenseFolder.exists() && licenseFolder.isDirectory()) {
                 Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
                         .filter(p -> Files.isRegularFile(p)
@@ -753,14 +754,14 @@ public class ActivationInfoCollector {
                         .forEach(p -> {
                             try {
                                 File licenseFile = p.toFile();
-                                LogUtil.logInfo("Offline Activation: Start checking license file: " + licenseFile.getName());
+                                LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.RE_START_CHECK_LICENSE, licenseFile.getName()));
                                 String activationCode = FileUtils.readFileToString(licenseFile);
                                 License license = parseLicense(activationCode);
                                 if (license != null && license.isEngineLicense() && isOffline(license)) {
-                                    LogUtil.logInfo("Offline Activation: License file: " + licenseFile.getName() + " valid.");
+                                    LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.RE_LICENSE_FILE_VAILD, licenseFile.getName()));
                                     validActivationCodes.add(activationCode);
                                 } else {
-                                    LogUtil.logError("Offline Activation: License file: " + licenseFile.getName() + " invalid.");
+                                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.RE_LICENSE_FILE_INVALID, licenseFile.getName()));
                                 }
                             } catch (Exception e) {
                                 LogUtil.logError(e);

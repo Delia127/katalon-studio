@@ -71,6 +71,14 @@ public class ApplicationMessageConstants {
 
     public static String BTN_ACKNOWLEDGE;
 
+    public static String RE_FIND_VAILD_OFFLINE_LICENSE_IN_FOLDER;
+
+    public static String RE_START_CHECK_LICENSE;
+
+    public static String RE_LICENSE_FILE_VAILD;
+
+    public static String RE_LICENSE_FILE_INVALID;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ApplicationMessageConstants.class);
