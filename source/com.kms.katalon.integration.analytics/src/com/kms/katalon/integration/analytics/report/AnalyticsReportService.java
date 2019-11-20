@@ -53,22 +53,26 @@ public class AnalyticsReportService implements AnalyticsComponent {
     
     public void upload(ReportFolder reportFolder) throws AnalyticsApiExeception {
         if (isIntegrationEnabled()) {
-            LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
-            try {
-                AnalyticsTokenInfo token = getKAToken();
-                if (token != null) {
-                    perform(token.getAccess_token(), reportFolder);
-                } else {
-                    LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
-                }
-            } catch (Exception e ) {
-                LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-                throw new AnalyticsApiExeception(e);
-            }
-            LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_END);
+            uploadReports(reportFolder);
         } else {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_INTEGRATE_WITH_KA);
         }
+    }
+
+    public void uploadReports(ReportFolder reportFolder) throws AnalyticsApiExeception {
+        LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
+        try {
+            AnalyticsTokenInfo token = getKAToken();
+            if (token != null) {
+                perform(token.getAccess_token(), reportFolder);
+            } else {
+                LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
+            throw new AnalyticsApiExeception(e);
+        }
+        LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_END);
     }
 
     private AnalyticsTokenInfo getKAToken() throws IOException, GeneralSecurityException, AnalyticsApiExeception {

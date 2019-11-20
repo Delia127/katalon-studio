@@ -923,22 +923,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             LoggerSingleton.logError(ex);
             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
                     ex.getMessage());
-            try {
-                analyticsSettingStore.enableIntegration(false);
-            } catch (IOException e1) {
-                LoggerSingleton.logError(e1);
-            }
         }
     }
     
     private void uploadReportHandle(AnalyticsSettingStore analyticsSettingStore) throws IOException {
         UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell);
-        analyticsSettingStore.enableIntegration(true);
         int returnCode = uploadSelectionDialog.open();
         if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
             uploadToKatalonTestOps();
-        } else {
-            analyticsSettingStore.enableIntegration(false);
         }
     }
 
@@ -952,7 +944,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
                         monitor.worked(1);
                         ReportFolder reportFolder = new ReportFolder(testSuiteLogRecord.getLogFolder());
-                        analyticsReportService.upload(reportFolder);
+                        analyticsReportService.uploadReports(reportFolder);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
                         monitor.worked(2);
                     } catch (final AnalyticsApiExeception ex) {
