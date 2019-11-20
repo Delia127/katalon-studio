@@ -71,7 +71,6 @@ public class InstallationManager {
                 };
             });
         } catch (InterruptedException | InvocationTargetException error) {
-            getInstallationDialog().close();
             throw error;
         }
     }
