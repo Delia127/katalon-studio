@@ -63,10 +63,10 @@ public class ProxyUtil {
             throw new IllegalArgumentException("proxyInfo cannot be null");
         }
         List<String> exceptionList = new ArrayList<String>();
-        String exclude = proxyInfo.getExceptionList().replaceAll("\\s+","");
+        String exclude = proxyInfo.getExceptionList().replaceAll("\\s+", "");
         String[] output = exclude.split(",");
         String newUrl = null;
-        
+
         Arrays.stream(output).forEach(part -> exceptionList.add(part));
         switch (ProxyOption.valueOf(proxyInfo.getProxyOption())) {
             case NO_PROXY:

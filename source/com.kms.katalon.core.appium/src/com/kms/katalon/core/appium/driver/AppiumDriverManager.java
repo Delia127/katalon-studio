@@ -202,12 +202,6 @@ public class AppiumDriverManager {
             return false;
         }
     }
-    
-    public static URL getURL() throws MalformedURLException {
-        return new URL("http://" + DEFAULT_APPIUM_SERVER_ADDRESS + ":" + localStorageAppiumPort.get()
-                + APPIUM_SERVER_URL_SUFFIX + "/status");
-
-    }
 
     private static boolean isWebProxyServerStarted(int timeOut) {
         if (localStorageWebProxyProcess.get() == null) {
