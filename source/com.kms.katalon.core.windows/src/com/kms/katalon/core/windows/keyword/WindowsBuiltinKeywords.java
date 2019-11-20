@@ -664,7 +664,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
 
     /**
      * Starts Windows driver and starts the Windows application at the given absolute path.
-     * After the application starts, if WinAppDriver may not detect the main application window correctly, Katalon Studio will use
+     * After the application starts, if WinAppDriver cannot not detect the main application window correctly, Katalon Studio will use
      * the given windowTitle to find the opened application to continue working.
      * 
      * @param appFile
@@ -684,7 +684,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
 
     /**
      * Starts Windows driver and starts the Windows application at the given absolute path.
-     * After the application starts, if WinAppDriver may not detect the main application window correctly, Katalon Studio will use
+     * After the application starts, if WinAppDriver cannot not detect the main application window correctly, Katalon Studio will use
      * the given windowTitle to find the opened application to continue working.
      * 
      * @param appFile
