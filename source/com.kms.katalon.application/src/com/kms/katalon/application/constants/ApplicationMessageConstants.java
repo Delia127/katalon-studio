@@ -67,6 +67,8 @@ public class ApplicationMessageConstants {
 
     public static String BTN_ACKNOWLEDGE;
 
+    public static String TITLE_KS_NOTIFICATION;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ApplicationMessageConstants.class);
