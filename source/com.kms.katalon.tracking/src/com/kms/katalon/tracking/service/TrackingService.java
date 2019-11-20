@@ -35,7 +35,7 @@ public class TrackingService {
                     String payload = buildEventPayload(trackInfo);
                     sendEventPayload(payload);
                 } catch (Exception e) {
-                    LogUtil.logError(e);
+//                    LogUtil.logError(e);
                 }
             });
         }

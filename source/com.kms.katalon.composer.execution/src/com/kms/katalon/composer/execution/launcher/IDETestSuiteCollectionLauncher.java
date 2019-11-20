@@ -59,8 +59,15 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
         getEventBroker().post(EventConstants.TEST_SUITE_COLLECTION_FINISHED, testSuiteCollectionEntity);
 
         String executionResult = getExecutionResult();
-        Trackings.trackExecuteTestSuiteCollectionInGuiMode(executionResult,
-                getEndTime().getTime() - getStartTime().getTime());
+        ExecutionMode executionMode = getExecutedEntity().getEntity().getExecutionMode();
+        if (executionMode == ExecutionMode.PARALLEL) {
+            int maxConcurrentInstances = getExecutedEntity().getEntity().getMaxConcurrentInstances();
+            Trackings.trackExecuteParallelTestSuiteCollectionInGuiMode(executionResult,
+                    getEndTime().getTime() - getStartTime().getTime(), maxConcurrentInstances);
+        } else {
+            Trackings.trackExecuteSequentialTestSuiteCollectionInGuiMode(executionResult,
+                    getEndTime().getTime() - getStartTime().getTime());
+        }
     }
 
     protected String getExecutionResult() {

@@ -133,13 +133,28 @@ public class Trackings {
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result, long duration) {
         trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType, "executionResult", result, "duration", duration);
     }
-    
-    public static void trackExecuteTestSuiteCollectionInGuiMode(String result, long duration) {
-        trackUserAction("executeTestSuiteCollection", "runningMode", "gui", "executionResult", result, "duration", duration);
+
+    public static void trackExecuteSequentialTestSuiteCollectionInGuiMode(String result, long duration) {
+        trackUserAction("executeTestSuiteCollection", "runningMode", "gui", "executionResult", result, "duration",
+                duration, "executionMode", "Sequential");
     }
 
-    public static void trackExecuteTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result, long duration) {
-        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console", "executionResult", result, "duration", duration);
+    public static void trackExecuteParallelTestSuiteCollectionInGuiMode(String result, long duration,
+            int maxConcurrentInstances) {
+        trackUserAction("executeTestSuiteCollection", "runningMode", "gui", "executionResult", result, "duration",
+                duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances);
+    }
+
+    public static void trackExecuteSequentialTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result,
+            long duration) {
+        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console", "executionResult", result,
+                "duration", duration, "executionMode", "Sequential");
+    }
+
+    public static void trackExecuteParallelTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result,
+            long duration, int maxConcurrentInstances) {
+        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console", "executionResult", result,
+                "duration", duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances);
     }
 
     public static void trackGenerateCmd() {
