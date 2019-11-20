@@ -52,28 +52,22 @@ public class InstallationManager {
     public void startInstallation() throws InvocationTargetException, InterruptedException {
         worked = 0;
         totalSteps = getInstallationSteps().size();
-        try {
-            getInstallationDialog().run(true, true, new IRunnableWithProgress() {
-
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    UISynchronizeService.syncExec(() -> monitor.beginTask(title, totalSteps));
-                    while (!getInstallationSteps().isEmpty()) {
-                        InstallationStep step = getInstallationSteps().poll();
-                        try {
-                            runStep(step);
-                        } catch (RunInstallationStepException error) {
-                            handleFailedStep(step, error);
-                            break;
-                        }
+        getInstallationDialog().run(true, true, new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                UISynchronizeService.syncExec(() -> monitor.beginTask(title, totalSteps));
+                while (!getInstallationSteps().isEmpty()) {
+                    InstallationStep step = getInstallationSteps().poll();
+                    try {
+                        runStep(step);
+                    } catch (RunInstallationStepException error) {
+                        handleFailedStep(step, error);
+                        break;
                     }
-                    UISynchronizeService.syncExec(() -> monitor.done());
-                };
-            });
-        } catch (InterruptedException | InvocationTargetException error) {
-            getInstallationDialog().close();
-            throw error;
-        }
+                }
+                UISynchronizeService.syncExec(() -> monitor.done());
+            };
+        });
     }
     
     private void handleFailedStep(InstallationStep step, RunInstallationStepException error) {
