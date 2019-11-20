@@ -515,12 +515,12 @@ public class ActivationInfoCollector {
         if (license.isTesting()) {
             if (isValidMachineId) {
                 if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) {
-                    LogUtil.logInfo("Testing license " + licenseFileName +" is valid. Please create an offline license.");
+                    LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.TESTING_LICENSE_WITH_FILENAME_CORRECT, licenseFileName));
                 } else  if (runMode == RunningMode.GUI && license.isKSELicense()) {
-                    LogUtil.logInfo("Testing license " + licenseFileName + " is NOT for this machine.");
+                    LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.TESTING_LICENSE_WITH_FILENAME_CORRECT, licenseFileName));
                 }
             } else {
-                LogUtil.logError("Testing license " + licenseFileName + " is NOT for this machine.");
+                LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.TESTING_LICENSE_WITH_FILENAME_INCORRECT, licenseFileName));
             }
         } else {
             if (isValidMachineId && !isExpired && !license.isTesting()) {
@@ -531,22 +531,21 @@ public class ActivationInfoCollector {
                     return true;
                 }
                 if (runMode == RunningMode.CONSOLE) {
-                    LogUtil.logError("Invalid license: " + licenseFileName + ". Reason: Cannot use KSE license to activate KRE.");
+                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.LICENSE_INVALID_KSE_USE_TO_KRE, licenseFileName));
                 } else if (runMode == RunningMode.GUI) {
-                    LogUtil.logError("Invalid license: " + licenseFileName + ". Reason: Cannot use KRE license to activate KSE.");
+                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.LICENSE_INVALID_KRE_USE_TO_KSE, licenseFileName));
                 } else {
                     LogUtil.logError(DEFAULT_REASON);
                 }
             } else {
                 if (!isValidMachineId) {
-                    LogUtil.logError("Invalid license: " + licenseFileName + ". Reason: Incorrect machine ID.");
+                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.LICENSE_INCORRECT_MACHINE_ID, licenseFileName));
                 }
 
                 if (isExpired) {
-                    LogUtil.logError("Invalid license: " + licenseFileName + ". Reason: Expired license.");
+                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.LICENSE_EXPIRED_WITH_FILE_NAME, licenseFileName));
                 }
             }
-            return false;
         }
         return false;
     }

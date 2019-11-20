@@ -53,6 +53,14 @@ public class ApplicationMessageConstants {
 
     public static String LICENSE_INVALID_MACHINE_ID;
 
+    public static String LICENSE_INVALID_KSE_USE_TO_KRE;
+
+    public static String LICENSE_INVALID_KRE_USE_TO_KSE;
+
+    public static String LICENSE_INCORRECT_MACHINE_ID;
+
+    public static String LICENSE_EXPIRED_WITH_FILE_NAME;
+
     public static String LICENSE_EXPIRED;
 
     public static String LICENSE_UNABLE_RENEW;
@@ -62,6 +70,10 @@ public class ApplicationMessageConstants {
     public static String LICENSE_EXPIRED_NO_MESSAGE;
 
     public static String LICENSE_ERROR_RENEW;
+
+    public static String TESTING_LICENSE_WITH_FILENAME_CORRECT;
+
+    public static String TESTING_LICENSE_WITH_FILENAME_INCORRECT;
 
     public static String TESTING_LICENSE_MACHINE_ID_CORRECT;
 
