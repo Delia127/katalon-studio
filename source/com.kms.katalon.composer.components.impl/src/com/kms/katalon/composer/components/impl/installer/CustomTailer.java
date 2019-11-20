@@ -24,7 +24,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 
 public class CustomTailer extends Tailer {
     private TailerListener listener;
-    
+
     public CustomTailer(File file, TailerListener listener) {
         super(file, listener);
         this.listener = listener;
@@ -79,7 +79,6 @@ public class CustomTailer extends Tailer {
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     Path filename = ev.context();
                     if (kind == ENTRY_MODIFY && filename.toFile().getName().equals(file.getName())) {
-                        LoggerSingleton.logDebug(filename.getFileName().toString());
                         if (Thread.currentThread().isInterrupted()) {
                             break;
                         }
@@ -104,12 +103,13 @@ public class CustomTailer extends Tailer {
                 }
             }
         } catch (IOException | InterruptedException error) {
+            LoggerSingleton.logError(error);
+        } finally {
             try {
                 reader.close();
             } catch (IOException e) {
                 //
             }
-            LoggerSingleton.logError(error);
         }
     }
 }
