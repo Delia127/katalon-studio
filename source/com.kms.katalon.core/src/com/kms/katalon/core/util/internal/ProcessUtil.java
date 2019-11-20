@@ -73,7 +73,7 @@ public class ProcessUtil {
         ProcessBuilder pb = new ProcessBuilder("taskkill", "/f", "/im", processName, "/t");
         if (logFile != null) {
             FileWriter writer = new FileWriter(logFile, true);
-            writer.write(String.format("Terminating process \"%s\"\r\n", processName));
+            writer.write(String.format("\r\nTerminating process \"%s\"\r\n", processName));
             writer.close();
             pb.redirectOutput(Redirect.appendTo(logFile));
         }
@@ -91,7 +91,7 @@ public class ProcessUtil {
         ProcessBuilder pb = new ProcessBuilder("killall", processName);
         if (logFile != null) {
             FileWriter writer = new FileWriter(logFile, true);
-            writer.write(String.format("Terminating process \"%s\"\r\n", processName));
+            writer.write(String.format("\r\nTerminating process \"%s\"\r\n", processName));
             writer.close();
             pb.redirectOutput(Redirect.appendTo(logFile));
         }

@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -25,7 +24,7 @@ public class InstallationManager {
     private Queue<InstallationStep> installationSteps;
 
     private String title = "Install Requested Components";
-    
+
     private int totalSteps = 0;
 
     private int worked = 0;
@@ -35,7 +34,7 @@ public class InstallationManager {
     public InstallationManager(Shell shell) {
         this(shell, null);
     }
-    
+
     public InstallationManager(Shell shell, String title) {
         setInstallationSteps(new LinkedList<>());
         trackedLogs = new ArrayList<>();
@@ -69,10 +68,11 @@ public class InstallationManager {
             };
         });
     }
-    
+
     private void handleFailedStep(InstallationStep step, RunInstallationStepException error) {
         UISynchronizeService.syncExec(() -> {
-            getInstallationDialog().appendWarning("\r\nFailed to run the installation step: " + step.getTitle() + "\r\n");
+            getInstallationDialog()
+                    .appendWarning("\r\nFailed to run the installation step: " + step.getTitle() + "\r\n");
             getInstallationDialog().appendWarning(error.getTargetException().getMessage() + "\r\n");
             getInstallationDialog().setFailureMessage(error.getMessage());
         });
@@ -95,7 +95,7 @@ public class InstallationManager {
             stopLogTrackingThread(errorTrackingThread);
             throw error;
         }
-        
+
     }
 
     private Thread startLogTrackingThread(File logFile) {
@@ -103,7 +103,7 @@ public class InstallationManager {
             return null;
         }
         trackedLogs.add(logFile);
-        Thread trackingThread = new Thread(new Tailer(logFile, new TailerListenerAdapter() {
+        Thread trackingThread = new Thread(new CustomTailer(logFile, new TailerListenerAdapter() {
             @Override
             public void handle(String line) {
                 if (Thread.currentThread().isInterrupted()) {
@@ -128,7 +128,7 @@ public class InstallationManager {
             return null;
         }
         trackedLogs.add(logFile);
-        Thread trackingThread = new Thread(new Tailer(logFile, new TailerListenerAdapter() {
+        Thread trackingThread = new Thread(new CustomTailer(logFile, new TailerListenerAdapter() {
             @Override
             public void handle(String line) {
                 if (Thread.currentThread().isInterrupted()) {
@@ -146,7 +146,8 @@ public class InstallationManager {
             getInstallationDialog().getProgressMonitor()
                     .subTask(String.format(step.getTitle() + " (%d/%d)", worked, totalSteps));
             if (worked > 0) {
-                getInstallationDialog().appendInfo("\r\n\r\n----------------------------------------------------\r\n\r\n");
+                getInstallationDialog()
+                        .appendInfo("\r\n\r\n----------------------------------------------------\r\n\r\n");
             }
             getInstallationDialog().appendInfo(step.getTitle() + "\r\n\r\n");
         });
@@ -160,7 +161,7 @@ public class InstallationManager {
         UISynchronizeService.syncExec(() -> {
             getInstallationDialog().getProgressMonitor().worked(1);
             getInstallationDialog().getProgressMonitor()
-                .subTask(String.format(step.getTitle() + " (%d/%d)", worked, totalSteps));
+                    .subTask(String.format(step.getTitle() + " (%d/%d)", worked, totalSteps));
         });
         if (getInstallationDialog().getProgressMonitor().isCanceled()) {
             throw new InterruptedException("User cancelled installation.");

@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -30,7 +29,7 @@ public class KillRunningWebdriverProcessHandler {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
-                    WebDriverCleanerUtil.cleanup(getLogFile(), getErrorLogFile());
+                    WebDriverCleanerUtil.cleanup(getLogFile(), getLogFile());
                 } catch (IOException error) {
                     throw new RunInstallationStepException(StringConstants.MSG_FAIL_TO_KILL_WEB_DRIVER, error);
                 }
