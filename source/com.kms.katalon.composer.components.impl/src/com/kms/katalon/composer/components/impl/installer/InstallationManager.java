@@ -18,12 +18,11 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 
 public class InstallationManager {
-
     private ComponentInstallerDialog installationDialog;
 
     private Queue<InstallationStep> installationSteps;
 
-    private String title = "Install Requested Components";
+    private String title = "Component Installer";
 
     private int totalSteps = 0;
 
