@@ -75,7 +75,7 @@ public class SmartWaitWebEventListener extends AbstractWebDriverEventListener {
 
         boolean localSmartWaitEnabled = (boolean) Optional
                 .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.LOCAL_SMART_WAIT_MODE))
-                .orElse(false);
+                .orElse(true);
 
         boolean globalSmartWaitEnabled = (boolean) Optional
                 .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
