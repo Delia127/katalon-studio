@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -103,7 +102,7 @@ public class InstallationManager {
             return null;
         }
         trackedLogs.add(logFile);
-        Thread trackingThread = new Thread(new Tailer(logFile, new TailerListenerAdapter() {
+        Thread trackingThread = new Thread(new CustomTailer(logFile, new TailerListenerAdapter() {
             @Override
             public void handle(String line) {
                 if (Thread.currentThread().isInterrupted()) {
@@ -128,7 +127,7 @@ public class InstallationManager {
             return null;
         }
         trackedLogs.add(logFile);
-        Thread trackingThread = new Thread(new Tailer(logFile, new TailerListenerAdapter() {
+        Thread trackingThread = new Thread(new CustomTailer(logFile, new TailerListenerAdapter() {
             @Override
             public void handle(String line) {
                 if (Thread.currentThread().isInterrupted()) {
