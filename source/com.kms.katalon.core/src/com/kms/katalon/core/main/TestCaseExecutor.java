@@ -455,20 +455,21 @@ public class TestCaseExecutor {
         if (ignoreIfFailed) {
             startKeywordAttributeMap.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, String.valueOf(ignoreIfFailed));
         }
+        boolean isKeyword = true;
         logger.startKeyword(methodName, actionType, startKeywordAttributeMap, keywordStack);
         try {
             runMethod(getScriptFile(), methodName);
             endAllUnfinishedKeywords(keywordStack);
-            logger.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, methodName));
+            logger.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, methodName), Collections.emptyMap(), isKeyword);
         } catch (Throwable e) {
             endAllUnfinishedKeywords(keywordStack);
             String message = MessageFormat.format(StringConstants.MAIN_LOG_WARNING_ERROR_OCCURRED_WHEN_RUN_METHOD,
                     methodName, e.getClass().getName(), ExceptionsUtil.getMessageForThrowable(e));
             if (ignoreIfFailed) {
-                logger.logWarning(message, null, e);
+                logger.logWarning(message, null, e, isKeyword);
                 return;
             }
-            logger.logError(message, null, e);
+            logger.logError(message, null, e, isKeyword);
             errorCollector.addError(e);
         } finally {
             logger.endKeyword(methodName, actionType, Collections.emptyMap(), keywordStack);
