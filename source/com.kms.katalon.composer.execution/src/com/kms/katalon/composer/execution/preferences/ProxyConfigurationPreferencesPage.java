@@ -165,6 +165,21 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
                 }
             }
         });
+        
+        Label separatorEx = new Label(area, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separatorEx.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        
+        Label lblExceptionList = new Label(innerComposite, SWT.NONE);
+        GridData gdLblException = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblExceptionList.setLayoutData(gdLblException);
+        lblExceptionList.setText(MessageConstants.LBL_EXCEPTION_LIST);
+
+        txtExceptionList = new Text(innerComposite, SWT.BORDER);
+        GridData gdExceptionList = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdExceptionList.widthHint = 320;
+        gdExceptionList.heightHint = 28;
+        txtExceptionList.setLayoutData(gdExceptionList);
+        
         chkRequireAuthentication = new Button(innerComposite, SWT.CHECK);
         chkRequireAuthentication.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         chkRequireAuthentication.setText(MessageConstants.CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION);
@@ -199,22 +214,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         txtPass = new Text(authenticateGroup, SWT.BORDER | SWT.PASSWORD);
         GridData gdPass = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtPass.setLayoutData(gdPass);
-
-        Group executionGroup = new Group(innerComposite, SWT.NONE);
-        executionGroup.setText("Excludes");
-        executionGroup.setLayout(new GridLayout(2, false));
-        GridData executionData = new GridData(SWT.FILL, SWT.TOP, false, true, 2, 1);
-        executionData.widthHint = 200;
-        executionGroup.setLayoutData(executionData);
-
-        txtExceptionList = new Text(executionGroup, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        data.heightHint = 150;
-        txtExceptionList.setLayoutData(data);
         
-        Label separator = new Label(area, SWT.HORIZONTAL | SWT.SEPARATOR);
-        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
         initialize();
 
         return area;
