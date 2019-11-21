@@ -3,10 +3,13 @@ package com.kms.katalon.composer.components.impl.installer;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
+import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -28,7 +31,7 @@ public class InstallationManager {
 
     private int worked = 0;
 
-    private List<File> trackedLogs;
+    private Map<File, Thread> trackingThreads;
 
     public InstallationManager(Shell shell) {
         this(shell, null);
@@ -36,7 +39,7 @@ public class InstallationManager {
 
     public InstallationManager(Shell shell, String title) {
         setInstallationSteps(new LinkedList<>());
-        trackedLogs = new ArrayList<>();
+        trackingThreads = new HashMap<>();
         if (title != null) {
             this.title = title;
         }
@@ -59,16 +62,18 @@ public class InstallationManager {
                     try {
                         runStep(step);
                     } catch (RunInstallationStepException error) {
+                        Thread.sleep(1000L); // wait for the last line of the current run log to be appended
                         handleFailedStep(step, error);
                         break;
                     }
                 }
+                stopAllTrackingThreads();
                 UISynchronizeService.syncExec(() -> monitor.done());
             };
         });
     }
 
-    private void handleFailedStep(InstallationStep step, RunInstallationStepException error) {
+    private void handleFailedStep(InstallationStep step, RunInstallationStepException error) throws InterruptedException {
         UISynchronizeService.syncExec(() -> {
             getInstallationDialog()
                     .appendWarning("\r\nFailed to run the installation step: " + step.getTitle() + "\r\n");
@@ -78,66 +83,56 @@ public class InstallationManager {
     }
 
     private void runStep(InstallationStep step) throws InvocationTargetException, InterruptedException {
-        Thread logTrackingThread = null;
-        Thread errorTrackingThread = null;
-        try {
-            notifyStartNextStep(step);
-            logTrackingThread = startLogTrackingThread(step.getLogFile());
-            errorTrackingThread = startErrorLogTrackingThread(step.getErrorLogFile());
-            step.run(getInstallationDialog().getProgressMonitor());
-            stopLogTrackingThread(logTrackingThread);
-            stopLogTrackingThread(errorTrackingThread);
-            handleStepResults(null, step);
-            Thread.sleep(1000L); // wait for the last line of the current run log to be appended
-        } catch (InvocationTargetException | InterruptedException error) {
-            stopLogTrackingThread(logTrackingThread);
-            stopLogTrackingThread(errorTrackingThread);
-            throw error;
-        }
+        notifyStartNextStep(step);
+        startLogTrackingThread(step.getLogFile());
+        startErrorLogTrackingThread(step.getErrorLogFile());
+        Thread.sleep(1000L); // wait for the log file to be tracked
+
+        step.run(getInstallationDialog().getProgressMonitor());
+        Thread.sleep(1000L); // wait for the last line of the current run log to be appended
+
+        handleStepResults(null, step);
 
     }
 
     private Thread startLogTrackingThread(File logFile) {
-        if (trackedLogs.contains(logFile)) {
+        if (trackingThreads.containsKey(logFile)) {
             return null;
         }
-        trackedLogs.add(logFile);
         Thread trackingThread = new Thread(new CustomTailer(logFile, new TailerListenerAdapter() {
             @Override
             public void handle(String line) {
-                if (Thread.currentThread().isInterrupted()) {
-                    return;
-                }
                 UISynchronizeService.syncExec(() -> getInstallationDialog().appendInfo(line + "\r\n"));
             }
         }, 100L, true));
+        trackingThreads.put(logFile, trackingThread);
         trackingThread.start();
         return trackingThread;
     }
 
-    private void stopLogTrackingThread(Thread trackingThread) {
-        if (trackingThread != null && trackingThread.isAlive()) {
-            trackingThread.interrupt();
-        }
-        trackingThread = null;
-    }
-
-    private Thread startErrorLogTrackingThread(File logFile) {
-        if (trackedLogs.contains(logFile)) {
+    private Thread startErrorLogTrackingThread(File errorLogFile) {
+        if (trackingThreads.containsKey(errorLogFile)) {
             return null;
         }
-        trackedLogs.add(logFile);
-        Thread trackingThread = new Thread(new CustomTailer(logFile, new TailerListenerAdapter() {
+        Thread trackingThread = new Thread(new CustomTailer(errorLogFile, new TailerListenerAdapter() {
             @Override
             public void handle(String line) {
-                if (Thread.currentThread().isInterrupted()) {
-                    return;
-                }
                 UISynchronizeService.syncExec(() -> getInstallationDialog().appendError(line + "\r\n"));
             }
         }, 100L, true));
+        trackingThreads.put(errorLogFile, trackingThread);
         trackingThread.start();
         return trackingThread;
+    }
+
+    private void stopAllTrackingThreads() throws InterruptedException {
+        trackingThreads.forEach((logFile, trackingThread) -> {
+            if (trackingThread != null && trackingThread.isAlive()) {
+                trackingThread.interrupt();
+            }
+            trackingThread = null;
+        });
+        trackingThreads.clear();
     }
 
     private void notifyStartNextStep(InstallationStep step) {
