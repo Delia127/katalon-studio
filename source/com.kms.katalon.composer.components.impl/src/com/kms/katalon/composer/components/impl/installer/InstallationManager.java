@@ -84,7 +84,7 @@ public class InstallationManager {
         notifyStartNextStep(step);
         startLogTrackingThread(step.getLogFile());
         startErrorLogTrackingThread(step.getErrorLogFile());
-        Thread.sleep(1000L); // wait for the log file to be tracked
+        Thread.sleep(500L); // wait for the log file to be ready
 
         step.run(getInstallationDialog().getProgressMonitor());
         Thread.sleep(1000L); // wait for the last line of the current run log to be appended
