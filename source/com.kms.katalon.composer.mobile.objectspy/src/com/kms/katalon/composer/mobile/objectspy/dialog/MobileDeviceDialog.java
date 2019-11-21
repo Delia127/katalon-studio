@@ -43,7 +43,7 @@ public class MobileDeviceDialog extends Dialog {
 
     public static final int DIALOG_WIDTH = 400;
 
-    public static final int DIALOG_HEIGHT = 600;
+    public static final int DIALOG_HEIGHT = 750;
 
     private double currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
 
@@ -257,10 +257,12 @@ public class MobileDeviceDialog extends Dialog {
 
             // Save scaled version
             getShell().getDisplay().syncExec(() -> {
-                Map<String, String> attributes = root.getAttributes();
                 double rootHeight = (double) img.getBounds().height;
-                if (attributes.containsKey(GUIObject.HEIGHT)) {
-                    rootHeight = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
+                if (root != null) {
+                    Map<String, String> attributes = root.getAttributes();
+                    if (attributes.containsKey(GUIObject.HEIGHT)) {
+                        rootHeight = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
+                    }
                 }
 
                 // Calculate scaled ratio

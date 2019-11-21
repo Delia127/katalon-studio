@@ -30,7 +30,14 @@ Require-Bundle: org.eclipse.osgi,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di,
  org.eclipse.ui.workbench,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ org.eclipse.e4.ui.workbench,
+ org.eclipse.osgi.services,
+ org.eclipse.e4.core.services,
+ com.kms.katalon.tracking,
+ com.kms.katalon.controller,
+ org.apache.commons.lang3,
+ com.kms.katalon.composer.explorer
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.kms.katalon.composer.mobile.execution.testsuite,
  com.kms.katalon.composer.mobile.util

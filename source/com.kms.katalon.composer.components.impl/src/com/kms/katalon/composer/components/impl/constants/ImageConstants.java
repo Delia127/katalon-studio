@@ -68,6 +68,8 @@ public class ImageConstants {
     // WebElementTreeEntity
     public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);
     
+    public static final Image IMG_16_MOBILE_TEST_OBJECT = ImageManager.getImage(IImageKeys.MOBILE_16);
+    
     public static final Image IMG_16_BTN_TEST_OBJECT = ImageManager.getImage(IImageKeys.BTN_TEST_OBJECT_16);
 
     public static final Image IMG_16_CBX_TEST_OBJECT = ImageManager.getImage(IImageKeys.CBX_TEST_OBJECT_16);

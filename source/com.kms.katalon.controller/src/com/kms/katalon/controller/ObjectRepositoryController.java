@@ -16,6 +16,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -48,6 +49,22 @@ public class ObjectRepositoryController extends EntityController {
     public WebElementEntity newTestObject(FolderEntity parentFolder, String testObjectName) throws ControllerException {
         try {
             return saveNewTestObject(newTestObjectWithoutSave(parentFolder, testObjectName));
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
+    }
+
+    /**
+     * Create and save new Mobile Object
+     * 
+     * @param parentFolder
+     * @param testObjectName Test Object name. Default name (New Element) will be used if this null or empty
+     * @return {@link WebElementEntity}
+     * @throws Exception
+     */
+    public MobileElementEntity newMobileElement(MobileElementEntity mobileElement) throws ControllerException {
+        try {
+            return (MobileElementEntity) getDataProviderSetting().getWebElementDataProvider().saveNewTestObject(mobileElement);
         } catch (Exception e) {
             throw new ControllerException(e);
         }

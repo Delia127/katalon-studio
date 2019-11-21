@@ -50,6 +50,10 @@ public class EntityPartUtil {
     public static String getTestObjectPartId(String testObjectPk) {
         return IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";
     }
+
+    public static String getMobileTestObjectPartId(String testObjectPk) {
+        return IdConstants.MOBILE_TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";
+    }
     
     public static String getWindowsTestObjectPartId(String windowsTestObjectId) {
         return IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + windowsTestObjectId + ")";

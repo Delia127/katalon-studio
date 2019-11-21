@@ -1,13 +1,16 @@
 package com.kms.katalon.core.mobile.keyword.internal;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.AndroidDriver;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.core.testobject.ConditionType;
+import com.kms.katalon.core.testobject.MobileTestObject;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 
@@ -248,6 +251,9 @@ public class MobileSearchEngine {
     }
 
     public WebElement findWebElement(boolean addLogEntries) throws Exception {
+        if (element instanceof MobileTestObject) {
+            return findElementByMobileLocator();
+        }
         if (driver instanceof AndroidDriver) {
             List<WebElement> elements = findAndroidElements((AndroidDriver) driver);
             if ((elements == null) || elements.isEmpty()) {
@@ -261,6 +267,38 @@ public class MobileSearchEngine {
             }
             return elements.get(0);
         }
+    }
+
+    private WebElement findElementByMobileLocator() {
+        MobileTestObject mobileTestObject = (MobileTestObject) element;
+        String mobileLocator = mobileTestObject.getMobileLocator();
+        switch (mobileTestObject.getMobileLocatorStrategy()) {
+            case ACCESSIBILITY:
+                return driver.findElement(MobileBy.AccessibilityId(mobileLocator));
+            case ANDROID_UI_AUTOMATOR:
+                return driver.findElement(MobileBy.AndroidUIAutomator(mobileLocator));
+            case ANDROID_VIEWTAG:
+                return driver.findElement(MobileBy.AndroidViewTag(mobileLocator));
+            case CUSTOM:
+                return driver.findElement(MobileBy.custom(mobileLocator));
+            case IMAGE:
+                return driver.findElement(MobileBy.image(mobileLocator));
+            case IOS_CLASS_CHAIN:
+                return driver.findElement(MobileBy.iOSClassChain(mobileLocator));
+            case IOS_PREDICATE_STRING:
+                return driver.findElement(MobileBy.iOSNsPredicateString(mobileLocator));
+            case CLASS_NAME:
+                return driver.findElement(By.className(mobileLocator));
+            case ID:
+                return driver.findElement(By.id(mobileLocator));
+            case NAME:
+                return driver.findElement(By.name(mobileLocator));
+            case XPATH:
+                return driver.findElement(By.xpath(mobileLocator));
+            default:
+                break;
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")

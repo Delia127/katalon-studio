@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -157,6 +158,15 @@ public class AndroidSnapshotMobileElement extends RenderedTreeSnapshotMobileElem
             htmlMobileElementProps.put(GUIObject.Y, String.valueOf(top));
             htmlMobileElementProps.put(GUIObject.WIDTH, String.valueOf(right - left));
             htmlMobileElementProps.put(GUIObject.HEIGHT, String.valueOf(bottom - top));
+        }
+
+        NamedNodeMap attributes = xmlElement.getAttributes();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            String attrName = attributes.item(i).getNodeName();
+            String attrValue = attributes.item(i).getNodeValue();
+            if (!htmlMobileElementProps.containsKey(attrName)) {
+                htmlMobileElementProps.put(attrName, attrValue);
+            }
         }
 
         String guiName = htmlMobileElementProps.get(AndroidProperties.ANDROID_CLASS);

@@ -25,6 +25,7 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.core.webui.constants.HTMLTags;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -65,6 +66,9 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
+        if (webElement instanceof MobileElementEntity) {
+            return ImageConstants.IMG_16_MOBILE_TEST_OBJECT;
+        }
 
         if (webElement instanceof WebServiceRequestEntity) {
             WebServiceRequestEntity wsEntity = (WebServiceRequestEntity) webElement;

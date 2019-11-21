@@ -35,4 +35,7 @@
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_-vSAgMz9Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.android" label="Android" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.menu.AndroidDebugExecutionDynamicContribution"/>
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="__EpMgMz9Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.ios.debug" label="iOS" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.menu.IosDebugExecutionDynamicContribution"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_a4-oEAH6EeqOItdycCsZ9A" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ccGnsAH6EeqOItdycCsZ9A" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.mobileObject" label="New Mobile Element" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.menu.NewMobileElementPopupMenuContribution"/>
+  </fragments>
 </fragment:ModelFragments>

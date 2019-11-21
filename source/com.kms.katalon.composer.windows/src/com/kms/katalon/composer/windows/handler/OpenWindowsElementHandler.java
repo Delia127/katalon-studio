@@ -93,7 +93,7 @@ public class OpenWindowsElementHandler {
                 stack.setSelectedElement(mPart);
                 
                 if (!alreadyOpened) {
-                    Trackings.trackOpenObject("testData");
+                    Trackings.trackOpenObject("windowsObject");
                 }
             }
         } catch (Exception e) {

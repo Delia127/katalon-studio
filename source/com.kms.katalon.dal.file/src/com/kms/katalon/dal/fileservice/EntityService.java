@@ -115,6 +115,7 @@ public final class EntityService {
                 com.kms.katalon.entity.repository.WebElementPropertyEntity.class,
                 com.kms.katalon.entity.repository.WebElementSelectorMethod.class,
                 com.kms.katalon.entity.repository.WindowsElementEntity.class,
+                com.kms.katalon.entity.repository.MobileElementEntity.class,
                 com.kms.katalon.entity.testcase.TestCaseEntity.class,
                 com.kms.katalon.entity.testdata.DataFileEntity.class,
                 com.kms.katalon.entity.testdata.InternalDataColumnEntity.class,
