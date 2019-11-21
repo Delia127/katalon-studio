@@ -175,7 +175,6 @@ public class KeywordLogger {
             String actionType, 
             Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-    	
     	if (shouldLogTestSteps()) {
     		logStartKeyword(name, attributes);
     		xmlKeywordLogger.startKeyword(name, actionType, attributes, keywordStack);
@@ -303,6 +302,13 @@ public class KeywordLogger {
         attributes.putAll(exceptionAttributes);
         logWarning(message, attributes);
     }
+    
+    public void logWarning(String message, Map<String, String> attributes, Throwable throwable, boolean isKeyword) {
+        if (isKeyword && !shouldLogTestSteps()) {
+            return;
+        }
+        logWarning(message, attributes, throwable);
+    }
 
     public void logWarning(String message, Map<String, String> attributes) {
         logger.warn(message);
@@ -320,6 +326,12 @@ public class KeywordLogger {
         xmlKeywordLogger.logPassed(message, attributes);
     }
 
+    public void logPassed(String message, Map<String, String> attributes, boolean isKeyword) {
+        if (isKeyword && !shouldLogTestSteps()) {
+            return;
+        }
+        logPassed(message, attributes);
+    }
 
     public void logInfo(String message) {
         logInfo(message, null);
@@ -348,6 +360,12 @@ public class KeywordLogger {
         logError(message, attributes);
     }
 
+    public void logError(String message, Map<String, String> attributes, Throwable throwable, boolean isKeyword) {
+        if (isKeyword && !shouldLogTestSteps()) {
+            return;
+        }
+        logError(message, attributes, throwable);
+    }
 
     public void logError(String message) {
         logError(message, null);

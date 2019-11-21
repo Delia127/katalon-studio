@@ -70,21 +70,25 @@ public class ClickKeyword extends WebUIAbstractKeyword {
                 int timeout = KeywordHelper.checkTimeout(RunConfiguration.getTimeOut())
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()))
                 Try.ofFailable({
+                    logger.logDebug("Trying Selenium click !");
                     webElement.click();
                     return Boolean.TRUE;
                 }).orElseTry({
+                    logger.logDebug("Trying to scroll to the element and use Selenium click !");
                     scrollToElement(webDriver, webElement);
                     WebDriverWait wait = new WebDriverWait(webDriver, timeout);
                     webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
                     webElement.click();
                     return Boolean.TRUE;
                 }).orElseTry({
+                    logger.logDebug("Trying to scroll the element and use Context click !");
                     scrollToElement(webDriver, webElement);
                     Actions builder = new Actions(webDriver);
                     builder.click();
                     builder.build().perform();
                     return Boolean.TRUE;
                 }).orElseTry({
+                    logger.logDebug("Trying Javascript click !");
                     JavascriptExecutor executor = (JavascriptExecutor) webDriver;
                     executor.executeScript("arguments[0].click();", webElement);
                     return Boolean.TRUE;

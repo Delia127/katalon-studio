@@ -36,6 +36,8 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 public class RunConfiguration {
 	
 	public static final String SMART_XPATH_BUNDLE_ID = "com.katalon.katalon-studio-smart-xpath";
+	
+	public static final String ALLOW_USING_SMART_XPATH = "allowUsingSmartXPath";
 
 	public static final String OVERRIDING_GLOBAL_VARIABLES = "overridingGlobalVariables";
 
@@ -542,13 +544,12 @@ public class RunConfiguration {
     }
     
 	public static Boolean shouldApplySmartXPath() {
-		if (getProperty(SMART_XPATH_BUNDLE_ID) != null) {
-			try {
-				return (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
-						.getBoolean("SmartXPathEnabled", true);
-			} catch (IOException e) {
-				KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage(), null, e);
-			}
+	    boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SMART_XPATH);
+		try {
+			return allowUsingSmartXPath && (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
+					.getBoolean("SmartXPathEnabled", true);
+		} catch (IOException e) {
+			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage(), null, e);
 		}
 		return false;
 	}
