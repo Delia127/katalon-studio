@@ -219,18 +219,20 @@ public class TestSuiteExecutor {
             errorCollector.getErrors().add(e);
         }
 
+        boolean isKeyword = true;
         if (errorCollector.containsErrors()) {
             endAllUnfinishedKeywords(keywordStack);
             Throwable firstError = errorCollector.getFirstError();
             String errorMessage = firstError.getMessage();
             if (ignoredIfFailed) {
-                logger.logWarning(errorMessage, null, firstError);
+                logger.logWarning(errorMessage, null, firstError, isKeyword);
             } else {
                 oldErrors.add(errorCollector.getFirstError());
-                logger.logError(errorMessage, null, firstError);
+                logger.logError(errorMessage, null, firstError, isKeyword);
             }
         } else {
-            logger.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, methodName));
+            logger.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, methodName),
+                    Collections.emptyMap(), isKeyword);
         }
 
         errorCollector.clearErrors();
