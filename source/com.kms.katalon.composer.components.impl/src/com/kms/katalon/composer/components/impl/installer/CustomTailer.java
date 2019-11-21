@@ -33,6 +33,12 @@ public class CustomTailer extends Tailer {
 
     private final boolean reOpen;
 
+    private RandomAccessFile reader = null;
+
+    private long position = 0L;
+
+    private long lastModified = 0L;
+
     public CustomTailer(final File file, final TailerListener listener) {
         this(file, listener, DEFAULT_DELAY_MILLIS);
     }
@@ -108,12 +114,6 @@ public class CustomTailer extends Tailer {
     public static Tailer create(final File file, final TailerListener listener) {
         return create(file, listener, DEFAULT_DELAY_MILLIS, false);
     }
-
-    private long position = 0L;
-
-    private long lastModified = 0L;
-
-    private RandomAccessFile reader = null;
 
     private boolean getRun() {
         return !Thread.currentThread().isInterrupted();
