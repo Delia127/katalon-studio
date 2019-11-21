@@ -47,10 +47,23 @@ public class PlatformHelper {
     public synchronized static Bundle installSmartXPathBundle() throws BundleException {
         Bundle bundle = Platform.getBundle(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
         if (bundle != null && !isSmartXPathBundleInstalled) {
-            bundle.start();
             PluginInstaller pluginInstaller = getPluginInstaller();
             pluginInstaller.register(bundle);
             isSmartXPathBundleInstalled = true;
+        }
+        return bundle;
+    }
+    
+    public static boolean isSmartXPathBundleInstalled() {
+        return isSmartXPathBundleInstalled;
+    }
+    
+    public synchronized static Bundle uninstallSmartXPathBundle() throws BundleException {
+        Bundle bundle = Platform.getBundle(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
+        if (bundle != null && isSmartXPathBundleInstalled) {
+            PluginInstaller pluginInstaller = getPluginInstaller();
+            pluginInstaller.softDeregister(bundle);
+            isSmartXPathBundleInstalled = false;
         }
         return bundle;
     }
