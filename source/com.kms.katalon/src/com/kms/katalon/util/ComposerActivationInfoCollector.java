@@ -16,9 +16,12 @@ import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.plugin.util.PlatformHelper;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
@@ -46,6 +49,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                     try {
                         ActivationInfoCollector.postEndSession();
                         ActivationInfoCollector.releaseLicense();
+                        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.ACTIVATION_DEACTIVATED, null);
                     } catch (Exception e) {
                         LogUtil.logError(e);
                     }
