@@ -1,22 +1,13 @@
 package com.kms.katalon.composer.components.impl.installer;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
-
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.nio.charset.Charset;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 
@@ -25,91 +16,205 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 public class CustomTailer extends Tailer {
     private TailerListener listener;
 
+    private static final String RAF_MODE = "r";
+
+    private final byte inbuf[];
+
+    private static final int DEFAULT_BUFSIZE = 4096;
+
+    private final boolean end = true;
+
+    private static final Charset DEFAULT_CHARSET = Charset.defaultCharset();
+
     public CustomTailer(File file, TailerListener listener) {
         super(file, listener);
         this.listener = listener;
+        this.inbuf = new byte[DEFAULT_BUFSIZE];
     }
 
     public CustomTailer(File file, TailerListener listener, long delayMillis) {
         super(file, listener, delayMillis);
         this.listener = listener;
+        this.inbuf = new byte[DEFAULT_BUFSIZE];
     }
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis, boolean end) {
+    public CustomTailer(File file, TailerListener listener, long delayMillis, final boolean end) {
         super(file, listener, delayMillis, end);
         this.listener = listener;
+        this.inbuf = new byte[DEFAULT_BUFSIZE];
     }
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis, boolean end, boolean reOpen) {
+    public CustomTailer(File file, TailerListener listener, long delayMillis, final boolean end, boolean reOpen) {
         super(file, listener, delayMillis, end, reOpen);
         this.listener = listener;
+        this.inbuf = new byte[DEFAULT_BUFSIZE];
     }
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis, boolean end, boolean reOpen,
+    public CustomTailer(File file, TailerListener listener, long delayMillis, final boolean end, boolean reOpen,
             int bufSize) {
         super(file, listener, delayMillis, end, reOpen, bufSize);
         this.listener = listener;
+        this.inbuf = new byte[DEFAULT_BUFSIZE];
     }
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis, boolean end, int bufSize) {
+    public CustomTailer(File file, TailerListener listener, long delayMillis, final boolean end, int bufSize) {
         super(file, listener, delayMillis, end, bufSize);
         this.listener = listener;
+        this.inbuf = new byte[DEFAULT_BUFSIZE];
     }
 
-    @SuppressWarnings({ "unchecked" })
+    private long position = 0L;
+
+    private long lastModified;
+
+    private RandomAccessFile reader = null;
+
+    private boolean getRun() {
+        return !Thread.currentThread().isInterrupted();
+    }
+
     @Override
     public void run() {
         File file = getFile();
-        WatchService watcher;
-        RandomAccessFile reader = null;
-        Long[] latestPos = { 0L };
+
         try {
-            watcher = FileSystems.getDefault().newWatchService();
-            Path dir = Paths.get(file.getParent());
-            dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-
-            while (true) {
-                WatchKey key = watcher.take();
-
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    WatchEvent.Kind<?> kind = event.kind();
-                    if (kind == OVERFLOW) {
-                        continue;
-                    }
-                    WatchEvent<Path> ev = (WatchEvent<Path>) event;
-                    Path filename = ev.context();
-                    if (kind == ENTRY_MODIFY && filename.toFile().getName().equals(file.getName())) {
-                        if (Thread.currentThread().isInterrupted()) {
-                            break;
-                        }
-                        reader = new RandomAccessFile(file, "r");
-                        reader.seek(latestPos[0]);
-                        BufferedReader buffer = new BufferedReader(new FileReader(reader.getFD()));
-                        reader.getChannel().position();
-                        String line;
-                        while ((line = buffer.readLine()) != null) {
-                            latestPos[0] = reader.getFilePointer();
-                            listener.handle(line);
-                        }
-                        buffer.close();
-                        reader.close();
-                        reader = null;
-                    }
+            while (getRun()) {
+                if (reader == null) {
+                    openFile();
                 }
 
-                boolean valid = key.reset();
-                if (!valid) {
+                final boolean isNewer = FileUtils.isFileNewer(file, lastModified);
+                final long length = file.length();
+
+                if (position > length) {
+                    listener.fileRotated();
+                    try (RandomAccessFile save = reader) {
+                        seek(position);
+                        checkFile(save);
+                        position = 0;
+                        reOpenFile();
+                    } catch (final FileNotFoundException e) {
+                        listener.fileNotFound();
+                        Thread.sleep(getDelay());
+                    }
+                    continue;
+                }
+
+                if (position < length) {
+                    seek(position);
+                    checkFile(reader);
+                    lastModified = file.lastModified();
+                } else if (isNewer) {
+                    position = 0;
+                    seek(position);
+                    checkFile(reader);
+                    lastModified = file.lastModified();
+                }
+
+//                closeFile();
+                try {
+                    Thread.sleep(getDelay());
+                } catch (InterruptedException error) {
                     break;
                 }
             }
-        } catch (IOException | InterruptedException error) {
+        } catch (InterruptedException | IOException error) {
             LoggerSingleton.logError(error);
+            listener.handle(error);
+            Thread.currentThread().interrupt();
         } finally {
+            closeFile();
+        }
+    }
+
+    private void openFile() throws InterruptedException {
+        File file = getFile();
+
+        while (getRun() && reader == null) {
+            try {
+                reader = new RandomAccessFile(file, RAF_MODE);
+            } catch (final FileNotFoundException e) {
+                listener.fileNotFound();
+            }
+
+            if (reader == null) {
+                Thread.sleep(getDelay());
+            } else {
+                // position = end ? file.length() : 0;
+                // lastModified = file.lastModified();
+            }
+        }
+    }
+
+    private void closeFile() {
+        if (reader != null) {
             try {
                 reader.close();
-            } catch (IOException e) {
-                //
+                reader = null;
+            } catch (IOException error) {
+                listener.handle(error);
             }
+        }
+    }
+
+    private void reOpenFile() throws InterruptedException {
+        closeFile();
+        openFile();
+    }
+
+    private void seek(long position) throws InterruptedException {
+        while (getRun()) {
+            try {
+                reader.seek(position);
+                break;
+            } catch (IOException e) {
+                reOpenFile();
+            }
+        }
+    }
+
+    private void checkFile(final RandomAccessFile reader) throws InterruptedException, IOException {
+        try (ByteArrayOutputStream lineBuf = new ByteArrayOutputStream(64)) {
+            long pos = reader.getFilePointer();
+            long rePos = pos; // position to re-read
+            int num;
+            boolean seenCR = false;
+            while ((num = reader.read(inbuf)) != -1) {
+                for (int i = 0; i < num; i++) {
+                    final byte ch = inbuf[i];
+                    switch (ch) {
+                        case '\n':
+                            seenCR = false; // swallow CR before LF
+                            listener.handle(new String(lineBuf.toByteArray(), DEFAULT_CHARSET));
+                            lineBuf.reset();
+                            rePos = pos + i + 1;
+                            break;
+                        case '\r':
+                            if (seenCR) {
+                                lineBuf.write('\r');
+                            }
+                            seenCR = true;
+                            break;
+                        default:
+                            if (seenCR) {
+                                seenCR = false; // swallow final CR
+                                listener.handle(new String(lineBuf.toByteArray(), DEFAULT_CHARSET));
+                                lineBuf.reset();
+                                rePos = pos + i + 1;
+                            }
+                            lineBuf.write(ch);
+                    }
+                }
+                pos = reader.getFilePointer();
+            }
+
+            reader.seek(rePos); // Ensure we can re-read if necessary
+
+            // if (listener instanceof TailerListenerAdapter) {
+            // ((TailerListenerAdapter) listener).endOfFileReached();
+            // }
+
+            position = reader.getFilePointer();
         }
     }
 }
