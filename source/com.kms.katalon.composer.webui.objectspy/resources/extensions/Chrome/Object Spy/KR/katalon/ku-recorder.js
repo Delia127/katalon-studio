@@ -94,6 +94,8 @@ class KURecorder {
         this.window.document.addEventListener("keyup", KURecorder.keyUpEventHandler.bind(this));
 
         this.rec_createInfoDiv();
+        var currentURL = this.window.document.url;	
+        this.checkForNavigateAction(currentURL);
     }
 
     // This part of code is copyright by Software Freedom Conservancy(SFC)
