@@ -178,7 +178,7 @@ public class TestCaseExecutor {
 
     private void postExecution() {
     	
-		if (RunConfiguration.getProperty(RunConfiguration.SMART_XPATH_BUNDLE_ID) != null) {
+		if (RunConfiguration.shouldApplySmartXPath()) {
 
 			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_OPENING);
 			logger.logInfo(StringConstants.SMART_XPATH_VISIT_BELOW_LINK);

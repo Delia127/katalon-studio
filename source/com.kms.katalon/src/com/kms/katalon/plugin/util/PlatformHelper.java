@@ -7,12 +7,15 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.plugin.models.Plugin;
 
 @SuppressWarnings("restriction")
 public class PlatformHelper {
     
     private static boolean isComposerArtifactBundleInstalled = false;
+    
+    private static boolean isSmartXPathBundleInstalled = false;
     
     public static Bundle installPlugin(Plugin plugin) throws BundleException {
         BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
@@ -37,6 +40,17 @@ public class PlatformHelper {
             PluginInstaller pluginInstaller = getPluginInstaller();
             pluginInstaller.register(bundle);
             isComposerArtifactBundleInstalled = true;
+        }
+        return bundle;
+    }
+    
+    public synchronized static Bundle installSmartXPathBundle() throws BundleException {
+        Bundle bundle = Platform.getBundle(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
+        if (bundle != null && !isSmartXPathBundleInstalled) {
+            bundle.start();
+            PluginInstaller pluginInstaller = getPluginInstaller();
+            pluginInstaller.register(bundle);
+            isSmartXPathBundleInstalled = true;
         }
         return bundle;
     }

@@ -18,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import com.google.gson.Gson;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -203,7 +204,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         
         propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
         
-        initializePluginPresence("com.katalon.katalon-studio-smart-xpath", propertyMap);
+//        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
         
         return propertyMap;
     }
