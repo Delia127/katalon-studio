@@ -76,7 +76,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
             }
         } catch (Exception e) {
             LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
         LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_END);
     }
@@ -229,7 +229,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
             }
         } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
             LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
