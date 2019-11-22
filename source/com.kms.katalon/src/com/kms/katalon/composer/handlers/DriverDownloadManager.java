@@ -10,6 +10,10 @@ import com.kms.katalon.execution.webui.driver.SeleniumWebDriverProvider;
 
 public class DriverDownloadManager {
 
+    public static void downloadDriver(WebUIDriverType typeDriver) throws InterruptedException, IOException {
+        downloadDriver(typeDriver, null, null);
+    }
+
     public static void downloadDriver(WebUIDriverType typeDriver, File logFile, File errorLogFile) throws InterruptedException, IOException {
 
         switch (typeDriver) {

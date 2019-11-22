@@ -71,7 +71,8 @@ public class InstallationManager {
         });
     }
 
-    private void handleFailedStep(InstallationStep step, RunInstallationStepException error) throws InterruptedException {
+    private void handleFailedStep(InstallationStep step, RunInstallationStepException error)
+            throws InterruptedException {
         UISynchronizeService.syncExec(() -> {
             getInstallationDialog()
                     .appendWarning("\r\nFailed to run the installation step: " + step.getTitle() + "\r\n");
@@ -84,13 +85,11 @@ public class InstallationManager {
         notifyStartNextStep(step);
         startLogTrackingThread(step.getLogFile());
         startErrorLogTrackingThread(step.getErrorLogFile());
-        Thread.sleep(1000L); // wait for the log file to be tracked
 
         step.run(getInstallationDialog().getProgressMonitor());
         Thread.sleep(1000L); // wait for the last line of the current run log to be appended
 
         handleStepResults(null, step);
-
     }
 
     private Thread startLogTrackingThread(File logFile) {
