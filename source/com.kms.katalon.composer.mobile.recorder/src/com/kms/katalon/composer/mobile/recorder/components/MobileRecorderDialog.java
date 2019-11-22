@@ -158,7 +158,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(950, 800);
+        return new Point(900, 800);
     }
 
     @Override
@@ -303,7 +303,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     protected int[] getSashFormChildsWeights() {
-        return new int[] { 6, 6 };
+        return new int[] { 5, 4 };
     }
 
     /**
