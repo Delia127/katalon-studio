@@ -2,14 +2,12 @@ package com.kms.katalon.composer.components.impl.installer;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -73,7 +71,8 @@ public class InstallationManager {
         });
     }
 
-    private void handleFailedStep(InstallationStep step, RunInstallationStepException error) throws InterruptedException {
+    private void handleFailedStep(InstallationStep step, RunInstallationStepException error)
+            throws InterruptedException {
         UISynchronizeService.syncExec(() -> {
             getInstallationDialog()
                     .appendWarning("\r\nFailed to run the installation step: " + step.getTitle() + "\r\n");
@@ -86,13 +85,11 @@ public class InstallationManager {
         notifyStartNextStep(step);
         startLogTrackingThread(step.getLogFile());
         startErrorLogTrackingThread(step.getErrorLogFile());
-        Thread.sleep(1000L); // wait for the log file to be tracked
 
         step.run(getInstallationDialog().getProgressMonitor());
         Thread.sleep(1000L); // wait for the last line of the current run log to be appended
 
         handleStepResults(null, step);
-
     }
 
     private Thread startLogTrackingThread(File logFile) {
