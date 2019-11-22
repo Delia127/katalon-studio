@@ -15,6 +15,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
@@ -68,7 +69,7 @@ public class Application implements IApplication {
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
 
-        if (Platform.getProduct().getId().equals("com.kms.katalon.console.product")) {
+        if (isKSRE()) {
             return runConsole(context, appArgs);
         }
         switch (runningModeParam) {
@@ -83,6 +84,10 @@ public class Application implements IApplication {
                 return IApplication.EXIT_OK;
         }
 
+    }
+
+    private boolean isKSRE() {
+        return Platform.getProduct().getId().equals("com.kms.katalon.console.product");
     }
 
     private Object runConsole(IApplicationContext context, final String[] appArgs) {
@@ -127,6 +132,11 @@ public class Application implements IApplication {
         String configRelativePath = Platform.OS_MACOSX.equals(Platform.getOS()) ? "../MacOS/config" : "config";
         if (Platform.inDevelopmentMode()) {
             configRelativePath += "-dev";
+        }
+
+        if (isKSRE()) {
+            configRelativePath = configRelativePath + "/session-" + KatalonApplication.SESSION_ID.substring(0, 8);
+            return new File(installLocation.getAbsolutePath(), configRelativePath);
         }
         return new File(installLocation.getAbsolutePath(), configRelativePath);
     }

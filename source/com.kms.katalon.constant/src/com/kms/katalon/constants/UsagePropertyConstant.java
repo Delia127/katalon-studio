@@ -25,7 +25,7 @@ public interface UsagePropertyConstant {
 
     public static final String PROPERTY_RUNNING_MODE = "runningMode";
 
-    public static final String PROPERTY_USER_KEY = "user_key";
+    public static final String PROPERTY_USER_KEY = "userKey";
 
     public static final String KEY_ORG_TIME = "orgTime";
 

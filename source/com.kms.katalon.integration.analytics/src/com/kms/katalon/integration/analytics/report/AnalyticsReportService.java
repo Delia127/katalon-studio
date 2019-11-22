@@ -23,6 +23,7 @@ import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.util.ApiKey;
+import com.kms.katalon.execution.util.ApiKeyOnPremise;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
@@ -44,7 +45,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
         boolean isIntegrationEnabled = false;
         try {
             isIntegrationEnabled = getSettingStore().isIntegrationEnabled();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             // do nothing
         }
         return isIntegrationEnabled;
@@ -62,7 +63,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
                 }
             } catch (Exception e ) {
                 LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-                throw new AnalyticsApiExeception(e);
+                throw AnalyticsApiExeception.wrap(e);
             }
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_END);
         } else {
@@ -75,8 +76,14 @@ public class AnalyticsReportService implements AnalyticsComponent {
 
         RunningMode runMode = ApplicationRunningMode.get();
         if (runMode == RunningMode.CONSOLE) {
-            String apiKey = ApiKey.get();
-            if (apiKey != null && !apiKey.isEmpty()) {
+            String apiKey = null;
+            if (getSettingStore().isOverrideAuthentication()) {
+                apiKey = ApiKeyOnPremise.get();
+            }
+            if (StringUtils.isEmpty(apiKey)) {
+                apiKey = ApiKey.get();
+            }
+            if (!StringUtils.isEmpty(apiKey)) {
                 return AnalyticsApiProvider.requestToken(serverUrl, "", apiKey);
             } else {
                 LogUtil.printErrorLine(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_SPECIFY_KATALON_API_KEY);
@@ -199,7 +206,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
     }
     
     public void updateExecutionProccess(AnalyticsTestRun testRun) throws AnalyticsApiExeception {
-    	try {
+        try {
             AnalyticsTokenInfo token = getKAToken();
             if (token != null) {
                 String serverUrl = getSettingStore().getServerEndpoint();
@@ -210,13 +217,13 @@ public class AnalyticsReportService implements AnalyticsComponent {
             }
         } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
             LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
-    public void sendTrackingActivity(AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
+    public void sendTrackingActivity(AnalyticsTracking trackingInfo) {
         try {
-            String serverUrl = getSettingStore().getServerEndpoint();
+            String serverUrl = ApplicationInfo.getTestOpsServer();
             String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
             String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));

@@ -151,8 +151,10 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY = DefaultRerunSetting.RETRY_OPTION;
 
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
-    
+
     private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
+
+    private static final String ARG_API_KEY_ON_PREMISE = OsgiConsoleOptionContributor.API_KEY_ON_PREMISE_OPTION;
 
     private Group grpPlatform;
 
@@ -907,7 +909,12 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (!StringUtils.isEmpty(txtAPIKey.getText())) {
             args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
         }
-        
+
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(currentProject.getFolderLocation());
+        if (analyticsSettingStore.isOverrideAuthentication()) {
+            args.put(ARG_API_KEY_ON_PREMISE, wrapArgumentValue(""));
+        }
 
         return args;
     }
@@ -1074,7 +1081,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         Thread getApiKey = new Thread(() -> {
             AnalyticsApiKey apiKey = null;
             try {
-                String serverUrl = analyticsSettingStore.getServerEndpoint();
+                String serverUrl = ApplicationInfo.getTestOpsServer();
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                 if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {

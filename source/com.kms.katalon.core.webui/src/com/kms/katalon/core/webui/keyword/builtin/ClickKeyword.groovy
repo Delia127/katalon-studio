@@ -2,6 +2,7 @@ package com.kms.katalon.core.webui.keyword.builtin
 
 import java.text.MessageFormat
 
+import org.codehaus.groovy.runtime.ExceptionUtils
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
@@ -41,6 +42,21 @@ public class ClickKeyword extends WebUIAbstractKeyword {
         FailureHandling flowControl = (FailureHandling)(params.length > 1 && params[1] instanceof FailureHandling ? params[1] : RunConfiguration.getDefaultFailureHandling())
         click(to,flowControl)
     }
+    
+    private void scrollToElement(WebDriver webDriver, WebElement webElement) {
+        try {
+            Actions builder = new Actions(webDriver);
+            builder.moveToElement(webElement);
+            builder.build().perform();
+        } catch(Exception e) {
+            logger.logError(e.getMessage());
+        }
+        try {
+            ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", webElement);
+        } catch(Exception e) {
+            logger.logError(e.getMessage());
+        }
+    }
 
     @CompileStatic
     public void click(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -52,19 +68,27 @@ public class ClickKeyword extends WebUIAbstractKeyword {
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
                 WebDriver webDriver = DriverFactory.getWebDriver();
                 int timeout = KeywordHelper.checkTimeout(RunConfiguration.getTimeOut())
-                WebDriverWait wait = new WebDriverWait(webDriver, timeout);
-                webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()))
                 Try.ofFailable({
-                    webElement.click()
+                    logger.logDebug("Trying Selenium click !");
+                    webElement.click();
                     return Boolean.TRUE;
                 }).orElseTry({
+                    logger.logDebug("Trying to scroll to the element and use Selenium click !");
+                    scrollToElement(webDriver, webElement);
+                    WebDriverWait wait = new WebDriverWait(webDriver, timeout);
+                    webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
+                    webElement.click();
+                    return Boolean.TRUE;
+                }).orElseTry({
+                    logger.logDebug("Trying to scroll the element and use Context click !");
+                    scrollToElement(webDriver, webElement);
                     Actions builder = new Actions(webDriver);
-                    builder.moveToElement(webElement);
                     builder.click();
                     builder.build().perform();
                     return Boolean.TRUE;
                 }).orElseTry({
+                    logger.logDebug("Trying Javascript click !");
                     JavascriptExecutor executor = (JavascriptExecutor) webDriver;
                     executor.executeScript("arguments[0].click();", webElement);
                     return Boolean.TRUE;
