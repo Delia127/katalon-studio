@@ -137,15 +137,14 @@ public class CustomTailer extends Tailer {
 
                 final boolean isModified = FileUtils.isFileNewer(file, lastModified);
                 final long length = file.length();
-                LoggerSingleton.logInfo(isModified + " - " + position + "/" + length + " : " + file.getName());
 
                 if (position > length) {
                     listener.fileRotated();
                     try (RandomAccessFile save = reader) {
+                        reader = new RandomAccessFile(file, RAF_MODE);
                         seek(position);
                         checkFile(save);
                         position = 0;
-                        reOpenFile();
                     } catch (final FileNotFoundException e) {
                         listener.fileNotFound();
                         Thread.sleep(getDelay());
@@ -164,7 +163,6 @@ public class CustomTailer extends Tailer {
                     seek(position);
                     checkFile(reader);
                     lastModified = file.lastModified();
-                    LoggerSingleton.logInfo("New File or File Truncated");
                 }
 
                 if (reOpen) {
@@ -177,7 +175,6 @@ public class CustomTailer extends Tailer {
                 }
             }
         } catch (InterruptedException | IOException error) {
-            LoggerSingleton.logError(error);
             listener.handle(error);
             Thread.currentThread().interrupt();
         } finally {
@@ -197,9 +194,6 @@ public class CustomTailer extends Tailer {
 
             if (reader == null) {
                 Thread.sleep(getDelay());
-            } else {
-                // position = end ? file.length() : 0;
-                // lastModified = file.lastModified();
             }
         }
     }
@@ -208,9 +202,10 @@ public class CustomTailer extends Tailer {
         if (reader != null) {
             try {
                 reader.close();
-                reader = null;
             } catch (IOException error) {
                 listener.handle(error);
+            } finally {
+                reader = null;
             }
         }
     }
@@ -226,6 +221,7 @@ public class CustomTailer extends Tailer {
                 reader.seek(position);
                 break;
             } catch (IOException e) {
+                Thread.sleep(getDelay());
                 reOpenFile();
             }
         }
