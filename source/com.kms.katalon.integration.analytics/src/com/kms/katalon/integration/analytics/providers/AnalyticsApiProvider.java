@@ -45,6 +45,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
@@ -246,7 +247,16 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("email", username);
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
-            uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
+            
+            KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+            if (KatalonPackage.ENGINE.equals(katalonPackage)) {
+                String isFloatingEngine = System.getenv("ECLIPSE_SANDBOX");
+                if ("1.11".equals(isFloatingEngine)) {
+                    katalonPackage = KatalonPackage.FLOATING_ENGINE;
+                }
+            }
+            uriBuilder.setParameter("package", katalonPackage.getPackageName());
+            
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
