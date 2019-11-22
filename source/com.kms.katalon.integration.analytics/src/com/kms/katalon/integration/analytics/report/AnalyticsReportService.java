@@ -29,12 +29,14 @@ import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.integration.analytics.util.FileUtils;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
@@ -50,21 +52,25 @@ public class AnalyticsReportService implements AnalyticsComponent {
         }
         return isIntegrationEnabled;
     }
-    
+
     public void upload(ReportFolder reportFolder) throws AnalyticsApiExeception {
         if (isIntegrationEnabled()) {
-            uploadReports(reportFolder);
+            uploadReports(reportFolder, false);
         } else {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_INTEGRATE_WITH_KA);
         }
     }
 
-    public void uploadReports(ReportFolder reportFolder) throws AnalyticsApiExeception {
+    public void uploadManually(ReportFolder reportFolder) throws AnalyticsApiExeception {
+        uploadReports(reportFolder, true);
+    }
+
+    public void uploadReports(ReportFolder reportFolder, boolean isManually) throws AnalyticsApiExeception {
         LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
         try {
             AnalyticsTokenInfo token = getKAToken();
             if (token != null) {
-                perform(token.getAccess_token(), reportFolder);
+                perform(token.getAccess_token(), reportFolder, isManually);
             } else {
                 LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
             }
@@ -100,15 +106,17 @@ public class AnalyticsReportService implements AnalyticsComponent {
         return AnalyticsApiProvider.requestToken(serverUrl, email, password);
     }
 
-    private void perform(String token, ReportFolder reportFolder) throws Exception {
+    private void perform(String token, ReportFolder reportFolder, boolean isManually) throws Exception {
     	if (reportFolder.isRunTestSuite()) {
             LogUtil.printOutputLine("Uploading log files of test suite");
     	} else {
             LogUtil.printOutputLine("Uploading log files of test suite collection");
     	}
-        String serverUrl = getSettingStore().getServerEndpoint();
+    	AnalyticsSettingStore settingStore = getSettingStore();
+        String serverUrl = settingStore.getServerEndpoint();
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        Long projectId = getSettingStore().getProject().getId();
+        AnalyticsProject analyticsProject = isManually ? settingStore.getManualProject() : settingStore.getProject();
+        Long projectId = analyticsProject.getId();
         List<Path> files = scanFiles(reportFolder);
         long timestamp = System.currentTimeMillis();
         Path reportLocation = Paths.get(FolderController.getInstance().getReportRoot(project).getLocation());

@@ -312,8 +312,8 @@ public class UploadSelectionDialog extends Dialog {
             if (teams != null && teams.size() > 0) {
                 team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
             }
-            analyticsSettingStore.setTeam(team);
-            analyticsSettingStore.setProject(
+            analyticsSettingStore.setManualTeam(team);
+            analyticsSettingStore.setManualProject(
                     cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
         } catch (IOException e1) {
             LoggerSingleton.logError(e1);

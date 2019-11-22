@@ -944,7 +944,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
                         monitor.worked(1);
                         ReportFolder reportFolder = new ReportFolder(testSuiteLogRecord.getLogFolder());
-                        analyticsReportService.uploadReports(reportFolder);
+                        analyticsReportService.uploadManually(reportFolder);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
                         monitor.worked(2);
                     } catch (final AnalyticsApiExeception ex) {
