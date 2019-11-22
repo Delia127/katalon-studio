@@ -14,60 +14,106 @@ import org.apache.commons.io.input.TailerListener;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 
 public class CustomTailer extends Tailer {
-    private TailerListener listener;
+
+    private static final int DEFAULT_DELAY_MILLIS = 1000;
 
     private static final String RAF_MODE = "r";
 
-    private final byte inbuf[];
-
     private static final int DEFAULT_BUFSIZE = 4096;
-
-    private final boolean end = true;
 
     private static final Charset DEFAULT_CHARSET = Charset.defaultCharset();
 
-    public CustomTailer(File file, TailerListener listener) {
-        super(file, listener);
-        this.listener = listener;
-        this.inbuf = new byte[DEFAULT_BUFSIZE];
-    }
+    private final byte inbuf[];
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis) {
-        super(file, listener, delayMillis);
-        this.listener = listener;
-        this.inbuf = new byte[DEFAULT_BUFSIZE];
-    }
+    private final Charset charset;
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis, final boolean end) {
-        super(file, listener, delayMillis, end);
-        this.listener = listener;
-        this.inbuf = new byte[DEFAULT_BUFSIZE];
-    }
+    private final boolean end;
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis, final boolean end, boolean reOpen) {
-        super(file, listener, delayMillis, end, reOpen);
-        this.listener = listener;
-        this.inbuf = new byte[DEFAULT_BUFSIZE];
-    }
+    private final TailerListener listener;
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis, final boolean end, boolean reOpen,
-            int bufSize) {
-        super(file, listener, delayMillis, end, reOpen, bufSize);
-        this.listener = listener;
-        this.inbuf = new byte[DEFAULT_BUFSIZE];
-    }
+    private final boolean reOpen;
 
-    public CustomTailer(File file, TailerListener listener, long delayMillis, final boolean end, int bufSize) {
-        super(file, listener, delayMillis, end, bufSize);
-        this.listener = listener;
-        this.inbuf = new byte[DEFAULT_BUFSIZE];
-    }
+    private RandomAccessFile reader = null;
 
     private long position = 0L;
 
-    private long lastModified;
+    private long lastModified = 0L;
 
-    private RandomAccessFile reader = null;
+    public CustomTailer(final File file, final TailerListener listener) {
+        this(file, listener, DEFAULT_DELAY_MILLIS);
+    }
+
+    public CustomTailer(final File file, final TailerListener listener, final long delayMillis) {
+        this(file, listener, delayMillis, false);
+    }
+
+    public CustomTailer(final File file, final TailerListener listener, final long delayMillis, final boolean end) {
+        this(file, listener, delayMillis, end, DEFAULT_BUFSIZE);
+    }
+
+    public CustomTailer(final File file, final TailerListener listener, final long delayMillis, final boolean end,
+            final boolean reOpen) {
+        this(file, listener, delayMillis, end, reOpen, DEFAULT_BUFSIZE);
+    }
+
+    public CustomTailer(final File file, final TailerListener listener, final long delayMillis, final boolean end,
+            final int bufSize) {
+        this(file, listener, delayMillis, end, false, bufSize);
+    }
+
+    public CustomTailer(final File file, final TailerListener listener, final long delayMillis, final boolean end,
+            final boolean reOpen, final int bufSize) {
+        this(file, DEFAULT_CHARSET, listener, delayMillis, end, reOpen, bufSize);
+    }
+
+    public CustomTailer(final File file, final Charset charset, final TailerListener listener, final long delayMillis,
+            final boolean end, final boolean reOpen, final int bufSize) {
+        super(file, listener, delayMillis, end, bufSize);
+        this.listener = listener;
+        listener.init(this);
+
+        this.end = end;
+        this.reOpen = reOpen;
+        this.inbuf = new byte[bufSize];
+        this.charset = charset;
+    }
+
+    public static Tailer create(final File file, final TailerListener listener, final long delayMillis,
+            final boolean end, final int bufSize) {
+        return create(file, listener, delayMillis, end, false, bufSize);
+    }
+
+    public static Tailer create(final File file, final TailerListener listener, final long delayMillis,
+            final boolean end, final boolean reOpen, final int bufSize) {
+        return create(file, DEFAULT_CHARSET, listener, delayMillis, end, reOpen, bufSize);
+    }
+
+    public static Tailer create(final File file, final Charset charset, final TailerListener listener,
+            final long delayMillis, final boolean end, final boolean reOpen, final int bufSize) {
+        final Tailer tailer = new CustomTailer(file, charset, listener, delayMillis, end, reOpen, bufSize);
+        final Thread thread = new Thread(tailer);
+        thread.setDaemon(true);
+        thread.start();
+        return tailer;
+    }
+
+    public static Tailer create(final File file, final TailerListener listener, final long delayMillis,
+            final boolean end) {
+        return create(file, listener, delayMillis, end, DEFAULT_BUFSIZE);
+    }
+
+    public static Tailer create(final File file, final TailerListener listener, final long delayMillis,
+            final boolean end, final boolean reOpen) {
+        return create(file, listener, delayMillis, end, reOpen, DEFAULT_BUFSIZE);
+    }
+
+    public static Tailer create(final File file, final TailerListener listener, final long delayMillis) {
+        return create(file, listener, delayMillis, false);
+    }
+
+    public static Tailer create(final File file, final TailerListener listener) {
+        return create(file, listener, DEFAULT_DELAY_MILLIS, false);
+    }
 
     private boolean getRun() {
         return !Thread.currentThread().isInterrupted();
@@ -78,21 +124,27 @@ public class CustomTailer extends Tailer {
         File file = getFile();
 
         try {
+            openFile();
+            if (end) {
+                position = file.length();
+                seek(position);
+            }
+
             while (getRun()) {
                 if (reader == null) {
                     openFile();
                 }
 
-                final boolean isNewer = FileUtils.isFileNewer(file, lastModified);
+                final boolean isModified = FileUtils.isFileNewer(file, lastModified);
                 final long length = file.length();
 
                 if (position > length) {
                     listener.fileRotated();
                     try (RandomAccessFile save = reader) {
+                        reader = new RandomAccessFile(file, RAF_MODE);
                         seek(position);
                         checkFile(save);
                         position = 0;
-                        reOpenFile();
                     } catch (final FileNotFoundException e) {
                         listener.fileNotFound();
                         Thread.sleep(getDelay());
@@ -104,14 +156,18 @@ public class CustomTailer extends Tailer {
                     seek(position);
                     checkFile(reader);
                     lastModified = file.lastModified();
-                } else if (isNewer) {
-                    position = 0;
+                } else if (isModified) {
+                    if (length == 0) {
+                        position = 0;
+                    }
                     seek(position);
                     checkFile(reader);
                     lastModified = file.lastModified();
                 }
 
-//                closeFile();
+                if (reOpen) {
+                    closeFile();
+                }
                 try {
                     Thread.sleep(getDelay());
                 } catch (InterruptedException error) {
@@ -119,7 +175,6 @@ public class CustomTailer extends Tailer {
                 }
             }
         } catch (InterruptedException | IOException error) {
-            LoggerSingleton.logError(error);
             listener.handle(error);
             Thread.currentThread().interrupt();
         } finally {
@@ -139,9 +194,6 @@ public class CustomTailer extends Tailer {
 
             if (reader == null) {
                 Thread.sleep(getDelay());
-            } else {
-                // position = end ? file.length() : 0;
-                // lastModified = file.lastModified();
             }
         }
     }
@@ -150,9 +202,10 @@ public class CustomTailer extends Tailer {
         if (reader != null) {
             try {
                 reader.close();
-                reader = null;
             } catch (IOException error) {
                 listener.handle(error);
+            } finally {
+                reader = null;
             }
         }
     }
@@ -168,6 +221,7 @@ public class CustomTailer extends Tailer {
                 reader.seek(position);
                 break;
             } catch (IOException e) {
+                Thread.sleep(getDelay());
                 reOpenFile();
             }
         }
@@ -185,7 +239,7 @@ public class CustomTailer extends Tailer {
                     switch (ch) {
                         case '\n':
                             seenCR = false; // swallow CR before LF
-                            listener.handle(new String(lineBuf.toByteArray(), DEFAULT_CHARSET));
+                            listener.handle(new String(lineBuf.toByteArray(), charset));
                             lineBuf.reset();
                             rePos = pos + i + 1;
                             break;
@@ -198,7 +252,7 @@ public class CustomTailer extends Tailer {
                         default:
                             if (seenCR) {
                                 seenCR = false; // swallow final CR
-                                listener.handle(new String(lineBuf.toByteArray(), DEFAULT_CHARSET));
+                                listener.handle(new String(lineBuf.toByteArray(), charset));
                                 lineBuf.reset();
                                 rePos = pos + i + 1;
                             }
