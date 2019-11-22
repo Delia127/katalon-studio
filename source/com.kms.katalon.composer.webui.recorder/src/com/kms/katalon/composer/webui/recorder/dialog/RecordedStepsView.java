@@ -533,7 +533,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                             getTreeTableInput().disable();
                             break;
                         case TreeTableMenuItemConstants.RUN_FROM_THIS_STEP_ID:
-                            runFromFirstSelectedStep();
+                            if (isEnterpriseAccount()) {
+                                runFromFirstSelectedStep();
+                            }
                             break;
                         case TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID:
                             if (isEnterpriseAccount()) {
@@ -558,15 +560,15 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 boolean hasSelection = tree.getSelectionCount() > 0;
                 menu = new Menu(tree);
 
-                MenuItem runFromThisStepMenuItem = new MenuItem(menu, SWT.PUSH);
-                runFromThisStepMenuItem.setText(
-                        createMenuItemLabel(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_HERE, KeyEventUtil
-                                .geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
-                runFromThisStepMenuItem.addSelectionListener(selectionListener);
-                runFromThisStepMenuItem.setID(TreeTableMenuItemConstants.RUN_FROM_THIS_STEP_ID);
-                runFromThisStepMenuItem.setEnabled(hasSelection);
-
                 if (isEnterpriseAccount()) {
+                    MenuItem runFromThisStepMenuItem = new MenuItem(menu, SWT.PUSH);
+                    runFromThisStepMenuItem.setText(
+                            createMenuItemLabel(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_HERE, KeyEventUtil
+                                    .geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
+                    runFromThisStepMenuItem.addSelectionListener(selectionListener);
+                    runFromThisStepMenuItem.setID(TreeTableMenuItemConstants.RUN_FROM_THIS_STEP_ID);
+                    runFromThisStepMenuItem.setEnabled(hasSelection);
+                    
                     MenuItem runSelectedStepsMenuItem = new MenuItem(menu, SWT.PUSH);
                     runSelectedStepsMenuItem.setText(createMenuItemLabel(
                             ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
@@ -574,9 +576,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                     runSelectedStepsMenuItem.addSelectionListener(selectionListener);
                     runSelectedStepsMenuItem.setID(TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID);
                     runSelectedStepsMenuItem.setEnabled(hasSelection);
+                    
+                    new MenuItem(menu, SWT.SEPARATOR);
                 }
-
-                new MenuItem(menu, SWT.SEPARATOR);
 
                 MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
                 removeMenuItem.setText(createMenuItemLabel(GlobalStringConstants.DELETE,
@@ -678,7 +680,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
                     // Run from first selected steps
                     if (e.keyCode == 'e' && ((e.stateMask & SWT.SHIFT) == SWT.SHIFT)) {
-                        runFromFirstSelectedStep();
+                        if (isEnterpriseAccount()) {
+                            runFromFirstSelectedStep();
+                        }
                         return;
                     }
 
