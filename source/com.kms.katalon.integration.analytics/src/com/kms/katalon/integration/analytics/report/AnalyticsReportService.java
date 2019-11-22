@@ -112,7 +112,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
     	} else {
             LogUtil.printOutputLine("Uploading log files of test suite collection");
     	}
-    	AnalyticsSettingStore settingStore = getSettingStore();
+        AnalyticsSettingStore settingStore = getSettingStore();
         String serverUrl = settingStore.getServerEndpoint();
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         AnalyticsProject analyticsProject = isManually ? settingStore.getManualProject() : settingStore.getProject();

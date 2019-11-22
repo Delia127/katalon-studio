@@ -161,7 +161,8 @@ public class UploadSelectionDialog extends Dialog {
             public void widgetSelected(SelectionEvent e) {
                 AnalyticsTeam team = null;
                 if (teams != null && teams.size() > 0) {
-                    team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    AnalyticsTeam selectedTeam = analyticsSettingStore.getManualTeam();
+                    team = teams.get(AnalyticsAuthorizationHandler.getTeamIndex(teams, selectedTeam));
                 }
 
                 NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(), serverUrl,
@@ -170,8 +171,8 @@ public class UploadSelectionDialog extends Dialog {
                     AnalyticsProject createdProject = dialog.getAnalyticsProject();
                     if (createdProject != null) {
                         try {
-                            analyticsSettingStore.setProject(createdProject);
-                            analyticsSettingStore.setTeam(team);
+                            analyticsSettingStore.setManualProject(createdProject);
+                            analyticsSettingStore.setManualTeam(team);
                             if (projects == null) {
                                 return;
                             }
@@ -207,9 +208,8 @@ public class UploadSelectionDialog extends Dialog {
                             ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
                     UISynchronizeService.syncExec(() -> {
                         try {
-                            analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
-                            AnalyticsTeam team = teams.get(
-                                    AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+                            AnalyticsTeam team = teams.get(cbbTeams.getSelectionIndex());
+                            analyticsSettingStore.setManualTeam(team);
                             AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
                                     password, analyticsSettingStore);
                             projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo);
@@ -233,11 +233,11 @@ public class UploadSelectionDialog extends Dialog {
     }
 
     private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects) {
-
         if (projects != null && !projects.isEmpty()) {
             cbbProjects.setItems(
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+            AnalyticsProject selectedProject = analyticsSettingStore.getManualProject();
+            cbbProjects.select(AnalyticsAuthorizationHandler.getProjectIndex(selectedProject, projects));
         }
     }
 
@@ -248,14 +248,14 @@ public class UploadSelectionDialog extends Dialog {
             UISynchronizeService.syncExec(() -> {
                 tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
                 teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, organization.getId(), tokenInfo);
-                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, teams.get(0), tokenInfo);
+                AnalyticsTeam manualTeam = analyticsSettingStore.getManualTeam();
+                AnalyticsTeam defaultTeam = teams.get(AnalyticsAuthorizationHandler.getTeamIndex(teams, manualTeam));
+                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, defaultTeam, tokenInfo);
 
                 fillData();
                 enableObject(true);
 
-                if (teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams))
-                        .getRole()
-                        .equals("USER")) {
+                if (defaultTeam.getRole().equals("USER")) {
                     btnCreate.setEnabled(false);
                 }
                 setProgressMessage(StringUtils.EMPTY, false);
@@ -273,7 +273,8 @@ public class UploadSelectionDialog extends Dialog {
     private void fillData() {
         try {
             cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-            cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+            AnalyticsTeam manualTeam = analyticsSettingStore.getManualTeam();
+            cbbTeams.select(AnalyticsAuthorizationHandler.getTeamIndex(teams, manualTeam));
             setProjectsBasedOnTeam(teams, projects);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -310,7 +311,7 @@ public class UploadSelectionDialog extends Dialog {
         try {
             AnalyticsTeam team = null;
             if (teams != null && teams.size() > 0) {
-                team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+                team = teams.get(cbbTeams.getSelectionIndex());
             }
             analyticsSettingStore.setManualTeam(team);
             analyticsSettingStore.setManualProject(
