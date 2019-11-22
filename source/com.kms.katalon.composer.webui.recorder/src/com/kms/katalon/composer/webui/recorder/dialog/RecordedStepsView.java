@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openqa.selenium.Keys;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -535,7 +536,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                             runFromFirstSelectedStep();
                             break;
                         case TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID:
-                            runSelectedSteps();
+                            if (isEnterpriseAccount()) {
+                                runSelectedSteps();
+                            }
                             break;
                     }
                 }
@@ -563,13 +566,15 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 runFromThisStepMenuItem.setID(TreeTableMenuItemConstants.RUN_FROM_THIS_STEP_ID);
                 runFromThisStepMenuItem.setEnabled(hasSelection);
 
-                MenuItem runSelectedStepsMenuItem = new MenuItem(menu, SWT.PUSH);
-                runSelectedStepsMenuItem.setText(createMenuItemLabel(
-                        ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
-                runSelectedStepsMenuItem.addSelectionListener(selectionListener);
-                runSelectedStepsMenuItem.setID(TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID);
-                runSelectedStepsMenuItem.setEnabled(hasSelection);
+                if (isEnterpriseAccount()) {
+                    MenuItem runSelectedStepsMenuItem = new MenuItem(menu, SWT.PUSH);
+                    runSelectedStepsMenuItem.setText(createMenuItemLabel(
+                            ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
+                            KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
+                    runSelectedStepsMenuItem.addSelectionListener(selectionListener);
+                    runSelectedStepsMenuItem.setID(TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID);
+                    runSelectedStepsMenuItem.setEnabled(hasSelection);
+                }
 
                 new MenuItem(menu, SWT.SEPARATOR);
 
@@ -665,7 +670,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
                     // Run selected steps
                     if (e.keyCode == 'e' && ((e.stateMask & SWT.ALT) == SWT.ALT)) {
-                        runSelectedSteps();
+                        if (isEnterpriseAccount()) {
+                            runSelectedSteps();
+                        }
                         return;
                     }
 
@@ -682,5 +689,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             }
         });
 
+    }
+
+    private boolean isEnterpriseAccount() {
+        return LicenseUtil.isNotFreeLicense();
     }
 }
