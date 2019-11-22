@@ -248,14 +248,14 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
             
-            String packageName = KatalonApplication.getKatalonPackage().getPackageName();
-            if (KatalonPackage.ENGINE.getPackageName().equals(packageName)) {
+            KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+            if (KatalonPackage.ENGINE.equals(katalonPackage)) {
                 String isFloatingEngine = System.getenv("ECLIPSE_SANDBOX");
                 if ("1.11".equals(isFloatingEngine)) {
-                    packageName = "FLOATING_ENGINE";
+                    katalonPackage = KatalonPackage.FLOATING_ENGINE;
                 }
             }
-            uriBuilder.setParameter("package", packageName);
+            uriBuilder.setParameter("package", katalonPackage.getPackageName());
             
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
