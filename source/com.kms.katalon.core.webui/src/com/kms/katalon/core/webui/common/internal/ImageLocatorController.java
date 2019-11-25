@@ -56,7 +56,10 @@ public class ImageLocatorController {
         logger.logDebug("Page Scroll Height: " + pageScrollHeight);
         do {
             try {
-                scrolledAmount = iterationCount * viewPortHeight;
+                int viewHeight = ((Number) ((JavascriptExecutor) webDriver).executeScript("return window.innerHeight")).intValue();
+                int imageHeight = ImageIO.read(new File(pathToScreenshot)).getHeight();
+                logger.logInfo(viewHeight + " , " + imageHeight);
+                scrolledAmount = iterationCount * Math.abs(viewHeight - imageHeight);
                 if (!scroll(webDriver, scrolledAmount)) {
                     break;
                 }
