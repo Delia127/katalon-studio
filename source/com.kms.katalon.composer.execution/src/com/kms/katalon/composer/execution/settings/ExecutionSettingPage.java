@@ -168,7 +168,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
 	        chckApplyNeighborXpaths.setLayoutData(gdChckApplyNeighborXpaths);
          */
         
-        if (true) {
+        if (LicenseUtil.isNotFreeLicense()) {
             Group grpImageRecognition = new Group(parent, SWT.NONE);
             grpImageRecognition.setText("Image Recognition");
             GridLayout glGrpImageRecognition = new GridLayout(3, false);

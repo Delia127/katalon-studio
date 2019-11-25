@@ -207,7 +207,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
         propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
-        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, true);
+        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, LicenseUtil.isNotFreeLicense());
         initializePluginPresence("com.katalon.katalon-studio-smart-xpath", propertyMap);
         
         return propertyMap;
