@@ -810,11 +810,19 @@ public class WebUiCommonHelper extends KeywordHelper {
                 List<WebElement> elementsByOtherMethods = findWebElementsWithSmartXPath(webDriver, objectInsideShadowDom, testObject);
                 return elementsByOtherMethods;
             }
+            final int timeOut2 = timeOut;
+            if (RunConfiguration.shouldApplyImageRecognition()) {
+                return testObject.getProperties()
+                        .stream()
+                        .filter(a -> a.getName().equals("screenshot"))
+                        .findAny()
+                        .map(present -> {
+                            return ImageLocatorController.findElementByScreenShot(webDriver, present.getValue(), timeOut2);
+                        })
+                        .orElse(Collections.emptyList());
+            }
             
-            return testObject.getProperties().stream().filter(a -> a.getName().equals("screenshot")).findAny()
-                    .map(present -> {
-                        return ImageLocatorController.findElementByScreenShot(webDriver, present.getValue());
-                    }).orElse(Collections.emptyList());
+            return Collections.emptyList();
 
         } catch (TimeoutException e) {
             // timeOut, do nothing

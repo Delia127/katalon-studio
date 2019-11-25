@@ -58,7 +58,7 @@ import com.kms.katalon.util.listener.EventManager;
 
 public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEvent>, EventManager<ObjectSpyEvent> {
 
-    private static final String WEB_ELEMENT_SCREENSHOT_PROPERTY = "Screenshot";
+    private static final String WEB_ELEMENT_SCREENSHOT_PROPERTY = "screenshot";
 
     private static final String HIGHLIGHT_JS_PATH = "/resources/js/highlight.js";
 

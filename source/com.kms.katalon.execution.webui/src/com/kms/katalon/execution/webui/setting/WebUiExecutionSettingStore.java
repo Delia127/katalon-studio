@@ -38,6 +38,8 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
 
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
 
+    public static final boolean EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED = true;
+
     
     public static WebUiExecutionSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -195,6 +197,18 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         	return SelectorMethod.BASIC;
         }
         return SelectorMethod.valueOf(str);
-    }    
+    }
+
+    public boolean getImageRecognitionEnabled() {
+        try {
+            return getBoolean(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, true);
+        } catch (IOException e) {
+            return EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED;
+        }
+    }
+
+    public void setDefaultImageRecognitionEnabled(boolean selection) throws IOException {
+        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, selection);
+    }
 
 }
