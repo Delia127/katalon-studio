@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 
 /**
@@ -20,7 +21,7 @@ public interface MobileElementInspectorDialog {
      * </ul>
      * @param element
      */
-    void setSelectedElement(CapturedMobileElement element);
+    void setSelectedElement(MobileElement element);
 
     void updateSelectedElement(CapturedMobileElement element);
     
@@ -42,5 +43,6 @@ public interface MobileElementInspectorDialog {
     
     // Focus and edit `Captured element name` on `Properties Composite`
     void focusAndEditCapturedElementName();
-    
+
+    CapturedMobileElement captureMobileElement(TreeMobileElement treeElement);
 }

@@ -88,7 +88,7 @@ public class MobileAllObjectsWithCheckboxComposite extends Composite {
                 Point pt = new Point(e.x, e.y);
                 TreeItem item = tree.getItem(pt);
                 if (item != null) {
-                    parentDialog.highlightElement((MobileElement) item.getData());
+                    parentDialog.setSelectedElement((MobileElement) item.getData());
                 }
             }
         });
@@ -98,7 +98,11 @@ public class MobileAllObjectsWithCheckboxComposite extends Composite {
             public void checkStateChanged(CheckStateChangedEvent event) {
                 TreeMobileElement selectedElement = (TreeMobileElement) event.getElement();
                 if (event.getChecked()) {
-                    parentDialog.addCapturedElement(selectedElement.newCapturedElement());
+					CapturedMobileElement captureMobileElement = parentDialog.captureMobileElement(selectedElement);
+					if (captureMobileElement == null) {
+						return;
+					}
+					parentDialog.addCapturedElement(captureMobileElement);
                 } else {
                     CapturedMobileElement capturedElement = selectedElement.getCapturedElement();
                     if (parentDialog.isAddedCapturedElement(capturedElement)) {

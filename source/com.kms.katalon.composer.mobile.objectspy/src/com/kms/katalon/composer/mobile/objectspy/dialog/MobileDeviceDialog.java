@@ -251,7 +251,6 @@ public class MobileDeviceDialog extends Dialog {
 
     public void refreshDialog(File imageFile, MobileElement root) {
         try {
-
             ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
             Image img = imgDesc.createImage();
 
@@ -260,7 +259,10 @@ public class MobileDeviceDialog extends Dialog {
                 double rootHeight = (double) img.getBounds().height;
                 if (root != null) {
                     Map<String, String> attributes = root.getAttributes();
-                    if (attributes.containsKey(GUIObject.HEIGHT)) {
+                    if (attributes.containsKey(GUIObject.HEIGHT)
+                    		&& attributes.containsKey(GUIObject.WIDTH)
+                    		&& attributes.containsKey(GUIObject.X)
+                    		&& attributes.containsKey(GUIObject.Y)) {
                         rootHeight = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
                     }
                 }

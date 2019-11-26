@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 
+import io.appium.java_client.AppiumDriver;
+
 public interface TreeMobileElement extends MobileElement {
 
     TreeMobileElement getParentElement();
@@ -12,7 +14,7 @@ public interface TreeMobileElement extends MobileElement {
 
     CapturedMobileElement getCapturedElement();
 
-    CapturedMobileElement newCapturedElement();
+    CapturedMobileElement newCapturedElement(AppiumDriver<?> windowsDriver);
 
     void setCapturedElement(CapturedMobileElement object);
 

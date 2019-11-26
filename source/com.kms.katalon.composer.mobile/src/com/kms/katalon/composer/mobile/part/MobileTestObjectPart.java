@@ -188,7 +188,7 @@ public class MobileTestObjectPart implements IComposerPart {
         lblLocator.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
         lblLocator.setText("Locator");
 
-        txtLocator = new StyledText(locatorDetailsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+        txtLocator = new StyledText(locatorDetailsComposite, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
         GridData gdTxtEditor = new GridData(SWT.FILL, SWT.FILL, true, false);
         gdTxtEditor.heightHint = 100;
         txtLocator.setLayoutData(gdTxtEditor);

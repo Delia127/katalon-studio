@@ -15,9 +15,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -53,6 +53,7 @@ import com.kms.katalon.composer.mobile.objectspy.composites.MobileElementPropert
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverterV2;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
@@ -64,6 +65,7 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -356,13 +358,13 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
             private List<ITreeEntity> addElementsToRepository(FolderTreeEntity folderTreeEntity, FolderEntity folder)
                     throws Exception {
-                CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
+                CapturedMobileElementConverterV2 converter = new CapturedMobileElementConverterV2();
                 List<ITreeEntity> newTreeEntities = new ArrayList<>();
 
                 ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
                 MobileDriverType currentMobileType = getCurrentMobileDriverType();
                 for (CapturedMobileElement mobileElement : capturedObjectsComposite.getAllCheckedElements()) {
-                    WebElementEntity testObject = converter.convert(mobileElement, folder, currentMobileType);
+                    MobileElementEntity testObject = converter.convert(mobileElement, folder, currentMobileType);
                     objectRepositoryController.updateTestObject(testObject);
                     newTreeEntities.add(new WebElementTreeEntity(testObject, folderTreeEntity));
                 }
@@ -558,7 +560,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     private void captureObjectAction() {
-        final String appName = getAppName();
         final ProgressMonitorDialogWithThread dialog = new ProgressMonitorDialogWithThread(getShell());
 
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
@@ -571,9 +572,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     @Override
                     public Object call() throws Exception {
                         appRootElement = inspectorController.getMobileObjectRoot();
-                        if (appRootElement != null) {
-                            appRootElement.setName(appName);
-                        }
                         return null;
                     }
                 });
@@ -804,17 +802,17 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     @Override
-    public void setSelectedElement(CapturedMobileElement element) {
-        if (element != null) {
-            TreeMobileElement link = element.getLink();
-            if (link != null) {
-                allObjectsComposite.setSelection(link);
-            }
-        } else {
-            allObjectsComposite.setSelection(null);
-        }
-        capturedObjectsComposite.setSelection(element);
-        propertiesComposite.setEditingElement(element);
+    public void setSelectedElement(MobileElement element) {
+//        if (element != null) {
+//            TreeMobileElement link = element.getLink();
+//            if (link != null) {
+//                allObjectsComposite.setSelection(link);
+//            }
+//        } else {
+//            allObjectsComposite.setSelection(null);
+//        }
+//        capturedObjectsComposite.setSelection(element);
+//        propertiesComposite.setEditingElement(element);
         highlightElement(element);
     }
 
@@ -853,4 +851,33 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     public void focusAndEditCapturedElementName() {
         propertiesComposite.focusAndEditCapturedElementName();
     }
+
+	@Override
+	public CapturedMobileElement captureMobileElement(TreeMobileElement selectedElement) {
+		List<CapturedMobileElement> mobileElements = new ArrayList<>();
+		ProgressMonitorDialog monitorDialog = new ProgressMonitorDialog(getShell());
+		try {
+			monitorDialog.run(true, false, new IRunnableWithProgress() {
+
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					try {
+						monitor.beginTask("Capturing Mobile element...", 1);
+						mobileElements.add(selectedElement.newCapturedElement(inspectorController.getDriver()));
+						monitor.worked(1);
+					} finally {
+						monitor.done();
+					}
+				}
+			});
+		} catch (InterruptedException ignored) {
+		} catch (InvocationTargetException e) {
+			MultiStatusErrorDialog.showErrorDialog(e, "Error", "Unable to capture object");
+		}
+		
+		if (mobileElements.size() > 0) {
+			return mobileElements.get(0);
+		}
+		return null;
+	}
 }

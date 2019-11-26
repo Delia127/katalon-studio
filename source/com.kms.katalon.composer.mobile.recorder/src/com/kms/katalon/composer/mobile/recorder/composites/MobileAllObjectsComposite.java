@@ -91,10 +91,7 @@ public class MobileAllObjectsComposite extends Composite {
                 TreeItem item = allElementTreeViewer.getTree().getItem(pt);
                 if (item != null) {
                     TreeMobileElement treeSnapshotItem = (TreeMobileElement) item.getData();
-                    CapturedMobileElement capturedElement = treeSnapshotItem.getCapturedElement() != null
-                            ? treeSnapshotItem.getCapturedElement()
-                            : treeSnapshotItem.newCapturedElement();
-                    parentDialog.setSelectedElement(capturedElement);
+                    parentDialog.setSelectedElement(treeSnapshotItem);
                 }
             }
         });
@@ -152,5 +149,9 @@ public class MobileAllObjectsComposite extends Composite {
     
     public void refreshTree(TreeMobileElement element) {
         allElementTreeViewer.refresh(element);
+    }
+
+    public TreeMobileElement getSelectedElement() {
+    	return (TreeMobileElement) allElementTreeViewer.getStructuredSelection().getFirstElement();
     }
 }

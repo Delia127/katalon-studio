@@ -83,6 +83,8 @@ import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.testobject.ConditionType;
+import com.kms.katalon.core.testobject.MobileTestObject;
+import com.kms.katalon.core.testobject.MobileTestObject.MobileLocatorStrategy;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
@@ -473,11 +475,11 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     return new MobileActionButtonWrapper(buttonsComposite, action, (event) -> {
                         try {
                             MobileActionMapping actionMapping = performAction(action,
-                                    propertiesComposite.getEditingElement());
+                                	allObjectsComposite.getSelectedElement());
                             if (actionMapping == null) {
                                 return;
                             }
-                            
+
                             recordedActionsComposite.getStepView().addNode(actionMapping);
                             
                             List<CapturedMobileElement> mobileElements = new ArrayList<>();
@@ -485,6 +487,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                             if (targetElement != null) {
                                 mobileElements.add(targetElement);
                                 capturedObjectsComposite.getCapturedObjectsTableViewer().addMobileElements(mobileElements);
+                                capturedObjectsComposite.setSelection(targetElement);
+                                propertiesComposite.setEditingElement(targetElement);
                             }
                         } catch (ClassNotFoundException | StepFailedException | MobileRecordException
                                 | InvocationTargetException | InterruptedException e) {
@@ -502,32 +506,21 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         allObjectsComposite = new MobileAllObjectsComposite(this, parent);
     }
 
-    private TestObject convertMobileElementToTestObject(MobileElement targetElement, MobileDriverType driverType) {
-        if (targetElement == null) {
-            return null;
-        }
-        List<String> typicalProps = new ArrayList<>();
-        if (driverType == MobileDriverType.ANDROID_DRIVER) {
-            typicalProps.addAll(Arrays.asList(AndroidProperties.ANDROID_TYPICAL_PROPERTIES));
-        } else if (driverType == MobileDriverType.IOS_DRIVER) {
-            typicalProps.addAll(Arrays.asList(IOSProperties.IOS_TYPICAL_PROPERTIES));
-        }
-        TestObject testObject = new TestObject(targetElement.getName());
-        testObject.getProperties().addAll(targetElement.getAttributes().entrySet().stream().map(entry -> {
-            TestObjectProperty objectProperty = new TestObjectProperty();
-            String keyValue = entry.getKey();
-            objectProperty.setName(keyValue);
-            objectProperty.setValue(entry.getValue());
-            objectProperty.setCondition(ConditionType.EQUALS);
-            objectProperty.setActive(keyValue.equals(IOSProperties.XPATH));
-            return objectProperty;
-        }).collect(Collectors.toList()));
-        return testObject;
-    }
+	private MobileTestObject convertMobileElementToTestObject(CapturedMobileElement targetElement,
+			MobileDriverType driverType) {
+		if (targetElement == null) {
+			return null;
+		}
+		MobileTestObject testObject = new MobileTestObject(targetElement.getName());
+		testObject.setMobileLocator(targetElement.getLocator());
+		testObject.setMobileLocatorStrategy(MobileLocatorStrategy.valueOf(targetElement.getLocatorStrategy().name()));
+		return testObject;
+	}
 
-    private MobileActionMapping performAction(MobileAction action, CapturedMobileElement targetElement)
+    private MobileActionMapping performAction(MobileAction action, TreeMobileElement treeElement)
             throws MobileRecordException {
         try {
+        	CapturedMobileElement targetElement = captureMobileElement(treeElement);
             TestObject testObject = convertMobileElementToTestObject(targetElement, getCurrentMobileDriverType());
             final MobileActionMapping mobileActionMapping = new MobileActionMapping(action, targetElement);
             MobileActionHelper mobileActionHelper = new MobileActionHelper(inspectorController.getDriver());
@@ -942,10 +935,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 allObjectsComposite.focusToElementsTree();
                 allObjectsComposite.setSelection(foundElement);
 
-                CapturedMobileElement element = foundElement.getCapturedElement() != null
-                        ? foundElement.getCapturedElement()
-                        : foundElement.newCapturedElement();
-                setSelectedElement(element);
+                setSelectedElement(foundElement);
             }
         });
     }
@@ -1038,17 +1028,17 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     @Override
-    public void setSelectedElement(CapturedMobileElement element) {
-        if (element != null) {
-            TreeMobileElement link = element.getLink();
-            if (link != null) {
-                allObjectsComposite.setSelection(link);
-            }
-        } else {
-            allObjectsComposite.setSelection(null);
-        }
-        capturedObjectsComposite.setSelection(element);
-        propertiesComposite.setEditingElement(element);
+    public void setSelectedElement(MobileElement element) {
+//        if (element != null) {
+//            TreeMobileElement link = element.getLink();
+//            if (link != null) {
+//                allObjectsComposite.setSelection(link);
+//            }
+//        } else {
+//            allObjectsComposite.setSelection(null);
+//        }
+//        capturedObjectsComposite.setSelection(element);
+//        propertiesComposite.setEditingElement(element);
         highlightElement(element);
         updateActionButtonsVisibility(element, getCurrentMobileDriverType());
     }
@@ -1106,6 +1096,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         
     }
 
+	@Override
+	public CapturedMobileElement captureMobileElement(TreeMobileElement treeElement) {
+		return treeElement.newCapturedElement(inspectorController.getDriver());
+	}
+
+
     public class RecordActionResult {
         private final List<CapturedMobileElement> mobileElements;
 
@@ -1124,4 +1120,5 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             return script;
         }
     }
+
 }

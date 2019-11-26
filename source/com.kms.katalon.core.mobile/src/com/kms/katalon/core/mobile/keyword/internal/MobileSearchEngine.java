@@ -6,6 +6,7 @@ import io.appium.java_client.android.AndroidDriver;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -28,6 +29,259 @@ public class MobileSearchEngine {
         this.driver = driver;
         this.element = element;
     }
+
+    public String findIOSID() {
+    	TestObjectProperty property = element.findProperty(IOSProperties.IOS_NAME);
+    	if (property != null) {
+    		return property.getValue();
+    	}
+    	return StringUtils.EMPTY;
+    }
+    
+    public String findIOSPredicateString() {
+    	List<String> predicates = new ArrayList<>();
+		for (TestObjectProperty property : element.getActiveProperties()) {
+			String name = property.getName();
+			String value = property.getValue();
+    		if (value == null) {
+    			continue;
+    		}
+			switch (name) {
+			case IOSProperties.IOS_TYPE:
+				predicates.add(String.format("type == '%s'", value));
+				break;
+
+			case IOSProperties.IOS_ENABLED:
+				predicates.add(String.format("enabled == %s", "true".equals(value) ? "1" : "0"));
+				break;
+
+			case IOSProperties.IOS_HINT:
+				predicates.add(String.format("hint == '%s'", value));
+				break;
+
+			case IOSProperties.IOS_LABEL:
+				predicates.add(String.format("label == '%s'", value));
+				break;
+
+			case IOSProperties.IOS_NAME:
+				predicates.add(String.format("name == '%s'", value));
+				break;
+
+			case IOSProperties.IOS_VISIBLE:
+				predicates.add(String.format("visible == %s", "true".equals(value) ? "1" : "0"));
+				break;
+
+			case IOSProperties.IOS_VALUE:
+				predicates.add(String.format("name == '%s'", value));
+				break;
+
+			default:
+				continue;
+			}
+		}
+		
+		if (predicates.isEmpty()) {
+			return StringUtils.EMPTY;
+		}
+
+		return StringUtils.join(predicates, " AND ");
+    }
+    
+    public String findIOSClassChain() {
+    	List<String> predicates = new ArrayList<>();
+		for (TestObjectProperty property : element.getProperties()) {
+			String name = property.getName();
+			String value = property.getValue();
+    		if (value == null) {
+    			continue;
+    		}
+			switch (name) {
+			case IOSProperties.IOS_ENABLED:
+				predicates.add(String.format("enabled == %s", "true".equals(value) ? "1" : "0"));
+				break;
+
+			case IOSProperties.IOS_HINT:
+				predicates.add(String.format("hint == '%s'", value));
+				break;
+
+			case IOSProperties.IOS_LABEL:
+				predicates.add(String.format("label == '%s'", value));
+				break;
+
+			case IOSProperties.IOS_NAME:
+				predicates.add(String.format("name == '%s'", value));
+				break;
+
+			case IOSProperties.IOS_VISIBLE:
+				predicates.add(String.format("visible == %s", "true".equals(value) ? "1" : "0"));
+				break;
+
+			case IOSProperties.IOS_VALUE:
+				predicates.add(String.format("value == '%s'", value));
+				break;
+
+			default:
+				continue;
+			}
+		}
+		if (predicates.isEmpty()) {
+			return StringUtils.EMPTY;
+		}
+
+    	StringBuilder builder = new StringBuilder("**");
+    	TestObjectProperty typeProp = element.findProperty(IOSProperties.IOS_TYPE);
+    	if (typeProp != null) {
+    		builder.append(String.format("/%s", typeProp.getValue()));
+    	}
+    	builder.append(String.format("[`%s`]", StringUtils.join(predicates, " AND ")));
+
+		return builder.toString();
+    }
+
+    public String findIOSName() {
+    	TestObjectProperty property = element.findProperty(IOSProperties.IOS_NAME);
+    	if (property != null) {
+    		return property.getValue();
+    	}
+    	return StringUtils.EMPTY;
+    }
+
+    public String findIOSAccessibilityId() {
+    	TestObjectProperty property = element.findProperty(IOSProperties.IOS_ACCESSIBILITY_ID);
+    	if (property != null) {
+    		return property.getValue();
+    	}
+    	return StringUtils.EMPTY;
+    }
+    
+    public String findAndroidID() {
+    	TestObjectProperty property = element.findProperty(AndroidProperties.ANDROID_RESOURCE_ID);
+    	if (property != null) {
+    		return property.getValue();
+    	}
+    	return StringUtils.EMPTY;
+    }
+
+    public String findAndroidAccessibilityId() {
+    	TestObjectProperty property = element.findProperty(AndroidProperties.ANDROID_CONTENT_DESC);
+    	if (property != null) {
+    		return property.getValue();
+    	}
+    	return StringUtils.EMPTY;
+    }
+
+	public String findAndroidUIAutomatorSelector() {
+		StringBuilder selector = new StringBuilder(AndroidUIAutomator.SELECTOR);
+		TestObjectProperty property = element.findProperty(AndroidProperties.ANDROID_CLASS);
+		if (property != null && property.isActive()) {
+			if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+				selector.append(String.format(AndroidUIAutomator.BY_CLASS_NAME_MATCH, property.getValue()));
+			} else {
+				selector.append(String.format(AndroidUIAutomator.BY_CLASS_NAME, property.getValue()));
+			}
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_CONTENT_DESC);
+		if (property != null && property.isActive()) {
+			if (property.getCondition().equals(ConditionType.CONTAINS)) {
+				selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_CONTAIN, property.getValue()));
+			} else if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+				selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_MATCH, property.getValue()));
+			} else if (property.getCondition().equals(ConditionType.STARTS_WITH)) {
+				selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_START_WITH, property.getValue()));
+			} else {
+				selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC, property.getValue()));
+			}
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_TEXT);
+		if (property != null && property.isActive() && StringUtils.isNotEmpty(property.getValue())) {
+			String propValText = property.getValue().replace("\\n", "\n");
+			if (property.getCondition().equals(ConditionType.CONTAINS)) {
+				selector.append(String.format(AndroidUIAutomator.BY_TEXT_CONTAIN, propValText));
+			} else if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+				selector.append(String.format(AndroidUIAutomator.BY_TEXT_MATCH, propValText));
+			} else if (property.getCondition().equals(ConditionType.STARTS_WITH)) {
+				selector.append(String.format(AndroidUIAutomator.BY_TEXT_START_WITH, propValText));
+			} else {
+				selector.append(String.format(AndroidUIAutomator.BY_TEXT, propValText));
+			}
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_RESOURCE_ID);
+		if (property != null && property.isActive()) {
+			if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+				selector.append(String.format(AndroidUIAutomator.BY_RESOURCE_ID_MATCH, property.getValue()));
+			} else {
+				selector.append(String.format(AndroidUIAutomator.BY_RESOURCE_ID, property.getValue()));
+			}
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_PACKAGE);
+		if (property != null && property.isActive()) {
+			if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+				selector.append(String.format(AndroidUIAutomator.BY_PACKAGE_MATCH, property.getValue()));
+			} else {
+				selector.append(String.format(AndroidUIAutomator.BY_PACKAGE, property.getValue()));
+			}
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_ENABLED);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_ENABLED, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_CLICKABLE);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_CLICKABLE, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_LONG_CLICKABLE);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_LONG_CLICKABLE, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_CHECKABLE);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_CHECKABLE, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_CHECKED);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_CHECKED, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_FOCUSABLE);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_FOCUSABLE, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_FOCUSED);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_FOCUSED, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_SCROLLABLE);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_SCROLLABLE, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_SELECTED);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_SELECTED, Boolean.parseBoolean(property.getValue())));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_INSTANCE);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_INSTANCE, property.getValue()));
+		}
+
+		property = element.findProperty(AndroidProperties.ANDROID_INDEX);
+		if (property != null && property.isActive()) {
+			selector.append(String.format(AndroidUIAutomator.BY_INDEX, property.getValue()));
+		}
+		return selector.toString();
+	}
 
     @SuppressWarnings("unchecked")
 	private List<WebElement> findAndroidElements(AndroidDriver driver) {
@@ -104,54 +358,59 @@ public class MobileSearchEngine {
                 }
 
                 property = element.findProperty(AndroidProperties.ANDROID_ENABLED);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_ENABLED, property.getValue()));
-                }
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_ENABLED, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_CLICKABLE);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_CLICKABLE, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_CLICKABLE);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_CLICKABLE, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_LONG_CLICKABLE);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_LONG_CLICKABLE, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_LONG_CLICKABLE);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_LONG_CLICKABLE, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_CHECKABLE);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_CHECKABLE, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_CHECKABLE);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_CHECKABLE, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_CHECKED);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_CHECKED, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_CHECKED);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_CHECKED, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_FOCUSABLE);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_FOCUSABLE, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_FOCUSABLE);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_FOCUSABLE, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_FOCUSED);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_FOCUSED, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_FOCUSED);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_FOCUSED, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_SCROLLABLE);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_SCROLLABLE, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_SCROLLABLE);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_SCROLLABLE, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_SELECTED);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.SELECTOR, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_SELECTED);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_SELECTED, Boolean.parseBoolean(property.getValue())));
+        		}
 
-                property = element.findProperty(AndroidProperties.ANDROID_INSTANCE);
-                if (property != null && property.isActive()) {
-                    selector.append(String.format(AndroidUIAutomator.BY_INSTANCE, property.getValue()));
-                }
+        		property = element.findProperty(AndroidProperties.ANDROID_INSTANCE);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_INSTANCE, property.getValue()));
+        		}
+
+        		property = element.findProperty(AndroidProperties.ANDROID_INDEX);
+        		if (property != null && property.isActive()) {
+        			selector.append(String.format(AndroidUIAutomator.BY_INDEX, property.getValue()));
+        		}
                 return driver.findElementsByAndroidUIAutomator(selector.toString());
             }
         } else {
