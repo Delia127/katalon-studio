@@ -318,7 +318,7 @@ public class KStoreRestClient {
         
         HttpGet get = new HttpGet(url);
         addAuthenticationHeaders(credentials, get);
-        CloseableHttpClient client = getHttpClient();
+        CloseableHttpClient client = getHttpClient(url);
         CloseableHttpResponse response = client.execute(get);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             requestSuccessHandler.handleRequestSuccess(response);
@@ -338,6 +338,10 @@ public class KStoreRestClient {
     
     private CloseableHttpClient getHttpClient() throws URISyntaxException, IOException, GeneralSecurityException {
         return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
+    }
+    
+    private CloseableHttpClient getHttpClient(String url) throws URISyntaxException, IOException, GeneralSecurityException {
+        return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation(), url).getClientBuilder().build();
     }
     
     private void addAuthenticationHeaders(KStoreCredentials credentials, HttpRequestBase request) {

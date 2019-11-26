@@ -44,7 +44,7 @@ public class WebDriverProxyUtil {
     public static Map<String, Object> getSeleniumProxy(ProxyInformation proxyInformation) {
         Map<String, Object> proxyMap = new HashMap<>();
         List<String> exceptionList = new ArrayList<String>();
-        String exclude = proxyInformation.getExceptionList().replaceAll("\\s+", "");
+        String exclude = proxyInformation.getExceptionList().trim();
         String[] output = exclude.split(",");
         Arrays.stream(output).forEach(part -> exceptionList.add(part));
         String proxyString = getProxyString(proxyInformation);
@@ -76,12 +76,11 @@ public class WebDriverProxyUtil {
     }
 
     public static Map<String, Object> getSeleniumProxy(ProxyInformation proxyInformation, String url,
-            DriverType driverType) {
+            String driverType) {
         Map<String, Object> proxyMap = new HashMap<>();
         List<String> exceptionList = new ArrayList<String>();
-        String exclude = proxyInformation.getExceptionList().replaceAll("\\s+", "");
-        String[] output = exclude.split(",");
-        Arrays.stream(output).forEach(part -> exceptionList.add(part));
+        String[] output = proxyInformation.getExceptionList().split(",");
+        Arrays.stream(output).forEach(part -> exceptionList.add(part.trim()));
         URL newUrl = null;
         Proxy proxy = null;
         try {
@@ -98,59 +97,9 @@ public class WebDriverProxyUtil {
                     case HTTP:
                     case HTTPS:
                         if (proxy.type() == Proxy.Type.DIRECT) {
-                            if (driverType.getName().equals("IE_DRIVER")) {
-                                proxyMap.put(PROP_PROXY_TYPE, "manual");
-                            } else {
+                            if (!(driverType.equals("") || driverType.equals("internet explorer"))) {
                                 proxyMap.put(PROP_PROXY_TYPE, "direct");
                             }
-
-                        } else {
-                            proxyMap.put(PROP_HTTP_PROXY, proxyString);
-                            proxyMap.put(PROP_FTP_PROXY, proxyString);
-                            proxyMap.put(PROP_SSL_PROXY, proxyString);
-                        }
-
-                        break;
-                    case SOCKS:
-                        proxyMap.put(PROP_SOCKS_PROXY, proxyString);
-                        proxyMap.put(PROP_SOCKS_USERNAME, proxyInformation.getUsername());
-                        proxyMap.put(PROP_SOCKS_PASSWORD, proxyInformation.getPassword());
-                        break;
-                }
-                break;
-            case USE_SYSTEM:
-                proxyMap.put(PROP_PROXY_TYPE, "system");
-                break;
-            case NO_PROXY:
-                proxyMap.put(PROP_PROXY_TYPE, "direct");
-                break;
-        }
-        return proxyMap;
-    }
-
-    public static Map<String, Object> getSeleniumProxy(ProxyInformation proxyInformation, String url) {
-        Map<String, Object> proxyMap = new HashMap<>();
-        List<String> exceptionList = new ArrayList<String>();
-        String exclude = proxyInformation.getExceptionList().replaceAll("\\s+", "");
-        String[] output = exclude.split(",");
-        Arrays.stream(output).forEach(part -> exceptionList.add(part));
-        URL newUrl = null;
-        Proxy proxy = null;
-        try {
-            newUrl = PathUtil.getUrl(url, "http");
-        } catch (MalformedURLException e1) {} catch (URISyntaxException e) {}
-        try {
-            proxy = ProxyUtil.getProxy(proxyInformation, newUrl);
-        } catch (URISyntaxException | IOException e) {}
-        String proxyString = getProxyString(proxyInformation);
-        switch (ProxyOption.valueOf(proxyInformation.getProxyOption())) {
-            case MANUAL_CONFIG:
-                proxyMap.put(PROP_PROXY_TYPE, "manual");
-                switch (ProxyServerType.valueOf(proxyInformation.getProxyServerType())) {
-                    case HTTP:
-                    case HTTPS:
-                        if (proxy.type() == Proxy.Type.DIRECT) {
-                            proxyMap.put(PROP_PROXY_TYPE, "manual");
 
                         } else {
                             proxyMap.put(PROP_HTTP_PROXY, proxyString);

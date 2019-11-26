@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Proxy;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Map;
@@ -184,7 +185,8 @@ public class SoapClient extends BasicRequestor {
         parseWsdl();
        
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
-        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
+        URL newUrl = new URL(request.getWsdlAddress());
+        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo, newUrl);
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
             configureProxy(clientBuilder, proxyInfo);
         }

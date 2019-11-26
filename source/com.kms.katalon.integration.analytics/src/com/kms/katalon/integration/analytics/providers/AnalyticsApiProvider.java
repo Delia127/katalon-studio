@@ -473,7 +473,7 @@ public class AnalyticsApiProvider {
     }
 
     private static String executeRequest(HttpUriRequest httpRequest) throws Exception {
-        HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
+        HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation(), httpRequest.getURI().getHost());
         HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
         HttpResponse httpResponse = httpClient.execute(httpRequest);
         int statusCode = httpResponse.getStatusLine().getStatusCode();
