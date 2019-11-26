@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -14,10 +15,12 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.activation.dialog.WarningReactivateDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -69,7 +72,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     }
                     if (PluginService.getInstance().shouldReloadPluginsOnlineOnly()
                             && !KStoreCredentialsHelper.isValidCredential(credentials[0])) {
-                        LoggerSingleton.logError("Invalid Credential.");
+                        LoggerSingleton.logError(StringConstants.KStore_ERROR_INVALID_CREDENTAILS);
                         return Status.CANCEL_STATUS;
                     }
                     LoggerSingleton.logInfo("Reloading plugins.");
@@ -78,8 +81,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     return Status.CANCEL_STATUS;
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    return new Status(Status.ERROR, "com.kms.katalon", "Error reloading plugins",
-                            new Exception(ExceptionsUtil.getStackTraceForThrowable(e)));
+                    if (StringUtils.containsIgnoreCase(e.getMessage(), StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
+                        return new Status(Status.CANCEL, "com.kms.katalon", StringConstants.KStore_ERROR_INVALID_CREDENTAILS, e);
+                    } else {
+                        return new Status(Status.ERROR, "com.kms.katalon", "Error reloading plugins",
+                                new Exception(ExceptionsUtil.getStackTraceForThrowable(e)));
+                    }
                 }
                 LoggerSingleton.logInfo("Reloaded plugins successfully.");
                 return Status.OK_STATUS;
@@ -90,7 +97,22 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             @Override
             public void done(IJobChangeEvent event) {
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
-                
+
+                if (StringUtils.containsIgnoreCase(reloadPluginsJob.getResult().getMessage(),
+                        StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
+                    LoggerSingleton.logError(StringConstants.KStore_ERROR_INVALID_CREDENTAILS);
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        try {
+                            // wait for Reloading Plugins dialog to close
+                            TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
+                        } catch (InterruptedException ignored) {}
+                        UISynchronizeService.syncExec(() -> {
+                            openWarningDialog();
+                        });
+                    });
+                    return;
+                }
+
                 if (!reloadPluginsJob.getResult().isOK()) {
                     LoggerSingleton.logError("Failed to reload plugins.");
                     return;
@@ -128,6 +150,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             }
             return false;
         }).findAny().isPresent();
+    }
+
+    private void openWarningDialog() {
+        WarningReactivateDialog dialog = new WarningReactivateDialog(Display.getCurrent().getActiveShell(),
+                StringConstants.KStore_MSG_INVALID_CREDENTAILS);
+        dialog.open();
     }
 
     private void openResultDialog(List<ReloadItem> result) {

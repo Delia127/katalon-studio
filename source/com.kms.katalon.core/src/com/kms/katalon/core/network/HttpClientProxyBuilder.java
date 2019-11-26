@@ -64,7 +64,7 @@ public class HttpClientProxyBuilder {
     		sc.init(getKeyManagers(), getTrustManagers(), null);
     		Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory> create()
     				.register("http", PlainConnectionSocketFactory.INSTANCE)
-    				.register("https", new SSLConnectionSocketFactory(sc))
+    				.register("https", new SSLConnectionSocketFactory(sc, getHostnameVerifier()))
     				.build();
 	        connectionManager = new PoolingHttpClientConnectionManager(reg);
     	} catch (Exception e) {
@@ -97,10 +97,7 @@ public class HttpClientProxyBuilder {
         sc.init(getKeyManagers(), getTrustManagers(), null);
         clientBuilder.setSSLContext(sc);
         
-        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
-        if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
-        	configureProxy(clientBuilder, proxyInfo);
-        }
+        configureProxy(clientBuilder, proxyInfo);
         
         clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         
@@ -139,10 +136,12 @@ public class HttpClientProxyBuilder {
     public static HttpClientProxyBuilder create(ProxyInformation proxyInfo, String url)
             throws URISyntaxException, IOException, GeneralSecurityException {
         URL newUrl = null;
-        if(url.contains("https")) {
-            newUrl = new URL(url);
-        } else {
-            newUrl = new URL("https://" + url);
+        if(url != null) {
+            if(url.contains("https")) {
+                newUrl = new URL(url);
+            } else {
+                newUrl = new URL("https://" + url);
+            }
         }
         
         HttpClientBuilder clientBuilder = HttpClients.custom();
@@ -194,6 +193,13 @@ public class HttpClientProxyBuilder {
     }
     
     private static void configureProxy(HttpClientBuilder httpClientBuilder, ProxyInformation proxyInformation) {
+        if (proxyInformation == null) {
+            return;
+        }
+        
+        if (ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.NO_PROXY)) {
+            return;
+        }
         HttpHost httpProxy = new HttpHost(proxyInformation.getProxyServerAddress(),
                 proxyInformation.getProxyServerPort());
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -208,7 +214,7 @@ public class HttpClientProxyBuilder {
             @Override
             public HttpRoute determineRoute(HttpHost arg0, HttpRequest arg1, HttpContext arg2) throws HttpException {
                 if ((ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.USE_SYSTEM))) {
-                    return new SystemDefaultRoutePlanner(ProxySelector.getDefault()).determineRoute(arg0, arg1, arg2);
+                    return new SystemDefaultRoutePlanner(ProxyUtil.getAutoProxySelector()).determineRoute(arg0, arg1, arg2);
                 } else {
                     return new DefaultProxyRoutePlanner(httpProxy).determineRoute(arg0, arg1, arg2);
                 }

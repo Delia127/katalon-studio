@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -76,6 +77,9 @@ public class KStoreRestClient {
                 }
             });
         } catch (Exception e) {
+            if (StringUtils.containsIgnoreCase(e.getMessage(), StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
+                throw new KStoreClientExceptionWithInfo(e.getMessage(), credentials, url);
+            }
             propagateIfInstanceOf(e, KStoreClientExceptionWithInfo.class);
             throw new KStoreClientExceptionWithInfo("Unexpected error occurs during executing get latest plugins",
                     credentials, url, e);
@@ -320,11 +324,14 @@ public class KStoreRestClient {
         addAuthenticationHeaders(credentials, get);
         CloseableHttpClient client = getHttpClient(url);
         CloseableHttpResponse response = client.execute(get);
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode == HttpStatus.SC_OK) {
             requestSuccessHandler.handleRequestSuccess(response);
+        } else if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
+            throw new KStoreClientException(StringConstants.KStore_ERROR_INVALID_CREDENTAILS);
         } else {
             throw new KStoreClientException(String.format("Invalid Request. Status Code: %d. Message: %s",
-                    response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                    statusCode, response.getStatusLine().getReasonPhrase()));
         }
         IOUtils.closeQuietly(client);
         IOUtils.closeQuietly(response);
