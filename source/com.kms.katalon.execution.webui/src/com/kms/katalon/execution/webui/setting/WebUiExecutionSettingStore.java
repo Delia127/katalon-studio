@@ -38,7 +38,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
 
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
 
-    public static final boolean EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED = true;
+    public static final boolean EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED = false;
 
     
     public static WebUiExecutionSettingStore getStore() {
@@ -201,7 +201,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
 
     public boolean getImageRecognitionEnabled() {
         try {
-            return getBoolean(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, true);
+            return getBoolean(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED);
         } catch (IOException e) {
             return EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED;
         }
