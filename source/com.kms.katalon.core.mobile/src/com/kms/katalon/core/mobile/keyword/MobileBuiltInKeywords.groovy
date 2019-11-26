@@ -521,6 +521,54 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Performs a double tap action on a mobile element.
+     * 
+     * @param to
+     *      Represent a mobile element.
+     * 
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     * 
+     * @param flowControl
+     *          Optional parameter: Used to control the step if the step failed.
+     *          <ul>
+     *              <li>STOP_ON_FAILURE: throws a StepFailedException if the step failed (default).</li>
+     *              <li>CONTINUE_ON_FAILURE: continue the test if the test failed but the test result is still failed.</li>
+     *              <li>OPTIONAL: continue the test and ignore the test result.</li>
+     *          </ul>
+     * 
+     * @throws StepFailedException
+     *          On the mobile element doesn't exist, or KS could not perform a double tap action on the element.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void doubleTap(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "doubleTap", to, timeout, flowControl)
+    }
+
+    /**
+     * Performs a double tap action on a mobile element.
+     * 
+     * @param to
+     *      Represent a mobile element.
+     * 
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     * 
+     * @throws StepFailedException
+     *          On the mobile element doesn't exist, or KS could not perform a double tap action on the element.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void doubleTap(TestObject to, int timeout) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "doubleTap", to, timeout)
+    }
+
+    /**
      * Tap and hold on a mobile element for a duration
      * @param to
      *      represent a mobile element
