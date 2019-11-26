@@ -399,7 +399,11 @@ public class CoreMobileMessageConstants extends NLS {
     public static String KW_MSG_TEXT_NOT_FOUND;
     
     public static String KW_LOG_TEXT_FOUND_IN_ELEMENTS;
-    
+
+    public static String KW_LOG_PASSED_EXECUTE_MOBILE_COMMAND;
+
+    public static String KW_LOG_FAILED_TO_EXECUTE_MOBILE_COMMAND;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreMobileMessageConstants.class);
