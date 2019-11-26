@@ -105,6 +105,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_POSITION = CoreMobileMessageConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_POSITION;
 
+    public static final String KW_LOG_PASSED_LONG_PRESSED_ON_ELEMENT = CoreMobileMessageConstants.KW_LOG_PASSED_LONG_PRESSED_ON_ELEMENT;
+
+    public static final String KW_MSG_FAILED_TO_LONG_PRESS_ON_ELEMENT_X = CoreMobileMessageConstants.KW_MSG_FAILED_TO_LONG_PRESS_ON_ELEMENT_X;
+
+    public static final String KW_MSG_FAILED_TO_LONG_PRESS_ON_ELEMENT = CoreMobileMessageConstants.KW_MSG_FAILED_TO_LONG_PRESS_ON_ELEMENT;
+
     public static final String KW_LOG_PASSED_ELEMENT_HAS_ATTR = CoreMobileMessageConstants.KW_LOG_PASSED_ELEMENT_HAS_ATTR;
 
     public static final String KW_MSG_FAILED_TO_GET_ELEMENT_X_ATTR_Y = CoreMobileMessageConstants.KW_MSG_FAILED_TO_GET_ELEMENT_X_ATTR_Y;
