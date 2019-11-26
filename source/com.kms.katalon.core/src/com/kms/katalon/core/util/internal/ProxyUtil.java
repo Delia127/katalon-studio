@@ -80,8 +80,7 @@ public class ProxyUtil {
                         newUrl = url.getHost();
                     }
                     if (exceptionList.get(i).contains("*")) {
-                        boolean match = strmatch(newUrl, exceptionList.get(i), newUrl.length(),
-                                exceptionList.get(i).length());
+                        boolean match = strMatch(exceptionList.get(i), newUrl);
                         if (exceptionList.get(i).equals(newUrl) || match) {
                             return Proxy.NO_PROXY;
                         }
@@ -97,31 +96,20 @@ public class ProxyUtil {
         }
     }
     
-    public static boolean strmatch(String url, String exceptionList, int n, int m) {
-        // case empty exception list content
-        if (m == 0)
-            return (n == 0);
-        boolean[][] lookup = new boolean[n + 1][m + 1];
-        // initialize lookup to false
-        for (int i = 0; i < n + 1; i++)
-            Arrays.fill(lookup[i], false);
-        // empty exception list can match with url
-        lookup[0][0] = true;
-        // Only '*' can match with empty url
-        for (int j = 1; j <= m; j++)
-            if (exceptionList.charAt(j - 1) == '*')
-                lookup[0][j] = lookup[0][j - 1];
+    public static boolean strMatch(String exceptionList, String url) {
 
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= m; j++) {
-                if (exceptionList.charAt(j - 1) == '*')
-                    lookup[i][j] = lookup[i][j - 1] || lookup[i - 1][j];
-                else if (url.charAt(i - 1) == exceptionList.charAt(j - 1))
-                    lookup[i][j] = lookup[i - 1][j - 1];
-                else lookup[i][j] = false;
+        for (int i = 0; i < exceptionList.length(); i++) {
+
+            // if the string don't have *
+            // then character at that position
+            // must be same.
+            if (exceptionList.charAt(i) != '*' && url.charAt(i) != '*') {
+                if (exceptionList.charAt(i) != url.charAt(i))
+                    return false;
             }
         }
-        return lookup[n][m];
+
+        return true;
     }
 
     public static Proxy getSystemProxy() throws URISyntaxException, IOException {

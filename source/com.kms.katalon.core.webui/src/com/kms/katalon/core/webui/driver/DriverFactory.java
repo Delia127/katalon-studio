@@ -459,9 +459,9 @@ public class DriverFactory {
             throws URISyntaxException, IOException, GeneralSecurityException {
 
         URL url = new URL(remoteWebServerUrl);
-        URL drverUrl = PathUtil.getUrl(newUrl, "http");
+        URL driverUrl = PathUtil.getUrl(newUrl, "http");
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo, drverUrl));
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo, driverUrl));
         HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, clientFactory);
         return executor;
     }
