@@ -228,7 +228,14 @@ public class DriverFactory {
         }
     }
 
-    private static void changeWebDriver(WebDriver webDriver) {
+    /**
+     * Change the web driver that Katalon uses to execute your test to
+     * the given web driver instance. Note that Katalon will
+     * wrap the given instance into a subclass of {@link EventFiringWebDriver}
+     * 
+     * @param webDriver
+     */
+    public static void changeWebDriver(WebDriver webDriver) {
         changeWebDriverWithoutLog(webDriver);
         logBrowserRunData(webDriver);
         switchToSmartWaitWebDriver(webDriver);
