@@ -220,7 +220,14 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         tblclmnEnvironment.setText(StringConstants.REPORT_COLLECTION_LBL_ENVIRONMENT);
         tableViewerColumnEnviroment.setLabelProvider(
                 new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_EVN_IDX));
-
+        
+        TableViewerColumn tableViewerColumnProfile = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnProfile = tableViewerColumnProfile.getColumn();
+        tblclmnProfile.setWidth(120);
+        tblclmnProfile.setText(StringConstants.REPORT_COLLECTION_COLUMN_PROFILE);
+        tableViewerColumnProfile.setLabelProvider(
+                new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_PROFILE_IDX));
+        
         TableViewerColumn tableViewerColumnStatus = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnStatus = tableViewerColumnStatus.getColumn();
         tblclmnStatus.setWidth(100);

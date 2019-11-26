@@ -45,7 +45,8 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.composer.testsuite.collection.dialog,
+Export-Package: com.kms.katalon.composer.testsuite.collection.constant,
+ com.kms.katalon.composer.testsuite.collection.dialog,
  com.kms.katalon.composer.testsuite.collection.part,
  com.kms.katalon.composer.testsuite.collection.part.provider,
  com.kms.katalon.composer.testsuite.collection.platform,
