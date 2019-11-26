@@ -198,12 +198,15 @@ public class ConsoleMain {
                     }
 
                     if (!isActivated) {
-                        String server = LicenseInfo.getServerURL();
-                        String apiKey = LicenseInfo.getApiKey();
+                        String server = LicenseInfo.getServerURL().trim();
+                        String apiKey = LicenseInfo.getApiKey().trim();
 
                         if (!StringUtils.isEmpty(server) && !StringUtils.isEmpty(apiKey)) {
                             LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER);
                             ApplicationInfo.setTestOpsServer(server);
+
+                            LocalInformationUtil.printLicenseServerInfo(server, apiKey);
+
                             errorMessage = new StringBuilder();
                             isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
                             error = errorMessage.toString();

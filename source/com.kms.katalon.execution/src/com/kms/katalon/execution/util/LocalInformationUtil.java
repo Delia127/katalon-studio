@@ -110,6 +110,20 @@ public class LocalInformationUtil {
         LogUtil.logInfo("\n");
     }
 
+    public static void printLicenseServerInfo(String serverURL, String apiKey) {
+        LogUtil.logInfo("\n");
+        LogUtil.logInfo("INFO: Katalon TestOps server URL: " + serverURL);
+
+        int length = apiKey.length();
+        if (length > 7) {
+            LogUtil.logInfo(
+                    "INFO: API key: " + apiKey.substring(0, 3) + "*****" + apiKey.substring(length - 3, length));
+        } else {
+            LogUtil.logError("Make sure your API key is valid.");
+        }
+        LogUtil.logInfo("\n");
+    }
+    
     private static String maskSensitiveArgs() {
         List<String> markedArgs = new ArrayList<>();
         for (String arg : Platform.getCommandLineArgs()) {
