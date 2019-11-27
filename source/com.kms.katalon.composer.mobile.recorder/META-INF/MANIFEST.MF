@@ -41,13 +41,13 @@ Require-Bundle: com.kms.katalon.composer.mobile,
  com.kms.katalon.tracking,
  org.eclipse.e4.core.contexts,
  org.apache.httpcomponents.httpclient,
- org.apache.httpcomponents.httpcore
+ org.apache.httpcomponents.httpcore,
+ com.kms.katalon.util
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: KMS
-Import-Package: com.kms.katalon.util,
- javax.inject,
+Import-Package: javax.inject,
  org.codehaus.groovy.control
 Export-Package: com.kms.katalon.composer.mobile.recorder.components
 
