@@ -454,11 +454,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * 
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
-     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
-     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
-     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *  <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *  <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *  <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
      * 
      * @return
@@ -466,6 +465,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * 
      * @throws StepFailedException
      * If KS could not find the specified element.
+     * 
+     * @since 7.2.0
      */
     @Keyword(keywordObject = "Element")
     public static Point getElementPosition(WindowsTestObject windowsObject, FailureHandling flowControl)
@@ -485,6 +486,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * 
      * @throws StepFailedException
      * If KS could not find the specified element.
+     * 
+     * @since 7.2.0
      */
     @Keyword(keywordObject = "Element")
     public static Point getElementPosition(WindowsTestObject windowsObject)
@@ -501,11 +504,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * 
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
-     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
-     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
-     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *  <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *  <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *  <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
      * 
      * @return
@@ -513,6 +515,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * 
      * @throws StepFailedException
      * If KS could not find the specified element.
+     * 
+     * @since 7.2.0
      */
     @Keyword(keywordObject = "Element")
     public static Rectangle getElementRect(WindowsTestObject windowsObject, FailureHandling flowControl)
@@ -532,6 +536,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * 
      * @throws StepFailedException
      * If KS could not find the specified element.
+     * 
+     * @since 7.2.0
      */
     @Keyword(keywordObject = "Element")
     public static Rectangle getElementRect(WindowsTestObject windowsObject)
