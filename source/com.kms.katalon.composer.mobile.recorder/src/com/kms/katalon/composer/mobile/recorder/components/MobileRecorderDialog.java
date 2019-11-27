@@ -668,10 +668,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
     }
 
-    private void handleScrollToText(
-            MobileActionHelper mobileActionHelper,
-            MobileActionMapping mobileActionMapping
-    ) throws Exception {
+    private void handleScrollToText(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping ) throws Exception {
         final StringBuilder stringBuilder = new StringBuilder();
         UISynchronizeService.syncExec(new Runnable() {
             @Override
