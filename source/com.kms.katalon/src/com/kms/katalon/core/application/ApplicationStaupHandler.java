@@ -3,11 +3,13 @@ package com.kms.katalon.core.application;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.activation.dialog.ExpiredLicenseDialog;
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -24,13 +26,15 @@ public class ApplicationStaupHandler {
 
     private static ExpiredLicenseDialog expiredDialog;
 
-    public static boolean checkActivation() throws Exception {
+    private static String lastActivateErrorMessage;
+
+    public static boolean checkActivation(boolean isStartup) throws Exception {
         eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
         // if (VersionUtil.isInternalBuild()) {
         // return true;
         // }
 
-        if (!(ComposerActivationInfoCollector.checkActivation())) {
+        if (!(ComposerActivationInfoCollector.checkActivation(isStartup))) {
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             PlatformUI.getWorkbench().close();
             return false;
@@ -61,32 +65,39 @@ public class ApplicationStaupHandler {
     }
 
     public static void scheduleCheckLicense() {
+        expiredDialog = null;
+        lastActivateErrorMessage = ActivationInfoCollector.DEFAULT_REASON;
         ActivationInfoCollector.scheduleCheckLicense(() -> {
             UISynchronizeService.syncExec(() -> {
-                expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell());
-                closeExpiredDialogAfter(30);
-                expiredDialog.open();
-                closeKS();
+                if (expiredDialog == null) {
+                    expiredDialog = new ExpiredLicenseDialog(Display.getCurrent().getActiveShell(),
+                            lastActivateErrorMessage);
+                    expiredDialog.open();
+                    closeKSAfter(300);
+                }
             });
         }, () -> {
-            ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+            StringBuilder errorMessage = new StringBuilder();
+            ActivationInfoCollector.checkAndMarkActivatedForGUIMode(errorMessage);
+
+            String error = errorMessage.toString();
+            if (StringUtils.isNotBlank(error)) {
+                lastActivateErrorMessage = error;
+                LogUtil.printErrorLine(error);
+            }
         });
     }
 
-    public static void closeExpiredDialogAfter(long seconds) {
+    public static void closeKSAfter(long seconds) {
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             try {
                 UISynchronizeService.syncExec(() -> {
-                    expiredDialog.close();
+                    eventBroker.send(EventConstants.PROJECT_CLOSE, null);
+                    PlatformUI.getWorkbench().close();
                 });
             } catch (Exception e) {
                 LogUtil.logError(e, "Error when closing Katalon Studio");
             }
         }, seconds, 5, TimeUnit.SECONDS);
-    }
-
-    public static void closeKS() {
-        eventBroker.send(EventConstants.PROJECT_CLOSE, null);
-        PlatformUI.getWorkbench().close();
     }
 }

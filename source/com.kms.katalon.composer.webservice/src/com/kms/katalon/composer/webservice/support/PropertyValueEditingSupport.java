@@ -6,6 +6,11 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
@@ -54,6 +59,7 @@ public class PropertyValueEditingSupport extends EditingSupport {
         }
         return "";
     }
+    
 
     @Override
     protected void setValue(Object element, Object value) {
@@ -67,20 +73,35 @@ public class PropertyValueEditingSupport extends EditingSupport {
             }
         }
     }
-    
     private class HttpHeaderValueCellEditor extends StringComboBoxCellEditor {
-        
         private Object element;
 
         public HttpHeaderValueCellEditor(Object element, String[] items) {
             super(viewer.getTable(), items);
             this.element = element;
+            CCombo combo = (CCombo) getControl();
+            combo.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    String text = combo.getText();
+                    PropertyValueEditingSupport.this.setValue(element, text);
+                }
+            });
+            combo.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    String text = combo.getText();
+                    PropertyValueEditingSupport.this.setValue(element, text);
+                }
+            });
         }
-        
         @Override
         public AutoCompleteField getAutoCompleteField(String[] newItems) {
             return  new AutoCompleteField(getControl(), new HeaderValueComboContentAdapter(), newItems); 
         }
+        
 
         private class HeaderValueComboContentAdapter extends CComboContentAdapter {
             @Override

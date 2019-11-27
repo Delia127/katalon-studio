@@ -197,6 +197,16 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String MSG_PLUGIN_HAS_BEEN_UNINSTALLED = MessageConstants.MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
 
+    public static final String KStore_ERROR_INVALID_CREDENTAILS = MessageConstants.KStore_ERROR_INVALID_CREDENTAILS;
+
+    public static final String KStore_MSG_INVALID_CREDENTAILS = MessageConstants.KStore_MSG_INVALID_CREDENTAILS;
+
+    public static final String TITLE_WARNING = MessageConstants.TITLE_WARNING;
+
+    public static final String BTN_CANCEL = MessageConstants.BTN_CANCEL;
+
+    public static final String BTN_REACTIVATE = MessageConstants.BTN_REACTIVATE;
+
     // PluginPreferencePage
     public static final String PAGE_LBL_PLUGIN_DIRECTORY = MessageConstants.PAGE_LBL_PLUGIN_DIRECTORY;
     
@@ -213,4 +223,52 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_FAIL_TO_KILL_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_KILL_WEB_DRIVER;
 
     public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
+
+    public static final String MSG_CLEANING = MessageConstants.MSG_CLEANING;
+    
+    public static final String MSG_DEACTIVATE = MessageConstants.MSG_DEACTIVATE;
+
+    public static final String Account_LOGIN_AS = MessageConstants.Account_LOGIN_AS;
+
+    public static final String Account_VIEW_DASHBOARD = MessageConstants.Account_VIEW_DASHBOARD;
+
+    public static final String Account_PLAN_GRID_EXECUTION = MessageConstants.Account_PLAN_GRID_EXECUTION;
+
+    public static final String Account_VISIT_PLUGIN = MessageConstants.Account_VISIT_PLUGIN;
+
+    public static final String Account_RELOAD_PLUGIN = MessageConstants.Account_RELOAD_PLUGIN;
+
+    public static final String Account_MANAGE_PLUGIN = MessageConstants.Account_MANAGE_PLUGIN;
+    
+    public static final String Account_MANAGE_API_KEY = MessageConstants.Account_MANAGE_API_KEY;
+
+    public static final String Account_DEACTIVATE = MessageConstants.Account_DEACTIVATE;
+
+    public static final String Account_LOG_IN = MessageConstants.Account_LOG_IN;
+
+    public static final String Account_HELP = MessageConstants.Account_HELP;
+
+    // About
+    public static final String ABOUT_LBL_VERSION = MessageConstants.About_LBL_VERSION;
+
+    public static final String ABOUT_LBL_BUILD = MessageConstants.About_LBL_BUILD;
+
+    public static final String ABOUT_LBL_EXPIRATION_DATE = MessageConstants.About_LBL_EXPIRATION_DATE;
+
+    public static final String ABOUT_LBL_COPYRIGHT = MessageConstants.About_LBL_COPYRIGHT;
+
+    public static final String ABOUT_BTN_INSTALLATION_DETAILS = MessageConstants.About_BTN_INSTALLATION_DETAILS;
+
+    public static final String ABOUT_BTN_OK = MessageConstants.About_BTN_OK;
+
+    public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
+
+    public static final String ABOUT_MSG_CHECKING_VERSION = MessageConstants.About_MSG_CHECKING_VERSION;
+
+    public static final String About_MSG_CHECKING_EXPIRATION_DATE = MessageConstants.About_MSG_CHECKING_EXPIRATION_DATE;
+
+    public static final String About_MSG_CANNOT_GET_EXPIRATION_DATE = MessageConstants.About_MSG_CANNOT_GET_EXPIRATION_DATE;
+
+    // ProxyConfigurationDialog
+    public static final String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG = MessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
 }

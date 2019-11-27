@@ -46,6 +46,7 @@ import com.kms.katalon.composer.keyword.dialogs.RenameKeywordDialog;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -147,6 +148,8 @@ public class PastePackageHandler {
             
             eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
                     keywordFile.getProjectRelativePath().toString(), copiedKeywordFilePath });
+            KeywordController.getInstance().parseCustomKeywordFile(keywordFile,
+                    ProjectController.getInstance().getCurrentProject());
         } catch (JavaModelException javaModelException) {
             if (javaModelException.getJavaModelStatus().getCode() == IJavaModelStatusConstants.NAME_COLLISION) {
                 openRenameDialog(keywordFile, targetPackageFragment, false);
@@ -168,6 +171,8 @@ public class PastePackageHandler {
             
             eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] {
                     keywordFile.getProjectRelativePath().toString(), cutKeywordFilePath });
+            KeywordController.getInstance().parseCustomKeywordFile(keywordFile,
+                    ProjectController.getInstance().getCurrentProject());
         } catch (JavaModelException javaModelException) {
             if (javaModelException.getJavaModelStatus().getCode() == IJavaModelStatusConstants.NAME_COLLISION) {
                 openRenameDialog(keywordFile, targetPackageFragment, true);

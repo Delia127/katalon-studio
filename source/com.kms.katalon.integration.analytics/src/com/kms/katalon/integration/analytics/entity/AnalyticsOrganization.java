@@ -24,8 +24,8 @@ public class AnalyticsOrganization {
         this.name = name;
     }
 
-    public AnalyticsOrganizationRole getRole() {
-        return AnalyticsOrganizationRole.valueOf(role);
+    public String getRole() {
+        return role;
     }
 
     public void setRole(String role) {

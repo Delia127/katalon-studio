@@ -7,6 +7,8 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.providers.CellLayoutInfo;
+import com.kms.katalon.composer.components.impl.providers.DefaultCellLayoutInfo;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -16,6 +18,8 @@ import com.kms.katalon.entity.report.ReportItemDescription;
 public class ReportActionColumnLabelProvider extends HyperLinkColumnLabelProvider<ReportItemDescription>
         implements ReportItemDescriptionLabelProvider {
 
+    private static final int DF_TABLE_CELL_MARGIN = 5;
+    
     public ReportActionColumnLabelProvider(int columnIndex) {
         super(columnIndex);
     }
@@ -56,5 +60,15 @@ public class ReportActionColumnLabelProvider extends HyperLinkColumnLabelProvide
     @Override
     protected Image getImage(ReportItemDescription element) {
         return null;
+    }
+    
+    @Override
+    public CellLayoutInfo getCellLayoutInfo() {
+        return new DefaultCellLayoutInfo() {
+            @Override
+            public int getLeftMargin() {
+                return DF_TABLE_CELL_MARGIN;
+            }
+        };
     }
 }

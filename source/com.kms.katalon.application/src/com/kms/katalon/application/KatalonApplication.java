@@ -9,8 +9,11 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.model.KatalonPackage;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.FileHashUtil;
@@ -25,6 +28,8 @@ public class KatalonApplication {
     private static final String MAC_ADDRESS;
 
     public static final String USER_KEY;
+    
+    public static String USER_SESSION_ID;
 
     static {
         SESSION_ID = UUID.randomUUID().toString();
@@ -32,6 +37,12 @@ public class KatalonApplication {
         MAC_ADDRESS = getMacAddress();
 
         USER_KEY = hashMacAndHostName();
+        
+        USER_SESSION_ID = UUID.randomUUID().toString();
+    }
+    
+    public static void refreshUserSession() {
+        USER_SESSION_ID = UUID.randomUUID().toString();
     }
     
     private static String hashMacAndHostName() {
@@ -65,10 +76,13 @@ public class KatalonApplication {
     }
     
     public static KatalonPackage getKatalonPackage() {
-        if (!isRunningInKatalonC()) {
-            return KatalonPackage.KSE;
-        } else {
+        boolean isDevelopmentMode = Platform.inDevelopmentMode();
+        boolean isRunningInKatalonC = isRunningInKatalonC();
+        RunningMode runMode = ApplicationRunningMode.get();
+        if (isRunningInKatalonC || (isDevelopmentMode && runMode == RunningMode.CONSOLE)) {
             return KatalonPackage.ENGINE;
+        } else {
+            return KatalonPackage.KSE;
         }
     }
     

@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -31,8 +30,11 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.DatabaseController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
@@ -61,6 +63,14 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
     protected boolean isChanged;
 
+    private Composite compDatabase;
+
+    private GridData gdLblOptionsDB;
+
+    private GridData gdTxtDriverClassName;
+
+    private Label lblOptionsDB;
+
     public DatabaseConnectionAbstractDialog(Shell parentShell) {
         super(parentShell);
         setDialogTitle(StringConstants.DIA_TITLE_DB_CONNECTION_QUERY_SETTINGS);
@@ -84,7 +94,7 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
     }
 
     private void createDatabasePart(Composite parent) {
-        Composite compDatabase = new Composite(parent, SWT.NONE);
+        compDatabase = new Composite(parent, SWT.NONE);
         compDatabase.setLayout(new GridLayout());
         compDatabase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
@@ -104,27 +114,29 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
         Label lblUser = new Label(grpDatabase, SWT.NONE);
         lblUser.setText(StringConstants.DIA_LBL_USER);
-        lblUser.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
+        lblUser.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
         txtUser = new Text(grpDatabase, SWT.BORDER);
         txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblPassword = new Label(grpDatabase, SWT.NONE);
         lblPassword.setText(StringConstants.DIA_LBL_PASSWORD);
-        lblPassword.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
+        lblPassword.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
         txtPassword = new Text(grpDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
-        Label lblOptionsDB = new Label(grpDatabase, SWT.NONE);
+
+        lblOptionsDB = new Label(grpDatabase, SWT.NONE);
         lblOptionsDB.setText("JDBC driver");
-        lblOptionsDB.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
-        
+        gdLblOptionsDB = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblOptionsDB.setLayoutData(gdLblOptionsDB);
+
         txtDriverClassName = new Text(grpDatabase, SWT.BORDER);
-        txtDriverClassName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        gdTxtDriverClassName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        txtDriverClassName.setLayoutData(gdTxtDriverClassName);
 
         Label lblConnectionURL = new Label(grpDatabase, SWT.NONE);
-        lblConnectionURL.setLayoutData(new GridData(SWT.LEAD, SWT.TOP, false, false, 1, 1));
+        lblConnectionURL.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblConnectionURL.setText(StringConstants.DIA_LBL_CONNECTION_URL);
 
         txtConnectionURL = new Text(grpDatabase, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
@@ -157,7 +169,7 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
         compSample.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         Label lblSampleURL = new Label(compSample, SWT.NONE);
-        lblSampleURL.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
+        lblSampleURL.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lblSampleURL.setText(StringConstants.DIA_LBL_CONNECTION_URL_SAMPLE);
 
         Label separator = new Label(compSample, SWT.HORIZONTAL | SWT.SEPARATOR);
@@ -325,6 +337,21 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
     @Override
     protected void okPressed() {
+        String connectionUrl = txtConnectionURL.getText();
+        if (!isEnterpriseAccount()) {
+            if (isOracleSql(connectionUrl)) {
+                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
+                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_ORACLE_SQL);
+                return;
+            }
+
+            if (isMicrosoftSqlServer(connectionUrl)) {
+                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
+                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
+                return;
+            }
+        }
+
         updateChanges();
         super.okPressed();
     }
@@ -360,7 +387,7 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
     private Link addLink(Composite parent, String label, final String hyperlink) {
         Link link = new Link(parent, SWT.NONE);
-        link.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
+        link.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         link.setText(label + " (<a href=\"" + hyperlink + "\">Docs</a>)");
         link.addSelectionListener(new SelectionAdapter() {
 
@@ -372,4 +399,31 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
         return link;
     }
 
+    protected boolean isEnterpriseAccount() {
+        return LicenseUtil.isNotFreeLicense();
+    }
+
+    private boolean isOracleSql(String connectionUrl) {
+        if (StringUtils.isEmpty(connectionUrl)) {
+            return false;
+        }
+        return connectionUrl.startsWith("jdbc:oracle");
+    }
+
+    private boolean isMicrosoftSqlServer(String connectionUrl) {
+        if (StringUtils.isEmpty(connectionUrl)) {
+            return false;
+        }
+        return connectionUrl.startsWith("jdbc:sqlserver");
+    }
+
+    protected void showDriverComposite() {
+        if (!isEnterpriseAccount()) {
+            gdLblOptionsDB.heightHint = 0;
+            gdTxtDriverClassName.heightHint = 0;
+            txtDriverClassName.setVisible(false);
+            lblOptionsDB.setVisible(false);
+            compDatabase.layout(true);
+        }
+    }
 }

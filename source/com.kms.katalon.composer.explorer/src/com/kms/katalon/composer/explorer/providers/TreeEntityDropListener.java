@@ -12,11 +12,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.PackageFragment;
+import org.eclipse.jdt.internal.corext.refactoring.reorg.IReorgDestination;
+import org.eclipse.jdt.internal.corext.refactoring.reorg.ReorgDestinationFactory;
+import org.eclipse.jdt.internal.ui.refactoring.reorg.ReorgMoveStarter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
@@ -43,6 +49,7 @@ import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.controller.WindowsElementController;
@@ -59,8 +66,8 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
-import com.kms.katalon.groovy.util.GroovyUtil;
 
+@SuppressWarnings("restriction")
 public class TreeEntityDropListener extends TreeDropTargetEffect {
     @Inject
     private IEventBroker eventBroker;
@@ -104,6 +111,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 moveKeyword(file, packageFragment, null);
                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity.getParent());
                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetTreeEntity);
+                KeywordController.getInstance().parseCustomKeywordFile(file, ProjectController.getInstance().getCurrentProject());
             }
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
@@ -118,7 +126,11 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         }
         String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
 
-        GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName);
+        IResource[] resources = new IResource[] {keywordFile };
+        IJavaElement[] elements = new IJavaElement[] { JavaCore.create(keywordFile) };
+        IReorgDestination destination = ReorgDestinationFactory.createDestination(targetPackageFragment);
+        ReorgMoveStarter moveStarter = ReorgMoveStarter.create(elements, resources, destination);
+        moveStarter.run(Display.getCurrent().getActiveShell());
         refactorReferencingTestSuites(ProjectController.getInstance().getCurrentProject(), keywordFile,
                 keywordFile.getLocation().toString(), cutKeywordFilePath);
         return keywordFile;

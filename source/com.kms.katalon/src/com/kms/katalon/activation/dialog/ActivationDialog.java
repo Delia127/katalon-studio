@@ -36,6 +36,7 @@ import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.license.models.License;
+import com.kms.katalon.license.models.LicenseResource;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -245,8 +246,9 @@ public class ActivationDialog extends Dialog {
             public void run() {
                 StringBuilder errorMessage = new StringBuilder();
                 String machineId = MachineUtil.getMachineId();
-                License license = ActivationInfoCollector.activate(username, password, machineId,
+                LicenseResource licenseResource = ActivationInfoCollector.activate(username, password, machineId,
                         errorMessage);
+                License license = licenseResource.getLicense();
                 lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
                 if (license != null) {
                     setReturnCode(Window.OK);

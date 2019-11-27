@@ -1,5 +1,6 @@
 package com.kms.katalon.feature;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface TestOpsFeatureActivator {
@@ -7,11 +8,17 @@ public interface TestOpsFeatureActivator {
 
     String connect(String serverUrl, String email, String password) throws Exception;
     
-    String getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
+    Map<String, String> getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
             String machineId) throws Exception;
     
     void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,
             Long orgId, String token) throws Exception;
     
     String getOrganization(String serverUrl, String token, long orgId) throws Exception;
+
+    String getTestOpsMessage(String message);
+
+    void deactivate(String serverUrl, String token, String machineId, Long orgId) throws Exception;
+    
+    boolean testConnection(String serverUrl) throws Exception;
 }

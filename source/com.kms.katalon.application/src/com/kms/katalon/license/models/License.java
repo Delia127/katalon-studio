@@ -17,7 +17,7 @@ public class License {
 
     private Long organizationId;
 
-    private String licenseType;
+    private LicenseType licenseType;
 
     public Date getExpirationDate() {
         return expirationDate;
@@ -67,12 +67,29 @@ public class License {
         this.jwtCode = jwtCode;
     }
 
-    public String getLicenseType() {
+    public LicenseType getType() {
         return licenseType;
     }
 
     public void setLicenseType(String licenseType) {
-        this.licenseType = licenseType;
+        this.licenseType = LicenseType.valueOf(licenseType);
     }
 
+    public boolean isEngineLicense() {
+        for (Feature feature : features) {
+            if (feature.getKey().contains("cli")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isKSELicense() {
+        for (Feature feature : features) {
+            if (feature.getKey().contains("gui")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

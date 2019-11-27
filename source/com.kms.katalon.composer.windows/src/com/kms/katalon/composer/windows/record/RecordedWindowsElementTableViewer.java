@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 
@@ -12,6 +13,7 @@ import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 
 public class RecordedWindowsElementTableViewer extends CTableViewer {
 
+    private static final String RUNTIME_ID_PROP = "RuntimeId";
     public List<CapturedWindowsElement> capturedElements;
 
     public RecordedWindowsElementTableViewer(Composite parent, int style) {
@@ -29,8 +31,9 @@ public class RecordedWindowsElementTableViewer extends CTableViewer {
 
     public CapturedWindowsElement getDuplicatedObject(CapturedWindowsElement element) {
         for (CapturedWindowsElement captured : capturedElements) {
-            if (captured.getProperties().containsKey("RuntimeId") && element.getProperties().containsKey("RuntimeId")
-                    && captured.getProperties().get("RuntimeId").equals(element.getProperties().get("RuntimeId"))) {
+            if (captured.getProperties().containsKey(RUNTIME_ID_PROP) && element.getProperties().containsKey(RUNTIME_ID_PROP)
+                    && captured.getProperties().get(RUNTIME_ID_PROP).equals(element.getProperties().get(RUNTIME_ID_PROP))
+                    && StringUtils.isNotEmpty(captured.getProperties().get(RUNTIME_ID_PROP))) {
                 return captured;
             }
         }
