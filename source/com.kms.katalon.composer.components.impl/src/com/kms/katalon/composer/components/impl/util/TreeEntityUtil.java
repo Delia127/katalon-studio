@@ -256,7 +256,10 @@ public class TreeEntityUtil {
 
     public static SystemFileTreeEntity getSystemFileTreeEntity(SystemFileEntity systemFile,
             FolderEntity parent) {
-        return new SystemFileTreeEntity(systemFile, new FolderTreeEntity(parent, null));
+        if (parent != null) {
+            return new SystemFileTreeEntity(systemFile, getFolderTreeEntity(parent));
+        }
+        return new SystemFileTreeEntity(systemFile, null);
     }
     
     public static WindowsElementTreeEntity getWindowsElementTreeEntity(WindowsElementEntity windowsElement,

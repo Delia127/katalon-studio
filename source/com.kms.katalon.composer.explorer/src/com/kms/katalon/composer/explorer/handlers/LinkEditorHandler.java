@@ -135,7 +135,10 @@ public class LinkEditorHandler implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         Object object = event.getProperty(EventTags.ELEMENT);
-        if (UIEvents.UILifeCycle.BRINGTOTOP.equals(event.getTopic()) && (object != null) && (object instanceof MPart)) {
+        if (getActive()
+                && UIEvents.UILifeCycle.BRINGTOTOP.equals(event.getTopic()) 
+                && (object != null) 
+                && (object instanceof MPart)) {
             MPart mpart = (MPart) object;
             performLinkWithPart(mpart);
         }
@@ -244,7 +247,7 @@ public class LinkEditorHandler implements EventHandler {
         String filePath = getFilePath(editorInput);
         SystemFileEntity systemFileEntity = SystemFileController.getInstance().getSystemFile(filePath,
                 ProjectController.getInstance().getCurrentProject());
-        return TreeEntityUtil.getSystemFileTreeEntity(systemFileEntity, null);
+        return TreeEntityUtil.getSystemFileTreeEntity(systemFileEntity, systemFileEntity.getParentFolder());
     }
 
     private UserFileTreeEntity getUserFileTreeRootEntity(IEditorInput editorInput) throws Exception {

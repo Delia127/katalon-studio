@@ -40,7 +40,7 @@ public class UserFileEntity extends FileEntity {
         }
         UserFileEntity that = (UserFileEntity)object;
         
-        if (this.getName().equals(that.getName())) {
+        if (this.getFile() != null && this.getFile().equals(that.getFile())) {
             return true;
         }
         return false;
