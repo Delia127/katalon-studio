@@ -52,6 +52,8 @@ public class ComposerMobileObjectspyMessageConstants extends NLS {
     public static String DIA_MSG_ELEMENT_FOUND;
     
     public static String DIA_MSG_ELEMENT_NOT_FOUND;
+    
+    public static String DIA_MSG_SEARCHING_FOR_ELEMENTS;
 
     public static String DIA_LBL_ALL_OBJECTS;
 

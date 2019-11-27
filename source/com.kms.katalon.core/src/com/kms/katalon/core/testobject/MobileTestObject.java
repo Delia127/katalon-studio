@@ -1,5 +1,7 @@
 package com.kms.katalon.core.testobject;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class MobileTestObject extends TestObject {
 
     private boolean useMobileLocator = false;
@@ -57,6 +59,18 @@ public class MobileTestObject extends TestObject {
 
         public String getLocatorStrategy() {
             return locatorStrategy;
+        }
+        
+        public static MobileLocatorStrategy valueOfStrategy(String strategy) {
+            if (StringUtils.isEmpty(strategy)) {
+                return null;
+            }
+            for (MobileLocatorStrategy str : values()) {
+                if (str.getLocatorStrategy().equals(strategy)) {
+                    return str;
+                }
+            }
+            throw new IllegalArgumentException("Strategy: " + strategy + " not found");
         }
     }
 }

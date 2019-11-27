@@ -25,11 +25,12 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -42,7 +43,7 @@ import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.entity.repository.MobileElementEntity;
-import com.kms.katalon.entity.repository.WindowsElementEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity.LocatorStrategy;
 
 public class MobileElementPropertiesComposite extends Composite {
     private Text txtObjectName;
@@ -64,7 +65,7 @@ public class MobileElementPropertiesComposite extends Composite {
         this.parentDialog = parentDialog;
         createComposite();
     }
-    
+
     public MobileElementPropertiesComposite(MobileElementInspectorDialog dialog, Composite parent) {
         this(dialog, parent, SWT.NONE);
     }
@@ -72,6 +73,7 @@ public class MobileElementPropertiesComposite extends Composite {
     public void setEditingElement(CapturedMobileElement editingElement) {
         this.editingElement = editingElement;
         refreshAttributesTable();
+        refreshButtonStates();
     }
 
     public CapturedMobileElement getEditingElement() {
@@ -101,7 +103,7 @@ public class MobileElementPropertiesComposite extends Composite {
         txtObjectName = new Text(this, SWT.BORDER);
         txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtObjectName.setToolTipText(StringConstants.DIA_TOOLTIP_OBJECT_NAME);
-        
+
         // Locator Strategy
         Composite locatorComposite = new Composite(this, SWT.NONE);
         GridLayout glLocatorComposite = new GridLayout(2, false);
@@ -114,7 +116,7 @@ public class MobileElementPropertiesComposite extends Composite {
         lblLocatorStrategy.setText("Locator Strategy");
         GridData gdLocatorStrategy = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         lblLocatorStrategy.setLayoutData(gdLocatorStrategy);
-        
+
         cbbLocatorStrategy = new Combo(locatorComposite, SWT.READ_ONLY);
         cbbLocatorStrategy.setItems(strategies);
 
@@ -135,8 +137,8 @@ public class MobileElementPropertiesComposite extends Composite {
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         attributesTableComposite.setLayout(tableColumnLayout);
 
-        attributesTableViewer = new CTableViewer(attributesTableComposite, SWT.MULTI | SWT.FULL_SELECTION
-                | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        attributesTableViewer = new CTableViewer(attributesTableComposite,
+                SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 
         createColumns(attributesTableViewer, tableColumnLayout);
 
@@ -150,6 +152,7 @@ public class MobileElementPropertiesComposite extends Composite {
         attributesTableViewer.setInput(Collections.emptyList());
 
         registerControlModifyListeners();
+        refreshButtonStates();
     }
 
     private void commitEditingName() {
@@ -169,7 +172,7 @@ public class MobileElementPropertiesComposite extends Composite {
         txtObjectName.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-               commitEditingName();
+                commitEditingName();
             }
         });
 
@@ -187,6 +190,26 @@ public class MobileElementPropertiesComposite extends Composite {
                         commitEditingName();
                     default:
                         break;
+                }
+            }
+        });
+
+        cbbLocatorStrategy.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (editingElement == null) {
+                    return;
+                }
+                int index = cbbLocatorStrategy.getSelectionIndex();
+                editingElement.setLocatorStrategy(LocatorStrategy.valueOfStrategy(strategies[index]));
+            }
+        });
+
+        txtLocator.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if (editingElement != null) {
+                    editingElement.setLocator(txtLocator.getText());
                 }
             }
         });
@@ -300,7 +323,7 @@ public class MobileElementPropertiesComposite extends Composite {
             int selectedIndex = Arrays.asList(strategies)
                     .indexOf(editingElement.getLocatorStrategy().getLocatorStrategy());
             if (selectedIndex >= 0) {
-            	cbbLocatorStrategy.select(selectedIndex);
+                cbbLocatorStrategy.select(selectedIndex);
             }
             attributesTableViewer.setInput(new ArrayList<>(editingElement.getAttributes().entrySet()));
         } else {
@@ -310,6 +333,13 @@ public class MobileElementPropertiesComposite extends Composite {
             attributesTableViewer.setInput(Collections.emptyList());
         }
         attributesTableViewer.refresh();
+    }
+    
+    private void refreshButtonStates() {
+        boolean isActive = editingElement != null;
+        txtObjectName.setEnabled(isActive);
+        txtLocator.setEnabled(isActive);
+        cbbLocatorStrategy.setEnabled(isActive);
     }
 
     public void focusAndEditCapturedElementName() {

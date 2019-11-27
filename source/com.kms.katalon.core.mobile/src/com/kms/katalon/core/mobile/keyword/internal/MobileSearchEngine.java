@@ -528,6 +528,19 @@ public class MobileSearchEngine {
         }
     }
 
+    public List<WebElement> findWebElements(boolean addLogEntries) throws Exception {
+        if (element instanceof MobileTestObject) {
+            return findElementsByMobileLocator();
+        }
+        if (driver instanceof AndroidDriver) {
+            List<WebElement> elements = findAndroidElements((AndroidDriver) driver);
+            return elements;
+        } else {
+            List<WebElement> elements = findIosElements(driver);
+            return elements;
+        }
+    }
+
     private WebElement findElementByMobileLocator() {
         MobileTestObject mobileTestObject = (MobileTestObject) element;
         String mobileLocator = mobileTestObject.getMobileLocator();
@@ -554,6 +567,39 @@ public class MobileSearchEngine {
                 return driver.findElement(By.name(mobileLocator));
             case XPATH:
                 return driver.findElement(By.xpath(mobileLocator));
+            default:
+                break;
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<WebElement> findElementsByMobileLocator() {
+        MobileTestObject mobileTestObject = (MobileTestObject) element;
+        String mobileLocator = mobileTestObject.getMobileLocator();
+        switch (mobileTestObject.getMobileLocatorStrategy()) {
+            case ACCESSIBILITY:
+                return driver.findElements(MobileBy.AccessibilityId(mobileLocator));
+            case ANDROID_UI_AUTOMATOR:
+                return driver.findElements(MobileBy.AndroidUIAutomator(mobileLocator));
+            case ANDROID_VIEWTAG:
+                return driver.findElements(MobileBy.AndroidViewTag(mobileLocator));
+            case CUSTOM:
+                return driver.findElements(MobileBy.custom(mobileLocator));
+            case IMAGE:
+                return driver.findElements(MobileBy.image(mobileLocator));
+            case IOS_CLASS_CHAIN:
+                return driver.findElements(MobileBy.iOSClassChain(mobileLocator));
+            case IOS_PREDICATE_STRING:
+                return driver.findElements(MobileBy.iOSNsPredicateString(mobileLocator));
+            case CLASS_NAME:
+                return driver.findElements(By.className(mobileLocator));
+            case ID:
+                return driver.findElements(By.id(mobileLocator));
+            case NAME:
+                return driver.findElements(By.name(mobileLocator));
+            case XPATH:
+                return driver.findElements(By.xpath(mobileLocator));
             default:
                 break;
         }
@@ -677,14 +723,6 @@ public class MobileSearchEngine {
 
         default:
             return false;
-        }
-    }
-
-    public List<WebElement> findWebElements(boolean addLogEntries) throws Exception {
-        if (driver instanceof AndroidDriver) {
-            return findAndroidElements((AndroidDriver) driver);
-        } else {
-            return findIosElements(driver);
         }
     }
 }

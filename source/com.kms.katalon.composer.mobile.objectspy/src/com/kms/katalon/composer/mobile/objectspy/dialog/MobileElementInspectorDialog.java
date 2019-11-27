@@ -1,5 +1,9 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
+import java.util.List;
+
+import org.eclipse.swt.graphics.Rectangle;
+
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
@@ -9,6 +13,8 @@ import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElem
  *
  */
 public interface MobileElementInspectorDialog {
+    MobileInspectorController getInspectorController();
+    
     void setSelectedElementByLocation(int x, int y);
 
     /** What this method do:
@@ -28,6 +34,8 @@ public interface MobileElementInspectorDialog {
     void handleCapturedObjectsTableSelectionChange();
 
     void highlightElement(MobileElement selectedElement);
+    
+    void highlightElementRects(List<Rectangle> rects);
     
     void setEdittingElement(CapturedMobileElement element);
     

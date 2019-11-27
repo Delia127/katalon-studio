@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -45,7 +48,11 @@ public class MobileDeviceDialog extends Dialog {
 
     public static final int DIALOG_HEIGHT = 750;
 
-    private double currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
+    public static final String HIGHLIGHT_COLOR = "#76BF42";
+
+    private List<Rectangle> highlightRects = new ArrayList<>();
+
+    private boolean highlightPhase = false;
 
     private double hRatio;
 
@@ -92,17 +99,18 @@ public class MobileDeviceDialog extends Dialog {
                 if (currentScreenShot != null && !currentScreenShot.isDisposed()) {
                     e.gc.drawImage(currentScreenShot, 0, 0);
 
-                    if (currentWidth != 0 && currentHeight != 0) {
+                    if (highlightPhase && highlightRects != null && highlightRects.size() > 0) {
                         Color oldForegroundColor = e.gc.getForeground();
-                        e.gc.setForeground(ColorUtil.getColor("#76BF42"));
-                        int x = safeRoundDouble(currentX);
-                        int y = safeRoundDouble(currentY);
-                        int width = safeRoundDouble(currentWidth);
-                        int height = safeRoundDouble(currentHeight);
+                        e.gc.setForeground(ColorUtil.getColor(HIGHLIGHT_COLOR));
+                        int oldLineWidth = e.gc.getLineWidth();
 
-                        e.gc.drawRectangle(x, y, width, height);
-                        e.gc.drawRectangle(x + 1, Math.max(y + 1, 0), Math.max(width - 2, 0), Math.max(height - 2, 0));
+                        e.gc.setLineWidth(2);
+                        highlightRects.forEach(rect -> {
+                            e.gc.drawRectangle(safeRoundDouble(rect.x * hRatio), safeRoundDouble(rect.y * hRatio),
+                                    safeRoundDouble(rect.width * hRatio), safeRoundDouble(rect.height * hRatio));
+                        });
 
+                        e.gc.setLineWidth(oldLineWidth);
                         e.gc.setForeground(oldForegroundColor);
                     }
                 }
@@ -153,14 +161,33 @@ public class MobileDeviceDialog extends Dialog {
     }
 
     public void highlight(final double x, final double y, final double width, final double height) {
-        // Scale the coordinator depend on the ratio between scaled image / source image
+        Rectangle newHighlightRect = new Rectangle(safeRoundDouble(x), safeRoundDouble(y), safeRoundDouble(width),
+                safeRoundDouble(height));
+        highlightRect(newHighlightRect);
+    }
+
+    public void highlightRect(Rectangle rect) {
+        List<Rectangle> newHighlightRects = new ArrayList<Rectangle>();
+        newHighlightRects.add(rect);
+        highlightRects(newHighlightRects);
+    }
+
+    public void highlightRects(List<Rectangle> rects) {
+        if (rects == null || rects.size() == 0) {
+            return;
+        }
+
         Display.getCurrent().syncExec(new Runnable() {
             @Override
             public void run() {
-                double currentX = x * hRatio;
-                double currentY = y * hRatio;
-                double currentWidth = width * hRatio;
-                double currentHeight = height * hRatio;
+                Rectangle firstRect = rects.size() > 0 ? rects.get(0) : null;
+                if (firstRect == null) {
+                    return;
+                }
+                double currentX = firstRect.x * hRatio;
+                double currentY = firstRect.y * hRatio;
+                double currentWidth = firstRect.width * hRatio;
+                double currentHeight = firstRect.height * hRatio;
                 if (!isElementOnScreen(currentX, currentY, currentWidth, currentHeight)) {
                     scrollToElement(currentX, currentY);
                 }
@@ -168,21 +195,11 @@ public class MobileDeviceDialog extends Dialog {
         });
 
         Thread highlightThread = new Thread(new Runnable() {
-
             @Override
             public void run() {
+                highlightRects.addAll(rects);
                 for (int i = 0; i < 9; i++) {
-                    if (i % 2 == 1) {
-                        MobileDeviceDialog.this.currentX = x * hRatio;
-                        MobileDeviceDialog.this.currentY = y * hRatio;
-                        MobileDeviceDialog.this.currentWidth = width * hRatio;
-                        MobileDeviceDialog.this.currentHeight = height * hRatio;
-                    } else {
-                        MobileDeviceDialog.this.currentX = 0;
-                        MobileDeviceDialog.this.currentY = 0;
-                        MobileDeviceDialog.this.currentWidth = 0;
-                        MobileDeviceDialog.this.currentHeight = 0;
-                    }
+                    highlightPhase = i % 2 == 1;
                     try {
                         Thread.sleep(200L);
                     } catch (InterruptedException e) {}
@@ -192,8 +209,13 @@ public class MobileDeviceDialog extends Dialog {
                         }
                     });
                 }
+                highlightRects = Collections.synchronizedList(highlightRects);
+                synchronized (highlightRects) {
+                    highlightRects.removeAll(rects);
+                }
             }
         });
+
         highlightThread.start();
     }
 
@@ -259,10 +281,8 @@ public class MobileDeviceDialog extends Dialog {
                 double rootHeight = (double) img.getBounds().height;
                 if (root != null) {
                     Map<String, String> attributes = root.getAttributes();
-                    if (attributes.containsKey(GUIObject.HEIGHT)
-                    		&& attributes.containsKey(GUIObject.WIDTH)
-                    		&& attributes.containsKey(GUIObject.X)
-                    		&& attributes.containsKey(GUIObject.Y)) {
+                    if (attributes.containsKey(GUIObject.HEIGHT) && attributes.containsKey(GUIObject.WIDTH)
+                            && attributes.containsKey(GUIObject.X) && attributes.containsKey(GUIObject.Y)) {
                         rootHeight = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
                     }
                 }

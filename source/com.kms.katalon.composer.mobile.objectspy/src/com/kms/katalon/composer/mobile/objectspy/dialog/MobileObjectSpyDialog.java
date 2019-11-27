@@ -50,11 +50,13 @@ import com.kms.katalon.composer.mobile.objectspy.composites.MobileAllObjectsWith
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileCapturedObjectsComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileConfigurationsComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileElementPropertiesComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileHighlightComposite;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverterV2;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.SnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
@@ -71,7 +73,7 @@ import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog {
 
-    public static final Point DIALOG_SIZE = new Point(800, 800);
+    public static final Point DIALOG_SIZE = new Point(900, 800);
 
     private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_SPY;
 
@@ -96,6 +98,8 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     private MobileElementPropertiesComposite propertiesComposite;
     
     private MobileCapturedObjectsComposite capturedObjectsComposite;
+
+    private MobileHighlightComposite highlightElementComposite;
     
     private MobileAllObjectsWithCheckboxComposite allObjectsComposite;
 
@@ -135,7 +139,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         createLeftPanel(sashForm);
         createRightPanel(sashForm);
 
-        sashForm.setWeights(new int[] { 4, 6 });
+        sashForm.setWeights(new int[] { 6, 6 });
 
         new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_OBJECT_SPY_MOBILE);
 
@@ -161,8 +165,9 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         createCapturedObjectsComposite(hSashForm);
         createElementPropertiesComposite(hSashForm);
+        createHighlightElementComposite(hSashForm);
 
-        hSashForm.setWeights(new int[] { 1, 1 });
+        hSashForm.setWeights(new int[] { 5, 6, 1 });
         leftPanelScrolledComposite.setContent(leftPanelComposite);
     }
     
@@ -195,8 +200,14 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     @Override
     public void handleCapturedObjectsTableSelectionChange() {
+//        highlightElementComposite.setEditingElement(allObjectsComposite.get);
         capturedObjectsComposite.updateCheckAllCheckboxState();
         btnAdd.setEnabled(capturedObjectsComposite.isAnyElementChecked());
+    }
+
+    private void createHighlightElementComposite(Composite parent) {
+        highlightElementComposite = new MobileHighlightComposite(this);
+        highlightElementComposite.createComposite(parent);
     }
 
     @Override
@@ -226,6 +237,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         allObjectsComposite.refreshTree();
         capturedObjectsComposite.removeElements(Arrays.asList(elements));
         propertiesComposite.setEditingElement(null);
+        highlightElementComposite.setEditingElement(null);
     }
 
     private void clearAllObjectState(CapturedMobileElement[] elements) {
@@ -460,8 +472,12 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         if (selectedElement == null || deviceView == null || deviceView.isDisposed()) {
             return;
         }
-
         deviceView.highlightElement(selectedElement);
+    }
+
+    @Override
+    public void highlightElementRects(List<Rectangle> rects) {
+        deviceView.highlightRects(rects);
     }
 
     private boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
@@ -828,6 +844,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     @Override
     public void setEdittingElement(CapturedMobileElement element) {
+        highlightElementComposite.setEditingElement(element);
         propertiesComposite.setEditingElement(element);
     }
 
@@ -880,4 +897,9 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 		}
 		return null;
 	}
+
+    @Override
+    public MobileInspectorController getInspectorController() {
+        return inspectorController;
+    }
 }
