@@ -136,6 +136,24 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_PROJECT, JsonUtil.toJson(project));
     }
 
+    public AnalyticsProject getManualProject() {
+        try {
+            String projectJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_MANUAL_PROJECT, StringUtils.EMPTY);
+            if (StringUtils.isNotBlank(projectJson) || !StringUtils.contains(projectJson, "null")) {
+                AnalyticsProject project = new AnalyticsProject();
+                project = JsonUtil.fromJson(projectJson, AnalyticsProject.class);
+                return project;
+            }
+        } catch (IOException e) {
+            LogUtil.logError(e);
+        }
+        return getProject();
+    }
+
+    public void setManualProject(AnalyticsProject project) throws IOException {
+        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_MANUAL_PROJECT, JsonUtil.toJson(project));
+    }
+
     public AnalyticsTeam getTeam() {
         try {
             String teamJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_TEAM, StringUtils.EMPTY);
@@ -153,6 +171,25 @@ public class AnalyticsSettingStore extends BundleSettingStore {
 
     public void setTeam(AnalyticsTeam team) throws IOException {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_TEAM, JsonUtil.toJson(team));
+    }
+
+    public AnalyticsTeam getManualTeam() {
+        try {
+            String teamJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_MANUAL_TEAM, StringUtils.EMPTY);
+            if (StringUtils.isNotBlank(teamJson)) {
+
+                AnalyticsTeam team = new AnalyticsTeam();
+                team = JsonUtil.fromJson(teamJson, AnalyticsTeam.class);
+                return team;
+            }
+        } catch (IOException e) {
+            LogUtil.logError(e);
+        }
+        return getTeam();
+    }
+    
+    public void setManualTeam(AnalyticsTeam team) throws IOException {
+        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_MANUAL_TEAM, JsonUtil.toJson(team));
     }
 
     public String getToken() throws IOException, GeneralSecurityException {

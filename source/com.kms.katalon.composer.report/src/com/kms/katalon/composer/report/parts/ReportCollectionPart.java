@@ -220,7 +220,14 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         tblclmnEnvironment.setText(StringConstants.REPORT_COLLECTION_LBL_ENVIRONMENT);
         tableViewerColumnEnviroment.setLabelProvider(
                 new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_EVN_IDX));
-
+        
+        TableViewerColumn tableViewerColumnProfile = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnProfile = tableViewerColumnProfile.getColumn();
+        tblclmnProfile.setWidth(120);
+        tblclmnProfile.setText(StringConstants.REPORT_COLLECTION_COLUMN_PROFILE);
+        tableViewerColumnProfile.setLabelProvider(
+                new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_PROFILE_IDX));
+        
         TableViewerColumn tableViewerColumnStatus = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnStatus = tableViewerColumnStatus.getColumn();
         tblclmnStatus.setWidth(100);
@@ -373,22 +380,14 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
             LoggerSingleton.logError(ex);
             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
                     ex.getMessage());
-            try {
-                analyticsSettingStore.enableIntegration(false);
-            } catch (IOException e1) {
-                LoggerSingleton.logError(e1);
-            }
         }
     }
     
     private void uploadReportHandle(AnalyticsSettingStore analyticsSettingStore) throws IOException {
-        analyticsSettingStore.enableIntegration(true);
         UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell);
         int returnCode = uploadSelectionDialog.open();
         if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
             uploadReportToKatalonTestOps();
-        } else {
-            analyticsSettingStore.enableIntegration(false);
         }
     }
     
@@ -416,7 +415,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
                         monitor.worked(1);
                         ReportFolder reportFolder = new ReportFolder(getReportFolder());
-                        analyticsReportService.upload(reportFolder);
+                        analyticsReportService.uploadManually(reportFolder);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
                         monitor.worked(2);
                     } catch (final AnalyticsApiExeception ex) {

@@ -108,6 +108,14 @@ public class WindowsActionHandler {
                 SwitchToDesktopHandler handler = new SwitchToDesktopHandler();
                 return handler.perform(element, activeShell);
             }
+            case SwitchToWindowTitle: {
+                SwitchToWindowTitleHandler handler = new SwitchToWindowTitleHandler();
+                return handler.perform(element, activeShell);
+            }
+            case SwitchToWindow: {
+                SwitchToWindowHandler handler = new SwitchToWindowHandler();
+                return handler.perform(element, activeShell);
+            }
             default:
                 return null;
         }
@@ -289,6 +297,65 @@ public class WindowsActionHandler {
             } catch (InterruptedException e) {
                 return null;
             }
+        }
+    }
+    
+    public class SwitchToWindowHandler extends BaseActionObjectHandler {
+        @Override
+        protected void performAction(WindowsTestObject windowsObject)
+                throws InterruptedException, InvocationTargetException {
+            try {
+                WindowsActionHelper.create(windowsSession).switchToWindow(windowsObject);
+            } catch (IllegalAccessException | IOException | URISyntaxException e) {
+                throw new InvocationTargetException(e);
+            }
+        }
+    }
+    
+    public class SwitchToWindowTitleHandler extends BaseActionHandler {
+        private String textInput;
+
+        @Override
+        protected void performActionBeforeProgress() throws InterruptedException {
+            AttachWindowByNameDialog inputDialog = new AttachWindowByNameDialog(activeShell);
+            if (inputDialog.open() != InputDialog.OK) {
+                throw new InterruptedException();
+            }
+            textInput = StringUtils.defaultString(inputDialog.text);
+        }
+        
+        @Override
+        protected IRunnableWithProgress getActionMappingProgress() {
+            return new IRunnableWithProgress() {
+
+                private void checkMonitorCanceled(IProgressMonitor monitor) throws InterruptedException {
+                    if (monitor.isCanceled()) {
+                        throw new InterruptedException("Operation has been canceled");
+                    }
+                }
+
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask("Running command...", 1);
+                        
+                        WindowsActionHelper.create(windowsSession).switchToWindowTitle(textInput);
+                        checkMonitorCanceled(monitor);
+                        monitor.worked(1);
+                    } catch (IOException | URISyntaxException e) {
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        monitor.done();
+                    }
+                }
+            };
+        }
+
+        @Override
+        public WindowsActionMapping getActionMapping() {
+            WindowsActionMapping actionMapping = super.getActionMapping();
+            actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
+            return actionMapping;
         }
     }
 
@@ -498,6 +565,61 @@ public class WindowsActionHandler {
         @Override
         public String getDialogTitle() {
             return "Get Text action";
+        }
+    }
+    
+    private class AttachWindowByNameDialog extends AbstractDialog {
+
+        private Text txtText;
+
+        private String text;
+
+        protected AttachWindowByNameDialog(Shell parentShell) {
+            super(parentShell, false);
+        }
+
+        @Override
+        protected void registerControlModifyListeners() {
+        }
+
+        @Override
+        protected void setInput() {
+            txtText.forceFocus();
+        }
+
+        @Override
+        protected Control createDialogContainer(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout());
+
+            Label lblText = new Label(composite, SWT.NONE);
+            lblText.setText("Please input the application window's title:");
+
+            txtText = new Text(composite, SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
+            txtText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            return composite;
+        }
+
+        @Override
+        protected void createButtonsForButtonBar(Composite parent) {
+            createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
+            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+        }
+
+        @Override
+        protected Point getInitialSize() {
+            return new Point(400, 250);
+        }
+
+        @Override
+        public String getDialogTitle() {
+            return "Switch to window title action";
+        }
+
+        @Override
+        protected void okPressed() {
+            this.text = txtText.getText();
+            super.okPressed();
         }
     }
 

@@ -205,6 +205,24 @@ public class AnalyticsAuthorizationHandler {
         }
         return selectionIndex;
     }
+
+    public static int getTeamIndex(List<AnalyticsTeam> teams, AnalyticsTeam selectedTeam) {
+        int selectionIndex = 0;
+        try {
+            if (selectedTeam != null && selectedTeam.getId() != null && teams != null) {
+                for (int i = 0; i < teams.size(); i++) {
+                    AnalyticsTeam t = teams.get(i);
+                    if (selectedTeam.getId().equals(t.getId())) {
+                        selectionIndex = i;
+                        return selectionIndex;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return selectionIndex;
+    }
     
     public static List<String> getTeamNames(List<AnalyticsTeam> teams) {
         List<String> names = teams.stream().map(t -> t.getName()).collect(Collectors.toList());

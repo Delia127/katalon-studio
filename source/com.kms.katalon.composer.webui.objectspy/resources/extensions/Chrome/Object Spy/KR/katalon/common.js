@@ -241,3 +241,14 @@ function getIndexPath (domNode, bits) {
     }
     return bits.reverse();
 }
+
+window.document.addEventListener('contextmenu', function(event) {
+    var element = event.target;
+    var myPort = browser.runtime.connect();
+    
+    myPort.onMessage.addListener(function portListener(m) {
+        if (m.cmd == 'captureObject') {
+            context_sendData(element);
+        }
+    });
+}, true);

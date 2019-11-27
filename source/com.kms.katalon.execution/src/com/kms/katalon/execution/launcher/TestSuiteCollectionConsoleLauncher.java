@@ -177,10 +177,12 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
     @Override
     protected void postExecution() {
         super.postExecution();
-        
+
+        Date startTime = getStartTime() != null ? getStartTime() : new Date();
+        Date endTime = getEndTime() != null ? getEndTime() : new Date();
         String executionResult = getExecutionResult();
-        Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(),
-                executionResult, getEndTime().getTime() - getStartTime().getTime());
+        Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(), executionResult,
+                endTime.getTime() - startTime.getTime());
     }
     
     protected String getExecutionResult() {

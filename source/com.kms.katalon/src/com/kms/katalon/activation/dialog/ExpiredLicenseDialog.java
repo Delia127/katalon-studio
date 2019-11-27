@@ -32,6 +32,11 @@ public class ExpiredLicenseDialog extends AbstractDialog {
     }
 
     @Override
+    public String getDialogTitle() {
+        return ApplicationMessageConstants.TITLE_KS_NOTIFICATION;
+    }
+
+    @Override
     protected Control createDialogContainer(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout());

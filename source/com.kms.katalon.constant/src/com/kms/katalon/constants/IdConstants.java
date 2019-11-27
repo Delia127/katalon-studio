@@ -244,6 +244,8 @@ public interface IdConstants {
     public static final String XERCES_BUNDLE_ID = "org.apache.xerces.impl";
 
     public static final String XML_APIS_BUNDLE_ID = "xml-apis";
+    
+    public static final String KATALON_SMART_XPATH_BUNDLE_ID = "com.katalon.katalon-studio-smart-xpath";
 
     public static final String COMPOSER_EXECUTION_BUNDLE_ID = "com.kms.katalon.composer.execution";
 
@@ -252,6 +254,8 @@ public interface IdConstants {
     public static final String DEBUG_UI_ID = "org.eclipse.debug.ui";
 
     public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
+    
+    public static final String EDITORS_ID = "org.eclipse.ui.editors";
     
     public static final String PLUGIN_DYNAMIC_EXECUTION = "com.katalon.katalon-studio-dynamic-execution-plugin";
     

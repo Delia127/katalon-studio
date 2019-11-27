@@ -45,6 +45,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
@@ -98,7 +99,7 @@ public class AnalyticsApiProvider {
             executeRequest(httpGet, Object.class);
             return true;
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -123,7 +124,7 @@ public class AnalyticsApiProvider {
 
             return executeRequest(httpPost, AnalyticsTokenInfo.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -136,7 +137,7 @@ public class AnalyticsApiProvider {
             AnalyticsOrganization organization = executeRequest(httpGet, AnalyticsOrganization.class);
             return organization;
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -149,7 +150,7 @@ public class AnalyticsApiProvider {
             AnalyticsOrganizationPage organizationPage = executeRequest(httpGet, AnalyticsOrganizationPage.class);
             return organizationPage.getOrganizations();
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -169,7 +170,7 @@ public class AnalyticsApiProvider {
             }
             return teams;
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
@@ -207,7 +208,7 @@ public class AnalyticsApiProvider {
             AnalyticsProjectPage projectPage = executeRequest(httpGet, AnalyticsProjectPage.class);
             return projectPage.getContent();
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -232,7 +233,7 @@ public class AnalyticsApiProvider {
 
             return executeRequest(httpPost, AnalyticsProject.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
@@ -246,13 +247,22 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("email", username);
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
-            uriBuilder.setParameter("package", KatalonApplication.getKatalonPackage().getPackageName());
+            
+            KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
+            if (KatalonPackage.ENGINE.equals(katalonPackage)) {
+                String isFloatingEngine = System.getenv("ECLIPSE_SANDBOX");
+                if ("1.11".equals(isFloatingEngine)) {
+                    katalonPackage = KatalonPackage.FLOATING_ENGINE;
+                }
+            }
+            uriBuilder.setParameter("package", katalonPackage.getPackageName());
+            
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
             return licenseKey;
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
@@ -272,7 +282,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -290,7 +300,7 @@ public class AnalyticsApiProvider {
 
             executeRequest(httpPost, true, Object.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -320,7 +330,7 @@ public class AnalyticsApiProvider {
 
             return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -334,7 +344,7 @@ public class AnalyticsApiProvider {
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
             return executeRequest(httpGet, AnalyticsUploadInfo.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -350,7 +360,7 @@ public class AnalyticsApiProvider {
             return executeRequest(httpGet, new TypeToken<ArrayList<AnalyticsUploadInfo>>() {});
         } catch (Exception e) {
             LogUtil.logError(e);
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -361,7 +371,7 @@ public class AnalyticsApiProvider {
             httpPut.setEntity(entity);
             executeRequest(httpPut, Object.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
@@ -376,7 +386,7 @@ public class AnalyticsApiProvider {
             List<AnalyticsFeature> features = executeRequest(httpGet, new TypeToken<ArrayList<AnalyticsFeature>>() {});
             return features;
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -400,7 +410,7 @@ public class AnalyticsApiProvider {
             return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
         } catch (Exception e) {
             LogUtil.logError(e);
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -424,7 +434,7 @@ public class AnalyticsApiProvider {
             return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
         } catch (Exception e) {
             LogUtil.logError(e);
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
@@ -449,7 +459,7 @@ public class AnalyticsApiProvider {
             return executeRequest(httpPost, AnalyticsTestProject.class);
         } catch (Exception e) {
             LogUtil.logError(e);
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -482,7 +492,7 @@ public class AnalyticsApiProvider {
             return executeRequest(httpPost, AnalyticsRunConfiguration.class);
         } catch (Exception e) {
             LogUtil.logError(e);
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -504,11 +514,11 @@ public class AnalyticsApiProvider {
 
         if (!isSilent) {
             LogUtil.logError(MessageFormat.format(
-                    "TestOps: Unexpected response code from Katalon TestOps server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
-                    httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
+                    "Katalon TestOps: Unexpected response, URL: {0}, Status: {1}, Response: {2}",
+                    httpRequest.getURI().toString(), statusCode, responseString));
         }
 
-        throw new AnalyticsApiExeception(new Throwable(responseString));
+        throw new AnalyticsApiExeception(responseString);
     }
 
     private static <T> T executeRequest(HttpUriRequest httpRequest, boolean isSilent, Class<T> returnType) throws Exception {
@@ -563,7 +573,7 @@ public class AnalyticsApiProvider {
             httpPost.setEntity(entity);
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
@@ -578,7 +588,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Content-type", "application/json");
             return executeRequest(httpPost, AnalyticsOrganization.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
     
@@ -598,7 +608,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Content-type", "application/json");
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -616,7 +626,7 @@ public class AnalyticsApiProvider {
             httpGet.setHeader("Content-type", "application/json");
             return executeRequest(httpGet, Date.class);
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 
@@ -629,7 +639,7 @@ public class AnalyticsApiProvider {
             AnalyticsUser user = executeRequest(httpGet, AnalyticsUser.class);
             return user.getTrialExpirationDate();
         } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
+            throw AnalyticsApiExeception.wrap(e);
         }
     }
 }

@@ -33,6 +33,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -167,7 +170,30 @@ public class UnusedTestObjectsPart extends CPart implements EventHandler {
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 Object element = selection.getFirstElement();
                 eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, element);
+            }
+        });
 
+        
+        tableViewer.getTable().addListener(SWT.MenuDetect, new Listener() {
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                Table table = tableViewer.getTable();
+                Menu menu = table.getMenu();
+                if (menu != null) {
+                    menu.dispose();
+                }
+                menu = new Menu(table);
+                MenuItem openTestObjectMenuItem = new MenuItem(menu, SWT.PUSH);
+                openTestObjectMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_OPEN_TEST_OBJECT);
+                openTestObjectMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+                        Object element = selection.getFirstElement();
+                        eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, element);
+                    }
+                });
+                table.setMenu(menu);
             }
         });
     }
