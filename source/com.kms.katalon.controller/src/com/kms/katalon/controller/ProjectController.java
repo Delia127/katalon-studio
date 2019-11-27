@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -42,9 +43,9 @@ public class ProjectController extends EntityController {
             + "recent_projects";
 
     public static final int NUMBER_OF_RECENT_PROJECTS = 6;
-    
+
     private static Map<String, URLClassLoader> classLoaderLookup = new HashMap<>();
-    
+
     private ProjectController() {
         super();
     }
@@ -63,7 +64,7 @@ public class ProjectController extends EntityController {
         return newProject;
     }
 
-    public ProjectEntity openProjectForUI(String projectPk, IProgressMonitor monitor) throws Exception {
+    public ProjectEntity openProjectForUI(String projectPk, boolean isEnterpriseAccount, IProgressMonitor monitor) throws Exception {
         try {
             if (monitor == null) {
                 monitor = new NullProgressMonitor();
@@ -83,11 +84,12 @@ public class ProjectController extends EntityController {
                 SubMonitor progress = SubMonitor.convert(monitor, 100);
                 DataProviderState.getInstance().setCurrentProject(project);
 
-//                KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+                // KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
 
                 try {
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
+                            isEnterpriseAccount,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                     updateProjectClassLoader(project);
                 } catch (JavaModelException e) {
@@ -95,6 +97,7 @@ public class ProjectController extends EntityController {
                     cleanupGroovyProject(project);
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
+                            isEnterpriseAccount,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 }
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
@@ -109,21 +112,40 @@ public class ProjectController extends EntityController {
             }
         }
     }
+    
+    public void closeAndCleanupProject(ProjectEntity project) throws Exception {
+        try {
+            closeProject(project.getId(), new NullProgressMonitor());
+            cleanupGroovyProject(project);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
+    }
 
     private void cleanupGroovyProject(ProjectEntity project) {
         File classpathFile = new File(project.getFolderLocation(), ".classpath");
         if (classpathFile.exists()) {
-            classpathFile.delete();
+            FileUtils.deleteQuietly(classpathFile);
         }
 
         File binFolder = new File(project.getFolderLocation(), "bin");
         if (binFolder.exists()) {
-            binFolder.delete();
+            FileUtils.deleteQuietly(binFolder);
         }
 
         File projectFile = new File(project.getFolderLocation(), ".project");
         if (projectFile.exists()) {
-            projectFile.delete();
+            FileUtils.deleteQuietly(projectFile);
+        }
+        
+        File libsFolder = new File(project.getFolderLocation(), "Libs");
+        if (libsFolder.exists()) {
+            FileUtils.deleteQuietly(libsFolder);
+        }
+
+        File eclipseSettingsFolder = new File(project.getFolderLocation(), ".settings");
+        if (eclipseSettingsFolder.exists()) {
+            FileUtils.deleteQuietly(eclipseSettingsFolder);
         }
     }
 
@@ -132,7 +154,7 @@ public class ProjectController extends EntityController {
         GroovyUtil.emptyProjectClasspath(projectEntity);
     }
 
-    public ProjectEntity openProject(String projectPk) throws Exception {
+    public ProjectEntity openProject(String projectPk, boolean isEnterpriseAccount) throws Exception {
         LogUtil.printOutputLine("Cleaning up workspace");
         cleanWorkspace();
         LogUtil.printOutputLine("Opening project file: " + projectPk);
@@ -147,9 +169,10 @@ public class ProjectController extends EntityController {
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
 
-//            LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
-//            KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
-            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
+            // LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
+            // KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
+                    isEnterpriseAccount, null);
 
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
@@ -162,6 +185,12 @@ public class ProjectController extends EntityController {
     }
 
     public static void cleanWorkspace() {
+        File externalFolder = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile(),
+                ".metadata/.plugins/org.eclipse.core.resources/.projects/.org.eclipse.jdt.core.external.folders");
+
+        if (!externalFolder.exists()) {
+            externalFolder.mkdirs();
+        }
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
             try {
                 // Remote all existing projects out of workspace
@@ -175,18 +204,22 @@ public class ProjectController extends EntityController {
                 .openProjectWithoutClasspath(projectPk);
         if (project != null) {
             IProject groovyProject = GroovyUtil.getGroovyProject(project);
-            groovyProject.clearHistory(monitor);
-            groovyProject.close(monitor);
+            try {
+                groovyProject.clearHistory(monitor);
+                groovyProject.close(monitor);
+            } catch (CoreException e) {
+                LogUtil.logError(e);
+            }
+
+            if (classLoaderLookup.containsKey(project.getLocation())) {
+                classLoaderLookup.remove(project.getLocation());
+            }
         }
         DataProviderState.getInstance().setCurrentProject(null);
-        if (classLoaderLookup.containsKey(project.getLocation())) {
-            classLoaderLookup.remove(project.getLocation());
-        }
     }
 
     public ProjectEntity updateProject(String name, String description, String projectPk) throws Exception {
-        return getDataProviderSetting().getProjectDataProvider().updateProject(name, description,
-                projectPk, (short) 0);
+        return getDataProviderSetting().getProjectDataProvider().updateProject(name, description, projectPk, (short) 0);
     }
 
     public void updateProject(ProjectEntity projectEntity) throws Exception {
@@ -201,9 +234,9 @@ public class ProjectController extends EntityController {
                     ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
                             .getProject(projectLocation);
 
-                   if (project != null) {
-                       recentProjects.add(project);
-                   }
+                    if (project != null) {
+                        recentProjects.add(project);
+                    }
                 } catch (DALException e) {
                     LogUtil.logError(e);
                 }
@@ -315,7 +348,7 @@ public class ProjectController extends EntityController {
     public List<File> getCustomKeywordPlugins(ProjectEntity project) throws ControllerException {
         return CustomKeywordPluginFactory.getInstance().getAllPluginFiles();
     }
-    
+
     public URLClassLoader getProjectClassLoader(ProjectEntity project) throws MalformedURLException, CoreException {
         String projectLocation = project.getLocation();
         if (classLoaderLookup.containsKey(projectLocation)) {

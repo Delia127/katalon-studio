@@ -78,7 +78,9 @@ public class ComposerReportMessageConstants extends NLS {
     public static String REPORT_COLLECTION_LBL_ENVIRONMENT;
 
     public static String REPORT_COLLECTION_COLUMN_FAILED_TEST;
-
+    
+    public static String REPORT_COLLECTION_COLUMN_PROFILE;
+    
     public static String PROVIDER_TOOLTIP_CLICK_TO_SEE_DETAILS;
 
     public static String PROVIDER_TOOLTIP_SHOW_DETAILS;

@@ -4,6 +4,7 @@ import static com.kms.katalon.core.constants.StringConstants.ID_SEPARATOR;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,10 +18,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.google.common.net.UrlEscapers;
 import com.google.common.reflect.TypeToken;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
@@ -32,6 +35,8 @@ import com.kms.katalon.core.testobject.internal.impl.WindowsObjectRepository;
 import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.util.URLBuilder;
+import com.kms.katalon.util.collections.NameValuePair;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
@@ -391,7 +396,9 @@ public class ObjectRepository {
             requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
             requestObject.setSoapBody(substitutor.replace(reqElement.elementText("soapBody")));
         } else if ("RESTful".equals(serviceType)) {
-            requestObject.setRestUrl(substitutor.replace(reqElement.elementText("restUrl")));
+            String rawUrl = reqElement.elementText("restUrl");
+            String url = buildUrlFromRaw(rawUrl, substitutor);
+            requestObject.setRestUrl(url);
             String requestMethod = reqElement.elementText("restRequestMethod");
             requestObject.setRestRequestMethod(requestMethod);
             requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
@@ -431,6 +438,30 @@ public class ObjectRepository {
         requestObject.setFollowRedirects(followRedirects);
         
         return requestObject;
+    }
+    
+    private static String buildUrlFromRaw(String rawUrl, StrSubstitutor substitutor) {
+        URLBuilder urlBuilder = new URLBuilder(rawUrl);
+        
+        List<NameValuePair> rawQueryParams = urlBuilder.getQueryParams();
+
+        List<NameValuePair> processedQueryParams = new ArrayList<>();
+
+        rawQueryParams.stream()
+            .forEach(p -> {
+                String variableExpandedName = substitutor.replace(p.getName());
+                String variableExpandedValue = substitutor.replace(p.getValue());
+                String escapedName = UrlEscapers.urlFormParameterEscaper().escape(variableExpandedName);
+                String escapedValue = UrlEscapers.urlFormParameterEscaper().escape(variableExpandedValue);
+                processedQueryParams.add(new NameValuePair(escapedName, escapedValue));
+            });
+        
+        urlBuilder.setParameters(processedQueryParams);
+        
+        String url = urlBuilder.buildString();
+        url = substitutor.replace(url); //replace the last time if there is still variable expansions in other parts of the URL
+        
+        return url;
     }
     
     @SuppressWarnings("unchecked")

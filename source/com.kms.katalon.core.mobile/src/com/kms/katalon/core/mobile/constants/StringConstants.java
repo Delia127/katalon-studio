@@ -91,6 +91,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT = CoreMobileMessageConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT;
 
+    public static final String KW_LOG_PASSED_DOUBLE_TAPPED_ON_ELEMENT = CoreMobileMessageConstants.KW_LOG_PASSED_DOUBLE_TAPPED_ON_ELEMENT;
+
+    public static final String KW_MSG_FAILED_TO_DOUBLE_TAP_ON_ELEMENT_X = CoreMobileMessageConstants.KW_MSG_FAILED_TO_DOUBLE_TAP_ON_ELEMENT_X;
+
+    public static final String KW_MSG_FAILED_TO_DOUBLE_TAP_ON_ELEMENT = CoreMobileMessageConstants.KW_MSG_FAILED_TO_DOUBLE_TAP_ON_ELEMENT;
+
     public static final String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y = CoreMobileMessageConstants.KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y;
 
     public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y = CoreMobileMessageConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y;
@@ -102,6 +108,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z = CoreMobileMessageConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z;
 
     public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_POSITION = CoreMobileMessageConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_POSITION;
+
+    public static final String KW_LOG_PASSED_LONG_PRESSED_ON_ELEMENT = CoreMobileMessageConstants.KW_LOG_PASSED_LONG_PRESSED_ON_ELEMENT;
+
+    public static final String KW_MSG_FAILED_TO_LONG_PRESS_ON_ELEMENT_X = CoreMobileMessageConstants.KW_MSG_FAILED_TO_LONG_PRESS_ON_ELEMENT_X;
+
+    public static final String KW_MSG_FAILED_TO_LONG_PRESS_ON_ELEMENT = CoreMobileMessageConstants.KW_MSG_FAILED_TO_LONG_PRESS_ON_ELEMENT;
 
     public static final String KW_LOG_PASSED_ELEMENT_HAS_ATTR = CoreMobileMessageConstants.KW_LOG_PASSED_ELEMENT_HAS_ATTR;
 
@@ -403,4 +415,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X = CoreMobileMessageConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X;
 
     public static final String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT = CoreMobileMessageConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT;
+
+    public static final String KW_LOG_PASSED_EXECUTE_MOBILE_COMMAND = CoreMobileMessageConstants.KW_LOG_PASSED_EXECUTE_MOBILE_COMMAND;
+
+    public static final String KW_LOG_FAILED_TO_EXECUTE_MOBILE_COMMAND = CoreMobileMessageConstants.KW_LOG_FAILED_TO_EXECUTE_MOBILE_COMMAND;
 }

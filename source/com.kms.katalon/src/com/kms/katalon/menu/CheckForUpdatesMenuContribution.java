@@ -21,9 +21,9 @@ public class CheckForUpdatesMenuContribution {
     
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
-        if (QTestUtil.isQTestEdition()) {
-            return;
-        }
+//        if (QTestUtil.isQTestEdition()) {
+//            return;
+//        }
         
         MHandledMenuItem checkForUpdateMenuItem = MenuFactory.createPopupMenuItem(
                 commandService.createCommand("com.kms.katalon.command.checkForUpdates", null),

@@ -99,11 +99,11 @@ public class ImportTestArtifactHandler {
             return;
         }
 
-        Job importArtifactsJob = new Job("Importing test artifacts...") {
+        Job importArtifactsJob = new Job(StringConstants.MSG_IMPORTING_TEST_ARTIFACTS) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    File tempFolder = Files.createTempDirectory("import-test-artifacts-").toFile();
+                    File tempFolder = Files.createTempDirectory(StringConstants.IMPORT_EXPORT_IMPORT_TEMP_FOLDER).toFile();
                     ZipUtil.extractAll(importFile, tempFolder);
 
                     if (!FileUtil.isEmptyFolder(tempFolder)) {
@@ -152,7 +152,7 @@ public class ImportTestArtifactHandler {
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e, e.getMessage());
-                    return new Status(Status.ERROR, "com.katalon.plugin.katashare", "Error importing test artifacts",
+                    return new Status(Status.ERROR, "com.katalon.plugin.katashare", StringConstants.MSG_ERROR_IMPORTING_TEST_ARTIFACTS,
                             e);
                 }
                 return Status.OK_STATUS;
@@ -186,7 +186,7 @@ public class ImportTestArtifactHandler {
     }
 
     private File importTestCases(File sourceFolder, String testCaseImportLocation) throws IOException {
-        File sharedTestCaseFolder = new File(sourceFolder, "shared-test-cases");
+        File sharedTestCaseFolder = new File(sourceFolder, StringConstants.IMPORT_EXPORT_TEST_CASES_FOLDER);
         if (!FileUtil.isEmptyFolder(sharedTestCaseFolder)) {
             ProjectEntity project = PlatformUtil.getCurrentProject();
 
@@ -203,7 +203,7 @@ public class ImportTestArtifactHandler {
     }
 
     private File importTestScripts(File sourceFolder, File testCaseImportFolder) throws IOException, ResourceException {
-        File sharedTestScriptFolder = new File(sourceFolder, "shared-test-scripts");
+        File sharedTestScriptFolder = new File(sourceFolder, StringConstants.IMPORT_EXPORT_TEST_SCRIPTS_FOLDER);
         if (!FileUtil.isEmptyFolder(sharedTestScriptFolder)) {
             ProjectEntity project = PlatformUtil.getCurrentProject();
 
@@ -231,7 +231,7 @@ public class ImportTestArtifactHandler {
 
     private File importTestObjects(File sourceFolder, String testObjectImportLocation)
             throws IOException, ResourceException {
-        File sharedTestObjectFolder = new File(sourceFolder, "shared-test-objects");
+        File sharedTestObjectFolder = new File(sourceFolder, StringConstants.IMPORT_EXPORT_TEST_OBJECTS_FOLDER);
         if (!FileUtil.isEmptyFolder(sharedTestObjectFolder)) {
             ProjectEntity project = PlatformUtil.getCurrentProject();
 
@@ -254,7 +254,7 @@ public class ImportTestArtifactHandler {
     }
 
     private void importProfiles(File sourceFolder) throws IOException, ResourceException {
-        File sharedProfileFolder = new File(sourceFolder, "shared-profiles");
+        File sharedProfileFolder = new File(sourceFolder, StringConstants.IMPORT_EXPORT_PROFILES_FOLDER);
         if (!FileUtil.isEmptyFolder(sharedProfileFolder)) {
             ProjectEntity project = PlatformUtil.getCurrentProject();
 
@@ -271,7 +271,7 @@ public class ImportTestArtifactHandler {
     }
     
     private List<File> importKeywords(File sourceFolder) throws Exception {
-        File sharedKeywordFolder = new File(sourceFolder, "shared-keywords");
+        File sharedKeywordFolder = new File(sourceFolder, StringConstants.IMPORT_EXPORT_KEYWORDS_FOLDER);
         if (!FileUtil.isEmptyFolder(sharedKeywordFolder)) {
             ProjectEntity project = PlatformUtil.getCurrentProject();
 
