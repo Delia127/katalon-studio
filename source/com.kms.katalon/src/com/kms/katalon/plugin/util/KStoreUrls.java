@@ -3,6 +3,8 @@ package com.kms.katalon.plugin.util;
 import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.core.model.KatalonPackage;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreProduct;
 
@@ -42,8 +44,12 @@ public class KStoreUrls {
         return getKatalonStoreAPIUrl() + "/authenticate";
     }
 
-    public static String getPluginsAPIUrl(String appVersion) {
-        return getKatalonStoreAPIUrl() + "/products/ks?appVersion=" + appVersion;
+    public static String getPluginsAPIUrl(String appVersion, KatalonPackage katalonPackage, LicenseType licenseType) {
+        String url = getKatalonStoreAPIUrl() 
+                + "/products/ks?appVersion=" + appVersion 
+                + "&appType=" + katalonPackage.getPackageName() 
+                + "&licenseType=" + licenseType.name();
+        return url;
     }
 
     public static String getPluginDownloadAPIUrl(KStorePlugin plugin) {

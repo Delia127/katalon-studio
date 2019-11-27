@@ -42,6 +42,8 @@ public interface IRunConfiguration {
     ExecutionProfileEntity getExecutionProfile();
 
     void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables);
+    
+    public Map<String, Object> getOverridingGlobalVariables();
 
     void setVmArgs(String[] vmArgs);
     

@@ -565,11 +565,11 @@ public class TestSuitePartTestCaseView {
             public void widgetSelected(SelectionEvent e) {
                 try {
                     if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
-                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()),
+                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(),
                                 analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
-                                testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                                testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken()));
                     } else {
-                        Program.launch(ApplicationInfo.getTestOpsServer());
+                        Program.launch(analyticsSettingStore.getServerEndpoint());
                     }
                     Trackings.trackOpenKAIntegration("testSuite");
                 } catch (IOException | GeneralSecurityException e1) {
@@ -633,7 +633,7 @@ public class TestSuitePartTestCaseView {
 
     private String createPath(String server, AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
         String result = "";
-        result = ApplicationInfo.getTestOpsServer() + AnalyticsStringConstants.ANALYTICS_API_FROM_KS + "teamId=" + team.getId() + "&projectId="
+        result = server + AnalyticsStringConstants.ANALYTICS_API_FROM_KS + "teamId=" + team.getId() + "&projectId="
                 + project.getId() + "&type=TEST_SUITE" + "&path=" + UrlEncoder.encode(path) + "&token=" + tokenInfo;
         return result;
 

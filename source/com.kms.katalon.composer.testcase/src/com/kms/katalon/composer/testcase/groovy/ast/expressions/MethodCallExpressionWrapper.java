@@ -187,8 +187,13 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
 
     @Override
     public String getText() {
-        String object = objectExpression.getText();
-        return (THIS_VARIABLE.equals(object) ? "" : object + ".")
+        String text = "";
+        if (objectExpression instanceof BinaryExpressionWrapper) {
+            text = "(" + objectExpression.getText() + ")";
+        } else {
+            text = objectExpression.getText();
+        }
+        return (THIS_VARIABLE.equals(text) ? "" : text + ".")
                 + ((method instanceof ConstantExpressionWrapper) ? ((ConstantExpressionWrapper) method).getValue()
                         : method.getText()) + arguments.getText();
 

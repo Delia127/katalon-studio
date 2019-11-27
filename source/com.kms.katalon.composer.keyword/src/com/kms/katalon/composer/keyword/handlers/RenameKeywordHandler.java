@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.keyword.handlers;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -13,7 +15,12 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.internal.corext.refactoring.RefactoringExecutionStarter;
+import org.eclipse.jdt.ui.refactoring.RenameSupport;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -68,17 +75,23 @@ public class RenameKeywordHandler extends RenamePackageHandler {
 
                     // Do rename KeywordTreeEntity
                     GroovyCompilationUnit cu = (GroovyCompilationUnit) keywordTreeEntity.getObject();
-                    IProgressMonitor monitor = new NullProgressMonitor();
-                    cu.rename(dialog.getName() + GroovyConstants.GROOVY_FILE_EXTENSION, false, monitor);
+                    RenameSupport.create(cu, dialog.getName(), RenameSupport.UPDATE_REFERENCES).perform(
+                            Display.getCurrent().getActiveShell(), new IRunnableContext() {
+                        
+                        @Override
+                        public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable)
+                                throws InvocationTargetException, InterruptedException {
+                            runnable.run(new NullProgressMonitor());
+                        }
+                    });
                     KeywordClassRenamingParticipant.updateReferences(getClassName(packageFragment, kwName),
                             getClassName(packageFragment, dialog.getName()));
-                    if (monitor.isCanceled()) {
-                        throw new InterruptedException();
-                    }
 
                     eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
                     
                     refreshParentAndSelect(parentTreeEntity, dialog.getName() + GroovyConstants.GROOVY_FILE_EXTENSION);
+                    KeywordController.getInstance().parseCustomKeywordFile(keywordFile,
+                            ProjectController.getInstance().getCurrentProject());
                 }
             }
         } catch (Exception e) {

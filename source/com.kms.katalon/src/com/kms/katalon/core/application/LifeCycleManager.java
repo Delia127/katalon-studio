@@ -42,6 +42,7 @@ import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.composer.initializer.ContentAssistProposalInitializer;
 import com.kms.katalon.composer.initializer.CucumberEditorColorInitializer;
+import com.kms.katalon.composer.initializer.DefaultLineNumberInitializer;
 import com.kms.katalon.composer.initializer.DefaultTextFontInitializer;
 import com.kms.katalon.composer.initializer.DisplayInitializer;
 import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
@@ -142,6 +143,7 @@ public class LifeCycleManager {
         new DefaultTextFontInitializer().setup();
         new DisplayInitializer().setup();
         new CucumberEditorColorInitializer().setup();
+        new DefaultLineNumberInitializer().setup();
     }
 
     private void setupPreferences() {
@@ -209,7 +211,7 @@ public class LifeCycleManager {
                 }
 
                 try {
-                    if (ApplicationStaupHandler.checkActivation()) {
+                    if (ApplicationStaupHandler.checkActivation(true)) {
                         eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
                     }
                 } catch (Exception e) {
@@ -224,7 +226,7 @@ public class LifeCycleManager {
                 // if (VersionUtil.isInternalBuild()) {
                 // return true;
                 // }
-                if (!(ComposerActivationInfoCollector.checkActivation())) {
+                if (!(ComposerActivationInfoCollector.checkActivation(true))) {
                     eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                     PlatformUI.getWorkbench().close();
                     return false;

@@ -133,7 +133,43 @@ public class ExecutionMessageConstants extends NLS {
     
     //ConsoleMain
     public static String MNG_PRT_INVALID_PROPERTY_FILE_ARG;
-    
+
+    public static String ACTIVATE_MOVE_TO_KATALONC;
+
+    public static String ACTIVATE_IN_ACTIVATING;
+
+    public static String ACTIVATE_LICENSE_FILE_PATH;
+
+    public static String ACTIVATE_LICENSE_FILE_FROM_OPTIONS;
+
+    public static String ACTIVATE_LICENSE_FILE_FROM_ENVIRONMENT;
+
+    public static String ACTIVATE_LICENSE_FILE_DEFAULT_PATH;
+
+    public static String ACTIVATE_START_ACTIVATE_OFFLINE;
+
+    public static String ACTIVATE_START_ACTIVATE_ONLINE;
+
+    public static String ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER;
+
+    public static String ACTIVATE_FAIL_OFFLINE;
+
+    public static String ACTIVATE_FAIL_ONLINE;
+
+    public static String ACTIVATE_FAIL_RUNTIME_ENGINE;
+
+    public static String ACTIVATE_CANNOT_CONNECT_TO_SERVER;
+
+    public static String RE_DONT_PERMISSION_TO_USE;
+
+    public static String RE_ERROR_DELETE_LIB_FOLDERS;
+
+    public static String RE_ERROR_DELETE_FOLDERS;
+
+    public static String RE_DELETE_FOLDER;
+
+    public static String RE_EXECUTE_COMPLETED;
+
     // TestSuiteLauncherOptionParser
     public static String CONSOLE_MSG_PROFILE_NOT_FOUND;
     

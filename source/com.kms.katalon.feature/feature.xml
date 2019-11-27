@@ -2690,4 +2690,32 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.eclipse.jsch.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ui.net"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+    <plugin
+         id="com.kms.katalon.proxyvole"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+     <plugin
+	     id="com.katalon.katalon-studio-smart-xpath"
+	     download-size="0"
+	     install-size="0"
+	     version="0.0.0"
+	     unpack="false"/>
+
 </feature>

@@ -55,15 +55,15 @@ function start(newRunMode, data, version) {
 
 function startObjectSpy(data) {
     if (runMode !== RUN_MODE_IDLE) {
-        stop();
+      stop();
     }
-    console.log("Starting Object Spy")
-    $('document').ready(function() {
-        startInspection(data);
-        startGetRequestSchedule();
-        runMode = RUN_MODE_OBJECT_SPY;
+    console.log("Starting Object Spy");
+    katalonReady(function() {
+      startInspection(data);
+      startGetRequestSchedule();
+      runMode = RUN_MODE_OBJECT_SPY;
     });
-}
+  }
 
 function startRecorder(version) {
     if (runMode !== RUN_MODE_IDLE) {
@@ -85,3 +85,29 @@ function stop() {
     }
     runMode = RUN_MODE_IDLE;
 }
+
+function katalonReady(callback) {
+    if (document.readyState === "complete") {
+      callback();
+    } else {
+      runOnce(callback);
+    }
+  }
+  
+  function runOnce(callback) {
+    var run = false;
+    document.addEventListener("DOMContentLoaded", function() {
+      if (run) {
+        return;
+      }
+      callback();
+      run = true;
+    });
+    $("document").ready(function() {
+      if (run) {
+        return;
+      }
+      callback();
+      run = true;
+    });
+  }

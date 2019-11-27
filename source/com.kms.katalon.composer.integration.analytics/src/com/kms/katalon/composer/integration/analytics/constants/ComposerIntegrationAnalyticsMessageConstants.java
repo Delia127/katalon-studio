@@ -9,6 +9,12 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     
     public static String BTN_UPLOAD;
 
+    public static String BTN_REFRESH;
+
+    public static String BTN_FETCH_ORGANIZATION;
+
+    public static String BTN_FETCH_PROJECT;
+
     public static String WARN_MSG_NO_PROJECT;
 
     public static String LBL_AUTHENTICATE_GROUP;
@@ -35,6 +41,10 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String LBL_TEAM;
 
+    public static String LBL_INTEGRATION;
+
+    public static String LBL_OVERRIDE_AUTHENTICATION;
+
     public static String MSG_DLG_PRG_CONNECTING_TO_SERVER;
 
     public static String MSG_DLG_PRG_GETTING_PROJECTS;
@@ -47,6 +57,12 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     
     public static String MSG_DLG_PRG_GETTING_UPLOAD_CODE;
 
+    public static String MSG_MUST_ENTER_CREDENTIAL;
+
+    public static String MSG_CONNECT_SUCCESS;
+
+    public static String MSG_NO_ORGANIZATION;
+    
     public static String TITLE_DLG_AUTHENTICATE;
     
     public static String TITLE_DLG_QUICK_ANALYTICS_INTEGRATION;

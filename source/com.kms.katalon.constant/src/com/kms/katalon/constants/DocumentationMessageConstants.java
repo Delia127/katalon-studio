@@ -20,6 +20,10 @@ public class DocumentationMessageConstants extends NLS {
     public static String DIALOG_OBJECT_SPY_WEB_UI_SELECTION_METHOD;
 
     public static String DIALOG_OBJECT_SPY_MOBILE;
+    
+    public static String DIALOG_WINDOWS_SPY;
+    
+    public static String DIALOG_WINDOWS_RECORDER;
 
     public static String DIALOG_RECORDER_WEB_UI;
 
@@ -132,6 +136,8 @@ public class DocumentationMessageConstants extends NLS {
 	public static String CUCUMBER_STEP_DEFINITIONS;
 	
 	public static String KSTORE_API_KEYS_USAGE;
+	
+	public static String RUNTIME_ENGINE_INTRODUCTION;
 	
 	public static String ADVANCED_SEARCH;
 

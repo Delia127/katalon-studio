@@ -2,11 +2,11 @@ package com.kms.katalon.composer.integration.analytics.dialog;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -22,10 +22,13 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -33,32 +36,53 @@ import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandl
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class UploadSelectionDialog extends Dialog {
+
     public static final int UPLOAD_ID = 2;
+
     public static final int CANCEL_ID = 3;
 
     private Button btnUpload;
+
     private Button btnCancel;
+
     private Button btnCreate;
+
     private Combo cbbProjects;
+
     private Combo cbbTeams;
 
+    private Label lblStatus;
+
     private List<AnalyticsTeam> teams;
+
     private List<AnalyticsProject> projects;
+
     private AnalyticsSettingStore analyticsSettingStore;
 
-    public UploadSelectionDialog(Shell parentShell, List<AnalyticsTeam> teams, List<AnalyticsProject> projects) {
+    private String email, password, serverUrl;
+
+    private AnalyticsOrganization organization;
+
+    private AnalyticsTokenInfo tokenInfo;
+
+    public UploadSelectionDialog(Shell parentShell) {
         super(parentShell);
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
-        this.teams = teams;
-        this.projects = projects;
+        try {
+            email = analyticsSettingStore.getEmail();
+            password = analyticsSettingStore.getPassword();
+            serverUrl = analyticsSettingStore.getServerEndpoint();
+            organization = analyticsSettingStore.getOrganization();
+        } catch (Exception e) {
+            // ignore
+        }
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.NONE);
         GridData bodyGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        bodyGridData.widthHint = 400;
         body.setLayoutData(bodyGridData);
         GridLayout bodyGridLayout = new GridLayout(1, false);
         bodyGridLayout.marginWidth = 10;
@@ -66,35 +90,50 @@ public class UploadSelectionDialog extends Dialog {
         body.setLayout(bodyGridLayout);
 
         CLabel lblInformation = new CLabel(body, SWT.WRAP);
-        lblInformation.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, false, 1, 1));
+        lblInformation.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, false, 2, 1));
         lblInformation.setBottomMargin(2);
         lblInformation.setText(StringConstants.LBL_SELECTION_INFORMATION);
 
-        Label lblTeam = new Label(body, SWT.NONE);
+        GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLabel.widthHint = 50;
+
+        Composite teamComposite = new Composite(body, SWT.NONE);
+        teamComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout teamGridLayout = new GridLayout(2, false);
+        teamGridLayout.marginWidth = 0;
+        teamGridLayout.marginHeight = 0;
+        teamComposite.setLayout(teamGridLayout);
+
+        Label lblTeam = new Label(teamComposite, SWT.NONE);
+        lblTeam.setLayoutData(gdLabel);
         lblTeam.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEAM);
 
-        cbbTeams = new Combo(body, SWT.READ_ONLY);
-        cbbTeams.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-
-        Label lblProject = new Label(body, SWT.NONE);
-        lblProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PROJECT);
+        cbbTeams = new Combo(teamComposite, SWT.READ_ONLY);
+        cbbTeams.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        cbbTeams.setEnabled(false);
 
         Composite projectComposite = new Composite(body, SWT.NONE);
         projectComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        GridLayout projectGridLayout = new GridLayout(2, false);
+        GridLayout projectGridLayout = new GridLayout(3, false);
         projectGridLayout.marginWidth = 0;
         projectGridLayout.marginHeight = 0;
         projectComposite.setLayout(projectGridLayout);
+
+        Label lblProject = new Label(projectComposite, SWT.NONE);
+        lblProject.setLayoutData(gdLabel);
+        lblProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PROJECT);
+
         cbbProjects = new Combo(projectComposite, SWT.READ_ONLY);
         cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        btnCreate = new Button(projectComposite, SWT.NONE);
-        btnCreate.setText("New Project");
-        if (teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)).getRole()
-                .equals("USER")) {
-            btnCreate.setEnabled(false);
-        }
+        cbbProjects.setEnabled(false);
 
-        fillData();
+        btnCreate = new Button(projectComposite, SWT.NONE);
+        btnCreate.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_NEW_PROJECT);
+        btnCreate.setEnabled(false);
+
+        lblStatus = new Label(body, SWT.NONE);
+
+        connect();
 
         return body;
     }
@@ -102,6 +141,8 @@ public class UploadSelectionDialog extends Dialog {
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         btnUpload = createButton(parent, UPLOAD_ID, StringConstants.BTN_UPLOAD, true);
+        btnUpload.setEnabled(false);
+
         btnCancel = createButton(parent, CANCEL_ID, StringConstants.BTN_CANCEL, false);
         addControlListeners();
     }
@@ -118,34 +159,27 @@ public class UploadSelectionDialog extends Dialog {
         btnCreate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                HashMap<String, String> results = null;
-                try {
-                    results = getInfo(analyticsSettingStore.isEncryptionEnabled());
-                } catch (IOException e1) {
-                    LoggerSingleton.logError(e1);
-                    return;
-                }
                 AnalyticsTeam team = null;
-
                 if (teams != null && teams.size() > 0) {
-                    team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    AnalyticsTeam selectedTeam = analyticsSettingStore.getManualTeam();
+                    team = teams.get(AnalyticsAuthorizationHandler.getTeamIndex(teams, selectedTeam));
                 }
 
-                NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(),
-                        results.get("serverUrl"), results.get("email"), results.get("password"), team);
+                NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(), serverUrl,
+                        email, password, team);
                 if (dialog.open() == Dialog.OK) {
                     AnalyticsProject createdProject = dialog.getAnalyticsProject();
                     if (createdProject != null) {
                         try {
-                            analyticsSettingStore.setProject(createdProject);
-                            analyticsSettingStore.setTeam(team);
+                            analyticsSettingStore.setManualProject(createdProject);
+                            analyticsSettingStore.setManualTeam(team);
                             if (projects == null) {
                                 return;
                             }
                             cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects)
                                     .toArray(new String[projects.size()]));
-                            cbbProjects.select(
-                                    AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+                            cbbProjects.select(AnalyticsAuthorizationHandler
+                                    .getDefaultProjectIndex(analyticsSettingStore, projects));
                         } catch (IOException ex) {
                             LoggerSingleton.logError(ex);
                             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
@@ -153,8 +187,7 @@ public class UploadSelectionDialog extends Dialog {
                         }
                     }
                 }
-
-                fillData();
+                connect();
             }
         });
 
@@ -168,68 +201,95 @@ public class UploadSelectionDialog extends Dialog {
         cbbTeams.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                enableObject(false);
                 cbbProjects.setItems();
-                if (teams.get(cbbTeams.getSelectionIndex()).getRole().equals("USER")) {
-                    btnCreate.setEnabled(false);
-                } else {
-                    btnCreate.setEnabled(true);
-                }
-                try {
-                    analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
-                    AnalyticsTeam team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
-
-                    HashMap<String, String> info = null;
-                    try {
-                        info = getInfo(analyticsSettingStore.isEncryptionEnabled());
-                    } catch (IOException e1) {
-                        LoggerSingleton.logError(e1);
-                        return;
-                    }
-                    String serverUrl = info.get("serverUrl");
-                    String email = info.get("email");
-                    String password = info.get("password");
-                    AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo,
-                            new ProgressMonitorDialog(getShell()));
-                    setProjectsBasedOnTeam(teams, projects);
-                } catch (IOException ex) {
-                    LoggerSingleton.logError(ex);
-                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
-                }
+                Executors.newFixedThreadPool(1).submit(() -> {
+                    UISynchronizeService.syncExec(() -> setProgressMessage(
+                            ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
+                    UISynchronizeService.syncExec(() -> {
+                        try {
+                            AnalyticsTeam team = teams.get(cbbTeams.getSelectionIndex());
+                            analyticsSettingStore.setManualTeam(team);
+                            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
+                                    password, analyticsSettingStore);
+                            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo);
+                            setProjectsBasedOnTeam(teams, projects);
+                            enableObject(true);
+                            if (teams.get(cbbTeams.getSelectionIndex()).getRole().equals("USER")) {
+                                btnCreate.setEnabled(false);
+                            } else {
+                                btnCreate.setEnabled(true);
+                            }
+                            setProgressMessage(StringUtils.EMPTY, false);
+                        } catch (IOException ex) {
+                            LoggerSingleton.logError(ex);
+                            MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+                                    ex.getMessage());
+                        }
+                    });
+                });
             }
         });
     }
 
     private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects) {
-        
         if (projects != null && !projects.isEmpty()) {
-            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+            cbbProjects.setItems(
+                    AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            AnalyticsProject selectedProject = analyticsSettingStore.getManualProject();
+            cbbProjects.select(AnalyticsAuthorizationHandler.getProjectIndex(selectedProject, projects));
         }
     }
 
-    private HashMap<String, String> getInfo(boolean encryptionEnabled) {
-        HashMap<String, String> results = new HashMap<String, String>();
-        try {
-            results.put("serverUrl", analyticsSettingStore.getServerEndpoint(encryptionEnabled));
-            results.put("email", analyticsSettingStore.getEmail(encryptionEnabled));
-            results.put("password", analyticsSettingStore.getPassword(encryptionEnabled));
-        } catch (IOException | GeneralSecurityException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return results;
+    private void connect() {
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService.syncExec(() -> setProgressMessage(
+                    ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false));
+            UISynchronizeService.syncExec(() -> {
+                tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+                teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, organization.getId(), tokenInfo);
+                AnalyticsTeam manualTeam = analyticsSettingStore.getManualTeam();
+                AnalyticsTeam defaultTeam = teams.get(AnalyticsAuthorizationHandler.getTeamIndex(teams, manualTeam));
+                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, defaultTeam, tokenInfo);
+
+                fillData();
+                enableObject(true);
+
+                if (defaultTeam.getRole().equals("USER")) {
+                    btnCreate.setEnabled(false);
+                }
+                setProgressMessage(StringUtils.EMPTY, false);
+            });
+        });
     }
 
+    private void enableObject(boolean isEnable) {
+        cbbTeams.setEnabled(isEnable);
+        cbbProjects.setEnabled(isEnable);
+        btnCreate.setEnabled(isEnable);
+        btnUpload.setEnabled(isEnable);
+    }
+    
     private void fillData() {
         try {
             cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-            cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+            AnalyticsTeam manualTeam = analyticsSettingStore.getManualTeam();
+            cbbTeams.select(AnalyticsAuthorizationHandler.getTeamIndex(teams, manualTeam));
             setProjectsBasedOnTeam(teams, projects);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
+    }
+
+    private void setProgressMessage(String message, boolean isError) {
+        lblStatus.setText(message);
+        if (isError) {
+            lblStatus.setForeground(ColorUtil.getTextErrorColor());
+        } else {
+            lblStatus.setForeground(ColorUtil.getTextRunningColor());
+        }
+        lblStatus.getParent().layout();
     }
 
     @Override
@@ -251,10 +311,10 @@ public class UploadSelectionDialog extends Dialog {
         try {
             AnalyticsTeam team = null;
             if (teams != null && teams.size() > 0) {
-                team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+                team = teams.get(cbbTeams.getSelectionIndex());
             }
-            analyticsSettingStore.setTeam(team);
-            analyticsSettingStore.setProject(
+            analyticsSettingStore.setManualTeam(team);
+            analyticsSettingStore.setManualProject(
                     cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
         } catch (IOException e1) {
             LoggerSingleton.logError(e1);
@@ -262,5 +322,4 @@ public class UploadSelectionDialog extends Dialog {
         setReturnCode(UPLOAD_ID);
         closeDialog();
     }
-
 }

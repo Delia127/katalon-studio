@@ -212,6 +212,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_CHK_KEEP_CONSOLE_LOG;
 
     public static String DIA_LBL_UPDATE_EXECUTION_STATUS;
+    
+    public static String DIA_LBL_APIKEY;
 
     public static String DIA_LBL_SECONDS;
 
@@ -238,6 +240,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_CHK_FOR_FAILED_TEST_CASES;
 
     public static String DIA_TITLE_TEST_SUITE_BROWSER;
+    
+    public static String DIA_PROCEED;
+    
+    public static String DIA_SHOW_PROBLEM;
 
     public static String PAGE_EXTERNAL_LIB_JOB_TASK_REBUILD_PROJECT;
 
@@ -268,6 +274,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String MSG_DELETING_FILE_X;
 
     public static String MSG_DELETING_LIBRARY_FILES;
+
+    public static String MSG_PROBLEMS_VIEW;
 
     public static String PREF_MSG_TEST_EMAIL_IS_SENT_SUCCESSFULLY;
 
@@ -329,6 +337,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_MSG_CONFIGURATION_IS_REQUIRED;
     
     public static String API_KEY_USAGE;
+    
+    public static String MSG_CONSOLE_MODE_REQUIREMENT;
 
     // MobileDeviceUIProvider
     public static String DIA_MSG_ANDROID_SDK_MISSING;

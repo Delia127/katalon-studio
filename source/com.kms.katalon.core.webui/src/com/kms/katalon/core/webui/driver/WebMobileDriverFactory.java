@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Platform;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.kms.katalon.core.appium.constants.AppiumStringConstants;
@@ -103,8 +104,14 @@ public class WebMobileDriverFactory {
             capabilities.merge(toDesireCapabilities(driverPreferences, WebUIDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);
             capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, CHROME);
+            ChromeOptions chromeOptions = new ChromeOptions();
+            chromeOptions.setExperimentalOption("w3c", false);
+            capabilities.merge(chromeOptions);
         }
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "test");
+        String deviceName = getDeviceName();
+        if (StringUtils.isNotEmpty(deviceName)) {
+            capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
+        }
         if (deviceId != null) {
             capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
         }

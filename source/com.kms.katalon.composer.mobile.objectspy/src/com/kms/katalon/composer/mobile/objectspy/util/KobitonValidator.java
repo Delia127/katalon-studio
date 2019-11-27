@@ -18,7 +18,7 @@ public class KobitonValidator {
     private static final String PREFERENCE_ID_KOBITON = "com.kms.katalon.composer.integration.kobiton.preferences";
 
     public static boolean validateKobitonIntergration() {
-        if (!KobitonPreferencesProvider.isKobitonIntegrationEnabled()) {
+        if (!KobitonPreferencesProvider.isKobitonIntegrationAvailable()) {
             int result = new MessageDialog(Display.getCurrent().getActiveShell(), StringConstants.INFO, null,
                     ComposerMobileObjectspyMessageConstants.MSG_NEED_KOBITON_INTEGRATION_FOR_MOBILE,
                     MessageDialog.INFORMATION, new String[] {
