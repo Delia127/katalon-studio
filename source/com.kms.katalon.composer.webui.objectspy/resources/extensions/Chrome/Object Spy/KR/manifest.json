@@ -2,7 +2,7 @@
     "description": "Selenium IDE alternative to record and export Selenium scripts. With reports & screenshots. Fast & open-source.",
     "manifest_version": 2,
     "name": "Katalon Recorder (Selenium tests generator)",
-    "version": "3.9.0",
+    "version": "3.9.3",
     "homepage_url":"https://www.katalon.com/",
     "icons":
     {
@@ -76,6 +76,7 @@
                 "katalon/chrome_variables_default.js",
                 "chrome_variables_init.js",
                 "katalon/ku-locatorBuilders.js",
+                "katalon/context_menu.js",
                 "katalon/common.js",
                 "katalon/record_common.js",
                 "katalon/chrome_setup.js",
@@ -90,7 +91,7 @@
                 "katalon/main.js"
             ]
         },
-        {            
+        {
             "matches": ["<all_urls>"],
             "js": ["content/jquery.simulate.js"],
             "match_about_blank": true,

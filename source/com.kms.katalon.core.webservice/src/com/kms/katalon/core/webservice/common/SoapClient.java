@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -25,14 +24,25 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeaderElementIterator;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.Args;
+import org.apache.http.util.EntityUtils;
 import org.xml.sax.InputSource;
 
 import com.ibm.wsdl.BindingOperationImpl;
@@ -52,6 +62,7 @@ import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
+import com.kms.katalon.util.Tools;
 
 public class SoapClient extends BasicRequestor {
     
@@ -164,6 +175,8 @@ public class SoapClient extends BasicRequestor {
         
         if (!request.isFollowRedirects()) {
             clientBuilder.disableRedirectHandling();
+        } else {
+            clientBuilder.setRedirectStrategy(new WebServiceRedirectStrategy());
         }
         
         clientBuilder.setConnectionManager(connectionManager);
@@ -173,13 +186,11 @@ public class SoapClient extends BasicRequestor {
         parseWsdl();
        
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
-        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
-        if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
-            configureProxy(clientBuilder, proxyInfo);
-        }
+        configureProxy(clientBuilder, proxyInfo);
         
 //        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(proxy);
         if (StringUtils.defaultString(endPoint).toLowerCase().startsWith(HTTPS)) {
+            //this will be overridden by setting connection manager for clientBuilder
             clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         HttpPost post = new HttpPost(endPoint);
@@ -187,10 +198,33 @@ public class SoapClient extends BasicRequestor {
         post.addHeader(SOAP_ACTION, actionUri);
         
         setHttpConnectionHeaders(post, request);
+        
+        clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration(final HttpResponse response, final HttpContext context) {
+        // copied from source
+                Args.notNull(response, "HTTP response");
+                final HeaderElementIterator it = new BasicHeaderElementIterator(
+                        response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+                while (it.hasNext()) {
+                    final HeaderElement he = it.nextElement();
+                    final String param = he.getName();
+                    final String value = he.getValue();
+                    if (value != null && param.equalsIgnoreCase("timeout")) {
+                        try {
+                            return Long.parseLong(value) * 1000;
+                        } catch (final NumberFormatException ignore) {}
+                    }
+                }
+                // If the server indicates no timeout, then let it be 1ms so that connection is not kept alive
+                // indefinitely
+                return 1;
+            }
+        });
 
-        InputStreamEntity reqStream = new InputStreamEntity(
-                new ByteArrayInputStream(request.getSoapBody().getBytes(StandardCharsets.UTF_8)));
-        post.setEntity(reqStream);
+        ByteArrayEntity entity = new ByteArrayEntity(request.getSoapBody().getBytes(StandardCharsets.UTF_8));
+        entity.setChunked(false);
+        post.setEntity(entity);
         
         CloseableHttpClient httpClient = clientBuilder.build();
         
@@ -201,47 +235,35 @@ public class SoapClient extends BasicRequestor {
         
         long headerLength = WebServiceCommonHelper.calculateHeaderLength(response);
         long contentDownloadTime = 0L;
-        StringBuffer sb = new StringBuffer();
+        String responseBody = StringUtils.EMPTY;
 
-        char[] buffer = new char[1024];
         long bodyLength = 0L;
-        try (InputStream inputStream = response.getEntity().getContent()) {
-            if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                int len = 0;
-                startTime = System.currentTimeMillis();
-                while ((len = reader.read(buffer)) != -1) {
-                    contentDownloadTime += System.currentTimeMillis() - startTime;
-                    sb.append(buffer, 0, len);
-                    bodyLength += len;
-                    startTime = System.currentTimeMillis();
-                }
+        
+        HttpEntity responseEntity = response.getEntity();
+        if (responseEntity != null) {
+            bodyLength = responseEntity.getContentLength();
+            startTime = System.currentTimeMillis();
+            try {
+                responseBody = EntityUtils.toString(responseEntity);
+            } catch (Exception e) {
+                responseBody = ExceptionUtils.getFullStackTrace(e);
             }
+            contentDownloadTime = System.currentTimeMillis() - startTime;
         }
+
+        ResponseObject responseObject = new ResponseObject(responseBody);
         
-        ResponseObject responseObject = new ResponseObject(sb.toString());
-        
-        String bodyLengthHeader = responseObject.getHeaderFields()
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().equals("Content-Length"))
-                .map(entry -> entry.getValue().get(0))
-                .findFirst()
-                .orElse("");
-        
-        if (!StringUtils.isEmpty(bodyLengthHeader)) {
-            bodyLength =  Long.parseLong(bodyLengthHeader, 10); 
-        }
         // SOAP is HTTP-XML protocol
 
         responseObject.setContentType(APPLICATION_XML);
+        responseObject.setHeaderFields(getResponseHeaderFields(response));
         responseObject.setStatusCode(statusCode);
         responseObject.setResponseBodySize(bodyLength);
         responseObject.setResponseHeaderSize(headerLength);
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
-        setBodyContent(response, sb, responseObject);
+        setBodyContent(response, responseBody, responseObject);
         
         return responseObject;
     }
@@ -288,7 +310,7 @@ public class SoapClient extends BasicRequestor {
             if (isAbsoluteUrl(imp)) {
                 last = imp;
             } else {
-                last = parent + "/" + imp;
+                last = Tools.joinRelativeUrl(parent, imp);
             }
             try {
                 InputStream input = load(last);
@@ -319,21 +341,47 @@ public class SoapClient extends BasicRequestor {
             }
 
             ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
-            Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo);
-            if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
-                configureProxy(clientBuilder, proxyInfo);
-            }
+            configureProxy(clientBuilder, proxyInfo);
             
             if (StringUtils.defaultString(url).toLowerCase().startsWith(HTTPS)) {
+                //this will be overridden by setting connection manager for clientBuilder
                 clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
             }
+            
+            clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
+                @Override
+                public long getKeepAliveDuration(final HttpResponse response, final HttpContext context) {
+            // copied from source
+                    Args.notNull(response, "HTTP response");
+                    final HeaderElementIterator it = new BasicHeaderElementIterator(
+                            response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+                    while (it.hasNext()) {
+                        final HeaderElement he = it.nextElement();
+                        final String param = he.getName();
+                        final String value = he.getValue();
+                        if (value != null && param.equalsIgnoreCase("timeout")) {
+                            try {
+                                return Long.parseLong(value) * 1000;
+                            } catch (final NumberFormatException ignore) {}
+                        }
+                    }
+                    // If the server indicates no timeout, then let it be 1ms so that connection is not kept alive
+                    // indefinitely
+                    return 1;
+                }
+            });
+            
             HttpGet get = new HttpGet(url);
 
             setHttpConnectionHeaders(get, requestObject);
 
             CloseableHttpClient httpClient = clientBuilder.build();
-            CloseableHttpResponse response = httpClient.execute(get);
-            InputStream is = response.getEntity().getContent();
+            CloseableHttpResponse response = httpClient.execute(get, getHttpContext());
+            HttpEntity responseEntity = response.getEntity();
+            InputStream is = null;
+            if (responseEntity != null) {
+                is = responseEntity.getContent();
+            }
             
             IOUtils.closeQuietly(httpClient);
             

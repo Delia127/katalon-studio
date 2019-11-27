@@ -120,12 +120,12 @@ public class ReloadPluginsResultDialog extends Dialog {
                         return StringConstants.KStorePluginsDialog_LICENSE_FREE;
                     }
                     
-                    if (onlinePlugin.isPaid()) {
-                        return StringConstants.KStorePluginsDialog_LICENSE_PAID;
-                    }
-                    
                     if (onlinePlugin.isExpired()) {
                         return StringConstants.KStorePluginsDialog_LICENSE_EXPIRED;
+                    }
+                    
+                    if (onlinePlugin.isPaid()) {
+                        return StringConstants.KStorePluginsDialog_LICENSE_PAID;
                     }
                     
                     if (onlinePlugin.isTrial()) {

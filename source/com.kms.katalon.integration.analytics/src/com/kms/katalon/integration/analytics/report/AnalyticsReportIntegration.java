@@ -37,7 +37,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     public boolean isIntegrationActive(TestSuiteEntity testSuite) {
         try {
             return getSettingStore().isIntegrationEnabled();
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogUtil.logError(e);
             return false;
         }
@@ -98,13 +98,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
             trackingInfo.setOrganizationId(organizationId);
             reportService.sendTrackingActivity(trackingInfo);
         } catch (Exception e) {
-            LogUtil.logError(e);
+//            LogUtil.logError(e);
         }
     }
-
-	@Override
-	public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 }

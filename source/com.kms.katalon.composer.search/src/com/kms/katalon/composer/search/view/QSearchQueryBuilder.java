@@ -39,6 +39,10 @@ public class QSearchQueryBuilder {
 
     private static final String GROOVY_FILE_FORMAT = "*.groovy";
 
+    private static final String PROFILE_FILE_FORMAT = "*.glbl";
+
+    private static final String TESTCASE_FILE_FORMAT = "*.tc";
+
     public static QSearchQuery getQuery(QSearchInput input) {
         return new QSearchQuery(input.getSearchText(), input.isRegExSearch(), input.isCaseSensitiveSearch(),
                 input.getScope());
@@ -82,6 +86,8 @@ public class QSearchQueryBuilder {
     private static String[] getTestObjectReferencesFileNamePatterns() {
         List<String> testObjectReferencesFileNamePatterns = new ArrayList<String>();
         testObjectReferencesFileNamePatterns.add(GROOVY_FILE_FORMAT);
+        testObjectReferencesFileNamePatterns.add(PROFILE_FILE_FORMAT);
+        testObjectReferencesFileNamePatterns.add(TESTCASE_FILE_FORMAT);
         // search for ref_element
         testObjectReferencesFileNamePatterns.add("*" + WebElementEntity.getWebElementFileExtension());
 
@@ -94,6 +100,8 @@ public class QSearchQueryBuilder {
     private static String[] getWindowsObjectReferencesFileNamePatterns() {
         List<String> windowsObjectReferencesFileNamePatterns = new ArrayList<String>();
         windowsObjectReferencesFileNamePatterns.add(GROOVY_FILE_FORMAT);
+        windowsObjectReferencesFileNamePatterns.add(PROFILE_FILE_FORMAT);
+        windowsObjectReferencesFileNamePatterns.add(TESTCASE_FILE_FORMAT);
         windowsObjectReferencesFileNamePatterns.add("*" + WindowsElementEntity.FILE_EXTENSION);
 
         return windowsObjectReferencesFileNamePatterns.toArray(new String[0]);

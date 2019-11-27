@@ -188,18 +188,22 @@ public class CustomKeywordParser {
                     packageName += ".";
                 }
             }
-            Class<?> clazz = ((GroovyClassLoader) classLoader).loadClass(packageName + className);
-            if (clazz != null) {
-                List<Method> methods = new ArrayList<Method>();
-                for (Method method : clazz.getMethods()) {
-                    for (Annotation annotation : method.getDeclaredAnnotations()) {
-                        if (annotation.annotationType().getName().equals(Keyword.class.getName())) {
-                            methods.add(method);
-                            break;
+            try {
+                Class<?> clazz = ((GroovyClassLoader) classLoader).loadClass(packageName + className);
+                if (clazz != null) {
+                    List<Method> methods = new ArrayList<Method>();
+                    for (Method method : clazz.getMethods()) {
+                        for (Annotation annotation : method.getDeclaredAnnotations()) {
+                            if (annotation.annotationType().getName().equals(Keyword.class.getName())) {
+                                methods.add(method);
+                                break;
+                            }
                         }
                     }
+                    return methods;
                 }
-                return methods;
+            } catch (ClassNotFoundException ex) {
+                LogUtil.printAndLogError(ex);
             }
         }
         return Collections.emptyList();

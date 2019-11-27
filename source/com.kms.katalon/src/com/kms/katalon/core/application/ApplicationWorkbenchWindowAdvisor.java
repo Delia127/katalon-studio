@@ -17,6 +17,7 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.EditorAreaDropAdapter;
 
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
@@ -76,6 +77,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 //                    break;
 //                }
 //            }
+        }
+       
+        try {
+            ActivationInfoCollector.postEndSession();
+            ActivationInfoCollector.releaseLicense();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
     }
 

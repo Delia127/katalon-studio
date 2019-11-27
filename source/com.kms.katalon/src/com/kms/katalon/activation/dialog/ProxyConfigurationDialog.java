@@ -1,7 +1,10 @@
 package com.kms.katalon.activation.dialog;
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -19,10 +22,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.katalon.platform.api.network.ApplicationProxyPreference.ProxyOption;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationProxyUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.MessageConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.network.ProxyInformation;
 
 public class ProxyConfigurationDialog extends TitleAreaDialog {
@@ -223,7 +229,7 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
     private void initialize() {
         ProxyInformation proxyInfo = ApplicationProxyUtil.getProxyInformation();
 
-        cboProxyOption.setText(proxyInfo.getProxyOption());
+        cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
         cboProxyServerType.setText(proxyInfo.getProxyServerType());
         txtAddress.setText(proxyInfo.getProxyServerAddress());
         txtPort.setText(proxyInfo.getProxyServerPort() >= 0 ? proxyInfo.getProxyServerPort() + "" : "");
@@ -256,14 +262,18 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
     protected void okPressed() {
         ProxyInformation proxyInfo = new ProxyInformation();
 
-        proxyInfo.setProxyOption(cboProxyOption.getText());
+        proxyInfo.setProxyOption(ProxyOption.valueOfDisplayName(cboProxyOption.getText()).name());
         proxyInfo.setProxyServerType(cboProxyServerType.getText());
         proxyInfo.setProxyServerAddress(txtAddress.getText());
         proxyInfo.setProxyServerPort(txtPort.getText());
         proxyInfo.setUsername(txtUsername.getText());
         proxyInfo.setPassword(txtPass.getText());
-        ApplicationProxyUtil.saveProxyInformation(proxyInfo);
-
-        super.okPressed();
+        try {
+            ApplicationProxyUtil.saveProxyInformation(proxyInfo);
+            super.okPressed();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE, StringConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG);
+        }
     }
 }
