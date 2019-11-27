@@ -38,6 +38,7 @@ import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.checkpoint.Checkpoint;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.testobject.WindowsTestObject;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
@@ -299,6 +300,10 @@ public class AstKeywordsInputUtil {
             return generateArgumentForTestObjectParam(existingParam, parentNode);
         }
 
+        if (isClassAssignable(paramClassFullName, WindowsTestObject.class)) {
+            return generateArgumentForWindowsObjectParam(existingParam, parentNode);
+        }
+
         if (isClassAssignable(paramClassFullName, List.class) || isArrayParam) {
             return generateArgumentForListParam(existingParam, parentNode);
         }
@@ -415,6 +420,14 @@ public class AstKeywordsInputUtil {
         return AstEntityInputUtil.createNewFindTestObjectMethodCall(null, parentNode);
     }
 
+    private static ExpressionWrapper generateArgumentForWindowsObjectParam(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode) {
+        if (isFindWindowsObjectMethodCall(existingParam) || (isUnknowTypeParam(existingParam))) {
+            return existingParam;
+        }
+        return AstEntityInputUtil.createNewFindWindowsObjectMethodCall(null, parentNode);
+    }
+
     private static ExpressionWrapper generateArgumentForCheckPointParam(ExpressionWrapper existingParam,
             ASTNodeWrapper parentNode) {
         if (isFindCheckpointMethodCall(existingParam) || (isUnknowTypeParam(existingParam))) {
@@ -426,6 +439,11 @@ public class AstKeywordsInputUtil {
     private static boolean isFindTestObjectMethodCall(ExpressionWrapper existingParam) {
         return existingParam instanceof MethodCallExpressionWrapper
                 && ((MethodCallExpressionWrapper) existingParam).isFindTestObjectMethodCall();
+    }
+
+    private static boolean isFindWindowsObjectMethodCall(ExpressionWrapper existingParam) {
+        return existingParam instanceof MethodCallExpressionWrapper
+                && ((MethodCallExpressionWrapper) existingParam).isFindWindowsObjectMethodCall();
     }
 
     private static boolean isFindCheckpointMethodCall(ExpressionWrapper existingParam) {

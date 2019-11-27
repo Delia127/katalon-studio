@@ -34,7 +34,9 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -46,6 +48,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenProjectHandler {
@@ -158,9 +161,11 @@ public class OpenProjectHandler {
                     SubMonitor progress = SubMonitor.convert(monitor, 10);
                     monitor.worked(1);
                     monitor.subTask(StringConstants.HAND_LOADING_PROJ);
+                    boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
+                            isEnterpriseAccount,
                             progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));                    
-                    
+
                     monitor.subTask(StringConstants.HAND_REFRESHING_EXPLORER);
                     syncService.syncExec(new Runnable() {
                         @Override
@@ -173,6 +178,8 @@ public class OpenProjectHandler {
                                 }
                                 eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));
+
+                                showProblemView();
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
                             }
@@ -207,10 +214,9 @@ public class OpenProjectHandler {
                 }
             }
         });
-        setUpToolbar();
     }
     
-    public static void setUpToolbar() {
+    public static void showProblemView() {
         EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
         MApplication application = ApplicationSingleton.getInstance().getApplication();
 

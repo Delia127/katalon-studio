@@ -25,6 +25,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
@@ -36,6 +39,7 @@ import com.kms.katalon.execution.configuration.contributor.IRunConfigurationCont
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.license.models.LicenseType;
 
 public class ExecutionSettingPage extends PreferencePageWithHelp {
     private static final String LBL_DEFAULT_EXECUTION = ExecutionMessageConstants.LBL_DEFAULT_EXECUTION;
@@ -72,6 +76,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
     private IRunConfigurationContributor[] runConfigs;
 
     private String selectedExecutionConfiguration;
+
+    private GridData gdCbLogTestSteps;
 
     public ExecutionSettingPage() {
         defaultSettingStore = ExecutionDefaultSettingStore.getStore();
@@ -148,7 +154,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         lblLogTestSteps.setLayoutData(gdLblLogTestSteps);
         
         cbLogTestSteps = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-        GridData gdCbLogTestSteps = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdCbLogTestSteps = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdCbLogTestSteps.widthHint = INPUT_WIDTH * 2;
         cbLogTestSteps.setLayoutData(gdCbLogTestSteps);
         
@@ -351,6 +357,11 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         chckIgnorePageLoadTimeoutException.setEnabled(usePageLoadTimeout);
         txtActionDelay.setText(String.valueOf(webSettingStore.getActionDelay()));
         txtDefaultIEHangTimeout.setText(Integer.toString(webSettingStore.getIEHangTimeout()));
+
+        if (!LicenseUtil.isNotFreeLicense()) {
+            gdCbLogTestSteps.heightHint = 0;
+            container.layout(true);
+        }
     }
 
     @Override

@@ -37,7 +37,8 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.javalite.common,
  org.apache.commons.lang3,
  com.kms.katalon.util,
- com.katalon.platform
+ com.katalon.platform,
+ com.kms.katalon.application
 Export-Package: com.kms.katalon.composer.components.impl.command,
  com.kms.katalon.composer.components.impl.components,
  com.kms.katalon.composer.components.impl.constants,

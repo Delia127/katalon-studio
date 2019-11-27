@@ -81,5 +81,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.core.webservice,
  com.katalon.platform,
  ch.qos.logback.classic,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ org.apache.httpcomponents.httpclient
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator

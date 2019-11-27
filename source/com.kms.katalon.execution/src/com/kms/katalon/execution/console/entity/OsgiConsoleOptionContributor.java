@@ -9,9 +9,11 @@ public class OsgiConsoleOptionContributor implements ConsoleOptionContributor {
 
     public static final String OSGI_NO_EXIT_OPTION = "noExit";
     public static final String DEFAULT_NO_EXIT_OPTION = Boolean.FALSE.toString();
-    
+
     public static final String API_KEY_OPTION = "apiKey";
-    
+
+    public static final String API_KEY_ON_PREMISE_OPTION = "apiKeyOnPremise";
+
     public static final String ANALYTICS_PROJECT_ID = "analyticsProjectId";
     
     public static final StringConsoleOption CONSOLE_LOG_CONSOLE_OPTION = new StringConsoleOption() {

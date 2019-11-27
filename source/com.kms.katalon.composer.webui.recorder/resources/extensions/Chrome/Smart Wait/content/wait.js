@@ -1,1 +1,139 @@
-var _0x4e69=['readyState','origXMLHttpRequest','content\x20script:\x20Ajax\x20waiting\x20is\x20done\x20!','content\x20script:\x20Katalon\x20Waiter\x20is\x20up\x20and\x20running\x20!','document','content\x20script:\x20','DOMNodeInserted','addEventListener','DOMNodeRemoved','DOMNodeRemovedFromDocument','DOMSubtreeModified','DOMContentLoaded','originXMLHttpRequest','XMLHttpRequest','katalonWaiter','undefined','domModifiedTime','ajaxObjects','prototype','katalon_smart_waiter_do_dom_wait','now','log','katalon_smart_waiter_do_ajax_wait','length'];(function(_0x11f543,_0x3c38c1){var _0x103228=function(_0x1e34ca){while(--_0x1e34ca){_0x11f543['push'](_0x11f543['shift']());}};_0x103228(++_0x3c38c1);}(_0x4e69,0x1be));var _0x50bb=function(_0x38b4df,_0x3fa5a8){_0x38b4df=_0x38b4df-0x0;var _0x5df026=_0x4e69[_0x38b4df];return _0x5df026;};if(window===window['top']&&typeof window[_0x50bb('0x0')]==_0x50bb('0x1')){const KatalonWaiter=function(){this[_0x50bb('0x2')]='';this[_0x50bb('0x3')]=[];};KatalonWaiter[_0x50bb('0x4')][_0x50bb('0x5')]=function(_0x1fde7b){var _0x2f059b=0x0;var _0x8fd6='';function _0x20b60e(){setTimeout(()=>{if(_0x8fd6&&Date[_0x50bb('0x6')]()-_0x8fd6>0x7530){_0x8fd6='';_0x1fde7b(!![]);}else if(window[_0x50bb('0x0')][_0x50bb('0x2')]&&Date['now']()-window[_0x50bb('0x0')][_0x50bb('0x2')]<0x1f4){_0x2f059b++;if(_0x2f059b===0x1){_0x8fd6=Date[_0x50bb('0x6')]();}return _0x20b60e();}else{console[_0x50bb('0x7')]('content\x20script:\x20'+Date[_0x50bb('0x6')]()+'\x20is\x20now,\x20no\x20changes\x20since\x20'+window[_0x50bb('0x0')]['domModifiedTime']);console[_0x50bb('0x7')]('content\x20script:\x20Dom\x20waiting\x20is\x20done\x20!');_0x8fd6='';_0x1fde7b(!![]);}},0x64);}return _0x20b60e();};KatalonWaiter[_0x50bb('0x4')][_0x50bb('0x8')]=function(_0x200d76){var _0x2a57bd=0x0;var _0x3a8312='';function _0x231651(){function _0x12c7ca(){if(window[_0x50bb('0x0')][_0x50bb('0x3')]){if(window[_0x50bb('0x0')]['ajaxObjects'][_0x50bb('0x9')]===0x0){return!![];}else{for(var _0x3acc1b in window[_0x50bb('0x0')][_0x50bb('0x3')]){if(window['katalonWaiter']['ajaxObjects'][_0x3acc1b][_0x50bb('0xa')]!==0x4&&window[_0x50bb('0x0')][_0x50bb('0x3')][_0x3acc1b][_0x50bb('0xa')]!==undefined&&window[_0x50bb('0x0')][_0x50bb('0x3')][_0x3acc1b][_0x50bb('0xa')]!==0x0){return![];}}return!![];}}else{if(window[_0x50bb('0xb')]){window['origXMLHttpRequest']='';}return!![];}}setTimeout(()=>{if(_0x3a8312&&Date[_0x50bb('0x6')]()-_0x3a8312>0x7530){_0x2a57bd=0x0;_0x3a8312='';_0x200d76(!![]);}else if(_0x12c7ca()){console[_0x50bb('0x7')](_0x50bb('0xc'));_0x2a57bd=0x0;_0x3a8312='';_0x200d76(!![]);}else{_0x2a57bd++;if(_0x2a57bd===0x1){_0x3a8312=Date[_0x50bb('0x6')]();}return _0x231651();}},0x64);};return _0x231651();};(function katalon_smart_waiter_do_prewait(){window[_0x50bb('0x0')]=new KatalonWaiter();console[_0x50bb('0x7')](_0x50bb('0xd'));var _0x3582eb=window[_0x50bb('0xe')];function _0xbeaf55(){window['katalonWaiter'][_0x50bb('0x2')]=Date[_0x50bb('0x6')]();console[_0x50bb('0x7')](_0x50bb('0xf')+window[_0x50bb('0x0')][_0x50bb('0x2')]);}_0x3582eb['addEventListener'](_0x50bb('0x10'),_0xbeaf55,![]);_0x3582eb[_0x50bb('0x11')]('DOMNodeInsertedIntoDocument',_0xbeaf55,![]);_0x3582eb[_0x50bb('0x11')](_0x50bb('0x12'),_0xbeaf55,![]);_0x3582eb[_0x50bb('0x11')](_0x50bb('0x13'),_0xbeaf55,![]);_0x3582eb['addEventListener'](_0x50bb('0x14'),_0xbeaf55,![]);_0x3582eb[_0x50bb('0x11')](_0x50bb('0x15'),_0xbeaf55,![]);if(window['XMLHttpRequest']){if(!window[_0x50bb('0x16')]||!window[_0x50bb('0x0')][_0x50bb('0x3')]){window[_0x50bb('0x0')][_0x50bb('0x3')]=[];window[_0x50bb('0x16')]=window[_0x50bb('0x17')];window['XMLHttpRequest']=function(){var _0x1bbdd9=new window[(_0x50bb('0x16'))]();window[_0x50bb('0x0')][_0x50bb('0x3')]['push'](_0x1bbdd9);return _0x1bbdd9;};}}}());}
+if (window === window.top && (typeof window.katalonWaiter == "undefined")) {
+  const KatalonWaiter = function() {
+    this.domModifiedTime = "";
+    this.ajaxObjects = [];
+  };
+
+  KatalonWaiter.prototype.katalon_smart_waiter_do_dom_wait = function(
+    callback
+  ) {
+    var domCount = 0;
+    var domTime = "";
+    function katalon_smart_waiter_do_dom_wait() {
+      setTimeout(() => {
+        if (domTime && (Date.now() - domTime > 30000)) {
+          domTime = "";
+          callback(true);
+        } else if (
+          window.katalonWaiter.domModifiedTime &&
+          (Date.now() - window.katalonWaiter.domModifiedTime < 400)
+        ) {
+          domCount++;
+          if (domCount === 1) {
+            domTime = Date.now();
+          }
+          return katalon_smart_waiter_do_dom_wait();
+        } else {
+          domTime = "";
+          callback(true);
+        }
+      }, 100);
+    }
+    return katalon_smart_waiter_do_dom_wait();
+  };
+
+  KatalonWaiter.prototype.katalon_smart_waiter_do_ajax_wait = function(
+    callback
+  ) {
+    var ajaxCount = 0;
+    var ajaxTime = "";
+
+    function katalon_smart_waiter_do_ajax_wait() {
+      function isAjaxDone() {
+        if (window.katalonWaiter.ajaxObjects) {
+          if (window.katalonWaiter.ajaxObjects.length === 0) {
+            return true;
+          } else {
+            for (var index in window.katalonWaiter.ajaxObjects) {
+              if (
+                (window.katalonWaiter.ajaxObjects[index].readyState) !== 4 &&
+                (window.katalonWaiter.ajaxObjects[index].readyState) !==
+                  undefined &&
+                (window.katalonWaiter.ajaxObjects[index].readyState) !== 0
+              ) {
+                return false;
+              }
+            }
+            return true;
+          }
+        } else {
+          if (window.katalonOriginXMLHttpRequest) {
+            window.katalonOriginXMLHttpRequest = "";
+          }
+          return true;
+        }
+      }
+
+      setTimeout(() => {
+        if (ajaxTime && (Date.now() - ajaxTime > 30000)) {
+          ajaxCount = 0;
+          ajaxTime = "";
+          callback(true);
+        } else if (isAjaxDone()) {
+          ajaxCount = 0;
+          ajaxTime = "";
+          callback(true);
+        } else {
+          ajaxCount++;
+          if (ajaxCount === 1) {
+            ajaxTime = Date.now();
+          }
+          return katalon_smart_waiter_do_ajax_wait();
+        }
+      }, 100);
+    }
+
+    return katalon_smart_waiter_do_ajax_wait();
+  };
+
+  (function katalon_smart_waiter_do_prewait() {
+    window.katalonWaiter = new KatalonWaiter();
+    console.log("content script: Katalon Waiter v.2 is up and running !");
+    var document = window.document;
+    function katalon_smart_waiter_setDOMModifiedTime() {
+      window.katalonWaiter.domModifiedTime = Date.now();
+    }
+    document.addEventListener(
+      "DOMNodeInserted",
+      katalon_smart_waiter_setDOMModifiedTime,
+      false
+    );
+    document.addEventListener(
+      "DOMNodeInsertedIntoDocument",
+      katalon_smart_waiter_setDOMModifiedTime,
+      false
+    );
+    document.addEventListener(
+      "DOMNodeRemoved",
+      katalon_smart_waiter_setDOMModifiedTime,
+      false
+    );
+    document.addEventListener(
+      "DOMNodeRemovedFromDocument",
+      katalon_smart_waiter_setDOMModifiedTime,
+      false
+    );
+    document.addEventListener(
+      "DOMSubtreeModified",
+      katalon_smart_waiter_setDOMModifiedTime,
+      false
+    );
+    document.addEventListener(
+      "DOMContentLoaded",
+      katalon_smart_waiter_setDOMModifiedTime,
+      false
+    );
+    if (window.XMLHttpRequest) {
+      if (!window.katalonOriginXMLHttpRequest || !window.katalonWaiter.ajaxObjects) {
+        window.katalonWaiter.ajaxObjects = [];
+        window.katalonOriginXMLHttpRequest = window.XMLHttpRequest;
+        window.XMLHttpRequest = function() {
+          var xhr = new window.katalonOriginXMLHttpRequest();
+          window.katalonWaiter.ajaxObjects.push(xhr);
+          return xhr;
+        };
+        window.XMLHttpRequest.prototype = window.katalonOriginXMLHttpRequest.prototype;
+      }
+    }
+  })();
+}

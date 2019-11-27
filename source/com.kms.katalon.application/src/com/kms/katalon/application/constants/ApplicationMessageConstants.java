@@ -6,6 +6,8 @@ public class ApplicationMessageConstants {
     private static final String BUNDLE_NAME = "com.kms.katalon.application.constants.applicationMessageConstants"; //$NON-NLS-1$
 
     public static String ACTIVATE_INFO_INVALID;
+    
+    public static String KSE_ACTIVATE_INFOR_INVALID;
 
     public static String ACTIVATION_CODE_INVALID;
 
@@ -38,6 +40,34 @@ public class ApplicationMessageConstants {
     public static String PROXY_FOUND;
 
     public static String NO_PROXY_FOUND;
+
+    public static String ACTIVATION_ONLINE_INVALID;
+
+    public static String ACTIVATION_GUI_FAIL;
+
+    public static String ACTIVATION_CLI_FAIL;
+
+    public static String ACTIVATION_OFFLINE_FAIL;
+
+    public static String LICENSE_INVALID;
+
+    public static String LICENSE_INVALID_MACHINE_ID;
+
+    public static String LICENSE_EXPIRED;
+
+    public static String LICENSE_UNABLE_RENEW;
+
+    public static String LICENSE_EXPIRED_MESSAGE;
+
+    public static String LICENSE_EXPIRED_NO_MESSAGE;
+
+    public static String LICENSE_ERROR_RENEW;
+
+    public static String AUTO_CLOSE;
+
+    public static String BTN_ACKNOWLEDGE;
+
+    public static String TITLE_KS_NOTIFICATION;
 
     static {
         // initialize resource bundle

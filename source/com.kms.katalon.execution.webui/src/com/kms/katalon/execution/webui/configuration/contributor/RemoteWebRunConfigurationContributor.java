@@ -1,6 +1,7 @@
 package com.kms.katalon.execution.webui.configuration.contributor;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,8 +9,11 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.controller.GlobalVariableController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
@@ -103,12 +107,28 @@ public class RemoteWebRunConfigurationContributor implements IRunConfigurationCo
             RemoteWebRunConfiguration clone = (RemoteWebRunConfiguration) remoteWebRunConfiguration.cloneConfig();
             clone.setRemoteServerUrl(remoteWebDriverUrl);
             clone.setRemoteWebDriverConnectorType(remoteWebDriverType);
+            setExecutionProfile(clone, runConfigurationDescription);
+            
             return clone;
         } else {
             RemoteWebRunConfiguration remoteWebRunConfiguration = new RemoteWebRunConfiguration(projectDir);
             remoteWebDriverUrl = remoteWebRunConfiguration.getRemoteServerUrl();
             remoteWebDriverType = remoteWebRunConfiguration.getRemoteWebDriverConnectorType();
+            
+            if (runConfigurationDescription != null) {
+                setExecutionProfile(remoteWebRunConfiguration, runConfigurationDescription);
+            }
             return remoteWebRunConfiguration;
+        }
+    }
+    
+    private void setExecutionProfile(RemoteWebRunConfiguration configuration, RunConfigurationDescription runConfigurationDescription) throws ExecutionException {
+        try {
+            configuration.setExecutionProfile(GlobalVariableController.getInstance().getGlobalVariableCollection(
+                    runConfigurationDescription.getProfileName(), ProjectController.getInstance().getCurrentProject()));
+        } catch (DALException e) {
+            throw new ExecutionException(
+                    MessageFormat.format("Profile {0} not found.", runConfigurationDescription.getProfileName()));
         }
     }
 

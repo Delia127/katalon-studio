@@ -14,6 +14,7 @@ import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -89,9 +90,9 @@ import io.appium.java_client.remote.AppiumCommandExecutor;
 
 public class DriverFactory {
 
-    private static final String SMART_WAIT_ADDON_CHROME_RELATIVE_PATH = File.separator + "chrome" + File.separator + "Smart Wait";
+    private static final String SMART_WAIT_ADDON_CHROME_RELATIVE_PATH = File.separator + "Chrome" + File.separator + "Smart Wait";
 
-    private static final String SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH = File.separator + "firefox" + File.separator + "smartwait.xpi";
+    private static final String SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH = File.separator + "Firefox" + File.separator + "smartwait.xpi";
 
     private static final KeywordLogger logger = KeywordLogger.getInstance(DriverFactory.class);
 
@@ -227,7 +228,14 @@ public class DriverFactory {
         }
     }
 
-    private static void changeWebDriver(WebDriver webDriver) {
+    /**
+     * Change the web driver that Katalon uses to execute your test to
+     * the given web driver instance. Note that Katalon will
+     * wrap the given instance into a subclass of {@link EventFiringWebDriver}
+     * 
+     * @param webDriver
+     */
+    public static void changeWebDriver(WebDriver webDriver) {
         changeWebDriverWithoutLog(webDriver);
         logBrowserRunData(webDriver);
         switchToSmartWaitWebDriver(webDriver);
@@ -364,13 +372,15 @@ public class DriverFactory {
     }
 
     private static DesiredCapabilities addSmartWaitExtensionToChrome(DesiredCapabilities capabilities) {
-        try {
-            File chromeExtensionFolder = getChromeExtensionFile();
-            WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
-            WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
-                    LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
-        } catch (Exception e) {
-            logger.logError(ExceptionUtils.getFullStackTrace(e));
+        if (shouldInstallSmartWait()) {
+            try {
+                File chromeExtensionFolder = getChromeExtensionFile();
+                WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
+                WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
+                        LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
+            } catch (Exception e) {
+                logger.logError(ExceptionUtils.getFullStackTrace(e));
+            }
         }
         return capabilities;
     }
@@ -558,10 +568,21 @@ public class DriverFactory {
         return CGeckoDriver.from(desiredCapabilities, actionDelay);
     }
     
+    private static boolean shouldInstallSmartWait() {
+        // Default to false if previously an error occurs in writing the value in RunConfiguration
+        boolean globalSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                .orElse(false);
+        return globalSmartWaitEnabled;
+    }
+
+    
     private static void addSmartWaitExtensionToFirefox(DesiredCapabilities desiredCapabilities) {
-        FirefoxProfile firefoxProfile = new FirefoxProfile();
-        firefoxProfile.addExtension(getFirefoxAddonFile());
-        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
+        if (shouldInstallSmartWait()) {
+            FirefoxProfile firefoxProfile = new FirefoxProfile();
+            firefoxProfile.addExtension(getFirefoxAddonFile());
+            desiredCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
+        }
     }
 
     private static File getFirefoxAddonFile() {

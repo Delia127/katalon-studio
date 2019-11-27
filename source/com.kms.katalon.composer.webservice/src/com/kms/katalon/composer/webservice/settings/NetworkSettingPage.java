@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -19,6 +19,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -28,6 +31,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
+import com.kms.katalon.license.models.LicenseType;
 
 public class NetworkSettingPage extends PreferencePageWithHelp {
 
@@ -42,6 +46,8 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
     private Text txtKeyStorePassword;
     
     private Button btnBrowse;
+
+    private GridData gdClientCert;
 
     public NetworkSettingPage() {
         settingStore = WebServiceSettingStore
@@ -72,11 +78,15 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
         rbtnBypassCertificateOpt.setText(ComposerWebserviceMessageConstants.DIA_LBL_SSL_CERT_BYPASS_OPT);
         sslCertButtons.put(SSLCertificateOption.BYPASS, rbtnBypassCertificateOpt);
 
-        Group grpClientCert = new Group(container, SWT.NONE);
+        Composite compositeClientCert = new Composite(container, SWT.NONE);
+        gdClientCert = new GridData(SWT.FILL, SWT.FILL, true, false);
+        compositeClientCert.setLayoutData(gdClientCert);
+
+        compositeClientCert.setLayout(new FillLayout());
+        Group grpClientCert = new Group(compositeClientCert, SWT.NONE);
         grpClientCert.setText(ComposerWebserviceMessageConstants.DIA_GRP_LBL_CLIENT_CERTIFICATES);
         grpClientCert.setLayout(new GridLayout(3, false));
-        grpClientCert.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        
+
         Label lblKeyStore = new Label(grpClientCert, SWT.NONE);
         lblKeyStore.setText(ComposerWebserviceMessageConstants.DIA_LBL_KEYSTORE);
         
@@ -121,6 +131,12 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
             SSLClientCertificateSettings clientCertSettings = settingStore.getClientCertificateSettings();
             txtKeyStore.setText(clientCertSettings.getKeyStoreFile());
             txtKeyStorePassword.setText(clientCertSettings.getKeyStorePassword());
+
+            // Hide this feature for normal users
+            if (!LicenseUtil.isNotFreeLicense()) {
+                gdClientCert.heightHint = 0;
+                container.layout(true);
+            }
         } catch (IOException e) {
             MultiStatusErrorDialog.showErrorDialog(e,
                     ComposerWebserviceMessageConstants.DIA_MSG_UNABLE_TO_LOAD_NETWORK_PAGE,

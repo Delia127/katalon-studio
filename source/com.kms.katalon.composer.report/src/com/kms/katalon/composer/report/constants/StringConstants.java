@@ -50,6 +50,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS = ComposerReportMessageConstants.PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS;
     
     // ReportCollectionPart
+    public static final String REPORT_COLLECTION_COLUMN_PROFILE = ComposerReportMessageConstants.REPORT_COLLECTION_COLUMN_PROFILE;
     public static final String REPORT_COLLECTION_LBL_ENVIRONMENT = ComposerReportMessageConstants.REPORT_COLLECTION_LBL_ENVIRONMENT;
     public static final String REPORT_COLLECTION_COLUMN_FAILED_TEST = ComposerReportMessageConstants.REPORT_COLLECTION_COLUMN_FAILED_TEST;
     
