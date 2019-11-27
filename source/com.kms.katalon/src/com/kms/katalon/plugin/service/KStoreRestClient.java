@@ -61,7 +61,7 @@ public class KStoreRestClient {
                 try {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
-                        String responseContent = EntityUtils.toString(response.getEntity());
+                        String responseContent = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
                         LogUtil.writeOutputLine("Latest plugins responses: " + responseContent);
                         responseContent = responseContent.replace("{}", "null");
                         LogService.getInstance().logInfo("Katalon version: " + appVersion);
@@ -94,7 +94,7 @@ public class KStoreRestClient {
                 try {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
-                        String responseContent = EntityUtils.toString(response.getEntity());
+                        String responseContent = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
                         //LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
                         responseContent = responseContent.replace("{}", "null");
                         //LogService.getInstance().logInfo("Katalon version: " + appVersion);
@@ -174,7 +174,7 @@ public class KStoreRestClient {
                     result.setAuthenticated(true);
                     HttpEntity responseEntity = response.getEntity();
                     if (responseEntity != null) { // just in case
-                        String token = EntityUtils.toString(responseEntity);
+                        String token = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
                         result.setToken(token);
                     }
                     return result;

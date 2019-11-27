@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -495,7 +496,7 @@ public class AnalyticsApiProvider {
         HttpEntity entity = httpResponse.getEntity();
         String responseString = StringUtils.EMPTY;
         if (entity != null) {
-            responseString = EntityUtils.toString(httpResponse.getEntity());
+            responseString = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
         }
 
         if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_CREATED || statusCode == HttpStatus.SC_NO_CONTENT) {
