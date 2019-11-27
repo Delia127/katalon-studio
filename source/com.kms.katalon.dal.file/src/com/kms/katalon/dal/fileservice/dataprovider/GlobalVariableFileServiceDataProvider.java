@@ -44,6 +44,11 @@ public class GlobalVariableFileServiceDataProvider implements IGlobalVariableDat
     }
 
     @Override
+    public ExecutionProfileEntity getById(String id, ProjectEntity project) throws DALException {
+        return GlobalVariableFileServiceManager.getById(id, project);
+    }
+
+    @Override
     public List<ExecutionProfileEntity> getAll(ProjectEntity project) throws DALException {
         return GlobalVariableFileServiceManager.getAll(project);
     }

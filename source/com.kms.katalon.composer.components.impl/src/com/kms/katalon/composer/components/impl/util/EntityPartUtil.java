@@ -21,6 +21,7 @@ import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.CheckpointController;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
@@ -193,9 +194,7 @@ public class EntityPartUtil {
             String profileId = getEntityIdFromPartId(partElementId, IdConstants.EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX);
             if (profileId != null) {
                 ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-                String[] profileIdName = profileId.split("\\\\");
-                String[] fileName = profileIdName[profileIdName.length - 1].split("\\.");
-                return  GlobalVariableController.getInstance().getExecutionProfile(fileName[0], projectEntity);
+                return GlobalVariableController.getInstance().getExecutionProfileById(profileId, projectEntity);
             }
             
             String windowsEntityId = getEntityIdFromPartId(partElementId, IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX);
