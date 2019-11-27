@@ -54,7 +54,7 @@ public class NewProjectDialog extends AbstractDialog {
         this.password = password;
         this.team = team;
         
-        if (this.team.getRole().contains("OWNER") || this.team.getRole().contains("ADMIN")) {
+        if (this.team != null && (this.team.getRole().contains("OWNER") || this.team.getRole().contains("ADMIN"))) {
             permissionCreateTeam = true;
         } else {
             permissionCreateTeam = false;

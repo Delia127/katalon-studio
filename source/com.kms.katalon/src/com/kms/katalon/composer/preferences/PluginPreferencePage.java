@@ -44,7 +44,9 @@ public class PluginPreferencePage extends PreferencePage {
         lblPluginDirectory.setText(StringConstants.PAGE_LBL_PLUGIN_DIRECTORY);
 
         txtPluginDirectory = new Text(composite, SWT.BORDER);
-        txtPluginDirectory.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gridData.widthHint = 450;
+        txtPluginDirectory.setLayoutData(gridData);
         txtPluginDirectory.setText(prefStore.getString(PreferenceConstants.PLUGIN_DIRECTORY));
 
         Button btnBrowseFolder = new Button(composite, SWT.PUSH);

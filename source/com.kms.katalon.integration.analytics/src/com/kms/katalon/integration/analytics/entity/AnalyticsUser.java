@@ -1,5 +1,7 @@
 package com.kms.katalon.integration.analytics.entity;
 
+import java.util.Date;
+
 public class AnalyticsUser {
 
     private String id;
@@ -9,6 +11,8 @@ public class AnalyticsUser {
     private String lastName;
 
     private String email;
+
+    private Date trialExpirationDate;
 
     public String getId() {
         return id;
@@ -40,6 +44,14 @@ public class AnalyticsUser {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Date getTrialExpirationDate() {
+        return trialExpirationDate;
+    }
+
+    public void setTrialExpirationDate(Date trialExpirationDate) {
+        this.trialExpirationDate = trialExpirationDate;
     }
 
 }

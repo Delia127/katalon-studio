@@ -145,10 +145,9 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         try {
             analyticsSettingStore = new AnalyticsSettingStore(
                     ProjectController.getInstance().getCurrentProject().getFolderLocation());
-            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            password = analyticsSettingStore.getPassword(encryptionEnabled);
-            serverUrl = analyticsSettingStore.getServerEndpoint(encryptionEnabled);
-            email = analyticsSettingStore.getEmail(encryptionEnabled);
+            password = analyticsSettingStore.getPassword();
+            serverUrl = analyticsSettingStore.getServerEndpoint();
+            email = analyticsSettingStore.getEmail();
 
             Executors.newFixedThreadPool(1).submit(() -> {
                 UISynchronizeService.syncExec(() -> {
@@ -162,7 +161,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                         enableUpload(false);
                         return;
                     }
-                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS, false);
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_TEAMS, false);
                     Long orgId = analyticsSettingStore.getOrganization().getId();
                     teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo);
                     if (teams != null && !teams.isEmpty()) {
@@ -171,7 +170,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                                 AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
                         cbbTeams.select(defaultTeamIndex);
 
-                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false);
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS, false);
                         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, teams.get(defaultTeamIndex), tokenInfo);
                         setProjectsBasedOnTeam(projects);
                     } else {
@@ -182,7 +181,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                     setProgressMessage("", false);
                 });
             });
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
             enableUpload(false);
@@ -211,7 +210,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                 enableUpload(false);
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(() -> {
-                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false);
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS, false);
                     });
                     UISynchronizeService.syncExec(() -> {
                         AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,

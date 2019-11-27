@@ -10,6 +10,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -25,7 +26,8 @@ public class TrackingService {
         IPreferenceStore prefStore = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
         boolean checkAllowUsage = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
                 ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
-        if (!checkAllowUsage) {
+        boolean isPaidLicense = LicenseUtil.isPaidLicense();
+        if (isPaidLicense && !checkAllowUsage) {
             return;
         } else {
             executor.submit(() -> {

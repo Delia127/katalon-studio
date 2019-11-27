@@ -162,6 +162,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 if (getRunConfig() instanceof AbstractRunConfiguration
                         && newConfig instanceof AbstractRunConfiguration) {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
+                    ((AbstractRunConfiguration) newConfig)
+                            .setOverridingGlobalVariables(getRunConfig().getOverridingGlobalVariables());
                 }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
@@ -173,7 +175,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             }
         }
     }
-    
+
     protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {
     	String projectFolder = reportEntity.getProject().getFolderLocation();
     	List<String> paths = new ArrayList<>();

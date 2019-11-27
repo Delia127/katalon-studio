@@ -424,7 +424,13 @@ public class GroovyWrapperParser {
             }
 
         } else {
+            if (objectExp instanceof BinaryExpressionWrapper) {
+                print("(");
+            }
             parseExpression(objectExp);
+            if (objectExp instanceof BinaryExpressionWrapper) {
+                print(")");
+            }
         }
         if (methodCallExpressionWrapper.isSpreadSafe()) {
             print("*");

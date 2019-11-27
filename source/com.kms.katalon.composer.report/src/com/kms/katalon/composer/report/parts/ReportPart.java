@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -120,7 +119,6 @@ import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
-import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -135,17 +133,11 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
-import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
-import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
-import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -154,8 +146,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private static final String BTN_SHOW_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_SHOW_TEST_CASE_DETAILS;
 
     private static final String BTN_HIDE_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_HIDE_TEST_CASE_DETAILS;
-
-    private static AnalyticsTokenInfo tokenInfo;
 
     @Inject
     private IEventBroker eventBroker;
@@ -863,13 +853,22 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         MenuItem accessKAMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
         uploadMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
 
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        
         accessKAMenuItem.setText(ComposerReportMessageConstants.BTN_ACCESSKA);
         accessKAMenuItem.setID(0);
         accessKAMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Trackings.trackOpenKAIntegration("report");
-                Program.launch(ApplicationInfo.getTestOpsServer());
+                try {
+                    String serverUrl = analyticsSettingStore.getServerEndpoint();
+                    Program.launch(serverUrl);
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
+                }
             }
         });
 
@@ -900,8 +899,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {
-            String email = analyticsSettingStore.getEmail(true);
-            String password = analyticsSettingStore.getPassword(true);
+            String email = analyticsSettingStore.getEmail();
+            String password = analyticsSettingStore.getPassword();
             
             if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password)) {
                 Shell shell = Display.getCurrent().getActiveShell();
@@ -924,22 +923,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             LoggerSingleton.logError(ex);
             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
                     ex.getMessage());
-            try {
-                analyticsSettingStore.enableIntegration(false);
-            } catch (IOException e1) {
-                LoggerSingleton.logError(e1);
-            }
         }
     }
     
     private void uploadReportHandle(AnalyticsSettingStore analyticsSettingStore) throws IOException {
         UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell);
-        analyticsSettingStore.enableIntegration(true);
         int returnCode = uploadSelectionDialog.open();
         if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
             uploadToKatalonTestOps();
-        } else {
-            analyticsSettingStore.enableIntegration(false);
         }
     }
 
@@ -953,7 +944,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
                         monitor.worked(1);
                         ReportFolder reportFolder = new ReportFolder(testSuiteLogRecord.getLogFolder());
-                        analyticsReportService.upload(reportFolder);
+                        analyticsReportService.uploadManually(reportFolder);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
                         monitor.worked(2);
                     } catch (final AnalyticsApiExeception ex) {

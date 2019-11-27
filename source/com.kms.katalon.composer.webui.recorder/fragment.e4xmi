@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_JAn4EM1IEeSTLup_fpV0TA">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_OUZe0M1IEeSTLup_fpV0TA" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.generic" positionInList="">
-    <elements xsi:type="menu:ToolBarSeparator" xmi:id="_q37qgA38EeaA_8AACvXEuw" elementId="com.kms.katalon.composer.webui.recorder.toolbarseparator.0">
-      <persistedState key="index" value="7"/>
-    </elements>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_OUZe0M1IEeSTLup_fpV0TA" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.generic" positionInList="after:com.kms.katalon.composer.objectrepository.handledtoolitem.objectSpy">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_OUZe0s1IEeSTLup_fpV0TA" elementId="com.kms.katalon.composer.webui.recorder.handledtoolitem.record" label="Record Web" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/web_object_record_24.png" tooltip="" command="_Yx0f8c1IEeSTLup_fpV0TA">
       <persistedState key="index" value="8"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/web_object_record_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
+    </elements>
+    <elements xsi:type="menu:ToolBarSeparator" xmi:id="_q37qgA38EeaA_8AACvXEuw" elementId="com.kms.katalon.composer.webui.recorder.toolbarseparator.0">
+      <persistedState key="index" value="7"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Yx0f8M1IEeSTLup_fpV0TA" featurename="commands" parentElementId="com.kms.katalon.composer.application">

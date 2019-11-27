@@ -7,7 +7,6 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,20 +32,20 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.common.base.Strings;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -91,11 +90,11 @@ import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -107,11 +106,11 @@ public class GenerateCommandDialog extends AbstractDialog {
         CONSOLE_COMMAND, PROPERTIES_FILE
     };
 
-    private static final String KATALON_EXECUTABLE_LINUX = "./katalon --args";
+    private static final String KATALON_EXECUTABLE_LINUX = "./katalonc";
 
-    private static final String KATALON_EXECUTABLE_WIN32 = "katalon";
+    private static final String KATALON_EXECUTABLE_WIN32 = "katalonc";
 
-    private static final String KATALON_EXECUTABLE_MACOS = "./Katalon\\ Studio.app/Contents/MacOS/katalon --args";
+    private static final String KATALON_EXECUTABLE_MACOS = "./katalonc";
 
     private static final int GENERATE_PROPERTY_ID = 22;
 
@@ -127,14 +126,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Button btnBrowseTestSuite;
 
-    private Button chkDisplayConsoleLog;
-
-    private Button chkKeepConsoleLog;
-
     private Button chkRetryFailedTestCase;
     
-    private Button chkAPIKey;
-
     private ProjectEntity project;
 
     private static final String ZERO = "0";
@@ -149,10 +142,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String ARG_PROJECT_PATH = ConsoleMain.PROJECT_PK_OPTION;
 
-    private static final String ARG_OSGI_CONSOLE_LOG = OsgiConsoleOptionContributor.OSGI_CONSOLE_LOG_OPTION;
-
-    private static final String ARG_OSGI_NO_EXIT = OsgiConsoleOptionContributor.OSGI_NO_EXIT_OPTION;
-
     private static final String ARG_STATUS_DELAY = ConsoleMain.SHOW_STATUS_DELAY_OPTION;
 
     private static final String ARG_TEST_SUITE_PATH = ConsoleMain.TESTSUITE_ID_OPTION;
@@ -162,8 +151,10 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY = DefaultRerunSetting.RETRY_OPTION;
 
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
-    
+
     private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
+
+    private static final String ARG_API_KEY_ON_PREMISE = OsgiConsoleOptionContributor.API_KEY_ON_PREMISE_OPTION;
 
     private Group grpPlatform;
 
@@ -186,8 +177,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Button btnChangeProfile;
     
     private AnalyticsSettingStore analyticsSettingStore;
-
-    private boolean isRetrievingApi;
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -218,7 +207,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         createPlatformPart(main);
         createOptionsPart(main);
         getConfigurationAnalytics();
-        changeEnabled();
         
         return main;
     }
@@ -363,14 +351,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         grpOptionsContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         grpOptionsContainer.setText(StringConstants.DIA_GRP_OTHER_OPTIONS);
 
-        chkDisplayConsoleLog = new Button(grpOptionsContainer, SWT.CHECK);
-        chkDisplayConsoleLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        chkDisplayConsoleLog.setText(StringConstants.DIA_CHK_DISPLAY_CONSOLE_LOG);
-
-        chkKeepConsoleLog = new Button(grpOptionsContainer, SWT.CHECK);
-        chkKeepConsoleLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        chkKeepConsoleLog.setText(StringConstants.DIA_CHK_KEEP_CONSOLE_LOG);
-
         Composite compRetry = new Composite(grpOptionsContainer, SWT.NONE);
         GridLayout glRetry = new GridLayout(4, false);
         glRetry.marginWidth = 0;
@@ -412,30 +392,55 @@ public class GenerateCommandDialog extends AbstractDialog {
         Label lblSeconds = new Label(grpOptionsContainer, SWT.NONE);
         lblSeconds.setText(StringConstants.DIA_LBL_SECONDS);
         
-        chkAPIKey = new Button(grpOptionsContainer, SWT.CHECK);
-        chkAPIKey.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        chkAPIKey.setText(StringConstants.DIA_API_KEY);
+        
+        Label lblAPIKey = new Label(grpOptionsContainer, SWT.NONE);
+        lblAPIKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblAPIKey.setText(StringConstants.DIA_LBL_APIKEY);
         
         txtAPIKey = new Text(grpOptionsContainer, SWT.BORDER);
-        GridData gdTxtAPIKey = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 3, 1);
+        GridData gdTxtAPIKey = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
         gdTxtAPIKey.widthHint = 600;
         txtAPIKey.setLayoutData(gdTxtAPIKey);
         
-        Composite pluginOptionsComposite = new Composite(grpOptionsContainer, SWT.NONE);
-        pluginOptionsComposite.setLayout(new GridLayout(2, false));
-        pluginOptionsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
-        
-        Label lblApiKeyUsage = new Label(pluginOptionsComposite, SWT.NONE);
-        ControlUtils.setFontStyle(lblApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
-        lblApiKeyUsage.setText(StringConstants.DIA_LBL_API_KEY_USAGE);
-
-        new HelpComposite(pluginOptionsComposite, DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
+        createNoticesComposite(grpOptionsContainer);
     }
     
-    private void changeEnabled() {
-        txtAPIKey.setEnabled(chkAPIKey.getSelection());
+    private void createNoticesComposite(Composite parent) {
+        Composite noticesComposite = new Composite(parent, SWT.NONE);
+        noticesComposite.setLayout(new GridLayout(1, false));
+        noticesComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
+        
+        Link lblApiKeyUsage = new Link(noticesComposite, SWT.WRAP);
+        lblApiKeyUsage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        ControlUtils.setFontStyle(lblApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
+        lblApiKeyUsage.setText(StringConstants.DIA_LBL_API_KEY_USAGE);
+        lblApiKeyUsage.addSelectionListener(new SelectionAdapter()  {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    Program.launch(DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
+        });
+        
+        Link lblConsoleModeRequirement = new Link(noticesComposite, SWT.WRAP);
+        lblConsoleModeRequirement.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        ControlUtils.setFontStyle(lblConsoleModeRequirement, SWT.BOLD | SWT.ITALIC, -1);
+        lblConsoleModeRequirement.setText(StringConstants.MSG_CONSOLE_MODE_REQUIREMENT);
+        lblConsoleModeRequirement.addSelectionListener(new SelectionAdapter()  {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    Program.launch(DocumentationMessageConstants.RUNTIME_ENGINE_INTRODUCTION);
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
+        });
     }
-
+    
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, GENERATE_PROPERTY_ID, StringConstants.DIA_BTN_GEN_PROPERTY_FILE, false);
@@ -467,16 +472,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private void loadLastWorkingData() {
         try {
             ScopedPreferenceStore prefs = getPreference();
-
-            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG)) {
-                chkDisplayConsoleLog.setSelection(
-                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG));
-            }
-
-            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG)) {
-                chkKeepConsoleLog.setSelection(
-                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG));
-            }
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL)) {
                 txtStatusDelay.setText(String.valueOf(
@@ -645,12 +640,6 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         });
                 
-        chkAPIKey.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                changeEnabled();
-            }
-        });
     }
 
     private void onRunConfigurationDataChanged() {
@@ -835,12 +824,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void generateCommandPressed() {
         try {
-        	if (chkAPIKey.getSelection() && StringUtils.isEmpty(txtAPIKey.getText())) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                        ComposerAnalyticsStringConstants.ERROR,
-                        StringConstants.REPORT_MSG_MUST_ENTER_API_KEY);
-                return;
-            }
         	
             GeneratedCommandDialog generatedCommandDialog = new GeneratedCommandDialog(getShell(), generateCommand());
             generatedCommandDialog.open();
@@ -878,7 +861,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 commandBuilder.append(KATALON_EXECUTABLE_LINUX);
         }
 
-        commandBuilder.append(" -noSplash ");
+        commandBuilder.append(" -noSplash");
 
         for (String key : consoleAgrsMap.keySet()) {
             commandBuilder.append(" ");
@@ -897,15 +880,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         Map<String, String> args = new LinkedHashMap<String, String>();
         if (generateCommandMode == GenerateCommandMode.CONSOLE_COMMAND) {
             args.put(ARG_RUN_MODE, Application.RUN_MODE_OPTION_CONSOLE);
-            if (chkDisplayConsoleLog.getSelection()) {
-                // OSGi argument
-                args.put(ARG_OSGI_CONSOLE_LOG, StringConstants.EMPTY);
-            }
-
-            if (chkKeepConsoleLog.getSelection()) {
-                // OSGi argument
-                args.put(ARG_OSGI_NO_EXIT, StringConstants.EMPTY);
-            }
         }
 
         args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
@@ -932,8 +906,14 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
         
 
-        if (chkAPIKey.getSelection()) {
+        if (!StringUtils.isEmpty(txtAPIKey.getText())) {
             args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
+        }
+
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(currentProject.getFolderLocation());
+        if (analyticsSettingStore.isOverrideAuthentication()) {
+            args.put(ARG_API_KEY_ON_PREMISE, wrapArgumentValue(""));
         }
 
         return args;
@@ -965,9 +945,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private boolean isValidInput() {
-        if (isRetrievingApi) {
-            return false;
-        }
         String entityId = txtTestSuite.getText();
         if (isBlank(entityId)) {
             return false;
@@ -1003,15 +980,20 @@ public class GenerateCommandDialog extends AbstractDialog {
             Composite main = (Composite) super.createDialogArea(parent);
             GridLayout glMain = (GridLayout) main.getLayout();
             glMain.numColumns = 1;
+            GridData gdMain = (GridData) main.getLayoutData();
+            gdMain.widthHint = 500;
 
             Label message = new Label(main, SWT.NONE);
             message.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
             message.setText(StringConstants.DIA_LBL_GENERATED_COMMAND_MESSAGE);
 
             txtCommand = new Text(main, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
-            txtCommand.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            GridData gdCommand = new GridData(SWT.FILL, SWT.FILL, true, true);
+            gdCommand.minimumHeight = 100;
+            txtCommand.setLayoutData(gdCommand);
             txtCommand.setText(getCommand());
 
+            createNoticesComposite(main);
             return main;
         }
 
@@ -1035,8 +1017,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
 
         @Override
-        protected Point getInitialSize() {
-            return new Point(500, 300);
+        protected boolean isResizable() {
+            return true;
         }
 
         @Override
@@ -1076,10 +1058,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private void saveUserInput() {
         ScopedPreferenceStore prefs = getPreference();
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID, txtTestSuite.getText());
-        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG,
-                chkDisplayConsoleLog.getSelection());
-        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG,
-                chkKeepConsoleLog.getSelection());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY, txtRetry.getText());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES,
                 chkRetryFailedTestCase.getSelection());
@@ -1096,23 +1074,14 @@ public class GenerateCommandDialog extends AbstractDialog {
     
     private void getConfigurationAnalytics() {
         analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
-
-        try {
-            boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled();
-            chkAPIKey.setSelection(enableApiKey);
-            getApiKey();
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
+        getApiKey();
     }
     
     private void getApiKey() {
-        isRetrievingApi = true;
         Thread getApiKey = new Thread(() -> {
             AnalyticsApiKey apiKey = null;
             try {
-                boolean isEncryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-                String serverUrl = analyticsSettingStore.getServerEndpoint(isEncryptionEnabled);
+                String serverUrl = ApplicationInfo.getTestOpsServer();
                 String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                 String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                 if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
@@ -1131,8 +1100,6 @@ public class GenerateCommandDialog extends AbstractDialog {
                     UISynchronizeService.asyncExec(() -> {
                         if (!txtAPIKey.isDisposed()) {
                             txtAPIKey.setText(key);
-                            isRetrievingApi = false;
-                            setGenerateCommandButtonStates();
                         }
                     });
                 }
