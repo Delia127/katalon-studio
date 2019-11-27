@@ -83,15 +83,13 @@ public class ApplicationMessageConstants {
 
     public static String BTN_ACKNOWLEDGE;
 
-<<<<<<< HEAD
     public static String RE_FIND_VAILD_OFFLINE_LICENSE_IN_FOLDER;
 
     public static String RE_START_CHECK_LICENSE;
 
     public static String RE_LICENSE_FILE_VAILD;
-=======
+
     public static String TITLE_KS_NOTIFICATION;
->>>>>>> staging-7.2.0
 
     static {
         // initialize resource bundle
