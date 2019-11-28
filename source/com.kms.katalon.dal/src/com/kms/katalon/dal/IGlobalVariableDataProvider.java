@@ -18,6 +18,8 @@ public interface IGlobalVariableDataProvider {
             throws Exception;
     
     ExecutionProfileEntity get(String name, ProjectEntity project) throws DALException;
+    
+    ExecutionProfileEntity getById(String id, ProjectEntity project) throws DALException;
 
     List<ExecutionProfileEntity> getAll(ProjectEntity project) throws DALException;
     
