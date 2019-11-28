@@ -21,6 +21,8 @@ import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.CheckpointController;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
@@ -29,10 +31,12 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.controller.WindowsElementController;
+import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.TestListenerEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -191,6 +195,12 @@ public class EntityPartUtil {
                 return CheckpointController.getInstance().getById(checkpointId);
             }
             
+            String profileId = getEntityIdFromPartId(partElementId, IdConstants.EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX);
+            if (profileId != null) {
+                ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+                return GlobalVariableController.getInstance().getExecutionProfileById(profileId, projectEntity);
+            }
+            
             String windowsEntityId = getEntityIdFromPartId(partElementId, IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX);
             if (windowsEntityId != null) {
                 return WindowsElementController.getInstance().getWindowsElementEntity(windowsEntityId);
@@ -206,7 +216,7 @@ public class EntityPartUtil {
         if (!StringUtils.startsWith(partElementId, entityPrefixId)) {
             return null;
         }
-        return StringUtils.substringBetween(partElementId, "(", ")");
+        return StringUtils.substring(partElementId, partElementId.indexOf("(")+1, partElementId.lastIndexOf(")"));
     }
 
     /**

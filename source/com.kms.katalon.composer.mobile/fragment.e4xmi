@@ -12,10 +12,14 @@
     <elements xsi:type="commands:Command" xmi:id="_1W2pIEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.command.ios" commandName="iOS">
       <parameters xmi:id="_amVXcAhuEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_Vm7EAAEHEeqBesOVFcy9cw" elementId="com.kms.katalon.composer.mobile.command.iOSInstallDependencies" commandName="Install Dependencies"/>
+    <elements xsi:type="commands:Command" xmi:id="_S1jDkAE-Eeq6aqGWteiljw" elementId="com.kms.katalon.composer.mobile.command.installWebDriverAgent" commandName="Install WebDriverAgent"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_89TdIEusEeWj7OhDHfltSQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_6B_wgEvWEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.handler.chrome" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.handler.AndroidExecutionHandler" command="_xoxN0EusEeWj7OhDHfltSQ"/>
     <elements xsi:type="commands:Handler" xmi:id="__lEwoEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.handler.firefox" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.handler.IosExecutionHandler" command="_1W2pIEusEeWj7OhDHfltSQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_f_idoAEHEeqBesOVFcy9cw" elementId="com.kms.katalon.composer.mobile.handler.iOSInstallDependencies" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.handler.IosInstallDependenciesHandler" command="_Vm7EAAEHEeqBesOVFcy9cw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_RrfEMAE-Eeq6aqGWteiljw" elementId="com.kms.katalon.composer.mobile.handler.0" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.handler.IosInstallWebDriverAgent" command="_S1jDkAE-Eeq6aqGWteiljw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-Z4IwAhtEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:7">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_-Z4IwQhtEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.mobile.menuseparator.0"/>
@@ -37,5 +41,11 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_a4-oEAH6EeqOItdycCsZ9A" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ccGnsAH6EeqOItdycCsZ9A" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.mobileObject" label="New Mobile Element" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.menu.NewMobileElementPopupMenuContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_wX5ooAEGEeqBesOVFcy9cw" featurename="children" parentElementId="com.kms.katalon.menu.tools" positionInList="before:com.kms.katalon.composer.objectrepository.menu.testobject">
+    <elements xsi:type="menu:Menu" xmi:id="_9meiwAEGEeqBesOVFcy9cw" elementId="com.kms.katalon.composer.mobile.menu.ios" label="iOS">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_C_KesAEHEeqBesOVFcy9cw" elementId="com.kms.katalon.composer.mobile.handledmenuitem.iOSInstallDependencies" label="Install Dependencies" command="_Vm7EAAEHEeqBesOVFcy9cw"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_fdOVwAE-Eeq6aqGWteiljw" elementId="com.kms.katalon.composer.mobile.handledmenuitem.installwebdriveragent" label="Install WebDriverAgent" command="_S1jDkAE-Eeq6aqGWteiljw"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>

@@ -51,6 +51,14 @@ public class LicenseService {
             orgId = claims.get(LicenseConstants.ORGANIZATION_ID).asLong();
         } 
         license.setOrganizationId(orgId);
+
+        Claim testingClaim = claims.get(LicenseConstants.TESTING);
+        if (testingClaim != null) {
+            license.setTesting(claims.get(LicenseConstants.TESTING).asBoolean());
+        } else {
+            license.setTesting(false);
+        }
+
         license.setFeatures(claims.get(LicenseConstants.FEATURES).asList(Feature.class));
         license.setJwtCode(jws);
         return license;
