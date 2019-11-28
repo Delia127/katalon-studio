@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -82,7 +83,7 @@ public class ZendeskHTTPRequestHelper {
         HttpResponse response = doPost(API_CREATE_TICKET, new StringEntity(new Gson().toJson(request)),
                 additionalHeaders);
         HttpEntity resEntity = response.getEntity();
-        String responseContent = (resEntity != null ? EntityUtils.toString(resEntity) : "");
+        String responseContent = (resEntity != null ? EntityUtils.toString(resEntity, StandardCharsets.UTF_8) : "");
         if (response.getStatusLine().getStatusCode() != STATUS_CODE_CREATED) {
             throw new ZendeskRequestException(responseContent);
         }
@@ -144,7 +145,7 @@ public class ZendeskHTTPRequestHelper {
                 .addBinaryBody(BINARY_BODY_NAME, attachment, ContentType.create(CONTENT_TYPE_IMAGE_JPEG), fileName)
                 .build(), null);
         HttpEntity resEntity = response.getEntity();
-        String responseContent = (resEntity != null ? EntityUtils.toString(resEntity) : "");
+        String responseContent = (resEntity != null ? EntityUtils.toString(resEntity, StandardCharsets.UTF_8) : "");
         if (response.getStatusLine().getStatusCode() != STATUS_CODE_CREATED) {
             throw new ZendeskRequestException(responseContent);
         }
