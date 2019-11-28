@@ -51,6 +51,10 @@ public class LocalInformationUtil {
         return System.getProperty("java.vendor");
     }
 
+    public static String getErrorLog() {
+        return Platform.getLogFileLocation().toString();
+    }
+
     public static String getTotalMemoryInMegabyte() {
         try {
             long totalMem = SystemInformationUtil.totalPhysicalMemorySizeInByte();
@@ -92,7 +96,8 @@ public class LocalInformationUtil {
         LogUtil.logInfo("INFO: Katalon Version: " + getKatalonVersion());
         LogUtil.logInfo("INFO: Command-line arguments: " + maskSensitiveArgs());
         LogUtil.logInfo("INFO: User working dir: " + getUserDir());
-        LogUtil.logInfo("INFO: TestOps server URL: " + ApplicationInfo.getTestOpsServer());
+        LogUtil.logInfo("INFO: Error log: " + getErrorLog());
+        LogUtil.logInfo("INFO: Katalon TestOps server URL: " + ApplicationInfo.getTestOpsServer());
         LogUtil.logInfo("INFO: Katalon Store server URL: " + getKatalonStoreUrl());
         LogUtil.logInfo("INFO: User home: " + getUserHome());
         LogUtil.logInfo("INFO: Java vendor: " + javaVendor);
@@ -122,6 +127,14 @@ public class LocalInformationUtil {
             }
             if (arg.startsWith("-password=")) {
                 markedArgs.add("-password=******");
+                continue;
+            }
+            if (arg.startsWith("-apiKeyOP=")) {
+                markedArgs.add("-apiKeyOP=******");
+                continue;
+            }
+            if (arg.startsWith("-apiKeyOnPremise=")) {
+                markedArgs.add("-apiKeyOnPremise=******");
                 continue;
             }
             markedArgs.add(arg);

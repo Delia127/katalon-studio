@@ -140,12 +140,12 @@ public class WindowsInspectorController {
         this.streamHandler = streamHandler;
     }
 
-    public void startApplication(WindowsDriverConnector driverConnector, String appFile)
+    public void startApplication(WindowsDriverConnector driverConnector, String appFile, String applicationTitle)
             throws SeleniumException, IOException, URISyntaxException {
         String url = driverConnector.getWinAppDriverUrl();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(driverConnector.getDesiredCapabilities());
         Proxy proxy = ProxyUtil.getProxy(ProxyPreferences.getProxyInformation());
-        session = WindowsDriverFactory.startApplication(new URL(url), appFile, desiredCapabilities, proxy);
+        session = WindowsDriverFactory.startApplication(new URL(url), appFile, desiredCapabilities, proxy, applicationTitle);
     }
 
     public void resetDriver() {

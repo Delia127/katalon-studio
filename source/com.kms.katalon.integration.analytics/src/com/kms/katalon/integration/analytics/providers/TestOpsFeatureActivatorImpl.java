@@ -102,4 +102,14 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
             throw ex;
         }
     }
+
+    @Override
+    public boolean testConnection(String serverUrl) throws Exception {
+        try {
+            return AnalyticsApiProvider.testConnection(serverUrl);
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+        }
+        return false;
+    }
 }

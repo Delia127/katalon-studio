@@ -32,6 +32,8 @@ public class KeywordExecutor {
 
     public static final String CORE_BUILT_IN_KEYWORD_PACKAGE = "com.kms.katalon.core.keyword.builtin"
     
+    private static final String INTERNAL_SMART_WAIT_GROOVY_WRAPPER = "internalSmartWaitGroovyWrapper";
+    
     private static Map cachePlatforms
 
     private static Map<String, List<IKeyword>> cacheActions
@@ -57,6 +59,16 @@ public class KeywordExecutor {
         if (actions.length != 1) {
             throw new StepFailedException(MessageFormat.format(StringConstants.KEYWORD_X_DOES_NOT_EXIST_ON_PLATFORM_Y, [keyword, platform] as Object[]))
         }
+
+        if(platform.equals(PLATFORM_WEB)) {
+            IKeyword[] internalSmartWaitGroovyWrappers = getActions(PLATFORM_WEB,
+                    INTERNAL_SMART_WAIT_GROOVY_WRAPPER, getSuitablePackage(PLATFORM_WEB));
+                
+            if(internalSmartWaitGroovyWrappers.length == 1) {
+                internalSmartWaitGroovyWrappers[0].execute(keyword);
+            }
+        }
+
         return actions[0].execute(params)
     }
 

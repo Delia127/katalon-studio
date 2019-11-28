@@ -41,6 +41,47 @@ public class ComposerMobileMessageConstants extends NLS {
     public static String DIA_TITLE_ANDROID_DEVICES;
     
     public static String DIA_TITLE_IOS_DEVICES;
+    
+    // iOS
+    public static String MSG_IOS_INSTALL_DEPENDENCIES;
+
+    public static String MSG_IOS_INSTALL_DEPENDENCIES_TITLE;
+
+    public static String MSG_IOS_INSTALL_DEPENDENCIES_SUCCESSFULLY;
+
+    public static String MSG_IOS_INSTALL_DEPENDENCIES_FAILED;
+
+    public static String MSG_IOS_FAILED_TO_CHECK_MODULE_IS_INSTALLED;
+
+    public static String MSG_IOS_INSTALL_WEB_DRIVER_AGENT;
+
+    public static String MSG_IOS_INSTALL_WEB_DRIVER_AGENT_SUCCESSFULLY;
+
+    public static String MSG_IOS_INSTALL_WEB_DRIVER_AGENT_FAILED;
+
+    public static String DIA_TITLE_IOS_IDENTITIES;
+
+    public static String DIA_LBL_LOADING_IDENTITIES;
+
+    public static String DIA_MSG_NO_IDENTITY_FOUND;
+
+    public static String DIA_LBL_IDENTITY_TROUBLESHOOT;
+
+    public static String DIA_LNK_IDENTITY_TROUBLESHOOT;
+
+    public static String MSG_IOS_INSTALL_WEB_DRIVER_AGENT_TITLE;
+
+    public static String MSG_IOS_INSTALLING_WEB_DRIVER_AGENT;
+
+    public static String MSG_IOS_RUN_BOOTSTRAP;
+
+    public static String MSG_IOS_BUILD_WEB_DRIVER_AGENT_LIB;
+
+    public static String MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER;
+
+    public static String MSG_IOS_CANCELLED_WEB_DRIVER_AGENT_INSTALLATION;
+
+    public static String MSG_IOS_CANCELLED_DEPENDENCIES_INSTALLATION;
 
     static {
         // initialize resource bundle

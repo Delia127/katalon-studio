@@ -25,9 +25,11 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -40,6 +42,7 @@ import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
+import com.kms.katalon.execution.handler.ApiKeyOnPremiseHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -98,6 +101,10 @@ public class ConsoleMain {
 
     public static final String KATALON_TESTOP_SERVER = "serverUrl";
 
+    public static final String KATALON_API_KEY_ON_PREMISE_OPTION = "apiKeyOnPremise";
+
+    public static final String KATALON_API_KEY_ON_PREMISE_SECOND_OPTION = "apiKeyOP";
+
     private ConsoleMain() {
         // hide constructor
     }
@@ -141,6 +148,16 @@ public class ConsoleMain {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_SECOND_OPTION));
             }
 
+            String apiKeyOnPremiseValue = null;
+            if (options.has(KATALON_API_KEY_ON_PREMISE_OPTION)) {
+                apiKeyOnPremiseValue = String.valueOf(options.valueOf(KATALON_API_KEY_ON_PREMISE_OPTION));
+            }
+
+            if (options.has(KATALON_API_KEY_ON_PREMISE_SECOND_OPTION)) {
+                apiKeyOnPremiseValue = String.valueOf(options.valueOf(KATALON_API_KEY_ON_PREMISE_SECOND_OPTION));
+            }
+            ApiKeyOnPremiseHandler.setApiKeyOnPremiseToProject(apiKeyOnPremiseValue);
+
             LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_IN_ACTIVATING);
             
             if (!ActivationInfoCollector.isActivated()) {
@@ -160,15 +177,40 @@ public class ConsoleMain {
                         LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
                     }
                 }
-                
+
                 if (!isActivated) {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
+
+                    //Test connection
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    boolean testConnection = KatalonApplicationActivator.getFeatureActivator().testConnection(serverUrl);
+                    if (!testConnection) {
+                        LogUtil.logError(ExecutionMessageConstants.ACTIVATE_CANNOT_CONNECT_TO_SERVER);
+                        return LauncherResult.RETURN_CODE_FAILED_AND_ERROR;
+                    }
+
                     StringBuilder errorMessage = new StringBuilder();
                     isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
 
                     String error = errorMessage.toString();
                     if (StringUtils.isNotBlank(error)) {
                         LogUtil.printErrorLine(error);
+                    }
+
+                    if (!isActivated) {
+                        String server = LicenseInfo.getServerURL();
+                        String apiKey = LicenseInfo.getApiKey();
+
+                        if (!StringUtils.isEmpty(server) && !StringUtils.isEmpty(apiKey)) {
+                            LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER);
+                            ApplicationInfo.setTestOpsServer(server);
+                            errorMessage = new StringBuilder();
+                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                            error = errorMessage.toString();
+                            if (StringUtils.isNotBlank(error)) {
+                                LogUtil.printErrorLine(error);
+                            }
+                        }
                     }
 
                     if (!isActivated) {

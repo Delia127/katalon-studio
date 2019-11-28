@@ -19,6 +19,8 @@ public class License {
 
     private LicenseType licenseType;
 
+    private boolean testing;
+
     public Date getExpirationDate() {
         return expirationDate;
     }
@@ -73,6 +75,14 @@ public class License {
 
     public void setLicenseType(String licenseType) {
         this.licenseType = LicenseType.valueOf(licenseType);
+    }
+
+    public boolean isTesting() {
+        return testing;
+    }
+
+    public void setTesting(boolean testing) {
+        this.testing = testing;
     }
 
     public boolean isEngineLicense() {
