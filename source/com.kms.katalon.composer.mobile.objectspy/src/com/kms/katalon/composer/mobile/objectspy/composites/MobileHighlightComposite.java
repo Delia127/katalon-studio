@@ -29,6 +29,8 @@ import com.kms.katalon.core.testobject.MobileTestObject.MobileLocatorStrategy;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.repository.MobileElementEntity.LocatorStrategy;
 
+import io.appium.java_client.ios.IOSDriver;
+
 public class MobileHighlightComposite {
 
     private MobileElementInspectorDialog parentDialog;
@@ -50,7 +52,10 @@ public class MobileHighlightComposite {
         elementToolsComposite.setLayout(new GridLayout(2, false));
         elementToolsComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        btnHighlight = new Button(elementToolsComposite, SWT.NONE);
+        lblMessageVerifyObject = new Label(elementToolsComposite, SWT.WRAP | SWT.LEFT);
+        lblMessageVerifyObject.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
+
+        btnHighlight = new Button(elementToolsComposite, SWT.RIGHT);
         btnHighlight.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
         btnHighlight.setText(StringConstants.DIA_BTN_HIGHLIGHT);
         btnHighlight.setToolTipText(StringConstants.DIA_TOOLTIP_HIGHLIGHT_BUTTON);
@@ -61,9 +66,6 @@ public class MobileHighlightComposite {
                 findAndHighlightEditingElement();
             }
         });
-
-        lblMessageVerifyObject = new Label(elementToolsComposite, SWT.WRAP | SWT.RIGHT);
-        lblMessageVerifyObject.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
 
         return elementToolsComposite;
     }
@@ -90,7 +92,9 @@ public class MobileHighlightComposite {
                 List<Rectangle> elementRects = (List<Rectangle>) webElements.stream().map(webElement -> {
                     org.openqa.selenium.Point location = webElement.getLocation();
                     Dimension size = webElement.getSize();
-                    return new Rectangle(location.x * 2, location.y * 2, size.width * 2, size.height * 2);
+                    double ratio = parentDialog.getInspectorController().getDriver() instanceof IOSDriver ? 2 : 1;
+                    return new Rectangle(safeRoundDouble(location.x * ratio), safeRoundDouble(location.y * ratio),
+                            safeRoundDouble(size.width * ratio), safeRoundDouble(size.height * ratio));
                 }).collect(Collectors.toList());
 
                 parentDialog.highlightElementRects(elementRects);
@@ -106,6 +110,7 @@ public class MobileHighlightComposite {
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog("Unable to highlight element!", e.getMessage(),
                     ExceptionsUtil.getStackTraceForThrowable(e));
+            displayNotFoundMessage(locatorStrategyName, locator);
         } finally {
             isFinding = false;
             refreshButtonStates();
@@ -177,5 +182,10 @@ public class MobileHighlightComposite {
     private void refreshButtonStates() {
         boolean isEnableHightlightButton = !isFinding && editingElement != null;
         btnHighlight.setEnabled(isEnableHightlightButton);
+    }
+
+    private static int safeRoundDouble(double d) {
+        long rounded = Math.round(d);
+        return (int) Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, rounded));
     }
 }

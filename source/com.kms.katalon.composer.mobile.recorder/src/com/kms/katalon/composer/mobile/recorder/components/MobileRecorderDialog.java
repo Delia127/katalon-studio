@@ -231,7 +231,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         SashForm sashForm = createMainSashForm(container);
         sashForm.setBackground(ColorUtil.getCompositeBackgroundColorForSashform());
         populateSashForm(sashForm);
-        sashForm.setWeights(getSashFormChildsWeights());
+        sashForm.setWeights(new int[] { 5, 6 });
 
         return container;
     }
@@ -300,10 +300,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         layout.marginHeight = 0;
         layout.marginWidth = 0;
         return layout;
-    }
-
-    protected int[] getSashFormChildsWeights() {
-        return new int[] { 5, 4 };
     }
 
     /**
@@ -1086,6 +1082,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     @Override
     public void removeCapturedElement(CapturedMobileElement element) {
         capturedObjectsComposite.removeElement(element);
+        if (element == propertiesComposite.getEditingElement()) {
+            propertiesComposite.setEditingElement(null);
+            highlightElementComposite.setEditingElement(null);
+        }
     }
 
     @Override

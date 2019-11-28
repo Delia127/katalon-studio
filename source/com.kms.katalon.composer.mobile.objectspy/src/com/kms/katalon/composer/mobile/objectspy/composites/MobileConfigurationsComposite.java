@@ -39,7 +39,6 @@ public class MobileConfigurationsComposite extends Composite {
     private void createComposite(Composite parent) {
         setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         GridLayout glSettingComposite = new GridLayout(2, false);
-        glSettingComposite.horizontalSpacing = 10;
         setLayout(glSettingComposite);
 
         createCompositeLabel(this);

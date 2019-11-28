@@ -200,7 +200,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     @Override
     public void handleCapturedObjectsTableSelectionChange() {
-//        highlightElementComposite.setEditingElement(allObjectsComposite.get);
         capturedObjectsComposite.updateCheckAllCheckboxState();
         btnAdd.setEnabled(capturedObjectsComposite.isAnyElementChecked());
     }
@@ -229,6 +228,15 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         allObjectsComposite.refreshTree();
         capturedObjectsComposite.refresh();
+    }
+
+    @Override
+    public void removeCapturedElement(CapturedMobileElement element) {
+        capturedObjectsComposite.removeElement(element);
+        if (element == propertiesComposite.getEditingElement()) {
+            propertiesComposite.setEditingElement(null);
+            highlightElementComposite.setEditingElement(null);
+        }
     }
 
     @Override
@@ -852,11 +860,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     public void addCapturedElement(CapturedMobileElement element) {
         capturedObjectsComposite.addElement(element);
         propertiesComposite.focusAndEditCapturedElementName();
-    }
-
-    @Override
-    public void removeCapturedElement(CapturedMobileElement element) {
-        capturedObjectsComposite.removeElement(element);
     }
 
     @Override
