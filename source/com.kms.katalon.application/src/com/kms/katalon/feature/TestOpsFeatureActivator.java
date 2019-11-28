@@ -19,4 +19,6 @@ public interface TestOpsFeatureActivator {
     String getTestOpsMessage(String message);
 
     void deactivate(String serverUrl, String token, String machineId, Long orgId) throws Exception;
+    
+    boolean testConnection(String serverUrl) throws Exception;
 }

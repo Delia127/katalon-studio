@@ -130,13 +130,9 @@ public class AuthenticationDialog extends Dialog {
             }
         });
 
-        try {
-            serverUrl.setText(analyticsSettingStore.getServerEndpoint());
-            password.setText(analyticsSettingStore.getPassword());
-            email.setText(analyticsSettingStore.getEmail());
-        } catch (IOException | GeneralSecurityException e) {
-            LoggerSingleton.logError(e);
-        }
+        serverUrl.setText(analyticsSettingStore.getServerEndpoint());
+        password.setText(analyticsSettingStore.getPassword());
+        email.setText(analyticsSettingStore.getEmail());
 
         gdLblPassword.exclude = !showPassword;
         serverUrl.setEnabled(showPassword);

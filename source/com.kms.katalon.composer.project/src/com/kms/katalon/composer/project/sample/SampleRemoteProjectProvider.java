@@ -53,7 +53,7 @@ public class SampleRemoteProjectProvider {
             cachedProjects = new ArrayList<>(gson.fromJson(sampleProjectsJson, type));
             
             return cachedProjects;
-        } catch (IOException | URISyntaxException | GeneralSecurityException e) {
+        } catch (Exception e) {
             cachedProjects = Collections.emptyList();
             return cachedProjects;
         }

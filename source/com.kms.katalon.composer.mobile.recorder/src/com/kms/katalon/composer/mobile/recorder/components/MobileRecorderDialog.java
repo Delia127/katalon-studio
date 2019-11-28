@@ -14,6 +14,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -52,6 +53,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileAction;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionParamValueType;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileCapturedObjectsComposite;
 import com.kms.katalon.composer.mobile.objectspy.composites.MobileConfigurationsComposite;
@@ -73,9 +75,13 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesC
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
+import com.kms.katalon.composer.testcase.ast.dialogs.ArgumentInputBuilderDialog;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
+import com.kms.katalon.composer.testcase.model.InputParameterClass;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.core.exception.StepFailedException;
@@ -584,6 +590,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                 case TapAndHold:
                                     mobileActionHelper.tapAndHold(testObject);
                                     break;
+                                case Swipe:
+                                    handleSwipeAction(mobileActionHelper, mobileActionMapping);
+                                    break;
                                 default:
                                     break;
                             }
@@ -618,6 +627,41 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } catch (Exception e) {
             throw new MobileRecordException(e);
         }
+    }
+    
+    private void handleSwipeAction(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping)
+            throws Exception {
+        List<InputParameter> parameters = new ArrayList<>();
+        InputParameterClass integerParamType = new InputParameterClass(Integer.class);
+        ConstantExpressionWrapper defaultValue = new ConstantExpressionWrapper(0);
+        parameters.add(new InputParameter("startX", integerParamType, defaultValue));
+        parameters.add(new InputParameter("startY", integerParamType, defaultValue));
+        parameters.add(new InputParameter("endX", integerParamType, defaultValue));
+        parameters.add(new InputParameter("endY", integerParamType, defaultValue));
+        InputParameterBuilder parameterBuilder = InputParameterBuilder.createForNestedMethodCall(parameters);
+
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                ArgumentInputBuilderDialog inputDialog = new ArgumentInputBuilderDialog(getShell(), parameterBuilder,
+                        null);
+                inputDialog.open();
+            }
+        });
+
+        MobileActionParamValueType[] actionParams = mobileActionMapping.getData();
+        List<InputParameter> touchCoords = parameterBuilder.getOriginalParameters();
+        List<Integer> coords = new ArrayList<Integer>();
+        IntStream.range(0, actionParams.length).forEach(index -> {
+            coords.add((Integer) (((ConstantExpressionWrapper) touchCoords.get(index).getValue()).getValue()));
+            actionParams[index].setValue(touchCoords.get(index).getValue());
+        });
+
+        if (coords.stream().allMatch(coord -> coord == 0)) {
+            throw new CancellationException();
+        }
+
+        mobileActionHelper.swipe(coords.get(0), coords.get(1), coords.get(2), coords.get(3));
     }
 
     public MobileDriverType getCurrentMobileDriverType() {

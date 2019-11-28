@@ -115,6 +115,10 @@ public class URLBuilder {
         }
     }
     
+    public String getPath() {
+        return path;
+    }
+    
     public String buildString() {
         final StringBuilder sb = new StringBuilder();
         

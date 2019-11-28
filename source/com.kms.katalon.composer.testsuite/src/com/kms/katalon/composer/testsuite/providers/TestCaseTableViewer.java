@@ -99,10 +99,11 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
             addTestCase(testCase);
             return null;
         }
+        
         // check testCase is in list or not
-        if (testCasesPKs.contains(testCase.getId())) {
-            return null;
-        }
+//        if (testCasesPKs.contains(testCase.getId())) {
+//            return null;
+//        }
 
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 

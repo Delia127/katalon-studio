@@ -92,6 +92,8 @@ public class ActivationDialogV2 extends AbstractDialog {
     private License license;
 
     private Link lnkAgreeTerm;
+    
+    private Link lnkLearnAboutKSE;
 
     private Composite organizationComposite;
     
@@ -148,6 +150,13 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
         
+        lnkLearnAboutKSE.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+        
         lnkOfflineActivation2.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -159,7 +168,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String serverUrl = txtServerUrl.getText();
+                String serverUrl = txtServerUrl.getText().trim();
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
 
@@ -176,6 +185,13 @@ public class ActivationDialogV2 extends AbstractDialog {
                     UISynchronizeService.syncExec(() -> {
                         try {
                             StringBuilder errorMessage = new StringBuilder();
+                            boolean testConnection = KatalonApplicationActivator.getFeatureActivator().testConnection(serverUrl);
+                            if (!testConnection) {
+                                setProgressMessage(MessageConstants.ActivationDialogV2_MSG_CANNOT_CONNECT_TESTOPS, true);
+                                enableObject(true);
+                                return;
+                            }
+
                             licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
                             if (licenseResource != null) {
                                 license = licenseResource.getLicense();
@@ -191,15 +207,18 @@ public class ActivationDialogV2 extends AbstractDialog {
                                 } else {
                                     enableObject(true);
                                     setProgressMessage(errorMessage.toString(), true);
+                                    ActivationInfoCollector.sendTrackingForActivate(username, machineId, false, errorMessage);
                                 }
                             } else {
                                 enableObject(true);
                                 setProgressMessage(errorMessage.toString(), true);
+                                ActivationInfoCollector.sendTrackingForActivate(username, machineId, false, errorMessage);
                             }
                         } catch (Exception ex) {
                             LogUtil.logError(ex);
                             setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
                             enableObject(true);
+                            ActivationInfoCollector.sendTrackingForActivate(username, machineId, false, new StringBuilder().append(ex));
                         }
                     });
                 });
@@ -243,16 +262,18 @@ public class ActivationDialogV2 extends AbstractDialog {
                     close();
 
                     String message = licenseResource.getMessage();
-
+                    StringBuilder errorMessage = new StringBuilder();
                     if (!StringUtils.isEmpty(message)) {
+                        errorMessage.append(message);
                         WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
                         warningLicenseDialog.open();
                     }
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+                    ActivationInfoCollector.sendTrackingForActivate(email, machineId, true, errorMessage);
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
                     LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                    ActivationInfoCollector.sendTrackingForActivate(email, machineId, false, new StringBuilder().append(e));
                 }
             });
         });
@@ -269,19 +290,19 @@ public class ActivationDialogV2 extends AbstractDialog {
                 try {
                     ActivationInfoCollector.markActivated(email, password, org, license);
                     close();
-
                     String message = licenseResource.getMessage();
-
+                    StringBuilder errorMessage = new StringBuilder();
                     if (!StringUtils.isEmpty(message)) {
+                        errorMessage.append(message);
                         WarningLicenseDialog warningLicenseDialog = new WarningLicenseDialog(Display.getCurrent().getActiveShell(), message);
                         warningLicenseDialog.open();
                     }
-
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+                    ActivationInfoCollector.sendTrackingForActivate(email, machineId, true, errorMessage);
                 } catch (Exception e) {
                     enableObject(true);
                     btnSave.setEnabled(false);
                     LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                    ActivationInfoCollector.sendTrackingForActivate(email, machineId, false, new StringBuilder().append(e));
                 }
             });
         });
@@ -324,6 +345,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                             break;
                     }
                 } catch (Exception e) {
+                    ActivationInfoCollector.sendTrackingForActivate(txtEmail.getText(), machineId, false, new StringBuilder().append(e));
                     LogUtil.logError(e);
                     setProgressMessage("", false);
                     MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),
@@ -343,7 +365,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         int selectionIndex = 0;
         for (int i = 0; i < organizations.size(); i++) {
             AnalyticsOrganization organization = organizations.get(i);
-            if (organization.getRole().equals(AnalyticsOrganizationRole.USER)) {
+            if ("USER".equals(organization.getRole())) {
                 selectionIndex = i;
                 return selectionIndex;
             }
@@ -363,7 +385,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     @Override
     protected void setInput() {
-        txtServerUrl.setText(ApplicationInfo.getTestOpsServer());
+        txtServerUrl.setText(ApplicationInfo.getDefaultTestOpsServer());
         btnActivate.setEnabled(validateInput());
     }
 
@@ -414,6 +436,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         txtEmail = new Text(contentComposite, SWT.BORDER);
         txtEmail.setLayoutData(gdText);
+        txtEmail.setFocus();
 
         Label lblPassword = new Label(contentComposite, SWT.NONE);
         lblPassword.setLayoutData(gdLabel);
@@ -439,7 +462,9 @@ public class ActivationDialogV2 extends AbstractDialog {
         activateComposite.setLayout(gdLogInComposite);
 
         lblProgressMessage = new Label(activateComposite, SWT.NONE);
-        lblProgressMessage.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+        GridData gdStatus = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        gdStatus.heightHint = 40;
+        lblProgressMessage.setLayoutData(gdStatus);
 
         Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
         activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
@@ -519,10 +544,13 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         Composite bottomTerm = new Composite(buttonBar, SWT.NONE);
         bottomTerm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridLayout gdBottomBarTerm = new GridLayout(2, false);
+        GridLayout gdBottomBarTerm = new GridLayout(1, false);
         gdBottomBarTerm.marginWidth = 10;
         gdBottomBarTerm.marginHeight = 0;
         bottomTerm.setLayout(gdBottomBarTerm);
+        
+        lnkLearnAboutKSE = new Link(bottomTerm, SWT.WRAP);
+        lnkLearnAboutKSE.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KSE);
         
         lnkAgreeTerm = new Link(bottomTerm, SWT.WRAP);
         lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);

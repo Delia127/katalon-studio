@@ -545,4 +545,160 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
             throws StepFailedException {
         return (List<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "findElements", windowsObject);
     }
+
+    /**
+     * Finds and attaches the opening application window that describes by the given windowsObject 
+     * to the working WindowsDriver session on the current desktop. 
+     * This keyword should use when:
+     * <ul>
+     *  <li>The main application window has been closed and replaced by another window.</li>
+     *  <li>The application has multiple working windows. We can switch among these windows.</li>
+     *  <li>We already have an opened application and need to switch to without reopening requires</li>
+     * </ul>
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find the opening application. 
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
+     * @return The WindowsDriver after Katalon Studio attaches successfully.
+     * @throws StepFailedException
+     * If Katalon Studio could not find any window that matches with the given windowsObject.
+     * @since 7.1.0
+     */
+    @SuppressWarnings("unchecked")
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
+    public static WindowsDriver<WebElement> switchToWindow(WindowsTestObject windowsObject, FailureHandling flowControl) throws StepFailedException {
+        return (WindowsDriver<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "switchToWindow", windowsObject, flowControl);
+    }
+    
+    /**
+     * Finds and attaches the opening application window that describes by the given windowsObject 
+     * to the working WindowsDriver session on the current desktop. 
+     * This keyword should use when:
+     * <ul>
+     *  <li>The main application window has been closed and replaced by another window.</li>
+     *  <li>The application has multiple working windows. We can switch among these windows.</li>
+     *  <li>We already have an opened application and need to switch to without reopening requires</li>
+     * </ul>
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find the opening application.
+     * 
+     * @return The WindowsDriver after Katalon Studio switches successfully.
+     * @throws StepFailedException
+     * If Katalon Studio could not find any window that matches with the given windowsObject.
+     * @since 7.1.0
+     */
+    @SuppressWarnings("unchecked")
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
+    public static WindowsDriver<WebElement> switchToWindow(WindowsTestObject windowsObject) throws StepFailedException {
+        return (WindowsDriver<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "switchToWindow", windowsObject);
+    }
+
+    /**
+     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title. 
+     * This keyword should use when:
+     * <ul>
+     *  <li>The main application window has been closed and replaced by another window.</li>
+     *  <li>The application has multiple working windows. We can switch among these windows.</li>
+     *  <li>We already have an opened application and need to switch to without reopening requires</li>
+     * </ul>
+     * 
+     * @param windowName
+     * Title or name of the opening application windows. Full text or partial text is acceptable.
+     * 
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * 
+     * @return The WindowsDriver after Katalon Studio switches successfully.
+     * @throws StepFailedException
+     * If Katalon Studio could not find any window that matches with the given name.
+     * @since 7.1.0
+     */
+    @SuppressWarnings("unchecked")
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
+    public static WindowsDriver<WebElement> switchToWindowTitle(String windowName, FailureHandling flowControl) throws StepFailedException {
+        return (WindowsDriver<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "switchToWindowTitle", windowName, flowControl);
+    }
+
+    /**
+     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title. 
+     * This keyword should use when:
+     * <ul>
+     *  <li>The main application window has been closed and replaced by another window.</li>
+     *  <li>The application has multiple working windows. We can switch among these windows.</li>
+     *  <li>We already have an opened application and need to switch to without reopening requires</li>
+     * </ul>
+     * 
+     * @param windowTitle
+     * Title of the opening application windows. Full text or partial text is acceptable.
+     * 
+     * @return The WindowsDriver after Katalon Studio switches successfully.
+     * @throws StepFailedException
+     * If Katalon Studio could not find any window that matches with the given title.
+     * @since 7.1.0
+     */
+    @SuppressWarnings("unchecked")
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
+    public static WindowsDriver<WebElement> switchToWindowTitle(String windowTitle) throws StepFailedException {
+        return (WindowsDriver<WebElement>) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "switchToWindowTitle", windowTitle);
+    }
+
+    /**
+     * Starts Windows driver and starts the Windows application at the given absolute path.
+     * After the application starts, if WinAppDriver cannot not detect the main application window correctly, Katalon Studio will use
+     * the given windowTitle to find the opened application to continue working.
+     * 
+     * @param appFile
+     * Absolute path to the Windows application.
+     * @param windowTitle
+     * Title of the opening application windows. Full text or partial text is acceptable.
+     * 
+     * @throws StepFailedException
+     * If KS could not start Windows Driver, could not start the application, the application file doesn't exist or there is no application maches
+     * with the given windowTitle
+     * @since 7.1.0
+     */
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
+    public static void startApplicationWithTitle(String appFile, String windowTitle, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "startApplicationWithTitle", appFile, windowTitle, flowControl);
+    }
+
+    /**
+     * Starts Windows driver and starts the Windows application at the given absolute path.
+     * After the application starts, if WinAppDriver cannot not detect the main application window correctly, Katalon Studio will use
+     * the given windowTitle to find the opened application to continue working.
+     * 
+     * @param appFile
+     * Absolute path to the Windows application.
+     * @param windowTitle
+     * Title of the opening application windows. Full text or partial text is acceptable.
+     * 
+     * @throws StepFailedException
+     * If KS could not start Windows Driver, could not start the application, the application file doesn't exist or there is no application maches
+     * with the given windowTitle
+     * @since 7.1.0
+     */
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
+    public static void startApplicationWithTitle(String appFile, String windowTitle) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "startApplicationWithTitle", appFile, windowTitle);
+    }
 }

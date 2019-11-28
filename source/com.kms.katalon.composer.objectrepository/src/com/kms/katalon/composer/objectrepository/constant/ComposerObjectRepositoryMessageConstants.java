@@ -93,6 +93,8 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
 
     public static String DIA_UNUSED_TEST_OBJECT_DELETE_MESSAGE;
     
+    public static String ADAP_MENU_CONTEXT_OPEN_TEST_OBJECT;
+    
     // ObjectPropertyView
     public static String VIEW_ITEM_TIP_ADD_NEW_PROPERTY;
 

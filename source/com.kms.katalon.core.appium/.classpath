@@ -6,7 +6,7 @@
 	<classpathentry exported="true" kind="lib" path="resources/lib/commons-validator-1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="resources/lib/slf4j-api-1.7.25.jar"/>
 	<classpathentry exported="true" kind="lib" path="resources/lib/spring-context-5.1.0.RELEASE.jar"/>
-	<classpathentry exported="true" kind="lib" path="resources/lib/java-client-7.0.0.jar" sourcepath="/var/folders/y_/wqvglkk962b4gr6d5s3rjj8c0000gp/T/.org.sf.feeling.decompiler1573188385159/source/java-client-7.0.0-sources-1573188974244.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/java-client-7.0.0.jar" sourcepath="/var/folders/y_/wqvglkk962b4gr6d5s3rjj8c0000gp/T/.org.sf.feeling.decompiler1574133585827/source/java-client-7.0.0-sources-1574134448158.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
