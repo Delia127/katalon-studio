@@ -218,6 +218,12 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String MSG_FAIL_TO_UPDATE_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER;
     
+    public static final String MSG_TERMINATING_WEB_DRIVER = MessageConstants.MSG_TERMINATING_WEB_DRIVER;
+    
+    public static final String DIA_TITLE_TERMINATE_WEB_DRIVER = MessageConstants.DIA_TITLE_TERMINATE_WEB_DRIVER;
+    
+    public static final String MSG_USER_CANCEL_WEB_DRIVER_TERMINATION = MessageConstants.MSG_USER_CANCEL_WEB_DRIVER_TERMINATION;
+    
     public static final String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
     
     public static final String MSG_FAIL_TO_KILL_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_KILL_WEB_DRIVER;
