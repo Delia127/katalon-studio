@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.logging.LogManager;
 import com.kms.katalon.logging.LogMode;
@@ -201,7 +203,10 @@ public class ApplicationInfo {
     }
 
     public static void setTestOpsServer(String serverUrl) {
-        setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, serverUrl, true);
+        RunningMode runMode = ApplicationRunningMode.get();
+        if (runMode == RunningMode.GUI) { 
+            setAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER, serverUrl, true);
+        }
         TestOpsServerURL.set(serverUrl);
     }
 
@@ -220,21 +225,19 @@ public class ApplicationInfo {
         String serverFromMemory = TestOpsServerURL.get();
         String server = serverFromMemory;
         if (StringUtils.isEmpty(serverFromMemory)) {
-            server = getAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
-        }
-        if (StringUtils.isEmpty(server)) {
-            server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
-        }
-        if (StringUtils.isEmpty(server)) {
-            server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
-        }
-        if (server.endsWith("/")) {
-            server = server.substring(0, server.length() - 1);
-        }
+            RunningMode runMode = ApplicationRunningMode.get();
+            if (runMode == RunningMode.GUI) { 
+                server = getAppProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+            }
+            if (StringUtils.isEmpty(server)) {
+                server = System.getProperty(ApplicationStringConstants.KATALON_TESTOPS_SERVER);
+            }
+            if (StringUtils.isEmpty(server)) {
+                server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
+            }
 
-        // If server from memory is null
-        // make sure that after the server URL is always received from memory 
-        if (StringUtils.isEmpty(serverFromMemory)) {
+            // If server from memory is null
+            // make sure that after the server URL is always received from memory 
             TestOpsServerURL.set(server);
         }
         return server;

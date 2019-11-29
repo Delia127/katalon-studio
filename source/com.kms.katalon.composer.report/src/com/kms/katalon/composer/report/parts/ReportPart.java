@@ -853,13 +853,22 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         MenuItem accessKAMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
         uploadMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
 
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        
         accessKAMenuItem.setText(ComposerReportMessageConstants.BTN_ACCESSKA);
         accessKAMenuItem.setID(0);
         accessKAMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Trackings.trackOpenKAIntegration("report");
-                Program.launch(ApplicationInfo.getTestOpsServer());
+                try {
+                    String serverUrl = analyticsSettingStore.getServerEndpoint();
+                    Program.launch(serverUrl);
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
+                }
             }
         });
 
@@ -914,22 +923,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             LoggerSingleton.logError(ex);
             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
                     ex.getMessage());
-            try {
-                analyticsSettingStore.enableIntegration(false);
-            } catch (IOException e1) {
-                LoggerSingleton.logError(e1);
-            }
         }
     }
     
     private void uploadReportHandle(AnalyticsSettingStore analyticsSettingStore) throws IOException {
         UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell);
-        analyticsSettingStore.enableIntegration(true);
         int returnCode = uploadSelectionDialog.open();
         if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
             uploadToKatalonTestOps();
-        } else {
-            analyticsSettingStore.enableIntegration(false);
         }
     }
 
@@ -943,7 +944,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
                         monitor.worked(1);
                         ReportFolder reportFolder = new ReportFolder(testSuiteLogRecord.getLogFolder());
-                        analyticsReportService.upload(reportFolder);
+                        analyticsReportService.uploadManually(reportFolder);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
                         monitor.worked(2);
                     } catch (final AnalyticsApiExeception ex) {

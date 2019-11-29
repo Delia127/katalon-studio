@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -208,7 +209,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         
         propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
         propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, LicenseUtil.isNotFreeLicense());
-        initializePluginPresence("com.katalon.katalon-studio-smart-xpath", propertyMap);
+        
+//        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
+        
+        propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, LicenseUtil.isNotFreeLicense());
         
         return propertyMap;
     }

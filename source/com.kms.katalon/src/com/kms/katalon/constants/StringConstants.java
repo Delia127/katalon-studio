@@ -197,16 +197,36 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String MSG_PLUGIN_HAS_BEEN_UNINSTALLED = MessageConstants.MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
 
+    public static final String KStore_ERROR_INVALID_CREDENTAILS = MessageConstants.KStore_ERROR_INVALID_CREDENTAILS;
+
+    public static final String KStore_MSG_INVALID_CREDENTAILS = MessageConstants.KStore_MSG_INVALID_CREDENTAILS;
+
+    public static final String TITLE_WARNING = MessageConstants.TITLE_WARNING;
+
+    public static final String BTN_CANCEL = MessageConstants.BTN_CANCEL;
+
+    public static final String BTN_REACTIVATE = MessageConstants.BTN_REACTIVATE;
+
     // PluginPreferencePage
     public static final String PAGE_LBL_PLUGIN_DIRECTORY = MessageConstants.PAGE_LBL_PLUGIN_DIRECTORY;
     
     public static final String PAGE_BTN_BROWSE_FOLDER = MessageConstants.PAGE_BTN_BROWSE_FOLDER;
+    
+    public static final String DIA_TITLE_UPDATE_WEBDRIVER = MessageConstants.DIA_TITLE_UPDATE_WEBDRIVER;
     
     public static final String MSG_UPDATING_WEB_DRIVER = MessageConstants.MSG_UPDATING_WEB_DRIVER;
     
     public static final String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static final String MSG_FAIL_TO_UPDATE_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    public static final String MSG_USER_CANCEL_UPDATE = MessageConstants.MSG_USER_CANCEL_UPDATE;
+    
+    public static final String MSG_TERMINATING_WEB_DRIVER = MessageConstants.MSG_TERMINATING_WEB_DRIVER;
+    
+    public static final String DIA_TITLE_TERMINATE_WEB_DRIVER = MessageConstants.DIA_TITLE_TERMINATE_WEB_DRIVER;
+    
+    public static final String MSG_USER_CANCEL_WEB_DRIVER_TERMINATION = MessageConstants.MSG_USER_CANCEL_WEB_DRIVER_TERMINATION;
     
     public static final String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
     
@@ -252,9 +272,13 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ABOUT_BTN_OK = MessageConstants.About_BTN_OK;
 
     public static final String ABOUT_LBL_TRIAL = MessageConstants.About_LBL_TRIAL;
-    
+
+    public static final String ABOUT_MSG_CHECKING_VERSION = MessageConstants.About_MSG_CHECKING_VERSION;
+
+    public static final String About_MSG_CHECKING_EXPIRATION_DATE = MessageConstants.About_MSG_CHECKING_EXPIRATION_DATE;
+
+    public static final String About_MSG_CANNOT_GET_EXPIRATION_DATE = MessageConstants.About_MSG_CANNOT_GET_EXPIRATION_DATE;
+
     // ProxyConfigurationDialog
     public static final String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG = MessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
-
-    public static final String ABOUT_LBL_CHECKING_VERSION = MessageConstants.About_LBL_CHECKING_VERSION;
 }

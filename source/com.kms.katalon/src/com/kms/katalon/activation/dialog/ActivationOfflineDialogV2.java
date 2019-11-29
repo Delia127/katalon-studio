@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
@@ -122,18 +123,31 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                 setProgressMessage(MessageConstants.ActivationDialogV2_MSG_ACTIVATING, false);
                 StringBuilder errorMessage = new StringBuilder();
                 String licenseFilePath = txtLicenseFile.getText();
-                
+
                 try {
                     String activationCode = FileUtils.readFileToString(new File(licenseFilePath));
-                    boolean result = ActivationInfoCollector.activateOffline(activationCode, errorMessage, ApplicationRunningMode.get());
-                    if (result == true) {
-                        setReturnCode(OK);
-                        close();
-                    } else {
-                        setProgressMessage(errorMessage.toString(), true);
+
+                    StringBuilder messageTestingLicense = new StringBuilder();
+                    if (ActivationInfoCollector.checkTestingLicense(activationCode, messageTestingLicense)) {
+                        String message = messageTestingLicense.toString();
+                        if (ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_CORRECT.equals(message)) {
+                            setProgressMessage(message, false);
+                        } else {
+                            setProgressMessage(message, true);
+                        }
                         btnActivate.setEnabled(true);
+                    } else {
+                        boolean result = ActivationInfoCollector.activateOffline(activationCode, errorMessage, ApplicationRunningMode.get());
+                        if (result == true) {
+                            setReturnCode(OK);
+                            close();
+                        } else {
+                            setProgressMessage(errorMessage.toString(), true);
+                            btnActivate.setEnabled(true);
+                        }
                     }
-                } catch (IOException ex) {
+
+                } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
                     setProgressMessage(ex.getMessage(), true);
                 }
@@ -267,12 +281,12 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     }
 
     private void setProgressMessage(String message, boolean isError) {
-        lblProgressMessage.setText(message);
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
         } else {
             lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
+        lblProgressMessage.setText(message);
         lblProgressMessage.getParent().layout();
     }
 

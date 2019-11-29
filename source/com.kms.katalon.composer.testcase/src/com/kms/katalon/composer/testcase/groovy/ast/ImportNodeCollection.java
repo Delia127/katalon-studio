@@ -153,14 +153,19 @@ public class ImportNodeCollection {
         SIMPLE_IMPORT, SIMPLE_STATIC_IMPORT, STAR_IMPORT, STATIC_STAR_IMPORT;
 
         private static ImportNodeStatistics evaluate(ImportNodeWrapper newImportWrapper) {
-            int value = (booleanToInt(newImportWrapper.isStatic()) & 1 >> 0)
-                    | (booleanToInt(newImportWrapper.isStar()) & 1 >> 1);
-            return ImportNodeStatistics.values()[value];
+            if (newImportWrapper.isStatic() && newImportWrapper.isStar()) {
+                return STATIC_STAR_IMPORT;
+            }
+            
+            if (newImportWrapper.isStar()) {
+                return STAR_IMPORT;
+            }
+            
+            if (newImportWrapper.isStatic()) {
+                return SIMPLE_STATIC_IMPORT;
+            }
+            
+            return SIMPLE_IMPORT;
         }
-
-        private static int booleanToInt(boolean b) {
-            return b ? 1 : 0;
-        }
-
     }
 }
