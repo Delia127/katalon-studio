@@ -2,10 +2,10 @@ package com.kms.katalon.objectspy.util;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,6 +32,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -38,7 +41,6 @@ import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
-import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -46,6 +48,8 @@ import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.util.collections.Pair;
 
 public class WebElementUtils {
+    private static final String SCREENSHOT_PATH = "/Screenshots/Targets";
+
     private static final String PAGE_ELEMENT_NAME_PREFIX = "Page_";
 
     private static final String FRAME_ELEMENT_NAME_PREFIX = "Frame_";
@@ -248,7 +252,40 @@ public class WebElementUtils {
         return el;
     }
 
-    private static List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocatorSettings() {
+	/**
+	 * Take screenshot of the given
+	 * {@link com.kms.katalon.objectspy.element.WebElement} and store it in the
+	 * default folder ProjectFolder/screenshots/targets.
+	 * 
+	 * Note that this has a different signature than
+	 * {@link WebUiCommonHelper#saveWebElementScreenshot(WebDriver, org.openqa.selenium.WebElement, String, String)}
+	 * in term of WebElement's type
+	 * 
+	 * @param driver
+	 *            Current running {@link WebDriver} instance
+	 * @param el
+	 *            The given {@link com.kms.katalon.objectspy.element.WebElement}
+	 * @return An absolute path to the screenshot if available, otherwise empty
+	 *         string
+	 */
+    public static String takeScreenShotForImageBasedObjectRecognition(WebDriver driver, WebElement el) {
+        String currentProjectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        File imageFolder = new File(currentProjectLocation + SCREENSHOT_PATH);
+        imageFolder.mkdirs();
+        TestObject testObject = WebElementUtils.buildTestObject(el);
+        By selectorMethod = WebUiCommonHelper.buildLocator(testObject);
+        return Optional.ofNullable(driver.findElement(selectorMethod)).map(element -> {
+            try {
+                return WebUiCommonHelper.saveWebElementScreenshotAndResize(driver, element, el.getName(),
+                        imageFolder.getAbsolutePath());
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+            return StringUtils.EMPTY;
+        }).get();
+    }
+
+	private static List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocatorSettings() {
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
                 ProjectController.getInstance().getCurrentProject());
         try {
