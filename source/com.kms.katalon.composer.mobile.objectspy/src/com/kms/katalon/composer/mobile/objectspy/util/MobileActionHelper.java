@@ -124,6 +124,17 @@ public class MobileActionHelper {
         }
     }
 
+    public String getText(TestObject to) throws Exception {
+        KeywordHelper.checkTestObjectParameter(to);
+        WebElement element = findElement(to, timeout * 1000);
+        if (element == null) {
+            KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()),
+                    flowControl, null);
+            return null;
+        }
+        return element.getText();
+    }
+
     public void setText(TestObject to, String text) throws Exception {
         KeywordHelper.checkTestObjectParameter(to);
         WebElement element = findElement(to, timeout * 1000);
