@@ -181,7 +181,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                     setProgressMessage("", false);
                 });
             });
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
             enableUpload(false);

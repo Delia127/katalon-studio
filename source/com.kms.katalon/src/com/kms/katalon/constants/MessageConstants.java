@@ -125,6 +125,10 @@ public class MessageConstants extends NLS {
 
     public static String BTN_SAVE;
 
+    public static String BTN_CANCEL;
+
+    public static String BTN_REACTIVATE;
+
     public static String WAITTING_MESSAGE;
 
     public static String LINK_OPEN_ACTIVATE_FORM_OFFLINE;
@@ -287,6 +291,10 @@ public class MessageConstants extends NLS {
 
     public static String HAND_IMPORT_SELENIUM_IDE_MSG_ERROR;
 
+    public static String URL_KATALON_PRICING;
+
+    public static String TOOLTIP_SUBSCRIPTION;
+
     // CheckForUpdateHandler
     public static String HAND_MSG_UP_TO_DATE;
 
@@ -341,7 +349,9 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
     
     public static String ActivationDialogV2_MSG_GETTING_LICENSE_KEY;
-    
+
+    public static String ActivationDialogV2_MSG_CANNOT_CONNECT_TESTOPS;
+
     public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;
@@ -494,6 +504,12 @@ public class MessageConstants extends NLS {
     
     public static String KStorePluginsDialog_LBL_HELP;
 
+    public static String KStore_ERROR_INVALID_CREDENTAILS;
+
+    public static String KStore_MSG_INVALID_CREDENTAILS;
+
+    public static String TITLE_WARNING;
+
     public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 
     public static String HAND_INFO_NO_PLUGINS_FOUND;
@@ -521,11 +537,21 @@ public class MessageConstants extends NLS {
     
     public static String PAGE_BTN_BROWSE_FOLDER;
     
+    public static String DIA_TITLE_UPDATE_WEBDRIVER;
+    
     public static String MSG_UPDATING_WEB_DRIVER;
     
     public static String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static String MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    public static String MSG_USER_CANCEL_UPDATE;
+    
+    public static String MSG_TERMINATING_WEB_DRIVER;
+    
+    public static String DIA_TITLE_TERMINATE_WEB_DRIVER;
+    
+    public static String MSG_USER_CANCEL_WEB_DRIVER_TERMINATION;
     
     public static String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
     
@@ -551,11 +577,15 @@ public class MessageConstants extends NLS {
     public static String About_BTN_OK;
 
     public static String About_LBL_TRIAL;
-    
+
+    public static String About_MSG_CHECKING_VERSION;
+
+    public static String About_MSG_CHECKING_EXPIRATION_DATE;
+
+    public static String About_MSG_CANNOT_GET_EXPIRATION_DATE;
+
     // ProxyConfigurationDialog
     public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
-
-    public static String About_LBL_CHECKING_VERSION;
 
     // Account
     public static String Account_LOGIN_AS;

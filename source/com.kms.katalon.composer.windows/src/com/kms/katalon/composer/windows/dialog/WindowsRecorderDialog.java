@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.WebDriverException;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
@@ -417,6 +418,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                             MultiStatusErrorDialog.showErrorDialog(
                                     "Unable to perform action: " + action.getReadableName(), e.getMessage(),
                                     ExceptionsUtil.getStackTraceForThrowable(e));
+                            LoggerSingleton.logError(e);
                         }
                     });
                 })
@@ -692,7 +694,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
                 WindowsActionHelper actionHelper = new WindowsActionHelper(appSession);
                 actionHelper.closeApp();
             }
-        } catch (NoSuchWindowException exception) {
+        } catch (WebDriverException exception) {
             // The application is already closed
         }
         Thread thread = new Thread(new Runnable() {

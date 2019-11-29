@@ -689,7 +689,8 @@ public class QTestIntegrationTestSuiteManager {
                     String[] testCaseHrefCut = testRunLink.getHref().split("test-cases/")[1]
                             .split(Pattern.quote("?versionId="));
                     qTestRun.setQTestCaseId(Long.parseLong(testCaseHrefCut[0]));
-                    qTestRun.setTestCaseVersionId(Long.parseLong(testCaseHrefCut[1]));
+                    
+                    qTestRun.setTestCaseVersionId(Long.parseLong(testCaseHrefCut[1].split("&")[0]));
                     break;
                 }
             }

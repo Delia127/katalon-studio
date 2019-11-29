@@ -7,6 +7,8 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
+import com.kms.katalon.composer.components.impl.providers.CellLayoutInfo;
+import com.kms.katalon.composer.components.impl.providers.DefaultCellLayoutInfo;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -14,6 +16,7 @@ import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
@@ -27,12 +30,16 @@ public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabe
     public static final int CLM_ID_IDX = 1;
 
     public static final int CLM_EVN_IDX = 2;
+    
+    public static final int CLM_PROFILE_IDX = 3;
 
-    public static final int CLM_STATUS_IDX = 3;
+    public static final int CLM_STATUS_IDX = 4;
 
-    public static final int CLM_FAILED_TESTS_IDX = 4;
+    public static final int CLM_FAILED_TESTS_IDX = 5;
 
-    public static final int CLM_ACTION_IDX = 5;
+    public static final int CLM_ACTION_IDX = 6;
+    
+    private static final int DF_TABLE_CELL_MARGIN = 5;
 
     public ReportCollectionTableLabelProvider(int columnIndex) {
         super(columnIndex);
@@ -48,6 +55,8 @@ public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabe
         switch (columnIndex) {
             case CLM_EVN_IDX:
                 return getImageForRunConfigurationColumn(element.getRunConfigDescription());
+            case CLM_PROFILE_IDX:
+                return ImageConstants.IMG_16_PROFILE;
         }
         return null;
     }
@@ -67,6 +76,10 @@ public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabe
             case CLM_EVN_IDX: {
                 return element.getRunConfigDescription().getRunConfigurationId();
             }
+            case CLM_PROFILE_IDX: {
+                return element.getRunConfigDescription().getProfileName();
+            }
+            
             case CLM_STATUS_IDX: {
                 TestSuiteLogRecord logRecord = getTestSuiteLogRecord(element.getReportLocation());
                 if (logRecord == null) {
@@ -77,6 +90,7 @@ public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabe
                 }
                 return StringConstants.COMPLETE;
             }
+
             case CLM_FAILED_TESTS_IDX: {
                 TestSuiteLogRecord logRecord = getTestSuiteLogRecord(element.getReportLocation());
                 if (logRecord == null) {
@@ -144,5 +158,15 @@ public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabe
     @Override
     protected String getElementToolTipText(ReportItemDescription element) {
         return StringUtils.defaultIfEmpty(getText(element), null);
+    }
+    
+    @Override
+    public CellLayoutInfo getCellLayoutInfo() {
+        return new DefaultCellLayoutInfo() {
+            @Override
+            public int getLeftMargin() {
+                return DF_TABLE_CELL_MARGIN;
+            }
+        };
     }
 }

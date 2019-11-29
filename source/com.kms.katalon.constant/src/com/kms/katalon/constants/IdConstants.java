@@ -244,6 +244,8 @@ public interface IdConstants {
     public static final String XERCES_BUNDLE_ID = "org.apache.xerces.impl";
 
     public static final String XML_APIS_BUNDLE_ID = "xml-apis";
+    
+    public static final String KATALON_SMART_XPATH_BUNDLE_ID = "com.katalon.katalon-studio-smart-xpath";
 
     public static final String COMPOSER_EXECUTION_BUNDLE_ID = "com.kms.katalon.composer.execution";
 

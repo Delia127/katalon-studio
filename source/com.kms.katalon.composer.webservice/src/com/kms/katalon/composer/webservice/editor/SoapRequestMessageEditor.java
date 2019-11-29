@@ -70,7 +70,13 @@ public class SoapRequestMessageEditor extends Composite {
         });
 
         mirrorEditor.addListener(SWT.Modify, event -> {
-            servicePart.setDirty(true);
+            WebServiceRequestEntity requestBodySoap = (WebServiceRequestEntity) servicePart.getOriginalWsObject()
+                    .clone();
+            if (requestBodySoap.getSoapBody().equals(mirrorEditor.getText())) {
+                servicePart.setDirty(false);
+            } else {
+                servicePart.setDirty(true);
+            }
         });
     }
 

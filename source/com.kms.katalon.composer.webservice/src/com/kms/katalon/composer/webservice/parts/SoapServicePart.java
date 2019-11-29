@@ -344,7 +344,7 @@ public class SoapServicePart extends WebServicePart {
 
         // requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
         requestBodyEditor.setInput((WebServiceRequestEntity) originalWsObject.clone());
-        dirtyable.setDirty(false);
+        setDirty(false);
     }
 
     private SourceViewer createXMLSourceViewer(Composite parent) {

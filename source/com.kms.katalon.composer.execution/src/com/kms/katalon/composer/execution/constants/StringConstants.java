@@ -312,8 +312,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEAM = ComposerExecutionMessageConstants.DIA_TITLE_TEAM;
     
     public static final String DIA_TITLE_PROJECT = ComposerExecutionMessageConstants.DIA_TITLE_PROJECT;
-    
-    public static final String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT = ComposerExecutionMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
 
     // TestSuiteSelectionDialog
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerExecutionMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;

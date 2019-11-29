@@ -105,7 +105,7 @@ public class AddElementToObjectRepositoryDialog extends AbstractDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(400, 400);
+        return new Point(super.getInitialSize().x, 400);
     }
 
     private Object[] getTreeInput() {
