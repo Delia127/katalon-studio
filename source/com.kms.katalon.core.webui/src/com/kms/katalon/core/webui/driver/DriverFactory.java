@@ -264,7 +264,7 @@ public class DriverFactory {
                 .getDriverPreferencesProperties(RunConfiguration.REMOTE_DRIVER_PROPERTY);
         DesiredCapabilities desireCapibilities = null;
         if (driverPreferenceProps != null) {
-            desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps);
+            desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, driver);
         }
 
         WebDriver webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities, url);
