@@ -60,11 +60,11 @@ public class KobitonPreferencesProvider {
     
     public static String getKobitonToken() {
         String kobitonToken = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN);
+        try {
+            // Console mode: we just passed username and password. So, we need to generate token automatically.
+            if (StringUtils.isEmpty(kobitonToken)) {
+                KobitonLoginInfo loginInfo;
 
-        // Console mode: we just passed username and password. So, we need to generate token automatically.
-        if (StringUtils.isEmpty(kobitonToken)) {
-            KobitonLoginInfo loginInfo;
-            try {
                 loginInfo = KobitonApiProvider.login(getKobitonUserName(), getKobitonPassword());
                 kobitonToken = loginInfo.getToken();
                 KobitonPreferencesProvider.saveKobitonToken(loginInfo.getToken());
@@ -73,12 +73,16 @@ public class KobitonPreferencesProvider {
                     KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
                 }
 
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Authentication kobiton system failed !", e);
+            } else {
+                List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
+                if (!apiKeys.isEmpty()) {
+                    KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
+                }
             }
-        }
 
+        } catch (Exception e) {
+            throw new RuntimeException("Authentication kobiton system failed !", e);
+        }
         return kobitonToken;
     }
     
