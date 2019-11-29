@@ -48,7 +48,7 @@ import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.util.collections.Pair;
 
 public class WebElementUtils {
-    private static final String SCREENSHOT_PATH = "/screenshots/targets";
+    private static final String SCREENSHOT_PATH = "/Screenshots/Targets";
 
     private static final String PAGE_ELEMENT_NAME_PREFIX = "Page_";
 

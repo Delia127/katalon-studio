@@ -38,25 +38,31 @@ public class ImageLocatorController {
      * Retrieve image at the given path, then look for similar images using
      * Sikuli. Given a matched image's position, use the coordinates to retrieve
      * the corresponding web elements, then sort ascending in size differences
-     * with the target image.
+     * with the target image. 
      * 
      * @param webDriver
      * @param pathToScreenshot
+     * @param timeout 
      * @return A list of {@link WebElement} whose visuals match the specified image and are sorted ascending in size
      * differences with the target image
      */
-    public static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot) {
+    public static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot, int timeout) {
         ScreenUtil screen = new ScreenUtil(0.2);
         logger.logInfo("Attempting to find element by its screenshot !");
         Map<ScreenRegion, List<WebElement>> mapOfCandidates = new HashMap<ScreenRegion, List<WebElement>>();
         int iterationCount = 0;
-        int viewPortHeight = 100;
         int scrolledAmount = 0;
         int pageScrollHeight = getPageScrollHeight(webDriver);
         logger.logDebug("Page Scroll Height: " + pageScrollHeight);
+        float timeCount = 0;
+        long miliseconds = System.currentTimeMillis();
         do {
             try {
-                scrolledAmount = iterationCount * viewPortHeight;
+                int viewHeight = ((Number) ((JavascriptExecutor) webDriver).executeScript("return window.innerHeight"))
+                        .intValue();
+                int imageHeight = ImageIO.read(new File(pathToScreenshot)).getHeight();
+                logger.logInfo(viewHeight + " , " + imageHeight);
+                scrolledAmount = iterationCount * Math.abs(viewHeight - imageHeight);
                 if (!scroll(webDriver, scrolledAmount)) {
                     break;
                 }
@@ -75,11 +81,15 @@ public class ImageLocatorController {
                         yRelativeToDriver);
                 sortMinimizingDifferencesInSize(elementsAtPointXandY, matchedRegion);
                 mapOfCandidates.put(matchedRegion, elementsAtPointXandY);
+                timeCount += ((System.currentTimeMillis() - miliseconds) / 1000);
+                Thread.sleep(500);
+                timeCount += 0.5;
+                miliseconds = System.currentTimeMillis();
             } catch (Exception e) {
                 logger.logInfo("Unable to find element within the current viewport !");
             }
             iterationCount++;
-        } while (scrolledAmount <= pageScrollHeight);
+        } while (scrolledAmount <= pageScrollHeight || timeCount < timeout);
         logger.logDebug("Highest matched region's score: " + getHighestMatchedRegionScore(mapOfCandidates));
         debug_printChosenWebElement(pathToScreenshot, webDriver, mapOfCandidates);
         try {
@@ -93,7 +103,7 @@ public class ImageLocatorController {
     private static void debug_printChosenWebElement(String pathToScreenshot, WebDriver webDriver,
             Map<ScreenRegion, List<WebElement>> mapOfCandidates) {
         File screenshotFile = new File(pathToScreenshot);
-        File targetFolder = new File(screenshotFile.getParentFile().getAbsolutePath() + "/matched-web-elements");
+        File targetFolder = new File(screenshotFile.getParentFile().getAbsolutePath() + "/Matched Elements");
         targetFolder.mkdirs();
         try {
             saveWebElementScreenshot(webDriver, getWebElementOfHighestMatchedRegion(mapOfCandidates),
@@ -190,18 +200,6 @@ public class ImageLocatorController {
         double widthDiff = Math.abs(element.getRect().getWidth() - matchedRegion.getBounds().getWidth());
         double heightDiff = Math.abs(element.getRect().getHeight() - matchedRegion.getBounds().getHeight());
         return widthDiff + heightDiff;
-    }
-
-    /**
-     * Calling {@link ImageLocatorController#findElementByScreenShot(WebDriver, String)} and then
-     * get the first element from the list or null otherwise
-     * 
-     * @param webDriver
-     * @param pathToScreenshot
-     * @return An {@link WebElement} whose visuals match the specified image the most
-     */
-    public static WebElement findElementByScreenshot(WebDriver webDriver, String pathToScreenshot) {
-        return findElementByScreenShot(webDriver, pathToScreenshot).stream().findFirst().orElse(null);
     }
 
     /**

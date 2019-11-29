@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
@@ -26,6 +27,7 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
             reportProps.put(DriverFactory.ACTION_DELAY, webUiSettingStore.getActionDelay());
             reportProps.put(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                     webUiSettingStore.getIgnorePageLoadTimeout());
+            reportProps.put(RunConfiguration.IMAGE_RECOGNITION_ENABLED, webUiSettingStore.getImageRecognitionEnabled());
         } catch (IOException e) {
             LogUtil.logError(e);
         }

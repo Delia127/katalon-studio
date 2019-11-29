@@ -113,6 +113,10 @@ public class RunConfiguration {
     public static final String GLOBAL_SMART_WAIT_MODE = "globalSmartWaitEnabled";
     
     public static final String LOG_TEST_STEPS = "logTestSteps";
+
+    public static final String ALLOW_IMAGE_RECOGNITION = "allowImageRecognition";
+
+    public static final String IMAGE_RECOGNITION_ENABLED = "imageRecognitionEnabled";
     
     private static String settingFilePath;
 
@@ -579,5 +583,10 @@ public class RunConfiguration {
     		return String.valueOf(object);
     	}
     	return null;
+    }
+    
+    public static boolean shouldApplyImageRecognition() {
+        return Boolean.TRUE.equals(getProperty(ALLOW_IMAGE_RECOGNITION))
+                && Boolean.TRUE.equals(getExecutionGeneralProperties().getOrDefault(IMAGE_RECOGNITION_ENABLED, true));
     }
 }
