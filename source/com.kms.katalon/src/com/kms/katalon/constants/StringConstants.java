@@ -212,11 +212,15 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String PAGE_BTN_BROWSE_FOLDER = MessageConstants.PAGE_BTN_BROWSE_FOLDER;
     
+    public static final String DIA_TITLE_UPDATE_WEBDRIVER = MessageConstants.DIA_TITLE_UPDATE_WEBDRIVER;
+    
     public static final String MSG_UPDATING_WEB_DRIVER = MessageConstants.MSG_UPDATING_WEB_DRIVER;
     
     public static final String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static final String MSG_FAIL_TO_UPDATE_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    public static final String MSG_USER_CANCEL_UPDATE = MessageConstants.MSG_USER_CANCEL_UPDATE;
     
     public static final String MSG_TERMINATING_WEB_DRIVER = MessageConstants.MSG_TERMINATING_WEB_DRIVER;
     
