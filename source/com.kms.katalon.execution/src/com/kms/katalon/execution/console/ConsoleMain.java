@@ -198,10 +198,13 @@ public class ConsoleMain {
                     }
 
                     if (!isActivated) {
-                        String server = LicenseInfo.getServerURL().trim();
-                        String apiKey = LicenseInfo.getApiKey().trim();
+                        String server = LicenseInfo.getServerURL();
+                        String apiKey = LicenseInfo.getApiKey();
 
                         if (!StringUtils.isEmpty(server) && !StringUtils.isEmpty(apiKey)) {
+                            server = server.trim();
+                            apiKey = apiKey.trim();
+
                             LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER);
                             ApplicationInfo.setTestOpsServer(server);
 
