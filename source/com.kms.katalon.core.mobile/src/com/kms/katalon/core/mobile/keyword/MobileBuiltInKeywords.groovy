@@ -550,15 +550,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Tap on an mobile element
-     * 
      * @param to
      *      represent a mobile element
-     * 
      * @param timeout
      *      system will wait at most timeout (seconds) to return result
-     * 
      * @param flowControl
-     * 
      * @throws StepFailedException
      */
     @CompileStatic
