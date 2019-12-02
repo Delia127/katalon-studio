@@ -37,6 +37,7 @@ import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
+import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 
@@ -521,6 +522,54 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Performs a double tap action on a mobile element.
+     * 
+     * @param to
+     *      Represent a mobile element.
+     * 
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     * 
+     * @param flowControl
+     *          Optional parameter: Used to control the step if the step failed.
+     *          <ul>
+     *              <li>STOP_ON_FAILURE: throws a StepFailedException if the step failed (default).</li>
+     *              <li>CONTINUE_ON_FAILURE: continue the test if the test failed but the test result is still failed.</li>
+     *              <li>OPTIONAL: continue the test and ignore the test result.</li>
+     *          </ul>
+     * 
+     * @throws StepFailedException
+     *          On the mobile element doesn't exist, or KS could not perform a double tap action on the element.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void doubleTap(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "doubleTap", to, timeout, flowControl)
+    }
+
+    /**
+     * Performs a double tap action on a mobile element.
+     * 
+     * @param to
+     *      Represent a mobile element.
+     * 
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     * 
+     * @throws StepFailedException
+     *          On the mobile element doesn't exist, or KS could not perform a double tap action on the element.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void doubleTap(TestObject to, int timeout) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "doubleTap", to, timeout)
+    }
+
+    /**
      * Tap and hold on a mobile element for a duration
      * @param to
      *      represent a mobile element
@@ -551,6 +600,54 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static void tapAndHold(TestObject to, Number duration, int timeout) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "tapAndHold", to, duration, timeout)
+    }
+
+    /**
+     * Performs a long-press action on a mobile element.
+     * 
+     * @param to
+     *          Represent a mobile element.
+     * 
+     * @param timeout
+     *          System will wait at most timeout (seconds) to return result.
+     * 
+     * @param flowControl
+     *          Optional parameter: Used to control the step if the step failed.
+     *          <ul>
+     *              <li>STOP_ON_FAILURE: throws a StepFailedException if the step failed (default).</li>
+     *              <li>CONTINUE_ON_FAILURE: continue the test if the test failed but the test result is still failed.</li>
+     *              <li>OPTIONAL: continue the test and ignore the test result.</li>
+     *          </ul>
+     * 
+     * @throws StepFailedException
+     *          On the mobile element doesn't exist, or KS could not perform a long-press action on the element.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void longPress(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "longPress", to, timeout, flowControl)
+    }
+
+    /**
+     * Performs a long-press action on a mobile element.
+     * 
+     * @param to
+     *          Represent a mobile element.
+     * 
+     * @param timeout
+     *          System will wait at most timeout (seconds) to return result.
+     * 
+     * @throws StepFailedException
+     *          On the mobile element doesn't exist, or KS could not perform a long-press action on the element.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void longPress(TestObject to, int timeout) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "longPress", to, timeout)
     }
 
     /**
@@ -1832,5 +1929,177 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static void sendKeys(TestObject to, String strokeKeys) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "sendKeys", to, strokeKeys)
+    }
+    
+    /**
+     * Finds the mobile element that is recognized by the given image.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @return
+     * The first found WebElement that is recognized by the given image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static WebElement findImageElement(String imageFilePath, FailureHandling flowControl) throws StepFailedException {
+        return (WebElement) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "findImageElement", imageFilePath, flowControl)
+    }
+
+    /**
+     * Finds the mobile element that is recognized by the given image.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @return
+     * The first found WebElement that is recognized by the given image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static WebElement findImageElement(String imageFilePath) throws StepFailedException {
+        return (WebElement) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "findImageElement", imageFilePath)
+    }
+    
+    /**
+     * Finds all mobile elements that are recognized by the given image.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @return
+     * A list of WebElement that is recognized by the given image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static List findImageElements(String imageFilePath, FailureHandling flowControl) throws StepFailedException {
+        return (List) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "findImageElements", imageFilePath, flowControl)
+    }
+
+    /**
+     * Finds all mobile elements that are recognized by the given image.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @return
+     * A list of WebElement that is recognized by the given image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static List findImageElements(String imageFilePath) throws StepFailedException {
+        return (List) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "findImageElements", imageFilePath)
+    }
+
+    /**
+     * Finds the webElement that is recognized by the given image then taps on the found element's location.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void tapOnImage(String imageFilePath, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "tapOnImage", imageFilePath, flowControl)
+    }
+
+    /**
+     * Finds the mobile element that is recognized by the given image and taps on the found element's location.
+     *  
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void tapOnImage(String imageFilePath) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "tapOnImage", imageFilePath)
+    }
+    
+    /**
+     * Verifies the given image that presents on the device screen or not.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @return
+     * true if the image presents. Otherwise, false in-case flowControl is OPTIONAL
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyImagePresent(String imageFilePath, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyImagePresent", imageFilePath, flowControl)
+    }
+   
+    /**
+     * Verifies the given image that presents on the device screen or not.
+     *
+     * @param imageFilePath
+     * Absolute path of the image.
+     * @return
+     * true if the image presents. Otherwise, false in-case the default FailureHandling is OPTIONAL
+     * @throws StepFailedException
+     * If the image file doesn't exist on system file or Katalon Studio could not find the image on the current screen.
+     *
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyImagePresent(String imageFilePath) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyImagePresent", imageFilePath)
     }
 }

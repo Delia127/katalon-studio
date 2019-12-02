@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.text.Format;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -51,6 +52,10 @@ public class ActivationInfoCollector {
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
     public static final String DEFAULT_REASON = ApplicationMessageConstants.LICENSE_INVALID;
+
+    private static final String DEFAULT_LICENSE_FOLDER = "license";
+
+    private static final String DEFALUT_LICENSE_EXTENSION = "lic";
 
     private static boolean activated = false;
 
@@ -355,6 +360,62 @@ public class ActivationInfoCollector {
         return null;
     }
 
+    public static boolean checkTestingLicense(String activationCode, StringBuilder errorMessage) throws Exception {
+        License testingLicense = parseTestingLicense(activationCode);
+        if (testingLicense != null) {
+            if (testingLicense.isTesting()) {
+                boolean isValidMachineId = hasValidMachineId(testingLicense);
+                if (isValidMachineId) {
+                    RunningMode runMode = ApplicationRunningMode.get();
+                    if (runMode == RunningMode.CONSOLE && testingLicense.isEngineLicense()) { 
+                        errorMessage.append(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_CORRECT);
+                        return true;
+                    }
+                    if (runMode == RunningMode.GUI && testingLicense.isKSELicense()) { 
+                        errorMessage.append(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_CORRECT);
+                        return true;
+                    }
+                } else {
+                    errorMessage.append(ApplicationMessageConstants.TESTING_LICENSE_MACHINE_ID_INCORRECT);
+                    return true;
+                }
+                errorMessage.append(ApplicationMessageConstants.LICENSE_INVALID);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static License parseTestingLicense(String jwtCode) throws Exception {
+        try {
+            if (jwtCode != null && !jwtCode.isEmpty()) {
+                License license = LicenseService.getInstance().parseJws(jwtCode);
+                if (license.isTesting()) {
+                    return license;
+                }
+            }
+        } catch (Exception ex) {
+            LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+            throw ex;
+        }
+        return null;
+    }
+
+    private static License parseLicense(String jwtCode, String licenseFileName) throws Exception {
+        try {
+            if (jwtCode != null && !jwtCode.isEmpty()) {
+                License license = LicenseService.getInstance().parseJws(jwtCode);
+                if (isValidLicense(license, licenseFileName)) {
+                    return license;
+                }
+            }
+        } catch (Exception ex) {
+            LogUtil.logError(ex, ApplicationMessageConstants.KSE_ACTIVATE_INFOR_INVALID);
+            throw ex;
+        }
+        return null;
+    }
+    
     private static License parseLicense(String jwtCode) throws Exception {
         try {
             if (jwtCode != null && !jwtCode.isEmpty()) {
@@ -444,11 +505,56 @@ public class ActivationInfoCollector {
             return false;
         }
     }
+    
+    private static boolean isValidLicense(License license, String licenseFileName) {
+        boolean isValidMachineId = hasValidMachineId(license);
+        boolean isExpired = isExpired(license);
+
+        RunningMode runMode = ApplicationRunningMode.get();
+
+        if (license.isTesting()) {
+            if (isValidMachineId) {
+                if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) {
+                    LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.TESTING_LICENSE_WITH_FILENAME_CORRECT, licenseFileName));
+                } else  if (runMode == RunningMode.GUI && license.isKSELicense()) {
+                    LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.TESTING_LICENSE_WITH_FILENAME_CORRECT, licenseFileName));
+                }
+            } else {
+                LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.TESTING_LICENSE_WITH_FILENAME_INCORRECT, licenseFileName));
+            }
+        } else {
+            if (isValidMachineId && !isExpired && !license.isTesting()) {
+                if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) { 
+                    return true;
+                }
+                if (runMode == RunningMode.GUI && license.isKSELicense()) { 
+                    return true;
+                }
+                if (runMode == RunningMode.CONSOLE) {
+                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.LICENSE_INVALID_KSE_USE_TO_KRE, licenseFileName));
+                } else if (runMode == RunningMode.GUI) {
+                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.LICENSE_INVALID_KRE_USE_TO_KSE, licenseFileName));
+                } else {
+                    LogUtil.logError(DEFAULT_REASON);
+                }
+            } else {
+                if (!isValidMachineId) {
+                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.LICENSE_INCORRECT_MACHINE_ID, licenseFileName));
+                }
+
+                if (isExpired) {
+                    LogUtil.logError(MessageFormat.format(ApplicationMessageConstants.LICENSE_EXPIRED_WITH_FILE_NAME, licenseFileName));
+                }
+            }
+        }
+        return false;
+    }
 
     private static boolean isValidLicense(License license) {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
-        if (isValidMachineId && !isExpired) {
+
+        if (isValidMachineId && !isExpired && !license.isTesting()) {
             RunningMode runMode = ApplicationRunningMode.get();
             if (runMode == RunningMode.CONSOLE && license.isEngineLicense()) { 
                 return true;
@@ -688,18 +794,20 @@ public class ActivationInfoCollector {
     public static Set<String> findValidEngineOfflineLinceseCodes() {
         Set<String> validActivationCodes = new HashSet<>();
         try {
-            File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
-            LogUtil.logInfo("Finding valid offline licenses in folder: " + licenseFolder.getAbsolutePath());
+            File licenseFolder = new File(ApplicationInfo.userDirLocation(), DEFAULT_LICENSE_FOLDER);
+            LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.RE_FIND_VAILD_OFFLINE_LICENSE_IN_FOLDER, licenseFolder.getAbsolutePath()));
             if (licenseFolder.exists() && licenseFolder.isDirectory()) {
                 Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
                         .filter(p -> Files.isRegularFile(p)
-                                && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals("lic"))
+                                && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals(DEFALUT_LICENSE_EXTENSION))
                         .forEach(p -> {
                             try {
                                 File licenseFile = p.toFile();
+                                LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.RE_START_CHECK_LICENSE, licenseFile.getName()));
                                 String activationCode = FileUtils.readFileToString(licenseFile);
-                                License license = parseLicense(activationCode);
+                                License license = parseLicense(activationCode, licenseFile.getName());
                                 if (license != null && license.isEngineLicense() && isOffline(license)) {
+                                    LogUtil.logInfo(MessageFormat.format(ApplicationMessageConstants.RE_LICENSE_FILE_VAILD, licenseFile.getName()));
                                     validActivationCodes.add(activationCode);
                                 }
                             } catch (Exception e) {

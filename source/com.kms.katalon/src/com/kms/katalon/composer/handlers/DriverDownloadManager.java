@@ -11,6 +11,10 @@ import com.kms.katalon.execution.webui.driver.SeleniumWebDriverProvider;
 public class DriverDownloadManager {
 
     public static void downloadDriver(WebUIDriverType typeDriver) throws InterruptedException, IOException {
+        downloadDriver(typeDriver, null, null);
+    }
+
+    public static void downloadDriver(WebUIDriverType typeDriver, File logFile, File errorLogFile) throws InterruptedException, IOException {
 
         switch (typeDriver) {
         case CHROME_DRIVER: {
@@ -19,6 +23,8 @@ public class DriverDownloadManager {
                 String chromeDriverPath = SeleniumWebDriverProvider.getChromeDriverPath();
     
                 WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
+                webDriverManagerRunConfiguration.setLogFile(logFile);
+                webDriverManagerRunConfiguration.setErrorLogFile(errorLogFile);
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.CHROME_DRIVER,
                         new File(chromeDriverPath).getParentFile());
             }
@@ -29,6 +35,8 @@ public class DriverDownloadManager {
                 String firefoxDriverPath = SeleniumWebDriverProvider.getGeckoDriverPath();
 
                 WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
+                webDriverManagerRunConfiguration.setLogFile(logFile);
+                webDriverManagerRunConfiguration.setErrorLogFile(errorLogFile);
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.FIREFOX_DRIVER,
                         new File(firefoxDriverPath).getParentFile());
             }
@@ -39,6 +47,8 @@ public class DriverDownloadManager {
                 String ieDriverPath = SeleniumWebDriverProvider.getIEDriverPath();
 
                 WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
+                webDriverManagerRunConfiguration.setLogFile(logFile);
+                webDriverManagerRunConfiguration.setErrorLogFile(errorLogFile);
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.IE_DRIVER,
                         new File(ieDriverPath).getParentFile());
             }
@@ -49,6 +59,8 @@ public class DriverDownloadManager {
                 String edgeDriverPath = SeleniumWebDriverProvider.getEdgeDriverPath();
 
                 WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
+                webDriverManagerRunConfiguration.setLogFile(logFile);
+                webDriverManagerRunConfiguration.setErrorLogFile(errorLogFile);
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.EDGE_DRIVER,
                         new File(edgeDriverPath).getParentFile());
             }

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.file.UserFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -22,6 +23,15 @@ public class UserFileController extends EntityController {
     }
     
     private UserFileController() {        
+    }
+    
+    public UserFileEntity getUserFileEntity(String userFilePath, ProjectEntity projectEntity)
+            throws ControllerException {
+        try {
+            return getDataProviderSetting().getUserFileDataProvider().getUserFileEntity(userFilePath,projectEntity);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
     
     public List<FileEntity> getChildren(FolderEntity parentFolder) throws ControllerException {

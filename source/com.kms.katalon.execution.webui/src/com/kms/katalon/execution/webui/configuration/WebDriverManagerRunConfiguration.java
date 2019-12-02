@@ -2,6 +2,7 @@ package com.kms.katalon.execution.webui.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,10 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 public class WebDriverManagerRunConfiguration {
 
     private static final String GECKO_RELEASES_JSON = "https://raw.githubusercontent.com/katalon-studio/katalon-studio/master/gecko-releases.json";
+    
+    private File logFile;
+
+    private File errorLogFile;
 
     public File getWebDriverManagerFatJar() throws IOException {
         if (Platform.inDevelopmentMode()) {
@@ -53,7 +58,12 @@ public class WebDriverManagerRunConfiguration {
         commands.add(webdriverFatJarFile.getName());
         commands.add(getDriverName(webUIDriverType));
         ProcessBuilder builder = new ProcessBuilder(commands).directory(new File(webdriverFatJarFile.getParent()));
-        builder.inheritIO();
+        if (getLogFile() != null) {
+            builder.redirectOutput(Redirect.appendTo(getLogFile()));
+        }
+        if (getErrorLogFile() != null) {
+            builder.redirectError(Redirect.appendTo(getErrorLogFile()));
+        }
         if (!builder.start().waitFor(120, TimeUnit.SECONDS)) {
             throw new IOException("Process Timeout");
         }
@@ -101,5 +111,21 @@ public class WebDriverManagerRunConfiguration {
                 }
         }
         return StringUtils.EMPTY;
+    }
+
+    public File getErrorLogFile() {
+        return errorLogFile;
+    }
+
+    public void setErrorLogFile(File errorLogFile) {
+        this.errorLogFile = errorLogFile;
+    }
+
+    public File getLogFile() {
+        return logFile;
+    }
+
+    public void setLogFile(File logFile) {
+        this.logFile = logFile;
     }
 }

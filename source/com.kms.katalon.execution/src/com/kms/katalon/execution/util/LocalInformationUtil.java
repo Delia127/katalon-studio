@@ -97,7 +97,7 @@ public class LocalInformationUtil {
         LogUtil.logInfo("INFO: Command-line arguments: " + maskSensitiveArgs());
         LogUtil.logInfo("INFO: User working dir: " + getUserDir());
         LogUtil.logInfo("INFO: Error log: " + getErrorLog());
-        LogUtil.logInfo("INFO: TestOps server URL: " + ApplicationInfo.getTestOpsServer());
+        LogUtil.logInfo("INFO: Katalon TestOps server URL: " + ApplicationInfo.getTestOpsServer());
         LogUtil.logInfo("INFO: Katalon Store server URL: " + getKatalonStoreUrl());
         LogUtil.logInfo("INFO: User home: " + getUserHome());
         LogUtil.logInfo("INFO: Java vendor: " + javaVendor);

@@ -43,6 +43,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 public class WindowsAppComposite {
 
     private static final String PREF_LAST_STARTED_APP = "lastStartedApp";
+    
+    private static final String PREF_LAST_STARTED_WINDOW_TITLE = "lastStartedWindowTitle";
 
     private static final String[] FILTER_FILE_NAMES = new String[] { "Windows Executable Files (*.exe)",
             "All Files (*.*)" };
@@ -58,6 +60,8 @@ public class WindowsAppComposite {
     private Label lblDriverConnector;
 
     private ScopedPreferenceStore store;
+
+    private Text txtApplicationTitle;
 
     public Composite createComposite(Composite parent, int type, WindowsObjectDialog parentDialog) {
         this.parentDialog = parentDialog;
@@ -153,6 +157,14 @@ public class WindowsAppComposite {
             }
         });
 
+        Label lblWindowTitle = new Label(composite, SWT.NONE);
+        lblWindowTitle.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        lblWindowTitle.setText("Application Title");
+        lblWindowTitle.setToolTipText("Title of the main application main window");
+
+        txtApplicationTitle = new Text(composite, SWT.BORDER);
+        txtApplicationTitle.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
         return composite;
     }
 
@@ -177,6 +189,7 @@ public class WindowsAppComposite {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         final WindowsDriverConnector driverConnector = getDriverConnector(projectDir);
         String appFile = txtAppFile.getText();
+        String appTitle = txtApplicationTitle.getText();
         IRunnableWithProgress processToRun = new IRunnableWithProgress() {
 
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
@@ -185,8 +198,9 @@ public class WindowsAppComposite {
                 progressDlg.runAndWait(new Callable<Object>() {
 
                     public Object call() throws Exception {
-                        controller.startApplication(driverConnector, appFile);
+                        controller.startApplication(driverConnector, appFile, appTitle);
                         store.setValue(PREF_LAST_STARTED_APP, appFile);
+                        store.setValue(PREF_LAST_STARTED_WINDOW_TITLE, appTitle);
                         return null;
                     }
                 });
@@ -196,8 +210,9 @@ public class WindowsAppComposite {
         };
 
         progressDlg.run(true, true, processToRun);
-        WindowsActionMapping actionMapping = new WindowsActionMapping(WindowsAction.StartApplication, null);
-        actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(txtAppFile.getText()));
+        WindowsActionMapping actionMapping = new WindowsActionMapping(WindowsAction.StartApplicationWithTitle, null);
+        actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(appFile));
+        actionMapping.getData()[1].setValue(new ConstantExpressionWrapper(appTitle));
         return actionMapping;
     }
 
@@ -214,6 +229,9 @@ public class WindowsAppComposite {
             store = PreferenceStoreManager.getPreferenceStore(WindowsAppComposite.class);
             String appPath = store.getString(PREF_LAST_STARTED_APP);
             txtAppFile.setText(StringUtils.defaultString(appPath));
+            
+            String windowTitle = store.getString(PREF_LAST_STARTED_WINDOW_TITLE);
+            txtApplicationTitle.setText(StringUtils.defaultString(windowTitle));
             updateRunConfigurationDetails();
         } catch (IOException e) {
             throw new InvocationTargetException(e);
