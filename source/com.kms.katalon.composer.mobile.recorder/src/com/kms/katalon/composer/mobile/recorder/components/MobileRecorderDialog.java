@@ -619,6 +619,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                     mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
                                     mobileActionHelper.setText(testObject, textInput);
                                     break;
+                                case ScrollToText:
+                                    handleScrollToText(mobileActionHelper, mobileActionMapping);
+                                    break;
                                 case SwitchToLandscape:
                                     mobileActionHelper.switchToLandscape();
                                     break;
@@ -668,6 +671,27 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } catch (Exception e) {
             throw new MobileRecordException(e);
         }
+    }
+
+    private void handleScrollToText(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping ) throws Exception {
+        final StringBuilder stringBuilder = new StringBuilder();
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                InputDialog inputDialog = new InputDialog(getShell(),
+                        MobileRecoderMessagesConstants.DLG_TITLE_TEXT_INPUT,
+                        MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null);
+                if (inputDialog.open() == Window.OK) {
+                    stringBuilder.append(inputDialog.getValue());
+                }
+            }
+        });
+        String textInput = stringBuilder.toString();
+        if (textInput.isEmpty()) {
+            throw new CancellationException();
+        }
+        mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
+        mobileActionHelper.scrollToText(textInput);
     }
 
     private void handleSwipeAction(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping)
