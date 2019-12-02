@@ -104,6 +104,17 @@ public class GlobalVariableFileServiceManager {
         }
     }
 
+    public static ExecutionProfileEntity getById(String id, ProjectEntity project) throws DALException {
+        try {
+            FolderEntity parentFolder = FolderFileServiceManager.getProfileRoot(project);
+            String name = id.replace(parentFolder.getId(), "").replace(File.pathSeparator, "").replace(
+                    ExecutionProfileEntity.getGlobalVariableFileExtension(), "");
+            return get(name, project);
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
     public static ExecutionProfileEntity newProfile(String newName, boolean defaultProfile, ProjectEntity project)
             throws DALException {
         return newProfile(newName, defaultProfile, Collections.emptyList(), project);

@@ -8,7 +8,8 @@ Bundle-ClassPath: .,
  resources/lib/jna-3.0.9.jar
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.annotation;version="1.2.0",
+Import-Package: com.kms.katalon.composer.components.log,
+ javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.swt,
@@ -42,4 +43,5 @@ Export-Package: com.kms.katalon.execution.mobile.configuration,
  com.kms.katalon.execution.mobile.device,
  com.kms.katalon.execution.mobile.driver,
  com.kms.katalon.execution.mobile.exception,
+ com.kms.katalon.execution.mobile.identity,
  com.kms.katalon.execution.mobile.util

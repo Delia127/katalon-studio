@@ -21,6 +21,11 @@ public class ConsoleCommandExecutor {
     }
 
     public static List<String> runConsoleCommandAndCollectResults(String[] command,
+            Map<String, String> addtionalEnvironmentVariables, boolean redirectErrorStream) throws IOException, InterruptedException {
+        return runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables, StringUtils.EMPTY, redirectErrorStream);
+    }
+
+    public static List<String> runConsoleCommandAndCollectResults(String[] command,
             Map<String, String> addtionalEnvironmentVariables, String directory, boolean redirectErrorStream)
             throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder(command);

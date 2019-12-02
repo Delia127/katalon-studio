@@ -28,6 +28,15 @@ public class MobileRecoderMessagesConstants extends NLS {
     public static String DLG_TITLE_MOBILE_RECORDER;
 
     public static String DLG_TITLE_TEXT_INPUT;
+
+    public static String DLG_GET_TEXT_TITLE;
+
+    public static String DLG_GET_TEXT_INPUT_LABEL;
+
+    public static String BTN_APPLY_ACTION;
+
+    public static String BTN_CANCEL_ACTION;
+
     public static String LBL_ALL_OBJECTS;
 
     public static String LBL_APP_FILE;
