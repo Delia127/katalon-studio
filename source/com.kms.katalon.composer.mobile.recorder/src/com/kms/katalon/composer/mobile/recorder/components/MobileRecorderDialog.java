@@ -4,7 +4,9 @@ import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialo
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -114,6 +116,7 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.util.CryptoUtil;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
@@ -619,6 +622,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                     mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
                                     mobileActionHelper.setText(testObject, textInput);
                                     break;
+                                case SetEncryptedText:
+                                    handleSetEncryptedText(mobileActionHelper, mobileActionMapping, testObject);
+                                    break;
                                 case ScrollToText:
                                     handleScrollToText(mobileActionHelper, mobileActionMapping);
                                     break;
@@ -671,6 +677,33 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } catch (Exception e) {
             throw new MobileRecordException(e);
         }
+    }
+
+    private void handleSetEncryptedText(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping, TestObject testObject) throws Exception {
+        final StringBuilder stringBuilder = new StringBuilder();
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                InputDialog inputDialog = new InputDialog(getShell(),
+                        MobileRecoderMessagesConstants.DLG_TITLE_TEXT_INPUT,
+                        MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null) {
+                    @Override
+                    protected int getInputTextStyle() {
+                        return super.getInputTextStyle() | SWT.PASSWORD;
+                    }
+                };
+                if (inputDialog.open() == Window.OK) {
+                    stringBuilder.append(inputDialog.getValue());
+                }
+            }
+        });
+        String password = stringBuilder.toString();
+        String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
+        if (password.isEmpty()) {
+            throw new CancellationException();
+        }
+        mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(encryptedPassword));
+        mobileActionHelper.setText(testObject, password);
     }
 
     private void handleScrollToText(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping ) throws Exception {

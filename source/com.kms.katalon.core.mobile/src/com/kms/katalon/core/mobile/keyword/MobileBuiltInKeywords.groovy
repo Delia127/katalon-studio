@@ -491,6 +491,62 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void setText(TestObject to, String text, int timeout) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "setText", to, text, timeout)
     }
+    
+    /**
+     * Set encrypted text into an input field. It also clears the previous value of the input field.
+     * To encrypt raw text, go to Help/Encrypt Text.
+     * 
+     * @param to
+     *          represent a mobile element.
+     * 
+     * @param encryptedText
+     *          the encrypted text to set to the mobile element.
+     * 
+     * @param timeout
+     *          system will wait at most timeout (seconds) to return result.
+     * 
+     * @param flowControl
+     *          Optional parameter: Used to control the step if the step failed.
+     *          <ul>
+     *              <li>STOP_ON_FAILURE: throws a StepFailedException if the step failed (default).</li>
+     *              <li>CONTINUE_ON_FAILURE: continue the test if the test failed but the test result is still failed.</li>
+     *              <li>OPTIONAL: continue the test and ignore the test result.</li>
+     *          </ul>
+     * 
+     * @throws StepFailedException
+     *          On KS could not find the specified element.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void setEncryptedText(TestObject to, String encryptedText, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "setEncryptedText", to, encryptedText, timeout, flowControl)
+    }
+    
+    /**
+     * Set encrypted text into an input field. It also clears the previous value of the input field.
+     * To encrypt raw text, go to Help/Encrypt Text.
+     * 
+     * @param to
+     *          Represent a mobile element.
+     * 
+     * @param encryptedText
+     *          The encrypted text to set to the mobile element.
+     * 
+     * @param timeout
+     *          System will wait at most timeout (seconds) to return result.
+     * 
+     * @throws StepFailedException
+     *          On KS could not find the specified element.
+     * 
+     * @since 7.2.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void setEncryptedText(TestObject to, String encryptedText, int timeout) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "setEncryptedText", to, encryptedText, timeout)
+    }
 
     /**
      * Tap on an mobile element
