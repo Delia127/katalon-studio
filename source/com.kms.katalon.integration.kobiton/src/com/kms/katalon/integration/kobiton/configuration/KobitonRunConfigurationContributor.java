@@ -71,7 +71,7 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
 
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
-        return Arrays.asList(getKobitonTokenIdConsoleOpt(StringUtils.EMPTY),
+        return Arrays.asList(getKobitonTokenConsoleOpt(StringUtils.EMPTY),
                 getKobitonDeviceIdConsoleOpt(StringUtils.EMPTY));
     }
 
@@ -108,7 +108,7 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
                 description.getRunConfigurationData().get(KobitonRunConfiguration.KOBITON_DEVICE_PROPERTY),
                 KobitonDevice.class);
         String tokenId = KobitonPreferencesProvider.getKobitonToken();
-        return Arrays.asList(getKobitonTokenIdConsoleOpt(tokenId),
+        return Arrays.asList(getKobitonTokenConsoleOpt(tokenId),
                 getKobitonDeviceIdConsoleOpt(Integer.toString(device.getId())));
     }
 
@@ -132,12 +132,12 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
         };
     }
     
-    private ConsoleOption<?> getKobitonTokenIdConsoleOpt(final String rawValue) {
+    private ConsoleOption<?> getKobitonTokenConsoleOpt(final String rawValue) {
         return new StringConsoleOption() {
 
             @Override
             public String getOption() {
-                return "kobitonTokenId";
+                return "kobitonToken";
             }
 
             @Override
