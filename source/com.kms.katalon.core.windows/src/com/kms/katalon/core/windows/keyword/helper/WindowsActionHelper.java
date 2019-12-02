@@ -10,9 +10,12 @@ import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -193,6 +196,18 @@ public class WindowsActionHelper {
         WebElement windowElement = findElement(testObject);
         logger.logDebug("Setting text on test object: " + testObject.getObjectId());
         windowElement.sendKeys(text);
+    }
+
+    public Point getPosition(WindowsTestObject testObject) {
+        WebElement windowElement = findElement(testObject);
+        return windowElement.getLocation();
+    }
+
+    public Rectangle getRect(WindowsTestObject testObject) {
+        WebElement windowElement = findElement(testObject);
+        Point position = windowElement.getLocation();
+        Dimension size = windowElement.getSize();
+        return new Rectangle(position.x, position.y, size.height, size.width);
     }
 
     public void closeApp() {
