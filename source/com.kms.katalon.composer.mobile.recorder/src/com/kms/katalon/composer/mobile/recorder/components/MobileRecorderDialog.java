@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -40,6 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -558,6 +561,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                 case PressBack:
                                     mobileActionHelper.pressBack();
                                     break;
+                                case GetText:
+                                    handleGetText(testObject, mobileActionMapping, mobileActionHelper);
+                                    break;
                                 case SetText:
                                     final StringBuilder stringBuilder = new StringBuilder();
                                     UISynchronizeService.syncExec(new Runnable() {
@@ -577,6 +583,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                     }
                                     mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
                                     mobileActionHelper.setText(testObject, textInput);
+                                    break;
+                                case ScrollToText:
+                                    handleScrollToText(mobileActionHelper, mobileActionMapping);
                                     break;
                                 case SwitchToLandscape:
                                     mobileActionHelper.switchToLandscape();
@@ -628,7 +637,28 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             throw new MobileRecordException(e);
         }
     }
-    
+
+    private void handleScrollToText(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping ) throws Exception {
+        final StringBuilder stringBuilder = new StringBuilder();
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                InputDialog inputDialog = new InputDialog(getShell(),
+                        MobileRecoderMessagesConstants.DLG_TITLE_TEXT_INPUT,
+                        MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null);
+                if (inputDialog.open() == Window.OK) {
+                    stringBuilder.append(inputDialog.getValue());
+                }
+            }
+        });
+        String textInput = stringBuilder.toString();
+        if (textInput.isEmpty()) {
+            throw new CancellationException();
+        }
+        mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
+        mobileActionHelper.scrollToText(textInput);
+    }
+
     private void handleSwipeAction(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping)
             throws Exception {
         List<InputParameter> parameters = new ArrayList<>();
@@ -662,6 +692,79 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
 
         mobileActionHelper.swipe(coords.get(0), coords.get(1), coords.get(2), coords.get(3));
+    }
+
+    private void handleGetText(
+            TestObject testObject,
+            MobileActionMapping mobileActionMapping,
+            MobileActionHelper mobileActionHelper
+    ) throws Exception {
+        String elementText = mobileActionHelper.getText(testObject);
+        final MutableBoolean isCanceled = new MutableBoolean(false);
+
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                GetTextDialog getTextDialog = new GetTextDialog(getShell(), elementText);
+                if (getTextDialog.open() != GetTextDialog.OK) {
+                    isCanceled.setTrue();
+                }
+            }
+        });
+        
+        if (isCanceled.isTrue()) {
+            throw new CancellationException();
+        }
+    }
+
+    private class GetTextDialog extends AbstractDialog {
+
+        private Text txtText;
+
+        private String text;
+
+        protected GetTextDialog(Shell parentShell, String text) {
+            super(parentShell, false);
+            this.text = text;
+        }
+
+        @Override
+        protected void registerControlModifyListeners() {
+        }
+
+        @Override
+        protected void setInput() {
+            txtText.setText(StringUtils.defaultIfEmpty(text, ""));
+        }
+
+        @Override
+        protected Control createDialogContainer(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout());
+
+            Label lblText = new Label(composite, SWT.NONE);
+            lblText.setText(MobileRecoderMessagesConstants.DLG_GET_TEXT_INPUT_LABEL);
+
+            txtText = new Text(composite, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER | SWT.WRAP);
+            txtText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            return composite;
+        }
+
+        @Override
+        protected void createButtonsForButtonBar(Composite parent) {
+            createButton(parent, IDialogConstants.OK_ID, MobileRecoderMessagesConstants.BTN_APPLY_ACTION, true);
+            createButton(parent, IDialogConstants.CANCEL_ID, MobileRecoderMessagesConstants.BTN_CANCEL_ACTION, false);
+        }
+
+        @Override
+        protected Point getInitialSize() {
+            return new Point(400, 250);
+        }
+
+        @Override
+        public String getDialogTitle() {
+            return MobileRecoderMessagesConstants.DLG_GET_TEXT_TITLE;
+        }
     }
 
     public MobileDriverType getCurrentMobileDriverType() {

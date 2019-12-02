@@ -2,7 +2,10 @@ package com.kms.katalon.execution.mobile.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
@@ -25,7 +28,7 @@ public class AndroidRunConfiguration extends MobileRunConfiguration {
     public IRunConfiguration cloneConfig() throws IOException {
         return new AndroidRunConfiguration(projectDir, mobileDriverConnector);
     }
-    
+
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
         return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();

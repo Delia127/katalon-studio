@@ -185,6 +185,12 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_MSG_VERIFYING;
 
+    public static String DIA_LBL_ADD_SCREENSHOT;
+	
+    public static String SCREENSHOT_TAKEN;
+
+    public static String FAIL_TO_TAKE_SCREENSHOT;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ObjectspyMessageConstants.class);

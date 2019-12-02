@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
+import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
@@ -12,7 +13,9 @@ import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.touch.TouchActions;
+import org.openqa.selenium.remote.RemoteWebElement;
 
+import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.core.helper.KeywordHelper;
 import com.kms.katalon.core.keyword.internal.KeywordMain;
 import com.kms.katalon.core.mobile.constants.StringConstants;
@@ -24,6 +27,7 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.WindowsTestObject;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
@@ -142,6 +146,17 @@ public class MobileActionHelper {
         }
     }
 
+    public String getText(TestObject to) throws Exception {
+        KeywordHelper.checkTestObjectParameter(to);
+        WebElement element = findElement(to, timeout * 1000);
+        if (element == null) {
+            KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()),
+                    flowControl, null);
+            return null;
+        }
+        return element.getText();
+    }
+
     public void setText(TestObject to, String text) throws Exception {
         KeywordHelper.checkTestObjectParameter(to);
         WebElement element = findElement(to, timeout * 1000);
@@ -183,6 +198,35 @@ public class MobileActionHelper {
             return;
         }
         element.clear();
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void scrollToText(String text) {
+        String context = driver.getContext();
+        try {
+            internalSwitchToNativeContext(driver);
+
+            if (driver instanceof AndroidDriver) {
+                String uiSelector = String.format("new UiSelector().textContains(\"%s\")", text);
+                String uiScrollable = String.format(
+                        "new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(%s)",
+                        uiSelector);
+                ((AndroidDriver) driver).findElementByAndroidUIAutomator(uiScrollable);
+            } else if (driver instanceof IOSDriver) {
+                List<MobileElement> elements = ((IOSDriver) driver).findElements(
+                        MobileBy.xpath("//*[contains(@label, '" + text + "') or contains(@text, '" + text + "')]"));
+                if (elements != null && !elements.isEmpty()) {
+                    RemoteWebElement remoteElement = (RemoteWebElement) elements.get(0);
+                    String parentID = remoteElement.getId();
+                    HashMap<String, String> scrollObject = new HashMap<String, String>();
+                    scrollObject.put("element", parentID);
+                    scrollObject.put("toVisible", text);
+                    driver.executeScript("mobile:scroll", scrollObject);
+                }
+            }
+        } finally {
+            driver.context(context);
+        }
     }
 
     private boolean internalSwitchToNativeContext(AppiumDriver<?> driver) {

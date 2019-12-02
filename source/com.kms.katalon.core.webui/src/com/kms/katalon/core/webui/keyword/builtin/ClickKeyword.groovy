@@ -57,7 +57,6 @@ public class ClickKeyword extends WebUIAbstractKeyword {
             logger.logError(e.getMessage());
         }
     }
-
     @CompileStatic
     public void click(TestObject to, FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
