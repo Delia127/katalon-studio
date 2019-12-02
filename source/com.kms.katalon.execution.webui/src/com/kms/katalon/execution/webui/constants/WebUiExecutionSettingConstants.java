@@ -17,4 +17,6 @@ public class WebUiExecutionSettingConstants {
     
     public static final String WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "execution.default.selectingCapturedObjectSelectorMethod";
 
+    public static final String WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED = "execution.default.imageRecognitionEnabled";
+
 }

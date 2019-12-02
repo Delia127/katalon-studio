@@ -53,10 +53,25 @@ public class StringConstants extends GlobalStringConstants {
     public static final String TOOLTIP_MESSAGE_PROPERTIES_ENTITY = ComposerExplorerMessageConstants.TOOLTIP_MESSAGE_PROPERTIES_ENTITY;
     
     public static final String CONTR_MENU_CONTEXT_IMPORT_OBJECTS = ComposerExplorerMessageConstants.CONTR_MENU_CONTEXT_IMPORT_OBJECTS;
-    
+
     public static final String PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS = ComposerExplorerMessageConstants.PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS;
     
     public static final String PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS = ComposerExplorerMessageConstants.PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS;
     
     public static final String PAGE_ERROR_MSG_UNABLE_TO_REFESH_EXPLORER = ComposerExplorerMessageConstants.PAGE_ERROR_MSG_UNABLE_TO_REFESH_EXPLORER;
+
+    // FolderName
+    public static final String INCLUDE_FOLDER_NAME = "Include";
+    
+    public static final String KEYWORD_FOLDER_NAME = "Keywords";
+    
+    public static final String CONFIG_FOLDER_NAME = "config";
+    
+    public static final String SCRIPTS_FOLDER_NAME = "scripts";
+    
+    public static final String FEATURES_FOLDER_NAME = "features";
+    
+    public static final String PLUGINS_FOLDER_NAME = "Plugins";
+    
+    public static final String TEST_LISTENERS_FOLDER_NAME = "Test Listeners";
 }
