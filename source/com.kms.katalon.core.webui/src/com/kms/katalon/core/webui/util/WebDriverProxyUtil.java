@@ -46,7 +46,7 @@ public class WebDriverProxyUtil {
         List<String> exceptionList = new ArrayList<String>();
         String exclude = proxyInformation.getExceptionList().trim();
         String[] output = exclude.split(",");
-        Arrays.stream(output).forEach(part -> exceptionList.add(part));
+        Arrays.stream(output).forEach(part -> exceptionList.add(part.trim()));
         String proxyString = getProxyString(proxyInformation);
         switch (ProxyOption.valueOf(proxyInformation.getProxyOption())) {
             case MANUAL_CONFIG:

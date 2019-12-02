@@ -12,8 +12,7 @@ import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -22,6 +21,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -68,54 +69,76 @@ public class ProxyUtil {
         if (proxyInfo == null) {
             throw new IllegalArgumentException("proxyInfo cannot be null");
         }
-        List<String> exceptionList = new ArrayList<String>();
-        String[] output = proxyInfo.getExceptionList().split(",");
-        String newUrl = null;
+        String[] excludes = proxyInfo.getExceptionList().split(",");
 
-        Arrays.stream(output).forEach(part -> exceptionList.add(part.trim()));
         switch (ProxyOption.valueOf(proxyInfo.getProxyOption())) {
             case NO_PROXY:
                 return Proxy.NO_PROXY;
             case USE_SYSTEM:
                 return getSystemProxy();
             case MANUAL_CONFIG:
-                for (int i = 0; i < exceptionList.size(); i++) {
-                    if (exceptionList.get(i).contains(":")) {
-                        newUrl = url.getAuthority();
-                    } else {
-                        newUrl = url.getHost();
-                    }
-                    if (exceptionList.get(i).contains("*")) {
-                        boolean match = strMatch(exceptionList.get(i), newUrl);
-                        if (exceptionList.get(i).equals(newUrl) || match) {
-                            return Proxy.NO_PROXY;
-                        }
-                    } else {
-                        if (exceptionList.get(i).equals(newUrl)) {
-                            return Proxy.NO_PROXY;
-                        }
-                    }
+                if (!excludes(excludes, url.getHost(), url.getPort())) {
+                    return getProxyForManualConfig(proxyInfo);
+                } else {
+                    return Proxy.NO_PROXY;
                 }
-                return getProxyForManualConfig(proxyInfo);
             default:
                 return Proxy.NO_PROXY;
         }
     }
     
-    public static boolean strMatch(String exceptionList, String url) {
+    public static boolean excludes(String[] excludes, String proxyHost, int proxyPort) {
+        for (int c = 0; c < excludes.length; c++) {
+            String exclude = excludes[c].trim();
+            if (exclude.length() == 0)
+                continue;
 
-        for (int i = 0; i < exceptionList.length(); i++) {
+            // check for port
+            int ix = exclude.indexOf(':');
 
-            // if the string don't have *
-            // then character at that position
-            // must be same.
-            if (exceptionList.charAt(i) != '*' && url.charAt(i) != '*') {
-                if (exceptionList.charAt(i) != url.charAt(i))
-                    return false;
+            if (ix >= 0 && exclude.length() > ix + 1) {
+                String excludePort = exclude.substring(ix + 1);
+                if (proxyPort != -1 && excludePort.equals(String.valueOf(proxyPort))) {
+                    exclude = exclude.substring(0, ix);
+                } else {
+                    continue;
+                }
             }
+
+            /*
+             * This will exclude addresses with wildcard *, too.
+             */
+            // if( proxyHost.endsWith( exclude ) )
+            // return true;
+            String excludeIp = exclude.indexOf('*') >= 0 ? exclude : nslookup(exclude, true);
+            String ip = nslookup(proxyHost, true);
+            Pattern pattern = Pattern.compile(excludeIp);
+            Matcher matcher = pattern.matcher(ip);
+            Matcher matcher2 = pattern.matcher(proxyHost);
+            if (matcher.find() || matcher2.find())
+                return true;
         }
 
-        return true;
+        return false;
+    }
+
+    private static String nslookup(String s, boolean ip) {
+        InetAddress host;
+        String address;
+
+        // get the bytes of the IP address
+        try {
+            host = InetAddress.getByName(s);
+            if (ip) {
+                address = host.getHostAddress();
+            } else {
+                address = host.getHostName();
+            }
+        } catch (UnknownHostException ue) {
+            return s; // no host
+        }
+
+        return address;
     }
 
     public static Proxy getSystemProxy() throws URISyntaxException, IOException {

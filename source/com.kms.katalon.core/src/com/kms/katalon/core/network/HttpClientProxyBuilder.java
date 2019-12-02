@@ -135,14 +135,7 @@ public class HttpClientProxyBuilder {
     
     public static HttpClientProxyBuilder create(ProxyInformation proxyInfo, String url)
             throws URISyntaxException, IOException, GeneralSecurityException {
-        URL newUrl = null;
-        if(url != null) {
-            if(url.contains("https")) {
-                newUrl = new URL(url);
-            } else {
-                newUrl = new URL("https://" + url);
-            }
-        }
+        URL newUrl = new URL(url);
         
         HttpClientBuilder clientBuilder = HttpClients.custom();
         
