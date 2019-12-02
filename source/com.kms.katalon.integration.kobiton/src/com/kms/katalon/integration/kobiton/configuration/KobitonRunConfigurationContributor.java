@@ -107,8 +107,8 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
         KobitonDevice device = JsonUtil.fromJson(
                 description.getRunConfigurationData().get(KobitonRunConfiguration.KOBITON_DEVICE_PROPERTY),
                 KobitonDevice.class);
-        String tokenId = KobitonPreferencesProvider.getKobitonToken();
-        return Arrays.asList(getKobitonTokenConsoleOpt(tokenId),
+        String kobitonToken = KobitonPreferencesProvider.getKobitonToken();
+        return Arrays.asList(getKobitonTokenConsoleOpt(kobitonToken),
                 getKobitonDeviceIdConsoleOpt(Integer.toString(device.getId())));
     }
 
