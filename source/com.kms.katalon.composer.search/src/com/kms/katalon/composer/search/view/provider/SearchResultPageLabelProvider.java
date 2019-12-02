@@ -120,7 +120,9 @@ public class SearchResultPageLabelProvider extends DecoratingFileSearchLabelProv
         StyledString styledString = super.getStyledText(element);
         if (element instanceof IProject) {
             IProject project = (IProject) element;
-            return new StyledString(project.getRawLocation().toString());
+            if (project.getRawLocation() != null) {
+                return new StyledString(project.getRawLocation().toString());
+            }
         } else if (element instanceof IFile) {
             IFile file = (IFile) element;
             return new StyledString(FilenameUtils.getBaseName(file.getName()));

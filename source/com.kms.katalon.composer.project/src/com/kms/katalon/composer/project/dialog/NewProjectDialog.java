@@ -46,6 +46,10 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.application.KatalonApplicationActivator;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -62,6 +66,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewProjectDialog extends TitleAreaDialog {
@@ -114,6 +119,10 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     private boolean okButtonClicked = false;
 
+    private GridData gdGenericProjectType;
+
+    private Composite container;
+
     public NewProjectDialog(Shell parentShell) {
         this(parentShell, (SampleRemoteProject) null);
     }
@@ -141,7 +150,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         setTitle(title);
         setMessage(StringConstants.VIEW_MSG_PLS_ENTER_PROJ_INFO);
 
-        Composite container = new Composite(area, SWT.NONE);
+        container = new Composite(area, SWT.NONE);
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
         GridLayout g = new GridLayout(2, false);
         container.setLayout(g);
@@ -203,7 +212,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         // GENERIC
         rbGenericProjectType = new Button(projectTypeComposite, SWT.RADIO);
-        GridData gdGenericProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdGenericProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         rbGenericProjectType.setLayoutData(gdGenericProjectType);
         rbGenericProjectType.setText(StringConstants.VIEW_OPTION_GENERIC_PROJECT);
         rbGenericProjectType.addSelectionListener(new SelectionAdapter() {
@@ -316,11 +325,24 @@ public class NewProjectDialog extends TitleAreaDialog {
         enableGenerateGitignoreFileBySelectedProject();
         enableGenerateGradleFileBySelectedProject();
 
+        hideGenericProjectTypeIfNotEnterprise();
         addControlModifyListeners();
 
         return area;
     }
 
+    private void hideGenericProjectTypeIfNotEnterprise() {
+        if (!isEnterpriseAccount()) {
+            gdGenericProjectType.exclude = true;
+            rbGenericProjectType.setVisible(false);
+            container.layout(true);
+        }
+    }
+
+    private boolean isEnterpriseAccount() {
+        return LicenseUtil.isNotFreeLicense();
+    }
+    
     private void initSampleProjects() {
         List<SampleRemoteProject> remoteSamples = SampleRemoteProjectProvider.getCachedProjects();
         if (remoteSamples.size() > 0) {
@@ -574,8 +596,8 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         int selectionIdx = cboProjects.getSelectionIndex();
         String selectedProjectName = cboProjects.getItem(selectionIdx);
+        Object selectedSampleProject = cboProjects.getData(selectedProjectName);
         if (!selectedProjectName.equals(BLANK_PROJECT)) {
-            Object selectedSampleProject = cboProjects.getData(selectedProjectName);
             if (selectedSampleProject instanceof SampleRemoteProject) {
                 handleCreatingSampleRemoteProject((SampleRemoteProject) selectedSampleProject);
             } else if (selectedSampleProject instanceof SampleLocalProject) {
@@ -585,11 +607,16 @@ public class NewProjectDialog extends TitleAreaDialog {
             handleCreatingBlankProject();
         }
         super.okPressed();
+        
+        if (!(selectedSampleProject instanceof SampleRemoteProject)) {
+        	KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
+        }
     }
 
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
-        String projectLocation = getProjectLocation();
+        String projectParentLocation = getProjectLocation();
+        String projectLocation = new File(projectParentLocation, projectName).getAbsolutePath();
         String projectDescription = getProjectDescription();
         ProjectType projectType = getSelectedProjectType();
 
@@ -628,7 +655,6 @@ public class NewProjectDialog extends TitleAreaDialog {
             TimeUnit.SECONDS.sleep(1);
 
             eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
-            eventBroker.post(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, null);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -661,7 +687,6 @@ public class NewProjectDialog extends TitleAreaDialog {
             if (!(getSelectedProjectType() == ProjectType.GENERIC)) {
                 eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
             }
-            eventBroker.post(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, null);
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     ex.getMessage());

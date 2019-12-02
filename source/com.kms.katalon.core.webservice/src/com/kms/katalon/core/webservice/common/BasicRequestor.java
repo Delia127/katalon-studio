@@ -2,14 +2,13 @@ package com.kms.katalon.core.webservice.common;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.security.KeyManagementException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,41 +16,74 @@ import java.util.stream.Collectors;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.ssl.KeyMaterial;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.routing.HttpRoutePlanner;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.auth.oauth.OAuthRsaSigner;
 import com.google.api.client.auth.oauth.OAuthSigner;
 import com.google.api.client.http.GenericUrl;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
-import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class BasicRequestor implements Requestor {
+    private static final String TLS = "TLS";
+    
+    private static final String SOCKET_FACTORY_REGISTRY = "http.socket-factory-registry";
+    
+    protected static PoolingHttpClientConnectionManager connectionManager;
+    
+    static {
+        connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setValidateAfterInactivity(1);
+        connectionManager.setMaxTotal(2000);
+        connectionManager.setDefaultMaxPerRoute(500);
+    }
 
     private String projectDir;
 
-    private ProxyInformation proxyInformation;
+    protected ProxyInformation proxyInformation;
 
     public BasicRequestor(String projectDir, ProxyInformation proxyInformation) {
         this.projectDir = projectDir;
@@ -140,7 +172,7 @@ public abstract class BasicRequestor implements Requestor {
         }
     }
 
-    protected void setHttpConnectionHeaders(HttpURLConnection con, RequestObject request)
+    protected void setHttpConnectionHeaders(HttpRequest httpRequest, RequestObject request)
             throws GeneralSecurityException, IOException {
         List<TestObjectProperty> complexAuthAttributes = request.getHttpHeaderProperties()
                 .stream()
@@ -159,9 +191,9 @@ public abstract class BasicRequestor implements Requestor {
         headers.forEach(header -> {
             if (request.getBodyContent() instanceof HttpFormDataBodyContent 
                     && header.getName().equalsIgnoreCase("Content-Type")) {
-                con.setRequestProperty(header.getName(), request.getBodyContent().getContentType());
+                httpRequest.addHeader(header.getName(), request.getBodyContent().getContentType());
             } else {
-                con.setRequestProperty(header.getName(), header.getValue());
+                httpRequest.addHeader(header.getName(), header.getValue());
             }
         });
     }
@@ -244,8 +276,8 @@ public abstract class BasicRequestor implements Requestor {
         return null;
     }
     
-    protected void setBodyContent(HttpURLConnection conn, StringBuffer sb, ResponseObject responseObject) {
-        String contentTypeHeader = conn.getHeaderField(RequestHeaderConstants.CONTENT_TYPE);
+    protected void setBodyContent(HttpResponse httpRequest, String responseBody, ResponseObject responseObject) {
+        String contentTypeHeader = getResponseContentType(httpRequest);
         String contentType = contentTypeHeader;
         String charset = "UTF-8";
         if (contentTypeHeader != null && contentTypeHeader.contains(";")) {
@@ -261,10 +293,77 @@ public abstract class BasicRequestor implements Requestor {
                         .trim().replace("\"", "");
             }
         }
-
-        HttpTextBodyContent textBodyContent = new HttpTextBodyContent(sb.toString(), charset, contentType);
+        HttpTextBodyContent textBodyContent = new HttpTextBodyContent(responseBody, charset, contentType);
         responseObject.setBodyContent(textBodyContent);
         responseObject.setContentCharset(charset);
     }
 
+    protected String getResponseContentType(HttpResponse httpResponse) {
+        Header contentTypeHeader = httpResponse.getFirstHeader("Content-Type");
+        if (contentTypeHeader != null) {
+            return contentTypeHeader.getValue();
+        } else {
+            return null;
+        }
+    }
+    
+    protected void configureProxy(HttpClientBuilder httpClientBuilder, ProxyInformation proxyInformation) {
+        if (proxyInformation == null) {
+            return;
+        }
+        
+        if (ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.NO_PROXY)) {
+            return;
+        }
+        
+        HttpHost httpProxy = new HttpHost(proxyInformation.getProxyServerAddress(),
+                proxyInformation.getProxyServerPort());
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        String username = proxyInformation.getUsername();
+        String password = proxyInformation.getPassword();
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            credentialsProvider.setCredentials(new AuthScope(httpProxy),
+                    new UsernamePasswordCredentials(username, password));
+        }
+        httpClientBuilder.setRoutePlanner(new HttpRoutePlanner() {
+
+            @Override
+            public HttpRoute determineRoute(HttpHost arg0, HttpRequest arg1, HttpContext arg2) throws HttpException {
+                if ((ProxyOption.valueOf(proxyInformation.getProxyOption()).equals(ProxyOption.USE_SYSTEM))) {
+                    return new SystemDefaultRoutePlanner(ProxyUtil.getAutoProxySelector()).determineRoute(arg0, arg1, arg2);
+                } else {
+                    return new DefaultProxyRoutePlanner(httpProxy).determineRoute(arg0, arg1, arg2);
+                }
+            }
+        }).setDefaultCredentialsProvider(credentialsProvider);
+    }
+    
+    protected HttpContext getHttpContext() throws KeyManagementException, GeneralSecurityException, IOException {
+        HttpContext httpContext = new BasicHttpContext();
+        SSLContext sc = SSLContext.getInstance(TLS);
+        sc.init(getKeyManagers(), getTrustManagers(), null);
+        Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory> create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", new SSLConnectionSocketFactory(sc, getHostnameVerifier()))
+                .build();
+        httpContext.setAttribute(SOCKET_FACTORY_REGISTRY, reg);
+        return httpContext;
+    }
+    
+    protected Map<String, List<String>> getResponseHeaderFields(HttpResponse httpResponse) {
+        Map<String, List<String>> headerFields = new HashMap<>();
+        Header[] headers = httpResponse.getAllHeaders();
+        for (Header header : headers) {
+            String name = header.getName();
+            if (!headerFields.containsKey(name)) {
+                headerFields.put(name, new ArrayList<>());
+            }
+            headerFields.get(name).add(header.getValue());
+        }
+        StatusLine statusLine = httpResponse.getStatusLine();
+        if (statusLine != null) {
+            headerFields.put("#status#", Arrays.asList(String.valueOf(statusLine)));
+        }
+        return headerFields;
+    }
 }

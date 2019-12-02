@@ -10,12 +10,14 @@ public enum WindowsAction implements IWindowsAction {
     RightClick("rightClick", "Right click on the given element"),
     GetText("getText", "Get text of the given element"),
     SetText("setText", "Set text to the given element"),
-    SendKeys("sendKeys", "Send combined keys to Application Windows"),
+    SendKeys("sendKeys", "Send combined keys to the application window"),
     ClearText("clearText", "Clear text on the given element"),
+    SwitchToWindow("switchToWindow", "Switch to Window"),
+    SwitchToWindowTitle("switchToWindowTitle", "Switch to window title"),
     CloseApplication("closeApplication", "Close the application"),
-    SwitchToDesktop("switchToDesktop", "Switch to Desktop Windows"),
-    SwitchToApplication("switchToApplication", "Switch to Application Windows"),
-    StartApplication("startApplication", "Start Windows Application", false);
+    SwitchToDesktop("switchToDesktop", "Switch to desktop window"),
+    SwitchToApplication("switchToApplication", "Switch to application window"),
+    StartApplicationWithTitle("startApplicationWithTitle", "Start windows application with the given title", false);
 
     private String description;
 
@@ -30,6 +32,8 @@ public enum WindowsAction implements IWindowsAction {
     private boolean hasElement = false;
 
     private boolean isUserInputAction = true;
+    
+    private boolean isCanceled = false;
 
     private WindowsAction(String mappedKeywordMethod) {
         this(mappedKeywordMethod, "");
@@ -99,5 +103,15 @@ public enum WindowsAction implements IWindowsAction {
 
     public String getReadableName() {
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(getName())), " ");
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return isCanceled;
+    }
+
+    @Override
+    public void setCanceled(boolean isCanceled) {
+        this.isCanceled = isCanceled;
     }
 }

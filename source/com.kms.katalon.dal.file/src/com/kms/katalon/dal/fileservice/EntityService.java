@@ -342,7 +342,7 @@ public final class EntityService {
         }
 
         // invalid characters check
-        Pattern pattern = Pattern.compile("^[\\w]+[\\w,\\s-().]*$"); // ver3
+        Pattern pattern = Pattern.compile("^[\\w]+[\\w,\\s-().]*$", Pattern.UNICODE_CHARACTER_CLASS); // ver3
         // Pattern pattern = Pattern.compile("[\\w,\\s-().]+$"); // ver2
         // Pattern pattern = Pattern.compile("^[^/\\\\:*?\"'<>|]+$"); // ver1
         Matcher matcher = pattern.matcher(name);

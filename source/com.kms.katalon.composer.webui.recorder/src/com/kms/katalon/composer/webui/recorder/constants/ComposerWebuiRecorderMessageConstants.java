@@ -4,6 +4,8 @@ import org.eclipse.osgi.util.NLS;
 
 public class ComposerWebuiRecorderMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webui.recorder.constants.composerWebuiRecorderMessages";
+    
+    public static String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
 
     public static String DIA_COL_ELEMENT;
 
@@ -128,9 +130,6 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
     public static String DIA_CONFIRM_REPLACE_TEST_CASE_SCRIPT;
     
     public static String RECOMMENDED_BROWSER_POSTFIX;
-    
-
-    public static String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
 
     static {
         // initialize resource bundle

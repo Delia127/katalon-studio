@@ -72,10 +72,6 @@ public class CheckForUpdatesHandler implements UpdateComponent {
     }
 
     public void checkForUpdate(boolean silenceMode) {
-        if (QTestUtil.isQTestEdition()) {
-            return;
-        }
-        
         CheckForUpdatesJob job = new CheckForUpdatesJob(silenceMode);
         job.setUser(!silenceMode);
         job.addJobChangeListener(new JobChangeAdapter() {

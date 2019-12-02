@@ -315,10 +315,22 @@ public interface IImageKeys {
     public static final String SAVE_ALL_DISABLED_16 = "toolbar/save_all_disabled_16.png"; //$NON-NLS-1$
     
     public static final String PROFILE_16 = "toolbar/profile_16.png";
-    
+
+    public static final String KATALON_SUBSCRIPTION_24 = "toolbar/pricing_32x24.png";
+
     public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
     
     public static final String KATALON_ACCOUNT_24 = "toolbar/account_32x24.png"; //$NON-NLS-1$
+    
+    public static final String KATALON_COMMUNITY_24 = "toolbar/community_32x24.png";//$NON-NLS-1$
+     
+    public static final String KATALON_FORUM_24 = "toolbar/search_icon_24.png";//$NON-NLS-1$
+    
+    public static final String KATALON_CHAT_24 = "toolbar/chat_support_24.png";//$NON-NLS-1$
+    
+    public static final String KATALON_TWEETABOUTUS_24 = "toolbar/tweetaboutus_24.png";//$NON-NLS-1$
+    
+    public static final String KATALON_FEEDBACK_24 = "toolbar/Feedback_24PX.png";//$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps
@@ -465,6 +477,8 @@ public interface IImageKeys {
     public static final String GIT_FILE_16 = "entity/git_file_16.png"; //$NON-NLS-1$
     
     public static final String WINDOWS_ENTITY_16 = "windows_application_16.png"; //$NON-NLS-1$
+
+    public static final String UNUSED_TEST_OBJECT = "entity/unused_test_object_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar
@@ -523,6 +537,8 @@ public interface IImageKeys {
     public static final String UNWATCH_16 = "unwatch_16.png"; //$NON-NLS-1$
 
     public static final String RECENT_16 = "recent_16.png"; //$NON-NLS-1$
+
+    public static final String EXPORT_CSV_16 = "export_csv_16.png"; //$NON-NLS-1$
 
     // Sub-toolbar disabled icons
     public static final String CLEAR_DISABLED_16 = "clear_disabled_16.png"; //$NON-NLS-1$
@@ -771,4 +787,18 @@ public interface IImageKeys {
     
     // In App Survey
     public static final String STAR = "highlight_24.png";
+    
+    //Result tab
+    public static final String IMG_REPORT_EMPTY_TEST_SUITE = "result_tab/empty_report_test_suite.png";
+    
+    public static final String IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION = "result_tab/empty_report_test_suite_collection.png";
+    
+    //About dialog
+    public static final String LOGO_KATALON_STUDIO = "about/KS_logo_200px.png";
+    
+    public static final String LOGO_KSE = "about/KSE_logo_200px.png";
+    
+    public static final String IMG_ABOUT_BG_LIGHT = "about/background_light.png";
+    
+    public static final String IMG_ABOUT_BG_DRANK = "about/background_dark.png";
 }

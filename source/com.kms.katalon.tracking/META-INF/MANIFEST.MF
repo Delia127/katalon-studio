@@ -15,7 +15,10 @@ Require-Bundle: com.kms.katalon.logging,
  com.kms.katalon.entity,
  com.kms.katalon.controller,
  com.kms.katalon.core.webui,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ com.kms.katalon.preferences,
+ org.eclipse.jface,
+ com.kms.katalon.constant
 Export-Package: com.kms.katalon.tracking.core,
  com.kms.katalon.tracking.model,
  com.kms.katalon.tracking.osgi.service,

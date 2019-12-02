@@ -1,50 +1,69 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.Args;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.message.BasicHeaderElementIterator;
 
 import com.google.common.net.MediaType;
-import com.kms.katalon.constants.GlobalStringConstants;
+import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
+import com.kms.katalon.util.URLBuilder;
+import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestfulClient extends BasicRequestor {
 
-    private static final String SSL = RequestHeaderConstants.SSL;
+    private static final String TLS = "TLS";
 
     private static final String HTTPS = RequestHeaderConstants.HTTPS;
-
-    private static final String DEFAULT_USER_AGENT = GlobalStringConstants.APP_NAME;
-
-    private static final String HTTP_USER_AGENT = RequestHeaderConstants.USER_AGENT;
     
     private static final int MAX_REDIRECTS = 5;
-    
-    private static final String[] BODY_UNSUPPORTED_METHODS = new String[] {
-        RequestHeaderConstants.GET, RequestHeaderConstants.HEAD
-    };
     
     public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
         super(projectDir, proxyInfomation);
@@ -58,109 +77,101 @@ public class RestfulClient extends BasicRequestor {
     }
 
     private ResponseObject sendRequest(RequestObject request) throws Exception {
+        HttpClientBuilder clientBuilder = HttpClients.custom();
+        
+        if (!request.isFollowRedirects()) {
+            clientBuilder.disableRedirectHandling();
+        } else {
+            clientBuilder.setRedirectStrategy(new WebServiceRedirectStrategy());
+        }
+        
+        clientBuilder.setConnectionManager(connectionManager);
+        clientBuilder.setConnectionManagerShared(true);
+        
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            SSLContext sc = SSLContext.getInstance(SSL);
+            SSLContext sc = SSLContext.getInstance(TLS);
             sc.init(getKeyManagers(), getTrustManagers(), null);
-            SSLSocketFactory socketFactory = sc.getSocketFactory();
-            HttpsURLConnection.setDefaultSSLSocketFactory(socketFactory);
+            //this will be overridden by setting connection manager for clientBuilder
+            clientBuilder.setSSLContext(sc);
         }
-
-        // If there are some parameters, they should be append after the Service URL
-        processRequestParams(request);
-
-        URL url = new URL(request.getRestUrl());
         
-        Proxy proxy = request.getProxy() != null ? request.getProxy() : getProxy();
-        
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(proxy);
+        ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
+        configureProxy(clientBuilder, proxyInfo);
+
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+            //this will be overridden by setting connection manager for clientBuilder
+            clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
         }
         
-        String requestMethod = request.getRestRequestMethod();
-        setRequestMethod(httpConnection, request.getRestRequestMethod());
-
-        // Default if not set
-        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
-        setHttpConnectionHeaders(httpConnection, request);
-        
-        if (isBodySupported(requestMethod) && request.getBodyContent() != null) {
-            httpConnection.setDoOutput(true);
-            
-            // Send post request
-            OutputStream os = httpConnection.getOutputStream();
-            request.getBodyContent().writeTo(os);
-            os.flush();
-            os.close();
-        }
-
-        ResponseObject responseObject = response(httpConnection);
-        boolean redirect = false;
-        int statusCode = responseObject.getStatusCode();
-        if (statusCode == HttpURLConnection.HTTP_MOVED_TEMP
-            || statusCode == HttpURLConnection.HTTP_MOVED_PERM
-            || statusCode == HttpURLConnection.HTTP_SEE_OTHER) {
-            redirect = true;
-        }
-        
-        if (redirect) {
-            String newUrl = httpConnection.getHeaderField("location");
-            if (!StringUtils.isBlank(newUrl)) {
-                request.setRestUrl(newUrl);
-                request.setRedirectTimes(request.getRedirectTimes() + 1);
-                if (request.isFollowRedirects() && request.getRedirectTimes() <= MAX_REDIRECTS) {
-                    responseObject = sendRequest(request);
+        clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration(final HttpResponse response, final HttpContext context) {
+        // copied from source
+                Args.notNull(response, "HTTP response");
+                final HeaderElementIterator it = new BasicHeaderElementIterator(
+                        response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+                while (it.hasNext()) {
+                    final HeaderElement he = it.nextElement();
+                    final String param = he.getName();
+                    final String value = he.getValue();
+                    if (value != null && param.equalsIgnoreCase("timeout")) {
+                        try {
+                            return Long.parseLong(value) * 1000;
+                        } catch (final NumberFormatException ignore) {}
+                    }
                 }
+                // If the server indicates no timeout, then let it be 1ms so that connection is not kept alive
+                // indefinitely
+                return 1;
             }
-        }
+        });
         
+        BaseHttpRequest httpRequest = getHttpRequest(request);
+
+        CloseableHttpClient httpClient = clientBuilder.build();
+        
+        // Default if not set
+        setHttpConnectionHeaders(httpRequest, request);
+        
+        ResponseObject responseObject = response(httpClient, httpRequest);
+        
+        IOUtils.closeQuietly(httpClient);
+
         return responseObject;
     }
-    
-    private boolean isBodySupported(String requestMethod) {
+
+    private static boolean isBodySupported(String requestMethod) {
         return RestRequestMethodHelper.isBodySupported(requestMethod);
     }
 
-    /**
-     * HttpURLConnection will throw ProtocolException when setting a request method which is not 
-     * GET, POST, HEAD, OPTIONS, PUT, DELETE, or TRACE. Use this workaround for unsupported methods.
-     */
-    private static void setRequestMethod(HttpURLConnection connection, String method) 
-            throws ProtocolException {
-        try {
-            connection.setRequestMethod(method);
-        } catch (ProtocolException ex) {
-                try {
-                    Field methodField = HttpURLConnection.class.getDeclaredField("method");
-                    methodField.setAccessible(true);
-                    if (connection instanceof HttpsURLConnection) {
-                        try {
-                            Field delegateField = connection.getClass().getDeclaredField("delegate");
-                            delegateField.setAccessible(true);
-                            
-                            Object delegateConnection = delegateField.get(connection);
-                            if (delegateConnection instanceof HttpURLConnection) {
-                                methodField.set(delegateConnection, method);
-                            }
-
-                            Field httpsURLConnectionField = delegateConnection.getClass()
-                                    .getDeclaredField("httpsURLConnection");
-                            httpsURLConnectionField.setAccessible(true);
-                            HttpsURLConnection httpsURLConnection = (HttpsURLConnection) httpsURLConnectionField
-                                    .get(delegateConnection);
-
-                            methodField.set(httpsURLConnection, method);
-                        } catch (Exception ignored) {
-                            
-                        }
-                        
-                    }
-                    
-                    methodField.set(connection, method);
-                } catch (Exception e) {
-                    throw ex;
-                }
+    private static void setRequestMethod(CustomHttpMethodRequest httpRequest, String method) {
+        httpRequest.setMethod(method);
+    }
+    
+    private static BaseHttpRequest getHttpRequest(RequestObject request) throws UnsupportedOperationException, IOException {
+        BaseHttpRequest httpRequest;
+        String url = request.getRestUrl();
+        if (isBodySupported(request.getRestRequestMethod()) && request.getBodyContent() != null) {
+            httpRequest = new DefaultHttpEntityEnclosingRequest(url);
+            ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+            request.getBodyContent().writeTo(outstream);
+            byte[] bytes = outstream.toByteArray();
+            ByteArrayEntity entity = new ByteArrayEntity(bytes);
+            entity.setChunked(false);
+            ((DefaultHttpEntityEnclosingRequest) httpRequest)
+                    .setEntity(entity);
+        } else {
+            httpRequest = new DefaultHttpRequest(url);
         }
+
+        setRequestMethod(httpRequest, request.getRestRequestMethod());
+
+        return httpRequest;
+    }
+
+    private static String escapeUrl(String url) throws MalformedURLException {
+        String escapedUrl = UrlEscapers.urlFragmentEscaper().escape(url);
+        return escapedUrl;
     }
 
     public static void processRequestParams(RequestObject request) throws MalformedURLException {
@@ -182,61 +193,48 @@ public class RestfulClient extends BasicRequestor {
                     request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&") + paramString.toString());
         }
     }
-
-    private ResponseObject response(HttpURLConnection conn) throws Exception {
-        if (conn == null) {
+    
+    private ResponseObject response(CloseableHttpClient httpClient, BaseHttpRequest httpRequest) throws Exception {
+        if (httpClient == null || httpRequest == null) {
             return null;
         }
-
+        
         long startTime = System.currentTimeMillis();
-        int statusCode = conn.getResponseCode();
+        CloseableHttpResponse response = httpClient.execute(httpRequest, getHttpContext());
+        int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         long contentDownloadTime = 0L;
-        StringBuffer sb = new StringBuffer();
+        String responseBody = StringUtils.EMPTY;
 
-        char[] buffer = new char[1024];
         long bodyLength = 0L;
         
-        Charset charset = StandardCharsets.UTF_8;
-        try {
-	        String contentType = conn.getContentType();
-	        if (StringUtils.isNotBlank(contentType)) {
-	        	MediaType mediaType = MediaType.parse(contentType);
-	        	charset = mediaType.charset().or(StandardCharsets.UTF_8);
-	        }
-        } catch (Exception e) {
-        	// ignored - don't let tests fail just because charset could not be detected
+        HttpEntity responseEntity = response.getEntity();
+        if (responseEntity != null) {
+            bodyLength = responseEntity.getContentLength();
+            startTime = System.currentTimeMillis();
+            try {
+                responseBody = EntityUtils.toString(responseEntity);
+            } catch (Exception e) {
+                responseBody = ExceptionUtils.getFullStackTrace(e);
+            }
+            contentDownloadTime = System.currentTimeMillis() - startTime;
         }
         
-        try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream()) {
-            if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
-                int len = 0;
-                startTime = System.currentTimeMillis();
-                while ((len = reader.read(buffer)) != -1) {
-                    contentDownloadTime += System.currentTimeMillis() - startTime;
-                    sb.append(buffer, 0, len);
-                    bodyLength += len;
-                    startTime = System.currentTimeMillis();
-                }
-            }
-        }
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(response);
 
-        long headerLength = WebServiceCommonHelper.calculateHeaderLength(conn);
-
-        ResponseObject responseObject = new ResponseObject(sb.toString());
-        responseObject.setContentType(conn.getContentType());
-        responseObject.setHeaderFields(conn.getHeaderFields());
+        ResponseObject responseObject = new ResponseObject(responseBody);
+        responseObject.setContentType(getResponseContentType(response));
+        responseObject.setHeaderFields(getResponseHeaderFields(response));
         responseObject.setStatusCode(statusCode);
         responseObject.setResponseBodySize(bodyLength);
         responseObject.setResponseHeaderSize(headerLength);
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
-        setBodyContent(conn, sb, responseObject);
-        conn.disconnect();
+        setBodyContent(response, responseBody, responseObject);
 
+        IOUtils.closeQuietly(response);
+        
         return responseObject;
     }
-
 }

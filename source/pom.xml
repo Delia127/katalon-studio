@@ -71,7 +71,6 @@
 		<module>com.kms.katalon.execution.windows</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
-		<module>com.kms.katalon.feature.qtest_edition</module>
 		<module>com.kms.katalon.groovy</module>
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
@@ -80,7 +79,7 @@
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.util</module>
 		<module>com.kms.katalon.product</module>
-		<module>com.kms.katalon.product.qtest_edition</module>
+		<module>com.kms.katalon.product.engine</module>
 		<module>com.kms.katalon.selenium-standalone</module>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon.application</module>
@@ -94,6 +93,8 @@
         <module>com.kms.katalon.poi</module>
 		<module>com.kms.katalon.platform.internal</module>
 		<module>com.kms.katalon.composer.artifact</module>
+		<module>com.kms.katalon.proxyvole</module>
+		<module>com.katalon.katalon-studio-smart-xpath</module>
 	</modules>
 
 	<properties>
@@ -101,7 +102,7 @@
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<platform.version>1.0.14</platform.version>
+		<platform.version>1.0.15</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>
@@ -121,6 +122,7 @@
 		<linux32ResourcesDirectory>linux32Resources</linux32ResourcesDirectory>
 		<linux64ResourcesDirectory>linux64Resources</linux64ResourcesDirectory>
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
+		<apisourceDirectory>${resourcesDiretory}/source</apisourceDirectory>
 		<cucumberRepo>file:///${maven.multiModuleProjectDirectory}/third-party/cucumber-eclipse/build/repository</cucumberRepo>
 	</properties>
 

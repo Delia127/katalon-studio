@@ -19,7 +19,13 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     
     public static final String ARG_ACTIVATION_CODE = "activationCode";
     
+    public static final String LICENSE_TYPE = "licenseType";
+    
+    public static final String EXPIRATION_DATE = "expirationDate";
+    
     public static final String ARG_OFFLINE_ACTIVATION = "offlineActivation";
+
+    public static final String KATALON_TESTOPS_SERVER = "testOps.serverUrl";
 
     // Proxy Configuration
     public static final String PROXY_OPTION = "proxy.option";
@@ -42,4 +48,9 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     
     // Server
     public static final String KA_SERVER_PRODUCTION = "https://analytics.katalon.com";
+
+    // Report On-Premise
+    public static final String ARG_ON_PREMISE_EMAIL = "onpremise.email";
+
+    public static final String ARG_ON_PREMISE_PASSWORD = "onpremise.password";
 }

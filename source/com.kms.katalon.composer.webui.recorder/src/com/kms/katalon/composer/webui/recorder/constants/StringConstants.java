@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.webui.recorder.constants;
 
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 
 public class StringConstants extends GlobalStringConstants {
 	// RecorderDialog
@@ -57,8 +56,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_LBL_DEFAULT_BROWSER = ComposerWebuiRecorderMessageConstants.PREF_LBL_DEFAULT_BROWSER;
     public static final String PREF_LBL_ACTIVE_BROWSER_PORT = ComposerWebuiRecorderMessageConstants.PREF_LBL_ACTIVE_BROWSER_PORT;
     public static final String PREF_LBL_ACTIVE_BROWSER_DO_NOT_SHOW_WARNING_DIALOG = ComposerWebuiRecorderMessageConstants.PREF_LBL_ACTIVE_BROWSER_DO_NOT_SHOW_WARNING_DIALOG;
-    public static final String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG = ComposerWebuiRecorderMessageConstants.PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
+	
 	// Record Session
     public static final String DIALOG_CANNOT_START_IE_MESSAGE = ComposerWebuiRecorderMessageConstants.DIALOG_CANNOT_START_IE_MESSAGE;
     public static final String DIALOG_RUNNING_INSTANT_IE_MESSAGE = ComposerWebuiRecorderMessageConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE;
+    public static final String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG = ComposerWebuiRecorderMessageConstants.PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
 }

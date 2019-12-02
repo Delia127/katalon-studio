@@ -77,6 +77,17 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         }
     };
 
+    private StringConsoleOption katalonTestOpsServerUrlOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_TESTOP_SERVER;
+        };
+
+        public boolean isRequired() {
+            return false;
+        };
+    };
+
     private StringConsoleOption katalonApiKeyOption = new StringConsoleOption() {
         @Override
         public String getOption() {
@@ -91,14 +102,36 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     private StringConsoleOption katalonStoreApiKeySecondOption = new StringConsoleOption() {
         @Override
         public String getOption() {
-            return ConsoleMain.KATALON_STORE_API_KEY_SECOND_OPTION;
+            return ConsoleMain.KATALON_API_KEY_SECOND_OPTION;
         };
 
         public boolean isRequired() {
             return false;
         };
     };
-    
+
+    private StringConsoleOption katalonApiKeyOnPremiseOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_API_KEY_ON_PREMISE_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        };
+    };
+
+    private StringConsoleOption katalonApiKeyOnPremiseSecondOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_API_KEY_ON_PREMISE_SECOND_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        };
+    };
+
     private StringConsoleOption katalonAnalyticsLicenseFile = new StringConsoleOption() {
 
         @Override
@@ -149,11 +182,14 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> allOptions = super.getConsoleOptionList();
+        allOptions.add(katalonTestOpsServerUrlOption);
         allOptions.add(testSuitePathOption);
         allOptions.add(browserTypeOption);
         allOptions.add(executionProfileOption);
         allOptions.add(katalonApiKeyOption);
         allOptions.add(katalonStoreApiKeySecondOption);
+        allOptions.add(katalonApiKeyOnPremiseOption);
+        allOptions.add(katalonApiKeyOnPremiseSecondOption);
         allOptions.add(katalonAnalyticsLicenseFile);
         allOptions.add(installPluginOption);
         allOptions.add(katalonAnalyticsProjectId);

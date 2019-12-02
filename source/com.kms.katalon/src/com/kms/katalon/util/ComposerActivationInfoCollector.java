@@ -3,15 +3,12 @@ package com.kms.katalon.util;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
-import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.activation.ActivationService;
-import com.kms.katalon.activation.ActivationServiceConsumer;
 import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
 import com.kms.katalon.activation.dialog.SignupDialog;
@@ -19,12 +16,12 @@ import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.composer.components.impl.handler.CommandCaller;
-import com.kms.katalon.composer.project.constants.CommandId;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
-import com.kms.katalon.imp.wizard.RecommendPluginsDialog;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.plugin.util.PlatformHelper;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
@@ -39,12 +36,25 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     
     private static boolean isActivated;
 
-    public static boolean checkActivation() throws InvocationTargetException, InterruptedException {
+    public static boolean checkActivation(boolean isStartup) throws InvocationTargetException, InterruptedException {
         Shell shell = Display.getCurrent().getActiveShell();
         new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
+                if (isStartup) {
+                    monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
+                } else {
+                    //Logout
+                    monitor.beginTask(StringConstants.MSG_CLEANING, IProgressMonitor.UNKNOWN);
+                    try {
+                        ActivationInfoCollector.postEndSession();
+                        ActivationInfoCollector.releaseLicense();
+                        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.ACTIVATION_DEACTIVATED, null);
+                    } catch (Exception e) {
+                        LogUtil.logError(e);
+                    }
+                    ApplicationInfo.cleanAll();
+                }
                 isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                 monitor.done();
             }
@@ -54,21 +64,13 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             // Send anonymous info for the first time using
             Trackings.trackOpenFirstTime();
         }
-        ActivationService activationService = ActivationServiceConsumer.getServiceInstance();
-        if (activationService != null) {
-            boolean activated = activationService.checkActivation(Display.getCurrent().getActiveShell());
-            if (!activated) {
+        if (!isActivated) {
+            if (checkActivationDialog()) {
+                showFunctionsIntroductionForTheFirstTime();
+                // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
+                return true;
+            } else {
                 return false;
-            }
-        } else {
-            if (!isActivated) {
-                if (checkActivationDialog()) {
-                    showFunctionsIntroductionForTheFirstTime();
-                    // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
-                    return true;
-                } else {
-                    return false;
-                }
             }
         }
 

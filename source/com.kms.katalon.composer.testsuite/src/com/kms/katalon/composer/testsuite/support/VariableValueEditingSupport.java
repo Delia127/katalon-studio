@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testsuite.support;
 
+import java.io.File;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -19,6 +21,8 @@ import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.db.DatabaseConnection;
+import com.kms.katalon.core.testdata.DBData;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
@@ -113,18 +117,16 @@ public class VariableValueEditingSupport extends TypeCheckedEditingSupport<Varia
         if (!isTestDataIdValid(variableLink, testDataId)) {
             return false;
         }
-
+        String projectLocation = getProjectFolderLocation();
         try {
-            if (StringUtils.isNotEmpty(testDataId)) {
-                testData = TestDataFactory.findTestDataForExternalBundleCaller(testDataId, getProjectFolderLocation());
-                return true;
-            }
-        } catch (Exception ex) {
+			testData = TestDataController.getInstance().getTestDataInstance(testDataId, projectLocation);
+			return true;
+		} catch (Exception ex) {
             // Show data source of test data not found dialog.
             MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
                     MessageFormat.format(StringConstants.SUP_WARN_MSG_TEST_DATA_NOT_AVAILABLE, testDataId));
             LoggerSingleton.logError(ex);
-        }
+		}
         return false;
     }
 

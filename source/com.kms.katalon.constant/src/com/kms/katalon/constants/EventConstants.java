@@ -12,6 +12,8 @@ public class EventConstants {
 
     public static final String ACTIVATION_CHECKED = "ACTIVATION/CHECKED";
     
+    public static final String ACTIVATION_DEACTIVATED = "ACTIVATION/DEACTIVATED";
+    
     public static final String WORKSPACE_PLUGIN_LOADED = "WORKSPACE/PLUGIN_LOADED";
 
     public static final String ACTIVATION_QTEST_INTEGRATION_CHECK = "ACTIVATION/QTEST_INTEGRATION_CHECK";
@@ -205,6 +207,8 @@ public class EventConstants {
     public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_POSTMAN = "WSOBJECT/POSTMAN";
 
     public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL = "WSOBJECT/WSDL";
+
+    public static final String UNUSED_TEST_OBJECTS_UPDATED = "UNUSED_TESTOBJECT/EXPORT";
 
     // Report Event
     public static final String REPORT_OPEN = "REPORT/OPEN";
@@ -407,4 +411,8 @@ public class EventConstants {
     public static final String BASIC_REPORT_PLUGIN_INSTALLED = "PLUGIN/BASIC_REPORT_INSTALLED";
 
     public static final String REPORT_EXPORT_PROVIDERS_COLLECTED = "PLUGIN/EXPORT_PROVIDER_COLLECTED";
+    
+    public static final String AFTER_PLUGIN_ACTIVATION = "KATALON_PLUGIN/AFTER_ACTIVATION";
+    
+    public static final String BEFORE_PLUGIN_DEACTIVATION = "KATALON_PLUGIN/BEFORE_DEACTIVATION";
 };

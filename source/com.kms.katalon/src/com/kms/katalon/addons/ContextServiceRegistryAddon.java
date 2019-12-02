@@ -10,6 +10,7 @@ import com.kms.katalon.composer.handlers.ActiveEventLogPartHandler;
 import com.kms.katalon.composer.handlers.CheckForUpdateOnStartupHandler;
 import com.kms.katalon.composer.handlers.InstallBasicReportPluginHandler;
 import com.kms.katalon.composer.handlers.InstallComposerArtifactBundleHandler;
+import com.kms.katalon.composer.handlers.InstallSmartXPathBundleHandler;
 import com.kms.katalon.composer.handlers.ProjectToolbarHandler;
 
 
@@ -27,6 +28,7 @@ public class ContextServiceRegistryAddon {
         ContextInjectionFactory.make(ActiveEventLogPartHandler.class, context);
 //        ContextInjectionFactory.make(InstallBasicReportPluginHandler.class, context);
         ContextInjectionFactory.make(InstallComposerArtifactBundleHandler.class, context);
+        ContextInjectionFactory.make(InstallSmartXPathBundleHandler.class, context);
     }
     
 }

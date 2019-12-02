@@ -3,6 +3,7 @@ package com.kms.katalon.composer.explorer.parts;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -305,6 +306,12 @@ public class ExplorerPart {
 
         // loadSavedState(part);
         registerEventListeners();
+
+        if (ProjectController.getInstance().getCurrentProject() != null) {
+            setTopControlTreeComposite();
+        } else {
+            setTopControlGettingStarted();
+        }
     }
     
     private void registerEventListeners() {
@@ -312,9 +319,7 @@ public class ExplorerPart {
             
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
-                stackLayout.topControl = gettingStartComposite;
-                gettingStartView.refreshRecentProjects();
-                stackComposite.layout(true);
+                setTopControlGettingStarted();
             }
         });
 
@@ -322,10 +327,20 @@ public class ExplorerPart {
             
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
-                stackLayout.topControl = treeComposite;
-                stackComposite.layout(true);
+                setTopControlTreeComposite();
             }
         });
+    }
+
+    private void setTopControlTreeComposite() {
+        stackLayout.topControl = treeComposite;
+        stackComposite.layout(true);
+    }
+    
+    private void setTopControlGettingStarted() {
+        stackLayout.topControl = gettingStartComposite;
+        gettingStartView.refreshRecentProjects();
+        stackComposite.layout(true);
     }
 
     private void createExplorerTreeViewerIfDisposed() {
@@ -607,7 +622,7 @@ public class ExplorerPart {
                     || (!((boolean) isForcingReload) && (treeEntities == null || treeEntities.isEmpty()))) {
                 List<ITreeEntity> treeEntities = TreeEntityUtil.getAllTreeEntity(ProjectController.getInstance()
                         .getCurrentProject());
-                eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
+                reloadTreeInputEventHandler(Arrays.asList(treeEntities.stream().toArray()));
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -645,8 +660,6 @@ public class ExplorerPart {
             getViewer().setExpandedElements(visibleExpandedElements);
             // --- IMPORTANT for saving and restore session ---
             part.getTransientData().put(CTreeViewer.class.getSimpleName(), treeViewer);
-            
-           
             // --- END ---
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -807,8 +820,18 @@ public class ExplorerPart {
         if (object == null || !(object instanceof ITreeEntity)) {
             return;
         }
-        getViewer().setExpandedState(object, true);
-        getViewer().setSelection(new StructuredSelection(object));
+        ITreeEntity entity = (ITreeEntity) object;
+        try {
+            if (entity.getParent() != null) {
+                getViewer().setExpandedState(object, true);
+                getViewer().setSelection(new StructuredSelection(object));
+            } else {
+                getViewer().setSelection(new StructuredSelection(new TreePath(new Object[] { entity })));
+                
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     @Inject

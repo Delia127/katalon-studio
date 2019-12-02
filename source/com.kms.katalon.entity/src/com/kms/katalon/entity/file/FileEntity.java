@@ -28,6 +28,10 @@ public abstract class FileEntity extends Entity implements IFileEntity {
             return name + getFileExtension();
         }
     }
+    
+    public String getLocationProjectFolder(){
+    	return project.getFolderLocation();
+    }
 
     @Override
     public String getRelativePath() {
