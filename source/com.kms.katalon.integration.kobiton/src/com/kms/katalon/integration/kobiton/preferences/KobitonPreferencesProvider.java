@@ -1,9 +1,15 @@
 package com.kms.katalon.integration.kobiton.preferences;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
@@ -77,6 +83,27 @@ public class KobitonPreferencesProvider {
                 List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
                 if (!apiKeys.isEmpty()) {
                     KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
+
+                    URL url = new URL("https://api.kobiton.com/v1/users/me/");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                    conn.setRequestProperty("Authorization", "Bearer " + kobitonToken);
+
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setRequestMethod("GET");
+
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    String output;
+
+                    StringBuffer response = new StringBuffer();
+                    while ((output = in.readLine()) != null) {
+                        response.append(output);
+                    }
+
+                    in.close();
+                    JsonObject convertedObject = new Gson().fromJson(response.toString(), JsonObject.class);
+                    String userName = convertedObject.get("username").getAsString();
+                    KobitonPreferencesProvider.saveKobitonUserName(userName);
                 }
             }
 

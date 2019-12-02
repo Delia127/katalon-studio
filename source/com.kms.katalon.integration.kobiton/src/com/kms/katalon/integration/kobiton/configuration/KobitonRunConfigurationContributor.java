@@ -20,7 +20,6 @@ import com.kms.katalon.execution.webui.configuration.contributor.WebUIRunConfigu
 import com.kms.katalon.integration.kobiton.constants.IntegrationKobitonMessages;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
-import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
 import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
@@ -92,7 +91,7 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
             }
 
             selectedDevice = selectedDeviceOpt.get();
-        }else {
+        } else {
             IPreferenceStore store = PreferenceStoreManager
                     .getPreferenceStore(KobitonPreferenceConstants.KOBITON_QUALIFIER);
             if (consoleOption instanceof StringConsoleOption) {
