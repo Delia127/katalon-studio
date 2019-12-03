@@ -55,6 +55,7 @@ public class InstallationCommandStep extends InstallationStep {
             }
         } catch (IOException error) {
             LoggerSingleton.logError(error);
+            throw new RunInstallationStepException("Failed to run the installation command.", error);
         }
     }
 
