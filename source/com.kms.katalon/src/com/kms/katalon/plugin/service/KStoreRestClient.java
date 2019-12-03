@@ -206,7 +206,7 @@ public class KStoreRestClient {
             post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
 
-            try (CloseableHttpClient client = getHttpClient(KStoreUrls.getAuthenticateAPIUrl());
+            try (CloseableHttpClient client = getHttpClient(KStoreUrls.getInstallRecommendedPluginsAPIUrl());
                     CloseableHttpResponse response = client.execute(post);) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode == HttpStatus.SC_OK) {
