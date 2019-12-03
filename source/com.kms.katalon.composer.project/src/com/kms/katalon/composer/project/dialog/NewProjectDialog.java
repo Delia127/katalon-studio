@@ -590,7 +590,7 @@ public class NewProjectDialog extends TitleAreaDialog {
     protected void okPressed() {
         okButtonClicked = true;
 
-        name = txtProjectName.getText();
+        name = txtProjectName.getText().trim();
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
 
