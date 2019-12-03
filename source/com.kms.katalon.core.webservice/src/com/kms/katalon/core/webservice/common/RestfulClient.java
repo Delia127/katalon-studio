@@ -213,7 +213,7 @@ public class RestfulClient extends BasicRequestor {
             bodyLength = responseEntity.getContentLength();
             startTime = System.currentTimeMillis();
             try {
-                responseBody = EntityUtils.toString(responseEntity);
+                responseBody = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
             } catch (Exception e) {
                 responseBody = ExceptionUtils.getFullStackTrace(e);
             }

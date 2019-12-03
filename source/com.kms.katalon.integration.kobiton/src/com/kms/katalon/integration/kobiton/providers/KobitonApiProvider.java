@@ -3,6 +3,7 @@ package com.kms.katalon.integration.kobiton.providers;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -62,7 +63,7 @@ public class KobitonApiProvider {
         httpPost.setEntity(new StringEntity(jsonObject.toString()));
         httpPost.setHeader(HEADER_CONTENT_TYPE, HEADER_VALUE_CONTENT_TYPE_JSON);
         HttpResponse httpResponse = httpClient.execute(httpPost);
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
+        String responseString = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
         checkForApiError(responseString);
         Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT_ISO_8601).create();
         return gson.fromJson(responseString, KobitonLoginInfo.class);
@@ -93,7 +94,7 @@ public class KobitonApiProvider {
         HttpGet httpGet = new HttpGet(getKobitonURI(KobitonStringConstants.KOBITON_API_GET_KEYS));
         setHeaderForKobitonGetRequest(token, httpGet);
         HttpResponse httpResponse = httpClient.execute(httpGet);
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
+        String responseString = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
         checkForApiError(responseString);
         return new Gson().fromJson(responseString, new TypeToken<List<KobitonApiKey>>() {}.getType());
     }
@@ -105,7 +106,7 @@ public class KobitonApiProvider {
         HttpGet httpGet = new HttpGet(getKobitonURI(KobitonStringConstants.KOBITON_API_GET_ALL_DEVICES));
         setHeaderForKobitonGetRequest(token, httpGet);
         HttpResponse httpResponse = httpClient.execute(httpGet);
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
+        String responseString = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
         checkForApiError(responseString);
         Map<String, List<KobitonDevice>> allDevices = new GsonBuilder()
                 .registerTypeAdapter(KobitonDevice.class, new KobitonJsonDeserializer())
@@ -129,7 +130,7 @@ public class KobitonApiProvider {
         HttpGet httpGet = new HttpGet(getKobitonURI(KobitonStringConstants.KOBITON_API_GET_APPLICATION));
         setHeaderForKobitonGetRequest(token, httpGet);
         HttpResponse httpResponse = httpClient.execute(httpGet);
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
+        String responseString = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
         checkForApiError(responseString);
         return new Gson().fromJson(responseString, KobitonApplications.class).getApps();
     }

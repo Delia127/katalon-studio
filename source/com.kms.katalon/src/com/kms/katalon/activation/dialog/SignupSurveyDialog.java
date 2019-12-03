@@ -2,6 +2,7 @@ package com.kms.katalon.activation.dialog;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -189,7 +190,7 @@ public class SignupSurveyDialog extends AbstractDialog {
             LoggerSingleton.logInfo("Signup Survey Response Reason: " + response.getStatusLine().getReasonPhrase());
             HttpEntity responseEntity = response.getEntity();
             if (responseEntity != null) {
-                String responseContent = EntityUtils.toString(responseEntity);
+                String responseContent = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
                 LoggerSingleton.logInfo("Singup Survey Response Content: " + responseContent);
             }
             
