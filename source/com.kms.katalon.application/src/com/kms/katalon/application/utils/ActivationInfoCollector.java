@@ -111,6 +111,13 @@ public class ActivationInfoCollector {
 
                     if (licenseResource != null) {
                         license = licenseResource.getLicense();
+                        if (license != null) {
+                            Long orgId = license.getOrganizationId();
+                            if (orgId != null && !orgId.equals(org.getId())) {
+                                String organization = getOrganization(email, password, orgId);
+                                saveOrganization(organization);
+                            }
+                        }
                         String message = licenseResource.getMessage();
                         if (!StringUtils.isEmpty(message)) {
                             LogUtil.logError(message);
@@ -151,6 +158,11 @@ public class ActivationInfoCollector {
 
     public static String getExpirationDate() {
         return expirationDate;
+    }
+
+    private static void saveOrganization(String org) {
+        organization = JsonUtil.fromJson(org, Organization.class);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, org, true);
     }
 
     private static void saveOrganization(Organization org) {

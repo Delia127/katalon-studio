@@ -22,6 +22,7 @@ import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
@@ -181,8 +182,15 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         Date startTime = getStartTime() != null ? getStartTime() : new Date();
         Date endTime = getEndTime() != null ? getEndTime() : new Date();
         String executionResult = getExecutionResult();
-        Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(), executionResult,
-                endTime.getTime() - startTime.getTime());
+        ExecutionMode executionMode = getExecutedEntity().getEntity().getExecutionMode();
+        if (executionMode == ExecutionMode.PARALLEL) {
+            int maxConcurrentInstances = getExecutedEntity().getEntity().getMaxConcurrentInstances();
+            Trackings.trackExecuteParallelTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(), executionResult,
+                    endTime.getTime() - startTime.getTime(), maxConcurrentInstances);
+        } else {
+            Trackings.trackExecuteSequentialTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(), executionResult,
+                    endTime.getTime() - startTime.getTime());
+        }
     }
     
     protected String getExecutionResult() {

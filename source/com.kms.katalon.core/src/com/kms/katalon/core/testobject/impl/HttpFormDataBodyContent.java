@@ -1,10 +1,12 @@
 package com.kms.katalon.core.testobject.impl;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLConnection;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -20,35 +22,41 @@ import com.kms.katalon.core.testobject.HttpBodyContent;
  * @since 5.4
  */
 public class HttpFormDataBodyContent implements HttpBodyContent {
-    
+
     private static final String DEFAULT_CHARSET = "US-ASCII";
-    
+
     private MultipartEntityBuilder multipartEntityBuilder;
-    
+
     private HttpEntity multipartEntity;
 
     private String charset;
-    
+
     public HttpFormDataBodyContent(List<FormDataBodyParameter> parameters) throws FileNotFoundException {
         this.charset = DEFAULT_CHARSET;
-        
+
         multipartEntityBuilder = MultipartEntityBuilder.create();
         multipartEntityBuilder.setContentType(ContentType.MULTIPART_FORM_DATA);
         for (FormDataBodyParameter parameter : parameters) {
             if (parameter.getType().equals(FormDataBodyParameter.PARAM_TYPE_FILE)) {
-                multipartEntityBuilder.addBinaryBody(
-                        parameter.getName(), 
-                        new FileInputStream(parameter.getValue()), 
-                        ContentType.DEFAULT_BINARY,
-                        parameter.getValue());
+                multipartEntityBuilder.addBinaryBody(parameter.getName(), new FileInputStream(parameter.getValue()),
+                        ContentType.create(getContentType(parameter)), parameter.getValue());
             } else {
                 multipartEntityBuilder.addTextBody(parameter.getName(), parameter.getValue());
             }
         }
-        
+
         multipartEntity = multipartEntityBuilder.build();
     }
-    
+
+    private String getContentType(FormDataBodyParameter parameter) {
+        try {
+            URLConnection connection = new File(parameter.getValue()).toURI().toURL().openConnection();
+            return connection.getContentType();
+        } catch (IOException e) {
+            return ContentType.DEFAULT_BINARY.getMimeType();
+        }
+    }
+
     @Override
     public String getContentType() {
         return multipartEntity.getContentType().getValue();
