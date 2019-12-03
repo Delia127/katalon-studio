@@ -121,7 +121,7 @@ public class IosInstallDependenciesHandler {
                     error.getMessage(), ExceptionsUtil.getStackTraceForThrowable(error));
             return false;
         }
-        return StringUtils.isBlank(result);
+        return !StringUtils.isBlank(result);
     }
 
     private File getLogFile(String name) {
