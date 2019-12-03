@@ -436,7 +436,7 @@ public class DriverFactory {
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
                 remoteWebServerUrl, remoteWebServerType));
         if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
-            HttpCommandExecutor seleniumExecutor = getSeleniumExecutorForRemoteDriver(remoteWebServerUrl, url);
+            HttpCommandExecutor seleniumExecutor = getSeleniumExecutorForRemoteDriver(remoteWebServerUrl);
             return new CRemoteWebDriver(seleniumExecutor, desiredCapabilities, getActionDelay());
         }
         Object platformName = desiredCapabilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
@@ -465,13 +465,12 @@ public class DriverFactory {
         return executor;
     }
 
-    private static HttpCommandExecutor getSeleniumExecutorForRemoteDriver(String remoteWebServerUrl, String newUrl)
+    private static HttpCommandExecutor getSeleniumExecutorForRemoteDriver(String remoteWebServerUrl)
             throws URISyntaxException, IOException, GeneralSecurityException {
 
         URL url = new URL(remoteWebServerUrl);
-        URL driverUrl = PathUtil.getUrl(newUrl, "http");
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo, driverUrl));
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo, url));
         HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, clientFactory);
         return executor;
     }

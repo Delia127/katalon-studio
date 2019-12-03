@@ -166,7 +166,7 @@ public class KStoreRestClient {
             post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
             
-            try (CloseableHttpClient client = getHttpClient();
+            try (CloseableHttpClient client = getHttpClient(KStoreUrls.getAuthenticateAPIUrl());
                 CloseableHttpResponse response = client.execute(post);) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 AuthenticationResult result = new AuthenticationResult();
@@ -206,7 +206,8 @@ public class KStoreRestClient {
             post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
 
-            try (CloseableHttpClient client = getHttpClient(); CloseableHttpResponse response = client.execute(post);) {
+            try (CloseableHttpClient client = getHttpClient(KStoreUrls.getAuthenticateAPIUrl());
+                    CloseableHttpResponse response = client.execute(post);) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode == HttpStatus.SC_OK) {
                     LoggerSingleton.logInfo("Successful");
@@ -341,10 +342,6 @@ public class KStoreRestClient {
         if (throwable != null && declaredType.isInstance(throwable)) {
             throw declaredType.cast(throwable);
         }
-    }
-    
-    private CloseableHttpClient getHttpClient() throws URISyntaxException, IOException, GeneralSecurityException {
-        return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
     }
     
     private CloseableHttpClient getHttpClient(String url) throws URISyntaxException, IOException, GeneralSecurityException {
