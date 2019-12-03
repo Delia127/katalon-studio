@@ -101,6 +101,8 @@ public class ConsoleMain {
 
     public static final String KATALON_TESTOP_SERVER = "serverUrl";
 
+    public static final String KATALON_TESTOP_SERVER_SECOND_OPTION = "serverURL";
+
     public static final String KATALON_API_KEY_ON_PREMISE_OPTION = "apiKeyOnPremise";
 
     public static final String KATALON_API_KEY_ON_PREMISE_SECOND_OPTION = "apiKeyOP";
@@ -131,11 +133,20 @@ public class ConsoleMain {
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
-            
+
+            String serverUrl = null;
             if (options.has(KATALON_TESTOP_SERVER)) {
-                String serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+                serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+            }
+
+            if (options.has(KATALON_TESTOP_SERVER_SECOND_OPTION)) {
+                serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER_SECOND_OPTION));
+            }
+
+            if (!StringUtils.isEmpty(serverUrl)) {
                 ApplicationInfo.setTestOpsServer(serverUrl);
             }
+
             //Set server URL before show in log
             LocalInformationUtil.printSystemInformation();
 
@@ -182,7 +193,7 @@ public class ConsoleMain {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
 
                     //Test connection
-                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    serverUrl = ApplicationInfo.getTestOpsServer();
                     boolean testConnection = KatalonApplicationActivator.getFeatureActivator().testConnection(serverUrl);
                     if (!testConnection) {
                         LogUtil.logError(ExecutionMessageConstants.ACTIVATE_CANNOT_CONNECT_TO_SERVER);
@@ -198,12 +209,15 @@ public class ConsoleMain {
                     }
 
                     if (!isActivated) {
-                        String server = LicenseInfo.getServerURL();
-                        String apiKey = LicenseInfo.getApiKey();
+                        String server = LicenseInfo.getServerURL().trim();
+                        String apiKey = LicenseInfo.getApiKey().trim();
 
                         if (!StringUtils.isEmpty(server) && !StringUtils.isEmpty(apiKey)) {
                             LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER);
                             ApplicationInfo.setTestOpsServer(server);
+
+                            LocalInformationUtil.printLicenseServerInfo(server, apiKey);
+
                             errorMessage = new StringBuilder();
                             isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
                             error = errorMessage.toString();
