@@ -68,43 +68,30 @@ public class KobitonPreferencesProvider {
         String kobitonToken = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN);
         try {
             // Console mode: we just passed username and password. So, we need to generate token automatically.
-            if (StringUtils.isEmpty(kobitonToken)) {
-                KobitonLoginInfo loginInfo;
 
-                loginInfo = KobitonApiProvider.login(getKobitonUserName(), getKobitonPassword());
-                kobitonToken = loginInfo.getToken();
-                KobitonPreferencesProvider.saveKobitonToken(loginInfo.getToken());
-                List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(loginInfo.getToken());
-                if (!apiKeys.isEmpty()) {
-                    KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
+            List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
+            if (!apiKeys.isEmpty()) {
+                KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
+                URL url = new URL("https://api.kobiton.com/v1/users/me/");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                conn.setRequestProperty("Authorization", "Bearer " + kobitonToken);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestMethod("GET");
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String output;
+
+                StringBuffer response = new StringBuffer();
+                while ((output = in.readLine()) != null) {
+                    response.append(output);
                 }
 
-            } else {
-                List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
-                if (!apiKeys.isEmpty()) {
-                    KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
-
-                    URL url = new URL("https://api.kobiton.com/v1/users/me/");
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-                    conn.setRequestProperty("Authorization", "Bearer " + kobitonToken);
-
-                    conn.setRequestProperty("Content-Type", "application/json");
-                    conn.setRequestMethod("GET");
-
-                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    String output;
-
-                    StringBuffer response = new StringBuffer();
-                    while ((output = in.readLine()) != null) {
-                        response.append(output);
-                    }
-
-                    in.close();
-                    JsonObject convertedObject = new Gson().fromJson(response.toString(), JsonObject.class);
-                    String userName = convertedObject.get("username").getAsString();
-                    KobitonPreferencesProvider.saveKobitonUserName(userName);
-                }
+                in.close();
+                JsonObject convertedObject = new Gson().fromJson(response.toString(), JsonObject.class);
+                String userName = convertedObject.get("username").getAsString();
+                KobitonPreferencesProvider.saveKobitonUserName(userName);
             }
 
         } catch (Exception e) {

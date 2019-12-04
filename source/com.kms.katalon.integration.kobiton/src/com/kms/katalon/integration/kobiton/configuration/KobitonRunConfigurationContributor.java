@@ -96,7 +96,6 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
                     .getPreferenceStore(KobitonPreferenceConstants.KOBITON_QUALIFIER);
             if (consoleOption instanceof StringConsoleOption) {
                 store.setValue(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN, argumentValue);
-                KobitonPreferencesProvider.saveKobitonToken(argumentValue);
 
             }
         }
