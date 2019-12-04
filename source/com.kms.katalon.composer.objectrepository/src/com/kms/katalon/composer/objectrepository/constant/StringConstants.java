@@ -82,5 +82,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_FIND_UNUSED_TEST_OBJECT = ComposerObjectRepositoryMessageConstants.DIA_TITLE_FIND_UNUSED_TEST_OBJECT;
     public static final String UNUSED_TEST_OBJECT_LABEL = ComposerObjectRepositoryMessageConstants.UNUSED_TEST_OBJECT_LABEL;
     public static final String DIA_UNUSED_TEST_OBJECT_DELETE_MESSAGE = ComposerObjectRepositoryMessageConstants.DIA_UNUSED_TEST_OBJECT_DELETE_MESSAGE;
+    public static final String ADAP_MENU_CONTEXT_OPEN_TEST_OBJECT = ComposerObjectRepositoryMessageConstants.ADAP_MENU_CONTEXT_OPEN_TEST_OBJECT;
 
 }

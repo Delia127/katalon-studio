@@ -36,6 +36,8 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 public class RunConfiguration {
 	
 	public static final String SMART_XPATH_BUNDLE_ID = "com.katalon.katalon-studio-smart-xpath";
+	
+	public static final String ALLOW_USING_SMART_XPATH = "allowUsingSmartXPath";
 
 	public static final String OVERRIDING_GLOBAL_VARIABLES = "overridingGlobalVariables";
 
@@ -113,6 +115,10 @@ public class RunConfiguration {
     public static final String GLOBAL_SMART_WAIT_MODE = "globalSmartWaitEnabled";
     
     public static final String LOG_TEST_STEPS = "logTestSteps";
+
+    public static final String ALLOW_IMAGE_RECOGNITION = "allowImageRecognition";
+
+    public static final String IMAGE_RECOGNITION_ENABLED = "imageRecognitionEnabled";
     
     private static String settingFilePath;
 
@@ -542,13 +548,12 @@ public class RunConfiguration {
     }
     
 	public static Boolean shouldApplySmartXPath() {
-		if (getProperty(SMART_XPATH_BUNDLE_ID) != null) {
-			try {
-				return (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
-						.getBoolean("SmartXPathEnabled", true);
-			} catch (IOException e) {
-				KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage(), null, e);
-			}
+	    boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SMART_XPATH);
+		try {
+			return allowUsingSmartXPath && (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
+					.getBoolean("SmartXPathEnabled", true);
+		} catch (IOException e) {
+			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage(), null, e);
 		}
 		return false;
 	}
@@ -579,5 +584,10 @@ public class RunConfiguration {
     		return String.valueOf(object);
     	}
     	return null;
+    }
+    
+    public static boolean shouldApplyImageRecognition() {
+        return Boolean.TRUE.equals(getProperty(ALLOW_IMAGE_RECOGNITION))
+                && Boolean.TRUE.equals(getExecutionGeneralProperties().getOrDefault(IMAGE_RECOGNITION_ENABLED, true));
     }
 }

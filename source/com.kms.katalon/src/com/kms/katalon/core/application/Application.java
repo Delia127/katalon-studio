@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
@@ -16,6 +15,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
@@ -50,13 +50,8 @@ public class Application implements IApplication {
     @Override
     public Object start(IApplicationContext context) {
 
-        LocalDate now = LocalDate.now();
-        LocalDate expiredDate = LocalDate.of(2019, 11, 1);
-        if (now.isAfter(expiredDate)) {
-            LogUtil.logInfo("This beta build has expired");
-            return IApplication.EXIT_OK;
-        }
-
+        createLicenseFolder();
+        
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
         }
@@ -74,6 +69,9 @@ public class Application implements IApplication {
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
 
+        if (isKSRE()) {
+            return runConsole(context, appArgs);
+        }
         switch (runningModeParam) {
             case CONSOLE:
                 return runConsole(context, appArgs);
@@ -86,6 +84,10 @@ public class Application implements IApplication {
                 return IApplication.EXIT_OK;
         }
 
+    }
+
+    private boolean isKSRE() {
+        return Platform.getProduct().getId().equals("com.kms.katalon.console.product");
     }
 
     private Object runConsole(IApplicationContext context, final String[] appArgs) {
@@ -130,6 +132,11 @@ public class Application implements IApplication {
         String configRelativePath = Platform.OS_MACOSX.equals(Platform.getOS()) ? "../MacOS/config" : "config";
         if (Platform.inDevelopmentMode()) {
             configRelativePath += "-dev";
+        }
+
+        if (isKSRE()) {
+            configRelativePath = configRelativePath + "/session-" + KatalonApplication.SESSION_ID.substring(0, 8);
+            return new File(installLocation.getAbsolutePath(), configRelativePath);
         }
         return new File(installLocation.getAbsolutePath(), configRelativePath);
     }
@@ -233,6 +240,17 @@ public class Application implements IApplication {
             return true;
         } catch (BundleException ex) {
             return false;
+        }
+    }
+    
+    private void createLicenseFolder() {
+        try {
+            File licenseFolder = new File(ApplicationInfo.userDirLocation(), "license");
+            if (!licenseFolder.exists()) {
+                licenseFolder.mkdir();
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
         }
     }
 }

@@ -83,6 +83,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.checkpoint.CheckpointCell;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
@@ -563,7 +564,7 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
             setDirty(false);
             eventBroker.post(EventConstants.CHECKPOINT_UPDATED,
                     new Object[] { checkpoint.getIdForDisplay(), checkpoint });
-            CheckpointTreeEntity checkpointTreeEntity = TreeEntityUtil.getCheckpointTreeEntity(checkpoint);
+            CheckpointTreeEntity checkpointTreeEntity = TreeEntityUtil.getCheckpointTreeEntity(checkpoint, ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, checkpointTreeEntity);
         } catch (Exception e) {
             LoggerSingleton.logError(e);

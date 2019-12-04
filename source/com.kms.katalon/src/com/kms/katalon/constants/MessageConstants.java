@@ -125,6 +125,10 @@ public class MessageConstants extends NLS {
 
     public static String BTN_SAVE;
 
+    public static String BTN_CANCEL;
+
+    public static String BTN_REACTIVATE;
+
     public static String WAITTING_MESSAGE;
 
     public static String LINK_OPEN_ACTIVATE_FORM_OFFLINE;
@@ -227,6 +231,8 @@ public class MessageConstants extends NLS {
 
     public static String ERR_MSG_SUBJECT_CANNOT_BE_BLANK;
 
+    public static String ERR_MSG_SERVER_INVALID;
+
     public static String LBL_USERNAME;
 
     public static String LBL_PASSWORD;
@@ -285,6 +291,10 @@ public class MessageConstants extends NLS {
 
     public static String HAND_IMPORT_SELENIUM_IDE_MSG_ERROR;
 
+    public static String URL_KATALON_PRICING;
+
+    public static String TOOLTIP_SUBSCRIPTION;
+
     // CheckForUpdateHandler
     public static String HAND_MSG_UP_TO_DATE;
 
@@ -339,14 +349,16 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
     
     public static String ActivationDialogV2_MSG_GETTING_LICENSE_KEY;
-    
+
+    public static String ActivationDialogV2_MSG_CANNOT_CONNECT_TESTOPS;
+
     public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;
 
-    public static String ActivationDialogV2_LNK_KSE_ACTIVATION;
-
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
+    
+    public static String ActivationDialogV2_LBL_LEARN_ABOUT_KSE;
     
     public static String ActivationDialogV2_LBL_AGREE_TERM;
     
@@ -382,6 +394,8 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LNK_SIGNUP;
     
     public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATION;
+
+    public static String DIALOG_SELECT_LICENSE;
 
     // SignupDialog
     public static String SignupDialog_LBL_FULL_NAME;
@@ -449,6 +463,8 @@ public class MessageConstants extends NLS {
     
     public static String LINK_KS_PLUGINS_DOCS_LINK;
 
+    public static String MSG_ERROR_NOT_BELONG_ORG;
+
     // ReloadPluginsResultDialog
     public static String KStorePluginsDialog_COL_PLUGIN;
 
@@ -488,6 +504,12 @@ public class MessageConstants extends NLS {
     
     public static String KStorePluginsDialog_LBL_HELP;
 
+    public static String KStore_ERROR_INVALID_CREDENTAILS;
+
+    public static String KStore_MSG_INVALID_CREDENTAILS;
+
+    public static String TITLE_WARNING;
+
     public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 
     public static String HAND_INFO_NO_PLUGINS_FOUND;
@@ -515,18 +537,77 @@ public class MessageConstants extends NLS {
     
     public static String PAGE_BTN_BROWSE_FOLDER;
     
+    public static String DIA_TITLE_UPDATE_WEBDRIVER;
+    
     public static String MSG_UPDATING_WEB_DRIVER;
     
     public static String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static String MSG_FAIL_TO_UPDATE_WEB_DRIVER;
     
+    public static String MSG_USER_CANCEL_UPDATE;
+    
+    public static String MSG_TERMINATING_WEB_DRIVER;
+    
+    public static String DIA_TITLE_TERMINATE_WEB_DRIVER;
+    
+    public static String MSG_USER_CANCEL_WEB_DRIVER_TERMINATION;
+    
     public static String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
     
     public static String MSG_FAIL_TO_KILL_WEB_DRIVER;
 
     public static String MSG_ACTIVATING;
+
+    public static String MSG_CLEANING;
     
+    public static String MSG_DEACTIVATE;
+
+    // About
+    public static String About_LBL_VERSION;
+
+    public static String About_LBL_BUILD;
+
+    public static String About_LBL_EXPIRATION_DATE;
+
+    public static String About_LBL_COPYRIGHT;
+
+    public static String About_BTN_INSTALLATION_DETAILS;
+
+    public static String About_BTN_OK;
+
+    public static String About_LBL_TRIAL;
+
+    public static String About_MSG_CHECKING_VERSION;
+
+    public static String About_MSG_CHECKING_EXPIRATION_DATE;
+
+    public static String About_MSG_CANNOT_GET_EXPIRATION_DATE;
+
+    // ProxyConfigurationDialog
+    public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
+
+    // Account
+    public static String Account_LOGIN_AS;
+
+    public static String Account_VIEW_DASHBOARD;
+
+    public static String Account_PLAN_GRID_EXECUTION;
+
+    public static String Account_VISIT_PLUGIN;
+
+    public static String Account_RELOAD_PLUGIN;
+
+    public static String Account_MANAGE_PLUGIN;
+
+    public static String Account_MANAGE_API_KEY;
+
+    public static String Account_DEACTIVATE;
+
+    public static String Account_LOG_IN;
+
+    public static String Account_HELP;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);

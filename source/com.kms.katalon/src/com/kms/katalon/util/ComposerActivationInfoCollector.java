@@ -16,8 +16,12 @@ import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.plugin.util.PlatformHelper;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
@@ -32,12 +36,25 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     
     private static boolean isActivated;
 
-    public static boolean checkActivation() throws InvocationTargetException, InterruptedException {
+    public static boolean checkActivation(boolean isStartup) throws InvocationTargetException, InterruptedException {
         Shell shell = Display.getCurrent().getActiveShell();
         new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
+                if (isStartup) {
+                    monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
+                } else {
+                    //Logout
+                    monitor.beginTask(StringConstants.MSG_CLEANING, IProgressMonitor.UNKNOWN);
+                    try {
+                        ActivationInfoCollector.postEndSession();
+                        ActivationInfoCollector.releaseLicense();
+                        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.ACTIVATION_DEACTIVATED, null);
+                    } catch (Exception e) {
+                        LogUtil.logError(e);
+                    }
+                    ApplicationInfo.cleanAll();
+                }
                 isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                 monitor.done();
             }

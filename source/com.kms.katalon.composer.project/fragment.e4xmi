@@ -50,6 +50,7 @@
     <elements xsi:type="menu:HandledMenuItem" xmi:id="__E0bsAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.project.handledmenuitem.refresh" label="Refresh" tooltip="" command="_INCkcAmgEeWmsZWUQ_5cNA"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_n8_IEA2-EeWNbI7oMCmN4Q" elementId="com.kms.katalon.composer.project.handledmenuitem.settings" label="Settings" tooltip="" command="_gXvN8A2-EeWNbI7oMCmN4Q"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_CzNKkMvsEeaTkcmJGqGq4Q" elementId="com.kms.katalon.composer.project.handledmenuitem.close" label="Close" tooltip="" command="_M-UTsMvsEeaTkcmJGqGq4Q"/>
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_8KGAYPuMEemHNuAOVU_cGw" elementId="com.kms.katalon.composer.project.directmenuitem.closeAndCleanup" label="Close and Clean up" tooltip="Close and Clean up the current project" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.CloseAndCleanupProjectHandler"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_TqVD8A5-EeWhRqQJseEW0Q" featurename="bindings" parentElementId="com.kms.katalon.bindingtable.window">
     <elements xsi:type="commands:KeyBinding" xmi:id="_YTHM8A5-EeWhRqQJseEW0Q" elementId="com.kms.katalon.composer.project.keybinding.open" keySequence="M1+O" command="_hWtc0Bv5EeSWv6Y47Htaiw">

@@ -49,6 +49,8 @@ public interface IdConstants {
 
     public static final String IDE_CONSOLE_LOG_PART_ID = "com.kms.katalon.partstack.console.log";
 
+    public static final String IDE_PROBLEM_VIEW_PART_ID = "org.eclipse.ui.views.ProblemView";
+
     public static final String IDE_SEARCH_PART_ID = "org.eclipse.search.ui.views.SearchView";
 
     public static final String ECLIPSE_EXPRESSION_PART_ID = "org.eclipse.debug.ui.ExpressionView";
@@ -242,12 +244,18 @@ public interface IdConstants {
     public static final String XERCES_BUNDLE_ID = "org.apache.xerces.impl";
 
     public static final String XML_APIS_BUNDLE_ID = "xml-apis";
+    
+    public static final String KATALON_SMART_XPATH_BUNDLE_ID = "com.katalon.katalon-studio-smart-xpath";
 
     public static final String COMPOSER_EXECUTION_BUNDLE_ID = "com.kms.katalon.composer.execution";
 
     public static final String WORKBENCH_WINDOW_ID = "org.eclipse.ui.workbench";
 
+    public static final String DEBUG_UI_ID = "org.eclipse.debug.ui";
+
     public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
+    
+    public static final String EDITORS_ID = "org.eclipse.ui.editors";
     
     public static final String PLUGIN_DYNAMIC_EXECUTION = "com.katalon.katalon-studio-dynamic-execution-plugin";
     
@@ -350,4 +358,7 @@ public interface IdConstants {
     public static final String SETTING_CAPABILITIES_WINDOWS = "com.kms.katalon.composer.execution.settings.default.5";
     
     public static final String SETTING_CAPABILITIES_REMOTE = "com.kms.katalon.composer.execution.settings.default.4";
+    
+    // QTest Plugin
+    public static final String QTEST_PLUGIN_ID = "com.katalon.katalon-studio-qtest";
 }

@@ -76,6 +76,7 @@ Require-Bundle: net.sf.supercsv.super-csv,
  com.kms.katalon.poi,
  xml-apis,
  org.apache.commons.commons-text,
- com.mysql.cj
+ com.mysql.cj,
+ com.kms.katalon.proxyvole
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

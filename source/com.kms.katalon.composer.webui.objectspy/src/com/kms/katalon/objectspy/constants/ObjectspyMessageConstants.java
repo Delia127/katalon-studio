@@ -124,8 +124,6 @@ public class ObjectspyMessageConstants extends NLS {
     public static String PREF_LBL_LOAD_DOM_MAP;
 
     public static String PREF_LBL_ACTIVE_BROWSER_PORT;
-
-    public static String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
     
     public static String PREF_LBL_PIN_OBJECT_SPY_WINDOW;
 
@@ -142,10 +140,6 @@ public class ObjectspyMessageConstants extends NLS {
     public static String DIA_MSG_RADIO_MERGE;
 
     public static String DIA_MSG_RADIO_REPLACE;
-
-    public static String DIA_MSG_SELECT_ALL_BTN;
-
-    public static String DIA_MSG_DE_SELECT_ALL_BTN;
 
     public static String LBL_DLG_CONTINUE_WITH_OBJECT_SPY;
 
@@ -190,6 +184,12 @@ public class ObjectspyMessageConstants extends NLS {
     public static String DIA_MSG_HIGHLIGHTING;
 
     public static String DIA_MSG_VERIFYING;
+
+    public static String DIA_LBL_ADD_SCREENSHOT;
+	
+    public static String SCREENSHOT_TAKEN;
+
+    public static String FAIL_TO_TAKE_SCREENSHOT;
 
     static {
         // initialize resource bundle

@@ -360,5 +360,15 @@ chrome.runtime.onStartup.addListener(function () {
 });
 
 chrome.runtime.onInstalled.addListener(function (details) {
-    waitForConnection();
+    createMenus();
+    waitForConnection();    
 });
+
+function createMenus() {
+    browser.contextMenus.create({
+        id: "captureObject",
+        title: "Capture Object",
+        documentUrlPatterns: ["<all_urls>"],
+        contexts: ["all"]
+    });
+}

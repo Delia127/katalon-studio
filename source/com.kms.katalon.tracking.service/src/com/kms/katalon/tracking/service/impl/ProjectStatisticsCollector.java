@@ -319,7 +319,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     }
         
     private boolean isKobitonIntegrated() {
-        return KobitonPreferencesProvider.isKobitonIntegrationEnabled();
+        return KobitonPreferencesProvider.isKobitonIntegrationAvailable();
     }
     
     private boolean isqTestIntegrated() {

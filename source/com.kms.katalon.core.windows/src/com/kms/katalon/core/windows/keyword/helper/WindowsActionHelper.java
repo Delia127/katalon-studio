@@ -3,14 +3,24 @@ package com.kms.katalon.core.windows.keyword.helper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.FluentWait;
 
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
@@ -188,6 +198,18 @@ public class WindowsActionHelper {
         windowElement.sendKeys(text);
     }
 
+    public Point getPosition(WindowsTestObject testObject) {
+        WebElement windowElement = findElement(testObject);
+        return windowElement.getLocation();
+    }
+
+    public Rectangle getRect(WindowsTestObject testObject) {
+        WebElement windowElement = findElement(testObject);
+        Point position = windowElement.getLocation();
+        Dimension size = windowElement.getSize();
+        return new Rectangle(position.x, position.y, size.height, size.width);
+    }
+
     public void closeApp() {
         WindowsDriver<WebElement> windowsDriver = windowsSession.getRunningDriver();
         windowsDriver.closeApp();
@@ -217,5 +239,105 @@ public class WindowsActionHelper {
 
     public void switchToApplication() {
         windowsSession.setApplicationSession(true);
+    }
+    
+    public WindowsDriver<WebElement> switchToWindowTitle(String windowName)
+            throws IOException, URISyntaxException {
+        if (windowsSession.getDesktopDriver() == null) {
+            DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+            desiredCapabilities.setCapability("app", "Root");
+            WindowsDriver<WebElement> desktopDriver = new WindowsDriver<WebElement>(WindowsDriverFactory
+                    .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxy()),
+                    desiredCapabilities);
+            windowsSession.setDesktopDriver(desktopDriver);
+        }
+        WindowsDriver<WebElement> desktopDriver = windowsSession.getDesktopDriver();
+        
+        FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(desktopDriver)
+                .withTimeout(Duration.ofSeconds(60))
+                .pollingEvery(Duration.ofSeconds(5))
+                .ignoring(NoSuchElementException.class);
+
+        WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
+            @Override
+            public WebElement apply(WindowsDriver<WebElement> driver) {
+                WebElement webElement = null;
+                for (WebElement element : desktopDriver.findElementsByTagName("Window")) {
+                    try {
+                        if (element.getText().contains(windowName)) {
+                            webElement = element;
+                            break;
+                        }
+                    } catch (WebDriverException ignored) {}
+                }
+
+                if (webElement == null) {
+                    for (WebElement element : desktopDriver.findElementsByTagName("Pane")) {
+                        try {
+                            if (element.getText().contains(windowName)) {
+                                webElement = element;
+                                break;
+                            }
+                        } catch (WebDriverException ignored) {}
+                    }
+                }
+                return webElement;
+            }
+        });
+        if (webElement == null) {
+            throw new NoSuchElementException(MessageFormat.format("No such window matches with name: {0}", windowName));
+        }
+
+        String appTopLevelWindow = webElement.getAttribute("NativeWindowHandle");
+
+        if (StringUtils.isNotEmpty(appTopLevelWindow)) {
+            DesiredCapabilities retryDesiredCapabilities = new DesiredCapabilities(
+                    windowsSession.getInitCapabilities());
+            retryDesiredCapabilities.setCapability("appTopLevelWindow",
+                    Integer.toHexString(Integer.parseInt(appTopLevelWindow)));
+            WindowsDriver<WebElement> windowsDriver = WindowsDriverFactory.newWindowsDriver(
+                    windowsSession.getRemoteAddressURL(), retryDesiredCapabilities, windowsSession.getProxy());
+
+            windowsSession.setApplicationDriver(windowsDriver);
+            windowsSession.setDesktopDriver(desktopDriver);
+            windowsSession.setApplicationSession(true);
+            return windowsDriver;
+        }
+        throw new NotFoundException("The found window does not have NativeWindowHandle property");
+    }
+
+    public WindowsDriver<WebElement> switchToWindow(WindowsTestObject windowsObject)
+            throws IOException, URISyntaxException, IllegalAccessException {
+        if (windowsSession.getDesktopDriver() == null) {
+            DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+            desiredCapabilities.setCapability("app", "Root");
+            WindowsDriver<WebElement> desktopDriver = new WindowsDriver<WebElement>(WindowsDriverFactory
+                    .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxy()),
+                    desiredCapabilities);
+            windowsSession.setDesktopDriver(desktopDriver);
+        }
+        WindowsDriver<WebElement> desktopDriver = windowsSession.getDesktopDriver();
+        WebElement webElement = findElement(windowsObject);
+        if (webElement == null) {
+            throw new NoSuchElementException("No such window matches with the given windowsObject");
+        }
+
+        String appTopLevelWindow = webElement.getAttribute("NativeWindowHandle");
+
+        if (StringUtils.isNotEmpty(appTopLevelWindow)) {
+            DesiredCapabilities retryDesiredCapabilities = new DesiredCapabilities(
+                    windowsSession.getInitCapabilities());
+            retryDesiredCapabilities.setCapability("appTopLevelWindow",
+                    Integer.toHexString(Integer.parseInt(appTopLevelWindow)));
+            WindowsDriver<WebElement> windowsDriver = WindowsDriverFactory.newWindowsDriver(
+                    windowsSession.getRemoteAddressURL(), retryDesiredCapabilities, windowsSession.getProxy());
+
+            windowsSession.setApplicationDriver(windowsDriver);
+            windowsSession.setDesktopDriver(desktopDriver);
+            
+            windowsSession.setApplicationSession(true);
+            return windowsDriver;
+        }
+        throw new NotFoundException("The found window does not have NativeWindowHandle property");
     }
 }

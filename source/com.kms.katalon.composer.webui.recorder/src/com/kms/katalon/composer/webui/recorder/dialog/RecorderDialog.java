@@ -73,6 +73,9 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
 import com.google.common.hash.Hashing;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
@@ -622,10 +625,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         capturedObjectComposite.addListener(objectPropertiesView,
                 Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
-
+        
         selectorEditor.addListener(verifyView, Arrays.asList(ObjectSpyEvent.SELECTOR_HAS_CHANGED));
         objectPropertiesView.addListener(selectorEditor, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
         objectPropertiesView.addListener(verifyView, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
+
+        verifyView.addListener(objectPropertiesView, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
 
         this.addListener(verifyView,
                 Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
@@ -863,32 +868,34 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         });
         runAllStepsItem.setSelection(true);
 
-        MenuItem runSelectedSteps = new MenuItem(playMenu, SWT.PUSH);
-        runSelectedSteps.setText(
-                ControlUtils.createMenuItemText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
-        runSelectedSteps.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                runSelectedSteps();
+        if (isEnterpriseAccount()) {
+            MenuItem runSelectedSteps = new MenuItem(playMenu, SWT.PUSH);
+            runSelectedSteps.setText(
+                    ControlUtils.createMenuItemText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
+                            KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
+            runSelectedSteps.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    runSelectedSteps();
+                }
+            });
+            if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
+                runSelectedSteps.setEnabled(false);
             }
-        });
-        if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
-            runSelectedSteps.setEnabled(false);
-        }
 
-        MenuItem runFromSelectedStep = new MenuItem(playMenu, SWT.PUSH);
-        runFromSelectedStep.setText(ControlUtils.createMenuItemText(
-                ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_SELECTED_STEP,
-                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
-        runFromSelectedStep.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                runFromStep();
+            MenuItem runFromSelectedStep = new MenuItem(playMenu, SWT.PUSH);
+            runFromSelectedStep.setText(ControlUtils.createMenuItemText(
+                    ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_SELECTED_STEP,
+                    KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
+            runFromSelectedStep.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    runFromStep();
+                }
+            });
+            if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
+                runFromSelectedStep.setEnabled(false);
             }
-        });
-        if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
-            runFromSelectedStep.setEnabled(false);
         }
     }
 
@@ -1866,10 +1873,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 runAllSteps();
                 return;
             case EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD:
-                runSelectedSteps();
+                if (isEnterpriseAccount()) {
+                    runSelectedSteps();
+                }
                 return;
             case EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD:
-                runFromStep();
+                if (isEnterpriseAccount()) {
+                    runFromStep();
+                }
                 return;
         }
     }
@@ -2047,6 +2058,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             return null;
         }
         return (WebUIDriverType) selectedBrowser.getDriverType();
+    }
+
+    private boolean isEnterpriseAccount() {
+        return LicenseUtil.isNotFreeLicense();
     }
 
 }

@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
 import java.util.Map;
 
 import com.kms.katalon.crypto.LicenseHelper;
@@ -40,12 +41,24 @@ public class LicenseService {
     
     private License getLicenseFromClaims(Map<String, Claim> claims, String jws) throws IOException {
         License license = new License();
+        license.setLicenseType(claims.get(LicenseConstants.LICENSE_TYPE).asString());
         license.setExpirationDate(claims.get(LicenseConstants.EXPIRATION_DATE).asDate());
+        license.setRenewTime(claims.get(LicenseConstants.RENEW_TIME).asDate());
         license.setMachineId(claims.get(LicenseConstants.MACHINE_ID).asString());
-        Claim orgId =  claims.get(LicenseConstants.ORGANIZATION_ID);
-        if (orgId != null) {
-            license.setOrganizationId(claims.get(LicenseConstants.ORGANIZATION_ID).asLong());
+        Claim orgIdClaim =  claims.get(LicenseConstants.ORGANIZATION_ID);
+        Long orgId = null;
+        if (orgIdClaim != null) {
+            orgId = claims.get(LicenseConstants.ORGANIZATION_ID).asLong();
+        } 
+        license.setOrganizationId(orgId);
+
+        Claim testingClaim = claims.get(LicenseConstants.TESTING);
+        if (testingClaim != null) {
+            license.setTesting(claims.get(LicenseConstants.TESTING).asBoolean());
+        } else {
+            license.setTesting(false);
         }
+
         license.setFeatures(claims.get(LicenseConstants.FEATURES).asList(Feature.class));
         license.setJwtCode(jws);
         return license;

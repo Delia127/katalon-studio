@@ -315,7 +315,9 @@ public interface IImageKeys {
     public static final String SAVE_ALL_DISABLED_16 = "toolbar/save_all_disabled_16.png"; //$NON-NLS-1$
     
     public static final String PROFILE_16 = "toolbar/profile_16.png";
-    
+
+    public static final String KATALON_SUBSCRIPTION_24 = "toolbar/pricing_32x24.png";
+
     public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
     
     public static final String KATALON_ACCOUNT_24 = "toolbar/account_32x24.png"; //$NON-NLS-1$
@@ -790,4 +792,13 @@ public interface IImageKeys {
     public static final String IMG_REPORT_EMPTY_TEST_SUITE = "result_tab/empty_report_test_suite.png";
     
     public static final String IMG_REPORT_EMPTY_TEST_SUITE_COLLECTION = "result_tab/empty_report_test_suite_collection.png";
+    
+    //About dialog
+    public static final String LOGO_KATALON_STUDIO = "about/KS_logo_200px.png";
+    
+    public static final String LOGO_KSE = "about/KSE_logo_200px.png";
+    
+    public static final String IMG_ABOUT_BG_LIGHT = "about/background_light.png";
+    
+    public static final String IMG_ABOUT_BG_DRANK = "about/background_dark.png";
 }
