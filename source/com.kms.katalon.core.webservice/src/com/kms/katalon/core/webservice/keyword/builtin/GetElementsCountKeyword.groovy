@@ -2,6 +2,8 @@ package com.kms.katalon.core.webservice.keyword.builtin
 
 import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.configuration.RunConfiguration
+import com.kms.katalon.core.exception.StepErrorException
+import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.model.FailureHandling
@@ -31,7 +33,7 @@ class GetElementsCountKeyword extends WebserviceAbstractKeyword {
     }
 
     @CompileStatic
-    public int getElementsCount(ResponseObject response, String locator, FailureHandling flowControl) throws Exception {
+    public int getElementsCount(ResponseObject response, String locator, FailureHandling flowControl) throws StepErrorException, StepFailedException {
         Object retValue = KeywordMain.runKeyword({
             WebServiceCommonHelper.checkResponseObject(response)
             Object retValue = response.isXmlContentType() ?

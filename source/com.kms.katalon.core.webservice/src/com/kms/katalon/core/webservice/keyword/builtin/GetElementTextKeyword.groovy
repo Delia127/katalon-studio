@@ -33,7 +33,7 @@ class GetElementTextKeyword extends WebserviceAbstractKeyword {
     }
 
     @CompileStatic
-    public  String getElementText(ResponseObject response, String locator, FailureHandling flowControl) throws Exception {
+    public  String getElementText(ResponseObject response, String locator, FailureHandling flowControl) throws StepErrorException, StepFailedException {
         Object retValue = KeywordMain.runKeyword({
             WebServiceCommonHelper.checkResponseObject(response)
             Object retValue = response.isXmlContentType() ?

@@ -34,7 +34,7 @@ class GetElementPropertyValueKeyword extends WebserviceAbstractKeyword {
     }
     
     @CompileStatic
-    public Object getElementPropertyValue(ResponseObject response, String locator, FailureHandling flowControl) throws Exception {
+    public Object getElementPropertyValue(ResponseObject response, String locator, FailureHandling flowControl) throws StepErrorException, StepFailedException {
         return KeywordMain.runKeyword({
             WebServiceCommonHelper.checkResponseObject(response);
             Object retValue = response.isXmlContentType() ?

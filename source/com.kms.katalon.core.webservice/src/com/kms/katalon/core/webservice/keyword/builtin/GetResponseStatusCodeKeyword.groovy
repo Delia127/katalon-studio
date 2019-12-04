@@ -7,6 +7,7 @@ import com.kms.katalon.core.webservice.keyword.internal.WebserviceAbstractKeywor
 import groovy.transform.CompileStatic
 
 import com.kms.katalon.core.annotation.internal.Action
+import com.kms.katalon.core.exception.StepErrorException
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.keyword.internal.SupportLevel
@@ -31,7 +32,7 @@ public class GetResponseStatusCodeKeyword extends WebserviceAbstractKeyword {
     }
 
     @CompileStatic
-    public int getResponseStatusCode(ResponseObject responseObject, FailureHandling flowControl) throws Exception {
+    public int getResponseStatusCode(ResponseObject responseObject, FailureHandling flowControl) throws StepErrorException, StepFailedException {
         Object retValue = KeywordMain.runKeyword({
             WebServiceCommonHelper.checkResponseObject(responseObject)
             int statusCode = responseObject.getStatusCode()
