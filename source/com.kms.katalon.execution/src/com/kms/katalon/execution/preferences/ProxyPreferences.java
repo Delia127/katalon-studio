@@ -20,7 +20,7 @@ public class ProxyPreferences {
     }
 
     public static ProxyInformation getProxyInformation() {
-        IPreferenceStore store = getPreferenceStore();
+        IPreferenceStore store = getPreferenceStore();       
         ProxyInformation proxyInfo = new ProxyInformation();
         proxyInfo.setProxyOption(StringUtils.defaultIfEmpty(store.getString(ProxyPreferenceConstants.PROXY_OPTION),
                 ProxyOption.NO_PROXY.name()));
@@ -30,7 +30,13 @@ public class ProxyPreferences {
         proxyInfo.setProxyServerPort(store.getInt(ProxyPreferenceConstants.PROXY_SERVER_PORT));
         proxyInfo.setUsername(store.getString(ProxyPreferenceConstants.PROXY_USERNAME));
         proxyInfo.setPassword(store.getString(ProxyPreferenceConstants.PROXY_PASSWORD));
-        proxyInfo.setExceptionList(store.getString(ProxyPreferenceConstants.PROXY_EXCEPTION_LIST));
+        
+        String proxyName = store.getString(ProxyPreferenceConstants.PROXY_EXCEPTION_LIST);
+        if (StringUtils.isEmpty(proxyName)) {
+            proxyName = ProxyOption.NO_PROXY.getDisplayName();
+        }
+        proxyInfo.setExceptionList(proxyName);
+        
         return proxyInfo;
     }
 

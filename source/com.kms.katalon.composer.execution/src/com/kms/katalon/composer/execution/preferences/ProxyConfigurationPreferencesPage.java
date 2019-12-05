@@ -273,6 +273,10 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         txtPort.setText(proxyInfo.getProxyServerPort() > 0 ? proxyInfo.getProxyServerPort() + "" : "");
         txtUsername.setText(proxyInfo.getUsername());
         txtPass.setText(proxyInfo.getPassword());
+        
+        if (StringUtils.isEmpty(proxyInfo.getExceptionList())) {
+            cboProxyOption.setText(ProxyOption.NO_PROXY.getDisplayName());
+        }
         txtExceptionList.setText(proxyInfo.getExceptionList());
 
         String proxyOption = cboProxyOption.getText();
