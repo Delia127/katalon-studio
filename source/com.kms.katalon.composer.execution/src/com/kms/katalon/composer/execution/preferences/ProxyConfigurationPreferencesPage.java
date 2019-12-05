@@ -41,6 +41,8 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
     private Text txtUsername;
 
     private Text txtPass;
+    
+    private Text txtExceptionList;
 
     private Combo cboProxyOption;
 
@@ -163,6 +165,21 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
                 }
             }
         });
+        
+        Label separatorEx = new Label(area, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separatorEx.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        
+        Label lblExceptionList = new Label(innerComposite, SWT.NONE);
+        GridData gdLblException = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblExceptionList.setLayoutData(gdLblException);
+        lblExceptionList.setText(MessageConstants.LBL_EXCEPTION_LIST);
+
+        txtExceptionList = new Text(innerComposite, SWT.BORDER);
+        GridData gdExceptionList = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdExceptionList.widthHint = 320;
+        gdExceptionList.heightHint = 28;
+        txtExceptionList.setLayoutData(gdExceptionList);
+        
         chkRequireAuthentication = new Button(innerComposite, SWT.CHECK);
         chkRequireAuthentication.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         chkRequireAuthentication.setText(MessageConstants.CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION);
@@ -198,10 +215,6 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         GridData gdPass = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtPass.setLayoutData(gdPass);
         
-        // Create a horizontal separator
-        Label separator = new Label(area, SWT.HORIZONTAL | SWT.SEPARATOR);
-        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
         initialize();
 
         return area;
@@ -222,6 +235,8 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         txtUsername.setText("");
         txtPass.setEnabled(false);
         txtPass.setText("");
+        txtExceptionList.setEnabled(false);
+        txtExceptionList.setText("");
     }
 
     private void selectSystemProxyOption() {
@@ -240,6 +255,8 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
             txtPass.setEnabled(false);
             txtPass.setText("");
         }
+        txtExceptionList.setEnabled(true);
+        txtExceptionList.setText("");
     }
 
     private void initialize() {
@@ -256,6 +273,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         txtPort.setText(proxyInfo.getProxyServerPort() > 0 ? proxyInfo.getProxyServerPort() + "" : "");
         txtUsername.setText(proxyInfo.getUsername());
         txtPass.setText(proxyInfo.getPassword());
+        txtExceptionList.setText(proxyInfo.getExceptionList());
 
         String proxyOption = cboProxyOption.getText();
         if (ApplicationMessageConstants.NO_PROXY.equals(proxyOption)) {
@@ -287,6 +305,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
                 ? String.valueOf(ProxyPreferenceDefaultValueInitializer.PROXY_SERVER_PORT_DEFAULT_VALUE) : portValue);
         proxyInfo.setUsername(txtUsername.getText());
         proxyInfo.setPassword(txtPass.getText());
+        proxyInfo.setExceptionList(txtExceptionList.getText());
         try {
             ProxyPreferences.saveProxyInformation(proxyInfo);
             return true;

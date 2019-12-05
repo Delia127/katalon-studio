@@ -144,7 +144,7 @@ public class WindowsInspectorController {
             throws SeleniumException, IOException, URISyntaxException {
         String url = driverConnector.getWinAppDriverUrl();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(driverConnector.getDesiredCapabilities());
-        Proxy proxy = ProxyUtil.getProxy(ProxyPreferences.getProxyInformation());
+        Proxy proxy = ProxyUtil.getProxy(ProxyPreferences.getProxyInformation(), new URL(url));
         session = WindowsDriverFactory.startApplication(new URL(url), appFile, desiredCapabilities, proxy, applicationTitle);
     }
 

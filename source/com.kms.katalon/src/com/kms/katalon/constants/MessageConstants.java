@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class MessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.constants.messages";
 
+    public static String LBL_EXCEPTION_LIST;
+    
     public static String HAND_QUIT_DIA_TITLE;
 
     public static String HAND_QUIT_DIA_MSG;

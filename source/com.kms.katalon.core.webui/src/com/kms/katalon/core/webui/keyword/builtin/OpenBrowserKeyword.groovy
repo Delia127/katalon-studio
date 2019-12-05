@@ -71,7 +71,7 @@ public class OpenBrowserKeyword extends WebUIAbstractKeyword {
     public void openBrowser(String rawUrl, FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
             logger.logDebug(StringConstants.KW_LOG_INFO_OPENING_BROWSER)
-            DriverFactory.openWebDriver()
+            DriverFactory.openWebDriver(rawUrl)
             if (rawUrl != null && !rawUrl.isEmpty()) {
                 URL url = PathUtil.getUrl(rawUrl, "http")
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_BROWSER_TO, url.toString()))
