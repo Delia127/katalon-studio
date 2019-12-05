@@ -133,6 +133,14 @@ public class ConsoleMain {
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
+            
+            // Set option value to application configuration
+            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
+                String optionName = opt.getOption();
+                if (options.hasArgument(optionName)) {
+                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
+                }
+            }
 
             String serverUrl = null;
             if (options.has(KATALON_TESTOP_SERVER)) {
@@ -245,14 +253,6 @@ public class ConsoleMain {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
                 addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
-            }
-            
-            // Set option value to application configuration
-            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
-                String optionName = opt.getOption();
-                if (options.hasArgument(optionName)) {
-                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
-                }
             }
 
             boolean isCliEnabled = FeatureServiceConsumer.getServiceInstance().canUse(TestOpsFeatureKey.CLI);
