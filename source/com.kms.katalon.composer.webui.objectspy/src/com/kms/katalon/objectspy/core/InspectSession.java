@@ -348,7 +348,7 @@ public class InspectSession implements Runnable {
     }
     
     private static Map<String, Object> getDefaultProxy(String driverType, String url) {
-        if (StringUtils.isBlank(driverType) || StringUtils.isBlank(url)) {
+        if (StringUtils.isBlank(url)) {
             return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
         } else {
             return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation(), url, driverType);
