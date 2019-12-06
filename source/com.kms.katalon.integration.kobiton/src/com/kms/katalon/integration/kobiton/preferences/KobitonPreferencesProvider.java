@@ -60,34 +60,16 @@ public class KobitonPreferencesProvider {
     
     public static String getKobitonToken() {
         String kobitonToken = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN);
-
-        // Console mode: we just passed username and password. So, we need to generate token automatically.
-        if (StringUtils.isEmpty(kobitonToken)) {
-            KobitonLoginInfo loginInfo;
-            try {
-                loginInfo = KobitonApiProvider.login(getKobitonUserName(), getKobitonPassword());
-                kobitonToken = loginInfo.getToken();
-                KobitonPreferencesProvider.saveKobitonToken(loginInfo.getToken());
-                List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(loginInfo.getToken());
-                if (!apiKeys.isEmpty()) {
-                    KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException("Authentication kobiton system failed !", e);
+        List<KobitonApiKey> apiKeys;
+        try {
+            apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
+            if (!apiKeys.isEmpty()) {
+                KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
             }
-        } else {
-            List<KobitonApiKey> apiKeys;
-            try {
-                apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
-                if (!apiKeys.isEmpty()) {
-                    KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("API key kobiton system failed !", e);
-            }
+        } catch (Exception e) {
+            throw new RuntimeException("API key kobiton system failed !", e);
         }
-        
+
         return kobitonToken;
 
     }
