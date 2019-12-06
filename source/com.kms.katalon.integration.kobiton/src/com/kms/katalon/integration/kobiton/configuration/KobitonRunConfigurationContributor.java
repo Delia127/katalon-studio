@@ -72,30 +72,37 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         return Arrays.asList(getKobitonTokenConsoleOpt(StringUtils.EMPTY),
-                getKobitonDeviceIdConsoleOpt(StringUtils.EMPTY));
+                getKobitonUserNameConsoleOpt(StringUtils.EMPTY), getKobitonDeviceIdConsoleOpt(StringUtils.EMPTY));
     }
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-        if(consoleOption.getOption().equals("kobitonDeviceId")) {
+        if (consoleOption.getOption().equals("kobitonDeviceId")) {
             int kobitonDeviceId = Integer.valueOf(argumentValue);
-            
+
             List<KobitonDevice> availableDevices = KobitonApiProvider
                     .getKobitonFavoriteDevices(KobitonPreferencesProvider.getKobitonToken());
             Optional<KobitonDevice> selectedDeviceOpt = availableDevices.stream()
                     .filter(device -> device.getId() == kobitonDeviceId)
                     .findAny();
             if (!selectedDeviceOpt.isPresent()) {
-                throw new ExecutionException(
-                        MessageFormat.format(IntegrationKobitonMessages.MSG_ERR_KOBITON_DEVICE_NOT_FOUND, kobitonDeviceId));
+                throw new ExecutionException(MessageFormat
+                        .format(IntegrationKobitonMessages.MSG_ERR_KOBITON_DEVICE_NOT_FOUND, kobitonDeviceId));
             }
 
             selectedDevice = selectedDeviceOpt.get();
-        } else {
+        } else if (consoleOption.getOption().equals("kobitonToken")) {
             IPreferenceStore store = PreferenceStoreManager
                     .getPreferenceStore(KobitonPreferenceConstants.KOBITON_QUALIFIER);
             if (consoleOption instanceof StringConsoleOption) {
                 store.setValue(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN, argumentValue);
+
+            }
+        } else {
+            IPreferenceStore store = PreferenceStoreManager
+                    .getPreferenceStore(KobitonPreferenceConstants.KOBITON_QUALIFIER);
+            if (consoleOption instanceof StringConsoleOption) {
+                store.setValue(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_USERNAME, argumentValue);
 
             }
         }
@@ -107,7 +114,8 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
                 description.getRunConfigurationData().get(KobitonRunConfiguration.KOBITON_DEVICE_PROPERTY),
                 KobitonDevice.class);
         String kobitonToken = KobitonPreferencesProvider.getKobitonToken();
-        return Arrays.asList(getKobitonTokenConsoleOpt(kobitonToken),
+        String kobitonUserName = KobitonPreferencesProvider.getKobitonUserName();
+        return Arrays.asList(getKobitonTokenConsoleOpt(kobitonToken), getKobitonUserNameConsoleOpt(kobitonUserName),
                 getKobitonDeviceIdConsoleOpt(Integer.toString(device.getId())));
     }
 
@@ -150,6 +158,24 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
             }
         };
     }
+    private ConsoleOption<?> getKobitonUserNameConsoleOpt(final String rawValue) {
+        return new StringConsoleOption() {
 
+            @Override
+            public String getOption() {
+                return "kobitonUserName";
+            }
+
+            @Override
+            public boolean isRequired() {
+                return false;
+            }
+
+            @Override
+            public String getValue() {
+                return rawValue;
+            }
+        };
+    }
 
 }

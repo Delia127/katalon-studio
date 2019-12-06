@@ -1,8 +1,10 @@
 package com.kms.katalon.integration.kobiton.preferences;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
 import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
+import com.kms.katalon.integration.kobiton.exceptions.KobitonApiException;
 import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -66,38 +69,36 @@ public class KobitonPreferencesProvider {
     
     public static String getKobitonToken() {
         String kobitonToken = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN);
-        try {
-            // Console mode: we just passed username and password. So, we need to generate token automatically.
 
-            List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
-            if (!apiKeys.isEmpty()) {
-                KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
-                URL url = new URL("https://api.kobiton.com/v1/users/me/");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-                conn.setRequestProperty("Authorization", "Bearer " + kobitonToken);
-
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestMethod("GET");
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String output;
-
-                StringBuffer response = new StringBuffer();
-                while ((output = in.readLine()) != null) {
-                    response.append(output);
+        // Console mode: we just passed username and password. So, we need to generate token automatically.
+        if (StringUtils.isEmpty(kobitonToken)) {
+            KobitonLoginInfo loginInfo;
+            try {
+                loginInfo = KobitonApiProvider.login(getKobitonUserName(), getKobitonPassword());
+                kobitonToken = loginInfo.getToken();
+                KobitonPreferencesProvider.saveKobitonToken(loginInfo.getToken());
+                List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(loginInfo.getToken());
+                if (!apiKeys.isEmpty()) {
+                    KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
                 }
 
-                in.close();
-                JsonObject convertedObject = new Gson().fromJson(response.toString(), JsonObject.class);
-                String userName = convertedObject.get("username").getAsString();
-                KobitonPreferencesProvider.saveKobitonUserName(userName);
+            } catch (Exception e) {
+                throw new RuntimeException("Authentication kobiton system failed !", e);
             }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Authentication kobiton system failed !", e);
+        } else {
+            List<KobitonApiKey> apiKeys;
+            try {
+                apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
+                if (!apiKeys.isEmpty()) {
+                    KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("API key kobiton system failed !", e);
+            }
         }
+        
         return kobitonToken;
+
     }
     
     public static void saveKobitonToken(String token) {
