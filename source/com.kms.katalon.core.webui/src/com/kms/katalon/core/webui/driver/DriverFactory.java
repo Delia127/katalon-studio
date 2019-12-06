@@ -195,7 +195,7 @@ public class DriverFactory {
      * @return An instance of {@link WebDriver}
      * @throws Exception
      */
-    public static WebDriver openWebDriver(String url) throws Exception {
+    public static WebDriver openWebDriver() throws Exception {
         try {
             WebDriver webDriver = null;
             if (isUsingExistingDriver()) {
@@ -203,9 +203,9 @@ public class DriverFactory {
             } else {
                 String remoteWebDriverUrl = getRemoteWebDriverServerUrl();
                 if (StringUtils.isNotEmpty(remoteWebDriverUrl)) {
-                    webDriver = startRemoteBrowser(url);
+                    webDriver = startRemoteBrowser();
                 } else {
-                    webDriver = startNewBrowser(getExecutedBrowser(), url);
+                    webDriver = startNewBrowser(getExecutedBrowser());
                 }
             }
             if (webDriver != null) {
@@ -252,7 +252,7 @@ public class DriverFactory {
         return RunConfiguration.getDriverSystemProperties(EXISTING_DRIVER_PROPERTY) != null;
     }
 
-    private static WebDriver startRemoteBrowser(String url) throws MalformedURLException, MobileDriverInitializeException,
+    private static WebDriver startRemoteBrowser() throws MalformedURLException, MobileDriverInitializeException,
             IOException, InterruptedException, AppiumStartException, Exception {
 
         if (null != localWebServerStorage.get()
@@ -274,13 +274,13 @@ public class DriverFactory {
             desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, driver);
         }
 
-        WebDriver webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities, url);
+        WebDriver webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities);
         saveWebDriverSessionData(webDriver);
         switchToSmartWaitWebDriver(webDriver);
         return webDriver;
     }
 
-    private static WebDriver startNewBrowser(DriverType executedBrowser, String url) throws MalformedURLException,
+    private static WebDriver startNewBrowser(DriverType executedBrowser) throws MalformedURLException,
             MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException, Exception {
         WebUIDriverType driver = (WebUIDriverType) executedBrowser;
         if (driver == null) {
@@ -305,20 +305,20 @@ public class DriverFactory {
         WebDriver webDriver = null;
         switch (driver) {
             case FIREFOX_DRIVER:
-                webDriver = createNewFirefoxDriver(desireCapibilities, url);
+                webDriver = createNewFirefoxDriver(desireCapibilities);
                 break;
             case IE_DRIVER:
-                webDriver = createNewIEDriver(desireCapibilities, url);
+                webDriver = createNewIEDriver(desireCapibilities);
                 break;
             case SAFARI_DRIVER:
                 webDriver = createNewSafariDriver(desireCapibilities);
                 break;
             case CHROME_DRIVER:
-                webDriver = createNewChromeDriver(desireCapibilities, url);
+                webDriver = createNewChromeDriver(desireCapibilities);
                 break;
             case REMOTE_WEB_DRIVER:
             case KOBITON_WEB_DRIVER:
-                webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities, url);
+                webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities);
                 break;
             case ANDROID_DRIVER:
             case IOS_DRIVER:
@@ -331,13 +331,13 @@ public class DriverFactory {
                 webDriver = createNewRemoteFirefoxDriver(desireCapibilities);
                 break;
             case REMOTE_CHROME_DRIVER:
-                webDriver = createNewRemoteChromeDriver(desireCapibilities, url);
+                webDriver = createNewRemoteChromeDriver(desireCapibilities);
                 break;
             case HEADLESS_DRIVER:
-                webDriver = createHeadlessChromeDriver(desireCapibilities, url);
+                webDriver = createHeadlessChromeDriver(desireCapibilities);
                 break;
             case FIREFOX_HEADLESS_DRIVER:
-                webDriver = createHeadlessFirefoxDriver(desireCapibilities, url);
+                webDriver = createHeadlessFirefoxDriver(desireCapibilities);
                 break;
             default:
                 throw new StepFailedException(
@@ -352,11 +352,11 @@ public class DriverFactory {
         return new CSafariDriver(desireCapibilities, getActionDelay());
     }
 
-    private static WebDriver createNewChromeDriver(DesiredCapabilities desireCapibilities, String url) {
-        return new CChromeDriver(addCapbilitiesForChrome(desireCapibilities, url), getActionDelay());
+    private static WebDriver createNewChromeDriver(DesiredCapabilities desireCapibilities) {
+        return new CChromeDriver(addCapbilitiesForChrome(desireCapibilities), getActionDelay());
     }
     
-    private static DesiredCapabilities addCapbilitiesForChrome(DesiredCapabilities desireCapibilities, String url) {
+    private static DesiredCapabilities addCapbilitiesForChrome(DesiredCapabilities desireCapibilities) {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
 
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
@@ -365,7 +365,7 @@ public class DriverFactory {
                 WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities,
                         "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
             } else {
-                desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy(url, desireCapibilities.getBrowserName()));
+                desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             }
         }
         addSmartWaitExtensionToChrome(desireCapibilities);
@@ -393,15 +393,19 @@ public class DriverFactory {
         return null;
     }
 
-    private static WebDriver createHeadlessChromeDriver(DesiredCapabilities desireCapibilities, String url) {
-        DesiredCapabilities chromeCapbilities = addCapbilitiesForChrome(desireCapibilities, url);
+    private static WebDriver createHeadlessChromeDriver(DesiredCapabilities desireCapibilities) {
+        DesiredCapabilities chromeCapbilities = addCapbilitiesForChrome(desireCapibilities);
         WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, "--headless", "disable-gpu");
         return new CChromeDriver(chromeCapbilities, getActionDelay());
     }
     
-    private static Map<String, Object> getDefaultProxy(String url, String driverType) {
-        return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation(), url, driverType);
-    }
+//    private static Map<String, Object> getDefaultProxy(String url, String driverType) {
+//        if (StringUtils.isBlank(url) || StringUtils.isBlank(driverType)) {
+//            return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
+//        } else {
+//            return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation(), url, driverType);
+//        }
+//    }
     
     private static Map<String, Object> getDefaultProxy() {
         return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
@@ -423,14 +427,14 @@ public class DriverFactory {
 
     @SuppressWarnings("rawtypes")
     private static WebDriver createNewRemoteWebDriver(Map<String, Object> driverPreferenceProps,
-            DesiredCapabilities desiredCapabilities, String url) throws URISyntaxException, IOException, GeneralSecurityException {
+            DesiredCapabilities desiredCapabilities) throws URISyntaxException, IOException, GeneralSecurityException {
         String remoteWebServerUrl = getRemoteWebDriverServerUrl();
         String remoteWebServerType = getRemoteWebDriverServerType();
         if (remoteWebServerType == null) {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
         if (!desiredCapabilities.getCapabilityNames().contains("proxy") && !isEdgeBrowser(desiredCapabilities)) {
-                desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(url, desiredCapabilities.getBrowserName()));
+                desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
 
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
@@ -500,7 +504,7 @@ public class DriverFactory {
         };
     }
 
-    private static WebDriver createNewRemoteChromeDriver(DesiredCapabilities desireCapibilities, String url)
+    private static WebDriver createNewRemoteChromeDriver(DesiredCapabilities desireCapibilities)
             throws MalformedURLException, IOException, Exception {
         String chromeDebugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
                 DriverFactory.DEFAULT_DEBUG_HOST);
@@ -545,10 +549,10 @@ public class DriverFactory {
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
     }
 
-    private static WebDriver createNewIEDriver(DesiredCapabilities desireCapibilities, String url) {
+    private static WebDriver createNewIEDriver(DesiredCapabilities desireCapibilities) {
         desireCapibilities.setCapability(CAP_IE_USE_PER_PROCESS_PROXY, "true");
         if (!WebDriverProxyUtil.isNoProxy(RunConfiguration.getProxyInformation())) {
-            desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy(url, desireCapibilities.getBrowserName()));
+            desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
 
         ieDriverService = new InternetExploreDriverServiceBuilder().withLogLevel(InternetExplorerDriverLogLevel.TRACE)
@@ -573,19 +577,19 @@ public class DriverFactory {
         return CGeckoDriver.from(desiredCapabilities, actionDelay);
     }
 
-    private static WebDriver createNewFirefoxDriver(DesiredCapabilities desiredCapabilities, String url) {
-        int actionDelay = getActionDelay();
-        int firefoxMajorVersion = FirefoxExecutable.getFirefoxVersion(desiredCapabilities);
-        addSmartWaitExtensionToFirefox(desiredCapabilities);
-        desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(url, desiredCapabilities.getBrowserName()));
-        if (firefoxMajorVersion >= USING_GECKO_VERSION) {
-            return CGeckoDriver.from(desiredCapabilities, actionDelay);
-        }
-        if (firefoxMajorVersion >= USING_MARIONETTEE_VERSION) {
-            return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
-        }
-        return CGeckoDriver.from(desiredCapabilities, actionDelay);
-    }
+//    private static WebDriver createNewFirefoxDriver(DesiredCapabilities desiredCapabilities, String url) {
+//        int actionDelay = getActionDelay();
+//        int firefoxMajorVersion = FirefoxExecutable.getFirefoxVersion(desiredCapabilities);
+//        addSmartWaitExtensionToFirefox(desiredCapabilities);
+//        desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(url, desiredCapabilities.getBrowserName()));
+//        if (firefoxMajorVersion >= USING_GECKO_VERSION) {
+//            return CGeckoDriver.from(desiredCapabilities, actionDelay);
+//        }
+//        if (firefoxMajorVersion >= USING_MARIONETTEE_VERSION) {
+//            return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
+//        }
+//        return CGeckoDriver.from(desiredCapabilities, actionDelay);
+//    }
     
     private static boolean shouldInstallSmartWait() {
         // Default to false if previously an error occurs in writing the value in RunConfiguration
@@ -611,10 +615,10 @@ public class DriverFactory {
         return null;
     }
 
-    private static WebDriver createHeadlessFirefoxDriver(DesiredCapabilities desiredCapibilities, String url) {
+    private static WebDriver createHeadlessFirefoxDriver(DesiredCapabilities desiredCapibilities) {
         FirefoxOptions firefoxOptions = new FirefoxOptions(desiredCapibilities);
         firefoxOptions.setHeadless(true);
-        return createNewFirefoxDriver(new DesiredCapabilities(firefoxOptions.asMap()), url);
+        return createNewFirefoxDriver(new DesiredCapabilities(firefoxOptions.asMap()));
     }
 
     private static void saveWebDriverSessionData(WebDriver webDriver) {
