@@ -353,6 +353,7 @@ public class InspectSession implements Runnable {
         } else {
             return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation(), url, driverType);
         }
+        
     }
 
     private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {
