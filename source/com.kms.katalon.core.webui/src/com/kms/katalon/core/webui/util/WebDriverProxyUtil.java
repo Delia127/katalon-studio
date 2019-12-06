@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
@@ -33,6 +35,8 @@ public class WebDriverProxyUtil {
     private static final String PROP_FTP_PROXY = "ftpProxy";
 
     private static final String PROP_PROXY_TYPE = "proxyType";
+    
+    private static final String PROP_NO_PROXY = "noProxy";
 
     /**
      * Returns an instance of Selenium Proxy based on proxy settings.
@@ -46,11 +50,18 @@ public class WebDriverProxyUtil {
         List<String> exceptionList = new ArrayList<String>();
         String exclude = proxyInformation.getExceptionList().trim();
         String[] output = exclude.split(",");
-        Arrays.stream(output).forEach(part -> exceptionList.add(part.trim()));
+        Arrays.stream(output).forEach(part -> {
+            if (!StringUtils.isBlank(part)) {
+                exceptionList.add(part.trim());
+            }
+        });
         String proxyString = getProxyString(proxyInformation);
         switch (ProxyOption.valueOf(proxyInformation.getProxyOption())) {
             case MANUAL_CONFIG:
                 proxyMap.put(PROP_PROXY_TYPE, "manual");
+                if (exceptionList.size() > 0) {
+                    proxyMap.put(PROP_NO_PROXY, exceptionList);
+                }
                 switch (ProxyServerType.valueOf(proxyInformation.getProxyServerType())) {
                     case HTTP:
                     case HTTPS:
