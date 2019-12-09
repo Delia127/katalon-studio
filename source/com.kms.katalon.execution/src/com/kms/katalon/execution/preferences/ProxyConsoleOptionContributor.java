@@ -62,6 +62,13 @@ public class ProxyConsoleOptionContributor extends PreferenceOptionContributor {
                 return ProxyPreferenceConstants.PROXY_PASSWORD;
             }
         });
+        
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.PROXY_EXCEPTION_LIST;
+            }
+        });
     }
 
     @Override

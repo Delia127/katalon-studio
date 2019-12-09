@@ -30,6 +30,7 @@ public class ProxyPreferences {
         proxyInfo.setProxyServerPort(store.getInt(ProxyPreferenceConstants.PROXY_SERVER_PORT));
         proxyInfo.setUsername(store.getString(ProxyPreferenceConstants.PROXY_USERNAME));
         proxyInfo.setPassword(store.getString(ProxyPreferenceConstants.PROXY_PASSWORD));
+        proxyInfo.setExceptionList(store.getString(ProxyPreferenceConstants.PROXY_EXCEPTION_LIST));
         return proxyInfo;
     }
 
@@ -42,6 +43,7 @@ public class ProxyPreferences {
         store.setValue(ProxyPreferenceConstants.PROXY_USERNAME, proxyInfo.getUsername());
         store.setValue(ProxyPreferenceConstants.PROXY_PASSWORD, proxyInfo.getPassword());
         store.setValue(ProxyPreferenceConstants.PROXY_PREFERENCE_SET, true);
+        store.setValue(ProxyPreferenceConstants.PROXY_EXCEPTION_LIST, proxyInfo.getExceptionList());
         ((ScopedPreferenceStore) store).save();
     }
 

@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class MessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.constants.messages";
 
+    public static String LBL_EXCEPTION_LIST;
+    
     public static String HAND_QUIT_DIA_TITLE;
 
     public static String HAND_QUIT_DIA_MSG;
@@ -537,11 +539,21 @@ public class MessageConstants extends NLS {
     
     public static String PAGE_BTN_BROWSE_FOLDER;
     
+    public static String DIA_TITLE_UPDATE_WEBDRIVER;
+    
     public static String MSG_UPDATING_WEB_DRIVER;
     
     public static String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static String MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    public static String MSG_USER_CANCEL_UPDATE;
+    
+    public static String MSG_TERMINATING_WEB_DRIVER;
+    
+    public static String DIA_TITLE_TERMINATE_WEB_DRIVER;
+    
+    public static String MSG_USER_CANCEL_WEB_DRIVER_TERMINATION;
     
     public static String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
     

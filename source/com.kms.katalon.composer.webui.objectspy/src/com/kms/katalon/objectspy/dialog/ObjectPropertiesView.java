@@ -1004,6 +1004,11 @@ public class ObjectPropertiesView extends Composite
             case SELECTED_ELEMENT_CHANGED:
                 setWebElement((WebElement) object);
                 return;
+            case ELEMENT_PROPERTIES_CHANGED:
+                Display.getDefault().syncExec(() -> {
+                    setWebElement((WebElement) object);
+                });
+                return;
             default:
                 return;
         }

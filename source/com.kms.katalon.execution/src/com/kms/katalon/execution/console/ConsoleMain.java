@@ -101,6 +101,8 @@ public class ConsoleMain {
 
     public static final String KATALON_TESTOP_SERVER = "serverUrl";
 
+    public static final String KATALON_TESTOP_SERVER_SECOND_OPTION = "serverURL";
+
     public static final String KATALON_API_KEY_ON_PREMISE_OPTION = "apiKeyOnPremise";
 
     public static final String KATALON_API_KEY_ON_PREMISE_SECOND_OPTION = "apiKeyOP";
@@ -132,10 +134,27 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
             
+            // Set option value to application configuration
+            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
+                String optionName = opt.getOption();
+                if (options.hasArgument(optionName)) {
+                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
+                }
+            }
+
+            String serverUrl = null;
             if (options.has(KATALON_TESTOP_SERVER)) {
-                String serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+                serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+            }
+
+            if (options.has(KATALON_TESTOP_SERVER_SECOND_OPTION)) {
+                serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER_SECOND_OPTION));
+            }
+
+            if (!StringUtils.isEmpty(serverUrl)) {
                 ApplicationInfo.setTestOpsServer(serverUrl);
             }
+
             //Set server URL before show in log
             LocalInformationUtil.printSystemInformation();
 
@@ -182,7 +201,7 @@ public class ConsoleMain {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
 
                     //Test connection
-                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    serverUrl = ApplicationInfo.getTestOpsServer();
                     boolean testConnection = KatalonApplicationActivator.getFeatureActivator().testConnection(serverUrl);
                     if (!testConnection) {
                         LogUtil.logError(ExecutionMessageConstants.ACTIVATE_CANNOT_CONNECT_TO_SERVER);
@@ -198,8 +217,8 @@ public class ConsoleMain {
                     }
 
                     if (!isActivated) {
-                        String server = LicenseInfo.getServerURL();
-                        String apiKey = LicenseInfo.getApiKey();
+                        String server = LicenseInfo.getServerURL().trim();
+                        String apiKey = LicenseInfo.getApiKey().trim();
 
                         if (!StringUtils.isEmpty(server) && !StringUtils.isEmpty(apiKey)) {
                             server = server.trim();
@@ -234,14 +253,6 @@ public class ConsoleMain {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
                 addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
-            }
-            
-            // Set option value to application configuration
-            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
-                String optionName = opt.getOption();
-                if (options.hasArgument(optionName)) {
-                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
-                }
             }
 
             boolean isCliEnabled = FeatureServiceConsumer.getServiceInstance().canUse(TestOpsFeatureKey.CLI);

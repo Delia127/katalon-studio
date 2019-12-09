@@ -820,8 +820,18 @@ public class ExplorerPart {
         if (object == null || !(object instanceof ITreeEntity)) {
             return;
         }
-        getViewer().setExpandedState(object, true);
-        getViewer().setSelection(new StructuredSelection(object));
+        ITreeEntity entity = (ITreeEntity) object;
+        try {
+            if (entity.getParent() != null) {
+                getViewer().setExpandedState(object, true);
+                getViewer().setSelection(new StructuredSelection(object));
+            } else {
+                getViewer().setSelection(new StructuredSelection(new TreePath(new Object[] { entity })));
+                
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     @Inject

@@ -2,6 +2,7 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,9 +12,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.text.DateFormat;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.Gson;
 import com.katalon.platform.api.Plugin;
@@ -64,6 +66,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private String executionUUID;
     
     private String executionSessionId;
+
+    private static final String PATH = "PATH";
 
     public AbstractRunConfiguration() {
         doInitExecutionSetting();
@@ -204,6 +208,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
         propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
+        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, LicenseUtil.isNotFreeLicense());
         
 //        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
         
@@ -287,6 +292,11 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     public void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables) {
     	if(overridingGlobalVariables == null) return;
     	overridingParameters.putAll(overridingGlobalVariables);
+    }
+    
+    @Override
+    public Map<String, Object> getOverridingGlobalVariables() {
+       return overridingParameters;
     }
     
     @Override

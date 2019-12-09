@@ -14,6 +14,16 @@ public class ProxyInformation {
     private String proxyServerAddress;
     
     private int proxyServerPort;
+    
+    private String exceptionList;
+    
+    public String getExceptionList() {
+        return exceptionList;
+    }
+
+    public void setExceptionList(String exceptionList) {
+        this.exceptionList = StringUtils.isNotEmpty(exceptionList) ? exceptionList : "";
+    }
 
     public String getProxyOption() {
         return proxyOption;
@@ -81,7 +91,8 @@ public class ProxyInformation {
                 + "proxyServerType=" + proxyServerType + ", "
                 + "password=" + password + ", "
                 + "proxyServerAddress=" + proxyServerAddress + ", "
-                + "proxyServerPort=" + proxyServerPort
+                + "proxyServerPort=" + proxyServerPort + ", "
+                + "executionList=" + exceptionList
                 + "}";
     }
 }

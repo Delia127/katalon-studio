@@ -4,7 +4,9 @@ import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialo
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,8 +16,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -57,6 +61,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -95,7 +100,11 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesC
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
+import com.kms.katalon.composer.testcase.ast.dialogs.ArgumentInputBuilderDialog;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
+import com.kms.katalon.composer.testcase.model.InputParameterClass;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
@@ -107,6 +116,7 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.util.CryptoUtil;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
@@ -589,6 +599,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                 case PressBack:
                                     mobileActionHelper.pressBack();
                                     break;
+                                case GetText:
+                                    handleGetText(testObject, mobileActionMapping, mobileActionHelper);
+                                    break;
                                 case SetText:
                                     final StringBuilder stringBuilder = new StringBuilder();
                                     UISynchronizeService.syncExec(new Runnable() {
@@ -609,6 +622,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                     mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
                                     mobileActionHelper.setText(testObject, textInput);
                                     break;
+                                case SetEncryptedText:
+                                    handleSetEncryptedText(mobileActionHelper, mobileActionMapping, testObject);
+                                    break;
+                                case ScrollToText:
+                                    handleScrollToText(mobileActionHelper, mobileActionMapping);
+                                    break;
                                 case SwitchToLandscape:
                                     mobileActionHelper.switchToLandscape();
                                     break;
@@ -620,6 +639,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                     break;
                                 case TapAndHold:
                                     mobileActionHelper.tapAndHold(testObject);
+                                    break;
+                                case Swipe:
+                                    handleSwipeAction(mobileActionHelper, mobileActionMapping);
                                     break;
                                 default:
                                     break;
@@ -654,6 +676,162 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             throw new MobileRecordException(e.getTargetException());
         } catch (Exception e) {
             throw new MobileRecordException(e);
+        }
+    }
+
+    private void handleSetEncryptedText(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping, TestObject testObject) throws Exception {
+        final StringBuilder stringBuilder = new StringBuilder();
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                InputDialog inputDialog = new InputDialog(getShell(),
+                        MobileRecoderMessagesConstants.DLG_TITLE_TEXT_INPUT,
+                        MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null) {
+                    @Override
+                    protected int getInputTextStyle() {
+                        return super.getInputTextStyle() | SWT.PASSWORD;
+                    }
+                };
+                if (inputDialog.open() == Window.OK) {
+                    stringBuilder.append(inputDialog.getValue());
+                }
+            }
+        });
+        String password = stringBuilder.toString();
+        String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
+        if (password.isEmpty()) {
+            throw new CancellationException();
+        }
+        mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(encryptedPassword));
+        mobileActionHelper.setText(testObject, password);
+    }
+
+    private void handleScrollToText(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping ) throws Exception {
+        final StringBuilder stringBuilder = new StringBuilder();
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                InputDialog inputDialog = new InputDialog(getShell(),
+                        MobileRecoderMessagesConstants.DLG_TITLE_TEXT_INPUT,
+                        MobileRecoderMessagesConstants.DLG_MSG_TEXT_INPUT, null, null);
+                if (inputDialog.open() == Window.OK) {
+                    stringBuilder.append(inputDialog.getValue());
+                }
+            }
+        });
+        String textInput = stringBuilder.toString();
+        if (textInput.isEmpty()) {
+            throw new CancellationException();
+        }
+        mobileActionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
+        mobileActionHelper.scrollToText(textInput);
+    }
+
+    private void handleSwipeAction(MobileActionHelper mobileActionHelper, MobileActionMapping mobileActionMapping)
+            throws Exception {
+        List<InputParameter> parameters = new ArrayList<>();
+        InputParameterClass integerParamType = new InputParameterClass(Integer.class);
+        ConstantExpressionWrapper defaultValue = new ConstantExpressionWrapper(0);
+        parameters.add(new InputParameter("startX", integerParamType, defaultValue));
+        parameters.add(new InputParameter("startY", integerParamType, defaultValue));
+        parameters.add(new InputParameter("endX", integerParamType, defaultValue));
+        parameters.add(new InputParameter("endY", integerParamType, defaultValue));
+        InputParameterBuilder parameterBuilder = InputParameterBuilder.createForNestedMethodCall(parameters);
+
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                ArgumentInputBuilderDialog inputDialog = new ArgumentInputBuilderDialog(getShell(), parameterBuilder,
+                        null);
+                inputDialog.open();
+            }
+        });
+
+        MobileActionParamValueType[] actionParams = mobileActionMapping.getData();
+        List<InputParameter> touchCoords = parameterBuilder.getOriginalParameters();
+        List<Integer> coords = new ArrayList<Integer>();
+        IntStream.range(0, actionParams.length).forEach(index -> {
+            coords.add((Integer) (((ConstantExpressionWrapper) touchCoords.get(index).getValue()).getValue()));
+            actionParams[index].setValue(touchCoords.get(index).getValue());
+        });
+
+        if (coords.stream().allMatch(coord -> coord == 0)) {
+            throw new CancellationException();
+        }
+
+        mobileActionHelper.swipe(coords.get(0), coords.get(1), coords.get(2), coords.get(3));
+    }
+
+    private void handleGetText(
+            TestObject testObject,
+            MobileActionMapping mobileActionMapping,
+            MobileActionHelper mobileActionHelper
+    ) throws Exception {
+        String elementText = mobileActionHelper.getText(testObject);
+        final MutableBoolean isCanceled = new MutableBoolean(false);
+
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                GetTextDialog getTextDialog = new GetTextDialog(getShell(), elementText);
+                if (getTextDialog.open() != GetTextDialog.OK) {
+                    isCanceled.setTrue();
+                }
+            }
+        });
+        
+        if (isCanceled.isTrue()) {
+            throw new CancellationException();
+        }
+    }
+
+    private class GetTextDialog extends AbstractDialog {
+
+        private Text txtText;
+
+        private String text;
+
+        protected GetTextDialog(Shell parentShell, String text) {
+            super(parentShell, false);
+            this.text = text;
+        }
+
+        @Override
+        protected void registerControlModifyListeners() {
+        }
+
+        @Override
+        protected void setInput() {
+            txtText.setText(StringUtils.defaultIfEmpty(text, ""));
+        }
+
+        @Override
+        protected Control createDialogContainer(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout());
+
+            Label lblText = new Label(composite, SWT.NONE);
+            lblText.setText(MobileRecoderMessagesConstants.DLG_GET_TEXT_INPUT_LABEL);
+
+            txtText = new Text(composite, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER | SWT.WRAP);
+            txtText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            return composite;
+        }
+
+        @Override
+        protected void createButtonsForButtonBar(Composite parent) {
+            createButton(parent, IDialogConstants.OK_ID, MobileRecoderMessagesConstants.BTN_APPLY_ACTION, true);
+            createButton(parent, IDialogConstants.CANCEL_ID, MobileRecoderMessagesConstants.BTN_CANCEL_ACTION, false);
+        }
+
+        @Override
+        protected Point getInitialSize() {
+            return new Point(400, 250);
+        }
+
+        @Override
+        public String getDialogTitle() {
+            return MobileRecoderMessagesConstants.DLG_GET_TEXT_TITLE;
         }
     }
 

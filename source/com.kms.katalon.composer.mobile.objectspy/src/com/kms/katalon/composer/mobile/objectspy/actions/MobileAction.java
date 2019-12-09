@@ -9,8 +9,12 @@ import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
 public enum MobileAction implements IMobileAction {
     Tap("tap", "Tap on the given element"),
     TapAndHold("tapAndHold", "Tap and hold on the given element"),
+    Swipe("swipe", "Simulate swiping fingers on the mobile device"),
+    GetText("getText", "Get text of a mobile element"),
     SetText("setText", "Set text to the given element"),
+    SetEncryptedText("setEncryptedText", "Set encrypted text to the given element"),
     ClearText("clearText", "Clear text on the given element"),
+    ScrollToText("scrollToText", "Scroll to an element which contains the given text"),
     HideKeyboard("hideKeyboard", "Hide the on-screen keyboard"),
     PressBack("pressBack", "Press back button on the mobile device (Android only)", MobileDriverType.ANDROID_DRIVER),
     SwitchToLandscape("switchToLandscape", "Switch the mobile device's orientation to landscape mode"),

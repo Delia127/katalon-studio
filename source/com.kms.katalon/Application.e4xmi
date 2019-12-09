@@ -132,20 +132,6 @@
           <children xsi:type="menu:DirectMenuItem" xmi:id="_qBe2oIXXEemk7_pQJ7Uj1g" elementId="com.kms.katalon.directmenuitem.themes.dark" label="Dark" tooltip="Dark Theme" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SwitchThemeHandler"/>
         </children>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" tooltip="" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_bv02QDdbEeiyIrMgpAUQAg" elementId="com.kms.katalon.handledmenuitem.checkForUpdates" toBeRendered="false" visible="false" label="Check for Updates..." command="_VC7xYDdkEeiyIrMgpAUQAg"/>
-        <children xsi:type="menu:MenuSeparator" xmi:id="_QCrHEDdlEeiyIrMgpAUQAg" elementId="com.kms.katalon.menuseparator.1"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" tooltip="" command="_jm89wGgxEeatJ4Re1SnNtw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" toBeRendered="false" visible="false" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q">
-          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_1xBsAKaxEeiIHNG-Fo2vNA"/>
-        </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_YU7NEOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handledmenuitem.reportIssue" label="Report Issue" tooltip="" command="_blPuUOxNEeal34fhcBE7BQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GLb_kMeZEeiT4f3fp0QbHA" elementId="com.kms.katalon.handledmenuitem.errorLog" label="Error Log" command="_xthpkMebEeiT4f3fp0QbHA"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_4l8VEFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handledmenuitem.service" label="Business Support" command="_CeYPQFdcEeiRfOF4k51oXA"/>
-        <children xsi:type="menu:DynamicMenuContribution" xmi:id="_JEmWAOi_Eei2Q7mM03p58A" elementId="com.kms.katalon.dynamicmenucontribution.checkForUpdates" label="Check for Updates..." contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.menu.CheckForUpdatesMenuContribution"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_u8IAwKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.handledmenuitem.quickstart" label="Quick Start" tooltip="" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
-      </children>
       <children xsi:type="menu:Menu" xmi:id="_CJOFUL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.menu.tools" label="Tools">
         <children xsi:type="menu:Menu" xmi:id="_kCdBsOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.menu.plugin" label="Plugin">
           <children xsi:type="menu:DirectMenuItem" xmi:id="_nemYcOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.installPlugin" label="Install Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.InstallPluginHandler"/>
@@ -160,6 +146,20 @@
         <children xsi:type="menu:Menu" xmi:id="_RQKm0M7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.menu.webTools" label="Web">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running WebDrivers" command="_631dcM7NEemY2ti3wcTZeQ"/>
         </children>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" tooltip="" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_bv02QDdbEeiyIrMgpAUQAg" elementId="com.kms.katalon.handledmenuitem.checkForUpdates" toBeRendered="false" visible="false" label="Check for Updates..." command="_VC7xYDdkEeiyIrMgpAUQAg"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_QCrHEDdlEeiyIrMgpAUQAg" elementId="com.kms.katalon.menuseparator.1"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" tooltip="" command="_jm89wGgxEeatJ4Re1SnNtw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" toBeRendered="false" visible="false" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q">
+          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_1xBsAKaxEeiIHNG-Fo2vNA"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YU7NEOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handledmenuitem.reportIssue" label="Report Issue" tooltip="" command="_blPuUOxNEeal34fhcBE7BQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GLb_kMeZEeiT4f3fp0QbHA" elementId="com.kms.katalon.handledmenuitem.errorLog" label="Error Log" command="_xthpkMebEeiT4f3fp0QbHA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_4l8VEFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handledmenuitem.service" label="Business Support" command="_CeYPQFdcEeiRfOF4k51oXA"/>
+        <children xsi:type="menu:DynamicMenuContribution" xmi:id="_JEmWAOi_Eei2Q7mM03p58A" elementId="com.kms.katalon.dynamicmenucontribution.checkForUpdates" label="Check for Updates..." contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.menu.CheckForUpdatesMenuContribution"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_u8IAwKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.handledmenuitem.quickstart" label="Quick Start" tooltip="" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
