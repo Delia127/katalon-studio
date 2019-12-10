@@ -72,7 +72,7 @@ public class KobitonPreferencesProvider {
     public static String getKobitonApiKey() {
         List<KobitonApiKey> apiKeys;
         String apiKey = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_API_KEY);
-        if(apiKey.isEmpty()) {
+        if (apiKey.isEmpty()) {
             try {
                 apiKeys = KobitonApiProvider.getApiKeyList(getKobitonToken());
                 if (!apiKeys.isEmpty()) {
@@ -83,10 +83,10 @@ public class KobitonPreferencesProvider {
                 throw new RuntimeException("API key kobiton system failed !", e);
             }
         }
-       
+
         return apiKey;
     }
-    
+
     public static void saveKobitonApiKey(String apiKey) {
         if (StringUtils.isEmpty(apiKey)) {
             return;
