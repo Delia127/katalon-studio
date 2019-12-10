@@ -59,19 +59,7 @@ public class KobitonPreferencesProvider {
     }
     
     public static String getKobitonToken() {
-        String kobitonToken = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN);
-        List<KobitonApiKey> apiKeys;
-        try {
-            apiKeys = KobitonApiProvider.getApiKeyList(kobitonToken);
-            if (!apiKeys.isEmpty()) {
-                KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("API key kobiton system failed !", e);
-        }
-
-        return kobitonToken;
-
+        return getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN);
     }
     
     public static void saveKobitonToken(String token) {
@@ -82,7 +70,21 @@ public class KobitonPreferencesProvider {
     }
 
     public static String getKobitonApiKey() {
-        return getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_API_KEY);
+        List<KobitonApiKey> apiKeys;
+        String apiKey = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_API_KEY);
+        if(apiKey.isEmpty()) {
+            try {
+                apiKeys = KobitonApiProvider.getApiKeyList(getKobitonToken());
+                if (!apiKeys.isEmpty()) {
+                    apiKey = apiKeys.get(0).getKey();
+                    KobitonPreferencesProvider.saveKobitonApiKey(apiKey);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("API key kobiton system failed !", e);
+            }
+        }
+       
+        return apiKey;
     }
     
     public static void saveKobitonApiKey(String apiKey) {
