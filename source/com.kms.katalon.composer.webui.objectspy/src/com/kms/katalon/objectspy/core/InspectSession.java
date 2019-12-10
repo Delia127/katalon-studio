@@ -284,7 +284,7 @@ public class InspectSession implements Runnable {
             case IE_DRIVER:
                 return createIEDesiredCapabilities(capabilities);
             case FIREFOX_DRIVER:
-                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(capabilities.getBrowserName(), startUrl));
+                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             default:
                 return capabilities;
         }
@@ -294,7 +294,7 @@ public class InspectSession implements Runnable {
         capabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, ABOUT_BLANK);
         capabilities.setCapability(CAP_IE_USE_PER_PROCESS_PROXY, "true");
         if (!WebDriverProxyUtil.isNoProxy(RunConfiguration.getProxyInformation())) {
-            capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(capabilities.getBrowserName(), startUrl));
+            capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(startUrl, capabilities.getBrowserName()));
         }
         return capabilities;
     }
@@ -317,7 +317,7 @@ public class InspectSession implements Runnable {
                 WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
                         "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
             } else {
-                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(capabilities.getBrowserName(), startUrl));
+                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             }
         }
         
@@ -347,13 +347,12 @@ public class InspectSession implements Runnable {
         return capabilities;
     }
     
-    private static Map<String, Object> getDefaultProxy(String driverType, String url) {
-        if (StringUtils.isBlank(url)) {
-            return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
-        } else {
-            return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation(), url, driverType);
-        }
-        
+    private static Map<String, Object> getDefaultProxy() {
+        return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
+    }
+    
+    private static Map<String, Object> getDefaultProxy(String url, String driverType) {
+        return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation(), url, driverType);
     }
 
     private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {
