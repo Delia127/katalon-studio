@@ -294,7 +294,7 @@ public class InspectSession implements Runnable {
         capabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, ABOUT_BLANK);
         capabilities.setCapability(CAP_IE_USE_PER_PROCESS_PROXY, "true");
         if (!WebDriverProxyUtil.isNoProxy(RunConfiguration.getProxyInformation())) {
-            capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+            capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(startUrl, capabilities.getBrowserName()));
         }
         return capabilities;
     }
@@ -349,6 +349,10 @@ public class InspectSession implements Runnable {
     
     private static Map<String, Object> getDefaultProxy() {
         return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
+    }
+    
+    private static Map<String, Object> getDefaultProxy(String url, String driverType) {
+        return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation(), url, driverType);
     }
 
     private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {
