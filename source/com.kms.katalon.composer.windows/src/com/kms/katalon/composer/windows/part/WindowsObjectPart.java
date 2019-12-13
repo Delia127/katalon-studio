@@ -59,106 +59,106 @@ import com.kms.katalon.entity.repository.WindowsElementEntity;
 
 public class WindowsObjectPart implements IComposerPart {
 
-	private WindowsElementEntity entity;
+    private WindowsElementEntity entity;
 
-	private StyledText txtLocator;
+    private StyledText txtLocator;
 
-	private CTableViewer tableViewerObjectProperties;
+    private CTableViewer tableViewerObjectProperties;
 
-	private Combo cbbLocatorStrategy;
+    private Combo cbbLocatorStrategy;
 
-	private MPart mpart;
+    private MPart mpart;
 
-	private Composite mainComposite;
+    private Composite mainComposite;
 
-	private static String[] strategies = WindowsElementEntity.LocatorStrategy.getStrategies();
+    private static String[] strategies = WindowsElementEntity.LocatorStrategy.getStrategies();
 
-	private List<WebElementPropertyEntity> properties;
+    private List<WebElementPropertyEntity> properties;
 
-	private WindowsElementEntity editingEntity;
+    private WindowsElementEntity editingEntity;
 
-	@Inject
-	IEventBroker eventBroker;
+    @Inject
+    IEventBroker eventBroker;
 
-	@PostConstruct
-	public void onCreatePart(MPart mpart, Composite parent) {
-		this.mpart = mpart;
-		entity = (WindowsElementEntity) mpart.getObject();
+    @PostConstruct
+    public void onCreatePart(MPart mpart, Composite parent) {
+        this.mpart = mpart;
+        entity = (WindowsElementEntity) mpart.getObject();
 
-		createControls(parent);
+        createControls(parent);
 
-		setInput();
+        setInput();
 
-		addListeners();
-	}
+        addListeners();
+    }
 
-	private EventServiceAdapter eventHandler = new EventServiceAdapter() {
+    private EventServiceAdapter eventHandler = new EventServiceAdapter() {
 
-		@Override
-		public void handleEvent(Event event) {
-			Object[] objects = getObjects(event);
-			if (objects == null || objects.length != 2) {
-				return;
-			}
-			try {
-				String oldWindowsObjectId = (String) objects[0];
-				String newWindowsObjectId = (String) objects[1];
-				if (editingEntity.getIdForDisplay().equals(oldWindowsObjectId)) {
-					entity = WindowsElementController.getInstance().getWindowsElementByDisplayId(newWindowsObjectId);
-					editingEntity = (WindowsElementEntity) entity.clone();
-					editingEntity.setName(entity.getName());
-					mpart.setLabel(editingEntity.getName());
-				}
-			} catch (ControllerException e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-	};
+        @Override
+        public void handleEvent(Event event) {
+            Object[] objects = getObjects(event);
+            if (objects == null || objects.length != 2) {
+                return;
+            }
+            try {
+                String oldWindowsObjectId = (String) objects[0];
+                String newWindowsObjectId = (String) objects[1];
+                if (editingEntity.getIdForDisplay().equals(oldWindowsObjectId)) {
+                    entity = WindowsElementController.getInstance().getWindowsElementByDisplayId(newWindowsObjectId);
+                    editingEntity = (WindowsElementEntity) entity.clone();
+                    editingEntity.setName(entity.getName());
+                    mpart.setLabel(editingEntity.getName());
+                }
+            } catch (ControllerException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    };
 
-	@PreDestroy
-	public void onDestroyPart() {
-		eventBroker.unsubscribe(eventHandler);
-	}
+    @PreDestroy
+    public void onDestroyPart() {
+        eventBroker.unsubscribe(eventHandler);
+    }
 
-	private void addListeners() {
-		eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, eventHandler);
+    private void addListeners() {
+        eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, eventHandler);
 
-		eventBroker.subscribe(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, eventHandler);
+        eventBroker.subscribe(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, eventHandler);
 
-		txtLocator.addModifyListener(new ModifyListener() {
+        txtLocator.addModifyListener(new ModifyListener() {
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				mpart.setDirty(true);
-			}
-		});
+            @Override
+            public void modifyText(ModifyEvent e) {
+                mpart.setDirty(true);
+            }
+        });
 
-		cbbLocatorStrategy.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				mpart.setDirty(true);
-			}
-		});
-	}
+        cbbLocatorStrategy.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                mpart.setDirty(true);
+            }
+        });
+    }
 
-	private void setInput() {
-		editingEntity = (WindowsElementEntity) entity.clone();
-		mpart.setLabel(editingEntity.getName());
-		WindowsElementEntity.LocatorStrategy selectedLocator = editingEntity.getLocatorStrategy();
-		int selectedIndex = Arrays.asList(strategies).indexOf(selectedLocator.getLocatorStrategy());
+    private void setInput() {
+        editingEntity = (WindowsElementEntity) entity.clone();
+        mpart.setLabel(editingEntity.getName());
+        WindowsElementEntity.LocatorStrategy selectedLocator = editingEntity.getLocatorStrategy();
+        int selectedIndex = Arrays.asList(strategies).indexOf(selectedLocator.getLocatorStrategy());
 
-		cbbLocatorStrategy.select(selectedIndex);
-		txtLocator.setText(StringUtils.defaultString(editingEntity.getLocator()));
+        cbbLocatorStrategy.select(selectedIndex);
+        txtLocator.setText(StringUtils.defaultString(editingEntity.getLocator()));
 
-		properties = new ArrayList<>(editingEntity.getProperties());
-		tableViewerObjectProperties.setInput(properties);
-	}
+        properties = new ArrayList<>(editingEntity.getProperties());
+        tableViewerObjectProperties.setInput(properties);
+    }
 
-	private Shell getShell() {
-		return mainComposite.getShell();
-	}
+    private Shell getShell() {
+        return mainComposite.getShell();
+    }
 
-	private void createControls(Composite parent) {
+    private void createControls(Composite parent) {
         mainComposite = new Composite(parent, SWT.NONE);
         mainComposite.setBackground(ColorUtil.getPartBackgroundColor());
         mainComposite.setLayout(new GridLayout(1, false));
@@ -229,23 +229,23 @@ public class WindowsObjectPart implements IComposerPart {
         ToolItem tltmEdit = new ToolItem(tbProperties, SWT.PUSH);
         tltmEdit.setText("Edit");
         tltmEdit.setImage(ImageManager.getImage(IImageKeys.EDIT_16));
-		tltmEdit.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection structuredSelection = tableViewerObjectProperties.getStructuredSelection();
-				if (structuredSelection.isEmpty()) {
-					return;
-				}
-				WebElementPropertyEntity editingProperty = (WebElementPropertyEntity) structuredSelection
-						.getFirstElement();
-				EditWindowsElementPropertyDialog windowsElementDialog = new EditWindowsElementPropertyDialog(getShell(),
-						editingProperty);
-				if (windowsElementDialog.open() == EditWindowsElementPropertyDialog.OK) {
-					tableViewerObjectProperties.refresh(editingProperty);
-					mpart.setDirty(true);
-				}
-			}
-		});
+        tltmEdit.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection structuredSelection = tableViewerObjectProperties.getStructuredSelection();
+                if (structuredSelection.isEmpty()) {
+                    return;
+                }
+                WebElementPropertyEntity editingProperty = (WebElementPropertyEntity) structuredSelection
+                        .getFirstElement();
+                EditWindowsElementPropertyDialog windowsElementDialog = new EditWindowsElementPropertyDialog(getShell(),
+                        editingProperty);
+                if (windowsElementDialog.open() == EditWindowsElementPropertyDialog.OK) {
+                    tableViewerObjectProperties.refresh(editingProperty);
+                    mpart.setDirty(true);
+                }
+            }
+        });
 
         ToolItem tltmDelete = new ToolItem(tbProperties, SWT.PUSH);
         tltmDelete.setText("Delete");
@@ -321,30 +321,30 @@ public class WindowsObjectPart implements IComposerPart {
         tableViewerObjectProperties.setInput(Collections.emptyList());
     }
 
-	@Persist
-	public void onSave() {
-		WindowsElementEntity.LocatorStrategy selectedLocator = WindowsElementEntity.LocatorStrategy
-				.valueOfStrategy(cbbLocatorStrategy.getText());
-		editingEntity.setLocatorStrategy(selectedLocator);
-		editingEntity.setLocator(txtLocator.getText());
-		editingEntity.setProperties(properties);
+    @Persist
+    public void onSave() {
+        WindowsElementEntity.LocatorStrategy selectedLocator = WindowsElementEntity.LocatorStrategy
+                .valueOfStrategy(cbbLocatorStrategy.getText());
+        editingEntity.setLocatorStrategy(selectedLocator);
+        editingEntity.setLocator(txtLocator.getText());
+        editingEntity.setProperties(properties);
 
-		try {
-			WindowsElementController.getInstance().updateWindowsElementEntity(editingEntity);
-			entity = editingEntity;
-			editingEntity = (WindowsElementEntity) editingEntity.clone();
+        try {
+            WindowsElementController.getInstance().updateWindowsElementEntity(editingEntity);
+            entity = editingEntity;
+            editingEntity = (WindowsElementEntity) editingEntity.clone();
 
-			WindowsElementTreeEntity treeEntity = TreeEntityUtil.getWindowsElementTreeEntity(entity,
-					entity.getParentFolder());
-			ExplorerPart.getInstance().refreshTreeEntity(treeEntity);
-			mpart.setDirty(false);
-		} catch (ControllerException e) {
-			MultiStatusErrorDialog.showErrorDialog(e, "Error", "Unable to save Windows Object");
-		}
-	}
+            WindowsElementTreeEntity treeEntity = TreeEntityUtil.getWindowsElementTreeEntity(entity,
+                    entity.getParentFolder());
+            ExplorerPart.getInstance().refreshTreeEntity(treeEntity);
+            mpart.setDirty(false);
+        } catch (ControllerException e) {
+            MultiStatusErrorDialog.showErrorDialog(e, "Error", "Unable to save Windows Object");
+        }
+    }
 
-	@Override
-	public String getEntityId() {
-		return entity.getIdForDisplay();
-	}
+    @Override
+    public String getEntityId() {
+        return entity.getIdForDisplay();
+    }
 }

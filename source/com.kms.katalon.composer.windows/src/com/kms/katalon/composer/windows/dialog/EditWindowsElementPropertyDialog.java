@@ -17,7 +17,7 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class EditWindowsElementPropertyDialog extends AbstractDialog {
-    
+
     private WebElementPropertyEntity editingProperty;
 
     private Text txtName;
@@ -32,7 +32,7 @@ public class EditWindowsElementPropertyDialog extends AbstractDialog {
     @Override
     protected void registerControlModifyListeners() {
         txtName.addModifyListener(new ModifyListener() {
-            
+
             @Override
             public void modifyText(ModifyEvent e) {
                 getButton(OK).setEnabled(canPressOk());
@@ -42,16 +42,16 @@ public class EditWindowsElementPropertyDialog extends AbstractDialog {
 
     @Override
     protected void setInput() {
-    	txtName.setText(StringUtils.defaultString(editingProperty.getName()));
-    	txtValue.setText(StringUtils.defaultString(editingProperty.getValue()));
+        txtName.setText(StringUtils.defaultString(editingProperty.getName()));
+        txtValue.setText(StringUtils.defaultString(editingProperty.getValue()));
 
         getButton(OK).setEnabled(canPressOk());
     }
-    
+
     public boolean canPressOk() {
         return StringUtils.isNotEmpty(txtName.getText());
     }
-    
+
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         super.createButtonsForButtonBar(parent);
@@ -64,14 +64,14 @@ public class EditWindowsElementPropertyDialog extends AbstractDialog {
         gridLayout.verticalSpacing = 7;
         gridLayout.horizontalSpacing = 15;
         composite.setLayout(gridLayout);
-        
+
         Label lblName = new Label(composite, SWT.NONE);
         lblName.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
         lblName.setText("Name");
 
         txtName = new Text(composite, SWT.BORDER);
         txtName.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        
+
         Label lblValue = new Label(composite, SWT.NONE);
         lblValue.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
         lblValue.setText("Value");
@@ -86,11 +86,11 @@ public class EditWindowsElementPropertyDialog extends AbstractDialog {
 
     @Override
     protected void okPressed() {
-    	editingProperty.setName(txtName.getText());
-    	editingProperty.setValue(txtValue.getText());
+        editingProperty.setName(txtName.getText());
+        editingProperty.setValue(txtValue.getText());
         super.okPressed();
     }
-    
+
     @Override
     protected Point getInitialSize() {
         return new Point(400, super.getInitialSize().y);
@@ -104,9 +104,9 @@ public class EditWindowsElementPropertyDialog extends AbstractDialog {
     public WebElementPropertyEntity getProperty() {
         return editingProperty;
     }
-    
+
     @Override
     public String getDialogTitle() {
-    	return "Edit Property";
+        return "Edit Property";
     }
 }
