@@ -12,6 +12,7 @@ import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class WindowsElementFileServiceDataProvider implements IWindowsElementDataProvider {
     
@@ -124,8 +125,13 @@ public class WindowsElementFileServiceDataProvider implements IWindowsElementDat
             return null;
         }
 
+        String oldId = windowsElementEntity.getIdForDisplay();
+        String newId = newLocation.getIdForDisplay() + "/" + windowsElementEntity.getName();
         try {
-            return EntityFileServiceManager.move(windowsElementEntity, newLocation);
+            WindowsElementEntity movedElement = EntityFileServiceManager.move(windowsElementEntity, newLocation);
+			TestArtifactScriptRefactor.createForWindowsObjectEntity(oldId)
+					.updateReferenceForProject(newId, windowsElementEntity.getProject());
+			return movedElement;
         } catch (Exception e) {
             throw new DALException(e);
         }
