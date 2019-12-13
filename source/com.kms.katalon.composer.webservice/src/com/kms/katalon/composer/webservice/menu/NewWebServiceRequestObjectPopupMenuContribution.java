@@ -21,6 +21,7 @@ import com.kms.katalon.constants.helper.ConstantsHelper;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 
 @SuppressWarnings("restriction")
 public class NewWebServiceRequestObjectPopupMenuContribution {
@@ -76,6 +77,8 @@ public class NewWebServiceRequestObjectPopupMenuContribution {
 						return (ITreeEntity) object;
 					}
 				} else if (((ITreeEntity) object).getObject() instanceof WebElementEntity) {
+					return (ITreeEntity) ((ITreeEntity) object).getParent();
+				} else if (((ITreeEntity) object).getObject() instanceof WindowsElementEntity) {
 					return (ITreeEntity) ((ITreeEntity) object).getParent();
 				}
 			}
