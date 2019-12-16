@@ -20,6 +20,8 @@ public class License {
     private LicenseType licenseType;
 
     private boolean testing;
+    
+    private String publicKey;
 
     public Date getExpirationDate() {
         return expirationDate;
@@ -101,5 +103,21 @@ public class License {
             }
         }
         return false;
+    }
+
+    public LicenseType getLicenseType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(LicenseType licenseType) {
+        this.licenseType = licenseType;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
     }
 }
