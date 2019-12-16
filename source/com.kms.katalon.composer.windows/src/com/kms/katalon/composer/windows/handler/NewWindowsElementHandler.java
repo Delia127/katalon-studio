@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.composer.windows.constant.ComposerWindowsMessage;
@@ -31,7 +32,7 @@ public class NewWindowsElementHandler {
                 folderTreeEntity = (FolderTreeEntity) selectedTreeEntity.getParent();
             }
 
-            FolderEntity folder = (FolderEntity) selectedTreeEntity.getObject();
+            FolderEntity folder = (FolderEntity) folderTreeEntity.getObject();
 
             String suggestedName = EntityNameController.getInstance()
                     .getAvailableName(ComposerWindowsMessage.TITLE_NEW_WINDOWS_OBJECT_NAME, folder, false);
@@ -58,6 +59,7 @@ public class NewWindowsElementHandler {
 
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, "Unable to create Windows object", e.getMessage());
+            LoggerSingleton.logError(e);
         }
     }
 }
