@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -128,17 +129,19 @@ public class Application implements IApplication {
     }
 
     private File getWorkspaceFile() throws URISyntaxException {
-        File installLocation = new File(Platform.getInstallLocation().getURL().getPath());
-        String configRelativePath = Platform.OS_MACOSX.equals(Platform.getOS()) ? "../MacOS/config" : "config";
-        if (Platform.inDevelopmentMode()) {
-            configRelativePath += "-dev";
-        }
-
         if (isKSRE()) {
-            configRelativePath = configRelativePath + "/session-" + KatalonApplication.SESSION_ID.substring(0, 8);
+            File tempParentFolder = FileUtils.getTempDirectory();
+            File workSpaceFile = new File(tempParentFolder, "/session-" + KatalonApplication.SESSION_ID.substring(0, 8));
+            workSpaceFile.mkdirs();
+            return workSpaceFile;
+        } else {
+            File installLocation = new File(Platform.getInstallLocation().getURL().getPath());
+            String configRelativePath = Platform.OS_MACOSX.equals(Platform.getOS()) ? "../MacOS/config" : "config";
+            if (Platform.inDevelopmentMode()) {
+                configRelativePath += "-dev";
+            }
             return new File(installLocation.getAbsolutePath(), configRelativePath);
         }
-        return new File(installLocation.getAbsolutePath(), configRelativePath);
     }
 
     private OptionSet parseOption(final String[] appArgs) {
