@@ -22,15 +22,13 @@ public class NewWindowsElementHandler {
     @Execute
     public void createNewWindowsElement(Shell activeShell) {
         try {
-        	ITreeEntity selectedTreeEntity = (ITreeEntity) ExplorerPart.getInstance()
-                    .getSelectedTreeEntities()
-                    .get(0);
+            ITreeEntity selectedTreeEntity = (ITreeEntity) ExplorerPart.getInstance().getSelectedTreeEntities().get(0);
 
-        	FolderTreeEntity folderTreeEntity = null;
+            FolderTreeEntity folderTreeEntity = null;
             if (selectedTreeEntity instanceof FolderTreeEntity) {
-            	folderTreeEntity = (FolderTreeEntity) selectedTreeEntity;
+                folderTreeEntity = (FolderTreeEntity) selectedTreeEntity;
             } else {
-            	folderTreeEntity = (FolderTreeEntity) selectedTreeEntity.getParent();
+                folderTreeEntity = (FolderTreeEntity) selectedTreeEntity.getParent();
             }
 
             FolderEntity folder = (FolderEntity) selectedTreeEntity.getObject();
