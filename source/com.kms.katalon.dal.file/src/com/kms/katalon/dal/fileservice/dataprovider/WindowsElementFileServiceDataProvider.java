@@ -126,12 +126,11 @@ public class WindowsElementFileServiceDataProvider implements IWindowsElementDat
         }
 
         String oldId = windowsElementEntity.getIdForDisplay();
-        String newId = newLocation.getIdForDisplay() + "/" + windowsElementEntity.getName();
         try {
             WindowsElementEntity movedElement = EntityFileServiceManager.move(windowsElementEntity, newLocation);
-			TestArtifactScriptRefactor.createForWindowsObjectEntity(oldId)
-					.updateReferenceForProject(newId, windowsElementEntity.getProject());
-			return movedElement;
+            TestArtifactScriptRefactor.createForWindowsObjectEntity(oldId)
+                    .updateReferenceForProject(movedElement.getIdForDisplay(), windowsElementEntity.getProject());
+            return movedElement;
         } catch (Exception e) {
             throw new DALException(e);
         }
