@@ -3,19 +3,19 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+trigger: 
+# - staging-*
+- release-*
+
+# pr:
+# - staging-*
+# - release-*
+
+pr: none
+
 jobs:
 - job: Build
   timeoutInMinutes: 360
-
-  trigger: 
-  # - staging-*
-  - release-*
-
-  # pr:
-  # - staging-*
-  # - release-*
-
-  pr: none
 
   variables:
     BRANCH: $(Build.SourceBranchName)
