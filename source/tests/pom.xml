@@ -12,5 +12,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>com.kms.katalon.core.test</module>
+
+		<module>com.kms.katalon.tests.report</module>
 	</modules>
 </project> 
