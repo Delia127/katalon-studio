@@ -72,6 +72,8 @@ public class ActivationInfoCollector {
     private static String activationCode;
 
     private static String expirationDate;
+    
+    private static String publicKey;
 
     protected ActivationInfoCollector() {
     }
@@ -96,7 +98,7 @@ public class ActivationInfoCollector {
                 activated = false;
                 return activated;
             }
-
+            publicKey = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PUBLIC_KEY);
             License license = getValidLicense();
             boolean isOffline = isOffline(license);
             isLicenseOffline = isOffline;
@@ -131,6 +133,7 @@ public class ActivationInfoCollector {
                 markActivatedLicenseCode(license.getJwtCode());
                 saveLicenseType(license.getType());
                 saveExpirationDate(license.getExpirationDate());
+
                 activated = true;
             }
         } catch (Exception ex) {
@@ -168,6 +171,10 @@ public class ActivationInfoCollector {
     private static void saveOrganization(Organization org) {
         organization = org;
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+    }
+    
+    private static void savePublicKey(String publicKey) {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PUBLIC_KEY, publicKey, true);
     }
     
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, StringBuilder errorMessage) {
@@ -344,11 +351,20 @@ public class ActivationInfoCollector {
 
     public static LicenseResource activate(String userName, String password, String machineId, StringBuilder errorMessage) {
         License license;
+        ActivationInfoCollector.publicKey = null;
         if (!StringUtils.isBlank(password) && !StringUtils.isBlank(machineId)) {
             try {
                 Map<String, String> respond = getLicenseFromTestOps(userName, password, machineId);
                 String jwtCode = respond.get("license");
                 String message = respond.get("errorMessage");
+                String publicKey = respond.get("publicKey");
+                if (StringUtils.isNotBlank(publicKey)) {
+                    ActivationInfoCollector.publicKey = publicKey;
+                    if (KatalonApplication.getKatalonPackage() == KatalonPackage.KSE) {
+                        savePublicKey(publicKey);
+                    }
+                }
+                    
                 license = parseLicense(jwtCode);
 
                 LicenseResource licenseResource = new LicenseResource();
@@ -431,7 +447,12 @@ public class ActivationInfoCollector {
     private static License parseLicense(String jwtCode) throws Exception {
         try {
             if (jwtCode != null && !jwtCode.isEmpty()) {
-                License license = LicenseService.getInstance().parseJws(jwtCode);
+                License license = null;
+                if (StringUtils.isNotBlank(publicKey)) {
+                    license = LicenseService.getInstance().parseJws(jwtCode, publicKey);
+                } else {
+                    license = LicenseService.getInstance().parseJws(jwtCode);
+                }
                 if (isValidLicense(license)) {
                     return license;
                 }
@@ -461,6 +482,7 @@ public class ActivationInfoCollector {
 
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage, RunningMode runningMode) {
         try {
+            ActivationInfoCollector.publicKey = null;
             License license = parseLicense(activationCode);
             if (license != null) {
                 boolean isOffline = isOffline(license);
@@ -783,7 +805,12 @@ public class ActivationInfoCollector {
         try {
             String jwtCode = getActivationCode();
             if (jwtCode != null && !jwtCode.isEmpty()) {
-                License license = LicenseService.getInstance().parseJws(jwtCode);
+                License license = null;
+                if (StringUtils.isNotBlank(publicKey)) {
+                    license = LicenseService.getInstance().parseJws(jwtCode, publicKey);
+                } else {
+                    license = LicenseService.getInstance().parseJws(jwtCode);
+                }
                 if (hasValidMachineId(license)) {
                     return license;
                 }

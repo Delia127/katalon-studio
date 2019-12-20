@@ -11,6 +11,8 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     
     public static final String ARG_ORGANIZATION = "organization";
     
+    public static final String ARG_PUBLIC_KEY = "publicKey";
+    
     public static final String STORE_TOKEN = "kstoreToken";
 
     public static final String REQUEST_CODE_PROP_NAME = "activatedRequestCode";
