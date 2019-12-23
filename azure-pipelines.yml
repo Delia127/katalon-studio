@@ -13,101 +13,105 @@ trigger:
 
 pr: none
 
-variables:
-  BRANCH: $(Build.SourceBranchName)
-  COMMIT_ID: $(Build.SourceVersion)
-  PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
-  # COMMIT_ID: $(System.PullRequest.SourceCommitId)
-  KATALON_DIR: $(Build.Repository.LocalPath)
-  TMP_DIR: $(Build.ArtifactStagingDirectory)
-  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  VERSION: 
-  TAG:
-  S3_LOCATION:
-  WITH_UPDATE:
-  IS_RELEASE:
+jobs:
+- job: Build
+  timeoutInMinutes: 360
 
-pool:
-  vmImage: 'macOS-latest'
+  variables:
+    BRANCH: $(Build.SourceBranchName)
+    COMMIT_ID: $(Build.SourceVersion)
+    PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
+    # COMMIT_ID: $(System.PullRequest.SourceCommitId)
+    KATALON_DIR: $(Build.Repository.LocalPath)
+    TMP_DIR: $(Build.ArtifactStagingDirectory)
+    MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+    MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+    VERSION: 
+    TAG:
+    S3_LOCATION:
+    WITH_UPDATE:
+    IS_RELEASE:
 
-steps:
+  pool:
+    vmImage: 'macOS-latest'
 
-- task: InstallAppleCertificate@2
-  inputs:
-    certSecureFile: 'KatalonAppleCert.p12'
-    certPwd: '$(CER_PASSWORD)'
-    keychain: 'temp'
+  steps:
 
-- checkout: self
-  fetchDepth: 1
-  clean: true
+  - task: InstallAppleCertificate@2
+    inputs:
+      certSecureFile: 'KatalonAppleCert.p12'
+      certPwd: '$(CER_PASSWORD)'
+      keychain: 'temp'
 
-- task: CacheBeta@0
-  inputs:
-    key: maven | **/pom.xml
-    path: $(MAVEN_CACHE_FOLDER)
-  displayName: Cache Maven Local Repo
+  - checkout: self
+    fetchDepth: 1
+    clean: true
 
-- bash: |
-    ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
-  displayName: Build
+  - task: CacheBeta@0
+    inputs:
+      key: maven | **/pom.xml
+      path: $(MAVEN_CACHE_FOLDER)
+    displayName: Cache Maven Local Repo
 
-- bash: |
-    source ./variable.sh
-    echo "##vso[task.setvariable variable=VERSION]${version}"
-    echo "##vso[task.setvariable variable=TAG]${tag}"
-    echo "##vso[task.setvariable variable=S3_LOCATION]${s3Location}"
-    echo "##vso[task.setvariable variable=WITH_UPDATE]${withUpdate}"
-    echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
-  displayName: Azure Populate Variable Value
+  - bash: |
+      ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
+    displayName: Build
 
-- task: S3Upload@1
-  inputs:
-    awsCredentials: 'aws'
-    regionName: 'us-east-1'
-    bucketName: 'katalon'
-    sourceFolder: '$(TMP_DIR)/update/$(TAG)'
-    globExpressions: '**'
-    targetFolder: 'update/$(TAG)'
-    filesAcl: 'public-read'
-  displayName: Upload Update Package
-  condition: eq(variables.WITH_UPDATE, 'true')
+  - bash: |
+      source ./variable.sh
+      echo "##vso[task.setvariable variable=VERSION]${version}"
+      echo "##vso[task.setvariable variable=TAG]${tag}"
+      echo "##vso[task.setvariable variable=S3_LOCATION]${s3Location}"
+      echo "##vso[task.setvariable variable=WITH_UPDATE]${withUpdate}"
+      echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
+    displayName: Azure Populate Variable Value
 
-- task: S3Upload@1
-  inputs:
-    awsCredentials: 'aws'
-    regionName: 'us-east-1'
-    bucketName: 'katalon'
-    sourceFolder: '$(TMP_DIR)'
-    globExpressions: '**'
-    targetFolder: '$(S3_LOCATION)'
-    filesAcl: 'public-read'
-  displayName: Upload Build Package
-  condition: eq(variables.IS_RELEASE, 'true')
+  - task: S3Upload@1
+    inputs:
+      awsCredentials: 'aws'
+      regionName: 'us-east-1'
+      bucketName: 'katalon'
+      sourceFolder: '$(TMP_DIR)/update/$(TAG)'
+      globExpressions: '**'
+      targetFolder: 'update/$(TAG)'
+      filesAcl: 'public-read'
+    displayName: Upload Update Package
+    condition: eq(variables.WITH_UPDATE, 'true')
 
-- task: S3Upload@1
-  inputs:
-    awsCredentials: 'aws'
-    regionName: 'us-east-1'
-    bucketName: 'katalon'
-    sourceFolder: '$(TMP_DIR)'
-    globExpressions: '**'
-    targetFolder: 'azure-$(BRANCH)-$(PR_SOURCE_BRANCH)-$(COMMIT_ID)'
-    filesAcl: 'public-read'
-  displayName: Upload Build Package
-  condition: eq(variables.IS_RELEASE, 'false')
+  - task: S3Upload@1
+    inputs:
+      awsCredentials: 'aws'
+      regionName: 'us-east-1'
+      bucketName: 'katalon'
+      sourceFolder: '$(TMP_DIR)'
+      globExpressions: '**'
+      targetFolder: '$(S3_LOCATION)'
+      filesAcl: 'public-read'
+    displayName: Upload Build Package
+    condition: eq(variables.IS_RELEASE, 'true')
 
-- bash: |
-    ./create_release.sh "${KATALON_DIR}" "${TMP_DIR}" "${GITHUB_TOKEN}"
-  displayName: Create Release
-  env:
-    GITHUB_TOKEN: $(GITHUB_TOKEN)
+  - task: S3Upload@1
+    inputs:
+      awsCredentials: 'aws'
+      regionName: 'us-east-1'
+      bucketName: 'katalon'
+      sourceFolder: '$(TMP_DIR)'
+      globExpressions: '**'
+      targetFolder: 'azure-$(BRANCH)-$(PR_SOURCE_BRANCH)-$(COMMIT_ID)'
+      filesAcl: 'public-read'
+    displayName: Upload Build Package
+    condition: eq(variables.IS_RELEASE, 'false')
 
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     PathtoPublish: '$(TMP_DIR)'
-#     ArtifactName: 'katalon-build'
-#     publishLocation: 'Container'
-#   displayName: Collect Artifacts
-    
+  - bash: |
+      ./create_release.sh "${KATALON_DIR}" "${TMP_DIR}" "${GITHUB_TOKEN}"
+    displayName: Create Release
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
+
+  # - task: PublishBuildArtifacts@1
+  #   inputs:
+  #     PathtoPublish: '$(TMP_DIR)'
+  #     ArtifactName: 'katalon-build'
+  #     publishLocation: 'Container'
+  #   displayName: Collect Artifacts
+      
