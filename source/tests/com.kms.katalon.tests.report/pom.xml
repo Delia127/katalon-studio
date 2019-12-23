@@ -31,6 +31,18 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.logging</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.logging.test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.core</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>

@@ -11,6 +11,7 @@
 	<artifactId>com.kms.katalon.tests</artifactId>
 	<packaging>pom</packaging>
 	<modules>
+		<module>com.kms.katalon.logging.test</module>
 		<module>com.kms.katalon.core.test</module>
 
 		<module>com.kms.katalon.tests.report</module>

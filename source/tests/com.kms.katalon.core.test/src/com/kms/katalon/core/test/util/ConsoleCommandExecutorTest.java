@@ -16,8 +16,14 @@ public class ConsoleCommandExecutorTest {
 
     @Test
     public void runConsoleCommandAndCollectResultsTest() throws IOException, InterruptedException {
+        String[] commands = null;
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+            commands = new String[] { "cmd", "/c", "echo hello" };
+        } else {
+            commands = new String[] { "/bin/sh", "-c", "echo hello" };
+        }
         List<String> results = ConsoleCommandExecutor
-                .runConsoleCommandAndCollectResults(new String[] { "echo", "hello" });
+                .runConsoleCommandAndCollectResults(commands);
         assertThat("The command results should be 1 line", results.size() == 1);
         assertThat("The command results should be hello", "hello".equals(results.get(0)));
     }
