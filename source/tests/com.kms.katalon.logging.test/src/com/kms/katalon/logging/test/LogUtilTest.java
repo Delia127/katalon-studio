@@ -56,14 +56,14 @@ public class LogUtilTest {
     public void printOutputLineTest() {
         LogUtil.printOutputLine("hello");
 
-        assertEquals("hello\n", outContent.toString());
+        assertEquals("hello" + System.lineSeparator(), outContent.toString());
     }
 
     @Test
     public void printErrorLineTest() {
         LogUtil.printErrorLine("hello");
 
-        assertEquals("hello\n", errorContent.toString());
+        assertEquals("hello" + System.lineSeparator(), errorContent.toString());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
 
         LogUtil.writeOutputLine("hello");
-        assertEquals("hello\n", FileUtils.readFileToString(logFile));
+        assertEquals("hello" + System.lineSeparator(), FileUtils.readFileToString(logFile));
 
         FileUtils.write(logFile, "");
     }
@@ -105,8 +105,8 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
 
         LogUtil.logInfo("hello");
-        assertEquals("hello\n", outContent.toString());
-        assertEquals("hello\n", FileUtils.readFileToString(logFile));
+        assertEquals("hello" + System.lineSeparator(), outContent.toString());
+        assertEquals("hello" + System.lineSeparator(), FileUtils.readFileToString(logFile));
 
         FileUtils.write(logFile, "");
     }
@@ -117,8 +117,8 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
 
         LogUtil.logError("hello");
-        assertEquals("hello\n", errorContent.toString());
-        assertEquals("hello\n", FileUtils.readFileToString(logFile));
+        assertEquals("hello" + System.lineSeparator(), errorContent.toString());
+        assertEquals("hello" + System.lineSeparator(), FileUtils.readFileToString(logFile));
 
         FileUtils.write(logFile, "");
     }
@@ -136,12 +136,12 @@ public class LogUtilTest {
         assertEquals(logLines.size() > 3, true);
 
         assertEquals("", logLines.get(0));
-        String stacktraceString = StringUtils.join(logLines.subList(2, logLines.size()), "\n");
+        String stacktraceString = StringUtils.join(logLines.subList(2, logLines.size()), System.lineSeparator());
         assertEquals(ExceptionUtils.getStackTrace(e).trim(), stacktraceString.trim());
 
         FileUtils.write(logFile, "");
     }
-    
+
     @Test
     public void logThrowableWithMessageTest() throws IOException {
         File logFile = getLogFile();
@@ -157,7 +157,7 @@ public class LogUtilTest {
 
         assertEquals("", logLines.get(0));
         assertEquals("Expected message", logLines.get(2));
-        String stacktraceString = StringUtils.join(logLines.subList(3, logLines.size()), "\n");
+        String stacktraceString = StringUtils.join(logLines.subList(3, logLines.size()), System.lineSeparator());
         assertEquals(ExceptionUtils.getStackTrace(e).trim(), stacktraceString.trim());
 
         FileUtils.write(logFile, "");
@@ -176,21 +176,21 @@ public class LogUtilTest {
         assertEquals(logLines.size() > 3, true);
 
         assertEquals("", logLines.get(0));
-        String stacktraceString = StringUtils.join(logLines.subList(2, logLines.size()), "\n");
+        String stacktraceString = StringUtils.join(logLines.subList(2, logLines.size()), System.lineSeparator());
         assertEquals(ExceptionUtils.getStackTrace(e).trim(), stacktraceString.trim());
 
         FileUtils.write(logFile, "");
 
         // Verify error in console
-        List<String> logLinesInConsole = Arrays.asList(errorContent.toString().split("\n"));
+        List<String> logLinesInConsole = Arrays.asList(errorContent.toString().split(System.lineSeparator()));
         assertEquals(logLinesInConsole.size() > 3, true);
 
         assertEquals("", logLinesInConsole.get(0));
         String stacktraceStringInConsole = StringUtils.join(logLinesInConsole.subList(2, logLinesInConsole.size()),
-                "\n");
+                System.lineSeparator());
         assertEquals(ExceptionUtils.getStackTrace(e).trim(), stacktraceStringInConsole.trim());
     }
-    
+
     @Test
     public void printAndLogErrorWithMessageTest() throws IOException {
         File logFile = getLogFile();
@@ -206,19 +206,19 @@ public class LogUtilTest {
 
         assertEquals("", logLines.get(0));
         assertEquals("Expected message", logLines.get(2));
-        String stacktraceString = StringUtils.join(logLines.subList(3, logLines.size()), "\n");
+        String stacktraceString = StringUtils.join(logLines.subList(3, logLines.size()), System.lineSeparator());
         assertEquals(ExceptionUtils.getStackTrace(e).trim(), stacktraceString.trim());
 
         FileUtils.write(logFile, "");
 
         // Verify error in console
-        List<String> logLinesInConsole = Arrays.asList(errorContent.toString().split("\n"));
+        List<String> logLinesInConsole = Arrays.asList(errorContent.toString().split(System.lineSeparator()));
         assertEquals(logLinesInConsole.size() > 3, true);
 
         assertEquals("", logLinesInConsole.get(0));
         assertEquals("Expected message", logLines.get(2));
         String stacktraceStringInConsole = StringUtils.join(logLinesInConsole.subList(3, logLinesInConsole.size()),
-                "\n");
+                System.lineSeparator());
         assertEquals(ExceptionUtils.getStackTrace(e).trim(), stacktraceStringInConsole.trim());
     }
 }
