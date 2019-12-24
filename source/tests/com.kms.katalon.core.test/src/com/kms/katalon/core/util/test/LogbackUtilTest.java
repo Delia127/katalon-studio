@@ -1,4 +1,4 @@
-package com.kms.katalon.core.test.util;
+package com.kms.katalon.core.util.test;
 
 import java.io.File;
 import java.io.IOException;

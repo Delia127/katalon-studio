@@ -1,4 +1,4 @@
-package com.kms.katalon.core.test.util;
+package com.kms.katalon.core.util.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
