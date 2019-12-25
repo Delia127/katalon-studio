@@ -49,7 +49,7 @@ jobs:
 
   - task: CacheBeta@0
     inputs:
-      key: maven | **/pom.xml, !target/**
+      key: maven | **/pom.xml, !**/target/**
       path: $(MAVEN_CACHE_FOLDER)
     displayName: Cache Maven Local Repo
 
