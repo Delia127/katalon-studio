@@ -108,7 +108,7 @@ jobs:
       repositoryName: 'katalon-studio/katalon-studio'
       action: 'create'
       target: 'master'
-      tagSource: 'auto'
+      tagSource: 'manual'
       tag: 'v${tag}'
       assets: '${TMP_DIR}/*'
       isDraft: true
