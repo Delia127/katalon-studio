@@ -47,9 +47,12 @@ jobs:
     fetchDepth: 1
     clean: true
 
-  - task: CacheBeta@0
+  - task: Cache@2
     inputs:
-      key: maven | **/pom.xml, !**/target/**
+      key: 'maven | "$(Agent.OS)" | **/pom.xml, !**/target/**'
+      restoreKeys: |
+        maven | "$(Agent.OS)"
+        maven
       path: $(MAVEN_CACHE_FOLDER)
     displayName: Cache Maven Local Repo
 
@@ -109,8 +112,8 @@ jobs:
       action: 'create'
       target: 'master'
       tagSource: 'manual'
-      tag: 'v${tag}'
-      assets: '${TMP_DIR}/*'
+      tag: 'v$(TAG)'
+      assets: '$(TMP_DIR)/*'
       isDraft: true
       addChangeLog: false
 
