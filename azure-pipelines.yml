@@ -102,11 +102,17 @@ jobs:
     displayName: Upload Build Package
     condition: eq(variables.IS_RELEASE, 'false')
 
-  - bash: |
-      ./create_release.sh "${KATALON_DIR}" "${TMP_DIR}" "${GITHUB_TOKEN}"
-    displayName: Create Release
-    env:
-      GITHUB_TOKEN: $(GITHUB_TOKEN)
+  - task: GitHubRelease@0
+    inputs:
+      gitHubConnection: 'github.com/katalon-studio'
+      repositoryName: 'katalon-studio/katalon-studio'
+      action: 'create'
+      target: 'master'
+      tagSource: 'auto'
+      tag: 'v${tag}'
+      assets: '${TMP_DIR}/*'
+      isDraft: true
+      addChangeLog: false
 
   # - task: PublishBuildArtifacts@1
   #   inputs:
