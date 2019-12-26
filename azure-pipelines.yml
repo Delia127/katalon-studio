@@ -113,9 +113,12 @@ jobs:
       target: 'master'
       tagSource: 'manual'
       tag: 'v$(TAG)'
+      title: 'v$(TAG)'
       assets: '$(TMP_DIR)/*'
       isDraft: true
       addChangeLog: false
+    displayName: Create Github Release
+    condition: eq(variables.IS_RELEASE, 'true')
 
   # - task: PublishBuildArtifacts@1
   #   inputs:
