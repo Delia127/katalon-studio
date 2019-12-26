@@ -105,7 +105,7 @@ jobs:
       regionName: 'us-east-1'
       awsCommand: 's3'
       awsSubCommand: 'cp'
-      awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION)'
+      awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION) --acl public-read'
     displayName: Upload Build Package
     condition: eq(variables.IS_RELEASE, 'true')
 
