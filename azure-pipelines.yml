@@ -50,7 +50,9 @@ jobs:
   - bash: |
       pip3 install awscli --upgrade --user
       echo $(which python)
-      export PATH="$HOME/.local/bin:$PATH"
+      echo $HOME
+      ls -la $HOME/.local/bin
+      ls -la $(which python)
       aws --version
     displayName: Install AWS CLI
 
