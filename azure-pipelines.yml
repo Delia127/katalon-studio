@@ -49,8 +49,17 @@ jobs:
 
   - bash: |
       pip3 install awscli --upgrade --user
-      aws configure set default.s3.use_accelerate_endpoint true
     displayName: Install AWS CLI
+
+  - task: AWSCLI@1
+    inputs:
+      awsCredentials: 'aws'
+      regionName: 'us-east-1'
+      awsCommand: 'configure'
+      awsSubCommand: 'set'
+      awsArguments: 'default.s3.use_accelerate_endpoint true'
+    displayName: Upload Build Package
+    condition: eq(variables.IS_RELEASE, 'true')
 
   - task: Cache@2
     inputs:
