@@ -6,15 +6,13 @@ import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
 import java.util.Map;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.kms.katalon.crypto.LicenseHelper;
+import com.kms.katalon.license.constants.LicenseConstants;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
-import com.auth0.jwt.interfaces.Claim;
-
-import com.kms.katalon.license.constants.LicenseConstants;
 
 public class LicenseService {
     public static LicenseService serviceInstance;
@@ -29,9 +27,13 @@ public class LicenseService {
     }
     
     public License parseJws(String jws) throws InvalidKeySpecException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        return parseJws(jws, LicenseConstants.LICENSE_PUBLIC_KEY);
+    }
+    
+    public License parseJws(String jws, String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         LicenseHelper licenseHelper = LicenseHelper.getInstance();
-        Map<String, Claim> claims = licenseHelper.parseJws(jws);
-        return getLicenseFromClaims(claims, jws);
+        Map<String, Claim> claims = licenseHelper.parseJws(jws, publicKey);
+        return getLicenseFromClaims(claims, jws, publicKey);
     }
     
     public License parseJwsFromFile(String filename) throws InvalidKeySpecException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
@@ -39,7 +41,7 @@ public class LicenseService {
         return parseJws(jws);
     }
     
-    private License getLicenseFromClaims(Map<String, Claim> claims, String jws) throws IOException {
+    private License getLicenseFromClaims(Map<String, Claim> claims, String jws, String publicKey) throws IOException {
         License license = new License();
         license.setLicenseType(claims.get(LicenseConstants.LICENSE_TYPE).asString());
         license.setExpirationDate(claims.get(LicenseConstants.EXPIRATION_DATE).asDate());
@@ -61,6 +63,7 @@ public class LicenseService {
 
         license.setFeatures(claims.get(LicenseConstants.FEATURES).asList(Feature.class));
         license.setJwtCode(jws);
+        license.setPublicKey(publicKey);
         return license;
     }
 }

@@ -55,6 +55,9 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
             Map<String, String> respond = new HashMap<String, String>();
             respond.put("license", analyticsLicenseKey.getValue());
             respond.put("errorMessage", analyticsLicenseKey.getErrorMessage());
+            if (StringUtils.isNotBlank(analyticsLicenseKey.getPublicKey())) {
+                respond.put("publicKey", analyticsLicenseKey.getPublicKey());
+            }
             return respond;
         }
         return null;
