@@ -49,6 +49,8 @@ jobs:
 
   - bash: |
       pip3 install awscli --upgrade --user
+      export PATH="$HOME/.local/bin:$PATH"
+      aws --version
     displayName: Install AWS CLI
 
   - task: AWSCLI@1
