@@ -47,6 +47,10 @@ jobs:
     fetchDepth: 1
     clean: true
 
+  - bash: |
+      pip3 install awscli --upgrade --user
+    displayName: Install AWS CLI
+
   - task: Cache@2
     inputs:
       key: 'maven | "$(Agent.OS)" | **/pom.xml, !**/target/**'
