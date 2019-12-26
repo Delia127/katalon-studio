@@ -3,9 +3,12 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger: 
-# - staging-*
-- release-*
+trigger:
+  batch: true
+  branches:
+    include:
+      # - staging-*
+      - release-*
 
 # pr:
 # - staging-*
@@ -135,7 +138,7 @@ jobs:
     inputs:
       gitHubConnection: 'github.com/katalon-studio'
       repositoryName: 'katalon-studio/katalon-studio'
-      action: 'create'
+      action: 'edit'
       target: 'master'
       tagSource: 'manual'
       tag: 'v$(TAG)'
