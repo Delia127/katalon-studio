@@ -65,25 +65,23 @@ building() {
     echo "Building: Standard Prod"
     cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} clean verify -P prod
 
-    cd $katalonDir/source/com.kms.katalon.apidocs && $katalonDir/source/mvnw ${mavenOpts} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}
+    cd $katalonDir/source/com.kms.katalon.apidocs && $katalonDir/source/mvnw ${mavenOpts} clean verify && mv 'target/resources/apidocs' ${tmpDir}/
 }
 
 copy_build() {
 
-    cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+    cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && mv 'Katalon Studio.app' ${tmpDir}/
     python3 $katalonDir/generate_commit_file.py $tmpDir/commit.txt ${commitId}
     cd $katalonDir/source/com.kms.katalon.product/target/products
-    find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
-    find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
-    find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
+    find . -iname '*.zip' -print -exec mv \{\} ${tmpDir}/ \;
+    find . -iname '*.tar.gz' -print -exec mv \{\} ${tmpDir}/ \;
 }
 
 copy_build_engine() {
 
     cd $katalonDir/source/com.kms.katalon.product.engine/target/products
-    find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
-    find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
-    find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
+    find . -iname '*.zip' -print -exec mv \{\} ${tmpDir}/ \;
+    find . -iname '*.tar.gz' -print -exec mv \{\} ${tmpDir}/ \;
 }
 
 sign_file() {
@@ -137,10 +135,10 @@ repackage() {
     mv ${tmpDir}/output/*.tar.gz ${tmpDir}/
     rm -rf ${tmpDir}/output
 
-    cd ${tmpDir} && zip -r "${tmpDir}/Katalon Studio.app.zip" "Katalon Studio.app"
+    cd ${tmpDir} && zip -qr "${tmpDir}/Katalon Studio.app.zip" "Katalon Studio.app"
     rm -rf "${tmpDir}/Katalon Studio.app"
 
-    cd ${tmpDir} && zip -r "${tmpDir}/apidocs.zip" "apidocs"
+    cd ${tmpDir} && zip -qr "${tmpDir}/apidocs.zip" "apidocs"
     rm -rf "${tmpDir}/apidocs"
 }
 
