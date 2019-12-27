@@ -2,6 +2,7 @@ package com.kms.katalon.execution.setting;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.controller.ProjectController;
@@ -192,5 +193,17 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     
     public void setLogTestSteps(Boolean value) throws IOException {
         setProperty(ExecutionDefaultSettingConstants.WEB_UI_LOG_TEST_STEPS, value);
+    }
+    
+    public String getVmArgs() {
+        try {
+            return getString(ExecutionDefaultSettingConstants.LAUNCH_VM_ARGS, "");
+        } catch (IOException e) {
+            return "";
+        }
+    }
+    
+    public void setVmArgs(String vmArgs) throws IOException {
+        setProperty(ExecutionDefaultSettingConstants.LAUNCH_VM_ARGS, vmArgs);
     }
 }

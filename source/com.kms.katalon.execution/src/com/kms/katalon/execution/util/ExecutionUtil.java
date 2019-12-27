@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
 import com.kms.katalon.controller.ProjectController;
@@ -118,6 +119,11 @@ public class ExecutionUtil {
 
     public static boolean isQuitDriversAfterExecutingTestSuite() {
         return getStore().isPostTestSuiteExecQuitDriver();
+    }
+    
+    public static String[] getVmArgs() {
+        String vmArgsString = getStore().getVmArgs();
+        return StringUtils.split(vmArgsString);
     }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {
