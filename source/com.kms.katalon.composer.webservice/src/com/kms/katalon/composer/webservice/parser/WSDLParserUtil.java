@@ -47,7 +47,7 @@ public class WSDLParserUtil {
 										String operationName = (String) objOperationName;
 										WebServiceRequestEntity newWSREntity = new WebServiceRequestEntity();
 										String location = null;
-										if(lstDefinition[1].contains("?wsdl")) {
+										if(!lstDefinition[1].contains("?wsdl")) {
 										    location = lstDefinition[1] + "?wsdl";
 										}
 										newWSREntity.setWsdlAddress(location);
