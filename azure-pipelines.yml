@@ -122,17 +122,27 @@ jobs:
     displayName: Upload Build Package
     condition: eq(variables.IS_RELEASE, 'true')
 
-  - task: S3Upload@1
+  # - task: S3Upload@1
+  #   inputs:
+  #     awsCredentials: 'aws'
+  #     regionName: 'us-east-1'
+  #     bucketName: 'katalon'
+  #     sourceFolder: '$(TMP_DIR)'
+  #     globExpressions: '**'
+  #     targetFolder: 'azure-$(BRANCH)-$(PR_SOURCE_BRANCH)-$(COMMIT_ID)'
+  #     filesAcl: 'public-read'
+  #   displayName: Upload Build Package
+  #   condition: eq(variables.IS_RELEASE, 'false')
+
+  - task: AWSCLI@1
     inputs:
       awsCredentials: 'aws'
       regionName: 'us-east-1'
-      bucketName: 'katalon'
-      sourceFolder: '$(TMP_DIR)'
-      globExpressions: '**'
-      targetFolder: 'azure-$(BRANCH)-$(PR_SOURCE_BRANCH)-$(COMMIT_ID)'
-      filesAcl: 'public-read'
+      awsCommand: 'cloudfront'
+      awsSubCommand: 'create-invalidation'
+      awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
     displayName: Upload Build Package
-    condition: eq(variables.IS_RELEASE, 'false')
+    condition: eq(variables.IS_RELEASE, 'true')
 
   - task: GitHubRelease@0
     inputs:
