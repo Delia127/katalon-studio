@@ -65,7 +65,7 @@ building() {
     echo "Building: Standard Prod"
     cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} clean verify -P prod
 
-    cd $katalonDir/source/com.kms.katalon.apidocs && $katalonDir/source/mvnw ${mavenOpts} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}
+    cd $katalonDir/source/com.kms.katalon.apidocs && $katalonDir/source/mvnw ${mavenOpts} clean verify && mv 'target/resources/apidocs' ${tmpDir}/
 }
 
 copy_build() {
@@ -73,17 +73,15 @@ copy_build() {
     cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
     python3 $katalonDir/generate_commit_file.py $tmpDir/commit.txt ${commitId}
     cd $katalonDir/source/com.kms.katalon.product/target/products
-    find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
-    find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
-    find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
+    find . -iname '*.zip' -print -exec mv \{\} ${tmpDir}/ \;
+    find . -iname '*.tar.gz' -print -exec mv \{\} ${tmpDir}/ \;
 }
 
 copy_build_engine() {
 
     cd $katalonDir/source/com.kms.katalon.product.engine/target/products
-    find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
-    find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
-    find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
+    find . -iname '*.zip' -print -exec mv \{\} ${tmpDir}/ \;
+    find . -iname '*.tar.gz' -print -exec mv \{\} ${tmpDir}/ \;
 }
 
 sign_file() {
@@ -111,15 +109,25 @@ generate_update_package() {
 
 repackage() {
     cd $katalonDir
-    cd tools/repackage
-    npm prune && npm install
-    node repackage.js ${tmpDir}/Katalon_Studio_Windows_32.zip ${version}
-    node repackage.js ${tmpDir}/Katalon_Studio_Windows_64.zip ${version}
-    node repackage.js ${tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}
-    node repackage.js ${tmpDir}/Katalon_Studio_Engine_Windows_32.zip ${version}
-    node repackage.js ${tmpDir}/Katalon_Studio_Engine_Windows_64.zip ${version}
-    node repackage.js ${tmpDir}/Katalon_Studio_Engine_MacOS.tar.gz ${version}
-    node repackage.js ${tmpDir}/Katalon_Studio_Engine_Linux_64.tar.gz ${version}
+    # cd tools/repackage
+    # npm prune && npm install
+    # node repackage.js ${tmpDir}/Katalon_Studio_Windows_32.zip ${version}
+    # node repackage.js ${tmpDir}/Katalon_Studio_Windows_64.zip ${version}
+    # node repackage.js ${tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}
+    # node repackage.js ${tmpDir}/Katalon_Studio_Engine_Windows_32.zip ${version}
+    # node repackage.js ${tmpDir}/Katalon_Studio_Engine_Windows_64.zip ${version}
+    # node repackage.js ${tmpDir}/Katalon_Studio_Engine_MacOS.tar.gz ${version}
+    # node repackage.js ${tmpDir}/Katalon_Studio_Engine_Linux_64.tar.gz ${version}
+
+    mkdir -p ${tmpDir}/output
+    cd ${tmpDir} && unzip -q Katalon_Studio_Windows_32.zip -d output/Katalon_Studio_Windows_32-${version} && cd output && zip -qr Katalon_Studio_Windows_32-${version}.zip Katalon_Studio_Windows_32-${version}
+    cd ${tmpDir} && unzip -q Katalon_Studio_Windows_64.zip -d output/Katalon_Studio_Windows_64-${version} && cd output && zip -qr Katalon_Studio_Windows_64-${version}.zip Katalon_Studio_Windows_64-${version}
+    cd ${tmpDir} && unzip -q Katalon_Studio_Engine_Windows_32.zip -d output/Katalon_Studio_Engine_Windows_32-${version} && cd output && zip -qr Katalon_Studio_Engine_Windows_32-${version}.zip Katalon_Studio_Engine_Windows_32-${version}
+    cd ${tmpDir} && unzip -q Katalon_Studio_Engine_Windows_64.zip -d output/Katalon_Studio_Engine_Windows_64-${version} && cd output && zip -qr Katalon_Studio_Engine_Windows_64-${version}.zip Katalon_Studio_Engine_Windows_64-${version}
+
+    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Engine_Linux_64-${version} && tar -xzf Katalon_Studio_Engine_Linux_64.tar.gz -C output/Katalon_Studio_Engine_Linux_64-${version} && cd output && tar -czf Katalon_Studio_Engine_Linux_64-${version}.tar.gz Katalon_Studio_Engine_Linux_64-${version}
+    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Engine_MacOS-${version} && tar -xzf Katalon_Studio_Engine_MacOS.tar.gz -C output/Katalon_Studio_Engine_MacOS-${version} && cd output && tar -czf Katalon_Studio_Engine_MacOS-${version}.tar.gz Katalon_Studio_Engine_MacOS-${version}
+    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Linux_64-${version} && tar -xzf Katalon_Studio_Linux_64.tar.gz -C output/Katalon_Studio_Linux_64-${version} && cd output && tar -czf Katalon_Studio_Linux_64-${version}.tar.gz Katalon_Studio_Linux_64-${version}
 
     rm -rf ${tmpDir}/*.zip
     rm -rf ${tmpDir}/*.tar.gz
@@ -127,10 +135,10 @@ repackage() {
     mv ${tmpDir}/output/*.tar.gz ${tmpDir}/
     rm -rf ${tmpDir}/output
 
-    cd ${tmpDir} && zip -r "${tmpDir}/Katalon Studio.app.zip" "Katalon Studio.app"
+    cd ${tmpDir} && zip -qr "${tmpDir}/Katalon Studio.app.zip" "Katalon Studio.app"
     rm -rf "${tmpDir}/Katalon Studio.app"
 
-    cd ${tmpDir} && zip -r "${tmpDir}/apidocs.zip" "apidocs"
+    cd ${tmpDir} && zip -qr "${tmpDir}/apidocs.zip" "apidocs"
     rm -rf "${tmpDir}/apidocs"
 }
 

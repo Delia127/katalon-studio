@@ -39,3 +39,7 @@ source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/R
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release/Setup.msi
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release/setup.exe
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release.7z
+
+.mvn
+mvnw
+mvnw.cmd
