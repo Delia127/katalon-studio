@@ -27,6 +27,7 @@ public class WSDLParserUtil {
 			WSDLHelper wsdlHelperInstance = WSDLHelper.newInstance(url, null);
 			List<String> operationNames = wsdlHelperInstance.getOperationNamesByRequestMethod(requestMethod);
 			Map<String, List<String>> paramMap = wsdlHelperInstance.getParamMap();
+			String[] lstDefinition = wsdlHelperInstance.getDefinition().toString().split("locationURI=");
 			new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell()).run(true, true,
 					new IRunnableWithProgress() {
 						@Override
@@ -45,7 +46,11 @@ public class WSDLParserUtil {
 									if(objOperationName != null){
 										String operationName = (String) objOperationName;
 										WebServiceRequestEntity newWSREntity = new WebServiceRequestEntity();
-										newWSREntity.setWsdlAddress(url);
+										String location = null;
+										if(lstDefinition[1].contains("?wsdl")) {
+										    location = lstDefinition[1] + "?wsdl";
+										}
+										newWSREntity.setWsdlAddress(location);
 										newWSREntity.setName(operationName);
 										newWSREntity.setSoapRequestMethod(requestMethod);
 										newWSREntity.setSoapServiceFunction(operationName);
