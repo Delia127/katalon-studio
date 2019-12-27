@@ -122,14 +122,14 @@ repackage() {
     # node repackage.js ${tmpDir}/Katalon_Studio_Engine_Linux_64.tar.gz ${version}
 
     mkdir -p ${tmpDir}/output
-    cd ${tmpDir} && unzip Katalon_Studio_Windows_32.zip -d output/Katalon_Studio_Windows_32-${version} && cd output && zip -r Katalon_Studio_Windows_32-${version}.zip Katalon_Studio_Windows_32-${version}
-    cd ${tmpDir} && unzip Katalon_Studio_Windows_64.zip -d output/Katalon_Studio_Windows_64-${version} && cd output && zip -r Katalon_Studio_Windows_64-${version}.zip Katalon_Studio_Windows_64-${version}
-    cd ${tmpDir} && unzip Katalon_Studio_Engine_Windows_32.zip -d output/Katalon_Studio_Engine_Windows_32-${version} && cd output && zip -r Katalon_Studio_Engine_Windows_32-${version}.zip Katalon_Studio_Engine_Windows_32-${version}
-    cd ${tmpDir} && unzip Katalon_Studio_Engine_Windows_64.zip -d output/Katalon_Studio_Engine_Windows_64-${version} && cd output && zip -r Katalon_Studio_Engine_Windows_64-${version}.zip Katalon_Studio_Engine_Windows_64-${version}
+    cd ${tmpDir} && unzip -q Katalon_Studio_Windows_32.zip -d output/Katalon_Studio_Windows_32-${version} && cd output && zip -qr Katalon_Studio_Windows_32-${version}.zip Katalon_Studio_Windows_32-${version}
+    cd ${tmpDir} && unzip -q Katalon_Studio_Windows_64.zip -d output/Katalon_Studio_Windows_64-${version} && cd output && zip -qr Katalon_Studio_Windows_64-${version}.zip Katalon_Studio_Windows_64-${version}
+    cd ${tmpDir} && unzip -q Katalon_Studio_Engine_Windows_32.zip -d output/Katalon_Studio_Engine_Windows_32-${version} && cd output && zip -qr Katalon_Studio_Engine_Windows_32-${version}.zip Katalon_Studio_Engine_Windows_32-${version}
+    cd ${tmpDir} && unzip -q Katalon_Studio_Engine_Windows_64.zip -d output/Katalon_Studio_Engine_Windows_64-${version} && cd output && zip -qr Katalon_Studio_Engine_Windows_64-${version}.zip Katalon_Studio_Engine_Windows_64-${version}
 
-    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Engine_Linux_64-${version} && tar -xzf Katalon_Studio_Engine_Linux_64.tar.gz -C output/Katalon_Studio_Engine_Linux_64-${version} && cd output && tar -czvf Katalon_Studio_Engine_Linux_64-${version}.tar.gz Katalon_Studio_Engine_Linux_64-${version}
-    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Engine_MacOS-${version} && tar -xzf Katalon_Studio_Engine_MacOS.tar.gz -C output/Katalon_Studio_Engine_MacOS-${version} && cd output && tar -czvf Katalon_Studio_Engine_MacOS-${version}.tar.gz Katalon_Studio_Engine_MacOS-${version}
-    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Linux_64-${version} && tar -xzf Katalon_Studio_Linux_64.tar.gz -C output/Katalon_Studio_Linux_64-${version} && cd output && tar -czvf Katalon_Studio_Linux_64-${version}.tar.gz Katalon_Studio_Linux_64-${version}
+    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Engine_Linux_64-${version} && tar -xzf Katalon_Studio_Engine_Linux_64.tar.gz -C output/Katalon_Studio_Engine_Linux_64-${version} && cd output && tar -czf Katalon_Studio_Engine_Linux_64-${version}.tar.gz Katalon_Studio_Engine_Linux_64-${version}
+    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Engine_MacOS-${version} && tar -xzf Katalon_Studio_Engine_MacOS.tar.gz -C output/Katalon_Studio_Engine_MacOS-${version} && cd output && tar -czf Katalon_Studio_Engine_MacOS-${version}.tar.gz Katalon_Studio_Engine_MacOS-${version}
+    cd ${tmpDir} && mkdir -p output/Katalon_Studio_Linux_64-${version} && tar -xzf Katalon_Studio_Linux_64.tar.gz -C output/Katalon_Studio_Linux_64-${version} && cd output && tar -czf Katalon_Studio_Linux_64-${version}.tar.gz Katalon_Studio_Linux_64-${version}
 
     rm -rf ${tmpDir}/*.zip
     rm -rf ${tmpDir}/*.tar.gz
