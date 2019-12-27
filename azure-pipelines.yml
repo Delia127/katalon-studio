@@ -100,6 +100,10 @@ jobs:
     displayName: Upload Update Package
     condition: eq(variables.IS_RELEASE, 'true')
 
+  - bash: |
+      rm -rf $(TMP_DIR)/update/$(TAG)
+    displayName: Delete Update Packages
+
   # - task: S3Upload@1
   #   inputs:
   #     awsCredentials: 'aws'
@@ -141,7 +145,7 @@ jobs:
       awsCommand: 'cloudfront'
       awsSubCommand: 'create-invalidation'
       awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
-    displayName: Upload Build Package
+    displayName: Invalidate CloudFront
     condition: eq(variables.IS_RELEASE, 'true')
 
   - task: GitHubRelease@0
