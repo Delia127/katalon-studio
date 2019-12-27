@@ -1,6 +1,7 @@
 package com.kms.katalon.integration.kobiton.preferences;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,7 +9,6 @@ import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
-import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
 import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -80,7 +80,7 @@ public class KobitonPreferencesProvider {
                     KobitonPreferencesProvider.saveKobitonApiKey(apiKey);
                 }
             } catch (Exception e) {
-                throw new RuntimeException("API key kobiton system failed !", e);
+                return "";
             }
         }
 
