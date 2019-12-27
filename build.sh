@@ -122,6 +122,7 @@ repackage() {
     # node repackage.js ${tmpDir}/Katalon_Studio_Engine_Linux_64.tar.gz ${version}
 
     mkdir -p ${tmpDir}/output
+    cd ${tmpDir} && unzip Katalon_Studio_Windows_32.zip -d output/Katalon_Studio_Windows_32-${version} && cd output && zip -r Katalon_Studio_Windows_32-${version}.zip Katalon_Studio_Windows_32-${version}
     cd ${tmpDir} && unzip Katalon_Studio_Windows_64.zip -d output/Katalon_Studio_Windows_64-${version} && cd output && zip -r Katalon_Studio_Windows_64-${version}.zip Katalon_Studio_Windows_64-${version}
     cd ${tmpDir} && unzip Katalon_Studio_Engine_Windows_32.zip -d output/Katalon_Studio_Engine_Windows_32-${version} && cd output && zip -r Katalon_Studio_Engine_Windows_32-${version}.zip Katalon_Studio_Engine_Windows_32-${version}
     cd ${tmpDir} && unzip Katalon_Studio_Engine_Windows_64.zip -d output/Katalon_Studio_Engine_Windows_64-${version} && cd output && zip -r Katalon_Studio_Engine_Windows_64-${version}.zip Katalon_Studio_Engine_Windows_64-${version}
