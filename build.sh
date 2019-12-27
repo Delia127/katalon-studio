@@ -70,7 +70,7 @@ building() {
 
 copy_build() {
 
-    cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && mv 'Katalon Studio.app' ${tmpDir}/
+    cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
     python3 $katalonDir/generate_commit_file.py $tmpDir/commit.txt ${commitId}
     cd $katalonDir/source/com.kms.katalon.product/target/products
     find . -iname '*.zip' -print -exec mv \{\} ${tmpDir}/ \;
