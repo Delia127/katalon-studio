@@ -81,7 +81,9 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     }
     
     protected void initVmArguments() {
-        vmArgs = Arrays.asList(ExecutionUtil.getVmArgs());
+        if (LicenseUtil.isNotFreeLicense()) {
+            vmArgs = Arrays.asList(ExecutionUtil.getVmArgs());
+        }
     }
 
     @Override

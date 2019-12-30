@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
@@ -28,14 +29,16 @@ public class LaunchArgumentsSettingPage extends PreferencePageWithHelp {
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout(1, false));
         
-        Label lblVmArgs = new Label(container, SWT.NONE);
-        lblVmArgs.setText("VM Arguments");
-        
-        txtVmArgs = new Text(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-        GridData gdVmArgs = new GridData(SWT.FILL, SWT.FILL, true, false);
-        gdVmArgs.heightHint = 75;
-        txtVmArgs.setLayoutData(gdVmArgs);
-        txtVmArgs.setText(settingStore.getVmArgs());
+        if (LicenseUtil.isNotFreeLicense()) {
+            Label lblVmArgs = new Label(container, SWT.NONE);
+            lblVmArgs.setText("VM Arguments");
+            
+            txtVmArgs = new Text(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+            GridData gdVmArgs = new GridData(SWT.FILL, SWT.FILL, true, false);
+            gdVmArgs.heightHint = 75;
+            txtVmArgs.setLayoutData(gdVmArgs);
+            txtVmArgs.setText(settingStore.getVmArgs());
+        }
         
         return container;
     }
@@ -47,8 +50,10 @@ public class LaunchArgumentsSettingPage extends PreferencePageWithHelp {
         }
         
         try {
-            String vmArgs = txtVmArgs.getText();
-            settingStore.setVmArgs(vmArgs.trim());
+            if (txtVmArgs != null) {
+                String vmArgs = txtVmArgs.getText();
+                settingStore.setVmArgs(vmArgs.trim());
+            }
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
