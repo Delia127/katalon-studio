@@ -43,4 +43,9 @@ public class LogManager {
         getErrorLogger().close();
         getOutputLogger().close();
     }
+    
+    public static void reset() {
+        outputLogger = null;
+        errorLogger = null;
+    }
 }
