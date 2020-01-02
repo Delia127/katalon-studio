@@ -27,8 +27,6 @@ public class WSDLParserUtil {
 			WSDLHelper wsdlHelperInstance = WSDLHelper.newInstance(url, null);
 			List<String> operationNames = wsdlHelperInstance.getOperationNamesByRequestMethod(requestMethod);
 			Map<String, List<String>> paramMap = wsdlHelperInstance.getParamMap();
-			System.out.print(wsdlHelperInstance.getDefinition().toString());
-			String[] lstDefinition = wsdlHelperInstance.getDefinition().toString().split("locationURI=");
 			new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell()).run(true, true,
 					new IRunnableWithProgress() {
 						@Override
@@ -47,11 +45,7 @@ public class WSDLParserUtil {
 									if(objOperationName != null){
 										String operationName = (String) objOperationName;
 										WebServiceRequestEntity newWSREntity = new WebServiceRequestEntity();
-										String location = null;
-										int n = lstDefinition.length;
-										if(!lstDefinition[n - 1].contains("?wsdl")) {
-										    location = lstDefinition[n - 1] + "?wsdl";
-										}
+										String location = getLocation(wsdlHelperInstance);
 										newWSREntity.setWsdlAddress(location);
 										newWSREntity.setName(operationName);
 										newWSREntity.setSoapRequestMethod(requestMethod);
@@ -85,6 +79,17 @@ public class WSDLParserUtil {
 			return newWSTestObjects;
 
 	}
+	
+    public static String getLocation(WSDLHelper wsdlHelperInstance) throws WSDLException {
+        String location = null;
+        String[] lstDefinition = wsdlHelperInstance.getDefinition().toString().split("locationURI=");
+        int n = lstDefinition.length;
+        if (!lstDefinition[n - 1].contains("?wsdl")) {
+            location = lstDefinition[n - 1] + "?wsdl";
+        }
+        return location;
+
+    }
 
 	public static List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(String requestMethod, String directory) 
 			throws InvocationTargetException, InterruptedException, WSDLException {
