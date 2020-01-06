@@ -25,7 +25,7 @@ public class LaunchArgumentsSettingPage extends PreferencePageWithHelp {
     private Text txtVmArgs;
     
     @Override
-    protected Control createContents(Composite parent) {
+    public Control createContents(Composite parent) {
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout(1, false));
         
@@ -39,7 +39,7 @@ public class LaunchArgumentsSettingPage extends PreferencePageWithHelp {
             txtVmArgs.setLayoutData(gdVmArgs);
             txtVmArgs.setText(settingStore.getVmArgs());
         }
-        
+
         return container;
     }
     
@@ -75,5 +75,9 @@ public class LaunchArgumentsSettingPage extends PreferencePageWithHelp {
     @Override
     public String getDocumentationUrl() {
         return StringUtils.EMPTY;
+    }
+    
+    public void setStore(ExecutionDefaultSettingStore settingStore) {
+        this.settingStore = settingStore;
     }
 }

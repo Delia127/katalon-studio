@@ -35,6 +35,7 @@ Require-Bundle: com.google.gson,
  com.kms.katalon.proxyvole
 Export-Package: com.kms.katalon.application,
  com.kms.katalon.application.constants,
+ com.kms.katalon.application.helper,
  com.kms.katalon.application.preference,
  com.kms.katalon.application.usagetracking,
  com.kms.katalon.application.utils,

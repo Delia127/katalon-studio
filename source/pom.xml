@@ -95,6 +95,7 @@
 		<module>com.kms.katalon.composer.artifact</module>
 		<module>com.kms.katalon.proxyvole</module>
 		<module>com.katalon.katalon-studio-smart-xpath</module>
+		<module>com.kms.katalon.powermock</module>
 		<module>tests</module>
 	</modules>
 
