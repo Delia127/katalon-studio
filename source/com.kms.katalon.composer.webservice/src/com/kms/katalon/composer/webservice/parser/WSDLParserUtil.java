@@ -83,8 +83,8 @@ public class WSDLParserUtil {
     public static String getLocation(WSDLHelper wsdlHelperInstance) throws WSDLException {
         String location = null;
         String definition = wsdlHelperInstance.getDefinition().toString();
-        String[] lines = definition.split("\n");
-        if (lines != null) {
+        if (definition != null) {
+            String[] lines = definition.split("\n");
             for (String line : lines) {
                 if (line.contains("locationURI=")) {
                     String[] locationURI = line.split("locationURI=");
