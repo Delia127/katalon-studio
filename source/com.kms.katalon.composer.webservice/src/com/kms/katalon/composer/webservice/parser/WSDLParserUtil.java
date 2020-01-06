@@ -40,12 +40,12 @@ public class WSDLParserUtil {
 								monitor.worked(1);
 								
 								WSDLHelper helper = WSDLHelper.newInstance(url, null);
+								String location = getLocation(wsdlHelperInstance);
 
 								for(Object objOperationName: SafeUtils.safeList(operationNames)){
 									if(objOperationName != null){
 										String operationName = (String) objOperationName;
 										WebServiceRequestEntity newWSREntity = new WebServiceRequestEntity();
-										String location = getLocation(wsdlHelperInstance);
 										newWSREntity.setWsdlAddress(location);
 										newWSREntity.setName(operationName);
 										newWSREntity.setSoapRequestMethod(requestMethod);
@@ -82,10 +82,18 @@ public class WSDLParserUtil {
 	
     public static String getLocation(WSDLHelper wsdlHelperInstance) throws WSDLException {
         String location = null;
-        String[] lstDefinition = wsdlHelperInstance.getDefinition().toString().split("locationURI=");
-        int n = lstDefinition.length;
-        if (!lstDefinition[n - 1].contains("?wsdl")) {
-            location = lstDefinition[n - 1] + "?wsdl";
+        String[] locationURI = null;
+        String definition = wsdlHelperInstance.getDefinition().toString();
+        String[] lines = definition.split("\n");
+        for (String line : lines) {
+            if (line.contains("locationURI=")) {
+                locationURI = line.split("locationURI=");
+                location = locationURI[1];
+
+            }
+        }
+        if (!location.contains("?wsdl")) {
+            location = location + "?wsdl";
         }
         return location;
 
