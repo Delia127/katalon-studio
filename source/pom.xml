@@ -114,9 +114,11 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<sonar.language>java</sonar.language>
+		<!-- <sonar.language>java</sonar.language>
 		<sonar.login>qautomate</sonar.login>
-		<sonar.password>qautomate@2014</sonar.password>
+		<sonar.password>qautomate@2014</sonar.password> -->
+		<sonar.host.url>https://sonar.katalon.com/</sonar.host.url>
+		<sonar.login>eb7853043bc93b04746ceb191f32d410d3670716</sonar.login>
 
 		<resourcesDiretory>resources</resourcesDiretory>
 		<mac64ResourcesDirectory>mac64Resources</mac64ResourcesDirectory>
