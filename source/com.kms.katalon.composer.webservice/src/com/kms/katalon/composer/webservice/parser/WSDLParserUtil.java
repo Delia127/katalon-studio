@@ -82,21 +82,20 @@ public class WSDLParserUtil {
 	
     public static String getLocation(WSDLHelper wsdlHelperInstance) throws WSDLException {
         String location = null;
-        String[] locationURI = null;
         String definition = wsdlHelperInstance.getDefinition().toString();
         String[] lines = definition.split("\n");
-        for (String line : lines) {
-            if (line.contains("locationURI=")) {
-                locationURI = line.split("locationURI=");
-                location = locationURI[1];
-
+        if (lines != null) {
+            for (String line : lines) {
+                if (line.contains("locationURI=")) {
+                    String[] locationURI = line.split("locationURI=");
+                    location = locationURI[1];
+                }
             }
         }
         if (!location.contains("?wsdl")) {
             location = location + "?wsdl";
         }
         return location;
-
     }
 
 	public static List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(String requestMethod, String directory) 
