@@ -51,5 +51,15 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.groovy,
  com.kms.katalon.util,
  org.eclipse.ui.workbench,
- com.kms.katalon.composer.objectrepository
+ com.kms.katalon.composer.objectrepository,
+ com.kms.katalon.composer.webui.recorder,
+ com.kms.katalon.composer.webui.objectspy,
+ org.eclipse.jetty.server,
+ org.eclipse.jetty.util,
+ org.eclipse.jetty.websocket.javax.websocket.server,
+ org.eclipse.jetty.servlet,
+ javax.websocket-api,
+ org.eclipse.jetty.websocket.javax.websocket,
+ com.google.gson,
+ javax.servlet
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
