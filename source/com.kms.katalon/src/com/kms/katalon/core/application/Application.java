@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -52,7 +51,6 @@ public class Application implements IApplication {
     @Override
     public Object start(IApplicationContext context) {
 
-//        String[] appArgs = Platform.getApplicationArgs();
         createLicenseFolder();
         
         if (!activeLoggingBundle()) {
@@ -71,6 +69,7 @@ public class Application implements IApplication {
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
+
         if (isKSRE()) {
             return runConsole(context, appArgs);
         }
