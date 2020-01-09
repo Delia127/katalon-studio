@@ -8,7 +8,7 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>com.kms.katalon.composer.execution.test</artifactId>
+	<artifactId>com.kms.katalon.execution.test</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 	<build>
 		<plugins>

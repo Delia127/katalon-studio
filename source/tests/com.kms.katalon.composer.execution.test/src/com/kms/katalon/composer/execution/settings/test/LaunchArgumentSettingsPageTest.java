@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.kms.katalon.application.helper.LicenseHelper;
 import com.kms.katalon.application.helper.LicenseHelperFactory;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.settings.LaunchArgumentsSettingPage;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
@@ -39,12 +40,14 @@ public class LaunchArgumentSettingsPageTest {
         LaunchArgumentsSettingPage settingsPage = new LaunchArgumentsSettingPage();
         settingsPage.setStore(settingStore);
         
-        Display display = Display.getCurrent();
-        Shell shell = new Shell(display);
-        Composite composite = new Composite(shell, SWT.NONE);
-        Composite container =  (Composite) settingsPage.createContents(composite);
-        
-        assertThat("The container content should be empty", container.getChildren().length == 0);
+        UISynchronizeService.syncExec(() -> {
+            Display display = Display.getCurrent();
+            Shell shell = new Shell(display);
+            Composite composite = new Composite(shell, SWT.NONE);
+            Composite container =  (Composite) settingsPage.createContents(composite);
+            
+            assertThat("The container content should be empty", container.getChildren().length == 0);
+        });
     }
     
     @Test
@@ -56,12 +59,14 @@ public class LaunchArgumentSettingsPageTest {
         LaunchArgumentsSettingPage settingsPage = new LaunchArgumentsSettingPage();
         settingsPage.setStore(settingStore);
         
-        Display display = Display.getCurrent();
-        Shell shell = new Shell(display);
-        Composite composite = new Composite(shell, SWT.NONE);
-        Composite container =  (Composite) settingsPage.createContents(composite);
-        
-        Control[] children = container.getChildren();
-        assertThat("The container content should not be empty", children.length > 0);
+        UISynchronizeService.syncExec(() -> {
+            Display display = Display.getCurrent();
+            Shell shell = new Shell(display);
+            Composite composite = new Composite(shell, SWT.NONE);
+            Composite container =  (Composite) settingsPage.createContents(composite);
+            
+            Control[] children = container.getChildren();
+            assertThat("The container content should not be empty", children.length > 0);
+        });
     }
 }

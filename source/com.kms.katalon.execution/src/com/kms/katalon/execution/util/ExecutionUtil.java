@@ -54,7 +54,7 @@ public class ExecutionUtil {
     public static boolean isRunningInKatalonC() {
         Properties props = System.getProperties();
         String launcherName = props.getProperty("eclipse.launcher.name");
-        return launcherName.equalsIgnoreCase("katalonc");
+        return "katalonc".equalsIgnoreCase(launcherName);
     }
 
     public static String getLocalHostAddress() {
