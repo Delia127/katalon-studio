@@ -13,11 +13,9 @@ import com.kms.katalon.composer.windows.action.WindowsAction;
 import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialogV2;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
+import com.kms.katalon.composer.windows.record.model.RecordedElementLocatorHelper;
 import com.kms.katalon.composer.windows.record.model.WindowsRecordedPayload;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.objectspy.core.ClientMessage;
-import com.kms.katalon.objectspy.core.KatalonRequestHandler;
-import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 public class WindowsActionServlet extends HttpServlet {
     public static final String WILD_CARD = "*";
@@ -25,12 +23,6 @@ public class WindowsActionServlet extends HttpServlet {
     public static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
 
     public static final String TEXT_HTML = "text/html";
-
-    private static final String EQUALS = "=";
-
-    private static final String ELEMENT_KEY = "element";
-
-    private static final String ELEMENT_MAP_KEY = "elementsMap";
 
     private static final long serialVersionUID = 1L;
 
@@ -68,10 +60,8 @@ public class WindowsActionServlet extends HttpServlet {
         try {
 
             WindowsRecordedPayload payload = JsonUtil.fromJson(value, WindowsRecordedPayload.class);
-            
-            CapturedWindowsElement element = new CapturedWindowsElement();
-            element.setName(payload.getElement().getType());
-            element.setProperties(payload.getElement().getAttributes());
+            RecordedElementLocatorHelper locatorHelper = new RecordedElementLocatorHelper(payload);
+            CapturedWindowsElement element = locatorHelper.getCapturedElement();
             WindowsActionMapping actionMapping = null;
             switch (payload.getActionName()) {
                 case "click": {
@@ -87,7 +77,6 @@ public class WindowsActionServlet extends HttpServlet {
                 }
             }
             recorderDialog.addActionMapping(actionMapping);
-            System.out.println(value);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             LoggerSingleton.logError(e);

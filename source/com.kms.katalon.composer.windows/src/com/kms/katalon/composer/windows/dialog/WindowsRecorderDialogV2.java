@@ -455,7 +455,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     public void addActionMapping(WindowsActionMapping actionMapping) {
         UISynchronizeService.syncExec(() -> {
             try {
-
                 stepView.refreshTree();
                 stepView.addNode(actionMapping);
             } catch (ClassNotFoundException | InvocationTargetException | InterruptedException e) {
