@@ -9,7 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.windows.action.WindowsAction;
+import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialogV2;
+import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
+import com.kms.katalon.composer.windows.record.model.WindowsRecordedPayload;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.objectspy.core.ClientMessage;
 import com.kms.katalon.objectspy.core.KatalonRequestHandler;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
@@ -29,10 +34,10 @@ public class WindowsActionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private WindowsRecorderDialogV2 objectSpyDialog;
+    private WindowsRecorderDialogV2 recorderDialog;
 
     public WindowsActionServlet(WindowsRecorderDialogV2 objectSpyDialog) {
-        this.objectSpyDialog = objectSpyDialog;
+        this.recorderDialog = objectSpyDialog;
     }
 
     @Override
@@ -54,28 +59,35 @@ public class WindowsActionServlet extends HttpServlet {
         } finally {
             reader.close();
         }
-        if (sb.indexOf(EQUALS) == -1) {
-            return;
-        }
-        String key = HTMLElementUtil.decodeURIComponent(sb.substring(0, sb.indexOf(EQUALS)));
-        switch (key) {
-            case ELEMENT_KEY:
-                addNewElement(response, sb.substring(sb.indexOf(EQUALS) + 1, sb.length()));
-                break;
-            case ELEMENT_MAP_KEY:
-                // No longer needed
-                break;
-            default:
-                KatalonRequestHandler.getInstance().processIncomeRequest(new ClientMessage(sb.toString()),
-                        response.getOutputStream());
-        }
+        addNewElement(response, sb.toString());
     }
 
     private void addNewElement(HttpServletResponse response, String value) {
         response.setContentType(TEXT_HTML);
         response.addHeader(ACCESS_CONTROL_ALLOW_ORIGIN, WILD_CARD);
         try {
-            //objectSpyDialog.addNewElement(WebElementUtils.buildWebElement(value));
+
+            WindowsRecordedPayload payload = JsonUtil.fromJson(value, WindowsRecordedPayload.class);
+            
+            CapturedWindowsElement element = new CapturedWindowsElement();
+            element.setName(payload.getElement().getType());
+            element.setProperties(payload.getElement().getAttributes());
+            WindowsActionMapping actionMapping = null;
+            switch (payload.getActionName()) {
+                case "click": {
+                    actionMapping = new WindowsActionMapping(WindowsAction.Click, element);
+                    break;
+                }
+                case "rightClick": {
+                    actionMapping = new WindowsActionMapping(WindowsAction.RightClick, element);
+                    break;
+                }
+                case "setText": {
+                    actionMapping = new WindowsActionMapping(WindowsAction.SetText, payload.getActionData(), element);
+                }
+            }
+            recorderDialog.addActionMapping(actionMapping);
+            System.out.println(value);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             LoggerSingleton.logError(e);

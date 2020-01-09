@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.windows.dialog;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.BindException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,12 +33,15 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.project.handlers.SettingHandler;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webui.recorder.dialog.RecordedStepsView;
+import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.record.WindowsActionsCaptureServer;
+import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
 import com.kms.katalon.composer.windows.websocket.WindowsAddonSocket;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -71,7 +75,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog {
 
     private SashForm hSashForm;
 
-    private RecordedStepsView recordStepsView;
+    private WindowsRecordedStepsView recordStepsView;
 
     private WindowsActionsCaptureServer server;
 
@@ -389,13 +393,10 @@ public class WindowsRecorderDialogV2 extends AbstractDialog {
         createStepButtons(compositeStepsTab);
 
         Composite tableComposite = new Composite(compositeStepsTab, SWT.None);
-        GridLayout layout = new GridLayout();
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        tableComposite.setLayout(layout);
+        tableComposite.setLayout(new FillLayout());
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        recordStepsView = new RecordedStepsView();
+        recordStepsView = new WindowsRecordedStepsView();
         recordStepsView.createContent(tableComposite);
     }
 
@@ -531,5 +532,19 @@ public class WindowsRecorderDialogV2 extends AbstractDialog {
     private void setButtonStates() {
         btnStart.setEnabled(!isStarting);
         btnStop.setEnabled(isStarting);
+    }
+
+    public void addActionMapping(WindowsActionMapping actionMapping) {
+        UISynchronizeService.syncExec(() -> {
+            try {
+
+                recordStepsView.refreshTree();
+                recordStepsView.addNode(actionMapping);
+            } catch (ClassNotFoundException | InvocationTargetException | InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        });
     }
 }
