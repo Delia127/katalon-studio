@@ -49,12 +49,14 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.project.handlers.SettingHandler;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webui.recorder.dialog.RecordedStepsView;
+import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementTableViewer;
@@ -95,8 +97,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     private Text txtApplicationTitle;
 
     private SashForm hSashForm;
-
-    private RecordedStepsView recordStepsView;
 
     private WindowsActionsCaptureServer server;
 
@@ -450,5 +450,19 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     public void highlightElementRects(List<Rectangle> rects) {
         // TODO Auto-generated method stub
         
+    }
+    
+    public void addActionMapping(WindowsActionMapping actionMapping) {
+        UISynchronizeService.syncExec(() -> {
+            try {
+
+                stepView.refreshTree();
+                stepView.addNode(actionMapping);
+            } catch (ClassNotFoundException | InvocationTargetException | InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        });
     }
 }

@@ -72,6 +72,8 @@ public class WindowsActionsCaptureServer extends HttpServlet {
 
     public void start() throws Exception {
         server.start();
+        
+        System.out.println(getServerPort());
     }
 
     public boolean isRunning() {
