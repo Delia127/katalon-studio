@@ -427,19 +427,16 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         // TODO Auto-generated method stub
         
     }
-    
+
     public void addActionMapping(WindowsActionMapping actionMapping) {
         UISynchronizeService.syncExec(() -> {
             try {
                 capturedObjectsTableViewer.addCapturedObject(actionMapping.getTargetElement());
                 stepView.refreshTree();
                 stepView.addNode(actionMapping);
-                
             } catch (ClassNotFoundException | InvocationTargetException | InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LoggerSingleton.logError(e);
             }
-
         });
     }
 }

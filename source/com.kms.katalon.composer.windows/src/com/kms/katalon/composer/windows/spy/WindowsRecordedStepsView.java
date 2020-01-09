@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -273,15 +275,52 @@ public class WindowsRecordedStepsView implements ITestCasePart {
 
     }
 
+    private WindowsActionMapping latestAction;
+
     public void addNode(WindowsActionMapping newAction) throws ClassNotFoundException {
         AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
         CapturedWindowsElement targetElement = newAction.getTargetElement();
         CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
         ExpressionStatementWrapper wrapper = (ExpressionStatementWrapper) WindowsActionUtil
                 .generateMobileTestStep(newAction, converter.convert(targetElement), treeTableInput.getMainClassNode());
+
+        if (preventMultiSetTextAction(newAction)) {
+            modifyStep(wrapper, latestNode);
+            latestAction = newAction;
+            return;
+        }
         treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
         treeViewer.refresh();
         treeViewer.setSelection(new StructuredSelection(getLatestNode()));
+
+        latestAction = newAction;
+    }
+    
+    private boolean preventMultiSetTextAction(WindowsActionMapping newAction) {
+        if (latestAction == null) {
+            return false;
+        }
+
+        String lastestActionName = latestAction.getAction().getName();
+        String actionName = newAction.getAction().getName();
+
+        CapturedWindowsElement latestCaptured = latestAction.getTargetElement();
+        CapturedWindowsElement newCaptured = newAction.getTargetElement();
+        return "setText".equals(lastestActionName) && lastestActionName.equals(actionName)
+                && isSameElement(latestCaptured, newCaptured);
+    }
+
+    private boolean isSameElement(CapturedWindowsElement a, CapturedWindowsElement b) {
+        Map<String, String> propertiesA = a.getProperties();
+        Map<String, String> propertiesB = b.getProperties();
+        if (propertiesA == null || propertiesB == null) {
+            return false;
+        }
+
+        String runtimeIdA = propertiesA.getOrDefault("RuntimeId", "");
+        String runtimeIdB = propertiesB.getOrDefault("RuntimeId", "");
+
+        return StringUtils.isNotEmpty(runtimeIdA) && StringUtils.equals(runtimeIdA, runtimeIdB);
     }
 
     private void modifyStep(ExpressionStatementWrapper wrapper, AstBuiltInKeywordTreeTableNode twoStepBefore) {
