@@ -150,36 +150,12 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     protected void setInput() {
 
         setButtonStates();
-        
+        stepView.setCapturedElementsTableViewer(capturedObjectsTableViewer);
+
         try {
             mobileComposite.setInput();
         } catch (InvocationTargetException | InterruptedException e) {
         }
-//        try {
-//            store = PreferenceStoreManager.getPreferenceStore(WindowsAppComposite.class);
-//            String appPath = store.getString(PREF_LAST_STARTED_APP);
-//            txtAppFile.setText(StringUtils.defaultString(appPath));
-//
-//            String windowTitle = store.getString(PREF_LAST_STARTED_WINDOW_TITLE);
-//            txtApplicationTitle.setText(StringUtils.defaultString(windowTitle));
-//            updateRunConfigurationDetails();
-//
-//            setButtonStates();
-//        } catch (IOException e) {
-//            LoggerSingleton.logError(e);
-//        }
-    }
-
-    private void updateRunConfigurationDetails() throws IOException {
-        WindowsDriverConnector driverConnector = WindowsDriverConnector
-                .getInstance(ProjectController.getInstance().getCurrentProject().getFolderLocation());
-        String url = driverConnector.getWinAppDriverUrl();
-        String desiredCapabilities = JsonUtil.toJson(driverConnector.getDesiredCapabilities(), false);
-        String text = String.format("%s, %s", url, desiredCapabilities);
-        lblDriverConnector.setText(text);
-
-        String toolTipText = String.format("WinAppDriver URL: %s, Capabilities: %s", url, desiredCapabilities);
-        lblDriverConnector.setToolTipText(toolTipText);
     }
 
     @Override
@@ -455,8 +431,10 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     public void addActionMapping(WindowsActionMapping actionMapping) {
         UISynchronizeService.syncExec(() -> {
             try {
+                capturedObjectsTableViewer.addCapturedObject(actionMapping.getTargetElement());
                 stepView.refreshTree();
                 stepView.addNode(actionMapping);
+                
             } catch (ClassNotFoundException | InvocationTargetException | InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

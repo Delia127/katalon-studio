@@ -36,7 +36,7 @@ public class RecordedElementLocatorHelper {
     }
 
     private String getCapitalizedName(String name) {
-        return StringUtils.capitalize(name).replace(" ", "");
+        return StringUtils.capitalize(name).replace("item", "Item").replace(" ", "");
     }
 
     private void buildLocator() {
@@ -51,6 +51,7 @@ public class RecordedElementLocatorHelper {
         if (StringUtils.isNotEmpty(automationId)) {
             locatorStrategy = LocatorStrategy.ACCESSIBILITY_ID;
             locator = automationId;
+            return;
         }
         
         locatorStrategy = LocatorStrategy.XPATH;
@@ -66,8 +67,8 @@ public class RecordedElementLocatorHelper {
             sb.append(buildPartialXPath(p));
             sb.append("/");
         }
-        sb.append("/" + buildPartialXPath(recordedElement));
-        return null;
+        sb.append(buildPartialXPath(recordedElement));
+        return sb.toString();
     }
     
     private String buildPartialXPath(WindowsRecordedElement e) {

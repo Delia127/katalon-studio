@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.windows.action.WindowsAction;
 import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialogV2;
@@ -73,7 +74,8 @@ public class WindowsActionServlet extends HttpServlet {
                     break;
                 }
                 case "setText": {
-                    actionMapping = new WindowsActionMapping(WindowsAction.SetText, payload.getActionData(), element);
+                    actionMapping = new WindowsActionMapping(WindowsAction.SetText, element);
+                    actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(payload.getActionData()));
                 }
             }
             recorderDialog.addActionMapping(actionMapping);
