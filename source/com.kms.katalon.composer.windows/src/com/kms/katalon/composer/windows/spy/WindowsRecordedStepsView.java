@@ -68,6 +68,7 @@ import com.kms.katalon.composer.testcase.support.InputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.ItemColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
+import com.kms.katalon.composer.windows.action.WindowsAction;
 import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.action.WindowsActionUtil;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
@@ -289,6 +290,14 @@ public class WindowsRecordedStepsView implements ITestCasePart {
             latestAction = newAction;
             return;
         }
+        if (mergeMultiSingleClickIntoDoubleClickAction(newAction)) {
+            newAction.setAction(WindowsAction.DoubleClick);
+            wrapper = (ExpressionStatementWrapper) WindowsActionUtil.generateMobileTestStep(newAction,
+                    converter.convert(targetElement), treeTableInput.getMainClassNode());
+            modifyStep(wrapper, latestNode);
+            latestAction = newAction;
+            return;
+        }
         treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
         treeViewer.refresh();
         treeViewer.setSelection(new StructuredSelection(getLatestNode()));
@@ -296,6 +305,21 @@ public class WindowsRecordedStepsView implements ITestCasePart {
         latestAction = newAction;
     }
     
+    private boolean mergeMultiSingleClickIntoDoubleClickAction(WindowsActionMapping newAction) {
+        if (latestAction == null || newAction.getRecordedTime() == null || latestAction.getRecordedTime() == null) {
+            return false;
+        }
+
+        String lastestActionName = latestAction.getAction().getName();
+        String actionName = newAction.getAction().getName();
+
+        CapturedWindowsElement latestCaptured = latestAction.getTargetElement();
+        CapturedWindowsElement newCaptured = newAction.getTargetElement();
+        long diff = newAction.getRecordedTime().getTime() - latestAction.getRecordedTime().getTime();
+        return "Click".equals(lastestActionName) && lastestActionName.equals(actionName)
+                && isSameElement(newCaptured, latestCaptured) && diff >= 0 && diff < 50L;
+    }
+
     private boolean preventMultiSetTextAction(WindowsActionMapping newAction) {
         if (latestAction == null) {
             return false;
@@ -306,7 +330,7 @@ public class WindowsRecordedStepsView implements ITestCasePart {
 
         CapturedWindowsElement latestCaptured = latestAction.getTargetElement();
         CapturedWindowsElement newCaptured = newAction.getTargetElement();
-        return "setText".equals(lastestActionName) && lastestActionName.equals(actionName)
+        return "SetText".equals(lastestActionName) && lastestActionName.equals(actionName)
                 && isSameElement(latestCaptured, newCaptured);
     }
 

@@ -78,6 +78,7 @@ public class WindowsActionServlet extends HttpServlet {
                     actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(payload.getActionData()));
                 }
             }
+            actionMapping.setRecordedTime(payload.getRecordedTime());
             recorderDialog.addActionMapping(actionMapping);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {

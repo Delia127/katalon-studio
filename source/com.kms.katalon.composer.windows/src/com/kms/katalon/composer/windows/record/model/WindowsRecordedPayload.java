@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.windows.record.model;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -17,6 +18,9 @@ public class WindowsRecordedPayload {
 
     @SerializedName("ActionData")
     private String actionData;
+    
+    @SerializedName("RecordedTime")
+    private Date recordedTime;
 
     public WindowsRecordedElement getElement() {
         return element;
@@ -48,5 +52,13 @@ public class WindowsRecordedPayload {
 
     public void setActionData(String actionData) {
         this.actionData = actionData;
+    }
+
+    public Date getRecordedTime() {
+        return recordedTime;
+    }
+
+    public void setRecordedTime(Date recordedTime) {
+        this.recordedTime = recordedTime;
     }
 }

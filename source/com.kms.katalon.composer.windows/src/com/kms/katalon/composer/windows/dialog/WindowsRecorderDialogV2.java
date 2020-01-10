@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.windows.dialog;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.BindException;
 import java.util.ArrayList;
@@ -22,10 +21,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -34,15 +29,12 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -52,10 +44,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
-import com.kms.katalon.composer.project.handlers.SettingHandler;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
-import com.kms.katalon.composer.webui.recorder.dialog.RecordedStepsView;
 import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementLabelProvider;
@@ -67,36 +57,9 @@ import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
 import com.kms.katalon.composer.windows.websocket.WindowsAddonSocket;
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.execution.windows.WindowsDriverConnector;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsObjectDialog {
-
-    private static final String PREF_LAST_STARTED_APP = "lastStartedApp";
-
-    private static final String PREF_LAST_STARTED_WINDOW_TITLE = "lastStartedWindowTitle";
-
-    private static final String[] FILTER_FILE_NAMES = new String[] { "Windows Executable Files (*.exe)",
-            "All Files (*.*)" };
-
-    private static final String[] FILTER_EXTENSIONS = new String[] { "*.exe", "*.*" };
-
-    private Text txtAppFile;
-
-    private Button btnBrowse;
-
-    private Label lblDriverConnector;
-
-    private ScopedPreferenceStore store;
-
-    private Text txtApplicationTitle;
-
-    private SashForm hSashForm;
 
     private WindowsActionsCaptureServer server;
 
