@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import javax.wsdl.Input;
 import javax.wsdl.Operation;
 import javax.wsdl.Types;
 import javax.wsdl.WSDLException;
+import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.http.HTTPOperation;
 import javax.wsdl.extensions.schema.Schema;
 import javax.wsdl.extensions.soap.SOAPOperation;
@@ -497,4 +499,21 @@ public class WSDLHelper {
         return post;
     }
 
+    public static <T extends ExtensibilityElement> T getExtensiblityElement(List<?> list, Class<T> clazz) {
+        List<T> elements = getExtensiblityElements(list, clazz);
+        return elements.isEmpty() ? null : elements.get(0);
+    }
+
+    public static <T extends ExtensibilityElement> List<T> getExtensiblityElements(List list, Class<T> clazz) {
+        List<T> result = new ArrayList<T>();
+
+        for (Iterator<T> i = list.iterator(); i.hasNext(); ) {
+            T elm = i.next();
+            if (clazz.isAssignableFrom(elm.getClass())) {
+                result.add(elm);
+            }
+        }
+
+        return result;
+    }
 }
