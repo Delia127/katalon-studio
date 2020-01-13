@@ -51,6 +51,7 @@ import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementTableViewer;
 import com.kms.katalon.composer.windows.record.WindowsActionsCaptureServer;
+import com.kms.katalon.composer.windows.socket.WindowsSocketServer;
 import com.kms.katalon.composer.windows.spy.HighlightElementComposite;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
@@ -87,6 +88,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     public WindowsRecorderDialogV2(Shell parentShell) {
         super(parentShell);
+        new WindowsSocketServer().start();
     }
 
     @Override

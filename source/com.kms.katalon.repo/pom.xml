@@ -293,6 +293,13 @@
                                 <artifact>
                                 	<id>ca.juliusdavies:not-yet-commons-ssl:0.3.11</id>
                                 </artifact>
+                                <artifact>
+                                	<id>com.corundumstudio.socketio:netty-socketio:1.7.17</id>
+                                	<excludes>
+        								<exclude>org.slf4j:*</exclude>
+        								<exclude>com.fasterxml.jackson.core:*</exclude>
+    								</excludes>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>
