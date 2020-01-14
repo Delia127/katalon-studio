@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.wsdl.extensions.ExtensibilityElement;
 
-public class WSDLUtils {
+public class WSDLUtil {
 
     public static <T extends ExtensibilityElement> T getExtensiblityElement(List<?> list, Class<T> clazz) {
         List<T> elements = getExtensiblityElements(list, clazz);

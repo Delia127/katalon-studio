@@ -71,7 +71,7 @@ import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
-import com.kms.katalon.core.webservice.util.WSDLUtils;
+import com.kms.katalon.core.webservice.util.WSDLUtil;
 import com.kms.katalon.util.Tools;
 
 public class SoapClient extends BasicRequestor {
@@ -156,21 +156,21 @@ public class SoapClient extends BasicRequestor {
 
             if (objBinding != null && objBinding instanceof SOAPBindingImpl) {
                 proc = SOAP;
-                SOAPAddress soapAddress = WSDLUtils.getExtensiblityElement(port.getExtensibilityElements(), SOAPAddress.class);
+                SOAPAddress soapAddress = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), SOAPAddress.class);
                 endPoint = soapAddress.getLocationURI();
-                SOAPOperation soapOperation = WSDLUtils.getExtensiblityElement(operation.getExtensibilityElements(), SOAPOperation.class);
+                SOAPOperation soapOperation = WSDLUtil.getExtensiblityElement(operation.getExtensibilityElements(), SOAPOperation.class);
                 actionUri = soapOperation.getSoapActionURI();
             } else if (objBinding != null && objBinding instanceof SOAP12BindingImpl) {
                 proc = SOAP12;
-                SOAP12Address soap12Address = WSDLUtils.getExtensiblityElement(port.getExtensibilityElements(), SOAP12Address.class);
+                SOAP12Address soap12Address = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), SOAP12Address.class);
                 endPoint = soap12Address.getLocationURI();
-                SOAP12Operation soap12Operation = WSDLUtils.getExtensiblityElement(operation.getExtensibilityElements(), SOAP12Operation.class);
+                SOAP12Operation soap12Operation = WSDLUtil.getExtensiblityElement(operation.getExtensibilityElements(), SOAP12Operation.class);
                 actionUri = soap12Operation.getSoapActionURI();
             } else if (objBinding != null && objBinding instanceof HTTPBindingImpl) {
                 proc = ((HTTPBindingImpl) objBinding).getVerb();
-                HTTPAddress httpAddress = WSDLUtils.getExtensiblityElement(port.getExtensibilityElements(), HTTPAddress.class);
+                HTTPAddress httpAddress = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), HTTPAddress.class);
                 endPoint = httpAddress.getLocationURI();
-                HTTPOperation httpOperation = WSDLUtils.getExtensiblityElement(port.getExtensibilityElements(), HTTPOperation.class);
+                HTTPOperation httpOperation = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), HTTPOperation.class);
                 actionUri = httpOperation.getLocationURI();
             }
 
@@ -182,12 +182,12 @@ public class SoapClient extends BasicRequestor {
     
     private Object getBindingObject(Binding binding) {
         List<?> extensibilityElements = binding.getExtensibilityElements();
-        Object objBinding = WSDLUtils.getExtensiblityElement(extensibilityElements, SOAPBinding.class);
+        Object objBinding = WSDLUtil.getExtensiblityElement(extensibilityElements, SOAPBinding.class);
         if (objBinding == null) {
-            objBinding = WSDLUtils.getExtensiblityElement(extensibilityElements, SOAP12Binding.class);
+            objBinding = WSDLUtil.getExtensiblityElement(extensibilityElements, SOAP12Binding.class);
         }
         if (objBinding == null) {
-            objBinding = WSDLUtils.getExtensiblityElement(extensibilityElements, HTTPBinding.class);
+            objBinding = WSDLUtil.getExtensiblityElement(extensibilityElements, HTTPBinding.class);
         }
         return objBinding;
     }
