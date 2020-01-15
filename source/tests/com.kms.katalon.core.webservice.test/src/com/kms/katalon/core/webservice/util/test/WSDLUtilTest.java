@@ -32,7 +32,7 @@ public class WSDLUtilTest {
         reader.setFeature("javax.wsdl.verbose", false);
         reader.setFeature("javax.wsdl.importDocuments", true);
         
-        URL wsdlDefinitionUrl = this.getClass().getClassLoader().getResource("resource/soap-test/calculator.wsdl");
+        URL wsdlDefinitionUrl = this.getClass().getClassLoader().getResource("resources/calculator-service/calculator.wsdl");
         wsdlDefinition = reader.readWSDL(wsdlDefinitionUrl.toURI().toString());
     }
 
