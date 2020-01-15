@@ -28,11 +28,11 @@ public class SoapClientTest {
         ResponseObject response = soapClient.send(request);
 
         assertThat("Request should be sent successfully", response.getStatusCode() == 200);
-
-        String responseBody = response.getResponseText();
-        assertTrue(StringUtils.isNotBlank(responseBody));
         assertNotNull(response.getHeaderField("Content-Type"));
         assertTrue(response.getHeaderField("Content-Type").contains("/xml"));
+        
+        String responseBody = response.getResponseText();
+        assertTrue(StringUtils.isNotBlank(responseBody));
     }
 
     private RequestObject getRequestObject() throws IOException {
