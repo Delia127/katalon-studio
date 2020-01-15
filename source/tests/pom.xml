@@ -13,7 +13,7 @@
 	<modules>
 		<module>com.kms.katalon.logging.test</module>
 		<module>com.kms.katalon.core.test</module>
-
+		<module>com.kms.katalon.core.webservice.test</module>
 		<module>com.kms.katalon.tests.report</module>
 	</modules>
 </project> 

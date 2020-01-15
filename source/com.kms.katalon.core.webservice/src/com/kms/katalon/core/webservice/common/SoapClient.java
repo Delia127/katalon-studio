@@ -10,13 +10,21 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.wsdl.Binding;
 import javax.wsdl.Definition;
+import javax.wsdl.extensions.http.HTTPAddress;
+import javax.wsdl.extensions.http.HTTPBinding;
 import javax.wsdl.extensions.http.HTTPOperation;
+import javax.wsdl.extensions.soap.SOAPAddress;
+import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPOperation;
+import javax.wsdl.extensions.soap12.SOAP12Address;
+import javax.wsdl.extensions.soap12.SOAP12Binding;
 import javax.wsdl.extensions.soap12.SOAP12Operation;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLLocator;
@@ -63,6 +71,7 @@ import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
+import com.kms.katalon.core.webservice.util.WSDLUtil;
 import com.kms.katalon.util.Tools;
 
 public class SoapClient extends BasicRequestor {
@@ -137,7 +146,7 @@ public class SoapClient extends BasicRequestor {
 
             PortImpl port = (PortImpl) ports.get(pKey);
 
-            Object objBinding = port.getBinding().getExtensibilityElements().get(0);
+            Object objBinding = getBindingObject(port.getBinding());
             String proc = "";
             BindingOperationImpl operation = (BindingOperationImpl) port.getBinding()
                     .getBindingOperation(requestObject.getSoapServiceFunction(), null, null);
@@ -147,22 +156,40 @@ public class SoapClient extends BasicRequestor {
 
             if (objBinding != null && objBinding instanceof SOAPBindingImpl) {
                 proc = SOAP;
-                endPoint = ((SOAPAddressImpl) port.getExtensibilityElements().get(0)).getLocationURI();
-                actionUri = ((SOAPOperation) operation.getExtensibilityElements().get(0)).getSoapActionURI();
+                SOAPAddress soapAddress = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), SOAPAddress.class);
+                endPoint = soapAddress.getLocationURI();
+                SOAPOperation soapOperation = WSDLUtil.getExtensiblityElement(operation.getExtensibilityElements(), SOAPOperation.class);
+                actionUri = soapOperation.getSoapActionURI();
             } else if (objBinding != null && objBinding instanceof SOAP12BindingImpl) {
                 proc = SOAP12;
-                endPoint = ((SOAP12AddressImpl) port.getExtensibilityElements().get(0)).getLocationURI();
-                actionUri = ((SOAP12Operation) operation.getExtensibilityElements().get(0)).getSoapActionURI();
+                SOAP12Address soap12Address = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), SOAP12Address.class);
+                endPoint = soap12Address.getLocationURI();
+                SOAP12Operation soap12Operation = WSDLUtil.getExtensiblityElement(operation.getExtensibilityElements(), SOAP12Operation.class);
+                actionUri = soap12Operation.getSoapActionURI();
             } else if (objBinding != null && objBinding instanceof HTTPBindingImpl) {
                 proc = ((HTTPBindingImpl) objBinding).getVerb();
-                endPoint = ((HTTPAddressImpl) port.getExtensibilityElements().get(0)).getLocationURI();
-                actionUri = ((HTTPOperation) operation.getExtensibilityElements().get(0)).getLocationURI();
+                HTTPAddress httpAddress = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), HTTPAddress.class);
+                endPoint = httpAddress.getLocationURI();
+                HTTPOperation httpOperation = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), HTTPOperation.class);
+                actionUri = httpOperation.getLocationURI();
             }
 
             if (protocol.equals(proc)) {
                 break;
             }
         }
+    }
+    
+    private Object getBindingObject(Binding binding) {
+        List<?> extensibilityElements = binding.getExtensibilityElements();
+        Object objBinding = WSDLUtil.getExtensiblityElement(extensibilityElements, SOAPBinding.class);
+        if (objBinding == null) {
+            objBinding = WSDLUtil.getExtensiblityElement(extensibilityElements, SOAP12Binding.class);
+        }
+        if (objBinding == null) {
+            objBinding = WSDLUtil.getExtensiblityElement(extensibilityElements, HTTPBinding.class);
+        }
+        return objBinding;
     }
 
     private boolean isHttps(RequestObject request) {
@@ -172,6 +199,7 @@ public class SoapClient extends BasicRequestor {
     @Override
     public ResponseObject send(RequestObject request)
             throws Exception {
+        protocol = request.getSoapRequestMethod();
         HttpClientBuilder clientBuilder = HttpClients.custom();
         
         if (!request.isFollowRedirects()) {
