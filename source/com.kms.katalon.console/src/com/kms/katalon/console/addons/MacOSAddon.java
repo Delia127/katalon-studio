@@ -20,8 +20,6 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.VMStandin;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -98,22 +96,10 @@ public class MacOSAddon {
     }
 
     private static File getJREFolder() throws IOException {
-        boolean useSystemJRE = false;
-        File jreFolder;
-        Bundle currentBundle = FrameworkUtil.getBundle(MacOSAddon.class);
-        File currentBundleFile = FileLocator.getBundleFile(currentBundle);
-        if (currentBundleFile.isDirectory()) { // built by IDE
-            File featureProjectDir = new File(currentBundleFile.getParentFile(), "com.kms.katalon.feature");
-            jreFolder = new File(featureProjectDir, "resources" + File.separator + "macosx-x64" + File.separator + MAC_JRE_HOME_RELATIVE_PATH);
+        File jreFolder = new File(getConfigurationFolder().getParentFile(), MAC_JRE_HOME_RELATIVE_PATH);
+        if (!jreFolder.exists()) {
+            jreFolder = new File(System.getProperty("java.home"));
         } else {
-            jreFolder = new File(getConfigurationFolder().getParentFile(), MAC_JRE_HOME_RELATIVE_PATH);
-            if (!jreFolder.exists()) {
-                jreFolder = new File(System.getProperty("java.home"));
-                useSystemJRE = true;
-            }
-        }
-        
-        if (jreFolder != null && jreFolder.exists() && !useSystemJRE) {
             makeJREFilesExecutable(jreFolder);
         }
         return jreFolder;
