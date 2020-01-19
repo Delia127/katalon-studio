@@ -8,7 +8,7 @@ trigger:
   branches:
     include:
       # - staging-*
-      - release-*
+      - web-test-azure
 
 # pr:
 # - staging-*
