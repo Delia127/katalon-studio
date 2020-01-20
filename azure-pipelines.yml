@@ -40,11 +40,11 @@ jobs:
 
   steps:
 
-  - task: InstallAppleCertificate@2
-    inputs:
-      certSecureFile: 'KatalonAppleCert.p12'
-      certPwd: '$(CER_PASSWORD)'
-      keychain: 'temp'
+  # - task: InstallAppleCertificate@2
+  #   inputs:
+  #     certSecureFile: 'KatalonAppleCert.p12'
+  #     certPwd: '$(CER_PASSWORD)'
+  #     keychain: 'temp'
 
   - bash: |
       brew install awscli
