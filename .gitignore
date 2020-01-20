@@ -1,5 +1,7 @@
 bin/
 *.class
+!tools/sonar-scanner/jre/bin/
+!tools/sonar-scanner/bin
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

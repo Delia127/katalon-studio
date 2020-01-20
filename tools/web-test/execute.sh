@@ -65,7 +65,7 @@ generateXmlCoverageReport() {
 uploadResultToSonar() {
   echo "UPLOAD RESULT TO SONAR"
 
-  sonarScanner="$tools/sonar-scanner/binary/sonar-scanner"
+  sonarScanner="$tools/sonar-scanner/bin/sonar-scanner"
   sonarScannerPropertiesFile="$testProjectDir/sonar-project.properties"
   touch "$sonarScannerPropertiesFile"
 
