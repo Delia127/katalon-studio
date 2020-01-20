@@ -8,7 +8,7 @@ trigger:
   branches:
     include:
       # - staging-*
-      - web-test-azure
+      - release-*
 
 # pr:
 # - staging-*
@@ -40,56 +40,41 @@ jobs:
 
   steps:
 
-  # - task: InstallAppleCertificate@2
-  #   inputs:
-  #     certSecureFile: 'KatalonAppleCert.p12'
-  #     certPwd: '$(CER_PASSWORD)'
-  #     keychain: 'temp'
-
-  # - bash: |
-  #     brew install awscli
-  #     aws --version
-  #     aws configure set default.s3.use_accelerate_endpoint true
-  #   displayName: Install AWS CLI
-
-  # - checkout: self
-  #   fetchDepth: 1
-  #   clean: true
-
-  # - task: Cache@2
-  #   inputs:
-  #     key: 'maven | "$(Agent.OS)" | **/pom.xml, !**/target/**'
-  #     restoreKeys: |
-  #       maven | "$(Agent.OS)"
-  #       maven
-  #     path: $(MAVEN_CACHE_FOLDER)
-  #   displayName: Cache Maven Local Repo
-
-  # - bash: |
-  #     ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
-  #   displayName: Build
-
-  # - bash: |
-  #     source ./variable.sh
-  #     echo "##vso[task.setvariable variable=VERSION]${version}"
-  #     echo "##vso[task.setvariable variable=TAG]${tag}"
-  #     echo "##vso[task.setvariable variable=S3_LOCATION]${s3Location}"
-  #     echo "##vso[task.setvariable variable=WITH_UPDATE]${withUpdate}"
-  #     echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
-  #   displayName: Azure Populate Variable Value
+  - task: InstallAppleCertificate@2
+    inputs:
+      certSecureFile: 'KatalonAppleCert.p12'
+      certPwd: '$(CER_PASSWORD)'
+      keychain: 'temp'
 
   - bash: |
-      ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}"
-    displayName: Execute WebUI keywords test
+      brew install awscli
+      aws --version
+      aws configure set default.s3.use_accelerate_endpoint true
+    displayName: Install AWS CLI
+  - checkout: self
+    fetchDepth: 1
+    clean: true
 
-  # - task: SonarQubePrepare@4
-  #   inputs:
-  #     SonarQube: 'Katalon Sonar'
-  #     scannerMode: 'CLI'
-  #     configMode: 'file'
-  #     configFile: "${KATALON_DIR}/web-ui-test/sonar-project.properties"
-  #   displayName: Prepare Sonar analysis configuration for WebUI keywords test
-  # - task: SonarQubeAnalyze@4
+  - task: Cache@2
+    inputs:
+      key: 'maven | "$(Agent.OS)" | **/pom.xml, !**/target/**'
+      restoreKeys: |
+        maven | "$(Agent.OS)"
+        maven
+      path: $(MAVEN_CACHE_FOLDER)
+    displayName: Cache Maven Local Repo
+
+  - bash: |
+      ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
+    displayName: Build
+  - bash: |
+      source ./variable.sh
+      echo "##vso[task.setvariable variable=VERSION]${version}"
+      echo "##vso[task.setvariable variable=TAG]${tag}"
+      echo "##vso[task.setvariable variable=S3_LOCATION]${s3Location}"
+      echo "##vso[task.setvariable variable=WITH_UPDATE]${withUpdate}"
+      echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
+    displayName: Azure Populate Variable Value
   # - task: S3Upload@1
   #   inputs:
   #     awsCredentials: 'aws'
@@ -102,21 +87,19 @@ jobs:
   #   displayName: Upload Update Package
   #   condition: eq(variables.WITH_UPDATE, 'true')
 
-  # uncomment
-  # - task: AWSCLI@1
-  #   inputs:
-  #     awsCredentials: 'aws'
-  #     regionName: 'us-east-1'
-  #     awsCommand: 's3'
-  #     awsSubCommand: 'cp'
-  #     awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
-  #   displayName: Upload Update Package
-  #   condition: eq(variables.IS_RELEASE, 'true')
+  - task: AWSCLI@1
+    inputs:
+      awsCredentials: 'aws'
+      regionName: 'us-east-1'
+      awsCommand: 's3'
+      awsSubCommand: 'cp'
+      awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
+    displayName: Upload Update Package
+    condition: eq(variables.IS_RELEASE, 'true')
 
-  # - bash: |
-  #     rm -rf $(TMP_DIR)/update/$(TAG)
-  #   displayName: Delete Update Packages
-
+  - bash: |
+      rm -rf $(TMP_DIR)/update/$(TAG)
+    displayName: Delete Update Packages
   # - task: S3Upload@1
   #   inputs:
   #     awsCredentials: 'aws'
@@ -129,16 +112,15 @@ jobs:
   #   displayName: Upload Build Package
   #   condition: eq(variables.IS_RELEASE, 'true')
 
-  # uncomment
-  # - task: AWSCLI@1
-  #   inputs:
-  #     awsCredentials: 'aws'
-  #     regionName: 'us-east-1'
-  #     awsCommand: 's3'
-  #     awsSubCommand: 'cp'
-  #     awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION) --recursive --acl public-read'
-  #   displayName: Upload Build Package
-  #   condition: eq(variables.IS_RELEASE, 'true')
+  - task: AWSCLI@1
+    inputs:
+      awsCredentials: 'aws'
+      regionName: 'us-east-1'
+      awsCommand: 's3'
+      awsSubCommand: 'cp'
+      awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION) --recursive --acl public-read'
+    displayName: Upload Build Package
+    condition: eq(variables.IS_RELEASE, 'true')
 
   # - task: S3Upload@1
   #   inputs:
@@ -151,33 +133,35 @@ jobs:
   #     filesAcl: 'public-read'
   #   displayName: Upload Build Package
   #   condition: eq(variables.IS_RELEASE, 'false')
-  
-  # uncomment
-  # - task: AWSCLI@1
-  #   inputs:
-  #     awsCredentials: 'aws'
-  #     regionName: 'us-east-1'
-  #     awsCommand: 'cloudfront'
-  #     awsSubCommand: 'create-invalidation'
-  #     awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
-  #   displayName: Invalidate CloudFront
-  #   condition: eq(variables.IS_RELEASE, 'true')
 
-  # uncomment
-  # - task: GitHubRelease@0
-  #   inputs:
-  #     gitHubConnection: 'github.com/katalon-studio'
-  #     repositoryName: 'katalon-studio/katalon-studio'
-  #     action: 'edit'
-  #     target: 'master'
-  #     tagSource: 'manual'
-  #     tag: 'v$(TAG)'
-  #     title: 'v$(TAG)'
-  #     assets: '$(TMP_DIR)/*'
-  #     isDraft: true
-  #     addChangeLog: false
-  #   displayName: Create Github Release
-  #   condition: eq(variables.IS_RELEASE, 'true')
+  - task: AWSCLI@1
+    inputs:
+      awsCredentials: 'aws'
+      regionName: 'us-east-1'
+      awsCommand: 'cloudfront'
+      awsSubCommand: 'create-invalidation'
+      awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
+    displayName: Invalidate CloudFront
+    condition: eq(variables.IS_RELEASE, 'true')
+
+  - task: GitHubRelease@0
+    inputs:
+      gitHubConnection: 'github.com/katalon-studio'
+      repositoryName: 'katalon-studio/katalon-studio'
+      action: 'edit'
+      target: 'master'
+      tagSource: 'manual'
+      tag: 'v$(TAG)'
+      title: 'v$(TAG)'
+      assets: '$(TMP_DIR)/*'
+      isDraft: true
+      addChangeLog: false
+    displayName: Create Github Release
+    condition: eq(variables.IS_RELEASE, 'true')
+
+  - bash: |
+      ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "${VERSION}"
+    displayName: Execute WebUI keywords test
 
   # - task: PublishBuildArtifacts@1
   #   inputs:
@@ -185,4 +169,3 @@ jobs:
   #     ArtifactName: 'katalon-build'
   #     publishLocation: 'Container'
   #   displayName: Collect Artifacts
-      
