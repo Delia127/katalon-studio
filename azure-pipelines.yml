@@ -79,7 +79,7 @@ jobs:
   #   displayName: Azure Populate Variable Value
 
   - bash: |
-      ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}"
+      ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "7.2.3"
     displayName: Execute WebUI keywords test
 
   # - task: SonarQubePrepare@4
