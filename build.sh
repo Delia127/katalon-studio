@@ -161,8 +161,8 @@ generate_latest_version_json_file
 building
 copy_build
 copy_build_engine
-# sign_file
-# create_dmg
+sign_file
+create_dmg
 generate_update_package
 repackage
 
