@@ -5,7 +5,6 @@ prepare() {
   echo "PREPARING"
 
   if [ -d "$testProjectDir" ]; then rm -rf "$testProjectDir"; fi
-  # if [ -d "$kreDir" ]; then rm -rf "$kreDir"; fi
 
   mkdir "$testProjectDir"
   mkdir "$jacocoReportDir"
@@ -50,8 +49,7 @@ executeTest() {
   projectPath="$testProjectDir/web-samples.prj"
   katalonc="$kreDir/Katalon Studio Engine.app/Contents/MacOS/katalonc"
 
-  source "$webTestTools/run-test.sh" "$projectPath" "$katalonc" 2>&1 &
-  wait
+  source "$webTestTools/run-test.sh" "$projectPath" "$katalonc"
 }
 
 generateXmlCoverageReport() {
