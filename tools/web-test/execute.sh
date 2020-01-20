@@ -5,18 +5,24 @@ prepare() {
   echo "PREPARING"
 
   if [ -d "$testProjectDir" ]; then rm -rf "$testProjectDir"; fi
+  # if [ -d "$kreDir" ]; then rm -rf "$kreDir"; fi
 
   mkdir "$testProjectDir"
   mkdir "$jacocoReportDir"
   mkdir "$katalonBundleClasses"
+  mkdir "$kreDir"
   touch "$jacocoExecFile"
   touch "$jacocoReportXmlFile"
+}
+
+downloadKRE() {
+  source "$webTestTools/download-kre.sh" "$kreDir"
 }
 
 extractKatalonBundleClasses() {
   echo "EXTRACT KATALON BUNDLE CLASSES"
 
-  jarDir="$katalonDir/source/com.kms.katalon.product.engine/target/products/com.kms.katalon.product.engine.product/macosx/cocoa/x86_64/Katalon Studio Engine.app/Contents/Eclipse/plugins"
+  jarDir="$kreDir/Katalon Studio Engine.app/Contents/Eclipse/plugins"
   outputDir=$katalonBundleClasses
 
   source "$webTestTools/extract-katalon-bundles.sh" "$jarDir" "$outputDir"
@@ -42,7 +48,7 @@ executeTest() {
   echo "EXECUTE TEST"
 
   projectPath="$testProjectDir/web-samples.prj"
-  katalonc="$katalonDir/source/com.kms.katalon.product.engine/target/products/com.kms.katalon.product.engine.product/macosx/cocoa/x86_64/Katalon Studio Engine.app/Contents/MacOS/katalonc"
+  katalonc="$kreDir/Katalon Studio Engine.app/Contents/MacOS/katalonc"
 
   source "$webTestTools/run-test.sh" "$projectPath" "$katalonc" 2>&1 &
   wait
@@ -81,7 +87,10 @@ jacocoReportXmlFile="$jacocoReportDir/jacoco.xml"
 
 katalonBundleClasses="$testProjectDir/katalon-bundle-classes"
 
+kreDir="$testProjectDir/kre"
+
 prepare
+downloadKRE
 extractKatalonBundleClasses
 downloadTestProject
 injectJacocoAgentForExecution
