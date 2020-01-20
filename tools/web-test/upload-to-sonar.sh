@@ -14,4 +14,4 @@ echo "sonar.java.binaries=$katalonClassDir" >> "$sonarScannerPropertiesFile"
 echo "sonar.coverage.jacoco.xmlReportPaths=$jacocoXmlReport" >> "$sonarScannerPropertiesFile"
 echo "sonar.inclusions=**/*.java,**/*.groovy" >> "$sonarScannerPropertiesFile"
 
-"$sonarScanner" -Dproject.settings="$sonarScannerPropertiesFile"
+# "$sonarScanner" -Dproject.settings="$sonarScannerPropertiesFile"
