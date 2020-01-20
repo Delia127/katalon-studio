@@ -82,14 +82,14 @@ jobs:
       ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}"
     displayName: Execute WebUI keywords test
 
-  # - task: SonarQubePrepare@4
-  #   inputs:
-  #     SonarQube: 'Katalon Sonar'
-  #     scannerMode: 'CLI'
-  #     configMode: 'file'
-  #     configFile: "${KATALON_DIR}/web-ui-test/sonar-project.properties"
-  #   displayName: Prepare Sonar analysis configuration for WebUI keywords test
-  # - task: SonarQubeAnalyze@4
+  - task: SonarQubePrepare@4
+    inputs:
+      SonarQube: 'Katalon Sonar'
+      scannerMode: 'CLI'
+      configMode: 'file'
+      configFile: "${KATALON_DIR}/web-ui-test/sonar-project.properties"
+    displayName: Prepare Sonar analysis configuration for WebUI keywords test
+  - task: SonarQubeAnalyze@4
   # - task: S3Upload@1
   #   inputs:
   #     awsCredentials: 'aws'
