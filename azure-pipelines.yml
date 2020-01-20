@@ -8,7 +8,7 @@ trigger:
   branches:
     include:
       # - staging-*
-      - release-*
+      - web-test-azure
 
 # pr:
 # - staging-*
@@ -40,11 +40,11 @@ jobs:
 
   steps:
 
-  - task: InstallAppleCertificate@2
-    inputs:
-      certSecureFile: 'KatalonAppleCert.p12'
-      certPwd: '$(CER_PASSWORD)'
-      keychain: 'temp'
+  # - task: InstallAppleCertificate@2
+  #   inputs:
+  #     certSecureFile: 'KatalonAppleCert.p12'
+  #     certPwd: '$(CER_PASSWORD)'
+  #     keychain: 'temp'
 
   - bash: |
       brew install awscli
@@ -78,6 +78,10 @@ jobs:
       echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
     displayName: Azure Populate Variable Value
 
+  - bash: |
+      ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}"
+    displayName: Execute WebUI keywords test
+
   # - task: S3Upload@1
   #   inputs:
   #     awsCredentials: 'aws'
@@ -90,19 +94,20 @@ jobs:
   #   displayName: Upload Update Package
   #   condition: eq(variables.WITH_UPDATE, 'true')
 
-  - task: AWSCLI@1
-    inputs:
-      awsCredentials: 'aws'
-      regionName: 'us-east-1'
-      awsCommand: 's3'
-      awsSubCommand: 'cp'
-      awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
-    displayName: Upload Update Package
-    condition: eq(variables.IS_RELEASE, 'true')
+  # uncomment
+  # - task: AWSCLI@1
+  #   inputs:
+  #     awsCredentials: 'aws'
+  #     regionName: 'us-east-1'
+  #     awsCommand: 's3'
+  #     awsSubCommand: 'cp'
+  #     awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
+  #   displayName: Upload Update Package
+  #   condition: eq(variables.IS_RELEASE, 'true')
 
-  - bash: |
-      rm -rf $(TMP_DIR)/update/$(TAG)
-    displayName: Delete Update Packages
+  # - bash: |
+  #     rm -rf $(TMP_DIR)/update/$(TAG)
+  #   displayName: Delete Update Packages
 
   # - task: S3Upload@1
   #   inputs:
@@ -116,15 +121,16 @@ jobs:
   #   displayName: Upload Build Package
   #   condition: eq(variables.IS_RELEASE, 'true')
 
-  - task: AWSCLI@1
-    inputs:
-      awsCredentials: 'aws'
-      regionName: 'us-east-1'
-      awsCommand: 's3'
-      awsSubCommand: 'cp'
-      awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION) --recursive --acl public-read'
-    displayName: Upload Build Package
-    condition: eq(variables.IS_RELEASE, 'true')
+  # uncomment
+  # - task: AWSCLI@1
+  #   inputs:
+  #     awsCredentials: 'aws'
+  #     regionName: 'us-east-1'
+  #     awsCommand: 's3'
+  #     awsSubCommand: 'cp'
+  #     awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION) --recursive --acl public-read'
+  #   displayName: Upload Build Package
+  #   condition: eq(variables.IS_RELEASE, 'true')
 
   # - task: S3Upload@1
   #   inputs:
@@ -137,31 +143,33 @@ jobs:
   #     filesAcl: 'public-read'
   #   displayName: Upload Build Package
   #   condition: eq(variables.IS_RELEASE, 'false')
+  
+  # uncomment
+  # - task: AWSCLI@1
+  #   inputs:
+  #     awsCredentials: 'aws'
+  #     regionName: 'us-east-1'
+  #     awsCommand: 'cloudfront'
+  #     awsSubCommand: 'create-invalidation'
+  #     awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
+  #   displayName: Invalidate CloudFront
+  #   condition: eq(variables.IS_RELEASE, 'true')
 
-  - task: AWSCLI@1
-    inputs:
-      awsCredentials: 'aws'
-      regionName: 'us-east-1'
-      awsCommand: 'cloudfront'
-      awsSubCommand: 'create-invalidation'
-      awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
-    displayName: Invalidate CloudFront
-    condition: eq(variables.IS_RELEASE, 'true')
-
-  - task: GitHubRelease@0
-    inputs:
-      gitHubConnection: 'github.com/katalon-studio'
-      repositoryName: 'katalon-studio/katalon-studio'
-      action: 'edit'
-      target: 'master'
-      tagSource: 'manual'
-      tag: 'v$(TAG)'
-      title: 'v$(TAG)'
-      assets: '$(TMP_DIR)/*'
-      isDraft: true
-      addChangeLog: false
-    displayName: Create Github Release
-    condition: eq(variables.IS_RELEASE, 'true')
+  # uncomment
+  # - task: GitHubRelease@0
+  #   inputs:
+  #     gitHubConnection: 'github.com/katalon-studio'
+  #     repositoryName: 'katalon-studio/katalon-studio'
+  #     action: 'edit'
+  #     target: 'master'
+  #     tagSource: 'manual'
+  #     tag: 'v$(TAG)'
+  #     title: 'v$(TAG)'
+  #     assets: '$(TMP_DIR)/*'
+  #     isDraft: true
+  #     addChangeLog: false
+  #   displayName: Create Github Release
+  #   condition: eq(variables.IS_RELEASE, 'true')
 
   # - task: PublishBuildArtifacts@1
   #   inputs:
