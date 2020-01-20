@@ -15,7 +15,7 @@ prepare() {
 }
 
 downloadKRE() {
-  source "$webTestTools/download-kre.sh" "$kreDir"
+  source "$webTestTools/download-kre.sh" "$kreDir" "$katalonVersion"
 }
 
 extractKatalonBundleClasses() {
@@ -72,6 +72,7 @@ uploadResultToSonar() {
 
 katalonDir="$1"
 workDir="$2"
+katalonVersion="$3"
 
 tools="$katalonDir/tools"
 webTestTools="$tools/web-test"

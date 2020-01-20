@@ -1,5 +1,7 @@
-kreDownloadLink="https://github.com/katalon-studio/katalon-studio/releases/download/v7.2.3/Katalon_Studio_Engine_MacOS-7.2.3.tar.gz"
 kreDir="$1"
+kreVersion="$2"
+
+kreDownloadLink="https://github.com/katalon-studio/katalon-studio/releases/download/v${kreVersion}/Katalon_Studio_Engine_MacOS-${kreVersion}.tar.gz"
 
 cd "$kreDir"
 
@@ -9,6 +11,6 @@ tar -xzvf katalon_runtime_engine.tar.gz
 
 rm katalon_runtime_engine.tar.gz
 
-cp -R Katalon_Studio_Engine_MacOS-7.2.3/ "$kreDir"
+cp -R "Katalon_Studio_Engine_MacOS-${kreVersion}"/ "$kreDir"
 
-rm -rf Katalon_Studio_Engine_MacOS-7.2.3
+rm -rf "Katalon_Studio_Engine_MacOS-${kreVersion}"
