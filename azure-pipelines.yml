@@ -29,7 +29,7 @@ jobs:
     TMP_DIR: $(Build.ArtifactStagingDirectory)
     MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
     MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-    VERSION: 7.2.4
+    VERSION:
     TAG:
     S3_LOCATION:
     WITH_UPDATE:
