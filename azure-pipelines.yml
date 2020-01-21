@@ -8,7 +8,7 @@ trigger:
   branches:
     include:
       # - staging-*
-      - release-*
+      - web-test-azure
 
 # pr:
 # - staging-*
@@ -158,15 +158,6 @@ jobs:
   #     addChangeLog: false
   #   displayName: Create Github Release
   #   condition: eq(variables.IS_RELEASE, 'true')
-    
-  - task: DownloadGitHubRelease@0
-    inputs:
-      connection: 'github.com_huynguyen2908'
-      userRepository: 'katalon-studio/katalon-studio'
-      defaultVersionType: 'specificVersion'
-      version: '22971403'
-      itemPattern: 'Katalon_Studio_Engine_MacOS*'
-      downloadPath: '$(System.ArtifactsDirectory)'
 
     # - task: DownloadGitHubRelease@0
     #   inputs:
@@ -176,9 +167,9 @@ jobs:
     #     version: '22464759'
     #     downloadPath: '$(System.ArtifactsDirectory)'
       
-  # - bash: |
-  #     ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "${VERSION}"
-  #   displayName: Execute WebUI keywords test
+  - bash: |
+      ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "${VERSION}"
+    displayName: Execute WebUI keywords test
 
   # - task: PublishBuildArtifacts@1
   #   inputs:
