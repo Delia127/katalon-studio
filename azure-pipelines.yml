@@ -158,13 +158,12 @@ jobs:
   #     addChangeLog: false
   #   displayName: Create Github Release
   #   condition: eq(variables.IS_RELEASE, 'true')
-
+    
   - task: DownloadGitHubRelease@0
     inputs:
-      connection: 'github/katalon-studio'
+      connection: 'github.com_huynguyen2908'
       userRepository: 'katalon-studio/katalon-studio'
-      defaultVersionType: 'specificVersion'
-      version: '7.2.3'
+      defaultVersionType: 'latest'
       itemPattern: 'Katalon_Studio_Engine_MacOS*'
       downloadPath: '$(System.ArtifactsDirectory)'
       
