@@ -1,7 +1,7 @@
 kreDir="$1"
 kreVersion="$2"
 
-kreDownloadLink="https://github.com/katalon-studio/katalon-studio/releases/download/v${kreVersion}/Katalon_Studio_Engine_MacOS-${kreVersion}.tar.gz"
+kreDownloadLink="https://download.katalon.com/${kreVersion}/Katalon_Studio_Engine_MacOS-${kreVersion}.tar.gz"
 
 cd "$kreDir"
 
