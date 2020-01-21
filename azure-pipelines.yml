@@ -164,9 +164,17 @@ jobs:
       connection: 'github.com_huynguyen2908'
       userRepository: 'katalon-studio/katalon-studio'
       defaultVersionType: 'specificVersion'
-      release: 'v7.2.4'
+      version: 'v7.2.4'
       itemPattern: 'Katalon_Studio_Engine_MacOS*'
       downloadPath: '$(System.ArtifactsDirectory)'
+
+    # - task: DownloadGitHubRelease@0
+    #   inputs:
+    #     connection: 'github.com_huynguyen2908'
+    #     userRepository: 'katalon-studio/katalon-studio'
+    #     defaultVersionType: 'specificVersion'
+    #     version: '22464759'
+    #     downloadPath: '$(System.ArtifactsDirectory)'
       
   # - bash: |
   #     ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "${VERSION}"
