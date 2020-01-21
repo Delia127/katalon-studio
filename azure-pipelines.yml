@@ -164,7 +164,7 @@ jobs:
       connection: 'github/katalon-studio'
       userRepository: 'katalon-studio/katalon-studio'
       defaultVersionType: 'specificVersion'
-      version: 'v7.2.3'
+      version: '7.2.3'
       itemPattern: 'Katalon_Studio_Engine_MacOS*'
       downloadPath: '$(System.ArtifactsDirectory)'
       
