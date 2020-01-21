@@ -163,7 +163,8 @@ jobs:
     inputs:
       connection: 'github.com_huynguyen2908'
       userRepository: 'katalon-studio/katalon-studio'
-      defaultVersionType: 'latest'
+      defaultVersionType: 'specificVersion'
+      release: 'v7.2.4'
       itemPattern: 'Katalon_Studio_Engine_MacOS*'
       downloadPath: '$(System.ArtifactsDirectory)'
       
