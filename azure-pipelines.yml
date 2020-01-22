@@ -51,7 +51,6 @@ jobs:
       aws --version
       aws configure set default.s3.use_accelerate_endpoint true
     displayName: Install AWS CLI
-
   - checkout: self
     fetchDepth: 1
     clean: true
@@ -68,7 +67,6 @@ jobs:
   - bash: |
       ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
     displayName: Build
-
   - bash: |
       source ./variable.sh
       echo "##vso[task.setvariable variable=VERSION]${version}"
@@ -77,7 +75,6 @@ jobs:
       echo "##vso[task.setvariable variable=WITH_UPDATE]${withUpdate}"
       echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
     displayName: Azure Populate Variable Value
-
   # - task: S3Upload@1
   #   inputs:
   #     awsCredentials: 'aws'
@@ -103,7 +100,6 @@ jobs:
   - bash: |
       rm -rf $(TMP_DIR)/update/$(TAG)
     displayName: Delete Update Packages
-
   # - task: S3Upload@1
   #   inputs:
   #     awsCredentials: 'aws'
@@ -163,10 +159,13 @@ jobs:
     displayName: Create Github Release
     condition: eq(variables.IS_RELEASE, 'true')
 
+  - bash: |
+      ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "${VERSION}"
+    displayName: Execute WebUI keywords test
+
   # - task: PublishBuildArtifacts@1
   #   inputs:
   #     PathtoPublish: '$(TMP_DIR)'
   #     ArtifactName: 'katalon-build'
   #     publishLocation: 'Container'
   #   displayName: Collect Artifacts
-      
