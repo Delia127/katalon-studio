@@ -232,6 +232,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PARAM_TABLE_MENU_ITEM_REMOVE;
 
     public static String PA_LBL_WRAP_LINE;
+    
+    public static String PA_LBL_AUTO_UPDATE_CONTENT_TYPE;
 
     public static String MSG_CANNOT_OPEN_REQUEST;
     

@@ -29,6 +29,8 @@ public class TextBodyEditor extends HttpBodyEditor {
     private MirrorEditor mirrorEditor;
 
     private Button chckWrapLine;
+    
+    private Button chckAutoUpdateContentType;
 
     Composite tbBodyType;
 
@@ -67,7 +69,7 @@ public class TextBodyEditor extends HttpBodyEditor {
         });
         
         Composite bottomComposite = new Composite(this, SWT.NONE);
-        GridLayout bottomLayout = new GridLayout(2, false);
+        GridLayout bottomLayout = new GridLayout(3, false);
         bottomLayout.marginWidth = bottomLayout.marginHeight = 0;
         bottomComposite.setLayout(bottomLayout);
         bottomComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -96,6 +98,10 @@ public class TextBodyEditor extends HttpBodyEditor {
         chckWrapLine = new Button(bottomComposite, SWT.CHECK);
         chckWrapLine.setText(ComposerWebserviceMessageConstants.PA_LBL_WRAP_LINE);
         chckWrapLine.setSelection(true);
+        
+        chckAutoUpdateContentType = new Button(bottomComposite, SWT.CHECK);
+        chckAutoUpdateContentType.setText(ComposerWebserviceMessageConstants.PA_LBL_AUTO_UPDATE_CONTENT_TYPE);
+        chckAutoUpdateContentType.setSelection(true);
 
     }
 
@@ -139,6 +145,12 @@ public class TextBodyEditor extends HttpBodyEditor {
         }
 
         setContentTypeUpdated(true);
+    }
+    
+    @Override
+    public void setContentTypeUpdated(boolean contentTypeUpdated) {
+        boolean autoUpdateContentTypeEnabled = chckAutoUpdateContentType.getSelection();
+        super.setContentTypeUpdated(autoUpdateContentTypeEnabled && contentTypeUpdated);
     }
 
     private void updateRadioStatus() {
