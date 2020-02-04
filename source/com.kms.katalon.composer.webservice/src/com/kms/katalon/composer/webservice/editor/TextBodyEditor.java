@@ -98,7 +98,7 @@ public class TextBodyEditor extends HttpBodyEditor {
         chckWrapLine = new Button(bottomComposite, SWT.CHECK);
         chckWrapLine.setText(ComposerWebserviceMessageConstants.PA_LBL_WRAP_LINE);
         chckWrapLine.setSelection(true);
-        
+
         chckAutoUpdateContentType = new Button(bottomComposite, SWT.CHECK);
         chckAutoUpdateContentType.setText(ComposerWebserviceMessageConstants.PA_LBL_AUTO_UPDATE_CONTENT_TYPE);
         chckAutoUpdateContentType.setSelection(true);
