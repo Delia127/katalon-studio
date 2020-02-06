@@ -38,6 +38,11 @@ if (window === window.top && (typeof window.katalonWaiter == "undefined")) {
     var ajaxCount = 0;
     var ajaxTime = "";
 
+    function notServerSentEvent(ajaxObject) {
+      var contentType = ajaxObject.getResponseHeader("Content-Type");
+      return !(contentType && contentType.includes('text/event-stream'));
+    }
+
     function katalon_smart_waiter_do_ajax_wait() {
       function isAjaxDone() {
         if (window.katalonWaiter.ajaxObjects) {
@@ -49,7 +54,8 @@ if (window === window.top && (typeof window.katalonWaiter == "undefined")) {
                 (window.katalonWaiter.ajaxObjects[index].readyState) !== 4 &&
                 (window.katalonWaiter.ajaxObjects[index].readyState) !==
                   undefined &&
-                (window.katalonWaiter.ajaxObjects[index].readyState) !== 0
+                (window.katalonWaiter.ajaxObjects[index].readyState) !== 0 &&
+                notServerSentEvent(window.katalonWaiter.ajaxObjects[index])
               ) {
                 return false;
               }
