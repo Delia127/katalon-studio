@@ -1,13 +1,11 @@
 package com.kms.katalon.composer.windows.dialog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.BindException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -50,23 +48,18 @@ import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementLabelProvider;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementTableViewer;
-import com.kms.katalon.composer.windows.record.WindowsActionsCaptureServer;
+import com.kms.katalon.composer.windows.socket.WindowsServerSocketMessage.ServerMessageType;
+import com.kms.katalon.composer.windows.socket.WindowsSocketMessageUtil;
 import com.kms.katalon.composer.windows.socket.WindowsSocketServer;
+import com.kms.katalon.composer.windows.socket.WindowsStartRecordingPayload;
 import com.kms.katalon.composer.windows.spy.HighlightElementComposite;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
-import com.kms.katalon.composer.windows.websocket.WindowsAddonSocket;
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.objectspy.websocket.AddonSocket;
+import com.kms.katalon.core.util.internal.JsonUtil;
 
 public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsObjectDialog {
-
-    private WindowsActionsCaptureServer server;
-
-    private static final int ANY_PORT_NUMBER = 0;
-
-    private AddonSocket currentInstantSocket;
 
     private ToolItem btnStart;
 
@@ -86,9 +79,22 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     private WindowsElementPropertiesComposite propertiesComposite;
 
+    private WindowsSocketServer socketServer = new WindowsSocketServer(this);
+
     public WindowsRecorderDialogV2(Shell parentShell) {
         super(parentShell);
-        new WindowsSocketServer().start();
+        socketServer.start();
+    }
+
+    @Override
+    public boolean close() {
+        socketServer.close();
+        return super.close();
+    }
+
+    @Override
+    protected void okPressed() {
+        super.okPressed();
     }
 
     @Override
@@ -119,8 +125,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
         try {
             mobileComposite.setInput();
-        } catch (InvocationTargetException | InterruptedException e) {
-        }
+        } catch (InvocationTargetException | InterruptedException e) {}
     }
 
     @Override
@@ -132,7 +137,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         SashForm sashForm = createMainSashForm(container);
         sashForm.setBackground(ColorUtil.getCompositeBackgroundColorForSashform());
         populateSashForm(sashForm);
-        //sashForm.setWeights(new int[] { 4, 6 });
+        // sashForm.setWeights(new int[] { 4, 6 });
 
         return container;
     }
@@ -173,8 +178,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
         return compositeStepView;
     }
-    
-    
+
     private Composite createCapturedObjectsComposite(Composite parent) {
         Composite capturedObjectsComposite = new Composite(parent, SWT.NONE);
         capturedObjectsComposite.setLayout(new GridLayout());
@@ -222,7 +226,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
         return capturedObjectsComposite;
     }
-    
+
     private Control createPropertiesComposite(Composite parent) {
         propertiesComposite = new WindowsElementPropertiesComposite(this);
         Control control = propertiesComposite.createObjectPropertiesComposite(parent);
@@ -235,7 +239,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         return control;
     }
 
-    
     private void addStartStopToolbar(Composite contentComposite) {
         Composite toolbarComposite = new Composite(contentComposite, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout(2, false));
@@ -254,13 +257,14 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         btnStart.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    startServer(ANY_PORT_NUMBER);
 
-                    isStarting = true;
-                    setButtonStates();
+                isStarting = true;
+                setButtonStates();
+                try {
+                    startServer();
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    isStarting = false;
+                    setButtonStates();
                 }
             }
         });
@@ -279,17 +283,16 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
                     isStarting = false;
                     setButtonStates();
-                } catch (Exception ex) {
-                }
+                } catch (Exception ex) {}
             }
         });
     }
-    
+
     private Font getFontBold(Label label) {
         FontDescriptor boldDescriptor = FontDescriptor.createFrom(label.getFont()).setStyle(SWT.BOLD);
         return boldDescriptor.createFont(label.getDisplay());
     }
-    
+
     private void createSettingComposite(Composite parent) {
         Composite settingComposite = new Composite(parent, SWT.NONE);
         settingComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -329,56 +332,35 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         return layout;
     }
 
-    private void closeInstantSession() {
-        if (currentInstantSocket != null && currentInstantSocket.isConnected()) {
-            currentInstantSocket.close();
-        }
-    }
-
-    public boolean isCurrentServerPortUsable(int port) {
-        return port == ANY_PORT_NUMBER || port == server.getServerPort();
-    }
-
-    private void startServer(int port) throws Exception {
-        closeInstantSession();
-        if (server != null && server.isStarted() && isCurrentServerPortUsable(port)) {
-            return;
-        }
-        stopServer();
-        try {
-            server = new WindowsActionsCaptureServer(port, this, WindowsAddonSocket.class);
-            server.start();
-        } catch (BindException e) {
-            MessageDialog.openError(getParentShell(), GlobalStringConstants.ERROR, "Port is in use");
-            server = null;
-        }
+    private void startServer() throws Exception {
+        WindowsStartRecordingPayload message = WindowsSocketMessageUtil.createStartRecordingPayload(mobileComposite.getAppFile());
+        String data = JsonUtil.toJson(message);
+        socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.START_RECORDING, data));
     }
 
     private void stopServer() throws Exception {
-        if (server != null && server.isRunning()) {
-            server.stop();
-        }
+        socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.STOP_RECORDING, ""));
     }
 
     private void setButtonStates() {
         btnStart.setEnabled(!isStarting);
         btnStop.setEnabled(isStarting);
     }
-    
+
     public void refreshButtonsState() {
-        
+
     }
 
     @Override
     public void setSelectedElementByLocation(int x, int y) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void updateSelectedElement(CapturedWindowsElement editingElement) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -390,13 +372,15 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     @Override
     public void highlightElementRects(List<Rectangle> rects) {
         // TODO Auto-generated method stub
-        
+
     }
 
     public void addActionMapping(WindowsActionMapping actionMapping) {
         UISynchronizeService.syncExec(() -> {
             try {
-                capturedObjectsTableViewer.addCapturedObject(actionMapping.getTargetElement());
+                if (actionMapping.getTargetElement() != null) {
+                    capturedObjectsTableViewer.addCapturedObject(actionMapping.getTargetElement());
+                }
                 stepView.refreshTree();
                 stepView.addNode(actionMapping);
             } catch (ClassNotFoundException | InvocationTargetException | InterruptedException e) {

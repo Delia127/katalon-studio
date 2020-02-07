@@ -155,4 +155,20 @@ public class WindowsInspectorController {
     public WindowsSession getWindowsSession() {
         return session;
     }
+
+    public String getApplicationProcessId() {
+        WindowsDriver<WebElement> driver = getDriver();
+        if (driver == null) {
+            return null;
+        }
+        return driver.findElementByName(driver.getTitle()).getAttribute("ProcessId");
+    }
+    
+    public String getApplicationTitle() {
+        WindowsDriver<WebElement> driver = getDriver();
+        if (driver == null) {
+            return null;
+        }
+        return driver.getTitle();
+    }
 }

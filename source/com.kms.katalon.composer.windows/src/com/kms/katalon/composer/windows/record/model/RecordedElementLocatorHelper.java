@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.windows.record.model;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,19 +61,24 @@ public class RecordedElementLocatorHelper {
 
     private String buildXPath() {
         StringBuilder sb = new StringBuilder();
-        for (WindowsRecordedElement p : payload.getParent()) {
+        List<WindowsRecordedElement> elements = payload.getParent();
+        for (int i = 0; i < elements.size(); i++) {
+            WindowsRecordedElement p = elements.get(i);
             if (p.getAttributes() == null || p.getAttributes().isEmpty()) {
                 continue;
             }
-            sb.append(buildPartialXPath(p));
+            sb.append(buildPartialXPath(p, i == 1));
             sb.append("/");
         }
-        sb.append(buildPartialXPath(recordedElement));
+        sb.append(buildPartialXPath(recordedElement, false));
         return sb.toString();
     }
     
-    private String buildPartialXPath(WindowsRecordedElement e) {
+    private String buildPartialXPath(WindowsRecordedElement e, boolean isMainWindow) {
         String type = getCapitalizedName(e.getType());
+        if (isMainWindow) {
+            return type;
+        }
         String automationId = e.getAttributes().get("AutomationId");
         String className = e.getAttributes().get("ClassName");
         String name = e.getAttributes().get("Name");
