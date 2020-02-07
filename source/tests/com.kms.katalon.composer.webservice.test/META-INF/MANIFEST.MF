@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test
+Bundle-SymbolicName: com.kms.katalon.composer.webservice.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Fragment-Host: com.kms.katalon.composer.webservice;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit

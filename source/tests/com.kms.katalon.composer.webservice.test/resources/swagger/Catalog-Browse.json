@@ -1,0 +1,481 @@
+{
+  "basePath": "/ecom/catalog/browse/v1.0",
+  "paths": {
+    "/getSkuDetails": {
+      "post": {
+        "x-auth-type": "None",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              }
+            },
+            "in": "body",
+            "name": "Payload",
+            "description": "Request Body",
+            "required": false
+          }
+        ],
+        "x-throttling-tier": "Unlimited",
+        "consumes": [
+          "application/json"
+        ]
+      },
+      "get": {
+        "summary": "API to get SKU details",
+        "x-auth-type": "None",
+        "produces": [
+          "application/json"
+        ],
+        "description": "getSkuDetails service is a REST API which returns all the data associated with a SKU# or material#.\n\nThe service supports both authenticated and un-authenticated results. . To get authenticated response, valid authorization token must be passed in request header.",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "siteId",
+            "description": "The site ID for the desired Medline site",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "catalogId",
+            "description": "Override Catalog Id",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "skuId",
+            "description": "The skuID  for which results are needed, This service require either SKU Id or a Material Id",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "alternateID",
+            "description": "This alternate id can be used to get the SKU by material number. This service require either SKU Id or a Material Id.",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "show",
+            "description": "This is a comma separated field which will accept a list of parameters which dictate what content is returned in the result. specifications: sku specifications with feature & feature values. media: sku associated media URLs for images and videos. documents: Returns attached documents, e.g. literature, SDS, marketing documents. packagingDetails: sku packaging information. details: Returns the basic sku details such as display name, manufacturer, description.",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "x-throttling-tier": "Unlimited",
+        "consumes": [
+          "text/plain"
+        ]
+      },
+      "options": {
+        "summary": "API to get SKU details",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      }
+    },
+    "/getProducts": {
+      "get": {
+        "summary": "API to get Products from any category",
+        "x-auth-type": "None",
+        "produces": [
+          "application/json"
+        ],
+        "description": "The getProducts Service is a REST API that gives results for products in a category and filtered products in a category  via a JSON response.  Logged in data and functionality will be present when an authenticated profile ID is furnished.",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "siteId",
+            "description": "The site ID for the desired Medline site",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "catalogId",
+            "description": "Override catalog ID.",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "categoryId",
+            "description": "The category ID for which products are needed",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "show",
+            "description": "This is a coma separated field which will accept a list of parameters which dictate what content is returned in the result. products ? Returns product data.   facets - Returns the applied and available facets and facet values.",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "N",
+            "description": "Navigation field id.  Used for refinements.",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "No",
+            "description": "Record Offset. Starting record number for the current result set.",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "Nrpp",
+            "description": "Records per page.  Upper limit is 100 records.",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "fF",
+            "description": "Formulary Filter = 1: service returns only products which have at least one formulary SKU, or SKUs which are formulary for the active facility onlyFormulary = 0: Service returns all products, regardless of their formulary status for the active facility",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "aLF",
+            "description": "Account Linked Filter = 1: service returns only products which have at least one account linked SKU, or SKUs which are account linked for the active facility. onlyAccountLinked = 0: Service returns all products, regardless of their account linked status for the active facility.",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "x-throttling-tier": "Unlimited",
+        "consumes": [
+          "text/plain"
+        ]
+      },
+      "options": {
+        "summary": "API to get Products from any category",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      }
+    },
+    "/findSku": {
+      "post": {
+        "summary": "API to find sku by material number/customer material number",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              }
+            },
+            "in": "body",
+            "name": "Payload",
+            "description": "Request Body",
+            "required": false
+          }
+        ],
+        "x-throttling-tier": "Unlimited"
+      },
+      "get": {
+        "summary": "API to find sku by material number/customer material number",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      },
+      "options": {
+        "summary": "API to find sku by material number/customer material number",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      }
+    },
+    "/getCatalog": {
+      "get": {
+        "summary": "API to get Medline catalog Information",
+        "x-auth-type": "None",
+        "produces": [
+          "application/json"
+        ],
+        "description": "The getCatalog Service is a REST API that gives root level categories for a catalog via a JSON response.\n\nThe service supports un-authenticated and authenticated calls. Authenticated calls will return results based on the authenticated profile.",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "siteId",
+            "description": "The site ID for the desired Medline site",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "catalogId",
+            "description": "Override catalog id",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "x-throttling-tier": "Unlimited",
+        "consumes": [
+          "text/plain"
+        ]
+      },
+      "options": {
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      }
+    },
+    "/getPage": {
+      "post": {
+        "summary": "API to get page structure and data",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              }
+            },
+            "in": "body",
+            "name": "Payload",
+            "description": "Request Body",
+            "required": false
+          }
+        ],
+        "x-throttling-tier": "Unlimited"
+      },
+      "get": {
+        "summary": "API to get page structure and data",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      },
+      "options": {
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      }
+    },
+    "/getProductFamily": {
+      "get": {
+        "summary": "API to get Product Family",
+        "x-auth-type": "None",
+        "produces": [
+          "application/json"
+        ],
+        "description": "The getProductFamily Service is a REST API that gives results for a product family (product) and associated data via a JSON response.\nThe service supports authenticated and un-authenticated (user) search.  Logged in data and functionality will be present when an authenticated profile ID is furnished.\n",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "siteId",
+            "description": "The site ID for the desired Medline site",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "catalogId",
+            "description": "Override catalog ID",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "productId",
+            "description": "The product ID for which results are needed",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "show",
+            "description": "This is a coma separated field which will accept a list of parameters which dictate what content is returned in the result. details: Returns the basic product details such as product ID, display name, and manufacturer.  media: Returns the product associated media URLs for images and videos. documents: Returns attached documents, e.g. literature, SDS, marketing documents. specifications: product specifications that consist of the aggregated features and feature values from child SKUs. skus: Returns all the navigable Child SKUs associated with the product family with their basic information such as material ID, SKU ID, SKU display name etc.",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "Ff",
+            "description": "Formulary Filter = 1: Service will only return a product which has at least one SKU that is on formulary for the active facility.  The list of child SKUs will reflect only the SKUs that are on formulary for the active facility. onlyFormulary = 0: Service will return a product and all of its child SKUs, regardless of their formulary status for the active facility.",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "x-throttling-tier": "Unlimited",
+        "consumes": [
+          "text/plain"
+        ]
+      },
+      "options": {
+        "summary": "API to get Product Family",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      }
+    },
+    "/getCategory": {
+      "get": {
+        "summary": "API to get Medline category from given catalog",
+        "x-auth-type": "None",
+        "produces": [
+          "application/json"
+        ],
+        "description": "The getCategory Service is a REST API that gives sub-categories for a given category via a JSON response.  Session token is passed in the request header to make the profile data available to the service for authenticated service calls.The service also supports un-authenticated calls.  ",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "siteId",
+            "description": "The site ID for the desired Medline site",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "catalogId",
+            "description": "Override catalog id",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "categoryId",
+            "description": "the category ID for the desired category",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "onlyFormulary",
+            "description": "onlyFormulary = 1: Service returns sub-categories which have only formulary SKUs. onlyFormulary = 0: Service returns all sub categories irrespective of the formulary status of the SKUs in the sub-category. ",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "x-throttling-tier": "Unlimited",
+        "consumes": [
+          "text/plain"
+        ]
+      },
+      "options": {
+        "summary": "API to get Medline category from given catalog",
+        "x-auth-type": "None",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "x-throttling-tier": "Unlimited"
+      }
+    }
+  },
+  "host": "localhost",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "API for Catalog Browsing,",
+    "title": "Catalog-Browse",
+    "version": "v1.0"
+  },
+  "securityDefinitions": {
+    "default": {
+      "type": "oauth2",
+      "authorizationUrl": "https://localhost/authorize",
+      "flow": "implicit",
+      "scopes": {
+        
+      }
+    }
+  }
+}
