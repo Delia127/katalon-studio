@@ -2,7 +2,9 @@ package com.kms.katalon.application.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,6 +12,7 @@ import java.security.GeneralSecurityException;
 import java.text.Format;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -26,16 +29,21 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
+import com.amazonaws.util.EC2MetadataUtils;
+import com.amazonaws.util.IOUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.preference.ProxyPreferences;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.TestOpsFeatureKey;
@@ -49,6 +57,8 @@ import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationInfoCollector {
 
+    private static final String URL_KATALON_AMI_ID = "https://katalon-ami.s3.amazonaws.com/ami-id.json";
+    
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
     public static final String DEFAULT_REASON = ApplicationMessageConstants.LICENSE_INVALID;
@@ -56,6 +66,10 @@ public class ActivationInfoCollector {
     private static final String DEFAULT_LICENSE_FOLDER = "license";
 
     private static final String DEFALUT_LICENSE_EXTENSION = "lic";
+    
+    private static final String ENV_KATALON_AMI = "KATALON_AMI";
+    
+    private static final String DEFAULT_KATALON_AMI = "true";
 
     private static boolean activated = false;
 
@@ -859,4 +873,46 @@ public class ActivationInfoCollector {
         }
         return validActivationCodes;
     }
+    
+    public static boolean requireAMILicense() {
+        try {
+            String hasKatalonAmi = System.getenv(ENV_KATALON_AMI);
+            return DEFAULT_KATALON_AMI.equalsIgnoreCase(hasKatalonAmi);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        return false;
+    }
+    
+    public static boolean isValidLicenseAMI() {
+        try {
+//            String amiID = EC2MetadataUtils.getAmiId();
+//            if (StringUtils.isNotEmpty(amiID)) {
+//                URL url = new URL(URL_KATALON_AMI_ID);
+//                
+//                InputStream is = null;
+//                
+//                is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
+//                String responseBody = IOUtils.toString(is);
+//                //compare
+//                
+//            }
+            //hard code
+            URL url = new URL(URL_KATALON_AMI_ID);
+            
+            InputStream is = null;
+            
+            is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
+            String responseBody = IOUtils.toString(is);
+            
+            List<String> amiIDs = Arrays.asList(JsonUtil.fromJson(responseBody, String[].class));
+            System.out.print(amiIDs);
+            
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        return false;
+    }
+    
+    
 }

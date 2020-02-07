@@ -65,6 +65,11 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             Trackings.trackOpenFirstTime();
         }
         if (!isActivated) {
+            //check AMI
+            if (ActivationInfoCollector.requireAMILicense()) {
+                ActivationInfoCollector.isValidLicenseAMI();
+            }
+            
             if (checkActivationDialog()) {
                 showFunctionsIntroductionForTheFirstTime();
                 // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
