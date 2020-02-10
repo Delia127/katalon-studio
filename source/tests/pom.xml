@@ -20,18 +20,20 @@
 	</modules>
 
 	<properties>
-		<os-jvm-flags/>
+		<os-jvm-flags />
 	</properties>
 
 	<profiles>
 		<profile>
-      <id>macosx-jvm-flags</id>
-      <activation>
-        <os><family>mac</family></os>
-      </activation>
-      <properties>
-        <os-jvm-flags>-XstartOnFirstThread</os-jvm-flags>
-      </properties>
-    </profile>
+			<id>macosx-jvm-flags</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<properties>
+				<os-jvm-flags>-XstartOnFirstThread</os-jvm-flags>
+			</properties>
+		</profile>
 	</profiles>
 </project> 
