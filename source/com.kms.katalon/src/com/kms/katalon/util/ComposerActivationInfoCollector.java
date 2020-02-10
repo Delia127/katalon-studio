@@ -55,7 +55,18 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                     }
                     ApplicationInfo.cleanAll();
                 }
-                isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+                if (isStartup) {
+                    //check AMI
+                    if (ActivationInfoCollector.isRunOnAMIMachine()) {
+                        isActivated = ActivationInfoCollector.isValidLicenseAMI();
+                        if (isActivated) {
+                            ActivationInfoCollector.checkAndMarkActivatedForGUIModeAMIMachine(new StringBuilder());
+                        }
+                    }
+                }
+                if (!isActivated) {
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+                }
                 monitor.done();
             }
         });
@@ -65,11 +76,6 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             Trackings.trackOpenFirstTime();
         }
         if (!isActivated) {
-            //check AMI
-            if (ActivationInfoCollector.requireAMILicense()) {
-                ActivationInfoCollector.isValidLicenseAMI();
-            }
-            
             if (checkActivationDialog()) {
                 showFunctionsIntroductionForTheFirstTime();
                 // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
@@ -78,7 +84,6 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 return false;
             }
         }
-
         return true;
     }
     
