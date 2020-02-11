@@ -10,11 +10,11 @@ public class AwsKatalonAmi {
     
     String reLicense;
     
-    public List<String> getAmiId() {
+    public List<String> getAmiIds() {
         return amiIds;
     }
     
-    public void setAmiId(List<String> amiId) {
+    public void setAmiIds(List<String> amiId) {
         this.amiIds = amiId;
     }
     

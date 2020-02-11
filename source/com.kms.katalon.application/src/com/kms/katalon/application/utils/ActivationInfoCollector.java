@@ -72,7 +72,7 @@ public class ActivationInfoCollector {
 
     private static final String DEFAULT_LICENSE_FOLDER = "license";
 
-    private static final String DEFALUT_LICENSE_EXTENSION = "lic";
+    private static final String DEFAULT_LICENSE_EXTENSION = "lic";
     
     private static final String ENV_KATALON_AMI = "KATALON_AMI";
     
@@ -900,7 +900,7 @@ public class ActivationInfoCollector {
             if (licenseFolder.exists() && licenseFolder.isDirectory()) {
                 Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
                         .filter(p -> Files.isRegularFile(p)
-                                && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals(DEFALUT_LICENSE_EXTENSION))
+                                && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals(DEFAULT_LICENSE_EXTENSION))
                         .forEach(p -> {
                             try {
                                 File licenseFile = p.toFile();
@@ -949,7 +949,7 @@ public class ActivationInfoCollector {
                 String responseBody = IOUtils.toString(is);
                 AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
 
-                if (awsKatalonAmi.getAmiId().contains(machineIdOfAmi)) {
+                if (awsKatalonAmi.getAmiIds().contains(machineIdOfAmi)) {
                     RunningMode runMode = ApplicationRunningMode.get();
                     if (runMode == RunningMode.GUI) {
                         amiLicense = awsKatalonAmi.getKseLicense();
