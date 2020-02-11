@@ -298,7 +298,7 @@ public class MobileElementCommonHelper {
         AppiumDriver<?> driver = MobileDriverFactory.getDriver();
         float percentValue = percent.floatValue() / 100;
         if (driver instanceof AndroidDriver<?>) {
-            moveAndroidSeekbar(percentValue, 0, to, driver, timeout);
+            moveAndroidSeekbar(percentValue, 0, to, driver, timeout, 1);
         } else if (driver instanceof IOSDriver<?>) {
             WebElement element = findElementWithCheck(to, timeout);
             moveIosUIASlider(percentValue, element);
@@ -312,7 +312,7 @@ public class MobileElementCommonHelper {
     }
 
     private static void moveAndroidSeekbar(float percentValue, int seekbarPadding, TestObject to,
-            AppiumDriver<?> driver, int timeout) throws Exception {
+            AppiumDriver<?> driver, int timeout, int numRetry) throws Exception {
         WebElement element = findElementWithCheck(to, timeout);
         int startX = element.getLocation().getX();
         int width = element.getSize().getWidth() - (seekbarPadding * 2);
@@ -321,6 +321,10 @@ public class MobileElementCommonHelper {
                 .tap(PointOption.point(startX + seekbarPadding + relativeX, element.getLocation().getY()))
                 .waitAction(WaitOptions.waitOptions(Duration.ofMillis(DEFAULT_TAP_DURATION)));
         tap.perform();
+        
+        if (numRetry <= 0) {
+            return;
+        }
 
         element = findElementWithCheck(to, timeout);
         String value = element.getAttribute("text");
@@ -335,7 +339,7 @@ public class MobileElementCommonHelper {
         int correctPadding = (int) ((width * width * diffInPercentage)
                 / (2 * relativeX + 2 * width * diffInPercentage - width));
 
-        moveAndroidSeekbar(percentValue, correctPadding, to, driver, timeout);
+        moveAndroidSeekbar(percentValue, correctPadding, to, driver, timeout, numRetry - 1);
     }
 
     public static int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
