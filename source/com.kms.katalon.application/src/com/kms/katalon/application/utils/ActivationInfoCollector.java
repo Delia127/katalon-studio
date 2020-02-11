@@ -64,7 +64,7 @@ import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationInfoCollector {
 
-    private static final String URL_KATALON_AMI_ID = "https://katalon-ami.s3.amazonaws.com/ami-id.json";
+    private static final String URL_KATALON_AMI_ID = "https://download.katalon.com/ami-id.json";
     
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
