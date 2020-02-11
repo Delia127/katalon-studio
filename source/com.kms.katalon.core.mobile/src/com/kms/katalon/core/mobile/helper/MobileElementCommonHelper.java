@@ -39,7 +39,7 @@ public class MobileElementCommonHelper {
 
     private static final KeywordLogger logger = KeywordLogger.getInstance(MobileElementCommonHelper.class);
 
-    private static final int MOVE_SEEKBAR_PRECISION = 2;
+    private static final float MOVE_SEEKBAR_MAX_DIFF_IN_PERCENTAGE = 0.01f;
 
     private static final int MOVE_SEEKBAR_MAX_RETRY = 1;
 
@@ -334,12 +334,12 @@ public class MobileElementCommonHelper {
             return;
         }
 
-        float diffInPercentage = Float.parseFloat(value) / 100.0f - percentValue;
-        if (Math.abs(diffInPercentage) < 1.0f / Math.pow(10.0f, 2 + MOVE_SEEKBAR_PRECISION)) {
+        float diffInPercentage = Float.parseFloat(value) - percentValue * 100;
+        if (Math.abs(diffInPercentage) < MOVE_SEEKBAR_MAX_DIFF_IN_PERCENTAGE) {
             return;
         }
-        int correctPadding = (int) ((width * width * diffInPercentage)
-                / (2 * relativeX + 2 * width * diffInPercentage - width));
+        int correctPadding = (int) ((width * width * diffInPercentage / 100.0f)
+                / (2 * relativeX + 2 * width * diffInPercentage / 100.0f - width));
 
         moveAndroidSeekbar(percentValue, correctPadding, to, driver, timeout, numRetry - 1);
     }
