@@ -55,18 +55,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                     }
                     ApplicationInfo.cleanAll();
                 }
-                if (isStartup) {
-                    //check AMI
-                    if (ActivationInfoCollector.isRunOnAmiMachine()) {
-                        isActivated = ActivationInfoCollector.getAndCheckAmiMachine();
-                        if (isActivated) {
-                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
-                        }
-                    }
-                }
-                if (!isActivated) {
-                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
-                }
+                isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                 monitor.done();
             }
         });

@@ -120,16 +120,24 @@ public class ActivationInfoCollector {
         try {
             License license = null;
             publicKey = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PUBLIC_KEY);
-            license = getValidLicense();
-            boolean isOffline = isOffline(license);
-            isLicenseOffline = isOffline;
 
-            if (!isRunOnAmiMachine()) {
+            if (isRunOnAmiMachine()) {
+                if (ActivationInfoCollector.getAndCheckAmiMachine()) {
+                    license = getValidLicense();
+                    isLicenseOffline = false; //by default AMI LICENSE is offline license
+                } else {
+                    activated = false;
+                    return activated;
+                }
+            } else {
                 Organization org = ApplicationInfo.getOrganization();
                 if (org.getId() == null) {
                     activated = false;
                     return activated;
                 }
+                license = getValidLicense();
+                boolean isOffline = isOffline(license);
+                isLicenseOffline = isOffline;
                 if (!isOffline) {
                     String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                     String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
@@ -156,7 +164,6 @@ public class ActivationInfoCollector {
                     }
                 }
             }
-            
             if (license != null) {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
@@ -492,7 +499,7 @@ public class ActivationInfoCollector {
         }
         return null;
     }
-    
+
     private static Map<String, String> getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
