@@ -57,10 +57,10 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 }
                 if (isStartup) {
                     //check AMI
-                    if (ActivationInfoCollector.isRunOnAMIMachine()) {
-                        isActivated = ActivationInfoCollector.isValidLicenseAMI();
+                    if (ActivationInfoCollector.isRunOnAmiMachine()) {
+                        isActivated = ActivationInfoCollector.getAndCheckAmiMachine();
                         if (isActivated) {
-                            ActivationInfoCollector.checkAndMarkActivatedForGUIModeAMIMachine(new StringBuilder());
+                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                         }
                     }
                 }

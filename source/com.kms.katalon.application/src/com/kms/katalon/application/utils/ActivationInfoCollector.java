@@ -12,6 +12,7 @@ import java.security.GeneralSecurityException;
 import java.text.Format;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -28,6 +29,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Link;
 
 import com.amazonaws.util.EC2MetadataUtils;
 import com.amazonaws.util.IOUtils;
@@ -48,6 +54,7 @@ import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.license.LicenseService;
+import com.kms.katalon.license.models.AwsKatalonAmi;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
 import com.kms.katalon.license.models.LicenseResource;
@@ -69,6 +76,8 @@ public class ActivationInfoCollector {
     
     private static final String ENV_KATALON_AMI = "KATALON_AMI";
     
+    private static final String MACHINE_ID_KATALON_AMI = "katalon-ami";
+    
     private static final String DEFAULT_KATALON_AMI = "true";
 
     private static boolean activated = false;
@@ -88,6 +97,8 @@ public class ActivationInfoCollector {
     private static String expirationDate;
     
     private static String publicKey;
+    
+    private static String amiLicense;
 
     protected ActivationInfoCollector() {
     }
@@ -107,41 +118,45 @@ public class ActivationInfoCollector {
     public static boolean checkAndMarkActivatedForGUIMode(StringBuilder errorMessage) {
         activated = false;
         try {
-            Organization org = ApplicationInfo.getOrganization();
-            if (org.getId() == null) {
-                activated = false;
-                return activated;
-            }
+            License license = null;
             publicKey = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PUBLIC_KEY);
-            License license = getValidLicense();
+            license = getValidLicense();
             boolean isOffline = isOffline(license);
             isLicenseOffline = isOffline;
-            if (!isOffline) {
-                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
 
-                if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(encryptedPassword)) {
-                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                    String machineId = MachineUtil.getMachineId();
-                    LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
+            if (!isRunOnAmiMachine()) {
+                Organization org = ApplicationInfo.getOrganization();
+                if (org.getId() == null) {
+                    activated = false;
+                    return activated;
+                }
+                if (!isOffline) {
+                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
 
-                    if (licenseResource != null) {
-                        license = licenseResource.getLicense();
-                        if (license != null) {
-                            Long orgId = license.getOrganizationId();
-                            if (orgId != null && !orgId.equals(org.getId())) {
-                                String organization = getOrganization(email, password, orgId);
-                                saveOrganization(organization);
+                    if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(encryptedPassword)) {
+                        String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                        String machineId = MachineUtil.getMachineId();
+                        LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
+
+                        if (licenseResource != null) {
+                            license = licenseResource.getLicense();
+                            if (license != null) {
+                                Long orgId = license.getOrganizationId();
+                                if (orgId != null && !orgId.equals(org.getId())) {
+                                    String organization = getOrganization(email, password, orgId);
+                                    saveOrganization(organization);
+                                }
                             }
-                        }
-                        String message = licenseResource.getMessage();
-                        if (!StringUtils.isEmpty(message)) {
-                            LogUtil.logError(message);
+                            String message = licenseResource.getMessage();
+                            if (!StringUtils.isEmpty(message)) {
+                                LogUtil.logError(message);
+                            }
                         }
                     }
                 }
             }
-
+            
             if (license != null) {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
@@ -477,7 +492,7 @@ public class ActivationInfoCollector {
         }
         return null;
     }
-
+    
     private static Map<String, String> getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
@@ -599,7 +614,12 @@ public class ActivationInfoCollector {
     }
 
     private static boolean isValidLicense(License license) {
-        boolean isValidMachineId = hasValidMachineId(license);
+        boolean isValidMachineId = false;
+        if (isValidAmiMachineId(license)) {
+            isValidMachineId = true;
+        } else {
+            isValidMachineId = hasValidMachineId(license);
+        }
         boolean isExpired = isExpired(license);
 
         if (isValidMachineId && !isExpired && !license.isTesting()) {
@@ -621,6 +641,10 @@ public class ActivationInfoCollector {
             }
         }
         return false;
+    }
+
+    private static boolean isValidAmiMachineId(License license) {
+        return MACHINE_ID_KATALON_AMI.contains(license.getMachineId());
     }
 
     private static boolean hasValidMachineId(License license) {
@@ -802,6 +826,14 @@ public class ActivationInfoCollector {
     }
 
     private static License getValidLicense() throws Exception {
+        if (isRunOnAmiMachine()) {
+            License license = LicenseService.getInstance().parseJws(amiLicense);
+            if (MACHINE_ID_KATALON_AMI.contains(license.getMachineId())) {
+                return license;
+            } else {
+                return null;
+            }
+        }
         String jwsCode = getActivationCode();
         License license = ActivationInfoCollector.parseLicense(jwsCode);
         return license;
@@ -873,8 +905,8 @@ public class ActivationInfoCollector {
         }
         return validActivationCodes;
     }
-    
-    public static boolean requireAMILicense() {
+
+    public static boolean isRunOnAmiMachine() {
         try {
             String hasKatalonAmi = System.getenv(ENV_KATALON_AMI);
             return DEFAULT_KATALON_AMI.equalsIgnoreCase(hasKatalonAmi);
@@ -883,36 +915,36 @@ public class ActivationInfoCollector {
         }
         return false;
     }
-    
-    public static boolean isValidLicenseAMI() {
+
+    public static boolean getAndCheckAmiMachine() {
         try {
-//            String amiID = EC2MetadataUtils.getAmiId();
-//            if (StringUtils.isNotEmpty(amiID)) {
-//                URL url = new URL(URL_KATALON_AMI_ID);
-//                
-//                InputStream is = null;
-//                
-//                is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
-//                String responseBody = IOUtils.toString(is);
-//                //compare
-//                
-//            }
-            //hard code
-            URL url = new URL(URL_KATALON_AMI_ID);
-            
-            InputStream is = null;
-            
-            is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
-            String responseBody = IOUtils.toString(is);
-            
-            List<String> amiIDs = Arrays.asList(JsonUtil.fromJson(responseBody, String[].class));
-            System.out.print(amiIDs);
-            
+            String amiID = EC2MetadataUtils.getAmiId();
+            if (StringUtils.isEmpty(amiID)) {
+                return false;
+            }
+
+            String userName = System.getProperty("user.name");
+            String machineIdOfAmi = amiID + "-" + userName;
+
+            if (StringUtils.isNotEmpty(machineIdOfAmi)) {
+                URL url = new URL(URL_KATALON_AMI_ID);
+                InputStream is = null;
+                is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
+                String responseBody = IOUtils.toString(is);
+                AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
+
+                if (awsKatalonAmi.getAmiId().contains(machineIdOfAmi)) {
+                    amiLicense = awsKatalonAmi.getLicense();
+                    return true;
+                }
+            }
         } catch (Exception e) {
             LogUtil.logError(e);
         }
         return false;
     }
     
-    
+    public static String getAmiLicense() {
+        return amiLicense;
+    }
 }
