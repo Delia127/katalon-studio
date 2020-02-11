@@ -23,3 +23,5 @@ jacocoReportXmlFile="$jacocoReportDir/jacoco.xml"
 katalonBundleClasses="$katalonRepoDir/katalon-bundle-classes"
 
 generateXmlCoverageReport
+
+ls "${jacocoReportDir}"

@@ -269,16 +269,17 @@ stages:
         TMP_DIR="${TMP_DIR//\\/\/}"
         
         kseDir="${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}"
-        ls "${kseDir}"
-        jacocoExecFile="${kseDir}/jacoco.exec"
+        jacocoReportDir="${kseDir}/jacoco-report"
+        jacocoExecFile="${jacocoReportDir}/jacoco.exec"
+        jacocoReportXmlFile="${jacocoReportDir}/jacoco.xml"
         jacocoAgent="${WORK_DIR}/katalon/tools/jacoco/lib/jacocoagent.jar"
-        
-        touch "${jacocoExecFile}"
-        
         katalonInitFile="${kseDir}/katalon.ini"
-        cat "${katalonInitFile}"
+
+        mkdir "$jacocoReportDir"
+        touch "$jacocoExecFile"
+        touch "$jacocoReportXmlFile"
+        
         echo "-javaagent:${jacocoAgent}=destfile=${jacocoExecFile}" >> "${katalonInitFile}"
-        cat "${katalonInitFile}"
 
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/katalon-windows-test" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
@@ -287,31 +288,30 @@ stages:
       displayName: Set up jacoco
       condition: eq(variables.IS_RELEASE, 'true')
 
-    # - bash: |
-    #     set -xe
-    #     katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
-    #     "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome"
-    #   displayName: Run Web UI Test
-    #   condition: eq(variables.SETUP_SUCCESS, 'true')
+    - bash: |
+        set -xe
+        katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome"
+      displayName: Run Web UI Test
+      condition: eq(variables.SETUP_SUCCESS, 'true')
 
     - script: |
         set projectPath=%WORK_DIR%\mobile-samples\katalon-studio-mobile-keywords-test-script.prj
-        # "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuitePath="Test Suites/Regression" -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -executionProfile="saucelabs" -browserType="Remote" -g_apiDemoApps_api_key="%SAUCELABS_API_DEMO_APPS_API_KEY%" -g_dragSortApps_api_key="%SAUCELABS_DRAG_SORT_APPS_API_KEY%"
-        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuitePath="Test Suites/Regression" -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -executionProfile="saucelabs" -browserType="Remote" -g_apiDemoApps_api_key="3A728618424743AD929B43CC6F1954A5" -g_dragSortApps_api_key="2F8917C6CDD345328615A7A61AC5400A"
+        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuiteCollectionPath="Test Suites/Regression - Saucelabs device" -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -g_apiDemoApps_api_key="%SAUCELABS_API_DEMO_APPS_API_KEY%" -g_dragSortApps_api_key="%SAUCELABS_DRAG_SORT_APPS_API_KEY%"
       displayName: Run Mobile Test
       env:
         SAUCELABS_API_DEMO_APPS_API_KEY: $(SAUCELABS_API_DEMO_APPS_API_KEY)
         SAUCELABS_DRAG_SORT_APPS_API_KEY: $(SAUCELABS_DRAG_SORT_APPS_API_KEY)
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
-    # - script: |
-    #     start /d "C:\Program Files (x86)\Windows Application Driver" WinAppDriver.exe 4723
-    #     set appPath=%TMP_DIR%\%VERSION%\Katalon_Studio_Windows_64-%VERSION%\katalon.exe
-    #     set projectPath=%WORK_DIR%\katalon-windows-test\katalon-window-test.prj
-    #     set testProjectPath=%WORK_DIR%\katalon-windows-test\Test_Project
-    #     "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuitePath="Test Suites/Manage Test Cases/All Cases" -executionProfile="ci_env" -browserType="Windows" -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -g_G_appPath="%appPath%" -g_G_projectLocation="%testProjectPath%"   
-    #   displayName: Run Window Test
-    #   condition: eq(variables.SETUP_SUCCESS, 'true')
+    - script: |
+        start /d "C:\Program Files (x86)\Windows Application Driver" WinAppDriver.exe 4723
+        set appPath=%TMP_DIR%\%VERSION%\Katalon_Studio_Windows_64-%VERSION%\katalon.exe
+        set projectPath=%WORK_DIR%\katalon-windows-test\katalon-window-test.prj
+        set testProjectPath=%WORK_DIR%\katalon-windows-test\Test_Project
+        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuitePath="Test Suites/Manage Test Cases/All Cases" -executionProfile="ci_env" -browserType="Windows" -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -g_G_appPath="%appPath%" -g_G_projectLocation="%testProjectPath%"
+      displayName: Run Window Test
+      condition: eq(variables.SETUP_SUCCESS, 'true')
 
     - bash: |
         set -xe
@@ -320,6 +320,7 @@ stages:
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/katalon-windows-test"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}"
-        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml"
+        "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples"
+        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml"
       displayName: Generate and upload report
       condition: eq(variables.SETUP_SUCCESS, 'true')
