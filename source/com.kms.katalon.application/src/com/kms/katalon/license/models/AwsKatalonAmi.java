@@ -4,23 +4,33 @@ import java.util.List;
 
 public class AwsKatalonAmi {
     
-    List<String> amiId;
+    List<String> amiIds;
     
-    String license;
+    String kseLicense;
+    
+    String reLicense;
     
     public List<String> getAmiId() {
-        return amiId;
+        return amiIds;
     }
     
     public void setAmiId(List<String> amiId) {
-        this.amiId = amiId;
+        this.amiIds = amiId;
     }
     
-    public String getLicense() {
-        return license;
+    public String getKseLicense() {
+        return kseLicense;
     }
     
-    public void setLicense(String license) {
-        this.license = license;
+    public void setKseLicense(String kseLicense) {
+        this.kseLicense = kseLicense;
+    }
+    
+    public String getReLicense() {
+        return reLicense;
+    }
+    
+    public void setReLicense(String reLicense) {
+        this.reLicense = reLicense;
     }
 }

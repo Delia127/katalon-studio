@@ -124,7 +124,7 @@ public class ActivationInfoCollector {
             if (isRunOnAmiMachine()) {
                 if (ActivationInfoCollector.getAndCheckAmiMachine()) {
                     license = getValidLicense();
-                    isLicenseOffline = false; //by default AMI LICENSE is offline license
+                    isLicenseOffline = true; //by default AMI LICENSE is offline license
                 } else {
                     activated = false;
                     return activated;
@@ -576,6 +576,15 @@ public class ActivationInfoCollector {
         }
     }
     
+    public static boolean activateOfflineForEngineAmiMachine(StringBuilder errorMessage) {
+        if (isRunOnAmiMachine()) {
+            if (getAndCheckAmiMachine()) {
+                return activateOffline(amiLicense, errorMessage, RunningMode.CONSOLE);
+            }
+        }
+        return false;
+    }
+    
     private static boolean isValidLicense(License license, String licenseFileName) {
         boolean isValidMachineId = hasValidMachineId(license);
         boolean isExpired = isExpired(license);
@@ -941,7 +950,12 @@ public class ActivationInfoCollector {
                 AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
 
                 if (awsKatalonAmi.getAmiId().contains(machineIdOfAmi)) {
-                    amiLicense = awsKatalonAmi.getLicense();
+                    RunningMode runMode = ApplicationRunningMode.get();
+                    if (runMode == RunningMode.GUI) {
+                        amiLicense = awsKatalonAmi.getKseLicense();
+                    } else {
+                        amiLicense = awsKatalonAmi.getReLicense();
+                    }
                     return true;
                 }
             }

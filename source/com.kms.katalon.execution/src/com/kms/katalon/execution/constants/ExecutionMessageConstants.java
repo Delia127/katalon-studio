@@ -158,6 +158,8 @@ public class ExecutionMessageConstants extends NLS {
 
     public static String ACTIVATE_FAIL_RUNTIME_ENGINE;
 
+    public static String ACTIVATE_SUCCESS_BY_AMI;
+
     public static String ACTIVATE_CANNOT_CONNECT_TO_SERVER;
 
     public static String RE_DONT_PERMISSION_TO_USE;
