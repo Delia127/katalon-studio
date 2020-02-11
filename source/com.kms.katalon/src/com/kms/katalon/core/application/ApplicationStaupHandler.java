@@ -79,8 +79,8 @@ public class ApplicationStaupHandler {
         }, () -> {
             StringBuilder errorMessage = new StringBuilder();
             ActivationInfoCollector.checkAndMarkActivatedForGUIMode(errorMessage);
-            String error = errorMessage.toString();
 
+            String error = errorMessage.toString();
             if (StringUtils.isNotBlank(error)) {
                 lastActivateErrorMessage = error;
                 LogUtil.printErrorLine(error);
