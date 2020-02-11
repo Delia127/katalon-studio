@@ -73,6 +73,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 return false;
             }
         }
+
         return true;
     }
     
