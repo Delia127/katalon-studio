@@ -313,9 +313,9 @@ public class MobileElementCommonHelper {
         element.sendKeys(String.valueOf(percentValue));
     }
 
-    private static void moveAndroidSeekbar(float percentValue, int seekbarPadding, TestObject to,
+    private static void moveAndroidSeekbar(float percentValue, int seekbarPadding, TestObject testObject,
             AppiumDriver<?> driver, int timeout, int numRetry) throws Exception {
-        WebElement element = findElementWithCheck(to, timeout);
+        WebElement element = findElementWithCheck(testObject, timeout);
         int startX = element.getLocation().getX();
         int width = element.getSize().getWidth() - (seekbarPadding * 2);
         int relativeX = Math.round(width * percentValue);
@@ -323,12 +323,12 @@ public class MobileElementCommonHelper {
                 .tap(PointOption.point(startX + seekbarPadding + relativeX, element.getLocation().getY()))
                 .waitAction(WaitOptions.waitOptions(Duration.ofMillis(DEFAULT_TAP_DURATION)));
         tap.perform();
-        
+
         if (numRetry <= 0) {
             return;
         }
 
-        element = findElementWithCheck(to, timeout);
+        element = findElementWithCheck(testObject, timeout);
         String value = element.getAttribute("text");
         if (StringUtils.isBlank(value)) {
             return;
@@ -341,7 +341,7 @@ public class MobileElementCommonHelper {
         int correctPadding = (int) ((width * width * diffInPercentage / 100.0f)
                 / (2 * relativeX + 2 * width * diffInPercentage / 100.0f - width));
 
-        moveAndroidSeekbar(percentValue, correctPadding, to, driver, timeout, numRetry - 1);
+        moveAndroidSeekbar(percentValue, correctPadding, testObject, driver, timeout, numRetry - 1);
     }
 
     public static int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
