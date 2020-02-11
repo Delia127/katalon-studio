@@ -41,6 +41,8 @@ public class MobileElementCommonHelper {
 
     private static final int MOVE_SEEKBAR_PRECISION = 2;
 
+    private static final int MOVE_SEEKBAR_MAX_RETRY = 1;
+
     private static final int DEFAULT_DRAG_AND_DROP_DELAY = 2000;
 
     public static final int DEFAULT_TAP_DURATION = 50;
@@ -298,7 +300,7 @@ public class MobileElementCommonHelper {
         AppiumDriver<?> driver = MobileDriverFactory.getDriver();
         float percentValue = percent.floatValue() / 100;
         if (driver instanceof AndroidDriver<?>) {
-            moveAndroidSeekbar(percentValue, 0, to, driver, timeout, 1);
+            moveAndroidSeekbar(percentValue, 0, to, driver, timeout, MOVE_SEEKBAR_MAX_RETRY);
         } else if (driver instanceof IOSDriver<?>) {
             WebElement element = findElementWithCheck(to, timeout);
             moveIosUIASlider(percentValue, element);
