@@ -39,9 +39,11 @@ public class MobileElementCommonHelper {
 
     private static final KeywordLogger logger = KeywordLogger.getInstance(MobileElementCommonHelper.class);
 
+    private static final int ANDROID_SEEKBAR_PADDING = 56;
+
     private static final float MOVE_SEEKBAR_MAX_DIFF_IN_PERCENTAGE = 0.01f;
 
-    private static final int MOVE_SEEKBAR_MAX_RETRY = 1;
+    private static final int MOVE_SEEKBAR_MAX_RETRY = 2;
 
     private static final int DEFAULT_DRAG_AND_DROP_DELAY = 2000;
 
@@ -298,11 +300,11 @@ public class MobileElementCommonHelper {
                     MessageFormat.format(StringConstants.KW_MSG_FAILED_SET_SLIDER_INVALID_PERCENTAGE_X, percent));
         }
         AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        WebElement element = findElementWithCheck(to, timeout);
         float percentValue = percent.floatValue() / 100;
         if (driver instanceof AndroidDriver<?>) {
-            moveAndroidSeekbar(percentValue, 0, to, driver, timeout, MOVE_SEEKBAR_MAX_RETRY);
+            moveAndroidSeekbar(percentValue, ANDROID_SEEKBAR_PADDING, element, to, driver, timeout, MOVE_SEEKBAR_MAX_RETRY);
         } else if (driver instanceof IOSDriver<?>) {
-            WebElement element = findElementWithCheck(to, timeout);
             moveIosUIASlider(percentValue, element);
         }
         logger.logPassed(
@@ -313,9 +315,8 @@ public class MobileElementCommonHelper {
         element.sendKeys(String.valueOf(percentValue));
     }
 
-    private static void moveAndroidSeekbar(float percentValue, int seekbarPadding, TestObject testObject,
+    private static void moveAndroidSeekbar(float percentValue, int seekbarPadding, WebElement element, TestObject testObject,
             AppiumDriver<?> driver, int timeout, int numRetry) throws Exception {
-        WebElement element = findElementWithCheck(testObject, timeout);
         int startX = element.getLocation().getX();
         int width = element.getSize().getWidth() - (seekbarPadding * 2);
         int relativeX = Math.round(width * percentValue);
@@ -338,10 +339,10 @@ public class MobileElementCommonHelper {
         if (Math.abs(diffInPercentage) < MOVE_SEEKBAR_MAX_DIFF_IN_PERCENTAGE) {
             return;
         }
-        int correctPadding = (int) ((width * width * diffInPercentage / 100.0f)
+        int correctPadding = seekbarPadding + (int) ((width * width * diffInPercentage / 100.0f)
                 / (2 * relativeX + 2 * width * diffInPercentage / 100.0f - width));
 
-        moveAndroidSeekbar(percentValue, correctPadding, testObject, driver, timeout, numRetry - 1);
+        moveAndroidSeekbar(percentValue, correctPadding, element, testObject, driver, timeout, numRetry - 1);
     }
 
     public static int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
