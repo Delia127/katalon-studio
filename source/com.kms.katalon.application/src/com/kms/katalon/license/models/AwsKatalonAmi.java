@@ -4,11 +4,11 @@ import java.util.List;
 
 public class AwsKatalonAmi {
     
-    List<String> amiIds;
+    private List<String> amiIds;
     
-    String kseLicense;
+    private String kseLicense;
     
-    String reLicense;
+    private String reLicense;
     
     public List<String> getAmiIds() {
         return amiIds;

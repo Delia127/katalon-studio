@@ -569,10 +569,8 @@ public class ActivationInfoCollector {
     }
     
     public static boolean activateOfflineForEngineAmiMachine(StringBuilder errorMessage) {
-        if (isRunOnAmiMachine()) {
-            if (getAndCheckAmiMachine()) {
-                return activateOffline(amiLicense, errorMessage, RunningMode.CONSOLE);
-            }
+        if (isRunOnAmiMachine() && getAndCheckAmiMachine()) {
+            return activateOffline(amiLicense, errorMessage, RunningMode.CONSOLE);
         }
         return false;
     }
