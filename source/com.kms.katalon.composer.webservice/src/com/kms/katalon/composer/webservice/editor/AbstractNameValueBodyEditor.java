@@ -103,15 +103,13 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
     
     @Override
     public String getContentType() {
-        getViewModel().setContentType(bodyContent.getContentType());
-        return getViewModel().getContentType();
+        return bodyContent.getContentType();
     }
 
     @Override
     public String getContentData() {
         tvParams.removeEmptyRows();
-        getViewModel().setContentData(JsonUtil.toJson(bodyContent));
-        return getViewModel().getContentData();
+        return JsonUtil.toJson(bodyContent);
     }
     
     private void updateButtonRemoveState() {
@@ -209,5 +207,10 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
             updateButtonRemoveState();
             tvParams.refresh();
         }
+    }
+    
+    protected void updateViewModel() {
+        getViewModel().setContentType(bodyContent.getContentType());
+        getViewModel().setContentData(JsonUtil.toJson(bodyContent));
     }
 }

@@ -174,9 +174,4 @@ public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncoded
         updateViewModel();
         setContentTypeUpdated(true);
     }
-    
-    private void updateViewModel() {
-        getViewModel().setContentType(bodyContent.getContentType());
-        getViewModel().setContentData(JsonUtil.toJson(bodyContent));
-    }
 }

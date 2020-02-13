@@ -242,9 +242,4 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
         updateViewModel();
         setContentTypeUpdated(true);
     }
-    
-    private void updateViewModel() {
-        getViewModel().setContentType(bodyContent.getContentType());
-        getViewModel().setContentData(JsonUtil.toJson(bodyContent));
-    }
 }
