@@ -88,6 +88,7 @@ public class TextBodyEditor extends HttpBodyEditor {
                     mirrorEditor.changeMode(textContentType.getText());
                     if (textBodyContent != null) {
                         textBodyContent.setContentType(textContentType.getContentType());
+                        updateViewModel();
                     }
                     TextBodyEditor.this.setContentTypeUpdated(true);
                     TextBodyEditor.this.notifyListeners(SWT.Modify, new Event());
@@ -112,20 +113,22 @@ public class TextBodyEditor extends HttpBodyEditor {
                 mirrorEditor.wrapLine(chckWrapLine.getSelection());
             }
         });
-		if (textBodyContent != null) {
-			mirrorEditor.setText(textBodyContent.getText());
-		}
+        if (textBodyContent != null) {
+            mirrorEditor.setText(textBodyContent.getText());
+            mirrorEditor.setText(getViewModel().getText());
+        }
     }
 
     @Override
     public String getContentType() {
-        return textBodyContent.getContentType();
+        return getViewModel().getContentType();
     }
 
     @Override
     public String getContentData() {
         textBodyContent.setText((String) mirrorEditor.evaluate("return editor.getValue();"));
-        return JsonUtil.toJson(textBodyContent);
+        updateViewModel();
+        return getViewModel().getContentData();
     }
 
     @Override
@@ -135,6 +138,7 @@ public class TextBodyEditor extends HttpBodyEditor {
         } else {
             textBodyContent = JsonUtil.fromJson(rawBodyContentData, TextBodyContent.class);
         }
+        updateViewModel();
         updateRadioStatus();
     }
 
@@ -143,23 +147,32 @@ public class TextBodyEditor extends HttpBodyEditor {
         if (textBodyContent == null) {
             textBodyContent = new TextBodyContent();
         }
-
+        updateViewModel();
         setContentTypeUpdated(true);
     }
     
     @Override
     public void setContentTypeUpdated(boolean contentTypeUpdated) {
-        boolean autoUpdateContentTypeEnabled = chckAutoUpdateContentType.getSelection();
-        super.setContentTypeUpdated(autoUpdateContentTypeEnabled && contentTypeUpdated);
+        if (chckAutoUpdateContentType != null) {
+            boolean autoUpdateContentTypeEnabled = chckAutoUpdateContentType.getSelection();
+            getViewModel().setUserAllowsAutoUpdateContentType(autoUpdateContentTypeEnabled);
+        }
+        super.setContentTypeUpdated(contentTypeUpdated);
     }
 
     private void updateRadioStatus() {
-        TextContentType preferedContentType = TextContentType.evaluateContentType(textBodyContent.getContentType());
+        TextContentType preferedContentType = TextContentType.evaluateContentType(getViewModel().getContentType());
         Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(preferedContentType.getText());
         TEXT_MODE_SELECTION_BUTTONS.entrySet().forEach(e -> e.getValue().setSelection(false));
         if (selectionButton != null) {
             selectionButton.setSelection(true);
             mirrorEditor.changeMode(preferedContentType.getText());
         }
+    }
+    
+    private void updateViewModel() {
+        getViewModel().setContentData(JsonUtil.toJson(textBodyContent));
+        getViewModel().setContentType(textBodyContent.getContentType());
+        getViewModel().setText(textBodyContent.getText());
     }
 }

@@ -153,6 +153,7 @@ public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncoded
         if (!bodyContent.getParameters().isEmpty()) {
             btnRemove.setEnabled(true);
         }
+        updateViewModel();
     }
     
     @Override
@@ -170,7 +171,12 @@ public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncoded
             }
             initialized = true;
         }
-            
+        updateViewModel();
         setContentTypeUpdated(true);
+    }
+    
+    private void updateViewModel() {
+        getViewModel().setContentType(bodyContent.getContentType());
+        getViewModel().setContentData(JsonUtil.toJson(bodyContent));
     }
 }
