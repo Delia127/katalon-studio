@@ -16,156 +16,310 @@ trigger:
 
 pr: none
 
-jobs:
-- job: Build
-  timeoutInMinutes: 45
+resources:
+  repositories:
+  - repository: WindowTest
+    type: github
+    ref: refs/heads/master
+    name: katalon-studio/katalon-windows-test
+    endpoint: github.com/katalon-studio
+  - repository: WebTest
+    type: github
+    ref: refs/heads/master
+    name: katalon-studio-samples/web-samples
+    endpoint: github.com/katalon-studio
+  - repository: MobileTest
+    type: github
+    ref: refs/heads/master
+    name: katalon-studio-samples/mobile-samples
+    endpoint: github.com/katalon-studio
 
-  variables:
-    BRANCH: $(Build.SourceBranchName)
-    COMMIT_ID: $(Build.SourceVersion)
-    PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
-    # COMMIT_ID: $(System.PullRequest.SourceCommitId)
-    KATALON_DIR: $(Build.Repository.LocalPath)
-    TMP_DIR: $(Build.ArtifactStagingDirectory)
-    MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-    MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-    VERSION: 
-    TAG:
-    S3_LOCATION:
-    WITH_UPDATE:
-    IS_RELEASE:
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    timeoutInMinutes: 45
 
-  pool:
-    vmImage: 'macOS-latest'
+    variables:
+      BRANCH: $(Build.SourceBranchName)
+      COMMIT_ID: $(Build.SourceVersion)
+      PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
+      # COMMIT_ID: $(System.PullRequest.SourceCommitId)
+      KATALON_DIR: $(Build.Repository.LocalPath)
+      TMP_DIR: $(Build.ArtifactStagingDirectory)
+      MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+      MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+      VERSION: 
+      TAG:
+      S3_LOCATION:
+      WITH_UPDATE:
+      IS_RELEASE:
 
-  steps:
+    pool:
+      vmImage: 'macOS-latest'
 
-  - task: InstallAppleCertificate@2
-    inputs:
-      certSecureFile: 'KatalonAppleCert.p12'
-      certPwd: '$(CER_PASSWORD)'
-      keychain: 'temp'
+    steps:
 
-  - bash: |
-      brew install awscli
-      aws --version
-      aws configure set default.s3.use_accelerate_endpoint true
-    displayName: Install AWS CLI
-  - checkout: self
-    fetchDepth: 1
-    clean: true
+    - task: InstallAppleCertificate@2
+      inputs:
+        certSecureFile: 'KatalonAppleCert.p12'
+        certPwd: '$(CER_PASSWORD)'
+        keychain: 'temp'
 
-  - task: Cache@2
-    inputs:
-      key: 'maven | "$(Agent.OS)" | **/pom.xml, !**/target/**'
-      restoreKeys: |
-        maven | "$(Agent.OS)"
-        maven
-      path: $(MAVEN_CACHE_FOLDER)
-    displayName: Cache Maven Local Repo
+    - bash: |
+        brew install awscli
+        aws --version
+        aws configure set default.s3.use_accelerate_endpoint true
+      displayName: Install AWS CLI
 
-  - bash: |
-      ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
-    displayName: Build
-  - bash: |
-      source ./variable.sh
-      echo "##vso[task.setvariable variable=VERSION]${version}"
-      echo "##vso[task.setvariable variable=TAG]${tag}"
-      echo "##vso[task.setvariable variable=S3_LOCATION]${s3Location}"
-      echo "##vso[task.setvariable variable=WITH_UPDATE]${withUpdate}"
-      echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
-    displayName: Azure Populate Variable Value
-  # - task: S3Upload@1
-  #   inputs:
-  #     awsCredentials: 'aws'
-  #     regionName: 'us-east-1'
-  #     bucketName: 'katalon'
-  #     sourceFolder: '$(TMP_DIR)/update/$(TAG)'
-  #     globExpressions: '**'
-  #     targetFolder: 'update/$(TAG)'
-  #     filesAcl: 'public-read'
-  #   displayName: Upload Update Package
-  #   condition: eq(variables.WITH_UPDATE, 'true')
+    - checkout: self
+      fetchDepth: 1
+      clean: true
 
-  - task: AWSCLI@1
-    inputs:
-      awsCredentials: 'aws'
-      regionName: 'us-east-1'
-      awsCommand: 's3'
-      awsSubCommand: 'cp'
-      awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
-    displayName: Upload Update Package
-    condition: eq(variables.IS_RELEASE, 'true')
+    - task: Cache@2
+      inputs:
+        key: 'maven | "$(Agent.OS)" | **/pom.xml, !**/target/**'
+        restoreKeys: |
+          maven | "$(Agent.OS)"
+          maven
+        path: $(MAVEN_CACHE_FOLDER)
+      displayName: Cache Maven Local Repo
 
-  - bash: |
-      rm -rf $(TMP_DIR)/update/$(TAG)
-    displayName: Delete Update Packages
-  # - task: S3Upload@1
-  #   inputs:
-  #     awsCredentials: 'aws'
-  #     regionName: 'us-east-1'
-  #     bucketName: 'katalon'
-  #     sourceFolder: '$(TMP_DIR)'
-  #     globExpressions: '**'
-  #     targetFolder: '$(S3_LOCATION)'
-  #     filesAcl: 'public-read'
-  #   displayName: Upload Build Package
-  #   condition: eq(variables.IS_RELEASE, 'true')
+    - bash: |
+        ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
+      displayName: Build
 
-  - task: AWSCLI@1
-    inputs:
-      awsCredentials: 'aws'
-      regionName: 'us-east-1'
-      awsCommand: 's3'
-      awsSubCommand: 'cp'
-      awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION) --recursive --acl public-read'
-    displayName: Upload Build Package
-    condition: eq(variables.IS_RELEASE, 'true')
+    - bash: |
+        source ./variable.sh
+        echo "##vso[task.setvariable variable=VERSION]${version}"
+        echo "##vso[task.setvariable variable=TAG]${tag}"
+        echo "##vso[task.setvariable variable=S3_LOCATION]${s3Location}"
+        echo "##vso[task.setvariable variable=WITH_UPDATE]${withUpdate}"
+        echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
+      displayName: Azure Populate Variable Value
 
-  # - task: S3Upload@1
-  #   inputs:
-  #     awsCredentials: 'aws'
-  #     regionName: 'us-east-1'
-  #     bucketName: 'katalon'
-  #     sourceFolder: '$(TMP_DIR)'
-  #     globExpressions: '**'
-  #     targetFolder: 'azure-$(BRANCH)-$(PR_SOURCE_BRANCH)-$(COMMIT_ID)'
-  #     filesAcl: 'public-read'
-  #   displayName: Upload Build Package
-  #   condition: eq(variables.IS_RELEASE, 'false')
+    # - task: S3Upload@1
+    #   inputs:
+    #     awsCredentials: 'aws'
+    #     regionName: 'us-east-1'
+    #     bucketName: 'katalon'
+    #     sourceFolder: '$(TMP_DIR)/update/$(TAG)'
+    #     globExpressions: '**'
+    #     targetFolder: 'update/$(TAG)'
+    #     filesAcl: 'public-read'
+    #   displayName: Upload Update Package
+    #   condition: eq(variables.WITH_UPDATE, 'true')
 
-  - task: AWSCLI@1
-    inputs:
-      awsCredentials: 'aws'
-      regionName: 'us-east-1'
-      awsCommand: 'cloudfront'
-      awsSubCommand: 'create-invalidation'
-      awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
-    displayName: Invalidate CloudFront
-    condition: eq(variables.IS_RELEASE, 'true')
+    - task: AWSCLI@1
+      inputs:
+        awsCredentials: 'aws'
+        regionName: 'us-east-1'
+        awsCommand: 's3'
+        awsSubCommand: 'cp'
+        awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
+      displayName: Upload Update Package
+      condition: eq(variables.IS_RELEASE, 'true')
 
-  - task: GitHubRelease@0
-    inputs:
-      gitHubConnection: 'github.com/katalon-studio'
-      repositoryName: 'katalon-studio/katalon-studio'
-      action: 'edit'
-      target: 'master'
-      tagSource: 'manual'
-      tag: 'v$(TAG)'
-      title: 'v$(TAG)'
-      assets: '$(TMP_DIR)/*'
-      isDraft: true
-      addChangeLog: false
-    displayName: Create Github Release
-    condition: eq(variables.IS_RELEASE, 'true')
+    - bash: |
+        rm -rf $(TMP_DIR)/update/$(TAG)
+      displayName: Delete Update Packages
 
-  - bash: |
-      ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "${VERSION}"
-    displayName: Execute WebUI keywords test
+    # - task: S3Upload@1
+    #   inputs:
+    #     awsCredentials: 'aws'
+    #     regionName: 'us-east-1'
+    #     bucketName: 'katalon'
+    #     sourceFolder: '$(TMP_DIR)'
+    #     globExpressions: '**'
+    #     targetFolder: '$(S3_LOCATION)'
+    #     filesAcl: 'public-read'
+    #   displayName: Upload Build Package
+    #   condition: eq(variables.IS_RELEASE, 'true')
 
-  # - task: PublishBuildArtifacts@1
-  #   inputs:
-  #     PathtoPublish: '$(TMP_DIR)'
-  #     ArtifactName: 'katalon-build'
-  #     publishLocation: 'Container'
-  #   displayName: Collect Artifacts
+    - task: AWSCLI@1
+      inputs:
+        awsCredentials: 'aws'
+        regionName: 'us-east-1'
+        awsCommand: 's3'
+        awsSubCommand: 'cp'
+        awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION) --recursive --acl public-read'
+      displayName: Upload Build Package
+      condition: eq(variables.IS_RELEASE, 'true')
+
+    # - task: S3Upload@1
+    #   inputs:
+    #     awsCredentials: 'aws'
+    #     regionName: 'us-east-1'
+    #     bucketName: 'katalon'
+    #     sourceFolder: '$(TMP_DIR)'
+    #     globExpressions: '**'
+    #     targetFolder: 'azure-$(BRANCH)-$(PR_SOURCE_BRANCH)-$(COMMIT_ID)'
+    #     filesAcl: 'public-read'
+    #   displayName: Upload Build Package
+    #   condition: eq(variables.IS_RELEASE, 'false')
+
+    - task: AWSCLI@1
+      inputs:
+        awsCredentials: 'aws'
+        regionName: 'us-east-1'
+        awsCommand: 'cloudfront'
+        awsSubCommand: 'create-invalidation'
+        awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
+      displayName: Invalidate CloudFront
+      condition: eq(variables.IS_RELEASE, 'true')
+
+    - task: GitHubRelease@0
+      inputs:
+        gitHubConnection: 'github.com/katalon-studio'
+        repositoryName: 'katalon-studio/katalon-studio'
+        action: 'edit'
+        target: 'master'
+        tagSource: 'manual'
+        tag: 'v$(TAG)'
+        title: 'v$(TAG)'
+        assets: '$(TMP_DIR)/*'
+        isDraft: true
+        addChangeLog: false
+      displayName: Create Github Release
+      condition: eq(variables.IS_RELEASE, 'true')
+
+    - bash: |
+        ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "${VERSION}"
+      displayName: Execute WebUI keywords test
+
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     PathtoPublish: '$(TMP_DIR)'
+    #     ArtifactName: 'katalon-build'
+    #     publishLocation: 'Container'
+    #   displayName: Collect Artifacts
+
+- stage: Test      
+  jobs:
+  - job: Test
+    timeoutInMinutes: 360
+    
+    pool:
+      vmImage: 'windows-latest'
+
+    variables:
+      TMP_DIR: $(Build.ArtifactStagingDirectory)
+      WORK_DIR: $(Build.Repository.LocalPath)
+      BRANCH: $(Build.SourceBranchName)
+      VERSION:
+      IS_RELEASE:
+      SETUP_SUCCESS:
+
+    steps:
+
+    - checkout: self
+      fetchDepth: 1
+      clean: true
+
+    - bash: |
+        set -xe
+        cd katalon
+        pip3 install pyjavaproperties
+        python get_version.py $BRANCH
+        source ./variable.sh
+        tag=7.2.5
+        isRelease=true
+        echo "##vso[task.setvariable variable=VERSION]${tag}"
+        echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
+      displayName: Set up
+
+    - checkout: WindowTest
+      fetchDepth: 1
+      clean: true
+      condition: eq(variables.IS_RELEASE, 'true')
+
+    - checkout: WebTest
+      fetchDepth: 1
+      clean: true
+      condition: eq(variables.IS_RELEASE, 'true')
+
+    - checkout: MobileTest
+      fetchDepth: 1
+      clean: true
+      condition: eq(variables.IS_RELEASE, 'true')
+      
+    - task: S3Download@1
+      inputs:
+        awsCredentials: 'aws'
+        regionName: 'us-east-1'
+        bucketName: 'katalon'
+        sourceFolder: '$(VERSION)'
+        globExpressions: '@(Katalon_Studio_Windows_64|Katalon_Studio_Engine_Windows_64)*.zip'
+        targetFolder: '$(TMP_DIR)'
+      displayName: Download KSE and KRE
+      condition: eq(variables.IS_RELEASE, 'true')
+
+    - bash: |
+        set -xe
+        cd ${TMP_DIR}/${VERSION}
+        unzip Katalon_Studio_Windows_64-${VERSION}.zip
+        unzip Katalon_Studio_Engine_Windows_64-${VERSION}.zip
+      displayName: Extract KSR and KRE
+      condition: eq(variables.IS_RELEASE, 'true')
+
+    - bash: |
+        set -xe
+        WORK_DIR="${WORK_DIR//\\/\/}"
+        TMP_DIR="${TMP_DIR//\\/\/}"
+        
+        kseDir="${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}"
+        jacocoReportDir="${kseDir}/jacoco-report"
+        jacocoExecFile="${jacocoReportDir}/jacoco.exec"
+        jacocoReportXmlFile="${jacocoReportDir}/jacoco.xml"
+        jacocoAgent="${WORK_DIR}/katalon/tools/jacoco/lib/jacocoagent.jar"
+        katalonInitFile="${kseDir}/katalon.ini"
+
+        mkdir "$jacocoReportDir"
+        touch "$jacocoExecFile"
+        touch "$jacocoReportXmlFile"
+        
+        echo "-javaagent:${jacocoAgent}=destfile=${jacocoExecFile}" >> "${katalonInitFile}"
+
+        "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
+        "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/katalon-windows-test" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
+        "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
+        echo "##vso[task.setvariable variable=SETUP_SUCCESS]true"
+      displayName: Set up jacoco
+      condition: eq(variables.IS_RELEASE, 'true')
+
+    - bash: |
+        set -xe
+        katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome"
+      displayName: Run Web UI Test
+      condition: eq(variables.SETUP_SUCCESS, 'true')
+
+    - script: |
+        set projectPath=%WORK_DIR%\mobile-samples\katalon-studio-mobile-keywords-test-script.prj
+        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuiteCollectionPath="Test Suites/Regression - Saucelabs device" -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -g_apiDemoApps_api_key="%SAUCELABS_API_DEMO_APPS_API_KEY%" -g_dragSortApps_api_key="%SAUCELABS_DRAG_SORT_APPS_API_KEY%"
+      displayName: Run Mobile Test
+      env:
+        SAUCELABS_API_DEMO_APPS_API_KEY: $(SAUCELABS_API_DEMO_APPS_API_KEY)
+        SAUCELABS_DRAG_SORT_APPS_API_KEY: $(SAUCELABS_DRAG_SORT_APPS_API_KEY)
+      condition: eq(variables.SETUP_SUCCESS, 'true')
+
+    - script: |
+        start /d "C:\Program Files (x86)\Windows Application Driver" WinAppDriver.exe 4723
+        set appPath=%TMP_DIR%\%VERSION%\Katalon_Studio_Windows_64-%VERSION%\katalon.exe
+        set projectPath=%WORK_DIR%\katalon-windows-test\katalon-window-test.prj
+        set testProjectPath=%WORK_DIR%\katalon-windows-test\Test_Project
+        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuitePath="Test Suites/Manage Test Cases/All Cases" -executionProfile="ci_env" -browserType="Windows" -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -g_G_appPath="%appPath%" -g_G_projectLocation="%testProjectPath%"
+      displayName: Run Window Test
+      condition: eq(variables.SETUP_SUCCESS, 'true')
+
+    - bash: |
+        set -xe
+        WORK_DIR="${WORK_DIR//\\/\/}"
+        cd katalon
+        "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples"
+        "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/katalon-windows-test"
+        "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}"
+        "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples"
+        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml"
+      displayName: Generate and upload report
+      condition: eq(variables.SETUP_SUCCESS, 'true')
