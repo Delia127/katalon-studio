@@ -9,7 +9,6 @@ trigger:
     include:
       # - staging-*
       - release-*
-      - window-test
 
 # pr:
 # - staging-*
