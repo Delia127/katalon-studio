@@ -183,10 +183,6 @@ stages:
       displayName: Create Github Release
       condition: eq(variables.IS_RELEASE, 'true')
 
-    - bash: |
-        ./tools/web-test/execute.sh "${KATALON_DIR}" "${KATALON_DIR}" "${VERSION}"
-      displayName: Execute WebUI keywords test
-
     # - task: PublishBuildArtifacts@1
     #   inputs:
     #     PathtoPublish: '$(TMP_DIR)'
@@ -194,7 +190,7 @@ stages:
     #     publishLocation: 'Container'
     #   displayName: Collect Artifacts
 
-- stage: Test      
+- stage: Test
   jobs:
   - job: Test
     timeoutInMinutes: 360
