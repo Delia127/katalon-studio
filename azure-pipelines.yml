@@ -291,13 +291,13 @@ stages:
     - bash: |
         set -xe
         katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
-        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome"
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome"
       displayName: Run Web UI Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
     - script: |
         set projectPath=%WORK_DIR%\mobile-samples\katalon-studio-mobile-keywords-test-script.prj
-        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuiteCollectionPath="Test Suites/Regression - Saucelabs device" -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -g_apiDemoApps_api_key="%SAUCELABS_API_DEMO_APPS_API_KEY%" -g_dragSortApps_api_key="%SAUCELABS_DRAG_SORT_APPS_API_KEY%"
+        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuiteCollectionPath="Test Suites/Regression - Saucelabs device" -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -g_apiDemoApps_api_key="%SAUCELABS_API_DEMO_APPS_API_KEY%" -g_dragSortApps_api_key="%SAUCELABS_DRAG_SORT_APPS_API_KEY%"
       displayName: Run Mobile Test
       env:
         SAUCELABS_API_DEMO_APPS_API_KEY: $(SAUCELABS_API_DEMO_APPS_API_KEY)
@@ -309,7 +309,7 @@ stages:
         set appPath=%TMP_DIR%\%VERSION%\Katalon_Studio_Windows_64-%VERSION%\katalon.exe
         set projectPath=%WORK_DIR%\katalon-windows-test\katalon-window-test.prj
         set testProjectPath=%WORK_DIR%\katalon-windows-test\Test_Project
-        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuitePath="Test Suites/Manage Test Cases/All Cases" -executionProfile="ci_env" -browserType="Windows" -apiKey="478f4186-56e2-497d-9238-ea8870c7d8e1" -g_G_appPath="%appPath%" -g_G_projectLocation="%testProjectPath%"
+        "%TMP_DIR%\%VERSION%\Katalon_Studio_Engine_Windows_64-%VERSION%\katalonc" -noSplash -runMode=console -projectPath="%projectPath%" -retry=0 -testSuitePath="Test Suites/Manage Test Cases/All Cases" -executionProfile="ci_env" -browserType="Windows" -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -g_G_appPath="%appPath%" -g_G_projectLocation="%testProjectPath%"
       displayName: Run Window Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
