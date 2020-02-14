@@ -2,6 +2,7 @@ package com.kms.katalon.composer.windows.record.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +26,7 @@ public class RecordedElementLocatorHelper {
     
     public CapturedWindowsElement getCapturedElement() {
         CapturedWindowsElement element = new CapturedWindowsElement();
-        element.setName(getCapitalizedName(recordedElement.getType()));
+        element.setName(getTitleCaseName(recordedElement.getType()));
         element.setProperties(recordedElement.getAttributes());
         
         buildLocator();
@@ -36,8 +37,29 @@ public class RecordedElementLocatorHelper {
         return element;
     }
 
-    private String getCapitalizedName(String name) {
-        return StringUtils.capitalize(name).replace("item", "Item").replace(" ", "");
+    private String getTitleCaseName(String name) {
+        return toTitleCase(name).replace(" ", "");
+    }
+    
+
+    private static String toTitleCase(String inputString) {
+        if (StringUtils.isBlank(inputString)) {
+            return "";
+        }
+ 
+        if (StringUtils.length(inputString) == 1) {
+            return inputString.toUpperCase();
+        }
+ 
+        StringBuffer resultPlaceHolder = new StringBuffer(inputString.length());
+ 
+        Stream.of(inputString.split(" ")).forEach(stringPart -> {
+            char[] charArray = stringPart.toLowerCase().toCharArray();
+            charArray[0] = Character.toUpperCase(charArray[0]);
+            resultPlaceHolder.append(new String(charArray)).append(" ");
+        });
+ 
+        return StringUtils.trim(resultPlaceHolder.toString());
     }
 
     private void buildLocator() {
@@ -75,7 +97,7 @@ public class RecordedElementLocatorHelper {
     }
     
     private String buildPartialXPath(WindowsRecordedElement e, boolean isMainWindow) {
-        String type = getCapitalizedName(e.getType());
+        String type = getTitleCaseName(e.getType());
         if (isMainWindow) {
             return type;
         }
