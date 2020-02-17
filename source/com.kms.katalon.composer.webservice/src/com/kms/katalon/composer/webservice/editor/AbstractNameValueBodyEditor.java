@@ -103,13 +103,13 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
     
     @Override
     public String getContentType() {
-        return bodyContent.getContentType();
+        return getViewModel().getContentType();
     }
 
     @Override
     public String getContentData() {
         tvParams.removeEmptyRows();
-        return JsonUtil.toJson(bodyContent);
+        return getViewModel().getContentData();
     }
     
     private void updateButtonRemoveState() {

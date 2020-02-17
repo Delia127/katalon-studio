@@ -60,7 +60,6 @@ public class FileBodyEditor extends HttpBodyEditor {
 
     @Override
     public String getContentType() {
-        updateViewModel();
         return getViewModel().getContentType();
     }
 
