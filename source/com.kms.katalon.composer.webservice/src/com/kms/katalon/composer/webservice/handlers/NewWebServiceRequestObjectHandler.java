@@ -37,6 +37,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewWebServiceRequestObjectHandler {
@@ -131,6 +132,8 @@ public class NewWebServiceRequestObjectHandler {
                             return (ITreeEntity) entity;
                         }
                     } else if (entityObject instanceof WebElementEntity) {
+                        return ((ITreeEntity) entity).getParent();
+                    } else if (entityObject instanceof WindowsElementEntity) {
                         return ((ITreeEntity) entity).getParent();
                     }
                 }

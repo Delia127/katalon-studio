@@ -20,6 +20,7 @@ import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEnti
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.UserFileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -84,12 +85,14 @@ public class NewFolderPopupMenuContribution {
                         || parentFolder.getFolderType() == FolderType.USER) {
                     return true;
                 }
-            } else if (parentTreeEntity instanceof TestCaseTreeEntity || parentTreeEntity instanceof TestDataTreeEntity
+            } else if (parentTreeEntity instanceof TestCaseTreeEntity 
+            		|| parentTreeEntity instanceof TestDataTreeEntity
                     || parentTreeEntity instanceof TestSuiteTreeEntity
                     || parentTreeEntity instanceof WebElementTreeEntity
                     || parentTreeEntity instanceof TestSuiteCollectionTreeEntity
                     || parentTreeEntity instanceof CheckpointTreeEntity
-                    || parentTreeEntity instanceof UserFileTreeEntity) {
+                    || parentTreeEntity instanceof UserFileTreeEntity
+                    || parentTreeEntity instanceof WindowsElementTreeEntity) {
                 return true;
             } else {
                 return false;

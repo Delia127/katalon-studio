@@ -35,6 +35,7 @@ import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewTestObjectHandler {
@@ -132,6 +133,8 @@ public class NewTestObjectHandler {
 						return (ITreeEntity) object;
 					}
 				} else if (((ITreeEntity) object).getObject() instanceof WebElementEntity) {
+					return (ITreeEntity) ((ITreeEntity) object).getParent();
+				} else if (((ITreeEntity) object).getObject() instanceof WindowsElementEntity) {
 					return (ITreeEntity) ((ITreeEntity) object).getParent();
 				}
 			}
