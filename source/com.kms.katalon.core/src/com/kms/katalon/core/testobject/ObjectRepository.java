@@ -180,12 +180,14 @@ public class ObjectRepository {
         return readTestObjectFile(testObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
     }
     
-    public static WindowsTestObject findWindowsObject(final String windowsObjectId) {
+    public static WindowsTestObject findWindowsObject(final String windowsObjectRelativeId) {
+    	String windowsObjectId = getTestObjectId(windowsObjectRelativeId);
         File objectFile = new File(RunConfiguration.getProjectDir(), windowsObjectId + ".wrs");
         return WindowsObjectRepository.readWindowsTestObjectFile(windowsObjectId, objectFile, RunConfiguration.getProjectDir(), Collections.emptyMap());
     }
-    
-    public static WindowsTestObject findWindowsObject(final String windowsObjectId, Map<String, Object> variables) {
+
+    public static WindowsTestObject findWindowsObject(final String windowsObjectRelativeId, Map<String, Object> variables) {
+    	String windowsObjectId = getTestObjectId(windowsObjectRelativeId);
         File objectFile = new File(RunConfiguration.getProjectDir(), windowsObjectId + ".wrs");
         return WindowsObjectRepository.readWindowsTestObjectFile(windowsObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
     }
