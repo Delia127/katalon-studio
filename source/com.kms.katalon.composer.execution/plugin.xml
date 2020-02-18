@@ -67,6 +67,12 @@
             name="Execution">
       </page>
       <page
+      		class="com.kms.katalon.composer.execution.settings.LaunchArgumentsSettingPage"
+      		category="com.kms.katalon.composer.execution.settings"
+      		id="com.kms.katalon.composer.execution.settings.launchArgs"
+      		name="Launch Arguments">
+	  </page>
+      <page
             class="com.kms.katalon.composer.execution.settings.CustomExecutionSettingPage"
             category="com.kms.katalon.composer.execution.desiredcapabilities"
             id="com.kms.katalon.composer.execution.settings.custom"

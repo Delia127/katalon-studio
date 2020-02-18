@@ -71,12 +71,19 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     public AbstractRunConfiguration() {
         doInitExecutionSetting();
+        initVmArguments();
     }
     
     protected void doInitExecutionSetting() {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         this.executionSessionId =  dateFormat.format(new Date());
         initExecutionSetting();
+    }
+    
+    protected void initVmArguments() {
+        if (LicenseUtil.isNotFreeLicense()) {
+            vmArgs.addAll(Arrays.asList(ExecutionUtil.getVmArgs()));
+        }
     }
 
     @Override

@@ -68,7 +68,6 @@ public class MacOSAddon {
             if (jreFolder == null || !jreFolder.exists()) {
                 return;
             }
-            makeJREFilesExecutable(jreFolder);
             prefStore.setValue(JavaRuntime.PREF_VM_XML, createXMLDefinitionForVM(jreFolder));
             prefStore.setValue(UPDATED_PREF_VM_XML_KEY, currentConfigurationLocation);
             prefStore.save();
@@ -97,7 +96,13 @@ public class MacOSAddon {
     }
 
     private static File getJREFolder() throws IOException {
-        return new File(getConfigurationFolder().getParentFile(), MAC_JRE_HOME_RELATIVE_PATH);
+        File jreFolder = new File(getConfigurationFolder().getParentFile(), MAC_JRE_HOME_RELATIVE_PATH);
+        if (!jreFolder.exists()) {
+            jreFolder = new File(System.getProperty("java.home"));
+        } else {
+            makeJREFilesExecutable(jreFolder);
+        }
+        return jreFolder;
     }
 
     private static File getConfigurationFolder() throws IOException {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -48,15 +49,14 @@ public class LaunchProcessor implements ILaunchProcessor {
     @Override
     public Process execute(File scripFile) throws IOException {
         List<String> args = new ArrayList<>();
-        String[] commands = new String[] { getInstalledJRE(), "-cp",
+        args.add(getInstalledJRE());
+        if (vmArgs != null) {
+            args.addAll(Arrays.asList(vmArgs)); 
+        }
+        args.addAll(Arrays.asList("-cp",
                 File.pathSeparator + FilenameUtils.separatorsToSystem(getGroovyLibs()) + File.pathSeparator
                         + getClasspaths(),
-                STARTER_CLASS, "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath()) };
-        
-        args.addAll(Arrays.asList(commands));
-        if (vmArgs != null) {
-            args.addAll(Arrays.asList(vmArgs));
-        }
+                STARTER_CLASS, "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath())));
         ProcessBuilder pb = new ProcessBuilder(args.toArray(new String[0]));
         pb.environment().putAll(getEnviromentVariables());
         pb.directory(new File(ProjectController.getInstance().getCurrentProject().getFolderLocation()));

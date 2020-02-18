@@ -95,10 +95,13 @@
 		<module>com.kms.katalon.composer.artifact</module>
 		<module>com.kms.katalon.proxyvole</module>
 		<module>com.katalon.katalon-studio-smart-xpath</module>
+		<module>com.kms.katalon.mockito</module>
+		<module>tests</module>
 	</modules>
 
 	<properties>
 		<tycho.version>1.3.0</tycho.version>
+		<jacoco.version>0.8.5</jacoco.version>
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
@@ -111,9 +114,11 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<sonar.language>java</sonar.language>
+		<!-- <sonar.language>java</sonar.language>
 		<sonar.login>qautomate</sonar.login>
-		<sonar.password>qautomate@2014</sonar.password>
+		<sonar.password>qautomate@2014</sonar.password> -->
+		<sonar.host.url>https://sonar.katalon.com/</sonar.host.url>
+		<sonar.login>eb7853043bc93b04746ceb191f32d410d3670716</sonar.login>
 
 		<resourcesDiretory>resources</resourcesDiretory>
 		<mac64ResourcesDirectory>mac64Resources</mac64ResourcesDirectory>
@@ -127,6 +132,12 @@
 	</properties>
 
 	<repositories>
+		 <repository>
+			<id>central maven repo</id>
+			<name>central maven repo https</name>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+
 		<repository>
 			<id>eclipse_repo</id>
 			<url>${eclipse_repo_url}</url>
@@ -265,6 +276,19 @@
 						<arg>-XX:MaxPermSize=128m</arg>
 					</compilerArgs>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

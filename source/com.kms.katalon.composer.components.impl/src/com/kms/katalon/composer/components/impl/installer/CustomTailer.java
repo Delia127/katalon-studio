@@ -115,7 +115,7 @@ public class CustomTailer extends Tailer {
         return create(file, listener, DEFAULT_DELAY_MILLIS, false);
     }
 
-    private boolean getRun() {
+    public boolean getRun() {
         return !Thread.currentThread().isInterrupted();
     }
 

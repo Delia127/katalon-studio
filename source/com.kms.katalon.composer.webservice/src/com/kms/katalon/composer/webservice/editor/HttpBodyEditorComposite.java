@@ -15,9 +15,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 
 import com.kms.katalon.composer.webservice.parts.RestServicePart;
-import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.composer.webservice.viewmodel.HttpBodyEditorCompositeViewModel;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
-import com.kms.katalon.entity.webservice.TextBodyContent;
 
 public class HttpBodyEditorComposite extends Composite {
 
@@ -34,8 +33,8 @@ public class HttpBodyEditorComposite extends Composite {
     private Button tltmBinary;
 
     private StackLayout slBodyContent;
-
-    private WebServiceRequestEntity webServiceEntity;
+    
+    private HttpBodyEditorCompositeViewModel viewModel;
 
     private RestServicePart servicePart;
 
@@ -98,28 +97,21 @@ public class HttpBodyEditorComposite extends Composite {
         if (StringUtils.isEmpty(requestEntity.getHttpBodyContent())
                 && StringUtils.isNotEmpty(requestEntity.getHttpBody())) {
             selectedBodyType = "text";
-            TextBodyContent textBodyContent = new TextBodyContent();
-            textBodyContent.setText(requestEntity.getHttpBody());
-
-            WebElementPropertyEntity contentTypeProperty = findContentTypeProperty();
-            if (contentTypeProperty != null) {
-                textBodyContent.setContentType(contentTypeProperty.getValue());
-            }
         }
     }
 
     public void setInput(WebServiceRequestEntity requestEntity) {
         isInputReady = false;
+        viewModel = new HttpBodyEditorCompositeViewModel();
+        viewModel.setModel(requestEntity);
 
-        this.webServiceEntity = requestEntity;
+        migrateFromOldVersion(viewModel.getModel());
 
-        migrateFromOldVersion(webServiceEntity);
-
-        selectedBodyType = StringUtils.defaultIfEmpty(webServiceEntity.getHttpBodyType(), "text");
+        selectedBodyType = StringUtils.defaultIfEmpty(viewModel.getModel().getHttpBodyType(), "text");
         Button selectedButton = bodySelectionButtons.get(selectedBodyType);
 
         if (bodyEditors.get(selectedBodyType) != null) {
-            bodyEditors.get(selectedBodyType).setInput(webServiceEntity.getHttpBodyContent());
+            bodyEditors.get(selectedBodyType).setInput(viewModel.getModel().getHttpBodyContent());
 
             selectedButton.setSelection(true);
             selectedButton.notifyListeners(SWT.Selection, new Event());
@@ -164,27 +156,9 @@ public class HttpBodyEditorComposite extends Composite {
 
     private void updateContentTypeByEditor(HttpBodyEditor editor) {
         if (editor.isContentTypeUpdated()) {
-            WebElementPropertyEntity propertyEntity = findContentTypeProperty();
-            String newContentType = editor.getContentType();
-            if (propertyEntity != null) {
-                propertyEntity.setValue(newContentType);
-            } else {
-                propertyEntity = new WebElementPropertyEntity("Content-Type", newContentType);
-                webServiceEntity.getHttpHeaderProperties().add(0, propertyEntity);
-            }
-            servicePart.updateHeaders(webServiceEntity);
-
-            editor.setContentTypeUpdated(false);
+            viewModel.updateContentTypeByEditorViewModel(editor.getViewModel());
+            servicePart.updateHeaders(viewModel.getModel());
         }
-    }
-
-    private WebElementPropertyEntity findContentTypeProperty() {
-        WebElementPropertyEntity propertyEntity = webServiceEntity.getHttpHeaderProperties()
-                .stream()
-                .filter(h -> "Content-Type".equals(h.getName()))
-                .findFirst()
-                .orElse(null);
-        return propertyEntity;
     }
 
     public String getHttpBodyType() {

@@ -120,6 +120,8 @@ public class RunConfiguration {
 
     public static final String IMAGE_RECOGNITION_ENABLED = "imageRecognitionEnabled";
     
+    public static final String VM_ARGUMENTS = "vmArguments";
+    
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>(){

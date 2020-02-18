@@ -32,9 +32,11 @@ Require-Bundle: com.google.gson,
  com.auth0.java-jwt,
  com.google.oauth-client.google-oauth-client,
  org.apache.commons.io,
- com.kms.katalon.proxyvole
+ com.kms.katalon.proxyvole,
+ com.amazonaws.aws-java-sdk-core
 Export-Package: com.kms.katalon.application,
  com.kms.katalon.application.constants,
+ com.kms.katalon.application.helper,
  com.kms.katalon.application.preference,
  com.kms.katalon.application.usagetracking,
  com.kms.katalon.application.utils,
