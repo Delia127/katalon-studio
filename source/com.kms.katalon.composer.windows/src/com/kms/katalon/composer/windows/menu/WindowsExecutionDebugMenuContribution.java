@@ -4,7 +4,7 @@ import com.kms.katalon.execution.launcher.model.LaunchMode;
 
 public class WindowsExecutionDebugMenuContribution extends WindowsExecutionMenuContribution {
     @Override
-    protected LaunchMode getLaunchMode() {
+    public LaunchMode getLaunchMode() {
         return LaunchMode.DEBUG;
     }
 }
