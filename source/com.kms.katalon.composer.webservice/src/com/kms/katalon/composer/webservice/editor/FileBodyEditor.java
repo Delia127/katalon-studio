@@ -60,7 +60,7 @@ public class FileBodyEditor extends HttpBodyEditor {
 
     @Override
     public String getContentType() {
-        return fileBodyContent.getContentType();
+        return getViewModel().getContentType();
     }
 
     @Override
@@ -73,7 +73,8 @@ public class FileBodyEditor extends HttpBodyEditor {
         if (StringUtils.isNotEmpty(type)) {
             fileBodyContent.setContentType(type);
         }
-        return JsonUtil.toJson(fileBodyContent);
+        updateViewModel();
+        return getViewModel().getContentData();
     }
 
     @Override
@@ -84,6 +85,7 @@ public class FileBodyEditor extends HttpBodyEditor {
         } else {
             fileBodyContent = JsonUtil.fromJson(rawBodyContentData, FileBodyContent.class);
         }
+        updateViewModel();
     }
 
     @Override
@@ -97,6 +99,7 @@ public class FileBodyEditor extends HttpBodyEditor {
             size.setText(fommatFileSize(fileBodyContent.getContentLength()));
             size.getParent().layout();
         }
+        updateViewModel();
     }
 
     private void createComponentLayout() {
@@ -184,6 +187,11 @@ public class FileBodyEditor extends HttpBodyEditor {
             return PathUtil.absoluteToRelativePath(filePath, currentProjectFolder);
         }
         return filePath;
+    }
+    
+    private void updateViewModel() {
+        getViewModel().setContentData(JsonUtil.toJson(fileBodyContent));
+        getViewModel().setContentType(fileBodyContent.getContentType());
     }
 
 }

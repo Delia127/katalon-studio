@@ -37,10 +37,12 @@ if [ ! -f "$jar_file" ] ; then
   exit 1
 fi
 
-use_embedded_jre=true
+use_embedded_jre=false
 if [ "$use_embedded_jre" = true ]; then
   export JAVA_HOME=$sonar_scanner_home/jre
 fi
+
+echo $JAVA_HOME
 
 if [ -n "$JAVA_HOME" ]
 then
@@ -56,10 +58,11 @@ fi
 
 project_home=$(pwd)
 
-#echo "Info: Using sonar-scanner at $sonar_scanner_home"
-#echo "Info: Using java at $java_cmd"
-#echo "Info: Using classpath $jar_file"
-#echo "Info: Using project $project_home"
+# echo "Info: Using sonar-scanner at $sonar_scanner_home"
+# echo "Info: Using java at $java_cmd"
+# echo "Info: Using classpath $jar_file"
+# echo "Info: Using project $project_home"
+
 
 exec "$java_cmd" \
   -Djava.awt.headless=true \
