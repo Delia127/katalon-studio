@@ -244,7 +244,7 @@ stages:
       fetchDepth: 1
       clean: true
       condition: eq(variables.IS_RELEASE, 'true')
- 
+
     - checkout: MobileTest
       fetchDepth: 1
       clean: true
