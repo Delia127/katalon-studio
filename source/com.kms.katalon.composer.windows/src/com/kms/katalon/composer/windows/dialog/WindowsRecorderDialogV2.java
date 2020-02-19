@@ -76,8 +76,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     private WindowsAppComposite mobileComposite = new WindowsAppComposite();
 
-    private HighlightElementComposite highlightElementComposite;
-
     private RecordedWindowsElementTableViewer capturedObjectsTableViewer;
 
     private WindowsRecordedStepsView stepView;
@@ -180,8 +178,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         createCapturedObjectsComposite(hSashForm);
         createPropertiesComposite(hSashForm);
-        createHighlightElementComposite(hSashForm);
-        hSashForm.setWeights(new int[] { 4, 6, 1 });
+        hSashForm.setWeights(new int[] { 4, 6 });
 
         capturedObjectsTabItem.setControl(hSashForm);
         capturedObjectsTabItem.setText("Captured Objects");
@@ -237,7 +234,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 CapturedWindowsElement firstElement = (CapturedWindowsElement) selection.getFirstElement();
                 propertiesComposite.setEditingElement(firstElement);
-                highlightElementComposite.setEditingElement(firstElement);
             }
         });
 
@@ -247,12 +243,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     private Control createPropertiesComposite(Composite parent) {
         propertiesComposite = new WindowsElementPropertiesComposite(this);
         Control control = propertiesComposite.createObjectPropertiesComposite(parent);
-        return control;
-    }
-
-    private Control createHighlightElementComposite(Composite parent) {
-        highlightElementComposite = new HighlightElementComposite(this);
-        Control control = highlightElementComposite.createComposite(parent);
         return control;
     }
 
@@ -278,6 +268,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
                 isStarting = true;
                 setButtonStates();
                 try {
+                    mobileComposite.saveSettings();
                     startServer();
                 } catch (Exception ex) {
                     isStarting = false;
@@ -326,6 +317,8 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         appsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         appsComposite.setLayout(new FillLayout());
 
+        mobileComposite.setShowConfiguration(false);
+        mobileComposite.setShowApplicationTitle(false);
         mobileComposite.createComposite(appsComposite, SWT.NONE, this);
     }
 

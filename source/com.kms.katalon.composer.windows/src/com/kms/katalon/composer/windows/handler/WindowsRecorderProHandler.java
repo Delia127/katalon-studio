@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
@@ -46,7 +47,7 @@ public class WindowsRecorderProHandler {
 
     @CanExecute
     public boolean canExecute() {
-        return ProjectController.getInstance().getCurrentProject() != null;
+        return ProjectController.getInstance().getCurrentProject() != null && LicenseUtil.isPaidLicense();
     }
 
     @Execute

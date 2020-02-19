@@ -13,10 +13,12 @@
     <elements xsi:type="menu:HandledToolItem" xmi:id="_-bOo0JySEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.handledtoolitem.spy" label="Spy Windows Object" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/spy_desktop_32x24.png" tooltip="Spy Windows Object" command="_KyEpsJyTEemdYrYS1JLsZA">
       <persistedState key="index" value="11"/>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_ifs8oJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.handledtoolitem.record" label="Record Windows Action" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/record_desktop_32x24.png" tooltip="Record Windows Action" command="_nf-YkJyTEemdYrYS1JLsZA">
-      <persistedState key="index" value="12"/>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_RLhkgFL9Eeq-i-XpWiLT1w" elementId="com.kms.katalon.composer.windows.handledtoolitem.recordwindowsactions" label="Record Windows Actions" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/record_desktop_32x24.png" command="_nf-YkJyTEemdYrYS1JLsZA">
+      <menu xmi:id="_eaeSEFL9Eeq-i-XpWiLT1w" elementId="com.kms.katalon.composer.windows.menu.0">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_AcOgMFL-Eeq-i-XpWiLT1w" elementId="com.kms.katalon.composer.windows.directmenuitem.windowsrecorder" label="Windows Recorder" iconURI="" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.RecordWindowsObjectHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_DXYCsFL-Eeq-i-XpWiLT1w" elementId="com.kms.katalon.composer.windows.directmenuitem.windowsnativerecorder" label="Windows Native Recorder" iconURI="" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.WindowsRecorderProHandler"/>
+      </menu>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_x13oEDEBEeqJVMJ_wEBeSg" elementId="com.kms.katalon.composer.windows.handledtoolitem.record2" label="Windows Recorder Pro" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/record_desktop_32x24.png" command="_rsjD8DECEeqJVMJ_wEBeSg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_JL4vAJyTEemdYrYS1JLsZA" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_KyEpsJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.command.spy" commandName="Spy Windows Objects"/>
