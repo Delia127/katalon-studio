@@ -4,32 +4,34 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 
+import com.kms.katalon.composer.webservice.viewmodel.HttpBodyEditorViewModel;
 import com.kms.katalon.entity.webservice.HttpBodyContent;
 
 public abstract class HttpBodyEditor extends Composite {
 
-    private boolean contentTypeUpdated = false;
+    private HttpBodyEditorViewModel viewModel;
 
     public HttpBodyEditor(Composite parent, int style) {
         super(parent, style);
+        viewModel = new HttpBodyEditorViewModel();
     }
-
-    /**
-     * Returns the Content-Type of the editing editor. This value is used to
-     * update HTTP header table.
-     */
-    public abstract String getContentType();
 
     /**
      * @return JSON string format of the {@link HttpBodyContent}
      */
-    public abstract String getContentData();
+    public String getContentData() {
+        return viewModel.getContentData();
+    }
+    
+    public void setContentData(String data) {
+        viewModel.setContentData(data);
+    }
 
     /**
      * Initializes input of the editor.
      * 
      * @param httpBodyContent:
-     *            JSON string format of the {@link HttpBodyContent}
+     * JSON string format of the {@link HttpBodyContent}
      */
     public abstract void setInput(String httpBodyContent);
 
@@ -40,11 +42,11 @@ public abstract class HttpBodyEditor extends Composite {
      * @return true if the Content-Type was updated. Otherwise, false.
      */
     public boolean isContentTypeUpdated() {
-        return contentTypeUpdated;
+        return viewModel.isContentTypeUpdated();
     }
 
     public void setContentTypeUpdated(boolean contentTypeUpdated) {
-        this.contentTypeUpdated = contentTypeUpdated;
+        viewModel.setContentTypeUpdated(contentTypeUpdated);
     }
 
     public void fireModifyEvent() {
@@ -56,5 +58,13 @@ public abstract class HttpBodyEditor extends Composite {
      * this.
      */
     public void onBodyTypeChanged() {
+    }
+
+    public HttpBodyEditorViewModel getViewModel() {
+        return viewModel;
+    }
+    
+    public String getContentType() {
+        return viewModel.getContentType();
     }
 }
