@@ -9,6 +9,7 @@ trigger:
     include:
       # - staging-*
       - release-*
+      - aptest-*
 
 # pr:
 # - staging-*
@@ -279,6 +280,7 @@ stages:
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/katalon-windows-test" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
+        "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-service-tests" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         echo "##vso[task.setvariable variable=SETUP_SUCCESS]true"
       displayName: Set up jacoco
       condition: eq(variables.IS_RELEASE, 'true')
@@ -288,6 +290,13 @@ stages:
         katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
         "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome"
       displayName: Run Web UI Test
+      condition: eq(variables.SETUP_SUCCESS, 'true')
+
+    - bash: |
+        set -xe
+        katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-service-tests/web-service-tests.prj" -testSuitePath="Test Suites/All Test Cases" -executionProfile="default" -browserType="Chrome"
+      displayName: Run API Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
     - script: |
