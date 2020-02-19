@@ -15,130 +15,130 @@ import com.kms.katalon.core.model.FailureHandling;
 
 public class TestStepTableContextMenuWrapper {
 
-	private Tree parentTableTree;
+    private Tree parentTableTree;
 
-	private SelectionListener selectionListener;
+    private SelectionListener selectionListener;
 
-	private boolean isFreeLicense;
+    private boolean isFreeLicense;
 
-	private Menu menu;
+    private Menu menu;
 
-	public TestStepTableContextMenuWrapper(Tree parentTableTree, SelectionListener selectionListener,
-			boolean isFreeLicense) {
-		
-		this.parentTableTree = parentTableTree;
-		this.selectionListener = selectionListener;
-		this.isFreeLicense = isFreeLicense;
+    public TestStepTableContextMenuWrapper(Tree parentTableTree, SelectionListener selectionListener,
+            boolean isFreeLicense) {
 
-		createMenu();
-	}
+        this.parentTableTree = parentTableTree;
+        this.selectionListener = selectionListener;
+        this.isFreeLicense = isFreeLicense;
 
-	private void createMenu() {
-		menu = new Menu(parentTableTree);
-		boolean isNotFreeLicense = !isFreeLicense;
+        createMenu();
+    }
 
-		if (parentTableTree.getSelectionCount() == 1) {
-			if (isNotFreeLicense) {
-				TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, selectionListener);
-			}
-			new MenuItem(menu, SWT.SEPARATOR);
+    private void createMenu() {
+        menu = new Menu(parentTableTree);
+        boolean isNotFreeLicense = !isFreeLicense;
 
-			// Add step add
-			TestCaseMenuUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
-					StringConstants.ADAP_MENU_CONTEXT_ADD, selectionListener);
+        if (parentTableTree.getSelectionCount() == 1) {
+            if (isNotFreeLicense) {
+                TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, selectionListener);
+            }
+            new MenuItem(menu, SWT.SEPARATOR);
 
-			MenuItem insertMenuItem = new MenuItem(menu, SWT.CASCADE);
-			insertMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_INSERT);
+            // Add step add
+            TestCaseMenuUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
+                    StringConstants.ADAP_MENU_CONTEXT_ADD, selectionListener);
 
-			Menu insertMenu = new Menu(menu);
-			insertMenuItem.setMenu(insertMenu);
+            MenuItem insertMenuItem = new MenuItem(menu, SWT.CASCADE);
+            insertMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_INSERT);
 
-			// Add step before
-			TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertBefore,
-					StringConstants.ADAP_MENU_CONTEXT_INSERT_BEFORE, selectionListener);
+            Menu insertMenu = new Menu(menu);
+            insertMenuItem.setMenu(insertMenu);
 
-			// Add step after
-			TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertAfter,
-					StringConstants.ADAP_MENU_CONTEXT_INSERT_AFTER, selectionListener);
-		}
+            // Add step before
+            TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertBefore,
+                    StringConstants.ADAP_MENU_CONTEXT_INSERT_BEFORE, selectionListener);
 
-		MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
-		removeMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_REMOVE,
-				KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.DEL_NAME })));
-		removeMenuItem.addSelectionListener(selectionListener);
-		removeMenuItem.setID(TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID);
+            // Add step after
+            TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertAfter,
+                    StringConstants.ADAP_MENU_CONTEXT_INSERT_AFTER, selectionListener);
+        }
 
-		MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
-		copyMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_COPY,
-				KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" }))); //$NON-NLS-1$
-		copyMenuItem.addSelectionListener(selectionListener);
-		copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
+        MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
+        removeMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_REMOVE,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.DEL_NAME })));
+        removeMenuItem.addSelectionListener(selectionListener);
+        removeMenuItem.setID(TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID);
 
-		MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
-		cutMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_CUT,
-				KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" }))); //$NON-NLS-1$
-		cutMenuItem.addSelectionListener(selectionListener);
-		cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
+        MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
+        copyMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_COPY,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" }))); //$NON-NLS-1$
+        copyMenuItem.addSelectionListener(selectionListener);
+        copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
 
-		MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
-		pasteMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_PASTE,
-				KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
-		pasteMenuItem.addSelectionListener(selectionListener);
-		pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
+        MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
+        cutMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_CUT,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" }))); //$NON-NLS-1$
+        cutMenuItem.addSelectionListener(selectionListener);
+        cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
 
-		new MenuItem(menu, SWT.SEPARATOR);
+        MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
+        pasteMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_PASTE,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
+        pasteMenuItem.addSelectionListener(selectionListener);
+        pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
 
-		addFailureHandlingSubMenu(menu);
+        new MenuItem(menu, SWT.SEPARATOR);
 
-		if (isNotFreeLicense) {
-			MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
-			disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
-					KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
-			disableMenuItem.addSelectionListener(selectionListener);
-			disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
+        addFailureHandlingSubMenu(menu);
 
-			MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
-			enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
-					KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
-			enableMenuItem.addSelectionListener(selectionListener);
-			enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
-		}
-	}
+        if (isNotFreeLicense) {
+            MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
+            disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
+                    KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
+            disableMenuItem.addSelectionListener(selectionListener);
+            disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
 
-	private String createMenuItemLabel(String text, String keyCombination) {
-		return text + "\t" + keyCombination; //$NON-NLS-1$
-	}
+            MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
+            enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
+                    KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
+            enableMenuItem.addSelectionListener(selectionListener);
+            enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
+        }
+    }
 
-	private void addFailureHandlingSubMenu(Menu menu) {
-		MenuItem failureHandlingMenuItem = new MenuItem(menu, SWT.CASCADE);
-		failureHandlingMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CHANGE_FAILURE_HANDLING);
-		failureHandlingMenuItem.addSelectionListener(selectionListener);
+    private String createMenuItemLabel(String text, String keyCombination) {
+        return text + "\t" + keyCombination; //$NON-NLS-1$
+    }
 
-		Menu failureHandlingMenu = new Menu(menu);
+    private void addFailureHandlingSubMenu(Menu menu) {
+        MenuItem failureHandlingMenuItem = new MenuItem(menu, SWT.CASCADE);
+        failureHandlingMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CHANGE_FAILURE_HANDLING);
+        failureHandlingMenuItem.addSelectionListener(selectionListener);
 
-		MenuItem failureStopMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
-		failureStopMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_STOP_ON_FAILURE);
-		failureStopMenuItem.addSelectionListener(selectionListener);
-		failureStopMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
-		failureStopMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY, FailureHandling.STOP_ON_FAILURE);
+        Menu failureHandlingMenu = new Menu(menu);
 
-		MenuItem failureContinueMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
-		failureContinueMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CONTINUE_ON_FAILURE);
-		failureContinueMenuItem.addSelectionListener(selectionListener);
-		failureContinueMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
-		failureContinueMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY,
-				FailureHandling.CONTINUE_ON_FAILURE);
+        MenuItem failureStopMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
+        failureStopMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_STOP_ON_FAILURE);
+        failureStopMenuItem.addSelectionListener(selectionListener);
+        failureStopMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
+        failureStopMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY, FailureHandling.STOP_ON_FAILURE);
 
-		MenuItem optionalMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
-		optionalMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_OPTIONAL);
-		optionalMenuItem.addSelectionListener(selectionListener);
-		optionalMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
-		optionalMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY, FailureHandling.OPTIONAL);
+        MenuItem failureContinueMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
+        failureContinueMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CONTINUE_ON_FAILURE);
+        failureContinueMenuItem.addSelectionListener(selectionListener);
+        failureContinueMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
+        failureContinueMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY,
+                FailureHandling.CONTINUE_ON_FAILURE);
 
-		failureHandlingMenuItem.setMenu(failureHandlingMenu);
-	}
+        MenuItem optionalMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
+        optionalMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_OPTIONAL);
+        optionalMenuItem.addSelectionListener(selectionListener);
+        optionalMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
+        optionalMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY, FailureHandling.OPTIONAL);
 
-	public Menu getMenu() {
-		return menu;
-	}
+        failureHandlingMenuItem.setMenu(failureHandlingMenu);
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
 }
