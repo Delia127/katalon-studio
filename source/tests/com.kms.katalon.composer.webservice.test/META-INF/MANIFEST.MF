@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Test
+Bundle-Name: Composer Web Service Test
 Bundle-SymbolicName: com.kms.katalon.composer.webservice.test
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS

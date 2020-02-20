@@ -290,6 +290,13 @@
                                 <artifact>
                                 	<id>ca.juliusdavies:not-yet-commons-ssl:0.3.11</id>
                                 </artifact>
+                                <artifact>
+                                    <id>com.amazonaws:aws-java-sdk-core:1.11.716</id>
+                                    <excludes>
+                                        <exclude>commons-codec</exclude>
+                                        <exclude>org.apache.httpcomponents</exclude>
+                                    </excludes>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>

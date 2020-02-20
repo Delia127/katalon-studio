@@ -185,15 +185,21 @@ public class ConsoleMain {
                 if (!isActivated) {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_OFFLINE);
                     StringBuilder errorMessage = new StringBuilder();
-                    isActivated = ActivationInfoCollector.activateOfflineForEngine(errorMessage);
+                    
+                    if (ActivationInfoCollector.activateOfflineForEngineAmiMachine(errorMessage)) {
+                        isActivated = true;
+                        LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_SUCCESS_BY_AMI);
+                    } else {
+                        isActivated = ActivationInfoCollector.activateOfflineForEngine(errorMessage);
 
-                    String error = errorMessage.toString();
-                    if (StringUtils.isNotBlank(error)) {
-                        LogUtil.printErrorLine(error);
-                    }
+                        String error = errorMessage.toString();
+                        if (StringUtils.isNotBlank(error)) {
+                            LogUtil.printErrorLine(error);
+                        }
 
-                    if (!isActivated) {
-                        LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
+                        if (!isActivated) {
+                            LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
+                        }
                     }
                 }
 

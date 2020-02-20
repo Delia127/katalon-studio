@@ -221,6 +221,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
         if (!bodyContent.getParameters().isEmpty()) {
             btnRemove.setEnabled(true);
         }
+        updateViewModel();
     }
 
     @Override
@@ -238,7 +239,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             }
             initialized = true;
         }
-
+        updateViewModel();
         setContentTypeUpdated(true);
     }
 }
