@@ -1,6 +1,7 @@
 package com.kms.katalon.integration.kobiton.preferences;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,7 +9,6 @@ import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
-import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
 import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -59,27 +59,7 @@ public class KobitonPreferencesProvider {
     }
     
     public static String getKobitonToken() {
-        String kobitonToken = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN);
-
-        // Console mode: we just passed username and password. So, we need to generate token automatically.
-        if (StringUtils.isEmpty(kobitonToken)) {
-            KobitonLoginInfo loginInfo;
-            try {
-                loginInfo = KobitonApiProvider.login(getKobitonUserName(), getKobitonPassword());
-                kobitonToken = loginInfo.getToken();
-                KobitonPreferencesProvider.saveKobitonToken(loginInfo.getToken());
-                List<KobitonApiKey> apiKeys = KobitonApiProvider.getApiKeyList(loginInfo.getToken());
-                if (!apiKeys.isEmpty()) {
-                    KobitonPreferencesProvider.saveKobitonApiKey(apiKeys.get(0).getKey());
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Authentication kobiton system failed !", e);
-            }
-        }
-
-        return kobitonToken;
+        return getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_AUTHENTICATION_TOKEN);
     }
     
     public static void saveKobitonToken(String token) {
@@ -90,9 +70,23 @@ public class KobitonPreferencesProvider {
     }
 
     public static String getKobitonApiKey() {
-        return getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_API_KEY);
+        List<KobitonApiKey> apiKeys;
+        String apiKey = getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_API_KEY);
+        if (apiKey.isEmpty()) {
+            try {
+                apiKeys = KobitonApiProvider.getApiKeyList(getKobitonToken());
+                if (!apiKeys.isEmpty()) {
+                    apiKey = apiKeys.get(0).getKey();
+                    KobitonPreferencesProvider.saveKobitonApiKey(apiKey);
+                }
+            } catch (Exception e) {
+                return "";
+            }
+        }
+
+        return apiKey;
     }
-    
+
     public static void saveKobitonApiKey(String apiKey) {
         if (StringUtils.isEmpty(apiKey)) {
             return;
