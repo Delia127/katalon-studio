@@ -62,6 +62,7 @@ public class SwaggerParserUtilTest {
         WebElementPropertyEntity accept = post.getHttpHeaderProperties().get(1);
         assertEquals(accept.getName(), "Accept");
         assertEquals(accept.getValue(), "application/json");
+        assertEquals(post.getRestUrl(), "https://localhost/ecom/catalog/browse/v1.0/getSkuDetails");
 
         WebServiceRequestEntity get = getSkuDetailsWebServices.stream()
                 .filter(ws -> ws.getRestRequestMethod().equals("GET"))
@@ -76,6 +77,16 @@ public class SwaggerParserUtilTest {
         WebElementPropertyEntity accept2 = get.getHttpHeaderProperties().get(1);
         assertEquals(accept2.getName(), "Accept");
         assertEquals(accept2.getValue(), "text/plain");
+        assertEquals(get.getRestUrl(), "https://localhost/ecom/catalog/browse/v1.0/getSkuDetails");
+        List<WebElementPropertyEntity> restParams = get.getRestParameters();
+        assertEquals(restParams.size(), 5);
+        assertEquals(restParams.get(0).getName(), "siteId");
+        assertEquals(restParams.get(1).getName(), "catalogId");
+        assertEquals(restParams.get(2).getName(), "skuId");
+        assertEquals(restParams.get(3).getName(), "alternateID");
+        assertEquals(restParams.get(4).getName(), "show");
+        
+        
     }
 
     private File getExtensionsDirectory(String path) throws IOException {
