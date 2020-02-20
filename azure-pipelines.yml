@@ -9,7 +9,6 @@ trigger:
     include:
       # - staging-*
       - release-*
-      - bdd-*
 
 # pr:
 # - staging-*
