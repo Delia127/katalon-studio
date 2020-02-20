@@ -35,12 +35,13 @@ public class TestStepTableContextMenuWrapper {
 
     private void createMenu() {
         menu = new Menu(parentTableTree);
-        boolean isNotFreeLicense = !isFreeLicense;
 
         if (parentTableTree.getSelectionCount() == 1) {
-            if (isNotFreeLicense) {
-                TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, selectionListener);
+            MenuItem executeFromTestStepMenuItem = TestCaseMenuUtil.generateExecuteFromTestStepMenuItem(menu, selectionListener);
+            if (isFreeLicense && executeFromTestStepMenuItem.isEnabled()) {
+                executeFromTestStepMenuItem.setEnabled(false);
             }
+           
             new MenuItem(menu, SWT.SEPARATOR);
 
             // Add step add
@@ -90,18 +91,22 @@ public class TestStepTableContextMenuWrapper {
 
         addFailureHandlingSubMenu(menu);
 
-        if (isNotFreeLicense) {
-            MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
-            disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
-                    KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
-            disableMenuItem.addSelectionListener(selectionListener);
-            disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
+        MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
+        disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
+        disableMenuItem.addSelectionListener(selectionListener);
+        disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
+        if (isFreeLicense) {
+            disableMenuItem.setEnabled(false);
+        }
 
-            MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
-            enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
-                    KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
-            enableMenuItem.addSelectionListener(selectionListener);
-            enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
+        MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
+        enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
+        enableMenuItem.addSelectionListener(selectionListener);
+        enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
+        if (isFreeLicense) {
+            enableMenuItem.setEnabled(false);
         }
     }
 

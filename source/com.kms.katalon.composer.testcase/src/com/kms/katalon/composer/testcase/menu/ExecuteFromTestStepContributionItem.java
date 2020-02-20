@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
@@ -54,7 +55,10 @@ public class ExecuteFromTestStepContributionItem extends ContributionItem implem
         if (findCompositeParentPart(getActiveGroovyEditor()) == null) {
             return;
         }
-        TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, this, index);
+        MenuItem executeFromTestStepMenuItem = TestCaseMenuUtil.generateExecuteFromTestStepMenuItem(menu, this, index);
+        if (LicenseUtil.isFreeLicense() && executeFromTestStepMenuItem.getEnabled()) {
+            executeFromTestStepMenuItem.setEnabled(false);
+        }
     }
 
     private void executeFromTestStep(ExecutionSession executionSession) {
