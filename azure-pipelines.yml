@@ -353,6 +353,7 @@ stages:
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/calculator-bdd-tests"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-service-tests"
+        "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples"
         "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml,${WORK_DIR}/web-service-tests/jacoco-report/jacoco.xml,${WORK_DIR}/calculator-bdd-tests/jacoco-report/jacoco.xml"
       displayName: Generate and upload report
       condition: eq(variables.SETUP_SUCCESS, 'true')
