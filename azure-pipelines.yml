@@ -203,7 +203,7 @@ stages:
 - stage: Test
   jobs:
   - job: Test
-    timeoutInMinutes: 360
+    timeoutInMinutes: 90
     
     pool:
       vmImage: 'windows-latest'
