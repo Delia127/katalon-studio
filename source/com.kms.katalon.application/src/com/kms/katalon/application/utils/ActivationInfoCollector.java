@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
@@ -922,6 +923,19 @@ public class ActivationInfoCollector {
         return false;
     }
 
+    private static AwsKatalonAmi getAwsKatalonAmi() {
+        try {
+            URL url = new URL(URL_KATALON_AMI_ID);
+            InputStream is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
+            String responseBody = IOUtils.toString(is);
+            is.close();
+            return JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        } 
+        return null;
+    }
+
     public static boolean getAndCheckAmiMachine() {
         try {
             String amiID = EC2MetadataUtils.getAmiId();
@@ -929,12 +943,10 @@ public class ActivationInfoCollector {
                 return false;
             }
 
-            URL url = new URL(URL_KATALON_AMI_ID);
-            InputStream is = null;
-            is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
-            String responseBody = IOUtils.toString(is);
-            AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
-
+            AwsKatalonAmi awsKatalonAmi = getAwsKatalonAmi();
+            if (awsKatalonAmi == null) {
+                return false;
+            }
             if (awsKatalonAmi.getAmiIds().contains(amiID)) {
                 RunningMode runMode = ApplicationRunningMode.get();
                 if (runMode == RunningMode.GUI) {
