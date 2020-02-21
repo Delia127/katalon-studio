@@ -929,17 +929,14 @@ public class ActivationInfoCollector {
                 return false;
             }
 
-            String userName = System.getProperty("user.name");
-            String machineIdOfAmi = amiID + "-" + userName;
-
-            if (StringUtils.isNotEmpty(machineIdOfAmi)) {
+            if (StringUtils.isNotEmpty(amiID)) {
                 URL url = new URL(URL_KATALON_AMI_ID);
                 InputStream is = null;
                 is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
                 String responseBody = IOUtils.toString(is);
                 AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
 
-                if (awsKatalonAmi.getAmiIds().contains(machineIdOfAmi)) {
+                if (awsKatalonAmi.getAmiIds().contains(amiID)) {
                     RunningMode runMode = ApplicationRunningMode.get();
                     if (runMode == RunningMode.GUI) {
                         amiLicense = awsKatalonAmi.getKseLicense();
