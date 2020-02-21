@@ -929,22 +929,20 @@ public class ActivationInfoCollector {
                 return false;
             }
 
-            if (StringUtils.isNotEmpty(amiID)) {
-                URL url = new URL(URL_KATALON_AMI_ID);
-                InputStream is = null;
-                is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
-                String responseBody = IOUtils.toString(is);
-                AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
+            URL url = new URL(URL_KATALON_AMI_ID);
+            InputStream is = null;
+            is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
+            String responseBody = IOUtils.toString(is);
+            AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
 
-                if (awsKatalonAmi.getAmiIds().contains(amiID)) {
-                    RunningMode runMode = ApplicationRunningMode.get();
-                    if (runMode == RunningMode.GUI) {
-                        amiLicense = awsKatalonAmi.getKseLicense();
-                    } else {
-                        amiLicense = awsKatalonAmi.getReLicense();
-                    }
-                    return true;
+            if (awsKatalonAmi.getAmiIds().contains(amiID)) {
+                RunningMode runMode = ApplicationRunningMode.get();
+                if (runMode == RunningMode.GUI) {
+                    amiLicense = awsKatalonAmi.getKseLicense();
+                } else {
+                    amiLicense = awsKatalonAmi.getReLicense();
                 }
+                return true;
             }
         } catch (Exception e) {
             LogUtil.logError(e);
