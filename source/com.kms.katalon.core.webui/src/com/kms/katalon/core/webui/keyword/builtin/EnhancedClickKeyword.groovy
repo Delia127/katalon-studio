@@ -41,7 +41,7 @@ class EnhancedClickKeyword extends WebUIAbstractKeyword {
         FailureHandling flowControl = (FailureHandling)(params.length > 1 && params[1] instanceof FailureHandling ? params[1] : RunConfiguration.getDefaultFailureHandling())
         click(to,flowControl)
     }
-    
+
     private void scrollToElement(WebDriver webDriver, WebElement webElement) {
         try {
             Actions builder = new Actions(webDriver);
@@ -72,18 +72,11 @@ class EnhancedClickKeyword extends WebUIAbstractKeyword {
                     webElement.click();
                     return Boolean.TRUE;
                 }).orElseTry({
-                    logger.logDebug("Trying to scroll to the element and use Selenium click !");
+                    logger.logDebug("Trying to scroll to the element, wait for it to be clickable and use Selenium click !");
                     scrollToElement(webDriver, webElement);
                     WebDriverWait wait = new WebDriverWait(webDriver, timeout);
                     webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
                     webElement.click();
-                    return Boolean.TRUE;
-                }).orElseTry({
-                    logger.logDebug("Trying to scroll the element and use Context click !");
-                    scrollToElement(webDriver, webElement);
-                    Actions builder = new Actions(webDriver);
-                    builder.click();
-                    builder.build().perform();
                     return Boolean.TRUE;
                 }).orElseTry({
                     logger.logDebug("Trying Javascript click !");
