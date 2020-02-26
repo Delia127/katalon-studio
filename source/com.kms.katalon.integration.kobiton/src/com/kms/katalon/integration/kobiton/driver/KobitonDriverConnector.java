@@ -33,7 +33,6 @@ public class KobitonDriverConnector extends RemoteWebDriverConnector {
     }
 
     private String buildKobitonUrl() {
-        System.out.println(KobitonPreferencesProvider.getKobitonHost());
         return KobitonStringConstants.KOBITON_SCHEME_HTTP + KobitonStringConstants.KOBITON_SCHEME_SEPARATOR + userName
                 + KobitonStringConstants.KOBITON_SERVER_URL_AUTHENTICATE_SEPARATOR + apiKey
                 + KobitonStringConstants.KOBITON_SERVER_URL_SEPARATOR + KobitonPreferencesProvider.getKobitonHost()
