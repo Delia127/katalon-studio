@@ -15,11 +15,6 @@ public class ConsoleCommandExecutor {
     private ConsoleCommandExecutor() {
     }
 
-    public static List<String> runConsoleCommandAndCollectResults(String[] command)
-            throws IOException, InterruptedException {
-        return runConsoleCommandAndCollectResults(command, new HashMap<String, String>());
-    }
-
     public static List<String> runConsoleCommandAndCollectResults(String[] command,
             Map<String, String> addtionalEnvironmentVariables) throws IOException, InterruptedException {
         return runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables, StringUtils.EMPTY, false);
@@ -83,10 +78,16 @@ public class ConsoleCommandExecutor {
         }
         return resultLines;
     }
-
-    public static String runConsoleCommandAndCollectFirstResult(String[] command)
-            throws IOException, InterruptedException {
-        return runConsoleCommandAndCollectFirstResult(command, new HashMap<String, String>());
+    
+    public static String runConsoleCommandAndCollectFirstResult(String[] command,
+            Map<String, String> addtionalEnvironmentVariables,
+            String directory) throws IOException, InterruptedException {
+        List<String> resultLines = runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables,
+                directory, false);
+        if (!resultLines.isEmpty()) {
+            return resultLines.get(0);
+        }
+        return "";
     }
 
     public static String runConsoleCommandAndCollectFirstResult(String[] command,
@@ -94,29 +95,34 @@ public class ConsoleCommandExecutor {
         return runConsoleCommandAndCollectFirstResult(command, addtionalEnvironmentVariables, StringUtils.EMPTY);
     }
 
-    public static String runConsoleCommandAndCollectFirstResult(String[] command,
-            Map<String, String> addtionalEnvironmentVariables, String directory)
+    public static List<String> runConsoleCommandAndCollectResults(String[] command)
             throws IOException, InterruptedException {
-        return runConsoleCommandAndCollectFirstResult(command, addtionalEnvironmentVariables, directory, false);
+        return runConsoleCommandAndCollectResults(command, new HashMap<String, String>());
     }
 
+    public static String runConsoleCommandAndCollectFirstResult(String[] command)
+            throws IOException, InterruptedException {
+        List<String> resultLines = runConsoleCommandAndCollectResults(command);
+        if (!resultLines.isEmpty()) {
+            return resultLines.get(0);
+        }
+        return "";
+    }
+    
     public static String runConsoleCommandAndCollectFirstResult(String[] command, boolean redirectErrorStream)
             throws IOException, InterruptedException {
-        return runConsoleCommandAndCollectFirstResult(command, new HashMap<String, String>(), redirectErrorStream);
+        List<String> resultLines = runConsoleCommandAndCollectResults(command, new HashMap<String, String>(), StringUtils.EMPTY, redirectErrorStream);
+        if (!resultLines.isEmpty()) {
+            return resultLines.get(0);
+        }
+        return "";
     }
 
     public static String runConsoleCommandAndCollectFirstResult(String[] command,
             Map<String, String> addtionalEnvironmentVariables, boolean redirectErrorStream)
             throws IOException, InterruptedException {
-        return runConsoleCommandAndCollectFirstResult(command, addtionalEnvironmentVariables, StringUtils.EMPTY,
-                redirectErrorStream);
-    }
-
-    public static String runConsoleCommandAndCollectFirstResult(String[] command,
-            Map<String, String> addtionalEnvironmentVariables, String directory, boolean redirectErrorStream)
-            throws IOException, InterruptedException {
-        List<String> resultLines = runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables, directory,
-                redirectErrorStream);
+        List<String> resultLines = runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables,
+                StringUtils.EMPTY, false);
         if (!resultLines.isEmpty()) {
             return resultLines.get(0);
         }
