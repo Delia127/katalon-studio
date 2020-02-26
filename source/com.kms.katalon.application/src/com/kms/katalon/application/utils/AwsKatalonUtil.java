@@ -25,7 +25,8 @@ public class AwsKatalonUtil {
     private static String decrypGpg(InputStream in) {
         BouncyGPG.registerProvider();
         try {
-            InMemoryKeyring keyringConfig = KeyringConfigs.forGpgExportedKeys(KeyringConfigCallbacks.withPassword(GnuPGConstants.gpgPassphrase));
+            InMemoryKeyring keyringConfig = KeyringConfigs.forGpgExportedKeys(
+                    KeyringConfigCallbacks.withPassword(GnuPGConstants.gpgPassphrase));
             keyringConfig.addSecretKey(GnuPGConstants.gpgSecretKey.getBytes("US-ASCII"));
 
             InputStream out = BouncyGPG
