@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -14,6 +15,8 @@ import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -25,6 +28,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -97,8 +101,18 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
         
         serverAndApiKeyComposite = createComposite(composite, 2, 1, GridData.FILL_HORIZONTAL);
         serverEditor = new StringFieldEditor(KobitonPreferenceConstants.KOBITON_SERVER_ENDPOINT,
-                ComposerIntegrationKobitonMessageConstants.LBL_SERVER_URL, serverAndApiKeyComposite);
-        serverEditor.getTextControl(serverAndApiKeyComposite).setEditable(false);
+                ComposerIntegrationKobitonMessageConstants.LBL_SERVER_URL, serverAndApiKeyComposite);        
+        Text txtServerEditor = serverEditor.getTextControl(serverAndApiKeyComposite);
+        txtServerEditor.setEditable(true);
+                txtServerEditor.addModifyListener(new ModifyListener() {            
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if(!txtServerEditor.isDisposed() 
+                        && txtServerEditor.getText().equals(StringUtils.EMPTY)) {
+                    serverEditor.loadDefault();
+                }
+            }
+        });
         addField(serverEditor);
         
         apiKeyComboEditor = new ComboFieldEditor(KobitonPreferenceConstants.KOBITON_API_KEY,
