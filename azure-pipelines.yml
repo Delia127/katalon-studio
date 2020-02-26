@@ -203,7 +203,7 @@ stages:
 - stage: Test
   jobs:
   - job: Test
-    timeoutInMinutes: 360
+    timeoutInMinutes: 90
     
     pool:
       vmImage: 'windows-latest'
@@ -228,8 +228,6 @@ stages:
         pip3 install pyjavaproperties
         python get_version.py $BRANCH
         source ./variable.sh
-        tag=7.2.5
-        isRelease=true
         echo "##vso[task.setvariable variable=VERSION]${tag}"
         echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
       displayName: Set up

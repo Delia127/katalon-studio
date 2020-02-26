@@ -922,6 +922,19 @@ public class ActivationInfoCollector {
         return false;
     }
 
+    private static AwsKatalonAmi getAwsKatalonAmi() {
+        try {
+            URL url = new URL(URL_KATALON_AMI_ID);
+            InputStream is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
+            String responseBody = IOUtils.toString(is);
+            is.close();
+            return JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        } 
+        return null;
+    }
+
     public static boolean getAndCheckAmiMachine() {
         try {
             String amiID = EC2MetadataUtils.getAmiId();
@@ -929,25 +942,18 @@ public class ActivationInfoCollector {
                 return false;
             }
 
-            String userName = System.getProperty("user.name");
-            String machineIdOfAmi = amiID + "-" + userName;
-
-            if (StringUtils.isNotEmpty(machineIdOfAmi)) {
-                URL url = new URL(URL_KATALON_AMI_ID);
-                InputStream is = null;
-                is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
-                String responseBody = IOUtils.toString(is);
-                AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
-
-                if (awsKatalonAmi.getAmiIds().contains(machineIdOfAmi)) {
-                    RunningMode runMode = ApplicationRunningMode.get();
-                    if (runMode == RunningMode.GUI) {
-                        amiLicense = awsKatalonAmi.getKseLicense();
-                    } else {
-                        amiLicense = awsKatalonAmi.getReLicense();
-                    }
-                    return true;
+            AwsKatalonAmi awsKatalonAmi = getAwsKatalonAmi();
+            if (awsKatalonAmi == null) {
+                return false;
+            }
+            if (awsKatalonAmi.getAmiIds().contains(amiID)) {
+                RunningMode runMode = ApplicationRunningMode.get();
+                if (runMode == RunningMode.GUI) {
+                    amiLicense = awsKatalonAmi.getKseLicense();
+                } else {
+                    amiLicense = awsKatalonAmi.getReLicense();
                 }
+                return true;
             }
         } catch (Exception e) {
             LogUtil.logError(e);
