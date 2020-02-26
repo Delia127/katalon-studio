@@ -917,11 +917,11 @@ public class ActivationInfoCollector {
 
     public static boolean getAndCheckAmiMachine() {
         try {
-           String amiID = EC2MetadataUtils.getAmiId();
-           if (StringUtils.isEmpty(amiID)) {
-               return false;
-           }
-            
+            String amiID = EC2MetadataUtils.getAmiId();
+            if (StringUtils.isEmpty(amiID)) {
+                return false;
+            }
+
             AwsKatalonAmi awsKatalonAmi = AwsKatalonUtil.getAwsKatalonAmi();
             if (awsKatalonAmi == null) {
                 return false;
