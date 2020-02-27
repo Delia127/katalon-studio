@@ -394,6 +394,30 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     }
 
+    public ToolItem getBtnStart() {
+        return btnStart;
+    }
+
+    public ToolItem getBtnStop() {
+        return btnStop;
+    }
+
+    public WindowsAppComposite getMobileComposite() {
+        return mobileComposite;
+    }
+
+    public WindowsRecordedStepsView getStepView() {
+        return stepView;
+    }
+
+    public RecordedWindowsElementTableViewer getCapturedObjectsTableViewer() {
+        return capturedObjectsTableViewer;
+    }
+
+    public WindowsElementPropertiesComposite getPropertiesComposite() {
+        return propertiesComposite;
+    }
+
     public void addActionMapping(WindowsActionMapping actionMapping) {
         UISynchronizeService.syncExec(() -> {
             try {
