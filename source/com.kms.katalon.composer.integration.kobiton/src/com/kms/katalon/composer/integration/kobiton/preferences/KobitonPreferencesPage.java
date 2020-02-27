@@ -177,6 +177,7 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
         connectButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                getPreferenceStore().setValue(KobitonPreferenceConstants.KOBITON_SERVER_ENDPOINT, serverEditor.getStringValue());
                 List<KobitonApiKey> apiKeys = getApiKeys(userNameEditor.getStringValue(),
                         passwordFieldEditor.getStringValue());
                 if (apiKeys == null) {
