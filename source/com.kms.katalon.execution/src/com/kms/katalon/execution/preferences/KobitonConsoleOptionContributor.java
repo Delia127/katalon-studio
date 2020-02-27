@@ -20,8 +20,6 @@ public class KobitonConsoleOptionContributor extends PreferenceOptionContributor
     
     public static final String KOBITON_AUTHENTICATION_PASSWORD = "kobiton.authentication.password";
     
-    public static final String KOBITON_SERVER_URL = "kobiton.server.endpoint";
-    
     private List<ConsoleOption<?>> options;
 
     public KobitonConsoleOptionContributor() {
@@ -38,12 +36,6 @@ public class KobitonConsoleOptionContributor extends PreferenceOptionContributor
             @Override
             public String getOption() {
                 return KOBITON_AUTHENTICATION_PASSWORD;
-            }
-        });
-        options.add(new StringConsoleOption() {
-            @Override
-            public String getOption() {
-                return KOBITON_SERVER_URL;
             }
         });
     }
