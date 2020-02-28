@@ -55,10 +55,6 @@ public class WebDriverManagerRunConfiguration {
         if (StringUtils.isNotEmpty(architecture)) {
             commands.add(architecture);
         }
-        String os = getOS(webUIDriverType);
-        if (StringUtils.isNotEmpty(os)) {
-            commands.add(os);
-        }
         commands.add("-jar");
         commands.add(webdriverFatJarFile.getName());
         commands.add(getDriverName(webUIDriverType));
@@ -77,19 +73,6 @@ public class WebDriverManagerRunConfiguration {
     private String getArchitecture(WebUIDriverType webUIDriverType) {
         if (webUIDriverType == WebUIDriverType.IE_DRIVER) {
             return "-Dwdm.architecture=32";
-        }
-        return "";
-    }
-    
-    private String getOS(WebUIDriverType webUIDriverType) {
-        if (webUIDriverType == WebUIDriverType.EDGE_CHROMIUM_DRIVER) {
-            if (OSUtil.isWindows()) {
-               return "-Dwdm.os=WIN";
-            }
-            
-            if (OSUtil.isMac()) {
-                return "-Dwdm.os=MAC";
-            }
         }
         return "";
     }

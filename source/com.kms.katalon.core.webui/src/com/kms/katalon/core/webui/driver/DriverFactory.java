@@ -63,7 +63,6 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
-import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
@@ -79,7 +78,6 @@ import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
 import com.kms.katalon.selenium.driver.CChromeDriver;
-import com.kms.katalon.selenium.driver.CEdgeChromiumDriver;
 import com.kms.katalon.selenium.driver.CEdgeDriver;
 import com.kms.katalon.selenium.driver.CFirefoxDriver;
 import com.kms.katalon.selenium.driver.CInternetExplorerDriver;
@@ -573,7 +571,22 @@ public class DriverFactory {
         if (!desiredCapabilities.getCapabilityNames().contains("proxy")) {
             desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
+        addSmartWaitExtensionToEdgeChromium(desiredCapabilities);
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
+    }
+
+    private static DesiredCapabilities addSmartWaitExtensionToEdgeChromium(DesiredCapabilities desiredCapabilities) {
+        if (shouldInstallSmartWait()) {
+            try {
+                File chromeExtensionFolder = getChromeExtensionFile();
+                WebDriverPropertyUtil.removeArgumentsForEdgeChromium(desiredCapabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
+                WebDriverPropertyUtil.addArgumentsForEdgeChromium(desiredCapabilities,
+                        LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
+            } catch (Exception e) {
+                logger.logError(ExceptionUtils.getFullStackTrace(e));
+            }
+        }
+        return desiredCapabilities;
     }
 
     private static WebDriver createNewIEDriver(DesiredCapabilities desireCapibilities) {

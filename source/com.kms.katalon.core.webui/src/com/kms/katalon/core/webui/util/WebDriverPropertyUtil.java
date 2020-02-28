@@ -15,7 +15,6 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.selenium.firefox.CFirefoxProfile;
@@ -48,6 +47,8 @@ public class WebDriverPropertyUtil {
     private static final String STARTUP_HOMEPAGE_WELCOME_URL_PREFERENCE = "startup.homepage_welcome_url";
     private static final String BROWSER_STARTUP_HOMEPAGE_PREFERENCE = "browser.startup.homepage";
     private static final String FIREFOX_BLANK_PAGE = "about:blank";
+    
+    private static final String EDGE_OPTIONS_CAPABILITY = "ms:edgeOptions";
 
     public static final String KATALON_DOCKER_ENV_KEY = "KATALON_DOCKER";
 
@@ -228,6 +229,40 @@ public class WebDriverPropertyUtil {
         }
         chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
         caps.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+    }
+    
+    public static void addArgumentsForEdgeChromium(DesiredCapabilities caps, String... args) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> edgeOptions = (Map<String, Object>) caps.getCapability(EDGE_OPTIONS_CAPABILITY);
+        if (edgeOptions == null) {
+            edgeOptions= new HashMap<>();
+        }
+        
+        @SuppressWarnings("unchecked")
+        List<String> argsEntry = (List<String>) edgeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY);
+        if (argsEntry == null) {
+            argsEntry = new ArrayList<>();
+        }
+        argsEntry.addAll(Arrays.asList(args));
+        edgeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
+        caps.setCapability(EDGE_OPTIONS_CAPABILITY, edgeOptions);
+    }
+    
+    public static void removeArgumentsForEdgeChromium(DesiredCapabilities caps, String... args) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> edgeOptions = (Map<String, Object>) caps.getCapability(EDGE_OPTIONS_CAPABILITY);
+        if (edgeOptions == null) {
+            edgeOptions= new HashMap<>();
+        }
+        
+        @SuppressWarnings("unchecked")
+        List<String> argsEntry = (List<String>) edgeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY);
+        if (argsEntry == null) {
+            argsEntry = new ArrayList<>();
+        }
+        argsEntry.removeAll(Arrays.asList(args));
+        edgeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
+        caps.setCapability(EDGE_OPTIONS_CAPABILITY, edgeOptions);
     }
 
     public static boolean isRunningInDocker() {
