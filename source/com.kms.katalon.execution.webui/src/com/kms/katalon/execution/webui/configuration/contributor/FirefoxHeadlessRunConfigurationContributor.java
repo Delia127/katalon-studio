@@ -20,6 +20,6 @@ public class FirefoxHeadlessRunConfigurationContributor extends WebUIRunConfigur
 
     @Override
     public int getPreferredOrder() {
-        return 7;
+        return 8;
     }
 }

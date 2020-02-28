@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -82,6 +83,21 @@ public class WebDriverPropertyUtil {
             desireCapabilities.setCapability(property.getKey(), property.getValue());
         }
         return desireCapabilities;
+    }
+    
+    public static DesiredCapabilities getDesiredCapabilitiesForEdgeChromium(Map<String, Object> propertyMap, boolean isLog) {
+        DesiredCapabilities capabilities = DesiredCapabilities.edge();
+        Platform platform = OSUtil.isMac() ? Platform.MAC : Platform.WINDOWS;
+        capabilities.setPlatform(platform);
+        for (Entry<String, Object> property : propertyMap.entrySet()) {
+            if (isLog) {
+                logger.logInfo(
+                        MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
+                                property.getValue()));
+            }
+            capabilities.setCapability(property.getKey(), property.getValue());
+        }
+        return capabilities;
     }
 
     public static DesiredCapabilities getDesireCapabilitiesForFirefox(Map<String, Object> propertyMap) {

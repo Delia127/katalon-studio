@@ -21,6 +21,6 @@ public class HeadlessRunConfigurationContributor extends WebUIRunConfigurationCo
 
     @Override
     public int getPreferredOrder() {
-        return 6;
+        return 7;
     }
 }

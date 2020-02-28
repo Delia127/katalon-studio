@@ -79,6 +79,7 @@ import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
 import com.kms.katalon.selenium.driver.CChromeDriver;
+import com.kms.katalon.selenium.driver.CEdgeChromiumDriver;
 import com.kms.katalon.selenium.driver.CEdgeDriver;
 import com.kms.katalon.selenium.driver.CFirefoxDriver;
 import com.kms.katalon.selenium.driver.CInternetExplorerDriver;
@@ -134,6 +135,8 @@ public class DriverFactory {
     public static final String IE_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_IE_DRIVER_PATH;
 
     public static final String EDGE_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_EDGE_DRIVER_PATH;
+    
+    public static final String EDGE_CHROMIUM_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_EDGE_CHROMIUM_DRIVER_PATH;
 
     public static final String CHROME_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_CHROME_DRIVER_PATH;
 
@@ -180,6 +183,15 @@ public class DriverFactory {
         @Override
         protected EdgeDriverService initialValue() {
             return new EdgeDriverService.Builder().usingDriverExecutable(new File(getEdgeDriverPath()))
+                    .usingAnyFreePort()
+                    .build();
+        }
+    };
+    
+    private static final ThreadLocal<EdgeDriverService> localEdgeChromiumDriverServiceStorage = new ThreadLocal<EdgeDriverService>() {
+        @Override
+        protected EdgeDriverService initialValue() {
+            return new EdgeDriverService.Builder().usingDriverExecutable(new File(getEdgeChromiumDriverPath()))
                     .usingAnyFreePort()
                     .build();
         }
@@ -326,6 +338,9 @@ public class DriverFactory {
                 break;
             case EDGE_DRIVER:
                 webDriver = createNewEdgeDriver(driverPreferenceProps);
+                break;
+            case EDGE_CHROMIUM_DRIVER:
+                webDriver = createNewEdgeChromiumDriver(driverPreferenceProps);
                 break;
             case REMOTE_FIREFOX_DRIVER:
                 webDriver = createNewRemoteFirefoxDriver(desireCapibilities);
@@ -546,6 +561,18 @@ public class DriverFactory {
                 DesiredCapabilities.edge(), false);
         // Edge driver doesn't support proxy: https://docs.microsoft.com/en-us/microsoft-edge/webdriver
         // desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
+    }
+    
+    private static WebDriver createNewEdgeChromiumDriver(Map<String, Object> driverPreferenceProps) throws IOException {
+        EdgeDriverService edgeService = localEdgeChromiumDriverServiceStorage.get();
+        if (!edgeService.isRunning()) {
+            edgeService.start();
+        }
+        DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.getDesiredCapabilitiesForEdgeChromium(driverPreferenceProps, false);
+        if (!desiredCapabilities.getCapabilityNames().contains("proxy")) {
+            desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        }
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
     }
 
@@ -1014,6 +1041,43 @@ public class DriverFactory {
         }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EDGE_DRIVER_PATH_PROPERTY);
     }
+    
+    private static String getEdgeChromiumDriverPath() {
+        if (OSUtil.isWindows()) {
+            if (OSUtil.is64Bit()) {
+                File customDriverLocationWin64 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/edgechromiumdriver_win64/msedgedriver.exe");
+                if (customDriverLocationWin64.exists()) {
+                    logger.logInfo("Custom Edge Chromium driver detected at location: "
+                            + customDriverLocationWin64.getAbsolutePath());
+                    return customDriverLocationWin64.getAbsolutePath();
+                }
+            } else {
+                File customDriverLocationWin32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/edgechromiumdriver_win32/msedgedriver.exe");
+                if (customDriverLocationWin32.exists()) {
+                    logger.logInfo("Custom Edge Chromium driver detected at location: "
+                            + customDriverLocationWin32.getAbsolutePath());
+                    return customDriverLocationWin32.getAbsolutePath();
+                }
+            }
+        } else if (OSUtil.isMac()) {
+            File customDriverLocationMac = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/edgechromiumdriver_mac/msedgedriver");
+            if (customDriverLocationMac.exists()) {
+                String customDriverPath = customDriverLocationMac.getAbsolutePath();
+                try {
+                    logger.logInfo("Custom Edge Chromium driver detected at location: "
+                            + customDriverLocationMac.getAbsolutePath());
+                    FileExcutableUtil.makeFileExecutable(customDriverPath);
+                } catch (IOException e) {
+                    logger.logInfo("Cannot make Edge Chromium driver file : " + customDriverPath + " excutable");
+                }
+                return customDriverPath;
+            }
+        }
+        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EDGE_CHROMIUM_DRIVER_PATH_PROPERTY);
+    }
 
     /**
      * Get the absolute path of the current ChromeDriver
@@ -1299,6 +1363,12 @@ public class DriverFactory {
                             EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
                             if (edgeDriverService.isRunning()) {
                                 edgeDriverService.stop();
+                            }
+                            break;
+                        case EDGE_CHROMIUM_DRIVER:
+                            EdgeDriverService edgeChromiumDriverService = localEdgeChromiumDriverServiceStorage.get();
+                            if (edgeChromiumDriverService.isRunning()) {
+                                edgeChromiumDriverService.stop();
                             }
                             break;
                         default:

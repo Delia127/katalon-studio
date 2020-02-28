@@ -14,6 +14,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
@@ -54,6 +55,10 @@ public class WebDriverManagerRunConfiguration {
         if (StringUtils.isNotEmpty(architecture)) {
             commands.add(architecture);
         }
+        String os = getOS(webUIDriverType);
+        if (StringUtils.isNotEmpty(os)) {
+            commands.add(os);
+        }
         commands.add("-jar");
         commands.add(webdriverFatJarFile.getName());
         commands.add(getDriverName(webUIDriverType));
@@ -75,6 +80,19 @@ public class WebDriverManagerRunConfiguration {
         }
         return "";
     }
+    
+    private String getOS(WebUIDriverType webUIDriverType) {
+        if (webUIDriverType == WebUIDriverType.EDGE_CHROMIUM_DRIVER) {
+            if (OSUtil.isWindows()) {
+               return "-Dwdm.os=WIN";
+            }
+            
+            if (OSUtil.isMac()) {
+                return "-Dwdm.os=MAC";
+            }
+        }
+        return "";
+    }
 
     private String getDriverName(WebUIDriverType webUIDriverType) {
         switch (webUIDriverType) {
@@ -82,6 +100,7 @@ public class WebDriverManagerRunConfiguration {
             case HEADLESS_DRIVER:
                 return "chrome";
             case EDGE_DRIVER:
+            case EDGE_CHROMIUM_DRIVER:
                 return "edge";
             case FIREFOX_DRIVER:
             case FIREFOX_HEADLESS_DRIVER:
