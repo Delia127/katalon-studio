@@ -37,6 +37,7 @@ import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
 import com.kms.katalon.integration.kobiton.entity.KobitonJsonDeserializer;
 import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
 import com.kms.katalon.integration.kobiton.exceptions.KobitonApiException;
+import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 
 public class KobitonApiProvider {
     private static final String HEADER_VALUE_AUTHORIZATION_PREFIX = "Bearer ";
@@ -83,7 +84,7 @@ public class KobitonApiProvider {
 
     private static URI getKobitonURI(String loginPath) throws URISyntaxException {
         return new URIBuilder().setScheme(KobitonStringConstants.KOBITON_SCHEME_HTTPS)
-                .setHost(KobitonStringConstants.KOBITON_HOST)
+                .setHost(KobitonPreferencesProvider.getKobitonHost())
                 .setPath(loginPath)
                 .build();
     }
