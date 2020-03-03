@@ -14,7 +14,6 @@
 	</prerequisites>
 
 	<modules>
-		<module>com.kms.katalon.bouncy-gpg</module>
 		<module>com.kms.katalon.composer.checkpoint</module>
 		<module>com.kms.katalon.composer.codeassist</module>
 		<module>com.kms.katalon.composer.components.impl</module>
