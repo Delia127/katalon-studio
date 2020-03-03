@@ -2,6 +2,7 @@ package com.kms.katalon.integration.analytics.handler;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class AnalyticsAuthorizationHandler {
             LogUtil.logError(ex);
             try {
                 settingStore.enableIntegration(false);
-            } catch (IOException | GeneralSecurityException e) {
+            } catch (IOException e) {
                 LogUtil.logError(e);
             }
         }
@@ -50,7 +51,7 @@ public class AnalyticsAuthorizationHandler {
             LogUtil.logError(ex);
             try {
                 settingStore.enableIntegration(false);
-            } catch (IOException | GeneralSecurityException e) {
+            } catch (IOException e) {
                 LogUtil.logError(e);
             }
             try {
@@ -76,21 +77,7 @@ public class AnalyticsAuthorizationHandler {
                 organizations.addAll(loaded);
             }
         } catch (AnalyticsApiExeception e) {
-            LoggerSingleton.logError(e);
-        }
-        return organizations;
-    }
-
-    public static List<AnalyticsOrganization> getOrganizations(final String serverUrl, AnalyticsTokenInfo tokenInfo) {
-        final List<AnalyticsOrganization> organizations = new ArrayList<>();
-        List<AnalyticsOrganization> loaded;
-        try {
-            loaded = AnalyticsApiProvider.getOrganizations(serverUrl, tokenInfo.getAccess_token());
-            if (loaded != null && !loaded.isEmpty()) {
-                organizations.addAll(loaded);
-            }
-        } catch (AnalyticsApiExeception e) {
-            LogUtil.logError(ex);
+            LogUtil.logError(e);
         }
         return organizations;
     }
@@ -201,19 +188,15 @@ public class AnalyticsAuthorizationHandler {
     
     public static int getDefaultTeamIndex(AnalyticsSettingStore analyticsSettingStore, List<AnalyticsTeam> teams) {
         int selectionIndex = 0;
-        try {
-            AnalyticsTeam storedTeam = analyticsSettingStore.getTeam();
-            if (storedTeam != null && storedTeam.getId() != null && teams != null) {
-                for (int i = 0; i < teams.size(); i++) {
-                    AnalyticsTeam p = teams.get(i);
-                    if (storedTeam.getId().equals(p.getId())) {
-                        selectionIndex = i;
-                        return selectionIndex;
-                    }
+        AnalyticsTeam storedTeam = analyticsSettingStore.getTeam();
+        if (storedTeam != null && storedTeam.getId() != null && teams != null) {
+            for (int i = 0; i < teams.size(); i++) {
+                AnalyticsTeam p = teams.get(i);
+                if (storedTeam.getId().equals(p.getId())) {
+                    selectionIndex = i;
+                    return selectionIndex;
                 }
             }
-        } catch (IOException e) {
-            LogUtil.logError(e);
         }
         return selectionIndex;
     }
@@ -274,19 +257,15 @@ public class AnalyticsAuthorizationHandler {
     public static int getDefaultProjectIndex(AnalyticsSettingStore analyticsSettingStore,
             List<AnalyticsProject> projects) {
         int selectionIndex = 0;
-        try {
-            AnalyticsProject storedProject = analyticsSettingStore.getProject();
-            if (storedProject != null && storedProject.getId() != null) {
-                for (int i = 0; i < projects.size(); i++) {
-                    AnalyticsProject p = projects.get(i);
-                    if (storedProject.getId().equals(p.getId())) {
-                        selectionIndex = i;
-                        return selectionIndex;
-                    }
+        AnalyticsProject storedProject = analyticsSettingStore.getProject();
+        if (storedProject != null && storedProject.getId() != null) {
+            for (int i = 0; i < projects.size(); i++) {
+                AnalyticsProject p = projects.get(i);
+                if (storedProject.getId().equals(p.getId())) {
+                    selectionIndex = i;
+                    return selectionIndex;
                 }
             }
-        } catch (IOException e) {
-            LogUtil.logError(e);
         }
         return selectionIndex;
     }

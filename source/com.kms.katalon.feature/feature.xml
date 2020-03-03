@@ -2703,4 +2703,18 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+    <plugin
+         id="com.kms.katalon.activation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+    <plugin
+         id="com.kms.katalon.composer.platform.internal"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 </feature>

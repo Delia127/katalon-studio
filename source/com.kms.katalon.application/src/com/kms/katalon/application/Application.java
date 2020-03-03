@@ -68,7 +68,7 @@ public class Application implements IApplication {
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
 
         if (isKSRE()) {
-            return runConsole(context, appArgs);
+            runningModeParam = RunningModeParam.CONSOLE;
         }
         switch (runningModeParam) {
             case CONSOLE:

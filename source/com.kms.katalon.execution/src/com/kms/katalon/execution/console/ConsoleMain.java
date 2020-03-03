@@ -30,7 +30,6 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseInfo;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -363,9 +362,9 @@ public class ConsoleMain {
     }
 
     private static void reloadPlugins(String apiKey) throws Exception {
-        Bundle katalonBundle = Platform.getBundle("com.kms.katalon.misc");
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon.activation");
         Class<?> reloadPluginsHandlerClass = katalonBundle
-                .loadClass("com.kms.katalon.misc.plugin.handler.ConsoleModeReloadPluginsHandler");
+                .loadClass("com.kms.katalon.activation.plugin.handler.ConsoleModeReloadPluginsHandler");
         Object handler = reloadPluginsHandlerClass.newInstance();
         Method reloadMethod = Arrays.asList(reloadPluginsHandlerClass.getMethods()).stream()
                 .filter(method -> method.getName().equals("reload"))
@@ -547,7 +546,7 @@ public class ConsoleMain {
         deleteLibFolders(projectPk);
         boolean allowSourceAttachment = false;
         ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk, allowSourceAttachment);
-        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
+        ExecutionBundleActivator.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
         if (projectEntity == null) {
             throw new InvalidConsoleArgumentException(
                     MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X, projectPk));

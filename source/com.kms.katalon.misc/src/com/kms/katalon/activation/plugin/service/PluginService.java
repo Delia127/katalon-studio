@@ -21,6 +21,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.LicenseUtil;
 
 import com.kms.katalon.activation.plugin.ActivationBundleActivator;
+import com.kms.katalon.activation.plugin.constant.ActivationMessageConstants;
 import com.kms.katalon.activation.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.activation.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.activation.plugin.models.KStoreCredentials;
@@ -37,7 +38,6 @@ import com.kms.katalon.activation.plugin.util.PluginFactory;
 import com.kms.katalon.activation.plugin.util.PluginSettings;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.KatalonPackage;
@@ -233,8 +233,8 @@ public class PluginService {
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
-            if (StringUtils.containsIgnoreCase(e.getMessage(), StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
-                throw new ReloadPluginsException(StringConstants.KStore_ERROR_INVALID_CREDENTAILS, e);
+            if (StringUtils.containsIgnoreCase(e.getMessage(), ActivationMessageConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
+                throw new ReloadPluginsException(ActivationMessageConstants.KStore_ERROR_INVALID_CREDENTAILS, e);
             }
             if (StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)) {
                 throw new ReloadPluginsException("Error occurs during executing reload plugins due to invalid API Key",

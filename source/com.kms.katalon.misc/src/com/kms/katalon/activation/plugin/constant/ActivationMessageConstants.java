@@ -8,6 +8,8 @@ public class ActivationMessageConstants {
     public static String MSG_PLUGIN_HAS_BEEN_INSTALLED;
 
     public static String MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
+
+    public static String KStore_ERROR_INVALID_CREDENTAILS;
     
     static {
         // initialize resource bundle

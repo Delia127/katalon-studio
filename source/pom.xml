@@ -52,7 +52,7 @@
 		<module>com.kms.katalon.composer.webui</module>
 		<module>com.kms.katalon.composer.windows</module>
 		<module>com.kms.katalon.composer.platform.internal</module>
-		<module>com.kms.katalon.activation</module>
+		<module>com.kms.katalon.misc</module>
 		<module>com.kms.katalon.console</module>
 		<module>com.kms.katalon.constant</module>
 		<module>com.kms.katalon.controller</module>

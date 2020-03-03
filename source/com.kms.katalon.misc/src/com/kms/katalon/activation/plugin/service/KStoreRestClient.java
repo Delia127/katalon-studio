@@ -28,6 +28,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.kms.katalon.activation.plugin.constant.ActivationMessageConstants;
 import com.kms.katalon.activation.plugin.models.KStoreClientException;
 import com.kms.katalon.activation.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.activation.plugin.models.KStoreCredentials;
@@ -37,7 +38,6 @@ import com.kms.katalon.activation.plugin.models.KStoreProductID;
 import com.kms.katalon.activation.plugin.models.KatalonStoreToken;
 import com.kms.katalon.activation.plugin.util.KStoreTokenService;
 import com.kms.katalon.activation.plugin.util.KStoreUrls;
-import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -76,7 +76,7 @@ public class KStoreRestClient {
                 }
             });
         } catch (Exception e) {
-            if (StringUtils.containsIgnoreCase(e.getMessage(), StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
+            if (StringUtils.containsIgnoreCase(e.getMessage(), ActivationMessageConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
                 throw new KStoreClientExceptionWithInfo(e.getMessage(), credentials, url);
             }
             propagateIfInstanceOf(e, KStoreClientExceptionWithInfo.class);
@@ -328,7 +328,7 @@ public class KStoreRestClient {
         if (statusCode == HttpStatus.SC_OK) {
             requestSuccessHandler.handleRequestSuccess(response);
         } else if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
-            throw new KStoreClientException(StringConstants.KStore_ERROR_INVALID_CREDENTAILS);
+            throw new KStoreClientException(ActivationMessageConstants.KStore_ERROR_INVALID_CREDENTAILS);
         } else {
             throw new KStoreClientException(String.format("Invalid Request. Status Code: %d. Message: %s",
                     statusCode, response.getStatusLine().getReasonPhrase()));

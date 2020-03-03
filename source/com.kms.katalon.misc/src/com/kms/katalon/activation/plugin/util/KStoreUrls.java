@@ -7,8 +7,6 @@ import com.kms.katalon.activation.plugin.models.KStoreProduct;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.license.models.LicenseType;
-import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.KStoreProduct;
 
 public class KStoreUrls {
 
