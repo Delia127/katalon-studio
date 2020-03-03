@@ -2,7 +2,9 @@ package com.kms.katalon.application.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,16 +29,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.amazonaws.util.EC2MetadataUtils;
+import com.amazonaws.util.IOUtils;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.preference.ProxyPreferences;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.TestOpsFeatureKey;
@@ -50,6 +55,8 @@ import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationInfoCollector {
+
+    private static final String URL_KATALON_AMI_ID = "https://download.katalon.com/ami-id.json";
     
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
@@ -915,6 +922,19 @@ public class ActivationInfoCollector {
         return false;
     }
 
+    private static AwsKatalonAmi getAwsKatalonAmi() {
+        try {
+            URL url = new URL(URL_KATALON_AMI_ID);
+            InputStream is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
+            String responseBody = IOUtils.toString(is);
+            is.close();
+            return JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        } 
+        return null;
+    }
+
     public static boolean getAndCheckAmiMachine() {
         try {
             String amiID = EC2MetadataUtils.getAmiId();
@@ -922,7 +942,7 @@ public class ActivationInfoCollector {
                 return false;
             }
 
-            AwsKatalonAmi awsKatalonAmi = AwsKatalonUtil.getAwsKatalonAmi();
+            AwsKatalonAmi awsKatalonAmi = getAwsKatalonAmi();
             if (awsKatalonAmi == null) {
                 return false;
             }
