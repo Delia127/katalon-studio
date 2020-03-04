@@ -6,7 +6,9 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -299,6 +301,13 @@ public class NotificationToolControl {
 
             popupNotifications.add(popup);
         }
+        
+        popupNotifications.sort(new Comparator<PopupNotification>() {
+            @Override
+            public int compare(PopupNotification notiA, PopupNotification notiB) {
+                return notiB.getContent().getStartDate() - notiA.getContent().getStartDate();
+            }
+        });
 
         return popupNotifications;
     }
@@ -323,7 +332,8 @@ public class NotificationToolControl {
     }
 
     private long diffDays(Date oldDate, Date newDate) {
-        long diff = newDate.getTime() - oldDate.getTime();
+        long diff = DateUtils.truncate(newDate, Calendar.DATE).getTime() - 
+                DateUtils.truncate(oldDate, Calendar.DATE).getTime();
         long diffDays = diff / (24 * 60 * 60 * 1000);
         return diffDays;
     }
