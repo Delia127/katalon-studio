@@ -31,8 +31,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -118,6 +120,11 @@ public class NotificationToolControl {
 
         communityToolItem.addSelectionListener(new SelectionAdapter() {
             private Shell popup;
+            
+            private void uncheckNotificationItem() {
+                communityToolItem.setSelection(false);
+                communityToolItem.notifyListeners(SWT.Selection, new org.eclipse.swt.widgets.Event());
+            }
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -141,7 +148,15 @@ public class NotificationToolControl {
                             link.addSelectionListener(new SelectionAdapter() {
                                 @Override
                                 public void widgetSelected(SelectionEvent e) {
-                                    Program.launch(e.text);
+                                    link.removeSelectionListener(this);
+                                    uncheckNotificationItem();
+                                    Executors.newFixedThreadPool(1).submit(() -> {
+                                        try {
+                                            Thread.sleep(200L);
+                                        } catch (InterruptedException ignored) {}
+                                        Program.launch(e.text);
+                                    });
+                                    
                                 }
                             });
 
@@ -153,7 +168,6 @@ public class NotificationToolControl {
                             }
                             Label lbl = new Label(composite, SWT.NONE);
                             GridData gdLbl = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-                            // gdLbl.widthHint = 100;
                             lbl.setLayoutData(gdLbl);
                             lbl.setText(getReadDate(noti.getTracked().getTrackedDate(), new Date()));
                         }
@@ -163,7 +177,7 @@ public class NotificationToolControl {
                                 .collect(Collectors.toList());
                         saveTrackedNotifications(newTracked);
 
-                        popup.setSize(mainComposite.computeSize(500, SWT.DEFAULT));
+                        popup.setSize(mainComposite.computeSize(400, SWT.DEFAULT));
                     } else {
                         Composite composite = new Composite(mainComposite, SWT.NONE);
                         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -177,6 +191,38 @@ public class NotificationToolControl {
 
                         popup.setSize(mainComposite.computeSize(300, SWT.DEFAULT));
                     }
+                    
+                    popup.getDisplay().addFilter(SWT.Activate, new Listener() {
+                        
+                        @Override
+                        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                            if (popup == null || popup.isDisposed()) {
+                                return;
+                            }
+                            if (event.widget == null) {
+                                event.display.removeFilter(SWT.Activate, this);
+                                uncheckNotificationItem();
+                                return;
+                            }
+                            
+                            if (event.widget instanceof Shell) {
+                                if (event.widget == popup) {
+                                    return;
+                                } else {
+                                    event.display.removeFilter(SWT.Activate, this);
+                                    uncheckNotificationItem();
+                                    return;
+                                }
+                            }
+                            
+                            Control control = (Control) event.widget;
+                            if (control.getShell() != popup) {
+                                event.display.removeFilter(SWT.Activate, this);
+                                uncheckNotificationItem();
+                                return;
+                            }
+                        }
+                    });
 
                     popup.setLocation(toolbar.getBounds().x - popup.getSize().x + 36, toolbar.getBounds().y + 78);
                     popup.setVisible(true);
