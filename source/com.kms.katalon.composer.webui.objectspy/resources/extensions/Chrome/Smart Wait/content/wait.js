@@ -133,10 +133,6 @@ if (window === window.top && (typeof window.katalonWaiter == "undefined")) {
       if (!window.katalonOriginXMLHttpRequest || !window.katalonWaiter.ajaxObjects) {
         window.katalonWaiter.ajaxObjects = [];
         window.katalonOriginXMLHttpRequest = window.XMLHttpRequest;
-        // Store properties
-        for (var key of Object.keys(window.XMLHttpRequest)) {
-          window.katalonOriginXMLHttpRequest[key] = window.XMLHttpRequest[key];
-        }
         window.XMLHttpRequest = function() {
           var xhr = new window.katalonOriginXMLHttpRequest();
           window.katalonWaiter.ajaxObjects.push(xhr);
