@@ -47,6 +47,7 @@ public class Application implements IApplication {
      */
     @Override
     public Object start(IApplicationContext context) {
+        System.out.println("> Start Application");
 
         createLicenseFolder();
         
