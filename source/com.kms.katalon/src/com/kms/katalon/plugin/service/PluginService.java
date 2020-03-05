@@ -326,6 +326,11 @@ public class PluginService {
         }
         
         if (canUsePrivatePlugins) {
+            if (offlinePlugins.size() > 0) {
+                Trackings.trackPrivatePluginUsage(true);
+            } else {
+                Trackings.trackPrivatePluginUsage(false);
+            }
             return offlinePlugins;
         } else {
             //restric to use 1 custom keyword plugin only

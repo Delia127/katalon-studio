@@ -377,6 +377,30 @@ public class Trackings {
                 StringUtils.isNotBlank(apiKey) ? apiKey : StringUtils.EMPTY, "runningMode", runningMode.toString());
     }
     
+    public static void trackOpenReportHistory() {
+        trackUserAction("openReportHistory");
+    }
+    
+    public static void trackPrivatePluginUsage(boolean usePrivatePlugin) {
+        trackUserAction("usePrivatePlugin", "usePrivatePlugin", usePrivatePlugin);
+    }
+    
+    public static void trackOpenExportTestArtifactsDialog() {
+        trackUserAction("openExportTestArtifactsDialog");
+    }
+    
+    public static void trackOpenImportTestArtifactsDialog() {
+        trackUserAction("openImportTestArtifactsDialog");
+    }
+    
+    public static void trackUsageTrackingOptionEnabled(boolean enabled) {
+        trackUserAction("setUsageTrackingOption", "usageTrackingOptionEnabled", enabled);
+    }
+    
+    public static void trackUseAdditionalTestDataSource(String driverClassName) {
+        trackUserAction("useAdditionalTestDataSource", "driverClassName", driverClassName);
+    }
+    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }

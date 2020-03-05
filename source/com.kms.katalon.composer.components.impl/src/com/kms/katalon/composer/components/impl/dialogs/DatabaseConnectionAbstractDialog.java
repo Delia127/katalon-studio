@@ -38,6 +38,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.DatabaseController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
+import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
@@ -350,6 +351,10 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
                         ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
                 return;
             }
+        }
+        
+        if (StringUtils.isNotBlank(txtDriverClassName.getText())) {
+            Trackings.trackUseAdditionalTestDataSource(txtDriverClassName.getText());
         }
 
         updateChanges();

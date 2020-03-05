@@ -56,6 +56,7 @@ public class OpenReportHandler {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof ReportEntity) {
                     excute((ReportEntity) object);
+                    Trackings.trackOpenReportHistory();
                 }
             }
         });

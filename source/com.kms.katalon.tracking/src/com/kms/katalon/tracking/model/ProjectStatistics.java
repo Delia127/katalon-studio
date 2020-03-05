@@ -71,6 +71,12 @@ public class ProjectStatistics {
     private boolean continueOnFailure = false;
     
     private String webLocatorConfig;
+    
+    private boolean logTestStepsEnabled = false;
+    
+    private boolean imageRecognitionEnabled = false;
+    
+    private String databaseDriverClassName;
 
     public String getProjectId() {
         return projectId;
@@ -352,4 +358,27 @@ public class ProjectStatistics {
         this.webLocatorConfig = webLocatorConfig;
     }
 
+    public boolean getLogTestStepsEnabled() {
+        return logTestStepsEnabled;
+    }
+
+    public void setLogTestStepsEnabled(boolean logTestStepsEnabled) {
+        this.logTestStepsEnabled = logTestStepsEnabled;
+    }
+
+    public boolean getImageRecognitionEnabled() {
+        return imageRecognitionEnabled;
+    }
+
+    public void setImageRecognitionEnabled(boolean imageRecognitionEnabled) {
+        this.imageRecognitionEnabled = imageRecognitionEnabled;
+    }
+
+    public String getDatabaseDriverClassName() {
+        return databaseDriverClassName;
+    }
+
+    public void setDatabaseDriverClassName(String databaseDriverClassName) {
+        this.databaseDriverClassName = databaseDriverClassName;
+    }
 }

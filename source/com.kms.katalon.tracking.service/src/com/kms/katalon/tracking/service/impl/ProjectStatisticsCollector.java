@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.kms.katalon.application.utils.FileUtil;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.dal.exception.DALException;
@@ -98,6 +99,12 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         statistics.setContinueOnFailure(isAutoApplyNeighborXpathsEnabled());
         
         statistics.setWebLocatorConfig(getWebLocatorConfig());
+        
+        statistics.setLogTestStepsEnabled(getLogTestStepsEnabled());
+        
+        statistics.setImageRecognitionEnabled(getImageRecognitionEnabled());
+        
+        statistics.setDatabaseDriverClassName(getDatabaseDriverClassName());
         
         return statistics;
     }
@@ -368,5 +375,24 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     private boolean isAutoApplyNeighborXpathsEnabled() {
         ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
         return store.getAutoApplyNeighborXpathsEnabled();
+    }
+    
+    private boolean getLogTestStepsEnabled() {
+        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
+        return store.getLogTestSteps();
+    }
+    
+    private boolean getImageRecognitionEnabled() {
+        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+        return store.getImageRecognitionEnabled();
+    }
+    
+    private String getDatabaseDriverClassName() throws IOException {
+        DatabaseSettings databaseSettings = new DatabaseSettings(project.getFolderLocation());
+        String driverClassName = databaseSettings.getDriverClassName();
+        if (StringUtils.isBlank(driverClassName)) {
+            driverClassName = StringUtils.EMPTY;
+        }
+        return driverClassName;
     }
 }

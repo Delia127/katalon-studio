@@ -19,6 +19,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class GeneralPreferencePage extends PreferencePage {
     private Button radioAutoRestorePrevSession;
@@ -126,6 +127,9 @@ public class GeneralPreferencePage extends PreferencePage {
                 chkShowHelpAtStartUp.getSelection());
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING,
                 chkCheckAllowUsageTracking.getSelection());
+       
+        Trackings.trackAllowUsageTrackingOption(chkCheckAllowUsageTracking.getSelection());
+
     }
 
     @Override
