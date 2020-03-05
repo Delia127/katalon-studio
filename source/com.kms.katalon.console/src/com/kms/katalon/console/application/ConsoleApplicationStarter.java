@@ -20,6 +20,7 @@ import com.kms.katalon.tracking.service.Trackings;
 public class ConsoleApplicationStarter implements ApplicationStarter {
 
     private void init() {
+        System.out.println("> ConsoleApplicationStarter.java > init()");
         EventBusSingleton.getInstance().setEventBus(EventBus.builder().installDefaultEventBus());
         
         int trackingTime = TrackingManager.getInstance().getTrackingTime();
@@ -27,13 +28,16 @@ public class ConsoleApplicationStarter implements ApplicationStarter {
             Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(), 
                     !ActivationInfoCollector.isActivated(), "console");
         }, trackingTime, trackingTime, TimeUnit.SECONDS);
+        System.out.println("> ConsoleApplicationStarter.java > init() done");
     }
 
     @Override
     public int start(String[] arguments) {
+        System.out.println("> ConsoleApplicationStarter.java > start()");
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
         try {
             init();
+            System.out.println("> ConsoleApplicationStarter.java > before ConsoleMain.launch(...)");
             return ConsoleMain.launch(arguments);
         } catch (Exception e) {
             LogUtil.printAndLogError(e, ConsoleMessageConstants.ERR_CONSOLE_MODE);

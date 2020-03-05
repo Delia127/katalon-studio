@@ -119,12 +119,14 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         try {
+            System.out.println("> inside ConsoleMain.launch(...)");
             boolean isDevelopmentMode = Platform.inDevelopmentMode();
             boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
             if (!isDevelopmentMode && !isRunningInKatalonC) {
                 LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_MOVE_TO_KATALONC);
                 return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
             }
+            System.out.println("> ConsoleMain.launch(...) > after check for running in katalonc");
 
             ConsoleExecutor consoleExecutor = new ConsoleExecutor();
             ApplicationConfigOptions applicationConfigOptions = new ApplicationConfigOptions();
@@ -133,6 +135,7 @@ public class ConsoleMain {
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
+            System.out.println("> ConsoleMain.launch(...) > after parse arguments");
             
             // Set option value to application configuration
             for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
@@ -141,6 +144,7 @@ public class ConsoleMain {
                     applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
                 }
             }
+            System.out.println("> ConsoleMain.launch(...) > after set option value to application configuration");
 
             String serverUrl = null;
             if (options.has(KATALON_TESTOP_SERVER)) {
@@ -154,9 +158,11 @@ public class ConsoleMain {
             if (!StringUtils.isEmpty(serverUrl)) {
                 ApplicationInfo.setTestOpsServer(serverUrl);
             }
+            System.out.println("> ConsoleMain.launch(...) > after set serverUrl");
 
             //Set server URL before show in log
             LocalInformationUtil.printSystemInformation();
+            System.out.println("> ConsoleMain.launch(...) > after printSystemInformation()");
 
             String apiKeyValue = null;
             if (options.has(KATALON_API_KEY_OPTION)) {
@@ -330,12 +336,15 @@ public class ConsoleMain {
             ActivationInfoCollector.releaseLicense();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
+            System.out.println("> ConsoleMain.launch(...) > InvalidConsoleArgumentException");
             LogUtil.printErrorLine(e.getMessage());
             return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
         } catch (Exception e) {
+            System.out.println("> ConsoleMain.launch(...) > Exception");
             LogUtil.printErrorLine(ExceptionUtils.getStackTrace(e));
             return LauncherResult.RETURN_CODE_ERROR;
         } finally {
+            System.out.println("> ConsoleMain.launch(...) > finally");
             LauncherManager.getInstance().removeAllTerminated();
         }
     }

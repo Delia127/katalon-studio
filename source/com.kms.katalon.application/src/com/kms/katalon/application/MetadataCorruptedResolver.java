@@ -22,11 +22,14 @@ public class MetadataCorruptedResolver {
 
     public boolean resolve() {
         try {
+            System.out.println("> MetadataCorruptedResolver.resolve(...) > before resolve");
             File resourcesFolder = new File(
                     Platform.getInstanceLocation().getDataArea(ResourcesPlugin.PI_RESOURCES).getFile());
             FileUtils.deleteDirectory(resourcesFolder);
+            System.out.println("> MetadataCorruptedResolver.resolve(...) > resolve OK");
             return true;
         } catch (IOException e) {
+            System.out.println("> MetadataCorruptedResolver.resolve(...) > resolve error");
             LogUtil.logError(e);
             return false;
         }

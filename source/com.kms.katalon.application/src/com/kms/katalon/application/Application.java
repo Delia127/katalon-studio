@@ -50,43 +50,61 @@ public class Application implements IApplication {
         System.out.println("> Start Application");
 
         createLicenseFolder();
+        System.out.println("> Create License Folder");
         
         if (!activeLoggingBundle()) {
+            System.out.println("> Active Logging Bundle Failed");
             return IApplication.EXIT_OK;
         }
 
         if (!activateInternalPlatformBundle()) {
+            System.out.println("> Activate Internal Platform Bundle Failed");
             return IApplication.EXIT_OK;
         }
 
         try {
+            System.out.println("> Before preRunInit()");
             preRunInit();
+            System.out.println("> After preRunInit()");
         } catch (Error e) {
+            System.out.println("> Before resolve()");
             resolve();
+            System.out.println("> After resolve()");
         }
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
+        System.out.println("> after resolve arguments");
 
         if (isKSRE()) {
+            System.out.println("> isKSRE");
             runningModeParam = RunningModeParam.CONSOLE;
         }
+        System.out.println("> Before switch (runningModeParam) {...}");
         switch (runningModeParam) {
             case CONSOLE:
+                System.out.println("> Case: CONSOLE");
                 try {
                     Bundle consoleBundle = Platform.getBundle("com.kms.katalon.console");
                     if (consoleBundle == null) {
                         System.out.println(INVALID_RUNNING_MODE);
                         return IApplication.EXIT_OK;
                     }
+                    System.out.println("> Before consoleBundle.start()");
                     consoleBundle.start();
+                    System.out.println("> After consoleBundle.start()");
                 } catch (BundleException e) {
+                    System.out.println("> BundleException");
+                    System.out.println(e);
                     return IApplication.EXIT_OK;
                 }
+                System.out.println("> Before runConsole()");
                 return runConsole(context, appArgs);
             case SELFTEST:
+                System.out.println("> Case: SELFTEST");
                 return runSelfTest();
             case GUI:
+                System.out.println("> Case: GUI");
                 try {
                     Bundle composerKatalonBundle = Platform.getBundle(IdConstants.KATALON_GENERAL_BUNDLE_ID);
                     if (composerKatalonBundle == null) {
