@@ -419,6 +419,9 @@ public class GroovyUtil {
                 if (requiredBundleLocation != null && requiredBundleLocation.exists()) {
                     if (requiredBundleLocation.isFile()) {
                         addJarFileToClasspath(requiredBundleLocation, entries, requiredBundle, isEnterpriseAccount);
+                    } else if (requiredBundle.getSymbolicName().contains("org.junit")) {
+                        File junitJar = new File(requiredBundleLocation, "junit.jar");
+                        addJarFileToClasspath(junitJar, entries, requiredBundle, isEnterpriseAccount);
                     }
                 }
             }
