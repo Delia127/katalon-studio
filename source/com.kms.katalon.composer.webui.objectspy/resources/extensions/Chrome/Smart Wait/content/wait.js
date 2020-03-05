@@ -38,9 +38,9 @@ if (window === window.top && (typeof window.katalonWaiter == "undefined")) {
     var ajaxCount = 0;
     var ajaxTime = "";
 
-    function notServerSentEvent(ajaxObject) {
-      var contentType = ajaxObject.getResponseHeader("Content-Type");
-      return !(contentType && contentType.includes('text/event-stream'));
+    function notServerSentEvent(ajaxObject) {	
+      var contentType = ajaxObject.getResponseHeader("Content-Type");	
+      return !(contentType && contentType.includes('text/event-stream'));	
     }
 
     function katalon_smart_waiter_do_ajax_wait() {
@@ -55,8 +55,8 @@ if (window === window.top && (typeof window.katalonWaiter == "undefined")) {
                 (window.katalonWaiter.ajaxObjects[index].readyState) !==
                   undefined &&
                 (window.katalonWaiter.ajaxObjects[index].readyState) !== 0 &&
-                notServerSentEvent(window.katalonWaiter.ajaxObjects[index])
-              ) {
+                notServerSentEvent(window.katalonWaiter.ajaxObjects[index]))
+              {
                 return false;
               }
             }
@@ -138,6 +138,10 @@ if (window === window.top && (typeof window.katalonWaiter == "undefined")) {
           window.katalonWaiter.ajaxObjects.push(xhr);
           return xhr;
         };
+        // Restore properties
+        for (var key of Object.keys(window.katalonOriginXMLHttpRequest)) {
+          window.XMLHttpRequest[key] = window.katalonOriginXMLHttpRequest[key];
+        }
         window.XMLHttpRequest.prototype = window.katalonOriginXMLHttpRequest.prototype;
       }
     }
