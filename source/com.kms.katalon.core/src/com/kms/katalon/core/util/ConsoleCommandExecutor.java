@@ -117,15 +117,4 @@ public class ConsoleCommandExecutor {
         }
         return "";
     }
-
-    public static String runConsoleCommandAndCollectFirstResult(String[] command,
-            Map<String, String> addtionalEnvironmentVariables, boolean redirectErrorStream)
-            throws IOException, InterruptedException {
-        List<String> resultLines = runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables,
-                StringUtils.EMPTY, false);
-        if (!resultLines.isEmpty()) {
-            return resultLines.get(0);
-        }
-        return "";
-    }
 }
