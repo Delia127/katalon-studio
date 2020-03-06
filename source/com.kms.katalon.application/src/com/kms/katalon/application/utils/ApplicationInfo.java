@@ -103,6 +103,8 @@ public class ApplicationInfo {
     public static void setAppInfoIntoUserHomeDir() {
         String version = versionNo();
         String buildNo = buildNo();
+        
+        System.err.println("> ApplicationInfo > Test Error Stream");
 
         getAppProperties();
         System.out.println("> ApplicationInfo > Set System Property: APP_VERSION_NUMBER_KEY -> " + version);
@@ -131,22 +133,41 @@ public class ApplicationInfo {
             return appProperties;
         }
 
+        System.out.println("> ApplicationInfo > Appication Properties file: " + ApplicationStringConstants.APP_INFO_FILE_LOCATION);
         File appPropFile = new File(ApplicationStringConstants.APP_INFO_FILE_LOCATION);
+        System.out.println("> ApplicationInfo > Appication Properties file: " + appPropFile.getAbsolutePath());
+        
         File katalonDir = new File(userDirLocation());
         if (!appPropFile.exists()) {
+            System.out.println("> ApplicationInfo > Appication Properties file does not exist: " + appPropFile.getAbsolutePath());
             if (!katalonDir.exists()) {
+                System.out.println("> ApplicationInfo > Katalon directory does not exist: " + katalonDir.getAbsolutePath());
                 katalonDir.mkdir();
+                if (!katalonDir.exists()) {
+                    System.out.println("> ApplicationInfo > Can't create Katalon directory: " + katalonDir.getAbsolutePath());
+                }
             }
             try {
+                System.out.println("> ApplicationInfo > before appPropFile.createNewFile()");
                 appPropFile.createNewFile();
+                System.out.println("> ApplicationInfo > after appPropFile.createNewFile()");
             } catch (Exception ex) {
+                System.err.println("> ApplicationInfo > Test Error Stream");
+                System.out.println("> ApplicationInfo > Create Appication Properties file exception: ");
+                System.out.println(ex);
                 LogUtil.logError(ex);
+            }
+            if (!appPropFile.exists()) {
+                System.out.println("> ApplicationInfo > Appication Properties file still does not exist");
             }
         }
         try (FileInputStream in = new FileInputStream(appPropFile)) {
+            System.out.println("> ApplicationInfo > Appication Properties input stream: " + in.available());
             appProperties = new Properties();
             appProperties.load(in);
         } catch (Exception ex) {
+            System.out.println("> ApplicationInfo > Load Appication Properties exception: ");
+            System.out.println(ex);
             appProperties = null;
             LogUtil.logError(ex);
         }
