@@ -155,7 +155,7 @@ public class MacOSAddon {
         for (File file : jreFolder.listFiles()) {
             if (!file.isFile()) {
                 if (file.isDirectory()) {
-                    System.out.println("> MacOSAddon > makeJREFilesExecutable > dir: " + file.getAbsolutePath());
+//                    System.out.println("> MacOSAddon > makeJREFilesExecutable > dir: " + file.getAbsolutePath());
                     makeJREFilesExecutable(file);
                 }
                 continue;
@@ -164,8 +164,8 @@ public class MacOSAddon {
             for (PosixFilePermission permission : PosixFilePermission.values()) {
                 perms.add(permission);
             }
-            System.out.println("> MacOSAddon > permissions: " + perms);
-            System.out.println("> MacOSAddon > makeJREFilesExecutable: " + file.toPath());
+//            System.out.println("> MacOSAddon > permissions: " + perms);
+//            System.out.println("> MacOSAddon > makeJREFilesExecutable: " + file.toPath());
             Files.setPosixFilePermissions(file.toPath(), perms);
         }
     }
