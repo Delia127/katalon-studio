@@ -164,7 +164,10 @@ public class Application implements IApplication {
             LogUtil.printOutputLine("Katalon workspace folder is set custom to: " + instanceLoc.getURL().toString());
         }
 
+        System.out.println("> MacOSAddon.initMacOSConfig()");
         MacOSAddon.initMacOSConfig();
+        
+        System.out.println("> ApplicationInfo.setAppInfoIntoUserHomeDir()");
         ApplicationInfo.setAppInfoIntoUserHomeDir();
     }
 

@@ -105,6 +105,7 @@ public class ApplicationInfo {
         String buildNo = buildNo();
 
         getAppProperties();
+        System.out.println("> ApplicationInfo > Set System Property: APP_VERSION_NUMBER_KEY -> " + version);
         System.setProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY, version);
         logInfo(ApplicationStringConstants.APP_VERSION_NUMBER_KEY + "=" + version);
         logInfo(ApplicationStringConstants.APP_BUILD_NUMBER_KEY + "=" + buildNo);
@@ -114,8 +115,13 @@ public class ApplicationInfo {
             return;
         }
 
+        System.out.println("> ApplicationInfo > Set App Property: APP_VERSION_NUMBER_KEY -> " + version);
         setAppProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY, version, false);
+        
+        System.out.println("> ApplicationInfo > Set App Property: APP_BUILD_NUMBER_KEY -> " + buildNo);
         setAppProperty(ApplicationStringConstants.APP_BUILD_NUMBER_KEY, buildNo, false);
+        
+        System.out.println("> ApplicationInfo > saveAppProperties()");
         saveAppProperties();
     }
 
@@ -172,6 +178,8 @@ public class ApplicationInfo {
         try (FileOutputStream out = new FileOutputStream(ApplicationStringConstants.APP_INFO_FILE_LOCATION)) {
             appProperties.store(out, installLocation());
         } catch (Exception ex) {
+            System.out.println("> ApplicationInfo > saveAppProperties exception: ");
+            System.out.println(ex);
             LogUtil.logError(ex);
         }
     }
