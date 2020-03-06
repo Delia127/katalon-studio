@@ -168,9 +168,7 @@ public class Application implements IApplication {
         MacOSAddon.initMacOSConfig();
         
         System.out.println("> ApplicationInfo.setAppInfoIntoUserHomeDir()");
-        if (!isKSRE()) {
-            ApplicationInfo.setAppInfoIntoUserHomeDir();
-        }
+        ApplicationInfo.setAppInfoIntoUserHomeDir();
     }
 
     private File getWorkspaceFile() throws URISyntaxException {

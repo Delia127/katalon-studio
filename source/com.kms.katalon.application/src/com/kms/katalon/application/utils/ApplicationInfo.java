@@ -112,6 +112,7 @@ public class ApplicationInfo {
 
         if (version.equals(getAppProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY))
                 && buildNo.equals(getAppProperty(ApplicationStringConstants.APP_BUILD_NUMBER_KEY))) {
+            System.out.println("> ApplicationInfo > version == appVersion && buildNo == appBuildNo");
             return;
         }
 
@@ -154,9 +155,14 @@ public class ApplicationInfo {
     }
 
     public static void setAppProperty(String key, String value, boolean autoSave) {
+        System.out.println("> ApplicationInfo > getAppProperties()");
         Properties appProps = getAppProperties();
+        System.out.println("> ApplicationInfo > appProps: " + appProps);
 
+        System.out.println("> ApplicationInfo > before appProps.setProperty(" + key + ", " + value + ")");
         appProps.setProperty(key, value);
+        System.out.println("> ApplicationInfo > after appProps.setProperty(" + key + ", " + value + ")");
+        
         if (autoSave) {
             saveAppProperties();
         }
