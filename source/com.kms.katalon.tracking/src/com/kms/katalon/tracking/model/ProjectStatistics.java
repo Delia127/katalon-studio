@@ -76,7 +76,9 @@ public class ProjectStatistics {
     
     private boolean imageRecognitionEnabled = false;
     
-    private String databaseDriverClassName;
+    private String additionalTestDatasourceForEnterpriseUser;
+    
+    private boolean allowUsageTracking = false;
 
     public String getProjectId() {
         return projectId;
@@ -374,11 +376,19 @@ public class ProjectStatistics {
         this.imageRecognitionEnabled = imageRecognitionEnabled;
     }
 
-    public String getDatabaseDriverClassName() {
-        return databaseDriverClassName;
+    public String getAdditionalTestDataSourceForEnterpriseUser() {
+        return additionalTestDatasourceForEnterpriseUser;
     }
 
-    public void setDatabaseDriverClassName(String databaseDriverClassName) {
-        this.databaseDriverClassName = databaseDriverClassName;
+    public void setAdditionalTestDataSourceForEnterpriseUser(String dataSourceType) {
+        this.additionalTestDatasourceForEnterpriseUser = dataSourceType;
+    }
+
+    public boolean getAllowUsageTracking() {
+        return allowUsageTracking;
+    }
+
+    public void setAllowUsageTracking(boolean allowUsageTracking) {
+        this.allowUsageTracking = allowUsageTracking;
     }
 }

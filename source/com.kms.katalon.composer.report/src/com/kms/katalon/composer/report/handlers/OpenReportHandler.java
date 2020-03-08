@@ -56,7 +56,6 @@ public class OpenReportHandler {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof ReportEntity) {
                     excute((ReportEntity) object);
-                    Trackings.trackOpenReportHistory();
                 }
             }
         });
@@ -85,7 +84,6 @@ public class OpenReportHandler {
             String partId = IdConstants.REPORT_CONTENT_PART_ID_PREFIX + "(" + report.getId() + ")";
             MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
             MPart mPart = (MPart) modelService.find(partId, application);
-            boolean alreadyOpened = true;
             if (mPart == null) {
                 mPart = modelService.createModelElement(MPart.class);
                 mPart.setElementId(partId);
@@ -95,16 +93,13 @@ public class OpenReportHandler {
                 mPart.setIconURI(ImageConstants.URL_16_REPORT);
                 mPart.setTooltip(report.getIdForDisplay());
                 stack.getChildren().add(mPart);
-                alreadyOpened = false;
             }
             context.set(ReportEntity.class, report);
             partService.activate(mPart);
 
             stack.setSelectedElement(mPart);
             
-            if (!alreadyOpened) {
-                Trackings.trackOpenObject("report");
-            }
+            Trackings.trackOpenObject("report");
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",

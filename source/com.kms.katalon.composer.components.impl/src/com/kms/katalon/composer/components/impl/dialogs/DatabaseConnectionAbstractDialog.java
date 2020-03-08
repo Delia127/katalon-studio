@@ -353,10 +353,16 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
             }
         }
         
-        if (StringUtils.isNotBlank(txtDriverClassName.getText())) {
-            Trackings.trackUseAdditionalTestDataSource(txtDriverClassName.getText());
+        if (!chkGlobalDBSetting.getSelection()) {
+            if (isOracleSql(connectionUrl)) {
+                Trackings.trackUseAdditionalTestDataSource("oracle");
+            }
+            
+            if (isMicrosoftSqlServer(connectionUrl)) {
+                Trackings.trackUseAdditionalTestDataSource("mssql");
+            }
         }
-
+        
         updateChanges();
         super.okPressed();
     }

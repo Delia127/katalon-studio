@@ -28,6 +28,8 @@ public class Trackings {
 
     private static TrackingService trackingService = new TrackingService();
     private static SystemInformationUtil system = new SystemInformationUtil();
+    
+    private static boolean trackedUseSourceCodeForDebugging = false;
 
     public static void trackOpenApplication(boolean isAnonymous, String runningMode) throws Exception {
         double cpu = 0.0;
@@ -190,6 +192,11 @@ public class Trackings {
 
     public static void trackOpenObject(String objectType) {
         String action = "open" + StringUtils.capitalize(objectType);
+        trackUserAction(action);
+    }
+    
+    public static void trackSaveObject(String objectType) {
+        String action = "save" + StringUtils.capitalize(objectType);
         trackUserAction(action);
     }
 
@@ -377,12 +384,8 @@ public class Trackings {
                 StringUtils.isNotBlank(apiKey) ? apiKey : StringUtils.EMPTY, "runningMode", runningMode.toString());
     }
     
-    public static void trackOpenReportHistory() {
-        trackUserAction("openReportHistory");
-    }
-    
-    public static void trackPrivatePluginUsage(boolean usePrivatePlugin) {
-        trackUserAction("usePrivatePlugin", "usePrivatePlugin", usePrivatePlugin);
+    public static void trackUsePrivatePlugins(int customKeywordPluginCount, int idePluginCount) {
+        trackUserAction("usePrivatePlugin", "customKeywordPluginsCount", customKeywordPluginCount, "idePluginsCount", idePluginCount);
     }
     
     public static void trackOpenExportTestArtifactsDialog() {
@@ -397,8 +400,20 @@ public class Trackings {
         trackUserAction("setUsageTrackingOption", "usageTrackingOptionEnabled", enabled);
     }
     
-    public static void trackUseAdditionalTestDataSource(String driverClassName) {
-        trackUserAction("useAdditionalTestDataSource", "driverClassName", driverClassName);
+    public static void trackOpenConsoleView() {
+        trackUserAction("openConsoleView");
+    }
+    
+    public static void trackGitOperation(String operationName, String protocol) {
+        trackUserAction("performGitOperation", "operationName", operationName, "protocol", protocol);
+    }
+    
+    public static void trackUseSourceCodeForDebugging(String className) {
+        trackUserAction("useSourceCodeForDebugging", "className", className);
+    }
+    
+    public static void trackUseAdditionalTestDataSource(String dataSourceType) {
+        trackUserAction("useAdditionalTestDataSource", "type", dataSourceType);
     }
     
     private static void trackUserAction(String actionName, Object... properties) {

@@ -127,8 +127,6 @@ public class GeneralPreferencePage extends PreferencePage {
                 chkShowHelpAtStartUp.getSelection());
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING,
                 chkCheckAllowUsageTracking.getSelection());
-       
-        Trackings.trackAllowUsageTrackingOption(chkCheckAllowUsageTracking.getSelection());
 
     }
 

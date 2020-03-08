@@ -8,8 +8,12 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.application.utils.FileUtil;
+import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseSettings;
@@ -39,6 +43,7 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.model.ProjectStatistics;
 import com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
@@ -104,7 +109,9 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         
         statistics.setImageRecognitionEnabled(getImageRecognitionEnabled());
         
-        statistics.setDatabaseDriverClassName(getDatabaseDriverClassName());
+        statistics.setAdditionalTestDataSourceForEnterpriseUser(getAdditionalTestDataSourceForEnterpriseUser());
+        
+        statistics.setAllowUsageTracking(getAllowUsageTracking());
         
         return statistics;
     }
@@ -387,12 +394,28 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         return store.getImageRecognitionEnabled();
     }
     
-    private String getDatabaseDriverClassName() throws IOException {
+    private String getAdditionalTestDataSourceForEnterpriseUser() throws IOException {
         DatabaseSettings databaseSettings = new DatabaseSettings(project.getFolderLocation());
-        String driverClassName = databaseSettings.getDriverClassName();
-        if (StringUtils.isBlank(driverClassName)) {
-            driverClassName = StringUtils.EMPTY;
+        String url = databaseSettings.getUrl();
+        if (StringUtils.isNotBlank(url)) {
+            if (url.startsWith("jdbc:oracle")) {
+                return "oracle";
+            }
+            
+            if (url.startsWith("jdbc:sqlserver")) {
+                return "mssql";
+            }
         }
-        return driverClassName;
+        return StringUtils.EMPTY;
+    }
+    
+    private boolean getAllowUsageTracking() {
+        IPreferenceStore prefStore = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
+        boolean allowUsageTracking = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
+                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
+        if (LicenseUtil.isNotFreeLicense()) {
+            return allowUsageTracking;
+        }
+        return true;
     }
 }
