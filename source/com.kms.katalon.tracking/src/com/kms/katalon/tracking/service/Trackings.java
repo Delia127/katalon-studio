@@ -28,8 +28,6 @@ public class Trackings {
 
     private static TrackingService trackingService = new TrackingService();
     private static SystemInformationUtil system = new SystemInformationUtil();
-    
-    private static boolean trackedUseSourceCodeForDebugging = false;
 
     public static void trackOpenApplication(boolean isAnonymous, String runningMode) throws Exception {
         double cpu = 0.0;
@@ -395,11 +393,7 @@ public class Trackings {
     public static void trackOpenImportTestArtifactsDialog() {
         trackUserAction("openImportTestArtifactsDialog");
     }
-    
-    public static void trackUsageTrackingOptionEnabled(boolean enabled) {
-        trackUserAction("setUsageTrackingOption", "usageTrackingOptionEnabled", enabled);
-    }
-    
+
     public static void trackOpenConsoleView() {
         trackUserAction("openConsoleView");
     }
