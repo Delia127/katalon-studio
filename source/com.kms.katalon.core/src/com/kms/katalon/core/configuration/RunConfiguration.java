@@ -148,7 +148,6 @@ public class RunConfiguration {
     private static final ThreadLocal<Properties> applicationInfo = new ThreadLocal<Properties>() {
         @Override
         protected Properties initialValue() {
-            System.out.println("> RunConfiguration > Init value for applicationInfo");
             File appPropFile = new File(APP_INFO_FILE_LOCATION);
             Properties appProp = new Properties();
             if (!appPropFile.exists()) {
@@ -156,9 +155,7 @@ public class RunConfiguration {
             }
 
             try {
-                System.out.println("> RunConfiguration > Load Application Properties from file: " + APP_INFO_FILE_LOCATION);
                 appProp.load(new FileInputStream(appPropFile));
-                System.out.println("> RunConfiguration > Application Properties: " + appProp);
             } catch (FileNotFoundException e) {
                 // do nothing
             } catch (IOException e) {

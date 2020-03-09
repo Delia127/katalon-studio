@@ -103,28 +103,19 @@ public class ApplicationInfo {
     public static void setAppInfoIntoUserHomeDir() {
         String version = versionNo();
         String buildNo = buildNo();
-        
-        System.err.println("> ApplicationInfo > Test Error Stream");
 
         getAppProperties();
-        System.out.println("> ApplicationInfo > Set System Property: APP_VERSION_NUMBER_KEY -> " + version);
         System.setProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY, version);
         logInfo(ApplicationStringConstants.APP_VERSION_NUMBER_KEY + "=" + version);
         logInfo(ApplicationStringConstants.APP_BUILD_NUMBER_KEY + "=" + buildNo);
 
         if (version.equals(getAppProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY))
                 && buildNo.equals(getAppProperty(ApplicationStringConstants.APP_BUILD_NUMBER_KEY))) {
-            System.out.println("> ApplicationInfo > version == appVersion && buildNo == appBuildNo");
             return;
         }
 
-        System.out.println("> ApplicationInfo > Set App Property: APP_VERSION_NUMBER_KEY -> " + version);
         setAppProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY, version, false);
-        
-        System.out.println("> ApplicationInfo > Set App Property: APP_BUILD_NUMBER_KEY -> " + buildNo);
         setAppProperty(ApplicationStringConstants.APP_BUILD_NUMBER_KEY, buildNo, false);
-        
-        System.out.println("> ApplicationInfo > saveAppProperties()");
         saveAppProperties();
     }
 
@@ -133,41 +124,22 @@ public class ApplicationInfo {
             return appProperties;
         }
 
-        System.out.println("> ApplicationInfo > Appication Properties file: " + ApplicationStringConstants.APP_INFO_FILE_LOCATION);
         File appPropFile = new File(ApplicationStringConstants.APP_INFO_FILE_LOCATION);
-        System.out.println("> ApplicationInfo > Appication Properties file: " + appPropFile.getAbsolutePath());
-        
         File katalonDir = new File(userDirLocation());
         if (!appPropFile.exists()) {
-            System.out.println("> ApplicationInfo > Appication Properties file does not exist: " + appPropFile.getAbsolutePath());
             if (!katalonDir.exists()) {
-                System.out.println("> ApplicationInfo > Katalon directory does not exist: " + katalonDir.getAbsolutePath());
                 katalonDir.mkdir();
-                if (!katalonDir.exists()) {
-                    System.out.println("> ApplicationInfo > Can't create Katalon directory: " + katalonDir.getAbsolutePath());
-                }
             }
             try {
-                System.out.println("> ApplicationInfo > before appPropFile.createNewFile()");
                 appPropFile.createNewFile();
-                System.out.println("> ApplicationInfo > after appPropFile.createNewFile()");
             } catch (Exception ex) {
-                System.err.println("> ApplicationInfo > Test Error Stream");
-                System.out.println("> ApplicationInfo > Create Appication Properties file exception: ");
-                System.out.println(ex);
                 LogUtil.logError(ex);
-            }
-            if (!appPropFile.exists()) {
-                System.out.println("> ApplicationInfo > Appication Properties file still does not exist");
             }
         }
         try (FileInputStream in = new FileInputStream(appPropFile)) {
-            System.out.println("> ApplicationInfo > Appication Properties input stream: " + in.available());
             appProperties = new Properties();
             appProperties.load(in);
         } catch (Exception ex) {
-            System.out.println("> ApplicationInfo > Load Appication Properties exception: ");
-            System.out.println(ex);
             appProperties = null;
             LogUtil.logError(ex);
         }
@@ -176,14 +148,9 @@ public class ApplicationInfo {
     }
 
     public static void setAppProperty(String key, String value, boolean autoSave) {
-        System.out.println("> ApplicationInfo > getAppProperties()");
         Properties appProps = getAppProperties();
-        System.out.println("> ApplicationInfo > appProps: " + appProps);
 
-        System.out.println("> ApplicationInfo > before appProps.setProperty(" + key + ", " + value + ")");
         appProps.setProperty(key, value);
-        System.out.println("> ApplicationInfo > after appProps.setProperty(" + key + ", " + value + ")");
-        
         if (autoSave) {
             saveAppProperties();
         }
@@ -205,8 +172,6 @@ public class ApplicationInfo {
         try (FileOutputStream out = new FileOutputStream(ApplicationStringConstants.APP_INFO_FILE_LOCATION)) {
             appProperties.store(out, installLocation());
         } catch (Exception ex) {
-            System.out.println("> ApplicationInfo > saveAppProperties exception: ");
-            System.out.println(ex);
             LogUtil.logError(ex);
         }
     }
