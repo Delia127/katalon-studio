@@ -113,5 +113,41 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.selenium-standalone</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.selenium-standalone.test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.execution.webui</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.execution.webui.test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.core.webui</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.core.webui.test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

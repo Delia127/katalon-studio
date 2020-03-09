@@ -1,0 +1,96 @@
+package com.kms.katalon.core.logging;
+
+import java.util.Map;
+import java.util.Stack;
+
+import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
+
+public interface IKeywordLogger {
+
+    void close();
+
+    String getLogFolderPath();
+
+    void startSuite(String name, Map<String, String> attributes);
+
+    void endSuite(String name, Map<String, String> attributes);
+
+    void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack);
+
+    void endTest(String name, Map<String, String> attributes);
+
+    void startCalledTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack);
+
+    void endCalledTest(String name, Map<String, String> attributes);
+
+    void startListenerKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack);
+
+    void startKeyword(String name, String actionType, Map<String, String> attributes,
+            Stack<KeywordStackElement> keywordStack);
+
+    void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack);
+
+    void startKeyword(String name, Map<String, String> attributes, int nestedLevel);
+
+    void endKeyword(String name, Map<String, String> attributes, int nestedLevel);
+
+    void endListenerKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack);
+
+    void endKeyword(String name, String keywordType, Map<String, String> attributes,
+            Stack<KeywordStackElement> keywordStack);
+
+    void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack);
+
+    void logFailed(String message);
+
+    void logFailed(String message, Map<String, String> attributes, Throwable throwable);
+
+    void logFailed(String message, Map<String, String> attributes);
+
+    void logWarning(String message);
+
+    void logWarning(String message, Map<String, String> attributes, Throwable throwable);
+
+    void logWarning(String message, Map<String, String> attributes, Throwable throwable, boolean isKeyword);
+
+    void logWarning(String message, Map<String, String> attributes);
+
+    void logPassed(String message);
+
+    void logPassed(String message, Map<String, String> attributes);
+
+    void logPassed(String message, Map<String, String> attributes, boolean isKeyword);
+
+    void logInfo(String message);
+
+    void logInfo(String message, Map<String, String> attributes);
+
+    void logRunData(String dataKey, String dataValue);
+
+    void logError(String message, Map<String, String> attributes, Throwable throwable);
+
+    void logError(String message, Map<String, String> attributes, Throwable throwable, boolean isKeyword);
+
+    void logError(String message);
+
+    void logError(String message, Map<String, String> attributes);
+
+    void logMessage(LogLevel level, String message);
+
+    void logMessage(LogLevel level, String message, Map<String, String> attributes);
+
+    void logMessage(LogLevel level, String message, Throwable thrown);
+
+    void setPendingDescription(String stepDescription);
+
+    void logNotRun(String message);
+
+    void logNotRun(String message, Map<String, String> attributes);
+
+    void logDebug(String message);
+
+    boolean isInfoEnabled();
+
+    boolean isDebugEnabled();
+
+}

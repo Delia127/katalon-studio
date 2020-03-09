@@ -19,7 +19,7 @@ public class CFirefoxDriver extends FirefoxDriver implements IDelayableDriver {
 
     public CFirefoxDriver(Capabilities capabilities, int actionDelay) {
         super(new FirefoxOptions(capabilities));
-        this.actionDelayInMiliseconds = actionDelay * 1000;
+        this.actionDelayInMiliseconds = actionDelay;
     }
 
     @Override

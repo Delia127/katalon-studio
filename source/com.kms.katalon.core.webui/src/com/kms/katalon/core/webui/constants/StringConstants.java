@@ -63,6 +63,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String CONF_PROPERTY_ENABLE_PAGE_LOAD_TIMEOUT = "enablePageLoadTimeout";
     public static final String CONF_PROPERTY_DEFAULT_PAGE_LOAD_TIMEOUT = "defaultPageLoadTimeout";
     public static final String CONF_PROPERTY_ACTION_DELAY = "actionDelay";
+    public static final String CONF_PROPERTY_USE_ACTION_DELAY_IN_SECOND = "useActionDelayInSecond";
     public static final String CONF_PROPERTY_IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION = "ignorePageLoadTimeoutException";
 	public static final String CONF_PROPERTY_EXECUTED_BROWSER = XML_LOG_BROWSER_TYPE_PROPERTY;
     public static final String CONF_PROPERTY_REMOTE_WEB_DRIVER_URL = "remoteWebDriverUrl";

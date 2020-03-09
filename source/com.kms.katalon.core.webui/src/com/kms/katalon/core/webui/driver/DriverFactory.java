@@ -63,10 +63,8 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
-import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
-import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
 import com.kms.katalon.core.webui.driver.firefox.CGeckoDriver;
@@ -144,6 +142,8 @@ public class DriverFactory {
     public static final String DEFAULT_PAGE_LOAD_TIMEOUT = StringConstants.CONF_PROPERTY_DEFAULT_PAGE_LOAD_TIMEOUT;
 
     public static final String ACTION_DELAY = StringConstants.CONF_PROPERTY_ACTION_DELAY;
+    
+    public static final String USE_ACTION_DELAY_IN_SECOND = StringConstants.CONF_PROPERTY_USE_ACTION_DELAY_IN_SECOND;
 
     public static final String IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION = StringConstants.CONF_PROPERTY_IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION;
 
@@ -186,8 +186,16 @@ public class DriverFactory {
     };
 
     private static InternetExplorerDriverService ieDriverService;
+    
+    private static IDriverConfigurationProvider driverConfigProvider = new DriverConfigurationProvider(logger);
+    
+    public static void setDriverConfigurationProvider(IDriverConfigurationProvider provider) {
+        driverConfigProvider = provider;
+    }
 
-    private static int actionDelay = -1;
+    public static IDriverConfigurationProvider getDriverConfigurationProvider() {
+        return driverConfigProvider;
+    }
 
     /**
      * Open a new web driver based on the execution configuration.
@@ -1196,18 +1204,7 @@ public class DriverFactory {
      * @return the action delay
      */
     public static int getActionDelay() {
-        if (actionDelay == -1) {
-            actionDelay = 0;
-            final Map<String, Object> executionGeneralProperties = RunConfiguration.getExecutionGeneralProperties();
-            if (executionGeneralProperties.containsKey(ACTION_DELAY)) {
-                actionDelay = RunConfiguration.getIntProperty(ACTION_DELAY, executionGeneralProperties);
-            }
-
-            if (RunConfiguration.getPort() > 0) {
-                logger.logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
-            }
-        }
-        return actionDelay;
+        return driverConfigProvider.getActionDelay();
     }
 
     /**

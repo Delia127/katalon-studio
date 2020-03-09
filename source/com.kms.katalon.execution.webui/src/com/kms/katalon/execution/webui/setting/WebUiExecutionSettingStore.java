@@ -33,12 +33,14 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
      */
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES = "id,true;name,true;alt,true;checked,true;form,true;href,true;placeholder,true;selected,true;src,true;title,true;type,true;text,true;linked_text,true";
     
-    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true;";
+    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true";
     
 
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
 
     public static final boolean EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED = false;
+    
+    public static final boolean EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND = true;
 
     
     public static WebUiExecutionSettingStore getStore() {
@@ -210,5 +212,17 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public void setDefaultImageRecognitionEnabled(boolean selection) throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, selection);
     }
+    
+    public void setUseDelayActionInSecond(boolean selection) throws IOException {
+        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_IN_SECOND, selection);
+    }
 
+    public boolean getUseDelayActionInSecond() {
+        try {
+            return getBoolean(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_IN_SECOND,
+                    EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND);
+        } catch (IOException e) {
+            return EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND;
+        }
+    }
 }

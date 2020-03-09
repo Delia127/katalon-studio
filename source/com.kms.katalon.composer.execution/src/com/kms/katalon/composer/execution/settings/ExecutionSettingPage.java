@@ -246,7 +246,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         compPageLoad.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         
         radioDelayBetweenActionsInSecond = new Button(compPageLoad, SWT.RADIO);
-        radioDelayBetweenActionsInSecond.setText(ComposerExecutionMessageConstants.PREFL_BL_ACTION_DELAY_IN_SECONDS);
+        radioDelayBetweenActionsInSecond.setText(ComposerExecutionMessageConstants.PREF_LBL_ACTION_DELAY_IN_SECONDS);
         radioDelayBetweenActionsInSecond.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         
         txtActionDelayInSecond = new Text(compPageLoad, SWT.BORDER);
@@ -255,7 +255,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         txtActionDelayInSecond.setLayoutData(ldActionDelayInSecond);
         
         radioDelayBetweenActionsInMilisecond = new Button(compPageLoad, SWT.RADIO);
-        radioDelayBetweenActionsInMilisecond.setText(ComposerExecutionMessageConstants.PREFL_BL_ACTION_DELAY_IN_SECONDS);
+        radioDelayBetweenActionsInMilisecond.setText(ComposerExecutionMessageConstants.PREF_LBL_ACTION_DELAY_IN_MILISECONDS);
         radioDelayBetweenActionsInMilisecond.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         
         txtActionDelayInMilisecond = new Text(compPageLoad, SWT.BORDER);
@@ -304,6 +304,22 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
                 boolean usePageLoadTimeout = radioUsePageLoadTimeout.getSelection();
                 txtDefaultPageLoadTimeout.setEnabled(usePageLoadTimeout);
                 chckIgnorePageLoadTimeoutException.setEnabled(usePageLoadTimeout);
+            }
+        });
+        
+        radioDelayBetweenActionsInMilisecond.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                txtActionDelayInMilisecond.setEnabled(true);
+                txtActionDelayInSecond.setEnabled(false);
+            }
+        });
+
+        radioDelayBetweenActionsInSecond.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                txtActionDelayInSecond.setEnabled(true);
+                txtActionDelayInMilisecond.setEnabled(false);
             }
         });
         
@@ -409,8 +425,19 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         txtDefaultPageLoadTimeout.setEnabled(usePageLoadTimeout);
         chckIgnorePageLoadTimeoutException.setSelection(webSettingStore.getIgnorePageLoadTimeout());
         chckIgnorePageLoadTimeoutException.setEnabled(usePageLoadTimeout);
-        txtActionDelayInSecond.setText(String.valueOf(webSettingStore.getActionDelay()));
-        txtActionDelayInSecond.setText(String.valueOf(webSettingStore.getActionDelay()));
+
+        radioDelayBetweenActionsInSecond.setSelection(webSettingStore.getUseDelayActionInSecond());
+        radioDelayBetweenActionsInMilisecond.setSelection(!webSettingStore.getUseDelayActionInSecond());
+        if (radioDelayBetweenActionsInSecond.getSelection()) {
+            txtActionDelayInSecond.setText(String.valueOf(webSettingStore.getActionDelay()));
+            txtActionDelayInMilisecond.setEnabled(false);
+        } else {
+            txtActionDelayInMilisecond.setText(String.valueOf(webSettingStore.getActionDelay()));
+            txtActionDelayInSecond.setEnabled(false);
+        }
+        txtActionDelayInSecond.setMessage("Ex: 1");
+        txtActionDelayInMilisecond.setMessage("Ex: 100");
+        
         txtDefaultIEHangTimeout.setText(Integer.toString(webSettingStore.getIEHangTimeout()));
 
         if (!LicenseUtil.isNotFreeLicense()) {
@@ -469,6 +496,18 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         txtActionDelayInSecond.setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
         txtDefaultIEHangTimeout
                 .setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING));
+        
+        radioDelayBetweenActionsInSecond
+                .setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND);
+        radioDelayBetweenActionsInSecond
+                .setSelection(!WebUiExecutionSettingStore.EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND);
+        if (radioDelayBetweenActionsInSecond.getSelection()) {
+            txtActionDelayInSecond.setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
+        } else {
+            txtActionDelayInMilisecond
+                    .setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
+        }
+        
         try {
             webSettingStore.setDefaultCapturedTestObjectAttributeLocators();
             webSettingStore.setDefaultCapturedTestObjectXpathLocators();
@@ -538,7 +577,23 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             }
             
             if (txtActionDelayInSecond != null) {
-                webSettingStore.setActionDelay(Integer.parseInt(txtActionDelayInSecond.getText()));
+                boolean useSec = true;
+                String secText = txtActionDelayInSecond.getText();
+                String milisecText = txtActionDelayInMilisecond.getText();
+                secText = (StringUtils.EMPTY.equals(secText))
+                        ? String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY) : secText;
+                milisecText = (StringUtils.EMPTY.equals(milisecText))
+                        ? String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY) : milisecText;
+
+                if (radioDelayBetweenActionsInSecond != null) {
+                    useSec = radioDelayBetweenActionsInSecond.getSelection();
+                }
+                if (radioDelayBetweenActionsInMilisecond != null) {
+                    useSec = !radioDelayBetweenActionsInMilisecond.getSelection();
+                }
+
+                webSettingStore.setUseDelayActionInSecond(useSec);
+                webSettingStore.setActionDelay(Integer.parseInt(useSec ? secText : milisecText));
             }
             
             if (txtDefaultIEHangTimeout != null) {

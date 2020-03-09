@@ -97,7 +97,7 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     public static String PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT;
     
-    public static String PREFL_BL_ACTION_DELAY_IN_SECONDS;
+    public static String PREF_LBL_ACTION_DELAY_IN_SECONDS;
     
     public static String PREF_LBL_ACTION_DELAY_IN_MILISECONDS;
     

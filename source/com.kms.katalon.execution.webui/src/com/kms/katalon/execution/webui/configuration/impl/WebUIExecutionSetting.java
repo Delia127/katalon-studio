@@ -17,14 +17,20 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
         generalProperties.putAll(getWebUiExecutionProperties());
         return generalProperties;
     }
+    
+    public WebUiExecutionSettingStore getWebUiStore() {
+        return new WebUiExecutionSettingStore(getCurrentProject());
+    }
 
     private Map<String, Object> getWebUiExecutionProperties() {
         Map<String, Object> reportProps = new HashMap<String, Object>();
-        WebUiExecutionSettingStore webUiSettingStore = new WebUiExecutionSettingStore(getCurrentProject());
+        WebUiExecutionSettingStore webUiSettingStore = getWebUiStore();
         try {
             reportProps.put(DriverFactory.ENABLE_PAGE_LOAD_TIMEOUT, webUiSettingStore.getEnablePageLoadTimeout());
             reportProps.put(DriverFactory.DEFAULT_PAGE_LOAD_TIMEOUT, webUiSettingStore.getPageLoadTimeout());
+            int val = webUiSettingStore.getActionDelay();
             reportProps.put(DriverFactory.ACTION_DELAY, webUiSettingStore.getActionDelay());
+            reportProps.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, webUiSettingStore.getUseDelayActionInSecond());
             reportProps.put(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                     webUiSettingStore.getIgnorePageLoadTimeout());
             reportProps.put(RunConfiguration.IMAGE_RECOGNITION_ENABLED, webUiSettingStore.getImageRecognitionEnabled());

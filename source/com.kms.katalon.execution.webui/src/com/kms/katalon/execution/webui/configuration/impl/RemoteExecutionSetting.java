@@ -16,14 +16,19 @@ public class RemoteExecutionSetting extends DefaultExecutionSetting {
         generalProperties.putAll(getRemoteExecutionProperties());
         return generalProperties;
     }
+    
+    public WebUiExecutionSettingStore getStore() {
+        return new WebUiExecutionSettingStore(getCurrentProject());
+    }
 
     private Map<String, Object> getRemoteExecutionProperties() {
         Map<String, Object> reportProps = new HashMap<String, Object>();
-        WebUiExecutionSettingStore webUiSettingStore = new WebUiExecutionSettingStore(getCurrentProject());
+        WebUiExecutionSettingStore webUiSettingStore = getStore();
         try {
             reportProps.put(DriverFactory.ENABLE_PAGE_LOAD_TIMEOUT, webUiSettingStore.getEnablePageLoadTimeout());
             reportProps.put(DriverFactory.DEFAULT_PAGE_LOAD_TIMEOUT, webUiSettingStore.getPageLoadTimeout());
             reportProps.put(DriverFactory.ACTION_DELAY, webUiSettingStore.getActionDelay());
+            reportProps.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, webUiSettingStore.getUseDelayActionInSecond());
             reportProps.put(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                     webUiSettingStore.getIgnorePageLoadTimeout());
         } catch (IOException e) {

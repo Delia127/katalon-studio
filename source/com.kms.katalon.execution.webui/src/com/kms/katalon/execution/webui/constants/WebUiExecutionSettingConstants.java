@@ -19,4 +19,6 @@ public class WebUiExecutionSettingConstants {
 
     public static final String WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED = "execution.default.imageRecognitionEnabled";
 
+    public static final String WEBUI_DEFAULT_USE_DELAY_ACTION_IN_SECOND = "execution.default.useDelayActionInSecond";
+
 }
