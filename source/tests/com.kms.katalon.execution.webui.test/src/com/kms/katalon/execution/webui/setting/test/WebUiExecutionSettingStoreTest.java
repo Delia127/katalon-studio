@@ -31,8 +31,7 @@ public class WebUiExecutionSettingStoreTest {
                 .toString()
                 .equals(WebUiExecutionSettingStore.DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD));
         assertThat("Page load timeout default is 30", store.getPageLoadTimeout() == 30);
-        assertThat("Page load timeout default is 30", store.getPageLoadTimeout() == 30);
-        assertThat("Enable page load timeout by default", store.getEnablePageLoadTimeout() == false);
+        assertThat("Disable page load timeout by default", store.getEnablePageLoadTimeout() == false);
         assertThat("Disable ignore page load timeout by default", store.getIgnorePageLoadTimeout() == false);
         assertThat("List of captured object properties is initialized correctly",
                 flattenStringBooleanList(store.getCapturedTestObjectAttributeLocators())
