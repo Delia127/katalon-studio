@@ -626,6 +626,10 @@ public class AppiumDriverManager {
         return localStorageAppiumDriver.get();
     }
 
+    public static void setDriver(AppiumDriver<?> driver) {
+        localStorageAppiumDriver.set(driver);
+    }
+
     public static Process getAppiumSeverProcess() {
         return localStorageAppiumServer.get();
     }
