@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.egit_4.6.1.201703071140-r.jar" id="org.eclipse.egit" version="4.6.1.201703071140-r"/>
+   <feature url="features/org.eclipse.jgit_4.6.1.201703071140-r.jar" id="org.eclipse.jgit" version="4.6.1.201703071140-r"/>
+   <feature url="features/org.eclipse.egit.mylyn_4.6.1.201703071140-r.jar" id="org.eclipse.egit.mylyn" version="4.6.1.201703071140-r"/>
+</site>
