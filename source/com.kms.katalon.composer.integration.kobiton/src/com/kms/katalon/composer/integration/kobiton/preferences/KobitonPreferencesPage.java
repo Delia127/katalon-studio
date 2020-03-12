@@ -227,8 +227,10 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
                     return apiKeys;
                 } catch (InvocationTargetException exception) {
                     final Throwable cause = exception.getCause();
-                    statusLabel.setText("Failed to retrieve Kobiton Keys");
-                    statusLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+                    if (cause instanceof KobitonApiException) {
+                        statusLabel.setText("Failed to retrieve Kobiton Keys");
+                        statusLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+                    }
                     LoggerSingleton.logError(cause);
                 } catch (InterruptedException e) {
                     // Ignore this
