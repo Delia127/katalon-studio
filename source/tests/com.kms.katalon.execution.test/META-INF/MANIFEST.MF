@@ -7,4 +7,5 @@ Bundle-Vendor: KMS
 Fragment-Host: com.kms.katalon.execution;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
- org.eclipse.persistence.eclipselink
+ org.eclipse.persistence.eclipselink,
+ com.kms.katalon.mockito;bundle-version="1.0.0"
