@@ -23,24 +23,12 @@ public class WSDLParserUtilTest {
     private final String actual = "http://www.dneonline.com/calculator.asmx?wsdl";
 
     @Test
-    public void testNewWSTestObjectsFromWSDL() {
-        File soapFile;
-        try {
-            soapFile = getExtensionsDirectory("resources/soap/calculator.wsdl");
-        } catch (IOException e) {
-            Assert.fail("WSDL file not found");
-            return;
-        }
+    public void testNewWSTestObjectsFromWSDL() throws WSDLException, IOException {
+        File wsdlFile = getExtensionsDirectory("resources/soap/calculator.wsdl");
 
-        wsdlHelperInstance = WSDLHelper.newInstance(soapFile.getAbsolutePath(), null);
+        wsdlHelperInstance = WSDLHelper.newInstance(wsdlFile.getAbsolutePath(), null);
 
-        String location;
-        try {
-            location = WSDLParserUtil.getLocation(wsdlHelperInstance);
-        } catch (WSDLException e) {
-            Assert.fail("Cannot get loaction");
-            return;
-        }
+        String location = WSDLParserUtil.getLocation(wsdlHelperInstance);
 
         assertThat("Locations are not equal", location.equals(actual));
     }
