@@ -16,7 +16,9 @@ import javax.activation.FileDataSource;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
@@ -24,8 +26,6 @@ import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
-import com.kms.katalon.execution.entity.HtmlEmailAdapter;
-import com.kms.katalon.execution.entity.IHtmlEmailAdapter;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
@@ -38,9 +38,9 @@ import net.lingala.zip4j.util.Zip4jConstants;
 public class MailUtil {
     private static final long EMAIL_WARNING_SIZE = 10 * 1024 * 1024L;
 
-    public static final String EMAIL_SEPARATOR = ";";
+    private static final int EMAIL_TIMEOUT = 600000;
 
-    private static IHtmlEmailAdapter adapter = new HtmlEmailAdapter();
+    public static final String EMAIL_SEPARATOR = ";";
 
     public enum MailSecurityProtocolType {
         None, SSL, TLS;
@@ -55,14 +55,6 @@ public class MailUtil {
         }
     }
 
-    public static void setHtmlEmailAdapter(IHtmlEmailAdapter adapter) {
-        MailUtil.adapter = adapter;
-    }
-
-    public static IHtmlEmailAdapter getHtmlEmailAdapter() {
-        return MailUtil.adapter;
-    }
-
     public static String[][] getMailSecurityProtocolTypeArrayValues() {
         MailSecurityProtocolType[] allSecurityProtocolTypes = MailSecurityProtocolType.values();
         String[][] arrayValues = new String[allSecurityProtocolTypes.length][2];
@@ -74,11 +66,50 @@ public class MailUtil {
     }
 
     public static void sendTestMail(EmailConfig conf) throws Exception {
-        HtmlEmail email = adapter.adapt(conf, new HtmlEmail());
-        String evaluatedHtmlMessage = GroovyStringUtil.evaluate(conf.getHtmlMessage(),
-                EmailVariableBinding.getTestEmailVariables());
-        email.setHtmlMsg("<html>" + evaluatedHtmlMessage + "</html>");
+        HtmlEmail email = initEmail(conf);
+        email.setHtmlMsg("<html>"
+                + GroovyStringUtil.evaluate(conf.getHtmlMessage(), EmailVariableBinding.getTestEmailVariables())
+                + "</html>");
         email.send();
+    }
+
+    private static HtmlEmail initEmail(EmailConfig conf) throws EmailException {
+        HtmlEmail email = new HtmlEmail();
+        email.setCharset("utf-8");
+        email.setHostName(conf.getHost());
+        email.setFrom(conf.getFrom(), "");
+        email.setSubject(conf.getSubject());
+
+        String cc = conf.getCc();
+        if (StringUtils.isNotEmpty(cc)) {
+            email.addCc(StringUtils.split(cc, EMAIL_SEPARATOR));
+        }
+        String bcc = conf.getBcc();
+        if (StringUtils.isNotEmpty(bcc)) {
+            email.addBcc(StringUtils.split(bcc, EMAIL_SEPARATOR));
+        }
+        email.addTo(conf.getTos());
+        email.setSubject(conf.getSubject());
+        email.setSocketConnectionTimeout(EMAIL_TIMEOUT);
+        email.setSocketTimeout(EMAIL_TIMEOUT);
+
+        email.setAuthenticator(new DefaultAuthenticator(conf.getUsername(), conf.getPassword()));
+        switch (conf.getSecurityProtocol()) {
+            case None:
+                email.setSmtpPort(Integer.parseInt(conf.getPort()));
+                break;
+            case SSL:
+                email.setSSLOnConnect(true);
+                email.setSslSmtpPort(conf.getPort());
+                break;
+            case TLS:
+                email.setStartTLSEnabled(true);
+                email.setSmtpPort(Integer.parseInt(conf.getPort()));
+                break;
+            default:
+                break;
+        }
+        return email;
     }
 
     public static void sendSummaryMail(EmailConfig conf, TestSuiteLogRecord suiteLogRecord,
@@ -87,14 +118,17 @@ public class MailUtil {
             return;
         }
 
-        HtmlEmail email = adapter.adapt(conf, new HtmlEmail());
+        HtmlEmail email = initEmail(conf);
         EmailAttachment attachment = null;
         File attachedFile = null;
         if (conf.isSendAttachmentEnable()) {
             attachment = attach(conf.getAttachmentOptions(), suiteLogRecord);
             if (attachment != null) {
                 attachedFile = new File(attachment.getURL().toURI());
-                email.attach(new FileDataSource(attachedFile), attachment.getName(), attachment.getDescription(),
+                email.attach(
+                        new FileDataSource(attachedFile), 
+                        attachment.getName(),
+                        attachment.getDescription(),
                         attachment.getDisposition());
             }
         }
@@ -119,7 +153,7 @@ public class MailUtil {
     private static EmailAttachment attach(List<ReportFormatType> attachmentOptions, TestSuiteLogRecord suiteLogRecord)
             throws Exception {
         File logFolder = new File(suiteLogRecord.getLogFolder());
-
+        
         // Zip html report with its dependencies
         File tmpReportDir = new File(System.getProperty("java.io.tmpdir"),
                 logFolder.getName() + "_" + System.currentTimeMillis());
@@ -138,7 +172,7 @@ public class MailUtil {
         }
         if (tmpReportDir.listFiles() != null && tmpReportDir.listFiles().length > 0) {
             File zipFile = zip(tmpReportDir.getAbsolutePath(), tmpReportDir.getName());
-
+    
             if (zipFile.length() > EMAIL_WARNING_SIZE) {
                 LogUtil.printOutputLine(ExecutionMessageConstants.MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE);
             }
@@ -147,7 +181,7 @@ public class MailUtil {
             attachment.setName(zipFile.getName());
             attachment.setURL(zipFile.toURI().toURL());
             attachment.setDisposition(EmailAttachment.ATTACHMENT);
-
+    
             return attachment;
         } else {
             return null;
@@ -204,13 +238,13 @@ public class MailUtil {
             EmailConfig conf = new EmailConfig();
             conf.setHost(store.getHost(encryptionEnabled));
             conf.setPort(store.getPort(encryptionEnabled));
-
+            
             String sender = store.getSender();
             if (store.useUsernameAsSender()) {
                 sender = store.getUsername(encryptionEnabled);
             }
             conf.setFrom(sender);
-
+            
             conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol(encryptionEnabled)));
             conf.setUsername(store.getUsername(encryptionEnabled));
             conf.setPassword(store.getPassword(encryptionEnabled));
