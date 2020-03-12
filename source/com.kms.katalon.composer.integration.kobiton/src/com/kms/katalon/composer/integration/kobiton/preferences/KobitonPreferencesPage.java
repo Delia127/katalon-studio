@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -37,6 +39,7 @@ import com.kms.katalon.composer.execution.preferences.ComboFieldEditor;
 import com.kms.katalon.composer.integration.kobiton.constants.ComposerIntegrationKobitonMessageConstants;
 import com.kms.katalon.composer.integration.kobiton.constants.ComposerKobitonStringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
 import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
@@ -227,12 +230,9 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
                     return apiKeys;
                 } catch (InvocationTargetException exception) {
                     final Throwable cause = exception.getCause();
-                    if (cause instanceof KobitonApiException) {
-                        statusLabel.setText(ComposerKobitonStringConstants.ERROR + ": " + cause.getMessage()); //$NON-NLS-1$
-                        statusLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-                    } else {
-                        LoggerSingleton.logError(cause);
-                    }
+                    statusLabel.setText("Failed to retrieve Kobiton Keys");
+                    statusLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+                    LoggerSingleton.logError(cause);
                 } catch (InterruptedException e) {
                     // Ignore this
                 }
