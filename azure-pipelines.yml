@@ -9,7 +9,7 @@ trigger:
     include:
       # - staging-*
       # - release-*
-      - TECH-3
+      - STUDIO-70
 
 # pr:
 # - staging-*
@@ -153,7 +153,7 @@ stages:
         regionName: 'us-east-1'
         awsCommand: 's3'
         awsSubCommand: 'cp'
-        awsArguments: '$(TMP_DIR)/ s3://katalon/TECH-3 --recursive --acl public-read'
+        awsArguments: '$(TMP_DIR)/ s3://katalon/STUDIO-70 --recursive --acl public-read'
       displayName: Upload Build Package
       # condition: eq(variables.IS_RELEASE, 'true')
 
