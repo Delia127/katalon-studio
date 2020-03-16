@@ -120,7 +120,6 @@ public class ShowUnusedTestObjectHandler {
         String partId = EntityPartUtil.getUnusedTestObjectsPartId();
         MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         MPart mPart = (MPart) modelService.find(partId, application);
-        boolean alreadyOpened = true;
         if (mPart == null) {
             mPart = modelService.createModelElement(MPart.class);
             mPart.setElementId(partId);
@@ -130,7 +129,6 @@ public class ShowUnusedTestObjectHandler {
             mPart.setCloseable(true);
             mPart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
             stack.getChildren().add(mPart);
-            alreadyOpened = false;
         } else {
             eventBroker.post(EventConstants.UNUSED_TEST_OBJECTS_UPDATED, unusedTestObjects);
         }
@@ -142,9 +140,6 @@ public class ShowUnusedTestObjectHandler {
         partService.bringToTop(mPart);
         stack.setSelectedElement(mPart);
 
-        if (!alreadyOpened) {
-            Trackings.trackOpenObject("unusedTestObject");
-        }
-
+        Trackings.trackOpenObject("unusedTestObject");
     }
 }

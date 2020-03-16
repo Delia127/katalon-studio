@@ -8,10 +8,15 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.application.utils.FileUtil;
+import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.dal.exception.DALException;
@@ -38,6 +43,7 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.model.ProjectStatistics;
 import com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
@@ -98,6 +104,14 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         statistics.setContinueOnFailure(isAutoApplyNeighborXpathsEnabled());
         
         statistics.setWebLocatorConfig(getWebLocatorConfig());
+        
+        statistics.setLogTestStepsEnabled(getLogTestStepsEnabled());
+        
+        statistics.setImageRecognitionEnabled(getImageRecognitionEnabled());
+        
+        statistics.setAdditionalTestDataSourceForEnterpriseUser(getAdditionalTestDataSourceForEnterpriseUser());
+        
+        statistics.setAllowUsageTracking(getAllowUsageTracking());
         
         return statistics;
     }
@@ -368,5 +382,40 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     private boolean isAutoApplyNeighborXpathsEnabled() {
         ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
         return store.getAutoApplyNeighborXpathsEnabled();
+    }
+    
+    private boolean getLogTestStepsEnabled() {
+        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
+        return store.getLogTestSteps();
+    }
+    
+    private boolean getImageRecognitionEnabled() {
+        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+        return store.getImageRecognitionEnabled();
+    }
+    
+    private String getAdditionalTestDataSourceForEnterpriseUser() throws IOException {
+        DatabaseSettings databaseSettings = new DatabaseSettings(project.getFolderLocation());
+        String url = databaseSettings.getUrl();
+        if (StringUtils.isNotBlank(url)) {
+            if (url.startsWith("jdbc:oracle")) {
+                return "oracle";
+            }
+            
+            if (url.startsWith("jdbc:sqlserver")) {
+                return "mssql";
+            }
+        }
+        return StringUtils.EMPTY;
+    }
+    
+    private boolean getAllowUsageTracking() {
+        IPreferenceStore prefStore = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
+        boolean allowUsageTracking = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
+                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
+        if (LicenseUtil.isNotFreeLicense()) {
+            return allowUsageTracking;
+        }
+        return true;
     }
 }
