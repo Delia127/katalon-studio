@@ -36,7 +36,9 @@ public class ProfileTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
-        return ImageConstants.IMG_16_PROFILE_ENTITY;
+        return getObject().isDefaultProfile()
+                ? ImageConstants.IMG_16_DEFAULT_PROFILE_ENTITY
+                : ImageConstants.IMG_16_PROFILE_ENTITY;
     }
 
     @Override
