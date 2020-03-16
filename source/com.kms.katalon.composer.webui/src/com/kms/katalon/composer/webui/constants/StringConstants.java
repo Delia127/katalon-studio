@@ -31,6 +31,9 @@ public class StringConstants extends GlobalStringConstants {
 	//EdgeExecutionDynamicContribution
     public static final String LBL_EDGE_EXECUTION_MENU_ITEM = ComposerWebuiMessageConstants.LBL_EDGE_EXECUTION_MENU_ITEM;
     
+    //EdgeChromiumExecutionDynamicContribution
+    public static final String LBL_EDGE_CHROMIUM_EXECUTION_MENU_ITEM = ComposerWebuiMessageConstants.LBL_EDGE_CHROMIUM_EXECUTION_MENU_ITEM;
+    
 	public static final String RESET_DEFAULT = ComposerWebuiMessageConstants.RESET_DEFAULT;
 
 	public static final String PAGE_PREF_AUTO_UPDATE_WEBDRIVERS = ComposerWebuiMessageConstants.PAGE_PREF_AUTO_UPDATE_WEBDRIVERS;

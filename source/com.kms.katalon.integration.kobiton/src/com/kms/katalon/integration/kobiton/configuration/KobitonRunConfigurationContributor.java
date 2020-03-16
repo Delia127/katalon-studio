@@ -25,7 +25,7 @@ import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class KobitonRunConfigurationContributor extends WebUIRunConfigurationContributor {
-    private static final int PREFERRED_ORDER = 8;
+    private static final int PREFERRED_ORDER = 11;
 
     private KobitonDevice selectedDevice;
 

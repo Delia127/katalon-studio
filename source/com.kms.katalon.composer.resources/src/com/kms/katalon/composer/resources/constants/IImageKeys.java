@@ -154,6 +154,8 @@ public interface IImageKeys {
     public static final String CHROME_HEADLESS_16 = "execution/chrome_headless_16.png";
     
     public static final String EDGE_16 = "execution/edge_16.png"; //$NON-NLS-1$
+    
+    public static final String EDGE_CHROMIUM_16 = "execution/edge_chromium_16.png"; //$NON-NLS-1$
 
     public static final String FIREFOX_16 = "execution/firefox_16.png"; //$NON-NLS-1$
 

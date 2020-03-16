@@ -67,6 +67,12 @@
             id="com.kms.katalon.composer.execution.settings.default.4"
             name="Remote">
       </page>
+       <page
+            category="com.kms.katalon.composer.execution.settings.default.1"
+            class="com.kms.katalon.composer.webui.setting.EdgeChromiumPreferencePage"
+            id="com.kms.katalon.composer.execution.settings.default.1.8"
+            name="Edge Chromium">
+      </page>
    </extension>
 	<extension
 	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
