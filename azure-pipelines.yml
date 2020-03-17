@@ -99,6 +99,13 @@ stages:
         ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
       displayName: Build
 
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: './source/tests/com.kms.katalon.tests.report/target/site/jacoco-aggregate/jacoco.xml'
+        artifact: 'jacoco-xml'
+        publishLocation: 'pipeline'
+      displayName: Publish Jacoco Report
+        
     - bash: |
         source ./variable.sh
         echo "##vso[task.setvariable variable=VERSION]${version}"
@@ -342,6 +349,14 @@ stages:
       displayName: Run Window Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'jacoco-xml'
+        targetPath: '$(WORK_DIR)'
+      displayName: Download Jacoco Report
+      condition: eq(variables.SETUP_SUCCESS, 'true')
+
     - bash: |
         set -xe
         WORK_DIR="${WORK_DIR//\\/\/}"
@@ -352,7 +367,7 @@ stages:
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/calculator-bdd-tests"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-service-tests"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples"
-        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml,${WORK_DIR}/web-service-tests/jacoco-report/jacoco.xml,${WORK_DIR}/calculator-bdd-tests/jacoco-report/jacoco.xml,${WORK_DIR}/katalon/source/tests/com.kms.katalon.tests.report/target/site/jacoco-aggregate/jacoco.xml"
+        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml,${WORK_DIR}/web-service-tests/jacoco-report/jacoco.xml,${WORK_DIR}/calculator-bdd-tests/jacoco-report/jacoco.xml,${WORK_DIR}/jacoco.xml"
       displayName: Generate and upload report
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
