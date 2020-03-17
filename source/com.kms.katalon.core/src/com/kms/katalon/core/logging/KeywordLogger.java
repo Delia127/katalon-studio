@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,9 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.CoreConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.main.ScriptEngine;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
-public class KeywordLogger implements IKeywordLogger {
+public class KeywordLogger {
     
     private static final int HR_LENGTH = 20;
     
@@ -99,28 +101,16 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#close()
-     */
-    @Override
     public void close() {
         xmlKeywordLogger.close();
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#getLogFolderPath()
-     */
-    @Override
     public String getLogFolderPath() {
         return xmlKeywordLogger.getLogFolderPath();
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#startSuite(java.lang.String, java.util.Map)
-     */
-    @Override
     public void startSuite(String name, Map<String, String> attributes) {
         logger.info("START {}", name);
         xmlKeywordLogger.startSuite(name, attributes);
@@ -136,10 +126,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#endSuite(java.lang.String, java.util.Map)
-     */
-    @Override
     public void endSuite(String name, Map<String, String> attributes) {
         logger.info(TEST_CASE_HR);
         logger.info("END {}", name);
@@ -148,10 +134,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#startTest(java.lang.String, java.util.Map, java.util.Stack)
-     */
-    @Override
     public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
         logger.info(TEST_CASE_HR);
         logger.info("START {}", name);
@@ -159,19 +141,11 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#endTest(java.lang.String, java.util.Map)
-     */
-    @Override
     public void endTest(String name, Map<String, String> attributes) {
         logger.info("END {}", name);
         xmlKeywordLogger.endTest(name, attributes);
     }
     
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#startCalledTest(java.lang.String, java.util.Map, java.util.Stack)
-     */
-    @Override
     public void startCalledTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
         logger.info(TEST_CASE_HR);
         logger.info("CALL {}", name);
@@ -179,10 +153,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#endCalledTest(java.lang.String, java.util.Map)
-     */
-    @Override
     public void endCalledTest(String name, Map<String, String> attributes) {
         logger.info("END CALL {}", name);
         logger.info(TEST_CASE_HR);
@@ -190,10 +160,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#startListenerKeyword(java.lang.String, java.util.Map, java.util.Stack)
-     */
-    @Override
     public void startListenerKeyword(
             String name, 
             Map<String, String> attributes,
@@ -204,10 +170,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#startKeyword(java.lang.String, java.lang.String, java.util.Map, java.util.Stack)
-     */
-    @Override
     public void startKeyword(
             String name, 
             String actionType, 
@@ -237,10 +199,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#startKeyword(java.lang.String, java.util.Map, java.util.Stack)
-     */
-    @Override
     public void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
     	
     	if (shouldLogTestSteps()) {
@@ -250,10 +208,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#startKeyword(java.lang.String, java.util.Map, int)
-     */
-    @Override
     public void startKeyword(String name, Map<String, String> attributes, int nestedLevel) {
     	
     	if (shouldLogTestSteps()) {
@@ -263,10 +217,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#endKeyword(java.lang.String, java.util.Map, int)
-     */
-    @Override
     public void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
     	
     	if (shouldLogTestSteps()) {
@@ -285,10 +235,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#endListenerKeyword(java.lang.String, java.util.Map, java.util.Stack)
-     */
-    @Override
     public void endListenerKeyword(
             String name, 
             Map<String, String> attributes,
@@ -298,10 +244,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#endKeyword(java.lang.String, java.lang.String, java.util.Map, java.util.Stack)
-     */
-    @Override
     public void endKeyword(
             String name, 
             String keywordType, 
@@ -315,10 +257,6 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#endKeyword(java.lang.String, java.util.Map, java.util.Stack)
-     */
-    @Override
     public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
     	
     	if (shouldLogTestSteps()) {
@@ -327,19 +265,11 @@ public class KeywordLogger implements IKeywordLogger {
     	}
     }
     
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logFailed(java.lang.String)
-     */
-    @Override
     public void logFailed(String message) {
         logFailed(message, null);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logFailed(java.lang.String, java.util.Map, java.lang.Throwable)
-     */
-    @Override
     public void logFailed(String message, Map<String, String> attributes, Throwable throwable) {
         if (attributes == null) {
             attributes = new HashMap<>();
@@ -352,28 +282,16 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logFailed(java.lang.String, java.util.Map)
-     */
-    @Override
     public void logFailed(String message, Map<String, String> attributes) {
         logger.error("{} {}", FAILED, message);
         xmlKeywordLogger.logFailed(message, attributes);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logWarning(java.lang.String)
-     */
-    @Override
     public void logWarning(String message) {
         logWarning(message, null);
     }
     
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logWarning(java.lang.String, java.util.Map, java.lang.Throwable)
-     */
-    @Override
     public void logWarning(String message, Map<String, String> attributes, Throwable throwable) {
         if (attributes == null) {
             attributes = new HashMap<>();
@@ -385,10 +303,6 @@ public class KeywordLogger implements IKeywordLogger {
         logWarning(message, attributes);
     }
     
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logWarning(java.lang.String, java.util.Map, java.lang.Throwable, boolean)
-     */
-    @Override
     public void logWarning(String message, Map<String, String> attributes, Throwable throwable, boolean isKeyword) {
         if (isKeyword && !shouldLogTestSteps()) {
             return;
@@ -396,38 +310,22 @@ public class KeywordLogger implements IKeywordLogger {
         logWarning(message, attributes, throwable);
     }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logWarning(java.lang.String, java.util.Map)
-     */
-    @Override
     public void logWarning(String message, Map<String, String> attributes) {
         logger.warn(message);
         xmlKeywordLogger.logWarning(message, attributes);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logPassed(java.lang.String)
-     */
-    @Override
     public void logPassed(String message) {
         logPassed(message, null);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logPassed(java.lang.String, java.util.Map)
-     */
-    @Override
     public void logPassed(String message, Map<String, String> attributes) {
         logger.debug("{} {}", PASSED, message);
         xmlKeywordLogger.logPassed(message, attributes);
     }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logPassed(java.lang.String, java.util.Map, boolean)
-     */
-    @Override
     public void logPassed(String message, Map<String, String> attributes, boolean isKeyword) {
         if (isKeyword && !shouldLogTestSteps()) {
             return;
@@ -435,38 +333,22 @@ public class KeywordLogger implements IKeywordLogger {
         logPassed(message, attributes);
     }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logInfo(java.lang.String)
-     */
-    @Override
     public void logInfo(String message) {
         logInfo(message, null);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logInfo(java.lang.String, java.util.Map)
-     */
-    @Override
     public void logInfo(String message, Map<String, String> attributes) {
         logger.info(message);
         xmlKeywordLogger.logInfo(this, message, attributes);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logRunData(java.lang.String, java.lang.String)
-     */
-    @Override
     public void logRunData(String dataKey, String dataValue) {
         logger.info("{} = {}", dataKey, dataValue);
         xmlKeywordLogger.logRunData(dataKey, dataValue);
     }
     
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logError(java.lang.String, java.util.Map, java.lang.Throwable)
-     */
-    @Override
     public void logError(String message, Map<String, String> attributes, Throwable throwable) {
         if (attributes == null) {
             attributes = new HashMap<>();
@@ -478,10 +360,6 @@ public class KeywordLogger implements IKeywordLogger {
         logError(message, attributes);
     }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logError(java.lang.String, java.util.Map, java.lang.Throwable, boolean)
-     */
-    @Override
     public void logError(String message, Map<String, String> attributes, Throwable throwable, boolean isKeyword) {
         if (isKeyword && !shouldLogTestSteps()) {
             return;
@@ -489,38 +367,22 @@ public class KeywordLogger implements IKeywordLogger {
         logError(message, attributes, throwable);
     }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logError(java.lang.String)
-     */
-    @Override
     public void logError(String message) {
         logError(message, null);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logError(java.lang.String, java.util.Map)
-     */
-    @Override
     public void logError(String message, Map<String, String> attributes) {
         logger.error("{} {}", FAILED, message);
         xmlKeywordLogger.logError(message, attributes);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logMessage(com.kms.katalon.core.logging.LogLevel, java.lang.String)
-     */
-    @Override
     public void logMessage(LogLevel level, String message) {
         logMessage(level, message, new HashMap<>());
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logMessage(com.kms.katalon.core.logging.LogLevel, java.lang.String, java.util.Map)
-     */
-    @Override
     public void logMessage(LogLevel level, String message, Map<String, String> attributes) {
         log(level, message);
         xmlKeywordLogger.logMessage(this, level, message, attributes);
@@ -546,64 +408,36 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logMessage(com.kms.katalon.core.logging.LogLevel, java.lang.String, java.lang.Throwable)
-     */
-    @Override
     public void logMessage(LogLevel level, String message, Throwable thrown) {
         log(level, message);
         xmlKeywordLogger.logMessage(level, message, thrown);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#setPendingDescription(java.lang.String)
-     */
-    @Override
     public void setPendingDescription(String stepDescription) {
         xmlKeywordLogger.setPendingDescription(stepDescription);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logNotRun(java.lang.String)
-     */
-    @Override
     public void logNotRun(String message) {
         logNotRun(message, null);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logNotRun(java.lang.String, java.util.Map)
-     */
-    @Override
     public void logNotRun(String message, Map<String, String> attributes) {
         logger.warn("SKIPPED {}", message);
         xmlKeywordLogger.logNotRun(message, attributes);
     }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logDebug(java.lang.String)
-     */
-    @Override
     public void logDebug(String message) {
         logger.debug(message);
         xmlKeywordLogger.logDebug(this, message, null);
     }
     
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#isInfoEnabled()
-     */
-    @Override
     public boolean isInfoEnabled() {
         return logger.isInfoEnabled();
     }
     
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#isDebugEnabled()
-     */
-    @Override
     public boolean isDebugEnabled() {
         return logger.isDebugEnabled();
     }

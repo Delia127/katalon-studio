@@ -4,13 +4,13 @@ import java.text.MessageFormat;
 import java.util.Map;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.logging.IKeywordLogger;
+import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 
 public class DriverConfigurationProvider implements IDriverConfigurationProvider {
-    private IKeywordLogger logger;
+    private KeywordLogger logger;
 
-    DriverConfigurationProvider(IKeywordLogger logger) {
+    DriverConfigurationProvider(KeywordLogger logger) {
         this.logger = logger;
     }
 
