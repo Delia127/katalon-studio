@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.kms.katalon.selenium.driver.IDelayableDriver;
 
-public class TestIDelayableDriver {
+public class IDelayableDriverTest {
 
     @Test
     public void testDelayActionIsAccurateWithin100Miliseconds() {
