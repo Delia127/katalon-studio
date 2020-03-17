@@ -3,6 +3,7 @@ package com.kms.katalon.composer.execution.settings;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -426,8 +427,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         chckIgnorePageLoadTimeoutException.setSelection(webSettingStore.getIgnorePageLoadTimeout());
         chckIgnorePageLoadTimeoutException.setEnabled(usePageLoadTimeout);
 
-        radioDelayBetweenActionsInSecond.setSelection(webSettingStore.getUseDelayActionInSecond());
-        radioDelayBetweenActionsInMilisecond.setSelection(!webSettingStore.getUseDelayActionInSecond());
+        radioDelayBetweenActionsInSecond.setSelection(webSettingStore.getUseDelayActionTimeUnit().equals(TimeUnit.SECONDS));
+        radioDelayBetweenActionsInMilisecond.setSelection(webSettingStore.getUseDelayActionTimeUnit().equals(TimeUnit.MILLISECONDS));
         if (radioDelayBetweenActionsInSecond.getSelection()) {
             txtActionDelayInSecond.setText(String.valueOf(webSettingStore.getActionDelay()));
             txtActionDelayInMilisecond.setEnabled(false);
@@ -497,10 +498,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         txtDefaultIEHangTimeout
                 .setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING));
         
-        radioDelayBetweenActionsInSecond
-                .setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND);
-        radioDelayBetweenActionsInSecond
-                .setSelection(!WebUiExecutionSettingStore.EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND);
+        radioDelayBetweenActionsInSecond.setSelection(true);
+        radioDelayBetweenActionsInMilisecond.setSelection(false);
         if (radioDelayBetweenActionsInSecond.getSelection()) {
             txtActionDelayInSecond.setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
         } else {
@@ -577,7 +576,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             }
             
             if (txtActionDelayInSecond != null) {
-                boolean useSec = true;
+                TimeUnit chosenTimeUnit = null;
                 String secText = txtActionDelayInSecond.getText();
                 String milisecText = txtActionDelayInMilisecond.getText();
                 secText = (StringUtils.EMPTY.equals(secText))
@@ -586,14 +585,17 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
                         ? String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY) : milisecText;
 
                 if (radioDelayBetweenActionsInSecond != null) {
-                    useSec = radioDelayBetweenActionsInSecond.getSelection();
+                    if(radioDelayBetweenActionsInSecond.getSelection()) {
+                        chosenTimeUnit = TimeUnit.SECONDS;
+                    }
                 }
                 if (radioDelayBetweenActionsInMilisecond != null) {
-                    useSec = !radioDelayBetweenActionsInMilisecond.getSelection();
+                    if(radioDelayBetweenActionsInMilisecond.getSelection()) {
+                        chosenTimeUnit = TimeUnit.MILLISECONDS;
+                    }
                 }
-
-                webSettingStore.setUseDelayActionInSecond(useSec);
-                webSettingStore.setActionDelay(Integer.parseInt(useSec ? secText : milisecText));
+                webSettingStore.setUseDelayActionTimeUnit(chosenTimeUnit);
+                webSettingStore.setActionDelay(Integer.parseInt(chosenTimeUnit.equals(TimeUnit.SECONDS) ? secText : milisecText));
             }
             
             if (txtDefaultIEHangTimeout != null) {

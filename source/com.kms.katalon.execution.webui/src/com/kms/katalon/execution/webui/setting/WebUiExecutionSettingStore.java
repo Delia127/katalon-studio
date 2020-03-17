@@ -3,6 +3,7 @@ package com.kms.katalon.execution.webui.setting;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,7 +41,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
 
     public static final boolean EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED = false;
     
-    public static final boolean EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND = true;
+    public static final String EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT = TimeUnit.SECONDS.toString();
 
     
     public static WebUiExecutionSettingStore getStore() {
@@ -213,16 +214,16 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, selection);
     }
     
-    public void setUseDelayActionInSecond(boolean selection) throws IOException {
-        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_IN_SECOND, selection);
+    public void setUseDelayActionTimeUnit(TimeUnit timeUnit) throws IOException {
+        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_TIME_UNIT, timeUnit.toString());
     }
 
-    public boolean getUseDelayActionInSecond() {
+    public TimeUnit getUseDelayActionTimeUnit() {
         try {
-            return getBoolean(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_IN_SECOND,
-                    EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND);
+            return TimeUnit.valueOf(getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_TIME_UNIT,
+                    EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT));
         } catch (IOException e) {
-            return EXECUTION_DEFAULT_USE_ACTION_DELAY_IN_SECOND;
+            return TimeUnit.valueOf(EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT);
         }
     }
 }

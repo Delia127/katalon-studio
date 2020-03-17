@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -26,7 +27,7 @@ public class WebUiExecutionSettingStoreTest {
         projectEntity.setFolderLocation(getExtensionsDirectory("resources/test1").getAbsolutePath());
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(projectEntity);
         assertThat("Action delay default is 0", store.getActionDelay() == 0);
-        assertThat("Action delay default is in second", store.getUseDelayActionInSecond());
+        assertThat("Action delay default is in second", store.getUseDelayActionTimeUnit().equals(TimeUnit.SECONDS));
         assertThat("Selector method default is BASIC", store.getCapturedTestObjectSelectorMethod()
                 .toString()
                 .equals(WebUiExecutionSettingStore.DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD));
@@ -46,7 +47,7 @@ public class WebUiExecutionSettingStoreTest {
         ProjectEntity projectEntity = new ProjectEntity();
         projectEntity.setFolderLocation(getExtensionsDirectory("resources/test2").getAbsolutePath());
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(projectEntity);
-        store.setUseDelayActionInSecond(false);
+        store.setUseDelayActionTimeUnit(TimeUnit.SECONDS);
         store.setActionDelay(250);
         store.setIEHangTimeout(22);
         store.setEnablePageLoadTimeout(false);
@@ -55,7 +56,8 @@ public class WebUiExecutionSettingStoreTest {
         store.setIgnorePageLoadTimeout(true);
 
         WebUiExecutionSettingStore anotherStore = new WebUiExecutionSettingStore(projectEntity);
-        assertThat("User can specify use delay action in second", anotherStore.getUseDelayActionInSecond() == false);
+        assertThat("User can specify use delay action in second",
+                anotherStore.getUseDelayActionTimeUnit().equals(TimeUnit.SECONDS));
         assertThat("User can specify the amount of action delay", anotherStore.getActionDelay() == 250);
         assertThat("User can specify the IE hang timeout", anotherStore.getIEHangTimeout() == 22);
         assertThat("User can change page load timeout", anotherStore.getEnablePageLoadTimeout() == false);

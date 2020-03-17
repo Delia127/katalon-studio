@@ -30,7 +30,7 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
             reportProps.put(DriverFactory.DEFAULT_PAGE_LOAD_TIMEOUT, webUiSettingStore.getPageLoadTimeout());
             int val = webUiSettingStore.getActionDelay();
             reportProps.put(DriverFactory.ACTION_DELAY, webUiSettingStore.getActionDelay());
-            reportProps.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, webUiSettingStore.getUseDelayActionInSecond());
+            reportProps.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, webUiSettingStore.getUseDelayActionTimeUnit());
             reportProps.put(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                     webUiSettingStore.getIgnorePageLoadTimeout());
             reportProps.put(RunConfiguration.IMAGE_RECOGNITION_ENABLED, webUiSettingStore.getImageRecognitionEnabled());

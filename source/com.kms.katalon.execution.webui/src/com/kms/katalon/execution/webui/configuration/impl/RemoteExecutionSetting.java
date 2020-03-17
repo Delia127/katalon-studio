@@ -28,7 +28,7 @@ public class RemoteExecutionSetting extends DefaultExecutionSetting {
             reportProps.put(DriverFactory.ENABLE_PAGE_LOAD_TIMEOUT, webUiSettingStore.getEnablePageLoadTimeout());
             reportProps.put(DriverFactory.DEFAULT_PAGE_LOAD_TIMEOUT, webUiSettingStore.getPageLoadTimeout());
             reportProps.put(DriverFactory.ACTION_DELAY, webUiSettingStore.getActionDelay());
-            reportProps.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, webUiSettingStore.getUseDelayActionInSecond());
+            reportProps.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, webUiSettingStore.getUseDelayActionTimeUnit());
             reportProps.put(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                     webUiSettingStore.getIgnorePageLoadTimeout());
         } catch (IOException e) {

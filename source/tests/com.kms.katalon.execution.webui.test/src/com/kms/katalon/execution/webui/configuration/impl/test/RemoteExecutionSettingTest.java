@@ -2,6 +2,7 @@ package com.kms.katalon.execution.webui.configuration.impl.test;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class RemoteExecutionSettingTest {
         Mockito.when(store.getEnablePageLoadTimeout()).thenReturn(false);
         Mockito.when(store.getPageLoadTimeout()).thenReturn(24);
         Mockito.when(store.getActionDelay()).thenReturn(12);
-        Mockito.when(store.getUseDelayActionInSecond()).thenReturn(false);
+        Mockito.when(store.getUseDelayActionTimeUnit()).thenReturn(TimeUnit.SECONDS);
         Mockito.when(store.getIgnorePageLoadTimeout()).thenReturn(true);
 
         RemoteExecutionSetting spiedSetting = Mockito.spy(new MyWebUiExecutionSetting(store));
@@ -35,7 +36,7 @@ public class RemoteExecutionSettingTest {
         assert (boolean) spiedSetting.getGeneralProperties().get(DriverFactory.ENABLE_PAGE_LOAD_TIMEOUT) == false;
         assert ((int) spiedSetting.getGeneralProperties().get(DriverFactory.ACTION_DELAY)) == 12;
         assert (int) spiedSetting.getGeneralProperties().get(DriverFactory.DEFAULT_PAGE_LOAD_TIMEOUT) == 24;
-        assert (boolean) spiedSetting.getGeneralProperties().get(DriverFactory.USE_ACTION_DELAY_IN_SECOND) == false;
+        assert (TimeUnit) spiedSetting.getGeneralProperties().get(DriverFactory.USE_ACTION_DELAY_IN_SECOND) == TimeUnit.SECONDS;
         assert (boolean) spiedSetting.getGeneralProperties()
                 .get(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION) == true;
     }
