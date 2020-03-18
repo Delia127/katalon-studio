@@ -12,6 +12,8 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 
 public class ProfileTreeEntity extends AbstractTreeEntity {
+    
+    public static final String DEFAULT_PROFILE_NAME = ExecutionProfileEntity.DF_PROFILE_NAME;
 
     private static final long serialVersionUID = -117775481186850234L;
     
@@ -58,12 +60,14 @@ public class ProfileTreeEntity extends AbstractTreeEntity {
 
     @Override
     public boolean isRemoveable() throws Exception {
-        return !getObject().isDefaultProfile();
+        String profileName = getObject().getName();
+        return !DEFAULT_PROFILE_NAME.equals(profileName);
     }
 
     @Override
     public boolean isRenamable() throws Exception {
-        return !getObject().isDefaultProfile();
+        String profileName = getObject().getName();
+        return !DEFAULT_PROFILE_NAME.equals(profileName);
     }
 
     @Override

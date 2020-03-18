@@ -31,7 +31,16 @@ public class SetDefaultExecutionProfileHandler extends CommonExplorerHandler {
     @Override
     public boolean canExecute() {
         ITreeEntity firstSelection = getFirstSelection();
-        return firstSelection != null && firstSelection instanceof ProfileTreeEntity;
+        if (firstSelection == null || !(firstSelection instanceof ProfileTreeEntity)) {
+            return false;
+        }
+        ExecutionProfileEntity selectedProfile;
+        try {
+            selectedProfile = (ExecutionProfileEntity) firstSelection.getObject();
+        } catch (Exception e) {
+            return false;
+        }
+        return !selectedProfile.isDefaultProfile();
     }
 
     @Override
