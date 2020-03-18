@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.webservice.editor;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 import com.kms.katalon.entity.webservice.FormDataBodyParameter;;
 
@@ -182,10 +184,9 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
 
     private String convertToRelativePathIfPossible(String filePath) {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-        if (filePath.startsWith(projectDir)) {
-            Path basePath = Paths.get(projectDir);
-            Path absolutePath = Paths.get(filePath);
-            return basePath.relativize(absolutePath).toString();
+        File file = new File(filePath);
+        if (file.isAbsolute() && file.getAbsolutePath().startsWith(projectDir)) {
+            return PathUtil.absoluteToRelativePath(filePath, projectDir);
         } else {
             return filePath;
         }
