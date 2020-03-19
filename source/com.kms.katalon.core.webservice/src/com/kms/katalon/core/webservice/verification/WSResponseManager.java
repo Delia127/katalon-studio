@@ -1,6 +1,8 @@
 package com.kms.katalon.core.webservice.verification;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,12 +44,24 @@ public class WSResponseManager {
             String responseObjectJson = (String) RunConfiguration
                     .getProperty(StringConstants.WS_VERIFICATION_RESPONSE_OBJECT);
 
+            System.out.println("json: "+responseObjectJson);
+            
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(HttpBodyContent.class, new HttpBodyContentInstanceCreator()).create();
 
             response = gson.fromJson(responseObjectJson, ResponseObject.class);
-            HttpBodyContent textBodyContent = new HttpTextBodyContent(response.getResponseBodyContent());
-            response.setBodyContent(textBodyContent);
+            String responseText = null;
+
+            Field field = response.getClass().getDeclaredField("responseText");
+            if (Modifier.isPrivate(field.getModifiers())) {
+                field.setAccessible(true);
+                responseText = (String) field.get(response);
+            }
+
+            if (responseText != null) {
+                HttpBodyContent textBodyContent = new HttpTextBodyContent(responseText);
+                response.setBodyContent(textBodyContent);
+            }
         }
 
         return response;
