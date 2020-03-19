@@ -192,24 +192,33 @@ public class ActivationDialogV2 extends AbstractDialog {
                                 return;
                             }
 
+                            LogUtil.logInfo("Activating credentials...");
                             licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
                             if (licenseResource != null) {
                                 license = licenseResource.getLicense();
                                 if (license != null) {
                                     if (license.getOrganizationId() != null) {
+                                        LogUtil.logInfo("Retrieving organization information of license...");
                                         String org = ActivationInfoCollector.getOrganization(username, password,
                                                 license.getOrganizationId());
+
+                                        LogUtil.logInfo("Saving organization information and closing activation dialog...");
                                         save(org);
                                     } else {
+                                        LogUtil.logInfo("Fetching organizations...");
                                         getOrganizations();
                                         setProgressMessage(StringUtils.EMPTY, false);
                                     }
                                 } else {
+                                    LogUtil.logError("Could not get license from TestOps server. Error message: "
+                                            + errorMessage.toString());
                                     enableObject(true);
                                     setProgressMessage(errorMessage.toString(), true);
                                     ActivationInfoCollector.sendTrackingForActivate(username, machineId, false, errorMessage);
                                 }
                             } else {
+                                LogUtil.logError(
+                                        "Failed to active user credentials. Error message: " + errorMessage.toString());
                                 enableObject(true);
                                 setProgressMessage(errorMessage.toString(), true);
                                 ActivationInfoCollector.sendTrackingForActivate(username, machineId, false, errorMessage);
@@ -219,6 +228,8 @@ public class ActivationDialogV2 extends AbstractDialog {
                             setProgressMessage(MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, true);
                             enableObject(true);
                             ActivationInfoCollector.sendTrackingForActivate(username, machineId, false, new StringBuilder().append(ex));
+                        } catch (Throwable t) {
+                            LogUtil.logError(t);
                         }
                     });
                 });
@@ -323,9 +334,13 @@ public class ActivationDialogV2 extends AbstractDialog {
                     String email = txtEmail.getText();
                     String password = txtPassword.getText();
 
+                    LogUtil.logInfo("Retrievinng token using credentials...");
                     String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, password);
+
+                    LogUtil.logInfo("Fetching organizations using token...");
                     organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token);
 
+                    LogUtil.logInfo(organizations.size() + " organization(s) fetched");
                     switch (organizations.size()) {
                         case 0:
                             AnalyticsOrganization organizationDefault = AnalyticsApiProvider.createDefaultOrganization(serverUrl, token);
