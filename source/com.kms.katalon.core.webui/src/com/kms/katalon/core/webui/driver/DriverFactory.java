@@ -1282,7 +1282,7 @@ public class DriverFactory {
      * @return the action delay
      */
     public static int getActionDelay() {
-        return driverConfigProvider.getActionDelay();
+        return driverConfigProvider.getActionDelayInMilisecond();
     }
 
     /**

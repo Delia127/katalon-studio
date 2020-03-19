@@ -15,7 +15,7 @@ public class DriverConfigurationProvider implements IDriverConfigurationProvider
     }
 
     @Override
-    public int getActionDelay() {
+    public int getActionDelayInMilisecond() {
         int actionDelay = 0;
         final Map<String, Object> executionGeneralProperties = RunConfiguration.getExecutionGeneralProperties();
         if (executionGeneralProperties.containsKey(DriverFactory.ACTION_DELAY)) {
