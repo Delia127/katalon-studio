@@ -17,10 +17,12 @@ public class WebDriverCleanerUtil {
             killProcessOnWindows("chromedriver.exe", logFile, errorLogFile);
             killProcessOnWindows("geckodriver.exe", logFile, errorLogFile);
             killProcessOnWindows("MicrosoftWebDriver.exe", logFile, errorLogFile);
+            killProcessOnWindows("msedgedriver.exe", logFile, errorLogFile);
             killProcessOnWindows("IEDriverServer.exe", logFile, errorLogFile);
         } else {
             killProcessOnUnix("chromedriver", logFile, errorLogFile);
             killProcessOnUnix("geckodriver", logFile, errorLogFile);
+            killProcessOnUnix("msedgedriver", logFile, errorLogFile);
         }
     }
     
@@ -50,6 +52,15 @@ public class WebDriverCleanerUtil {
         String os = getOS();
         if (os.toLowerCase().contains("win")) {
             killProcessOnWindows("MicrosoftWebDriver.exe");
+        }
+    }
+    
+    public static void terminateEdgeChromiumDriver() throws InterruptedException, IOException {
+        String os = getOS();
+        if (os.toLowerCase().contains("win")) {
+            killProcessOnWindows("msedgedriver.exe");
+        } else {
+            killProcessOnUnix("msedgedriver");
         }
     }
 

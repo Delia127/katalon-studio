@@ -31,7 +31,9 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.integration.git.components.utils.Protocol;
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
+import com.kms.katalon.tracking.service.Trackings;
 
 /**
  * UI Wrapper for {@link FetchOperation}
@@ -100,10 +102,19 @@ public class CustomFetchOperationUI {
                 op.setCredentialsProvider(new EGitCredentialsProvider());
             }
             op.run(monitor);
+            trackFetchOperation(op.getOperationResult());
             return op.getOperationResult();
         } catch (InvocationTargetException e) {
             throw new CoreException(Activator.createErrorStatus(e.getCause().getMessage(), e.getCause()));
         }
+    }
+    
+    private void trackFetchOperation(FetchResult fetchResult) {
+        try {
+            URIish remoteUri = fetchResult.getURI();
+            String protocol = Protocol.fromUri(remoteUri).getDefaultScheme();
+            Trackings.trackGitOperation("fetch", protocol);
+        } catch (Exception ignored) {}
     }
 
     /**

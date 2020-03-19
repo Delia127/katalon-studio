@@ -192,6 +192,11 @@ public class Trackings {
         String action = "open" + StringUtils.capitalize(objectType);
         trackUserAction(action);
     }
+    
+    public static void trackSaveObject(String objectType) {
+        String action = "save" + StringUtils.capitalize(objectType);
+        trackUserAction(action);
+    }
 
     public static void trackOpenHelp(String url) {
         trackUserAction("openHelp", "url", url);
@@ -375,6 +380,34 @@ public class Trackings {
     public static void trackInstallPlugins(List<Long> installedPluginIds, String apiKey, RunningMode runningMode) {
         trackUserAction("installPlugins", "pluginIdList", JsonUtil.toJson(installedPluginIds), "apiKey",
                 StringUtils.isNotBlank(apiKey) ? apiKey : StringUtils.EMPTY, "runningMode", runningMode.toString());
+    }
+    
+    public static void trackUsePrivatePlugins(int customKeywordPluginCount, int idePluginCount) {
+        trackUserAction("usePrivatePlugin", "customKeywordPluginsCount", customKeywordPluginCount, "idePluginsCount", idePluginCount);
+    }
+    
+    public static void trackOpenExportTestArtifactsDialog() {
+        trackUserAction("openExportTestArtifactsDialog");
+    }
+    
+    public static void trackOpenImportTestArtifactsDialog() {
+        trackUserAction("openImportTestArtifactsDialog");
+    }
+
+    public static void trackOpenConsoleView() {
+        trackUserAction("openConsoleView");
+    }
+    
+    public static void trackGitOperation(String operationName, String protocol) {
+        trackUserAction("performGitOperation", "operationName", operationName, "protocol", protocol);
+    }
+    
+    public static void trackUseSourceCodeForDebugging(String className) {
+        trackUserAction("useSourceCodeForDebugging", "className", className);
+    }
+    
+    public static void trackUseAdditionalTestDataSource(String dataSourceType) {
+        trackUserAction("useAdditionalTestDataSource", "type", dataSourceType);
     }
     
     private static void trackUserAction(String actionName, Object... properties) {

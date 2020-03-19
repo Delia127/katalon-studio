@@ -59,6 +59,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String CONF_PROPERTY_EDGE_DRIVER_PATH = "edgeDriverPath";
     public static final String CONF_PROPERTY_CHROME_DRIVER_PATH = "chromeDriverPath";
     public static final String CONF_PROPERTY_GECKO_DRIVER_PATH = "geckoDriverPath";
+    public static final String CONF_PROPERTY_EDGE_CHROMIUM_DRIVER_PATH = "edgeChromiumDriverPath";
     public static final String CONF_PROPERTY_WAIT_FOR_IE_HANGING = "waitForIEHanging";
     public static final String CONF_PROPERTY_ENABLE_PAGE_LOAD_TIMEOUT = "enablePageLoadTimeout";
     public static final String CONF_PROPERTY_DEFAULT_PAGE_LOAD_TIMEOUT = "defaultPageLoadTimeout";

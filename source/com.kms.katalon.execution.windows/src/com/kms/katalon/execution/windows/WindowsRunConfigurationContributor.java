@@ -34,7 +34,7 @@ public class WindowsRunConfigurationContributor implements IRunConfigurationCont
 
     @Override
     public int getPreferredOrder() {
-        return 8;
+        return 12;
     }
 
     @Override

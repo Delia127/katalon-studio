@@ -133,6 +133,9 @@ public class LifeCycleManager {
 
             @Override
             public void partActivated(IWorkbenchPartReference partRef) {
+                if (IdConstants.ECLIPSE_CONSOLE_PART_ID.equals(partRef.getId())) {
+                    Trackings.trackOpenConsoleView();
+                }
             }
         });
 
