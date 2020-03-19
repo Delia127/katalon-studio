@@ -19,13 +19,13 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.webservice.verification.WSResponseManager;
 
 public class WSResponseManagerTest {
-    
-    private static final String expectedResponseText="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Pet><category><id>1</id><name>string</name></category><id>1</id><name>SEBEK</name><photoUrls><photoUrl>string</photoUrl></photoUrls><status>available</status><tags><tag><id>1</id><name>string</name></tag></tags></Pet>";
 
-    private static final String expectedResponseBodyContent="<id>1</id>";
-    
+    private static final String expectedResponseText = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Pet><category><id>1</id><name>string</name></category><id>1</id><name>SEBEK</name><photoUrls><photoUrl>string</photoUrl></photoUrls><status>available</status><tags><tag><id>1</id><name>string</name></tag></tags></Pet>";
+
+    private static final String expectedResponseBodyContent = "<id>1</id>";
+
     private static String responseTextJson = "";
-    
+
     private static final Map<String, Object> mapObject = new HashMap<>();
 
     @Before

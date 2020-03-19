@@ -43,8 +43,6 @@ public class WSResponseManager {
         if (response == null) {
             String responseObjectJson = (String) RunConfiguration
                     .getProperty(StringConstants.WS_VERIFICATION_RESPONSE_OBJECT);
-
-            System.out.println("json: "+responseObjectJson);
             
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(HttpBodyContent.class, new HttpBodyContentInstanceCreator()).create();
