@@ -295,6 +295,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String CB_FOLLOW_REDIRECTS; 
     
+    public static String PREF_WARN_CLIENT_CERT;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

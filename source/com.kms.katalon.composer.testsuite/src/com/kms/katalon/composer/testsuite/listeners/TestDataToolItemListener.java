@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -55,6 +56,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.license.models.LicenseType;
 
 public class TestDataToolItemListener extends SelectionAdapter {
@@ -77,7 +79,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
             return;
         }
 
-        if (e.getSource() == null) return;
+        if (e.getSource() == null)
+            return;
 
         if (e.getSource() instanceof ToolItem) {
             toolItemSelected(e);
@@ -163,11 +166,14 @@ public class TestDataToolItemListener extends SelectionAdapter {
             if (currentProject == null) {
                 return;
             }
-            
+
             boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
             int items = getTableItems().size();
             if (!isEnterpriseAccount && items >= 1) {
-                MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+                // MessageDialog.openWarning(tableViewer.getTable().getShell(),
+                // GlobalStringConstants.INFO,
+                // ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION,
                         ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
                 return;
             }
@@ -184,13 +190,14 @@ public class TestDataToolItemListener extends SelectionAdapter {
                 for (Object childResult : dialog.getResult()) {
                     if (childResult instanceof TestDataTreeEntity) {
                         DataFileEntity testData = (DataFileEntity) ((TestDataTreeEntity) childResult).getObject();
-                        if (testData == null) continue;
+                        if (testData == null)
+                            continue;
                         dataFileEntities.add(testData);
                     } else if (childResult instanceof FolderTreeEntity) {
                         dataFileEntities.addAll(getTestDatasFromFolderTree((FolderTreeEntity) childResult));
                     }
                 }
-                
+
                 if (!isEnterpriseAccount && (items + dataFileEntities.size()) > 1) {
                     MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
                             ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
@@ -259,7 +266,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
     private void removeTestDataLink() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.size() == 0) return;
+        if (selection == null || selection.size() == 0)
+            return;
         @SuppressWarnings("unchecked")
         Iterator<TestCaseTestDataLink> iterator = selection.toList().iterator();
 
@@ -268,7 +276,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
             for (VariableLink variableLink : view.getVariableLinks()) {
 
-                if ((variableLink.getType() == VariableType.DATA_COLUMN || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) 
+                if ((variableLink.getType() == VariableType.DATA_COLUMN
+                        || variableLink.getType() == VariableType.DATA_COLUMN_INDEX)
                         && variableLink.getTestDataLinkId().equals(linkNode.getId())) {
                     variableLink.setTestDataLinkId("");
                     variableLink.setValue("");
@@ -352,8 +361,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
         }
     }
 
-    private void sortListByAscending(final List<TestCaseTestDataLink> data,
-            List<TestCaseTestDataLink> testDataLinks) {
+    private void sortListByAscending(final List<TestCaseTestDataLink> data, List<TestCaseTestDataLink> testDataLinks) {
         Collections.sort(testDataLinks, new Comparator<TestCaseTestDataLink>() {
 
             @Override
@@ -362,9 +370,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
             }
         });
     }
-    
-    private void sortListByDescending(final List<TestCaseTestDataLink> data,
-            List<TestCaseTestDataLink> testDataLinks) {
+
+    private void sortListByDescending(final List<TestCaseTestDataLink> data, List<TestCaseTestDataLink> testDataLinks) {
         Collections.sort(testDataLinks, new Comparator<TestCaseTestDataLink>() {
 
             @Override
@@ -387,9 +394,11 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
         for (TestCaseTestDataLink dataLink : view.getSelectedTestCaseLink().getTestDataLinks()) {
             try {
-//                TestData testData = TestDataFactory.findTestDataForExternalBundleCaller(dataLink.getTestDataId(),
-//                        projectEntity.getFolderLocation());
-            	TestData testData = TestDataController.getInstance().getTestDataInstance(dataLink.getTestDataId(), projectEntity.getFolderLocation());
+                // TestData testData =
+                // TestDataFactory.findTestDataForExternalBundleCaller(dataLink.getTestDataId(),
+                // projectEntity.getFolderLocation());
+                TestData testData = TestDataController.getInstance().getTestDataInstance(dataLink.getTestDataId(),
+                        projectEntity.getFolderLocation());
                 if (testData == null) {
                     continue;
                 }
@@ -407,8 +416,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
         try {
             TestSuiteTestCaseLink testCaseLink = view.getSelectedTestCaseLink();
-            TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
-                    testCaseLink.getTestCaseId());
+            TestCaseEntity testCaseEntity = TestCaseController.getInstance()
+                    .getTestCaseByDisplayId(testCaseLink.getTestCaseId());
 
             int matches = 0;
             for (VariableLink variableLink : view.getSelectedTestCaseLink().getVariableLinks()) {

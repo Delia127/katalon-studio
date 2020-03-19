@@ -20,7 +20,10 @@ import com.katalon.plugin.smart_xpath.controller.AutoHealingController;
 import com.katalon.plugin.smart_xpath.dialog.AutoHealingDialog;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
+import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.feature.KSEFeature;
 
 public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDescription {
 	private Menu newMenu;
@@ -83,18 +86,22 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		smartXPathEnable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				try {
-					// Retrieve PreferenceStore on click in case user installed
-					// this plug-in when no project was opened
-					Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-					PluginPreference preferenceStore = ApplicationManager.getInstance().getPreferenceManager()
-							.getPluginPreference(currentProject.getId(), IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
-
-					preferenceStore.setBoolean("SmartXPathEnabled", true);
-					preferenceStore.save();
-				} catch (ResourceException e1) {
-					e1.printStackTrace(System.out);
-				}
+			    if (LicenseUtil.isNotFreeLicense()) {
+    				try {
+    					// Retrieve PreferenceStore on click in case user installed
+    					// this plug-in when no project was opened
+    					Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
+    					PluginPreference preferenceStore = ApplicationManager.getInstance().getPreferenceManager()
+    							.getPluginPreference(currentProject.getId(), IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
+    
+    					preferenceStore.setBoolean("SmartXPathEnabled", true);
+    					preferenceStore.save();
+    				} catch (ResourceException e1) {
+    					e1.printStackTrace(System.out);
+    				}
+			    } else {
+			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SMART_XPATH);
+			    }
 			}
 		});
 		return smartXPathEnable;
@@ -107,18 +114,22 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		smartXPathDisable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				try {
-					// Retrieve PreferenceStore again in case the user installed
-					// the plugin when no project was opened
-					Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-					PluginPreference preferenceStore = ApplicationManager.getInstance().getPreferenceManager()
-							.getPluginPreference(currentProject.getId(), IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
+			    if (LicenseUtil.isNotFreeLicense()) {
+			        try {
+	                    // Retrieve PreferenceStore again in case the user installed
+	                    // the plugin when no project was opened
+	                    Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
+	                    PluginPreference preferenceStore = ApplicationManager.getInstance().getPreferenceManager()
+	                            .getPluginPreference(currentProject.getId(), IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
 
-					preferenceStore.setBoolean("SmartXPathEnabled", false);
-					preferenceStore.save();
-				} catch (ResourceException e1) {
-					e1.printStackTrace(System.out);
-				}
+	                    preferenceStore.setBoolean("SmartXPathEnabled", false);
+	                    preferenceStore.save();
+	                } catch (ResourceException e1) {
+	                    e1.printStackTrace(System.out);
+	                }
+			    } else {
+			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SMART_XPATH);
+			    }
 			}
 		});
 		return smartXPathDisable;
@@ -132,43 +143,46 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		autoHealing.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				AutoHealingDialog autoHealingDialog = new AutoHealingDialog(parent.getShell());
+			    if (LicenseUtil.isNotFreeLicense()) {
+			        AutoHealingDialog autoHealingDialog = new AutoHealingDialog(parent.getShell());
 
-				if (autoHealingDialog.open() == Window.OK) {
-					Set<BrokenTestObject> approvedAutoHealingEntities = autoHealingDialog
-							.getApprovedAutoHealingEntities();
-					Set<BrokenTestObject> unapprovedAutoHealingEntities = autoHealingDialog
-							.getUnapprovedAutoHealingEntities();
+	                if (autoHealingDialog.open() == Window.OK) {
+	                    Set<BrokenTestObject> approvedAutoHealingEntities = autoHealingDialog
+	                            .getApprovedAutoHealingEntities();
+	                    Set<BrokenTestObject> unapprovedAutoHealingEntities = autoHealingDialog
+	                            .getUnapprovedAutoHealingEntities();
 
-					Set<BrokenTestObject> approvedButUnableToHealEntities = AutoHealingController
-							.autoHealBrokenTestObjects(parent.getShell(), approvedAutoHealingEntities);
+	                    Set<BrokenTestObject> approvedButUnableToHealEntities = AutoHealingController
+	                            .autoHealBrokenTestObjects(parent.getShell(), approvedAutoHealingEntities);
 
-					Entity projectEntity = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-					if (projectEntity != null) {
-						// Append approved broken test objects to approved.json
-						String pathToApprovedJson = projectEntity.getFolderLocation()
-								+ SmartXPathConstants.APPROVED_FILE_SUFFIX;
-						BrokenTestObjects brokenTestObjectsInApprovedJson = AutoHealingController
-								.readExistingBrokenTestObjects(pathToApprovedJson);
-						brokenTestObjectsInApprovedJson.getBrokenTestObjects().addAll(approvedAutoHealingEntities);
-						AutoHealingController.writeBrokenTestObjects(brokenTestObjectsInApprovedJson,
-								pathToApprovedJson);
+	                    Entity projectEntity = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
+	                    if (projectEntity != null) {
+	                        // Append approved broken test objects to approved.json
+	                        String pathToApprovedJson = projectEntity.getFolderLocation()
+	                                + SmartXPathConstants.APPROVED_FILE_SUFFIX;
+	                        BrokenTestObjects brokenTestObjectsInApprovedJson = AutoHealingController
+	                                .readExistingBrokenTestObjects(pathToApprovedJson);
+	                        brokenTestObjectsInApprovedJson.getBrokenTestObjects().addAll(approvedAutoHealingEntities);
+	                        AutoHealingController.writeBrokenTestObjects(brokenTestObjectsInApprovedJson,
+	                                pathToApprovedJson);
 
-						// Replace the content of waiting-for-approval.json with
-						// unapproved entities
-						String pathToWaitingForApprovalJson = projectEntity.getFolderLocation()
-								+ SmartXPathConstants.WAITING_FOR_APPROVAL_FILE_SUFFIX;
-						BrokenTestObjects brokenTestObjectsInWaitingForApprovalJson = AutoHealingController
-								.readExistingBrokenTestObjects(pathToWaitingForApprovalJson);
-						// Unapprove objects that could not be healed
-						approvedButUnableToHealEntities.forEach(a -> a.setApproved(false));
-						unapprovedAutoHealingEntities.addAll(approvedButUnableToHealEntities);
-						brokenTestObjectsInWaitingForApprovalJson.setBrokenTestObjects(unapprovedAutoHealingEntities);
-						AutoHealingController.writeBrokenTestObjects(brokenTestObjectsInWaitingForApprovalJson,
-								pathToWaitingForApprovalJson);
-					}
-
-				}
+	                        // Replace the content of waiting-for-approval.json with
+	                        // unapproved entities
+	                        String pathToWaitingForApprovalJson = projectEntity.getFolderLocation()
+	                                + SmartXPathConstants.WAITING_FOR_APPROVAL_FILE_SUFFIX;
+	                        BrokenTestObjects brokenTestObjectsInWaitingForApprovalJson = AutoHealingController
+	                                .readExistingBrokenTestObjects(pathToWaitingForApprovalJson);
+	                        // Unapprove objects that could not be healed
+	                        approvedButUnableToHealEntities.forEach(a -> a.setApproved(false));
+	                        unapprovedAutoHealingEntities.addAll(approvedButUnableToHealEntities);
+	                        brokenTestObjectsInWaitingForApprovalJson.setBrokenTestObjects(unapprovedAutoHealingEntities);
+	                        AutoHealingController.writeBrokenTestObjects(brokenTestObjectsInWaitingForApprovalJson,
+	                                pathToWaitingForApprovalJson);
+	                    }
+	                }
+			    } else {
+			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SMART_XPATH);
+			    }
 			}
 		});
 		return autoHealing;

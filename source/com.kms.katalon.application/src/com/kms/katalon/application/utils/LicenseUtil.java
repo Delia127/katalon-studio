@@ -9,6 +9,10 @@ public class LicenseUtil {
         return getLicenseHelper().isNotFreeLicense();
     }
     
+    public static boolean isFreeLicense() {
+        return !getLicenseHelper().isNotFreeLicense();
+    }
+    
     public static boolean isPaidLicense() {
         return getLicenseHelper().isPaidLicense();
     }

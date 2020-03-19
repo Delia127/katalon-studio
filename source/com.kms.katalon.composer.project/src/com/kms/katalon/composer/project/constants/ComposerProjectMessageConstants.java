@@ -123,6 +123,8 @@ public class ComposerProjectMessageConstants extends NLS {
     
     public static String PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE;
     
+    public static String MSG_WARN_GENERIC_PROJECT_TYPE;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerProjectMessageConstants.class);

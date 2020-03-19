@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -26,6 +27,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.feature.KSEFeature;
 
 public class TestDataTableDropListener extends TableDropTargetEffect {
     private TableViewer tableViewer;
@@ -56,7 +58,9 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
                 List<String> testDataIds = Arrays.asList(String.valueOf(event.data).split("\n"));
                 
                 if (!isEnterpriseAccount && (testDataIds.size() + inputs.size()) > 1) {
-                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+//                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+//                            ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION,
                             ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
                     return;
                 }
@@ -93,7 +97,9 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
                     }
 
                     if (!isEnterpriseAccount && (addedTestDataLinkTreeNodes.size() + inputs.size()) > 1) {
-                        MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+//                        MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+//                                ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION,
                                 ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
                         return;
                     }

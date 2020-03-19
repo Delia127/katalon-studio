@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
@@ -37,6 +38,7 @@ import com.kms.katalon.execution.configuration.contributor.IRunConfigurationCont
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.KSEFeature;
 
 public class ExecutionSettingPage extends PreferencePageWithHelp {
     private static final String LBL_DEFAULT_EXECUTION = ExecutionMessageConstants.LBL_DEFAULT_EXECUTION;
@@ -168,20 +170,18 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
 	        chckApplyNeighborXpaths.setLayoutData(gdChckApplyNeighborXpaths);
          */
         
-        if (LicenseUtil.isNotFreeLicense()) {
-            Group grpImageRecognition = new Group(parent, SWT.NONE);
-            grpImageRecognition.setText("Image Recognition");
-            GridLayout glGrpImageRecognition = new GridLayout(3, false);
-            glGrpImageRecognition.marginLeft = 15;
-            grpImageRecognition.setLayout(glGrpImageRecognition);
-            grpImageRecognition.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-            
-            chckEnableImageRecognition = new Button(grpImageRecognition, SWT.CHECK);
-            GridData gdChckEnableImageRecognition = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-            chckEnableImageRecognition.setText("Enable Image Recognition");
-            chckEnableImageRecognition.setLayoutData(gdChckEnableImageRecognition);
-        }
+    
+        Group grpImageRecognition = new Group(parent, SWT.NONE);
+        grpImageRecognition.setText("Image Recognition");
+        GridLayout glGrpImageRecognition = new GridLayout(3, false);
+        glGrpImageRecognition.marginLeft = 15;
+        grpImageRecognition.setLayout(glGrpImageRecognition);
+        grpImageRecognition.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         
+        chckEnableImageRecognition = new Button(grpImageRecognition, SWT.CHECK);
+        GridData gdChckEnableImageRecognition = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        chckEnableImageRecognition.setText("Enable Image Recognition");
+        chckEnableImageRecognition.setLayoutData(gdChckEnableImageRecognition);
         
         Group grpAfterExecuting = new Group(parent, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
@@ -273,6 +273,26 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             }
         });
         
+        chckEnableImageRecognition.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (LicenseUtil.isFreeLicense()) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.IMAGE_BASED_OBJECT_DETECTION);
+                    chckEnableImageRecognition.setSelection(false);
+                }
+            }
+        });
+        
+        cbLogTestSteps.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (LicenseUtil.isFreeLicense()) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CONSOLE_LOG_CUSTOMIZATION);
+                    cbLogTestSteps.select(1); // reselect "Disable" item
+                }
+            }
+        });
+        
         addNumberVerification(txtActionDelay, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
         addNumberVerification(txtDefaultIEHangTimeout, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
         addNumberVerification(txtDefaultPageLoadTimeout, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
@@ -350,12 +370,19 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
         cbDefaultSmartWait.select(selectedSmartWaitMode.booleanValue() ? 0 : 1);
         if (chckEnableImageRecognition != null) {
-            chckEnableImageRecognition.setSelection(webSettingStore.getImageRecognitionEnabled());
+            if (LicenseUtil.isNotFreeLicense()) {
+                chckEnableImageRecognition.setSelection(webSettingStore.getImageRecognitionEnabled());
+            } else {
+                chckEnableImageRecognition.setSelection(false);
+            }
         }
         
         Boolean selectedLogTestSteps = defaultSettingStore.getLogTestSteps();
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(selectedLogTestSteps.booleanValue() ? 0 : 1);
+        if (LicenseUtil.isFreeLicense()) {
+            cbLogTestSteps.select(1); // disable by default for free user
+        }
         
         txtDefaultElementTimeout.setText(Integer.toString(defaultSettingStore.getElementTimeout()));
         
@@ -377,10 +404,10 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         txtActionDelay.setText(String.valueOf(webSettingStore.getActionDelay()));
         txtDefaultIEHangTimeout.setText(Integer.toString(webSettingStore.getIEHangTimeout()));
 
-        if (!LicenseUtil.isNotFreeLicense()) {
-            gdCbLogTestSteps.heightHint = 0;
-            container.layout(true);
-        }
+//        if (!LicenseUtil.isNotFreeLicense()) {
+//            gdCbLogTestSteps.heightHint = 0;
+//            container.layout(true);
+//        }
     }
 
     @Override
@@ -410,7 +437,11 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         }
         
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
-        cbLogTestSteps.select(0);
+        if (LicenseUtil.isNotFreeLicense()) {
+            cbLogTestSteps.select(0);
+        } else {
+            cbLogTestSteps.select(1);
+        }
         
         txtDefaultElementTimeout
                 .setText(Integer.toString(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_TIMEOUT_VALUE));
