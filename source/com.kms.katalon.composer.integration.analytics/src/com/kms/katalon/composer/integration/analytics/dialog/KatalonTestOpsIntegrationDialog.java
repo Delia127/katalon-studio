@@ -271,18 +271,12 @@ public class KatalonTestOpsIntegrationDialog extends AbstractDialog {
 
     private void setProgressMessage(String message, boolean isError) {
         lnkStatus.setText(message);
+        lnkStatus.requestLayout();
         if (isError) {
             lnkStatus.setForeground(ColorUtil.getTextErrorColor());
         } else {
             lnkStatus.setForeground(ColorUtil.getTextRunningColor());
         }
-
-        Composite parent = lnkStatus.getParent();
-        do {
-            parent.pack();
-            parent.layout();
-            parent = parent.getParent();
-        } while (parent != null);
     }
 
     private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
