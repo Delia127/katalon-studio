@@ -236,7 +236,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             if (runSuccess) {
                 logger.logPassed(MessageFormat.format("All feature files in ''{0}'' were passed", folderRelativePath));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format("Run feature folder ''{0}'' failed", folderRelativePath));
+                KeywordMain.stepFailed(MessageFormat.format("Run feature folder ''{0}'' failed", folderRelativePath), flowControl);
             }
             return cucumberResult;
         }, flowControl, "Keyword runFeatureFolder was failed");
@@ -304,7 +304,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             if (runSuccess) {
                 logger.logPassed(MessageFormat.format("All feature files in ''{0}'' were passed", folderRelativePath));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format("Run feature folder ''{0}'' failed", folderRelativePath));
+                KeywordMain.stepFailed(MessageFormat.format("Run feature folder ''{0}'' failed", folderRelativePath), flowControl);
             }
             return cucumberResult;
         }, flowControl, "Keyword runFeatureFolderWithTags was failed");

@@ -36,6 +36,7 @@ import com.kms.katalon.composer.artifact.core.util.ZipUtil;
 import com.kms.katalon.composer.artifact.dialog.ExportTestArtifactDialog;
 import com.kms.katalon.composer.artifact.dialog.ExportTestArtifactDialog.ExportTestArtifactDialogResult;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ExportTestArtifactHandler {
     
@@ -48,6 +49,7 @@ public class ExportTestArtifactHandler {
     }
 
     public void execute() {
+        Trackings.trackOpenExportTestArtifactsDialog();
         ExportTestArtifactDialog dialog = new ExportTestArtifactDialog(activeShell);
         if (dialog.open() == Window.OK) {
             ExportTestArtifactDialogResult result = dialog.getResult();

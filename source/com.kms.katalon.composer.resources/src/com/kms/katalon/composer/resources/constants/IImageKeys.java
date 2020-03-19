@@ -154,6 +154,8 @@ public interface IImageKeys {
     public static final String CHROME_HEADLESS_16 = "execution/chrome_headless_16.png";
     
     public static final String EDGE_16 = "execution/edge_16.png"; //$NON-NLS-1$
+    
+    public static final String EDGE_CHROMIUM_16 = "execution/edge_chromium_16.png"; //$NON-NLS-1$
 
     public static final String FIREFOX_16 = "execution/firefox_16.png"; //$NON-NLS-1$
 
@@ -331,6 +333,14 @@ public interface IImageKeys {
     public static final String KATALON_TWEETABOUTUS_24 = "toolbar/tweetaboutus_24.png";//$NON-NLS-1$
     
     public static final String KATALON_FEEDBACK_24 = "toolbar/Feedback_24PX.png";//$NON-NLS-1$
+    
+    public static final String KATALON_NOTIFICATION_24 = "toolbar/noti_blue_32x24.png";//$NON-NLS-1$
+    
+    public static final String KATALON_NOTIFICATION_UNREAD_1_24 = "toolbar/noti_blue_01_32x24.png";//$NON-NLS-1$
+
+    public static final String KATALON_NOTIFICATION_UNREAD_2_24 = "toolbar/noti_blue_02_32x24.png";//$NON-NLS-1$
+
+    public static final String KATALON_NOTIFICATION_UNREAD_3_24 = "toolbar/noti_blue_02_32x24.png";//$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps

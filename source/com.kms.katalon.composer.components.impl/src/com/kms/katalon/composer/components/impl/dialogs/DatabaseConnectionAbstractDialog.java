@@ -38,6 +38,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.DatabaseController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
+import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
@@ -351,7 +352,17 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
                 return;
             }
         }
-
+        
+        if (!chkGlobalDBSetting.getSelection()) {
+            if (isOracleSql(connectionUrl)) {
+                Trackings.trackUseAdditionalTestDataSource("oracle");
+            }
+            
+            if (isMicrosoftSqlServer(connectionUrl)) {
+                Trackings.trackUseAdditionalTestDataSource("mssql");
+            }
+        }
+        
         updateChanges();
         super.okPressed();
     }

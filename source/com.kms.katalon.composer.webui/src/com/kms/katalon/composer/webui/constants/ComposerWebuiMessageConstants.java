@@ -44,6 +44,8 @@ public class ComposerWebuiMessageConstants extends NLS {
     public static String LBL_IE_EXECUTION_MENU_ITEM;
 
     public static String LBL_EDGE_EXECUTION_MENU_ITEM;
+    
+    public static String LBL_EDGE_CHROMIUM_EXECUTION_MENU_ITEM;
 
     public static String LBL_CHROME_EXECUTION_MENU_ITEM;
 

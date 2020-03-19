@@ -42,7 +42,7 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
 
     public ExecutionDefaultSettingStore(ProjectEntity projectEntity) {
         super(projectEntity.getFolderLocation(),
-                "com.kms.katalon.execution.setting", false);
+                "com.kms.katalon.execution", false);
     }
 
     public String getExecutionConfiguration() {

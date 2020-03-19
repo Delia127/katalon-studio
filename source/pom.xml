@@ -14,6 +14,7 @@
 	</prerequisites>
 
 	<modules>
+		<module>com.kms.katalon.bouncy-gpg</module>
 		<module>com.kms.katalon.composer.checkpoint</module>
 		<module>com.kms.katalon.composer.codeassist</module>
 		<module>com.kms.katalon.composer.components.impl</module>
@@ -108,9 +109,9 @@
 		<platform.version>1.0.15</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
-		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>
+		<eclipse_update_site>https://download.eclipse.org</eclipse_update_site>
 		<eclipse_repo_url>${eclipse_update_site}/eclipse/updates/4.6/</eclipse_repo_url>
-		<egit_repo_url>${eclipse_update_site}/egit/updates-4.6.1/</egit_repo_url>
+		<egit_repo_url>file:///${maven.multiModuleProjectDirectory}/third-party/egit-4.6.1/</egit_repo_url>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

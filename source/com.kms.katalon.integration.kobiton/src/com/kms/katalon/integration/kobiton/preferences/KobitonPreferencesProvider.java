@@ -1,5 +1,6 @@
 package com.kms.katalon.integration.kobiton.preferences;
 
+import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -8,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
+import com.kms.katalon.integration.kobiton.constants.KobitonStringConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
 import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
@@ -92,5 +94,19 @@ public class KobitonPreferencesProvider {
             return;
         }
         getPreferencetStore().setValue(KobitonPreferenceConstants.KOBITON_API_KEY, apiKey);
+    }
+    
+    private static String getKobionServerUrl() {
+        return getPreferencetStore().getString(KobitonPreferenceConstants.KOBITON_SERVER_ENDPOINT);
+    }    
+    
+    public static String getKobitonHost() {
+        try {
+            String kobitonServerUrl = getKobionServerUrl();
+            return new URL(kobitonServerUrl).getHost();
+        } catch (Exception e) {
+            // Do nothing
+        }
+        return KobitonStringConstants.KOBITON_HOST;
     }
 }

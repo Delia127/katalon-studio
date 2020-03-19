@@ -12,7 +12,7 @@ import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 public class IosRunConfigurationContributor extends MobileRunConfigurationContributor {
     @Override
     public int getPreferredOrder() {
-        return 7;
+        return 10;
     }
     
     @Override

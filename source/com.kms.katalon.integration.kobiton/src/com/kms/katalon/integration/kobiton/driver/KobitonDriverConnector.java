@@ -10,6 +10,7 @@ import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.integration.kobiton.constants.IntegrationKobitonMessages;
 import com.kms.katalon.integration.kobiton.constants.KobitonStringConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
+import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 
 public class KobitonDriverConnector extends RemoteWebDriverConnector {
     private KobitonDevice kobitonDevice;
@@ -34,7 +35,7 @@ public class KobitonDriverConnector extends RemoteWebDriverConnector {
     private String buildKobitonUrl() {
         return KobitonStringConstants.KOBITON_SCHEME_HTTP + KobitonStringConstants.KOBITON_SCHEME_SEPARATOR + userName
                 + KobitonStringConstants.KOBITON_SERVER_URL_AUTHENTICATE_SEPARATOR + apiKey
-                + KobitonStringConstants.KOBITON_SERVER_URL_SEPARATOR + KobitonStringConstants.KOBITON_HOST
+                + KobitonStringConstants.KOBITON_SERVER_URL_SEPARATOR + KobitonPreferencesProvider.getKobitonHost()
                 + KobitonStringConstants.KOBITON_SERVER_REMOTE_HUB;
     }
 

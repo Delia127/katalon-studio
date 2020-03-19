@@ -36,6 +36,12 @@
             configuration="com.kms.katalon.execution.webui.configuration.contributor.EdgeRunConfigurationContributor">
       </client>
    </extension>
+    <extension
+         point="com.kms.katalon.execution.runConfiguration">
+      <client
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.EdgeChromiumRunConfigurationContributor">
+      </client>
+   </extension>
    <extension
          point="com.kms.katalon.execution.driverConnector">
       <client

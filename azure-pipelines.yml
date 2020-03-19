@@ -33,6 +33,11 @@ resources:
     ref: refs/heads/master
     name: katalon-studio-samples/mobile-samples
     endpoint: github.com/katalon-studio
+  - repository: BddTest
+    type: github
+    ref: refs/heads/master
+    name: katalon-studio-samples/calculator-bdd-tests
+    endpoint: github.com/katalon-studio
   - repository: ApiTest
     type: github
     ref: refs/heads/master
@@ -94,6 +99,13 @@ stages:
         ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
       displayName: Build
 
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: './source/tests/com.kms.katalon.tests.report/target/site/jacoco-aggregate/jacoco.xml'
+        artifact: 'jacoco-xml'
+        publishLocation: 'pipeline'
+      displayName: Publish Jacoco Report
+        
     - bash: |
         source ./variable.sh
         echo "##vso[task.setvariable variable=VERSION]${version}"
@@ -198,7 +210,7 @@ stages:
 - stage: Test
   jobs:
   - job: Test
-    timeoutInMinutes: 360
+    timeoutInMinutes: 90
     
     pool:
       vmImage: 'windows-latest'
@@ -223,8 +235,6 @@ stages:
         pip3 install pyjavaproperties
         python get_version.py $BRANCH
         source ./variable.sh
-        tag=7.2.5
-        isRelease=true
         echo "##vso[task.setvariable variable=VERSION]${tag}"
         echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
       displayName: Set up
@@ -239,6 +249,11 @@ stages:
       clean: true
       condition: eq(variables.IS_RELEASE, 'true')
 
+    - checkout: BddTest
+      fetchDepth: 1
+      clean: true
+      condition: eq(variables.IS_RELEASE, 'true')
+      
     - checkout: ApiTest
       fetchDepth: 1
       clean: true
@@ -289,6 +304,7 @@ stages:
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/katalon-windows-test" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
+        "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/calculator-bdd-tests" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-service-tests" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         echo "##vso[task.setvariable variable=SETUP_SUCCESS]true"
       displayName: Set up jacoco
@@ -299,6 +315,13 @@ stages:
         katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
         "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome"
       displayName: Run Web UI Test
+      condition: eq(variables.SETUP_SUCCESS, 'true')
+
+    - bash: |
+        set -xe
+        katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/calculator-bdd-tests/demo.prj" -testSuitePath="Test Suites/Verify Operations" -executionProfile="default" -browserType="Chrome"
+      displayName: Run BDD Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
     - bash: |
@@ -326,6 +349,14 @@ stages:
       displayName: Run Window Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'jacoco-xml'
+        targetPath: '$(WORK_DIR)'
+      displayName: Download Jacoco Report
+      condition: eq(variables.SETUP_SUCCESS, 'true')
+
     - bash: |
         set -xe
         WORK_DIR="${WORK_DIR//\\/\/}"
@@ -333,8 +364,16 @@ stages:
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/katalon-windows-test"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}"
+        "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/calculator-bdd-tests"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-service-tests"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples"
-        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml,${WORK_DIR}/web-service-tests/jacoco-report/jacoco.xml"
+        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml,${WORK_DIR}/web-service-tests/jacoco-report/jacoco.xml,${WORK_DIR}/calculator-bdd-tests/jacoco-report/jacoco.xml,${WORK_DIR}/jacoco.xml"
       displayName: Generate and upload report
       condition: eq(variables.SETUP_SUCCESS, 'true')
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/JUnit_Report.xml' 
+        searchFolder: '$(System.DefaultWorkingDirectory)'
+        mergeTestResults: true

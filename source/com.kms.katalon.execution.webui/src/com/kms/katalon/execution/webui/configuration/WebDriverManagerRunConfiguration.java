@@ -14,6 +14,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
@@ -82,6 +83,7 @@ public class WebDriverManagerRunConfiguration {
             case HEADLESS_DRIVER:
                 return "chrome";
             case EDGE_DRIVER:
+            case EDGE_CHROMIUM_DRIVER:
                 return "edge";
             case FIREFOX_DRIVER:
             case FIREFOX_HEADLESS_DRIVER:

@@ -14,6 +14,8 @@ public class ImageConstants {
     public static final String IMG_URL_16_IE = ImageManager.getImageURLString(IImageKeys.IE_16);
 
     public static final String IMG_URL_16_EDGE = ImageManager.getImageURLString(IImageKeys.EDGE_16);
+    
+    public static final String IMG_URL_16_EDGE_CHROMIUM = ImageManager.getImageURLString(IImageKeys.EDGE_CHROMIUM_16);
 
     public static final String IMG_URL_16_SAFARI = ImageManager.getImageURLString(IImageKeys.SAFARI_16);
 

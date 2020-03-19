@@ -38,6 +38,7 @@ public class SwaggerParserUtil {
 	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder, String fileLocationOrUrl) throws Exception{
 		
 		List<WebServiceRequestEntity> newWSTestObjects = new ArrayList<WebServiceRequestEntity>();
+		List<String> wsTestObjectNames = new ArrayList<>();
 		
 		try{
 			Swagger swagger = new SwaggerParser().read(fileLocationOrUrl);
@@ -85,7 +86,8 @@ public class SwaggerParserUtil {
 							ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParams = new 
 									ParameterizedBodyContent<UrlEncodedBodyParameter>();
 							
-							entity.setName(wsObjectName.isEmpty() ? "Web service Object" : wsObjectName);
+							String entitySuggestionName = wsObjectName.isEmpty() ? "Web service Object" : wsObjectName;
+							setRequestEntityName(entitySuggestionName, entity, wsTestObjectNames);
 							entity.setRestUrl(urlCommonPrefix2);
 							entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
 							entity.setRestRequestMethod(method.toString());
@@ -184,6 +186,21 @@ public class SwaggerParserUtil {
 	    		return null;
         }
 	}
+	
+	private static void setRequestEntityName(String suggestion, WebServiceRequestEntity entity, List<String> availableNames) {
+        int index = 0;
+        String entityName = suggestion;
+        while (isNameDuplicated(entityName, availableNames)) {
+            index++;
+            entityName = suggestion + " (" + index + ")";
+        }
+        entity.setName(entityName);
+        availableNames.add(entityName);
+    }
+
+    private static boolean isNameDuplicated(String name, List<String> availableNames) {
+        return availableNames.stream().anyMatch(n -> n.equalsIgnoreCase(name));
+    }
 	
 	
 	public static List<WebServiceRequestEntity> newWSTestObjectsFromSwagger(FolderEntity parentFolder, String directoryOfJsonFile)
