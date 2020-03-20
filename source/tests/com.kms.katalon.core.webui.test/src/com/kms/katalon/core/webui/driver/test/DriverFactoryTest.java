@@ -18,7 +18,7 @@ public class DriverFactoryTest {
         IDriverConfigurationProvider provider = Mockito.mock(IDriverConfigurationProvider.class);
         DriverFactory.setDriverConfigurationProvider(provider);
         DriverFactory.getActionDelay();
-        Mockito.verify(provider).getActionDelay();
+        Mockito.verify(provider).getActionDelayInMilisecond();
     }
 
     @Test
