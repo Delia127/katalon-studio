@@ -24,7 +24,7 @@ public class DriverConfigurationProvider implements IDriverConfigurationProvider
         }
 
         if (executionGeneralProperties.containsKey(DriverFactory.USE_ACTION_DELAY_IN_SECOND)) {
-            TimeUnit useInSec = (TimeUnit) RunConfiguration.getExecutionGeneralProperties().get(DriverFactory.USE_ACTION_DELAY_IN_SECOND);
+            TimeUnit useInSec = TimeUnit.valueOf((String) RunConfiguration.getExecutionGeneralProperties().get(DriverFactory.USE_ACTION_DELAY_IN_SECOND));
             if (useInSec.equals(TimeUnit.SECONDS)) {
                 actionDelay = actionDelay * 1000;
             }
