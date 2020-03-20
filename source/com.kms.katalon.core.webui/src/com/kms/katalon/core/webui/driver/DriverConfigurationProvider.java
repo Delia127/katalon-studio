@@ -2,6 +2,7 @@ package com.kms.katalon.core.webui.driver;
 
 import java.text.MessageFormat;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
@@ -23,9 +24,8 @@ public class DriverConfigurationProvider implements IDriverConfigurationProvider
         }
 
         if (executionGeneralProperties.containsKey(DriverFactory.USE_ACTION_DELAY_IN_SECOND)) {
-            boolean useInSec = RunConfiguration.getBooleanProperty(DriverFactory.USE_ACTION_DELAY_IN_SECOND,
-                    executionGeneralProperties);
-            if (useInSec) {
+            TimeUnit useInSec = (TimeUnit) RunConfiguration.getExecutionGeneralProperties().get(DriverFactory.USE_ACTION_DELAY_IN_SECOND);
+            if (useInSec.equals(TimeUnit.SECONDS)) {
                 actionDelay = actionDelay * 1000;
             }
         }

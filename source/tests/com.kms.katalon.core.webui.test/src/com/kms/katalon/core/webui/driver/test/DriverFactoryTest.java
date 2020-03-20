@@ -3,6 +3,7 @@ package com.kms.katalon.core.webui.driver.test;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,7 +29,7 @@ public class DriverFactoryTest {
         HashMap<String, Object> executionProperties = new HashMap<>();
         HashMap<String, Object> executionGeneralProperties = new HashMap<>();
         executionGeneralProperties.put(DriverFactory.ACTION_DELAY, expected);
-        executionGeneralProperties.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, true);
+        executionGeneralProperties.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, TimeUnit.SECONDS);
         executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, executionGeneralProperties);
         map.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
         RunConfiguration.setExecutionSetting(map);
@@ -45,7 +46,7 @@ public class DriverFactoryTest {
         HashMap<String, Object> executionProperties = new HashMap<>();
         HashMap<String, Object> executionGeneralProperties = new HashMap<>();
         executionGeneralProperties.put(DriverFactory.ACTION_DELAY, expected);
-        executionGeneralProperties.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, false);
+        executionGeneralProperties.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, TimeUnit.MILLISECONDS);
         executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, executionGeneralProperties);
         map.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
         RunConfiguration.setExecutionSetting(map);
