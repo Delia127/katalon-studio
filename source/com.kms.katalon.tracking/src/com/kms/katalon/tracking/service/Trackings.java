@@ -429,4 +429,12 @@ public class Trackings {
 
         return jsonObject;
     }
+    
+    public static void trackClickOnTrialNotification(String message) {
+        trackUserAction("clickOnTrialNotification", "message", message);
+    }
+    
+    public static void trackClickOnTrialNotificationButton() {
+        trackUserAction("clickOnTrialNotificationButton");
+    }
 }
