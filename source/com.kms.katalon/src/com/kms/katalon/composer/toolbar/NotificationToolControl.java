@@ -63,6 +63,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
 
 public class NotificationToolControl {
@@ -132,6 +133,7 @@ public class NotificationToolControl {
             public void widgetSelected(SelectionEvent e) {
                 communityToolItem.setImage(ImageConstants.IMG_KATALON_NOTIFICATION_24);
                 if (communityToolItem.getSelection()) {
+                    Trackings.trackClickOnTrialNotificationButton();
                     popup = new Shell(toolbar.getDisplay(), SWT.NO_TRIM | SWT.ON_TOP);
                     popup.setLayout(new FillLayout());
                     Composite mainComposite = new Composite(popup, SWT.BORDER);
@@ -157,6 +159,7 @@ public class NotificationToolControl {
                                             Thread.sleep(200L);
                                         } catch (InterruptedException ignored) {}
                                         Program.launch(e.text);
+                                        Trackings.trackClickOnTrialNotification(noti.getContent().getMessage());
                                     });
                                     
                                 }
