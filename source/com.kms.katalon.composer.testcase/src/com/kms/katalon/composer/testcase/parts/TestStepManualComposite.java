@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -58,12 +57,12 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -90,6 +89,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpres
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
+import com.kms.katalon.composer.testcase.menu.TestStepTableContextMenuWrapper;
 import com.kms.katalon.composer.testcase.model.ExecuteFromTestStepEntity;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
@@ -437,71 +437,10 @@ public class TestStepManualComposite {
 				if (menu != null) {
 					menu.dispose();
 				}
-				menu = new Menu(childTableTree);
-
-				if (childTableTree.getSelectionCount() == 1) {
-					TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, selectionListener);
-
-					new MenuItem(menu, SWT.SEPARATOR);
-
-					// Add step add
-					TestCaseMenuUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
-							StringConstants.ADAP_MENU_CONTEXT_ADD, selectionListener);
-
-					MenuItem insertMenuItem = new MenuItem(menu, SWT.CASCADE);
-					insertMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_INSERT);
-
-					Menu insertMenu = new Menu(menu);
-					insertMenuItem.setMenu(insertMenu);
-
-					// Add step before
-					TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertBefore,
-							StringConstants.ADAP_MENU_CONTEXT_INSERT_BEFORE, selectionListener);
-
-					// Add step after
-					TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertAfter,
-							StringConstants.ADAP_MENU_CONTEXT_INSERT_AFTER, selectionListener);
-				}
-
-				MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
-				removeMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_REMOVE,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.DEL_NAME })));
-				removeMenuItem.addSelectionListener(selectionListener);
-				removeMenuItem.setID(TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID);
-
-				MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
-				copyMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_COPY,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" }))); //$NON-NLS-1$
-				copyMenuItem.addSelectionListener(selectionListener);
-				copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
-
-				MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
-				cutMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_CUT,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" }))); //$NON-NLS-1$
-				cutMenuItem.addSelectionListener(selectionListener);
-				cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
-
-				MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
-				pasteMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_PASTE,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
-				pasteMenuItem.addSelectionListener(selectionListener);
-				pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
-
-				new MenuItem(menu, SWT.SEPARATOR);
-
-				addFailureHandlingSubMenu(menu);
-
-				MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
-				disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
-				disableMenuItem.addSelectionListener(selectionListener);
-				disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
-
-				MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
-				enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
-				enableMenuItem.addSelectionListener(selectionListener);
-				enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
+				
+				TestStepTableContextMenuWrapper menuWrapper = new TestStepTableContextMenuWrapper(childTableTree, selectionListener, LicenseUtil.isFreeLicense());
+				menu = menuWrapper.getMenu();
+				
 				parentPart.createDynamicGotoMenu(menu);
 				childTableTree.setMenu(menu);
 			}
@@ -1000,5 +939,4 @@ public class TestStepManualComposite {
 	public IStructuredSelection getTreeTableSelection() {
 		return (IStructuredSelection) treeTable.getSelection();
 	}
-
 }
