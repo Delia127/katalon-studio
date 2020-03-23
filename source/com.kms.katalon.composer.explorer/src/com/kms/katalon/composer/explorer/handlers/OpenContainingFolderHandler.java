@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.internal.core.PackageFragment;
 import org.eclipse.ui.internal.ide.IDEInternalPreferences;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.jface.util.Util;
@@ -47,8 +49,19 @@ public class OpenContainingFolderHandler extends CommonExplorerHandler {
 			}
 			ITreeEntity treeEntity = treeEntities.get(0);
 			String parent = getParentFolderLocation(treeEntity);
-			FileEntity fileEntity = (FileEntity) treeEntity.getObject();
-			String launchCmd = formShowInSytemExplorerCommand(new File(fileEntity.getLocation()));
+			File fileLocation = null;
+			if (treeEntity instanceof PackageTreeEntity) {
+                String packageName = ((PackageTreeEntity) treeEntity).getPackageName();
+                fileLocation = new File(((FileEntity) treeEntity.getParent().getObject()).getLocation(),
+                        getPathToPackage(packageName, true));
+			} else if (treeEntity instanceof KeywordTreeEntity) {
+			    ICompilationUnit unit = (ICompilationUnit) ((KeywordTreeEntity) treeEntity).getObject();
+			    fileLocation = new File(unit.getResource().getRawLocationURI().toURL().getFile());
+			} else {
+                FileEntity fileEntity = (FileEntity) treeEntity.getObject();
+                fileLocation = new File(fileEntity.getLocation());
+			}
+			String launchCmd = formShowInSytemExplorerCommand(fileLocation);
 			File dir = new File(parent);
 
 			Process p;
