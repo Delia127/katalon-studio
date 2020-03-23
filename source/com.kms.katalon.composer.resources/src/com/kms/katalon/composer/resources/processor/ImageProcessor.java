@@ -313,6 +313,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.KATALON_CHAT_24);
         ImageManager.registerImage(IImageKeys.KATALON_TWEETABOUTUS_24);
         ImageManager.registerImage(IImageKeys.KATALON_FEEDBACK_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_1_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_2_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_3_24);
 
         // Toolbar disabled icons
         ImageManager.registerImage(IImageKeys.BUG_DISABLED_24);

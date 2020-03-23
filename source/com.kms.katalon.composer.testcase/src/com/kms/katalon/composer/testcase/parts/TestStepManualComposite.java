@@ -58,8 +58,10 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -123,6 +125,7 @@ import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.session.ExecutionSession;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
@@ -437,71 +440,73 @@ public class TestStepManualComposite {
 				if (menu != null) {
 					menu.dispose();
 				}
+				
 				menu = new Menu(childTableTree);
 
-				if (childTableTree.getSelectionCount() == 1) {
-					TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, selectionListener);
+                if (childTableTree.getSelectionCount() == 1) {
+                    TestCaseMenuUtil.generateExecuteFromTestStepMenuItem(menu, selectionListener);
 
-					new MenuItem(menu, SWT.SEPARATOR);
+                    new MenuItem(menu, SWT.SEPARATOR);
 
-					// Add step add
-					TestCaseMenuUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
-							StringConstants.ADAP_MENU_CONTEXT_ADD, selectionListener);
+                    // Add step add
+                    TestCaseMenuUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
+                            StringConstants.ADAP_MENU_CONTEXT_ADD, selectionListener);
 
-					MenuItem insertMenuItem = new MenuItem(menu, SWT.CASCADE);
-					insertMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_INSERT);
+                    MenuItem insertMenuItem = new MenuItem(menu, SWT.CASCADE);
+                    insertMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_INSERT);
 
-					Menu insertMenu = new Menu(menu);
-					insertMenuItem.setMenu(insertMenu);
+                    Menu insertMenu = new Menu(menu);
+                    insertMenuItem.setMenu(insertMenu);
 
-					// Add step before
-					TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertBefore,
-							StringConstants.ADAP_MENU_CONTEXT_INSERT_BEFORE, selectionListener);
+                    // Add step before
+                    TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertBefore,
+                            StringConstants.ADAP_MENU_CONTEXT_INSERT_BEFORE, selectionListener);
 
-					// Add step after
-					TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertAfter,
-							StringConstants.ADAP_MENU_CONTEXT_INSERT_AFTER, selectionListener);
-				}
+                    // Add step after
+                    TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertAfter,
+                            StringConstants.ADAP_MENU_CONTEXT_INSERT_AFTER, selectionListener);
+                }
 
-				MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
-				removeMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_REMOVE,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.DEL_NAME })));
-				removeMenuItem.addSelectionListener(selectionListener);
-				removeMenuItem.setID(TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID);
+                MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
+                removeMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_REMOVE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.DEL_NAME })));
+                removeMenuItem.addSelectionListener(selectionListener);
+                removeMenuItem.setID(TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID);
 
-				MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
-				copyMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_COPY,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" }))); //$NON-NLS-1$
-				copyMenuItem.addSelectionListener(selectionListener);
-				copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
+                MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
+                copyMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_COPY,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" }))); //$NON-NLS-1$
+                copyMenuItem.addSelectionListener(selectionListener);
+                copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
 
-				MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
-				cutMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_CUT,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" }))); //$NON-NLS-1$
-				cutMenuItem.addSelectionListener(selectionListener);
-				cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
+                MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
+                cutMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_CUT,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" }))); //$NON-NLS-1$
+                cutMenuItem.addSelectionListener(selectionListener);
+                cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
 
-				MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
-				pasteMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_PASTE,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
-				pasteMenuItem.addSelectionListener(selectionListener);
-				pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
+                MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
+                pasteMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_PASTE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
+                pasteMenuItem.addSelectionListener(selectionListener);
+                pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
 
-				new MenuItem(menu, SWT.SEPARATOR);
+                new MenuItem(menu, SWT.SEPARATOR);
 
-				addFailureHandlingSubMenu(menu);
+                addFailureHandlingSubMenu(menu);
 
-				MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
-				disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
-				disableMenuItem.addSelectionListener(selectionListener);
-				disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
+                MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
+                disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
+                disableMenuItem.addSelectionListener(selectionListener);
+                disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
 
-				MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
-				enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
-						KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
-				enableMenuItem.addSelectionListener(selectionListener);
-				enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
+                MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
+                enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
+                enableMenuItem.addSelectionListener(selectionListener);
+                enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
+				
 				parentPart.createDynamicGotoMenu(menu);
 				childTableTree.setMenu(menu);
 			}
@@ -928,10 +933,18 @@ public class TestStepManualComposite {
 			removeTestStep();
 			break;
 		case TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID:
-			getTreeTableInput().enable();
+		    if (!isEnterpriseAccount()) {
+		        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_ENABLE_STEP);
+		    } else {
+		        getTreeTableInput().enable();
+		    }
 			break;
 		case TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID:
-			getTreeTableInput().disable();
+		    if (!isEnterpriseAccount()) {
+		        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_DISABLE_STEP);
+		    } else {
+		        getTreeTableInput().disable();
+		    }   
 			break;
 		case TreeTableMenuItemConstants.ADD_TO_AN_EXISTING_TEST_SUITE_ID:
 			addToAnExistingTestSuiteStep();
@@ -943,6 +956,10 @@ public class TestStepManualComposite {
 			getTreeTableInput().addNewAstObject(menuItem.getID(), treeTableInput.getSelectedNode(), addType);
 			break;
 		}
+	}
+	
+	private boolean isEnterpriseAccount() {
+	    return LicenseUtil.isNotFreeLicense();
 	}
 
 	public void addStepByActionID(int id) {
@@ -1000,5 +1017,4 @@ public class TestStepManualComposite {
 	public IStructuredSelection getTreeTableSelection() {
 		return (IStructuredSelection) treeTable.getSelection();
 	}
-
 }

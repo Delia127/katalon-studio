@@ -10,7 +10,7 @@ public class LicenseUtil {
     }
     
     public static boolean isFreeLicense() {
-        return !getLicenseHelper().isNotFreeLicense();
+    	return getLicenseHelper().isFreeLicense();
     }
     
     public static boolean isPaidLicense() {
