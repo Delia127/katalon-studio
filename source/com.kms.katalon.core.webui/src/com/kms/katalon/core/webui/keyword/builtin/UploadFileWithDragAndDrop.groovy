@@ -46,9 +46,12 @@ class UploadFileWithDragAndDrop extends WebUIAbstractKeyword {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
             try {
-                WebUiCommonHelper.checkTestObjectParameter(to)
-                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
-                WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
+                WebElement webElement = null;
+                if(to != null) {
+                    WebUiCommonHelper.checkTestObjectParameter(to)
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
+                    webElement = WebUIAbstractKeyword.findWebElement(to)
+                }
                 String dragAndDropScript = FileUtils.readFileToString(
                         new File(FileUtil.getExtensionsDirectory().getAbsolutePath() + "/drag-and-drop/drag-and-drop.js"));
                 WebElement virtualInput = (WebElement) ((JavascriptExecutor) DriverFactory.getWebDriver())
