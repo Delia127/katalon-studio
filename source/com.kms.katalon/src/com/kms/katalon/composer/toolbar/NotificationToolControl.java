@@ -342,11 +342,14 @@ public class NotificationToolControl {
     }
 
     private List<PopupNotification> getPopupNotificationsForTrialUser() {
-        if (ActivationInfoCollector.getLicenseType() != LicenseType.TRIAL) {
+        if (ActivationInfoCollector.getLicenseType() == LicenseType.ENTERPRISE) {
             return Collections.emptyList();
         }
         try {
             Date expiredDate = getExpiredDate();
+            if (getExpiredDate() == null) {
+                return Collections.emptyList();
+            }
             Date activationDate = DateUtils.addDays(expiredDate, -30);
             long diffDays = diffDays(activationDate, new Date());
             List<TrackedNotification> trackedNotifications = getTrackedNotifications();
