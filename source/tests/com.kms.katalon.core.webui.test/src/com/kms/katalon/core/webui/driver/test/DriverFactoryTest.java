@@ -29,7 +29,7 @@ public class DriverFactoryTest {
         HashMap<String, Object> executionProperties = new HashMap<>();
         HashMap<String, Object> executionGeneralProperties = new HashMap<>();
         executionGeneralProperties.put(DriverFactory.ACTION_DELAY, expected);
-        executionGeneralProperties.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, TimeUnit.SECONDS);
+        executionGeneralProperties.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, TimeUnit.SECONDS.toString());
         executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, executionGeneralProperties);
         map.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
         RunConfiguration.setExecutionSetting(map);
@@ -46,7 +46,7 @@ public class DriverFactoryTest {
         HashMap<String, Object> executionProperties = new HashMap<>();
         HashMap<String, Object> executionGeneralProperties = new HashMap<>();
         executionGeneralProperties.put(DriverFactory.ACTION_DELAY, expected);
-        executionGeneralProperties.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, TimeUnit.MILLISECONDS);
+        executionGeneralProperties.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, TimeUnit.MILLISECONDS.toString());
         executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, executionGeneralProperties);
         map.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
         RunConfiguration.setExecutionSetting(map);
