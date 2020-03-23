@@ -45,11 +45,6 @@ public class FirstTimeUseDialog extends MessageDialog {
         gdLeaveReason.exclude = true;
         leaveReasonComposite.setLayoutData(gdLeaveReason);
 
-        Label lblInputReason = new Label(leaveReasonComposite, SWT.WRAP);
-        GridData gdLblInputReason = new GridData(SWT.FILL, SWT.FILL, true, true);
-        lblInputReason.setLayoutData(gdLblInputReason);
-        lblInputReason.setText(StringConstants.MSG_QUIT_USING_KATALON_REASON);
-
         txtReason = new Text(leaveReasonComposite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
         GridData gdInputReason = new GridData(SWT.FILL, SWT.FILL, true, true);
         gdInputReason.minimumHeight = 100;
@@ -80,6 +75,7 @@ public class FirstTimeUseDialog extends MessageDialog {
     }
 
     private void hideReasonComposite() {
+        messageLabel.setText(StringConstants.MSG_QUESTION_WILL_CONTINUE_TO_USE);
         leaveReasonComposite.setVisible(false);
         GridData gdLeaveReason = (GridData) leaveReasonComposite.getLayoutData();
         gdLeaveReason.exclude = true;
@@ -87,6 +83,7 @@ public class FirstTimeUseDialog extends MessageDialog {
     }
 
     private void showReasonComposite() {
+        messageLabel.setText(StringConstants.MSG_QUIT_USING_KATALON_REASON);
         leaveReasonComposite.setVisible(true);
         GridData gdLeaveReason = (GridData) leaveReasonComposite.getLayoutData();
         gdLeaveReason.exclude = false;
