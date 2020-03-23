@@ -8,6 +8,7 @@
 {
 	"id" : "2",
 	"startDate" : 30,
+    "endDate" : 30,
 	"message": "Your Enterprise trial expires today.\n<a href=\"https://www.katalon.com/pricing/\">Don't let your workflow get disrupted!</a>"
 },
 {
