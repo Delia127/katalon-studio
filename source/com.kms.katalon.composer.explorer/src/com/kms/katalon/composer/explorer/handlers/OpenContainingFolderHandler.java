@@ -52,8 +52,12 @@ public class OpenContainingFolderHandler extends CommonExplorerHandler {
 			File fileLocation = null;
 			if (treeEntity instanceof PackageTreeEntity) {
                 String packageName = ((PackageTreeEntity) treeEntity).getPackageName();
+                String packagePath = "";
+                if (!packageName.equals(PackageTreeEntity.DEFAULT_PACKAGE_LABEL)) {
+                    packagePath = packageName.replace(".", "/");
+                }
                 fileLocation = new File(((FileEntity) treeEntity.getParent().getObject()).getLocation(),
-                        getPathToPackage(packageName, true));
+                        packagePath);
 			} else if (treeEntity instanceof KeywordTreeEntity) {
 			    ICompilationUnit unit = (ICompilationUnit) ((KeywordTreeEntity) treeEntity).getObject();
 			    fileLocation = new File(unit.getResource().getRawLocationURI().toURL().getFile());
@@ -117,6 +121,9 @@ public class OpenContainingFolderHandler extends CommonExplorerHandler {
 		}
 		if (treeEntity instanceof PackageTreeEntity) {
 			String packageName = ((PackageTreeEntity) treeEntity).getPackageName();
+            if (packageName.equals(PackageTreeEntity.DEFAULT_PACKAGE_LABEL)) {
+                return ((FileEntity) treeParent.getObject()).getLocation();
+            }
 			return ((FileEntity) treeParent.getObject()).getLocation() + getPathToPackage(packageName, false);
 		}
 		FileEntity fileEntity = (FileEntity) treeEntity.getObject();
