@@ -372,6 +372,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
     
     public static String REPORT_MSG_MUST_ENTER_API_KEY;
+    
+    public static String MSG_WARN_VM_ARGUMENTS;
 
     static {
         // initialize resource bundle

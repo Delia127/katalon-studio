@@ -41,8 +41,7 @@ public class NewFilteringTestSuitePopupMenuContribution {
                 return;
             }
 
-            boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
-            if (isEnterpriseAccount && NewTestSuiteHandler.findParentTreeEntity(selectedObjects) != null) {
+            if (NewTestSuiteHandler.findParentTreeEntity(selectedObjects) != null) {
                 MHandledMenuItem newTestSuitePopupMenuItem = MenuFactory.createPopupMenuItem(
                         commandService.createCommand(NEW_FILTERING_TEST_SUITE_COMMAND, null), "Dynamic Test Suite",
                         ConstantsHelper.getApplicationURI());

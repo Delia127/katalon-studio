@@ -21,6 +21,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -154,7 +155,7 @@ public class ExecutionUtil {
                 ExecutionUtil.getDefaultSmartWaitMode().booleanValue());
         
         executionProperties.put(RunConfiguration.LOG_TEST_STEPS,
-        		ExecutionUtil.getLogTestSteps().booleanValue());
+        		LicenseUtil.isNotFreeLicense() && ExecutionUtil.getLogTestSteps().booleanValue());
 
         propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
 

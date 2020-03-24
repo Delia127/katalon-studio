@@ -31,6 +31,7 @@ import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
@@ -39,6 +40,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.feature.KSEFeature;
 
 public class DatabasePreferencePage extends PreferencePageWithHelp {
 
@@ -291,13 +293,13 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             enableUserPassword(chkSecureUserPassword.getSelection());
             
             // Hide this feature for normal users
-            if (!isEnterpriseAccount()) {
-                gdLblOptionsDB.heightHint = 0;
-                gdTxtDriverClassName.heightHint = 0;
-                lblOptionsDB.setVisible(false);
-                txtDriverClassName.setVisible(false);
-                compContainer.layout(true, true);
-            }
+//            if (!isEnterpriseAccount()) {
+//                gdLblOptionsDB.heightHint = 0;
+//                gdTxtDriverClassName.heightHint = 0;
+//                lblOptionsDB.setVisible(false);
+//                txtDriverClassName.setVisible(false);
+//                compContainer.layout(true, true);
+//            }
         } catch (IOException e) {
             setStatusLabel(e.getMessage(), ColorUtil.getTextErrorColor());
         }
@@ -332,14 +334,20 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         dbSettings.setDriverClassName(txtDriverClassName.getText());
         if (!isEnterpriseAccount()) {
             if (isOracleSql(connectionUrl)) {
-                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ORACLE_EXTERNAL_DATA,
                         ComposerComponentsImplMessageConstants.PREF_WARN_KSE_ORACLE_SQL);
                 return false;
             }
 
             if (isMicrosoftSqlServer(connectionUrl)) {
-                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SQL_SERVER_EXTERNAL_DATA,
                         ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
+                return false;
+            }
+
+            if (StringUtils.isNotBlank(txtDriverClassName.getText())) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE,
+                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_CUSTOM_DB_CONNECTION);
                 return false;
             }
         }
