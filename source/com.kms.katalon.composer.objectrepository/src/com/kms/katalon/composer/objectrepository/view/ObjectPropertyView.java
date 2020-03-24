@@ -322,14 +322,15 @@ public class ObjectPropertyView implements EventHandler {
 		glCompositeTableDetails.marginHeight = 0;
 		compositeTableDetails.setLayout(glCompositeTableDetails);
 
-		propertyTableViewer = new ObjectPropetiesTableViewer(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+		propertyTableViewer = new ObjectPropetiesTableViewer(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL,
 				eventBroker);
 
 		Table table = propertyTableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
-		gridDataTable.minimumHeight = 150;
+        gridDataTable.minimumHeight = 150;
+		gridDataTable.heightHint = 300;
 		table.setLayoutData(gridDataTable);
 
 		TableViewerColumn treeViewerColumnName = new TableViewerColumn(propertyTableViewer, SWT.NONE);
