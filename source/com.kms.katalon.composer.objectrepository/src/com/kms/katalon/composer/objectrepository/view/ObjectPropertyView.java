@@ -329,7 +329,7 @@ public class ObjectPropertyView implements EventHandler {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
-        gridDataTable.minimumHeight = 150;
+		gridDataTable.minimumHeight = 150;
 		gridDataTable.heightHint = 300;
 		table.setLayoutData(gridDataTable);
 
