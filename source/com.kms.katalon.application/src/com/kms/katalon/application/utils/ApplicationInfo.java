@@ -168,7 +168,7 @@ public class ApplicationInfo {
         return null;
     }
 
-    public static void setBooleanAppProperty(String key, boolean value, boolean autoSave) {
+    public static void setAppProperty(String key, boolean value, boolean autoSave) {
         Properties appProps = getAppProperties();
 
         appProps.setProperty(key, value ? TRUE_VALUE : FALSE_VALUE);
@@ -177,7 +177,7 @@ public class ApplicationInfo {
         }
     }
 
-    public static boolean getBooleanAppProperty(String key) {
+    public static boolean getAppPropertyAsBoolean(String key) {
         Properties appProps = getAppProperties();
 
         if (appProps != null && appProps.containsKey(key)) {

@@ -610,10 +610,10 @@ public class MessageConstants extends NLS {
 
     public static String Account_HELP;
 
-    // First Time User Katalon Survey Dialog
-    public static String BTN_YES;
+    // First Time Use Katalon Survey Dialog
+    public static String BTN_YES_CONTINUE_USE;
 
-    public static String BTN_NO;
+    public static String BTN_NO_QUIT_USING;
 
     public static String BTN_SEND;
 
@@ -622,8 +622,6 @@ public class MessageConstants extends NLS {
     public static String MSG_QUIT_USING_KATALON_REASON;
 
     public static String MSG_QUIT_USING_KATALON_REASON_PLACEHOLDER;
-
-    public static String TITLE_DIALOG_WILL_CONTINUE_TO_USE;
 
     static {
         // initialize resource bundle

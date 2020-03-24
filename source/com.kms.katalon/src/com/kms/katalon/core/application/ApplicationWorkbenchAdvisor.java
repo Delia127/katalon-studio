@@ -78,7 +78,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
     @Override
     public boolean preShutdown() {
-        boolean doneFirstTimeUseSurvey = ApplicationInfo.getBooleanAppProperty(ApplicationStringConstants.DONE_FIRST_TIME_USE_SURVEY_PROP_NAME);
+        boolean doneFirstTimeUseSurvey = ApplicationInfo.getAppPropertyAsBoolean(ApplicationStringConstants.DONE_FIRST_TIME_USE_SURVEY_PROP_NAME);
         if (LicenseUtil.isNonPaidLicense() && !doneFirstTimeUseSurvey) {
             FirstTimeUseDialog dialog = new FirstTimeUseDialog(Display.getCurrent().getActiveShell());
             dialog.open();
