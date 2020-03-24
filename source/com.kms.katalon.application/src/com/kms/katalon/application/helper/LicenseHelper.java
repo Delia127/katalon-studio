@@ -13,6 +13,11 @@ public class LicenseHelper {
     	return ActivationInfoCollector.getLicenseType() == LicenseType.FREE;
     }
     
+    public boolean isNonPaidLicense() {
+        LicenseType licenseType = ActivationInfoCollector.getLicenseType();
+        return licenseType == LicenseType.FREE || licenseType == LicenseType.TRIAL;
+    }
+    
     public boolean isPaidLicense() {
         return ActivationInfoCollector.getLicenseType() == LicenseType.ENTERPRISE;
     }

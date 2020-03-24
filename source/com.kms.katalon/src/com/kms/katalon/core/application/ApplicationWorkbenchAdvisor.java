@@ -1,6 +1,7 @@
 package com.kms.katalon.core.application;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -11,7 +12,11 @@ import org.eclipse.ui.statushandlers.StatusAdapter;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.statushandlers.WorkbenchErrorHandler;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.plugin.dialog.FirstTimeUseDialog;
 
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
     private static final String GREPCLIPSE_PACKAGE_NAME_PREFIX = "org.codehaus.groovy.eclipse";
@@ -69,5 +74,15 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
             }
         };
         return workbenchErrorHandler;
+    }
+
+    @Override
+    public boolean preShutdown() {
+        boolean doneFirstTimeUseSurvey = ApplicationInfo.getAppPropertyAsBoolean(ApplicationStringConstants.DONE_FIRST_TIME_USE_SURVEY_PROP_NAME);
+        if (LicenseUtil.isNonPaidLicense() && !doneFirstTimeUseSurvey) {
+            FirstTimeUseDialog dialog = new FirstTimeUseDialog(Display.getCurrent().getActiveShell());
+            dialog.open();
+        }
+        return true;
     }
 }

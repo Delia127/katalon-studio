@@ -29,6 +29,8 @@ public class ApplicationStringConstants extends GlobalStringConstants {
 
     public static final String KATALON_TESTOPS_SERVER = "testOps.serverUrl";
 
+    public static final String DONE_FIRST_TIME_USE_SURVEY_PROP_NAME = "doneFirstTimeUseSurvey";
+
     // Proxy Configuration
     public static final String PROXY_OPTION = "proxy.option";
 
