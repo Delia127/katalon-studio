@@ -3913,7 +3913,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * Inject an input that will disappear by the end of this method. This keyword set files to
      * the input and then emit <i>dragenter</i>, <i>dragover</i>, <i>drop</i> events that carry the files to the provided drop zone.
      * <p>
-     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + " \n " + pathToFile2 + " \n " + pathToFile3</b>
+     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
      * </p>
      * 
      * @since 7.3.0
@@ -3929,7 +3929,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * Inject an input that will disappear by the end of this method. This keyword set files to
      * the input and then emit <i>dragenter</i>, <i>dragover</i>, <i>drop</i> events that carry the files to the provided drop zone.
      * <p>
-     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + " \n " + pathToFile2 + " \n " + pathToFile3</b>
+     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
      * </p>
      *
      * @since 7.3.0
@@ -3946,7 +3946,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * the input and then emit <i>dragenter</i>, <i>dragover</i>, <i>drop</i> events that carry the files to the drop zone which 
      * is defaulted to the <i>body</i> element. To specify your own drop zone, refer to other variations of this keyword
      * <p>
-     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + " \n " + pathToFile2 + " \n " + pathToFile3</b>
+     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
      * </p>
      *
      * @since 7.3.0
@@ -3964,7 +3964,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * is defaulted to the <i>body</i> element. To specify your own drop zone, refer to other variations of this keyword
      * 
      * <p>
-     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + " \n " + pathToFile2 + " \n " + pathToFile3</b>
+     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
      * </p>
      *
      * @since 7.3.0
