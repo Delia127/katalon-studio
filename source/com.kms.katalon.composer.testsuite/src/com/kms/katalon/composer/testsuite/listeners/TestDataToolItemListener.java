@@ -199,7 +199,9 @@ public class TestDataToolItemListener extends SelectionAdapter {
                 }
 
                 if (!isEnterpriseAccount && (items + dataFileEntities.size()) > 1) {
-                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+//                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+//                            ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION,
                             ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
                     return;
                 }
