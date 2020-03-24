@@ -13,7 +13,7 @@ public class CInternetExplorerDriver extends InternetExplorerDriver implements I
 
     public CInternetExplorerDriver(InternetExplorerDriverService service, Capabilities capabilities, int actionDelay) {
         super(service, new InternetExplorerOptions(capabilities));
-        this.actionDelayInMiliseconds = actionDelay * 1000;
+        this.actionDelayInMiliseconds = actionDelay;
     }
 
     @Override

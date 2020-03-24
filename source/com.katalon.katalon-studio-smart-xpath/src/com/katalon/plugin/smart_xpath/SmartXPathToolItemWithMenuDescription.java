@@ -20,6 +20,7 @@ import com.katalon.plugin.smart_xpath.controller.AutoHealingController;
 import com.katalon.plugin.smart_xpath.dialog.AutoHealingDialog;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
+import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.constants.IdConstants;
@@ -75,7 +76,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 				addLoadAutoHealingEntitiesMenuItem(newMenu, true);
 			}
 		} catch (ResourceException e) {
-			e.printStackTrace(System.out);
+			LoggerSingleton.logError(e);
 		}
 	}
 
@@ -97,7 +98,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
     					preferenceStore.setBoolean("SmartXPathEnabled", true);
     					preferenceStore.save();
     				} catch (ResourceException e1) {
-    					e1.printStackTrace(System.out);
+    					LoggerSingleton.logError(e1);
     				}
 			    } else {
 			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SMART_XPATH);
@@ -125,7 +126,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 	                    preferenceStore.setBoolean("SmartXPathEnabled", false);
 	                    preferenceStore.save();
 	                } catch (ResourceException e1) {
-	                    e1.printStackTrace(System.out);
+	                    LoggerSingleton.logError(e1);
 	                }
 			    } else {
 			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SMART_XPATH);

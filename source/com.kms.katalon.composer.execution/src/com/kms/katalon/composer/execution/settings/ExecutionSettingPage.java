@@ -3,6 +3,7 @@ package com.kms.katalon.composer.execution.settings;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,9 +48,13 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
     @SuppressWarnings("unused")
 	private static final String LBL_APPLY_NEIGHBOR_XPATHS = ExecutionMessageConstants.LBL_APPLY_NEIGHBOR_XPATHS;
 
-    public static final short TIMEOUT_MIN_VALUE = 0;
+    public static final short TIMEOUT_MIN_VALUE_IN_SEC = 0;
 
-    public static final short TIMEOUT_MAX_VALUE = 9999;
+    public static final short TIMEOUT_MAX_VALUE_IN_SEC = 9999;
+    
+    public static final short TIMEOUT_MIN_VALUE_IN_MILISEC = 0;
+
+    public static final int TIMEOUT_MAX_VALUE_IN_MILISEC = 9999999;
 
     private static final int INPUT_WIDTH = 60;
 
@@ -65,12 +70,13 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
 
     private Combo cbLogTestSteps;
     
-    private Text txtDefaultElementTimeout, txtDefaultPageLoadTimeout, txtActionDelay, txtDefaultIEHangTimeout;
+    private Text txtDefaultElementTimeout, txtDefaultPageLoadTimeout, txtActionDelayInSecond, txtActionDelayInMilisecond, txtDefaultIEHangTimeout;
 
     @SuppressWarnings("unused")
 	private Button chckApplyNeighborXpaths, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
-    
-    private Button radioNotUsePageLoadTimeout, radioUsePageLoadTimeout, chckIgnorePageLoadTimeoutException;
+
+    private Button radioNotUsePageLoadTimeout, radioUsePageLoadTimeout, chckIgnorePageLoadTimeoutException,
+            radioDelayBetweenActionsInSecond, radioDelayBetweenActionsInMilisecond;
 
     private IRunConfigurationContributor[] runConfigs;
 
@@ -210,16 +216,12 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         layout.marginWidth = 0;
         comp.setLayout(layout);
         
-        Label lblActionDelay = new Label(comp, SWT.NONE);
-        lblActionDelay.setText(ComposerExecutionMessageConstants.LBL_ACTION_DELAY);
-        GridData gdLblActionDelay = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblActionDelay.setLayoutData(gdLblActionDelay);
+        buildDefaultIEHangTimeoutComposite(comp);
+        buildDefaultPageLoadTimeoutComposite(comp);
+        buildDelayBetweenActionsComposite(comp);
+    }
 
-        txtActionDelay = new Text(comp, SWT.BORDER);
-        GridData ldActionDelay = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        ldActionDelay.widthHint = INPUT_WIDTH;
-        txtActionDelay.setLayoutData(ldActionDelay);
-
+    private void buildDefaultIEHangTimeoutComposite(Group comp) {
         Label lblDefaultIEHangTimeout = new Label(comp, SWT.NONE);
         lblDefaultIEHangTimeout.setText(ComposerExecutionMessageConstants.PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT);
         lblDefaultIEHangTimeout.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
@@ -228,11 +230,46 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         GridData gdTxtDefaultIEHangTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdTxtDefaultIEHangTimeout.widthHint = INPUT_WIDTH;
         txtDefaultIEHangTimeout.setLayoutData(gdTxtDefaultIEHangTimeout);
+    }
 
+    private void buildDelayBetweenActionsComposite(Group comp) {
+        Label lblActionDelay = new Label(comp, SWT.NONE);
+        lblActionDelay.setText(ComposerExecutionMessageConstants.LBL_ACTION_DELAY);
+        GridData gdLblActionDelay = new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1);
+        lblActionDelay.setLayoutData(gdLblActionDelay);
+        
+        Composite compPageLoad = new Composite(comp, SWT.NONE);
+        GridLayout glCompPageLoad = new GridLayout(2, false);
+        glCompPageLoad.marginWidth = 0;
+        glCompPageLoad.marginHeight = 0;
+        glCompPageLoad.marginLeft = 15;
+        compPageLoad.setLayout(glCompPageLoad);
+        compPageLoad.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        
+        radioDelayBetweenActionsInSecond = new Button(compPageLoad, SWT.RADIO);
+        radioDelayBetweenActionsInSecond.setText(ComposerExecutionMessageConstants.PREF_LBL_ACTION_DELAY_IN_SECONDS);
+        radioDelayBetweenActionsInSecond.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        
+        txtActionDelayInSecond = new Text(compPageLoad, SWT.BORDER);
+        GridData ldActionDelayInSecond = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        ldActionDelayInSecond.widthHint = INPUT_WIDTH;
+        txtActionDelayInSecond.setLayoutData(ldActionDelayInSecond);
+        
+        radioDelayBetweenActionsInMilisecond = new Button(compPageLoad, SWT.RADIO);
+        radioDelayBetweenActionsInMilisecond.setText(ComposerExecutionMessageConstants.PREF_LBL_ACTION_DELAY_IN_MILISECONDS);
+        radioDelayBetweenActionsInMilisecond.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        
+        txtActionDelayInMilisecond = new Text(compPageLoad, SWT.BORDER);
+        GridData ldActionDelayInMiliisecond = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        ldActionDelayInMiliisecond.widthHint = INPUT_WIDTH;
+        txtActionDelayInMilisecond.setLayoutData(ldActionDelayInMiliisecond);
+    }
+
+    private void buildDefaultPageLoadTimeoutComposite(Group comp) {
         Label lblDefaultPageLoadTimeout = new Label(comp, SWT.NONE);
         lblDefaultPageLoadTimeout.setText(ComposerExecutionMessageConstants.PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT);
         lblDefaultPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-
+        
         Composite compPageLoad = new Composite(comp, SWT.NONE);
         GridLayout glCompPageLoad = new GridLayout(2, false);
         glCompPageLoad.marginWidth = 0;
@@ -243,12 +280,10 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
 
         radioNotUsePageLoadTimeout = new Button(compPageLoad, SWT.RADIO);
         radioNotUsePageLoadTimeout.setText(ComposerExecutionMessageConstants.PREF_LBL_ENABLE_DEFAULT_PAGE_LOAD_TIMEOUT);
-        radioNotUsePageLoadTimeout.setText("Wait until the page is loaded");
         radioNotUsePageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         radioUsePageLoadTimeout = new Button(compPageLoad, SWT.RADIO);
         radioUsePageLoadTimeout.setText(ComposerExecutionMessageConstants.PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT);
-        radioUsePageLoadTimeout.setText("Wait for (in seconds)");
         GridData gdRadioPageLoadTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         radioUsePageLoadTimeout.setLayoutData(gdRadioPageLoadTimeout);
 
@@ -293,10 +328,27 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             }
         });
         
-        addNumberVerification(txtActionDelay, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
-        addNumberVerification(txtDefaultIEHangTimeout, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
-        addNumberVerification(txtDefaultPageLoadTimeout, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
-        addNumberVerification(txtDefaultElementTimeout, TIMEOUT_MIN_VALUE, TIMEOUT_MAX_VALUE);
+        radioDelayBetweenActionsInMilisecond.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                txtActionDelayInMilisecond.setEnabled(true);
+                txtActionDelayInSecond.setEnabled(false);
+            }
+        });
+
+        radioDelayBetweenActionsInSecond.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                txtActionDelayInSecond.setEnabled(true);
+                txtActionDelayInMilisecond.setEnabled(false);
+            }
+        });
+        
+        addNumberVerification(txtActionDelayInSecond, TIMEOUT_MIN_VALUE_IN_SEC, TIMEOUT_MAX_VALUE_IN_SEC);
+        addNumberVerification(txtActionDelayInMilisecond, TIMEOUT_MIN_VALUE_IN_MILISEC, TIMEOUT_MAX_VALUE_IN_MILISEC);
+        addNumberVerification(txtDefaultIEHangTimeout, TIMEOUT_MIN_VALUE_IN_SEC, TIMEOUT_MAX_VALUE_IN_SEC);
+        addNumberVerification(txtDefaultPageLoadTimeout, TIMEOUT_MIN_VALUE_IN_SEC, TIMEOUT_MAX_VALUE_IN_SEC);
+        addNumberVerification(txtDefaultElementTimeout, TIMEOUT_MIN_VALUE_IN_SEC, TIMEOUT_MAX_VALUE_IN_SEC);
     }
     
     private void addNumberVerification(Text txtInput, final int min, final int max) {
@@ -401,7 +453,19 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         txtDefaultPageLoadTimeout.setEnabled(usePageLoadTimeout);
         chckIgnorePageLoadTimeoutException.setSelection(webSettingStore.getIgnorePageLoadTimeout());
         chckIgnorePageLoadTimeoutException.setEnabled(usePageLoadTimeout);
-        txtActionDelay.setText(String.valueOf(webSettingStore.getActionDelay()));
+
+        radioDelayBetweenActionsInSecond.setSelection(webSettingStore.getUseDelayActionTimeUnit().equals(TimeUnit.SECONDS));
+        radioDelayBetweenActionsInMilisecond.setSelection(webSettingStore.getUseDelayActionTimeUnit().equals(TimeUnit.MILLISECONDS));
+        if (radioDelayBetweenActionsInSecond.getSelection()) {
+            txtActionDelayInSecond.setText(String.valueOf(webSettingStore.getActionDelay()));
+            txtActionDelayInMilisecond.setEnabled(false);
+        } else {
+            txtActionDelayInMilisecond.setText(String.valueOf(webSettingStore.getActionDelay()));
+            txtActionDelayInSecond.setEnabled(false);
+        }
+        txtActionDelayInSecond.setMessage("Ex: 1");
+        txtActionDelayInMilisecond.setMessage("Ex: 100");
+        
         txtDefaultIEHangTimeout.setText(Integer.toString(webSettingStore.getIEHangTimeout()));
 
 //        if (!LicenseUtil.isNotFreeLicense()) {
@@ -461,9 +525,19 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         chckIgnorePageLoadTimeoutException
                 .setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_IGNORE_PAGELOAD_TIMEOUT_EXCEPTION);
         chckIgnorePageLoadTimeoutException.setEnabled(usePageLoadTimeout);
-        txtActionDelay.setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
+        txtActionDelayInSecond.setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
         txtDefaultIEHangTimeout
                 .setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING));
+        
+        radioDelayBetweenActionsInSecond.setSelection(true);
+        radioDelayBetweenActionsInMilisecond.setSelection(false);
+        if (radioDelayBetweenActionsInSecond.getSelection()) {
+            txtActionDelayInSecond.setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
+        } else {
+            txtActionDelayInMilisecond
+                    .setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
+        }
+        
         try {
             webSettingStore.setDefaultCapturedTestObjectAttributeLocators();
             webSettingStore.setDefaultCapturedTestObjectXpathLocators();
@@ -532,8 +606,27 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
                 webSettingStore.setIgnorePageLoadTimeout(chckIgnorePageLoadTimeoutException.getSelection());
             }
             
-            if (txtActionDelay != null) {
-                webSettingStore.setActionDelay(Integer.parseInt(txtActionDelay.getText()));
+            if (txtActionDelayInSecond != null) {
+                TimeUnit chosenTimeUnit = null;
+                String secText = txtActionDelayInSecond.getText();
+                String milisecText = txtActionDelayInMilisecond.getText();
+                secText = (StringUtils.EMPTY.equals(secText))
+                        ? String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY) : secText;
+                milisecText = (StringUtils.EMPTY.equals(milisecText))
+                        ? String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY) : milisecText;
+
+                if (radioDelayBetweenActionsInSecond != null) {
+                    if(radioDelayBetweenActionsInSecond.getSelection()) {
+                        chosenTimeUnit = TimeUnit.SECONDS;
+                    }
+                }
+                if (radioDelayBetweenActionsInMilisecond != null) {
+                    if(radioDelayBetweenActionsInMilisecond.getSelection()) {
+                        chosenTimeUnit = TimeUnit.MILLISECONDS;
+                    }
+                }
+                webSettingStore.setUseDelayActionTimeUnit(chosenTimeUnit);
+                webSettingStore.setActionDelay(Integer.parseInt(chosenTimeUnit.equals(TimeUnit.SECONDS) ? secText : milisecText));
             }
             
             if (txtDefaultIEHangTimeout != null) {

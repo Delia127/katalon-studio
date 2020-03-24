@@ -31,14 +31,11 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     private File scriptFile;
     
     private String rawScript;
-    
-    private Boolean autoApplyNeighborXpaths;
 
     private Map<String, Object> generalProperties;
 
     public DefaultExecutionSetting() {
         timeout = 0;
-        setAutoApplyNeighborXpaths(ExecutionUtil.getAutoApplyNeighborXpaths());
     }
 
     @Override
@@ -48,23 +45,27 @@ public class DefaultExecutionSetting implements IExecutionSetting {
 
     @Override
     public Map<String, Object> getGeneralProperties() {
+        return getDefaultGeneralProperties();
+    }
+    
+    public Map<String, Object> getDefaultGeneralProperties() {
         generalProperties = new HashMap<>();
 
         generalProperties.put(RunConfiguration.TIMEOUT_PROPERTY, timeout);
         generalProperties.put(StringConstants.CONF_PROPERTY_REPORT, getReportProperties());
         generalProperties.put(RunConfiguration.EXCUTION_DEFAULT_FAILURE_HANDLING, getDefaultFailureHandlingSetting());
         generalProperties.put(RunConfiguration.PROXY_PROPERTY, getJsonProxyInformation());
-        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_CASE, ExecutionUtil.isQuitDriversAfterExecutingTestCase());
-        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_SUITE, ExecutionUtil.isQuitDriversAfterExecutingTestSuite());
-        
+        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_CASE,
+                ExecutionUtil.isQuitDriversAfterExecutingTestCase());
+        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_SUITE,
+                ExecutionUtil.isQuitDriversAfterExecutingTestSuite());
+        generalProperties.put(RunConfiguration.AUTO_APPLY_NEIGHBOR_XPATHS, ExecutionUtil.getAutoApplyNeighborXpaths());
+
         if (executedEntity != null) {
-            generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY, executedEntity.getCollectedDataInfo());
+            generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY,
+                    executedEntity.getCollectedDataInfo());
         }
-        
-        if(this.autoApplyNeighborXpaths != null){
-        	generalProperties.put(RunConfiguration.AUTO_APPLY_NEIGHBOR_XPATHS, this.autoApplyNeighborXpaths);
-        }
-        
+
         return generalProperties;
     }
 
@@ -93,14 +94,6 @@ public class DefaultExecutionSetting implements IExecutionSetting {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-    
-    public Boolean getAutoApplyNeighborXpaths(){
-    	return this.autoApplyNeighborXpaths;
-    }
-    
-    public void setAutoApplyNeighborXpaths(Boolean val){
-    	this.autoApplyNeighborXpaths = val;
     }
 
     public String getLogFileName() {
