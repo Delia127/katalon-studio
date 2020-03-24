@@ -4,8 +4,10 @@ var args = arguments,
   offsetY = args[2],
   doc = (element != null ? element.ownerDocument : document) || document;
 
+// Default drop zone to the body
 target = document.body;
 
+// if a custom drop zone is provided, check for interactability
 if (element != null) {
   for (var i = 0; ; ) {
     var box = element.getBoundingClientRect(),
@@ -28,15 +30,18 @@ if (element != null) {
     });
   }
 }
-
+// Create virtual input
 var input = doc.createElement("INPUT");
 input.setAttribute("type", "file");
 input.setAttribute("multiple", "");
 input.setAttribute("style", "position:fixed;z-index:2147483647;left:0;top:0;");
 input.onchange = function(ev) {
+  // Remove this virtual input
   input.parentElement.removeChild(input);
+  // Prevent side effects
   ev.stopPropagation();
-
+  
+  // Prepare dataTransfer object that contains the files
   var dataTransfer = {
     constructor: DataTransfer,
     effectAllowed: "all",
@@ -48,7 +53,7 @@ input.onchange = function(ev) {
     clearData: function clearData() {},
     setDragImage: function setDragImage() {}
   };
-
+  
   if (window.DataTransferItemList) {
     dataTransfer.items = Object.setPrototypeOf(
       Array.prototype.map.call(input.files, function(file) {
@@ -76,7 +81,7 @@ input.onchange = function(ev) {
       }
     );
   }
-
+  // Attach dataTransfer to events and dispatch them to the drop zone
   ["dragenter", "dragover", "drop"].forEach(function(type) {
     var event = doc.createEvent("DragEvent");
     event.initMouseEvent(
