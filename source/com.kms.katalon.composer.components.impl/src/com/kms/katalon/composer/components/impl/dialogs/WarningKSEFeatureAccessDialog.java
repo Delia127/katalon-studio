@@ -46,7 +46,9 @@ public class WarningKSEFeatureAccessDialog extends Dialog {
         lblImage.setImage(getWarningImage());
 
         lnkMessage = new Link(body, SWT.WRAP);
-        lnkMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        GridData gdMessage = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gdMessage.horizontalIndent = 10;
+        lnkMessage.setLayoutData(gdMessage);
         lnkMessage.setText(message);
 
         registerControlListeners();
