@@ -85,6 +85,7 @@ public class FirstTimeUseDialog extends MessageDialog {
         leaveReasonComposite.setVisible(true);
         GridData gdLeaveReason = (GridData) leaveReasonComposite.getLayoutData();
         gdLeaveReason.exclude = false;
+        txtReason.setFocus();
         updateDialogLayout();
     }
 
@@ -101,10 +102,12 @@ public class FirstTimeUseDialog extends MessageDialog {
         Button btnCancel = getButton(1);
         if (isShowReasonInput) {
             btnOK.setText(StringConstants.BTN_SEND);
+            btnCancel.setVisible(false);
             ((GridData) btnCancel.getLayoutData()).exclude = true;
             updateButtonsLayout(1);
         } else {
             btnOK.setText(StringConstants.BTN_YES_CONTINUE_USE);
+            btnCancel.setVisible(true);
             ((GridData) btnCancel.getLayoutData()).exclude = false;
             updateButtonsLayout(2);
         }
@@ -113,8 +116,7 @@ public class FirstTimeUseDialog extends MessageDialog {
     private void updateButtonsLayout(int numButtons) {
         Composite buttonContainer = getButton(0).getParent();
         ((GridLayout) buttonContainer.getLayout()).numColumns = numButtons;
-        buttonContainer.pack();
-        buttonContainer.getParent().pack();
+        buttonContainer.getShell().layout(true);
     }
 
     protected boolean isResizable() {
