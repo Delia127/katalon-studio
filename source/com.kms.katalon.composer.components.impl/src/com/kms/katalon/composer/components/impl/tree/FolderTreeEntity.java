@@ -25,9 +25,12 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.file.SystemFileEntity;
+import com.kms.katalon.entity.file.UserFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class FolderTreeEntity extends AbstractTreeEntity {
@@ -59,6 +62,15 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                     folder.getRelativePath())) {
                 if (packageFragment.exists()) {
                     childrenEntities.add(new PackageTreeEntity(packageFragment, this));
+                }
+            }
+            for (ITreeEntity child : TreeEntityUtil.getChildren(this)) {
+                if (child instanceof SystemFileTreeEntity) {
+                    String extension = ((SystemFileTreeEntity) child).getObject().getFileExtension();
+                    if (!extension.equals(GroovyConstants.GROOVY_FILE_EXTENSION) 
+                            && !extension.equals(GroovyConstants.JAVA_FILE_EXTENSION)) {
+                        childrenEntities.add(child);
+                    }
                 }
             }
         } else {

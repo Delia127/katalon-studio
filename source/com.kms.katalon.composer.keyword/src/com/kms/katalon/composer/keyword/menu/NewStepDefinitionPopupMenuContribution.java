@@ -8,6 +8,7 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
@@ -16,6 +17,7 @@ import org.eclipse.e4.ui.workbench.modeling.ISelectionListener;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.keyword.handlers.NewJavaClassHandler;
 import com.kms.katalon.composer.keyword.handlers.NewStepDefinitionHandler;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
@@ -26,6 +28,9 @@ public class NewStepDefinitionPopupMenuContribution {
     private static final String NEW_KEYWORD_POPUP_MENUITEM_LABEL = "Step Definition";
 
     private static final String NEW_KEYWORD_COMMAND_ID = "com.kms.katalon.composer.keyword.command.addNewStepDefinition";
+
+    private static final String JAVA_CLASS_CONTRIBUTION_URI = "bundleclass://com.kms.katalon.composer.keyword/"
+            + NewJavaClassHandler.class.getName();
 
     @Inject
     private ECommandService commandService;
@@ -45,7 +50,7 @@ public class NewStepDefinitionPopupMenuContribution {
             }
         });
     }
-    
+
     @CanExecute
     public boolean canExecute() {
         return true;
@@ -67,6 +72,11 @@ public class NewStepDefinitionPopupMenuContribution {
                 if (newKeywordPopupMenuItem != null) {
                     menuItems.add(newKeywordPopupMenuItem);
                 }
+
+                MDirectMenuItem newJavaClassItem = MenuFactory.createDirectMenuItem("Java Class",
+                        ConstantsHelper.getApplicationURI());
+                newJavaClassItem.setContributionURI(JAVA_CLASS_CONTRIBUTION_URI);
+                menuItems.add(newJavaClassItem);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
