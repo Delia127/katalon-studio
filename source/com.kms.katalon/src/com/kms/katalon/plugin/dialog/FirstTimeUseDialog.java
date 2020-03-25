@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.StringConstants;
@@ -64,7 +66,10 @@ public class FirstTimeUseDialog extends MessageDialog {
                 }
                 Trackings.trackInAppSurveyWillContinueToUse(false, txtReason.getText());
             }
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.DONE_FIRST_TIME_USE_SURVEY_PROP_NAME, true, true);
+            String userEmail = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+            UserProfile userProfile = UserProfileHelper.getOrCreateProfile(userEmail);
+            userProfile.setDoneFirstTimeUseSurvey(true);
+            UserProfileHelper.saveProfile(userProfile);
             close();
         } else {
             willContinueToUse = false;

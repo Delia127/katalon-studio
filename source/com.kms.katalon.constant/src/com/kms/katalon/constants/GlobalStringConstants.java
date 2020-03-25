@@ -298,6 +298,9 @@ public class GlobalStringConstants {
     public static final String APP_INFO_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
             + "application.properties";
 
+    public static final String LOCAL_STORAGE_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
+            + "localStorage.properties";
+
     public static final String APP_LICENSE_SERVER_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
             + "licenseServer.properties";
 

@@ -1,5 +1,6 @@
 package com.kms.katalon.core.application;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
@@ -13,6 +14,8 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.statushandlers.WorkbenchErrorHandler;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.constants.IdConstants;
@@ -78,11 +81,19 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
     @Override
     public boolean preShutdown() {
-        boolean doneFirstTimeUseSurvey = ApplicationInfo.getAppPropertyAsBoolean(ApplicationStringConstants.DONE_FIRST_TIME_USE_SURVEY_PROP_NAME);
-        if (LicenseUtil.isNonPaidLicense() && !doneFirstTimeUseSurvey) {
+        showFirstTimeUseSurvey();
+        return true;
+    }
+    
+    private void showFirstTimeUseSurvey() {
+        String userEmail = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        UserProfile userProfile = UserProfileHelper.getOrCreateProfile(userEmail);
+        if (StringUtils.isBlank(userEmail) || userProfile.isDoneFirstTimeUseSurvey()) {
+            return;
+        }
+        if (LicenseUtil.isNonPaidLicense()) {
             FirstTimeUseDialog dialog = new FirstTimeUseDialog(Display.getCurrent().getActiveShell());
             dialog.open();
         }
-        return true;
     }
 }
