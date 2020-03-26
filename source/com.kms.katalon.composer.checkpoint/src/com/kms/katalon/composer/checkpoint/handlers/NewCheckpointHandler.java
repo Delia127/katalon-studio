@@ -14,9 +14,11 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
 import com.kms.katalon.composer.checkpoint.dialogs.wizard.NewCheckpointWizard;
 import com.kms.katalon.composer.checkpoint.dialogs.wizard.NewCheckpointWizardDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -31,6 +33,7 @@ import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.feature.KSEFeature;
 
 public class NewCheckpointHandler {
 
@@ -59,6 +62,11 @@ public class NewCheckpointHandler {
     @Execute
     public void execute() {
         try {
+            if (LicenseUtil.isFreeLicense()) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CHECKPOINT);
+                return;
+            }
+            
             ITreeEntity parent = findParentSelection();
             if (parent == null) {
                 parent = new FolderTreeEntity(FolderController.getInstance().getCheckpointRoot(getProject()), null);
