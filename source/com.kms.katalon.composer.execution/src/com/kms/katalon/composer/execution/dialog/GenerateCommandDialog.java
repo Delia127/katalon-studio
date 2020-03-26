@@ -465,6 +465,21 @@ public class GenerateCommandDialog extends AbstractDialog {
         txtStatusDelay.setText(defaultStatusDelay);
         enableRetryFailedTestCase();
 
+        try {
+            ExecutionProfileEntity defaultExecutionProfile = GlobalVariableController.getInstance()
+                    .getDefaultExecutionProfile(project);
+            RunConfigurationDescription runConfigurationDescription = getStoredConfigurationDescription();
+            runConfigurationDescription.setProfileName(defaultExecutionProfile.getName());
+            
+            if (runConfigurationDescription != null) {
+                ScopedPreferenceStore prefs = getPreference();
+                prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION,
+                        JsonUtil.toJson(runConfigurationDescription));
+            }
+        } catch (ControllerException error) {
+            LoggerSingleton.logError(error);
+        }
+
         loadLastWorkingData();
         updatePlatformLayout();
     }
