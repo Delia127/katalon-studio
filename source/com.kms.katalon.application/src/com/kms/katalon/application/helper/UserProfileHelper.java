@@ -1,5 +1,11 @@
 package com.kms.katalon.application.helper;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,10 +13,14 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.reflect.TypeToken;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.userprofile.UserProfile;
-import com.kms.katalon.application.utils.LocalStorage;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.logging.LogUtil;
 
 public class UserProfileHelper {
+
+    public static final String USER_PROFILES_FILE_LOCATION = ApplicationStringConstants.USER_PROFILES_FILE_LOCATION;
 
     private static Map<String, UserProfile> userProfiles;
 
@@ -36,7 +46,7 @@ public class UserProfileHelper {
             return null;
         }
         Map<String, UserProfile> profiles = getUserProfiles();
-        return profiles.get(email);
+        return profiles.getOrDefault(email, null);
     }
 
     public static void saveProfile(UserProfile newUserProfile) {
@@ -53,9 +63,7 @@ public class UserProfileHelper {
             return userProfiles;
         }
 
-        Type userProfileMapType = new TypeToken<Map<String, UserProfile>>() {}.getType();
-        userProfiles = LocalStorage.get(USER_PROFILES_KEY, userProfileMapType);
-
+        userProfiles = loadUserProfiles();
         if (userProfiles == null) {
             userProfiles = new HashMap<String, UserProfile>();
         }
@@ -63,7 +71,41 @@ public class UserProfileHelper {
         return userProfiles;
     }
 
+    private static Map<String, UserProfile> loadUserProfiles() {
+        try {
+            File userProfilesFile = new File(USER_PROFILES_FILE_LOCATION);
+            if (!userProfilesFile.exists()) {
+                return null;
+            }
+
+            BufferedReader reader = new BufferedReader(new FileReader(USER_PROFILES_FILE_LOCATION));
+            String jsonUserProfiles = reader.readLine();
+            reader.close();
+            
+            if (StringUtils.isBlank(jsonUserProfiles)) {
+                return null;
+            }
+
+            Type userProfileMapType = new TypeToken<Map<String, UserProfile>>() {}.getType();
+            return JsonUtil.fromJson(jsonUserProfiles, userProfileMapType);
+        } catch (IOException error) {
+            LogUtil.logError(error);
+        }
+        return null;
+    }
+
     public static void saveUserProfiles() {
-        LocalStorage.set(USER_PROFILES_KEY, userProfiles);
+        Map<String, UserProfile> profiles = getUserProfiles();
+        if (profiles == null) {
+            return;
+        }
+        try {
+            String jsonUserProfiles = JsonUtil.toJson(profiles, false);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(USER_PROFILES_FILE_LOCATION));
+            writer.write(jsonUserProfiles);
+            writer.close();
+        } catch (IOException error) {
+            LogUtil.logError(error);
+        }
     }
 }
