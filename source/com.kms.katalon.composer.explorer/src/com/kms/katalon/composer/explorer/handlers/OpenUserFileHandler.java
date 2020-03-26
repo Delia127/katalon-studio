@@ -89,12 +89,10 @@ public class OpenUserFileHandler {
 
     private static IEditorInput getEditorInput(UserFileEntity userFile) throws CoreException {
         String extension = userFile.getFileExtension();
-        switch (extension) {
-            case FEATURE_FILE_EXTENSION:
-                return getFeatureFileEditorInput(userFile);
-            default:
-                return getDefaultFileEditorInput(userFile);
+        if (FEATURE_FILE_EXTENSION.equalsIgnoreCase(extension)) {
+            return getFeatureFileEditorInput(userFile);
         }
+        return getDefaultFileEditorInput(userFile);
     }
 
     private static IEditorInput getDefaultFileEditorInput(UserFileEntity userFile) throws CoreException {
