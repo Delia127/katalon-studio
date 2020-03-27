@@ -1,15 +1,12 @@
 package com.kms.katalon.application.helper;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.reflect.TypeToken;
@@ -78,10 +75,7 @@ public class UserProfileHelper {
                 return null;
             }
 
-            BufferedReader reader = new BufferedReader(new FileReader(USER_PROFILES_FILE_LOCATION));
-            String jsonUserProfiles = reader.readLine();
-            reader.close();
-            
+            String jsonUserProfiles = FileUtils.readFileToString(userProfilesFile);
             if (StringUtils.isBlank(jsonUserProfiles)) {
                 return null;
             }
@@ -101,9 +95,7 @@ public class UserProfileHelper {
         }
         try {
             String jsonUserProfiles = JsonUtil.toJson(profiles, false);
-            BufferedWriter writer = new BufferedWriter(new FileWriter(USER_PROFILES_FILE_LOCATION));
-            writer.write(jsonUserProfiles);
-            writer.close();
+            FileUtils.writeStringToFile(new File(USER_PROFILES_FILE_LOCATION), jsonUserProfiles);
         } catch (IOException error) {
             LogUtil.logError(error);
         }
