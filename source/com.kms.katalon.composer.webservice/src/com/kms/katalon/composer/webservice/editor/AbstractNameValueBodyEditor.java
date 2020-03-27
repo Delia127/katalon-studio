@@ -109,7 +109,6 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
     @Override
     public String getContentData() {
         tvParams.removeEmptyRows();
-        updateViewModel();
         return getViewModel().getContentData();
     }
     
