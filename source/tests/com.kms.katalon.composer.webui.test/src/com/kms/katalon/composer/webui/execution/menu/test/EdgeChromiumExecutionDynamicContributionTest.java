@@ -4,13 +4,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Method;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.composer.webui.execution.menu.EdgeChromiumExecutionDynamicContribution;
 
 public class EdgeChromiumExecutionDynamicContributionTest {
 
-	private EdgeChromiumExecutionDynamicContribution contribution = new EdgeChromiumExecutionDynamicContribution();
+	private EdgeChromiumExecutionDynamicContribution contribution;
 	/*EdgeChromiumExecutionDynamicContribution contribution;
 	
 	@Test
@@ -33,11 +36,16 @@ public class EdgeChromiumExecutionDynamicContributionTest {
 		assertEquals(false, items.isEmpty());
 	}*/
 	
+	@Before
+	public void setUp(){
+		contribution = new EdgeChromiumExecutionDynamicContribution();
+	}
+	
 	@Test
 	public void getIconUriTest() throws Exception{		
+		//ImageConstants.
 		Method method = contribution.getClass().getDeclaredMethod("getIconUri");
 		method.setAccessible(true);
-		//System.out.println(method.getParameterTypes().toString() + "-" + method.getParameterCount());
 		String result = (String) method.invoke(contribution);
 		String expected = "/icons/execution/edge_chromium_16.png";
 		assertEquals(result.endsWith(expected), true);

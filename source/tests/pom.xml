@@ -18,6 +18,9 @@
 		<module>com.kms.katalon.core.webservice.test</module>
 		<module>com.kms.katalon.composer.webservice.test</module>
 		<module>com.kms.katalon.tests.report</module>
+		<module>com.kms.katalon.composer.webui.test</module>
+		<module>com.kms.katalon.core.webui.test</module>
+		<module>com.kms.katalon.execution.webui.test</module>
 	</modules>
 
 	<properties>

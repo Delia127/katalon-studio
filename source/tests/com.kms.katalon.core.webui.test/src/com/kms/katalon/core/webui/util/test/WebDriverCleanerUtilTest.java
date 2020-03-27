@@ -7,10 +7,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.eclipse.core.runtime.Platform;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.osgi.framework.Bundle;
 
 import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.core.webui.util.WebDriverCleanerUtil;
@@ -30,13 +32,15 @@ public class WebDriverCleanerUtilTest {
 	public void cleanUpTest() throws Exception{		
 		File logFile = folder.newFile();
 		File errorLogFile = folder.newFile();
-		File driverDirectory = SeleniumWebDriverProvider.getDriverDirectory();
-		
+		//File driverDirectory = SeleniumWebDriverProvider.getDriverDirectory();
+		File path = getDriverPath();
+		System.out.println(path.getAbsolutePath());
 		if (OSUtil.isWindows() && OSUtil.is64Bit()) {
 			
         	ProcessBuilder pb = new ProcessBuilder();
-    		pb.directory(new File(driverDirectory + File.separator + "edgechromium_win64"));
+    		pb.directory(new File(path + File.separator + "edgechromium_win64"));
     		pb.command("cmd", "/c", PROCESS_NAME_CHROMIUM);
+    		//pb.command(PROCESS_NAME_CHROMIUM);
     		pb.start();
 
     		boolean check = isProcessExists();
@@ -48,6 +52,13 @@ public class WebDriverCleanerUtilTest {
     		assertEquals("Process does not exist anymore", false, check);
     		
         }else{};		
+	}
+	
+	private File getDriverPath(){
+		//String packageName = this.getClass().getPackage().getName();
+		String packageName = System.getProperty("user.dir");
+		File f = new File(packageName + File.separator + "os_resources" + File.separator + "win64" + File.separator + "resources" + File.separator + "drivers");
+		return f;
 	}
 	
 	private boolean isProcessExists() throws Exception{
