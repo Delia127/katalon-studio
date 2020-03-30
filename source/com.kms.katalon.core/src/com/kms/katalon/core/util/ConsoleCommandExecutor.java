@@ -3,18 +3,12 @@ package com.kms.katalon.core.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-import org.apache.bsf.util.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 public class ConsoleCommandExecutor {
@@ -44,23 +38,15 @@ public class ConsoleCommandExecutor {
 
         Process process = pb.start();
         List<String> resultLines = new ArrayList<String>();
-
+        
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         try {
             String line;
             while ((line = br.readLine()) != null) {
                 resultLines.add(line);
             }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
+            br.close();
         }
         process.waitFor();
 
