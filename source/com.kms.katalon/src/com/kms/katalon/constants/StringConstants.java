@@ -283,6 +283,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG = MessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
 
     // First Time Use Katalon Survey Dialog
+    public static final String DIALOG_TITLE_FIRST_TIME_USE_SURVEY = MessageConstants.DIALOG_TITLE_FIRST_TIME_USE_SURVEY;
+
     public static final String BTN_YES_CONTINUE_USE = MessageConstants.BTN_YES_CONTINUE_USE;
 
     public static final String BTN_NO_QUIT_USING = MessageConstants.BTN_NO_QUIT_USING;
