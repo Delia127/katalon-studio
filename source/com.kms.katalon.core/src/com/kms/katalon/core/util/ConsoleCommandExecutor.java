@@ -38,7 +38,7 @@ public class ConsoleCommandExecutor {
 
         Process process = pb.start();
         List<String> resultLines = new ArrayList<String>();
-        
+
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         try {
             String line;
@@ -46,7 +46,9 @@ public class ConsoleCommandExecutor {
                 resultLines.add(line);
             }
         } finally {
-            br.close();
+            if (br != null) {
+                br.close();
+            }
         }
         process.waitFor();
 
