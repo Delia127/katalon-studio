@@ -15,7 +15,6 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.helper.UserProfileHelper;
 import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -28,7 +27,7 @@ public class FirstTimeUseDialog extends MessageDialog {
     private boolean willContinueToUse = true;
 
     public FirstTimeUseDialog(Shell parentShell) {
-        super(parentShell, GlobalStringConstants.CONFIRMATION, null, StringConstants.MSG_QUESTION_WILL_CONTINUE_TO_USE,
+        super(parentShell, StringConstants.DIALOG_TITLE_FIRST_TIME_USE_SURVEY, null, StringConstants.MSG_QUESTION_WILL_CONTINUE_TO_USE,
                 MessageDialog.QUESTION, 0, StringConstants.BTN_YES_CONTINUE_USE, StringConstants.BTN_NO_QUIT_USING);
     }
 
