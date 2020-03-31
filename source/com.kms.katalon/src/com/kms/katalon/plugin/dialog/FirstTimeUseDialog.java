@@ -12,8 +12,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -26,7 +27,7 @@ public class FirstTimeUseDialog extends MessageDialog {
     private boolean willContinueToUse = true;
 
     public FirstTimeUseDialog(Shell parentShell) {
-        super(parentShell, GlobalStringConstants.CONFIRMATION, null, StringConstants.MSG_QUESTION_WILL_CONTINUE_TO_USE,
+        super(parentShell, StringConstants.DIALOG_TITLE_FIRST_TIME_USE_SURVEY, null, StringConstants.MSG_QUESTION_WILL_CONTINUE_TO_USE,
                 MessageDialog.QUESTION, 0, StringConstants.BTN_YES_CONTINUE_USE, StringConstants.BTN_NO_QUIT_USING);
     }
 
@@ -64,7 +65,10 @@ public class FirstTimeUseDialog extends MessageDialog {
                 }
                 Trackings.trackInAppSurveyWillContinueToUse(false, txtReason.getText());
             }
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.DONE_FIRST_TIME_USE_SURVEY_PROP_NAME, true, true);
+            String userEmail = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+            UserProfile userProfile = UserProfileHelper.getOrCreateProfile(userEmail);
+            userProfile.setDoneFirstTimeUseSurvey(true);
+            UserProfileHelper.saveProfile(userProfile);
             close();
         } else {
             willContinueToUse = false;
@@ -85,6 +89,7 @@ public class FirstTimeUseDialog extends MessageDialog {
         leaveReasonComposite.setVisible(true);
         GridData gdLeaveReason = (GridData) leaveReasonComposite.getLayoutData();
         gdLeaveReason.exclude = false;
+        txtReason.setFocus();
         updateDialogLayout();
     }
 
@@ -101,10 +106,12 @@ public class FirstTimeUseDialog extends MessageDialog {
         Button btnCancel = getButton(1);
         if (isShowReasonInput) {
             btnOK.setText(StringConstants.BTN_SEND);
+            btnCancel.setVisible(false);
             ((GridData) btnCancel.getLayoutData()).exclude = true;
             updateButtonsLayout(1);
         } else {
             btnOK.setText(StringConstants.BTN_YES_CONTINUE_USE);
+            btnCancel.setVisible(true);
             ((GridData) btnCancel.getLayoutData()).exclude = false;
             updateButtonsLayout(2);
         }
@@ -113,8 +120,7 @@ public class FirstTimeUseDialog extends MessageDialog {
     private void updateButtonsLayout(int numButtons) {
         Composite buttonContainer = getButton(0).getParent();
         ((GridLayout) buttonContainer.getLayout()).numColumns = numButtons;
-        buttonContainer.pack();
-        buttonContainer.getParent().pack();
+        buttonContainer.getShell().layout(true);
     }
 
     protected boolean isResizable() {

@@ -611,6 +611,8 @@ public class MessageConstants extends NLS {
     public static String Account_HELP;
 
     // First Time Use Katalon Survey Dialog
+    public static String DIALOG_TITLE_FIRST_TIME_USE_SURVEY;
+
     public static String BTN_YES_CONTINUE_USE;
 
     public static String BTN_NO_QUIT_USING;
