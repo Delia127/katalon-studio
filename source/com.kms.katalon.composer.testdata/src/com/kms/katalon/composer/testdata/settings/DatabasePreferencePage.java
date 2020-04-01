@@ -44,8 +44,6 @@ import com.kms.katalon.feature.KSEFeature;
 
 public class DatabasePreferencePage extends PreferencePageWithHelp {
 
-    private static final String PROJECT_DIR = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-
     private static final String SETTING_NAME = DatabaseSettings.class.getName();
 
     private Button chkSecureUserPassword;
@@ -284,7 +282,7 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
 
     private void loadSettings() {
         try {
-            dbSettings = new DatabaseSettings(PROJECT_DIR);
+            dbSettings = new DatabaseSettings(getCurrentProjectDir());
             chkSecureUserPassword.setSelection(dbSettings.isSecureUserAccount());
             txtUser.setText(StringUtils.defaultString(dbSettings.getUser()));
             txtPassword.setText(StringUtils.defaultString(dbSettings.getPassword()));
@@ -353,7 +351,7 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         }
 
         try {
-            PropertySettingStoreUtil.saveExternalSettings(PROJECT_DIR, SETTING_NAME, dbSettings.getSettings(),
+            PropertySettingStoreUtil.saveExternalSettings(getCurrentProjectDir(), SETTING_NAME, dbSettings.getSettings(),
                     com.kms.katalon.composer.testdata.constants.StringConstants.DIA_DB_SETTING_COMMENT);
             return true;
         } catch (IOException e) {
@@ -361,6 +359,10 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
                     com.kms.katalon.composer.testdata.constants.StringConstants.DIA_MSG_UNABLE_TO_SAVE_DB_SETTING_PAGE);
             return false;
         }
+    }
+    
+    private String getCurrentProjectDir() {
+        return ProjectController.getInstance().getCurrentProject().getFolderLocation();
     }
     
     @Override
