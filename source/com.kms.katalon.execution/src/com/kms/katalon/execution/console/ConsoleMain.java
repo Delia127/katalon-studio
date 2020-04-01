@@ -118,6 +118,7 @@ public class ConsoleMain {
      * @return the exit code for the console execution
      */
     public static int launch(String[] arguments) {
+        System.out.println("Console Main");
         try {
             boolean isDevelopmentMode = Platform.inDevelopmentMode();
             boolean isRunningInKatalonC = ExecutionUtil.isRunningInKatalonC();
@@ -177,6 +178,7 @@ public class ConsoleMain {
             }
             ApiKeyOnPremiseHandler.setApiKeyOnPremiseToProject(apiKeyOnPremiseValue);
 
+            System.out.println(ExecutionMessageConstants.ACTIVATE_IN_ACTIVATING);
             LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_IN_ACTIVATING);
             
             if (!ActivationInfoCollector.isActivated()) {
