@@ -59,13 +59,13 @@ public class Application implements IApplication {
         }
 
         try {
-            System.out.println("Before preRunInit()");
+            LogUtil.printOutputLine("Before preRunInit()");
             preRunInit();
-            System.out.println("After preRunInit()");
+            LogUtil.printOutputLine("After preRunInit()");
         } catch (Error e) {
-            System.out.println("Before resolve()");
+            LogUtil.printOutputLine("Before resolve()");
             resolve();
-            System.out.println("After resolve()");
+            LogUtil.printOutputLine("After resolve()");
         }
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
@@ -150,9 +150,9 @@ public class Application implements IApplication {
             LogUtil.printOutputLine("Katalon workspace folder is set custom to: " + instanceLoc.getURL().toString());
         }
 
-        System.out.println("Before MacOSAddon.initMacOSConfig()");
+        LogUtil.printOutputLine("Before MacOSAddon.initMacOSConfig()");
         MacOSAddon.initMacOSConfig();
-        System.out.println("Before ApplicationInfo.setAppInfoIntoUserHomeDir()");
+        LogUtil.printOutputLine("Before ApplicationInfo.setAppInfoIntoUserHomeDir()");
         ApplicationInfo.setAppInfoIntoUserHomeDir();
     }
 
