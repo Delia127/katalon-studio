@@ -34,11 +34,6 @@ public class LogUtil {
     
     private static void writeError(final LogMode logMode, final Throwable t, final String message) {
         final SystemLogger errorLogger = LogManager.getErrorLogger();
-        System.out.println(" > writeError: " + message);
-        if (t != null) {
-            System.out.println("> Error message: " + t.getMessage());
-            System.out.println("> Error Object: " + t);
-        }
 
         logSync(new Callable<Object>() {
             @Override
@@ -85,7 +80,6 @@ public class LogUtil {
     }
 
     public static void println(final SystemLogger logger, final String line, final LogMode mode) {
-        System.out.println(" > Log Line: " + line);
         if (logger == null) {
             return;
         }

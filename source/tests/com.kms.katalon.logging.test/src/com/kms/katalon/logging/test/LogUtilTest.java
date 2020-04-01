@@ -15,7 +15,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.core.runtime.Platform;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.kms.katalon.logging.LogManager;
@@ -53,7 +52,6 @@ public class LogUtilTest {
         return Platform.getLogFileLocation().toFile();
     }
 
-    @Ignore
     @Test
     public void printOutputLineTest() {
         LogUtil.printOutputLine("hello");
@@ -61,7 +59,6 @@ public class LogUtilTest {
         assertEquals("hello" + System.lineSeparator(), outContent.toString());
     }
 
-    @Ignore
     @Test
     public void printErrorLineTest() {
         LogUtil.printErrorLine("hello");
@@ -69,7 +66,6 @@ public class LogUtilTest {
         assertEquals("hello" + System.lineSeparator(), errorContent.toString());
     }
 
-    @Ignore
     @Test
     public void writeOutputLineTest() throws IOException {
         File logFile = getLogFile();
@@ -81,7 +77,6 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
     }
 
-    @Ignore
     @Test
     public void logErrorMessageTest() throws IOException {
         File logFile = getLogFile();
@@ -104,7 +99,6 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
     }
 
-    @Ignore
     @Test
     public void logInfoTest() throws IOException {
         File logFile = getLogFile();
@@ -117,7 +111,6 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
     }
 
-    @Ignore
     @Test
     public void logErrorTest() throws IOException {
         File logFile = getLogFile();
@@ -130,7 +123,6 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
     }
 
-    @Ignore
     @Test
     public void logThrowableTest() throws IOException {
         File logFile = getLogFile();
@@ -150,7 +142,6 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
     }
 
-    @Ignore
     @Test
     public void logThrowableWithMessageTest() throws IOException {
         File logFile = getLogFile();
@@ -172,7 +163,6 @@ public class LogUtilTest {
         FileUtils.write(logFile, "");
     }
 
-    @Ignore
     @Test
     public void printAndLogErrorTest() throws IOException {
         File logFile = getLogFile();
@@ -201,7 +191,6 @@ public class LogUtilTest {
         assertEquals(ExceptionUtils.getStackTrace(e).trim(), stacktraceStringInConsole.trim());
     }
 
-    @Ignore
     @Test
     public void printAndLogErrorWithMessageTest() throws IOException {
         File logFile = getLogFile();

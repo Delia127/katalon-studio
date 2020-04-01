@@ -59,13 +59,9 @@ public class Application implements IApplication {
         }
 
         try {
-            LogUtil.printOutputLine("Before preRunInit()");
             preRunInit();
-            LogUtil.printOutputLine("After preRunInit()");
         } catch (Error e) {
-            LogUtil.printOutputLine("Before resolve()");
             resolve();
-            LogUtil.printOutputLine("After resolve()");
         }
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
@@ -76,7 +72,6 @@ public class Application implements IApplication {
         }
         switch (runningModeParam) {
             case CONSOLE:
-                System.out.println("runningModeParam = CONSOLE");
                 try {
                     Bundle consoleBundle = Platform.getBundle("com.kms.katalon.console");
                     if (consoleBundle == null) {
@@ -150,9 +145,7 @@ public class Application implements IApplication {
             LogUtil.printOutputLine("Katalon workspace folder is set custom to: " + instanceLoc.getURL().toString());
         }
 
-        LogUtil.printOutputLine("Before MacOSAddon.initMacOSConfig()");
         MacOSAddon.initMacOSConfig();
-        LogUtil.printOutputLine("Before ApplicationInfo.setAppInfoIntoUserHomeDir()");
         ApplicationInfo.setAppInfoIntoUserHomeDir();
     }
 
