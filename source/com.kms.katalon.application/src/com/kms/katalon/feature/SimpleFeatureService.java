@@ -33,4 +33,9 @@ public class SimpleFeatureService implements IFeatureService {
         features.clear();
     }
 
+    @Override
+    public boolean canUse(KSEFeature feature) {
+        return canUse(feature.name());
+    }
+
 }

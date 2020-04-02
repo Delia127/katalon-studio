@@ -14,14 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.Gson;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.application.utils.LicenseUtil;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -44,6 +40,9 @@ import com.kms.katalon.execution.generator.TestCaseScriptGenerator;
 import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 
 public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
@@ -68,6 +67,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private String executionSessionId;
 
     private static final String PATH = "PATH";
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public AbstractRunConfiguration() {
         doInitExecutionSetting();
@@ -81,7 +82,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     }
     
     protected void initVmArguments() {
-        if (LicenseUtil.isNotFreeLicense()) {
+        if (featureService.canUse(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS)) {
             vmArgs.addAll(Arrays.asList(ExecutionUtil.getVmArgs()));
         }
     }
@@ -215,11 +216,11 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
         propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
-        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, LicenseUtil.isNotFreeLicense());
+        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, featureService.canUse(KSEFeature.IMAGE_BASED_OBJECT_DETECTION));
         
 //        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
         
-        propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, LicenseUtil.isNotFreeLicense());
+        propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, featureService.canUse(KSEFeature.SMART_XPATH));
         
         return propertyMap;
     }

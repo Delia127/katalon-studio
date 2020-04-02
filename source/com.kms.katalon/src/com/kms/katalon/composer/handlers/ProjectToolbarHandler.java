@@ -9,26 +9,23 @@ import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolItem;
 import org.openqa.selenium.Platform;
 import org.osgi.service.event.Event;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
-import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.processors.ToolbarProcessor;
-import com.kms.katalon.constants.IdConstants;
 
 public class ProjectToolbarHandler {
-    
+
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
     
     @Inject
     IEventBroker eventBroker;
@@ -74,14 +71,14 @@ public class ProjectToolbarHandler {
     }
     
     private void showDebugToolitemForEnterpriseAccount() {
-        boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
+        boolean isEnableDebugFeature = featureService.canUse(KSEFeature.DEBUG_MODE);
         MToolBar executionToolBar = (MToolBar) modelService.find(ToolbarProcessor.KATALON_EXECUTION_TOOLBAR_ID,
                 application);
         MHandledToolItem executionToolItemDebug = (MHandledToolItem) modelService
                 .find(IdConstants.DEBUG_TOOL_ITEM_ID, executionToolBar);
         if (executionToolItemDebug != null) {
-            executionToolItemDebug.setVisible(isEnterpriseAccount);
-            executionToolItemDebug.setToBeRendered(isEnterpriseAccount);
+            executionToolItemDebug.setVisible(isEnableDebugFeature);
+            executionToolItemDebug.setToBeRendered(isEnableDebugFeature);
         }
     }
 

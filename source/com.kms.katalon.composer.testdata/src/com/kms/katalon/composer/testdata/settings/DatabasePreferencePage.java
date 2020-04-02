@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
@@ -35,11 +34,12 @@ import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 
 public class DatabasePreferencePage extends PreferencePageWithHelp {
@@ -73,6 +73,8 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
     private GridData gdTxtDriverClassName;
 
     private Label lblOptionsDB;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     @Override
     protected Control createContents(Composite parent) {
@@ -332,24 +334,23 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         String connectionUrl = txtConnectionURL.getText();
         dbSettings.setUrl(connectionUrl);
         dbSettings.setDriverClassName(txtDriverClassName.getText());
-        if (!isEnterpriseAccount()) {
-            if (isOracleSql(connectionUrl)) {
-                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ORACLE_EXTERNAL_DATA,
-                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_ORACLE_SQL);
-                return false;
-            }
 
-            if (isMicrosoftSqlServer(connectionUrl)) {
-                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SQL_SERVER_EXTERNAL_DATA,
-                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
-                return false;
-            }
+        if (isOracleSql(connectionUrl) && !featureService.canUse(KSEFeature.ORACLE_EXTERNAL_DATA)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ORACLE_EXTERNAL_DATA,
+                    ComposerComponentsImplMessageConstants.PREF_WARN_KSE_ORACLE_SQL);
+            return false;
+        }
 
-            if (StringUtils.isNotBlank(txtDriverClassName.getText())) {
-                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE,
-                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_CUSTOM_DB_CONNECTION);
-                return false;
-            }
+        if (isMicrosoftSqlServer(connectionUrl) && !featureService.canUse(KSEFeature.SQL_SERVER_EXTERNAL_DATA)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SQL_SERVER_EXTERNAL_DATA,
+                    ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
+            return false;
+        }
+
+        if (StringUtils.isNotBlank(txtDriverClassName.getText()) && !featureService.canUse(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE,
+                    ComposerComponentsImplMessageConstants.PREF_WARN_KSE_CUSTOM_DB_CONNECTION);
+            return false;
         }
 
         try {
@@ -385,9 +386,5 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             return false;
         }
         return connectionUrl.startsWith("jdbc:sqlserver");
-    }
-
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
     }
 }
