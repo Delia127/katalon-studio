@@ -1,8 +1,6 @@
 package com.kms.katalon.core.webservice.verification;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import org.apache.commons.lang.StringUtils;
@@ -10,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
+import com.google.gson.JsonObject;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.testobject.HttpBodyContent;
@@ -49,12 +48,11 @@ public class WSResponseManager {
 
             response = gson.fromJson(responseObjectJson, ResponseObject.class);
             String responseText = null;
-
-            Field field = response.getClass().getDeclaredField("responseText");
-            if (Modifier.isPrivate(field.getModifiers())) {
-                field.setAccessible(true);
-                responseText = (String) field.get(response);
-            }
+            
+            Gson responseGson = new GsonBuilder().setPrettyPrinting().create();
+            String responseGsonText = responseGson.toJson(response);
+            JsonObject jsonObject = gson.fromJson( responseGsonText, JsonObject.class);
+            responseText = jsonObject.get("responseText").getAsString();
 
             if (responseText != null) {
                 HttpBodyContent textBodyContent = new HttpTextBodyContent(responseText);
