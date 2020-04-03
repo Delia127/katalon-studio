@@ -49,9 +49,7 @@ public class WSResponseManager {
             response = gson.fromJson(responseObjectJson, ResponseObject.class);
             String responseText = null;
             
-            Gson responseGson = new GsonBuilder().setPrettyPrinting().create();
-            String responseGsonText = responseGson.toJson(response);
-            JsonObject jsonObject = gson.fromJson( responseGsonText, JsonObject.class);
+            JsonObject jsonObject = gson.fromJson( responseObjectJson, JsonObject.class);
             responseText = jsonObject.get("responseText").getAsString();
 
             if (responseText != null) {
