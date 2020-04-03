@@ -9,15 +9,13 @@ import com.kms.katalon.logging.LogUtil;
 
 public class FeatureConfigurations implements IFeatureService {
 
-    private static FeatureConfigurations _instance;
-
     private Properties coreFeatures;
 
     private Properties customFeatures;
 
     public static final String FEATURES_RESOURCE_FILE = "resources/features/features.properties";
 
-    private InputStream getFeaturesResource() {
+    public InputStream getFeaturesResource() {
         return getClass().getClassLoader().getResourceAsStream(FEATURES_RESOURCE_FILE);
     }
 
@@ -25,23 +23,16 @@ public class FeatureConfigurations implements IFeatureService {
 
     private static final String FALSE_VALUE = "false";
 
-    private FeatureConfigurations() {
+    public FeatureConfigurations() {
         loadFeatures();
     }
 
-    public static FeatureConfigurations getInstance() {
-        if (_instance == null) {
-            _instance = new FeatureConfigurations();
-        }
-        return _instance;
-    }
-
-    public void loadFeatures() {
+    protected void loadFeatures() {
         loadCoreFeatures();
         loadCustomFeatures();
     }
 
-    public void loadCoreFeatures() {
+    protected void loadCoreFeatures() {
         if (coreFeatures == null) {
             coreFeatures = new Properties();
         }
@@ -52,8 +43,10 @@ public class FeatureConfigurations implements IFeatureService {
         }
     }
 
-    public void loadCustomFeatures() {
-        customFeatures = new Properties();
+    protected void loadCustomFeatures() {
+        if (customFeatures == null) {
+            customFeatures = new Properties();
+        }
     }
 
     public boolean canUse(KSEFeature feature) {
