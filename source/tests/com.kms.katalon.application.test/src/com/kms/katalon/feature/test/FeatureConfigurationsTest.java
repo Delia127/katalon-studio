@@ -177,11 +177,12 @@ public class FeatureConfigurationsTest {
     }
 
     @Test
-    public void canUseEnterpriseLicenseTest() {
+    public void canUseEnterpriseLicenseTest() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         // Given
-        LicenseHelperFactory.set(licenseHelperEnterprise);
+        setUpFeatureService();
 
         // When
+        LicenseHelperFactory.set(licenseHelperEnterprise);
 
         // Then
         Assert.assertTrue("Enterprise users must be able to use free features",
