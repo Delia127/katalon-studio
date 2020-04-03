@@ -164,11 +164,12 @@ public class FeatureConfigurationsTest {
     }
 
     @Test
-    public void canUseFreeLicenseTest() {
+    public void canUseFreeLicenseTest() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         // Given
         LicenseHelperFactory.set(licenseHelperFree);
 
         // When
+        setUpFeatureService();
 
         // Then
         Assert.assertTrue("Free users must be able to use free features", featureService.canUse(FREE_FEATURE_KEY));
@@ -179,10 +180,10 @@ public class FeatureConfigurationsTest {
     @Test
     public void canUseEnterpriseLicenseTest() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         // Given
-        setUpFeatureService();
+        LicenseHelperFactory.set(licenseHelperEnterprise);
 
         // When
-        LicenseHelperFactory.set(licenseHelperEnterprise);
+        setUpFeatureService();
 
         // Then
         Assert.assertTrue("Enterprise users must be able to use free features",
