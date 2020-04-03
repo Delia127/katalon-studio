@@ -198,15 +198,22 @@ public class FeatureConfigurationsTest {
         featureService.enable(customFeature);
 
         Class<?> featureServiceClass = FeatureConfigurations.class;
+        
         Field customFeaturesField = featureServiceClass.getDeclaredField(CUSTOM_FEATURES_FIELD);
         customFeaturesField.setAccessible(true);
         Properties customFeatures = (Properties) customFeaturesField.get(featureService);
         Assert.assertThat(customFeatures.size(), Matchers.greaterThan(0));
+        
+        Field coreFeaturesField = featureServiceClass.getDeclaredField(CORE_FEATURES_FIELD);
+        coreFeaturesField.setAccessible(true);
+        Properties coreFeatures = (Properties) coreFeaturesField.get(featureService);
+        int numCoreFeatures = coreFeatures.size();
 
         // When
         featureService.clear();
 
         // Then
         Assert.assertEquals("All custom features must be cleared", 0, customFeatures.size());
+        Assert.assertEquals("All core features must be kept", numCoreFeatures, coreFeatures.size());
     }
 }
