@@ -60,7 +60,7 @@ public class OpenContainingFolderHandler extends CommonExplorerHandler {
                         packagePath);
 			} else if (treeEntity instanceof KeywordTreeEntity) {
 			    ICompilationUnit unit = (ICompilationUnit) ((KeywordTreeEntity) treeEntity).getObject();
-			    fileLocation = new File(unit.getResource().getRawLocationURI().toURL().getFile());
+			    fileLocation = unit.getResource().getRawLocation().toFile();
 			} else {
                 FileEntity fileEntity = (FileEntity) treeEntity.getObject();
                 fileLocation = new File(fileEntity.getLocation());
