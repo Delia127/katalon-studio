@@ -51,6 +51,8 @@ import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationInfoCollector {
     
+    public static final String MACHINE_ID_BYPASS = "katalon-special-license";
+    
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
     public static final String DEFAULT_REASON = ApplicationMessageConstants.LICENSE_INVALID;
@@ -648,6 +650,9 @@ public class ActivationInfoCollector {
 
     private static boolean hasValidMachineId(License license) {
         try {
+            if (MACHINE_ID_BYPASS.equals(license.getMachineId())) {
+                return true;
+            }
             String machineId = MachineUtil.getMachineId();
             return machineId.equals(license.getMachineId());
         } catch (Exception e) {
