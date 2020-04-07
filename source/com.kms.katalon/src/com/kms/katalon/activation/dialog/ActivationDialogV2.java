@@ -389,12 +389,13 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
 
     private void setProgressMessage(String message, boolean isError) {
-        lblProgressMessage.setText(message);
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
+            message = message.replace(". ", "\n");
         } else {
             lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
+        lblProgressMessage.setText(message);
         lblProgressMessage.getParent().layout();
     }
 

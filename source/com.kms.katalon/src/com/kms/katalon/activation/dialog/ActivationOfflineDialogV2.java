@@ -283,6 +283,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     private void setProgressMessage(String message, boolean isError) {
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
+            message = message.replace(". ", "\n");
         } else {
             lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }

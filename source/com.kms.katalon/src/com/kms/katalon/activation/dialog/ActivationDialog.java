@@ -254,7 +254,8 @@ public class ActivationDialog extends Dialog {
                     setReturnCode(Window.OK);
                     close();
                 } else {
-                    lblError.setText(errorMessage.toString());
+                    String errMessage = errorMessage.toString().replace(". ", "\n");
+                    lblError.setText(errMessage);
                 }
             }
         });
