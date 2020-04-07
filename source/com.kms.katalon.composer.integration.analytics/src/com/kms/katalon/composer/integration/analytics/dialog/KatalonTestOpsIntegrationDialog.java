@@ -166,9 +166,9 @@ public class KatalonTestOpsIntegrationDialog extends AbstractDialog {
         btnNewProject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         btnNewProject.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_NEW_PROJECT);
 
-        lnkStatus = new Link(container, SWT.WRAP);
+        lnkStatus = new Link(container, SWT.WRAP | SWT.MULTI);
         GridData gdStatus = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdStatus.heightHint = 30;
+        gdStatus.widthHint = getInitialSize().x;
         lnkStatus.setLayoutData(gdStatus);
 
         Composite titleComposite = new Composite(container, SWT.NONE);
@@ -271,6 +271,7 @@ public class KatalonTestOpsIntegrationDialog extends AbstractDialog {
 
     private void setProgressMessage(String message, boolean isError) {
         lnkStatus.setText(message);
+        lnkStatus.requestLayout();
         if (isError) {
             lnkStatus.setForeground(ColorUtil.getTextErrorColor());
         } else {
