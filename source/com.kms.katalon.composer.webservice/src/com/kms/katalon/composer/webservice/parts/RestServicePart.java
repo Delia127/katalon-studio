@@ -97,29 +97,29 @@ public class RestServicePart extends WebServicePart {
 
         wsApiControl.addRequestURLModifyListener(requestURLModifyListener);
 
-        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
+//        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
+//
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                setTabBodyContentBasedOnRequestMethod();
+//            }
+//        });
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                setTabBodyContentBasedOnRequestMethod();
-            }
-        });
-
-        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                setTabBodyContentBasedOnRequestMethod();
-            }
-        });
+//        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
+//
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                setTabBodyContentBasedOnRequestMethod();
+//            }
+//        });
         
-        wsApiControl.addRequestMethodModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                setTabBodyContentBasedOnRequestMethod();
-            }
-        });
+//        wsApiControl.addRequestMethodModifyListener(new ModifyListener() {
+//
+//            @Override
+//            public void modifyText(ModifyEvent e) {
+//                setTabBodyContentBasedOnRequestMethod();
+//            }
+//        });
         
         wsApiControl.addRequestMethodFocusListener(new FocusListener() {
 
@@ -436,9 +436,11 @@ public class RestServicePart extends WebServicePart {
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
-        if (isBodySupported(requestMethod) && requestBodyEditor.getHttpBodyType() != null) {
-            originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
-            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
+        if (requestBodyEditor.getHttpBodyType() != null) {
+            String bodyType = requestBodyEditor.getHttpBodyType();
+            String bodyContent = requestBodyEditor.getHttpBodyContent();
+            originalWsObject.setHttpBodyContent(bodyContent);
+            originalWsObject.setHttpBodyType(bodyType);
         }
 
         updatePartImage();
@@ -475,7 +477,7 @@ public class RestServicePart extends WebServicePart {
 
         requestBodyEditor.setInput(clone);
 
-        setTabBodyContentBasedOnRequestMethod();
+//        setTabBodyContentBasedOnRequestMethod();
 
         dirtyable.setDirty(false);
 

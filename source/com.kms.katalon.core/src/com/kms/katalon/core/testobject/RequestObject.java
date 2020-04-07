@@ -237,20 +237,18 @@ public class RequestObject extends TestObject implements HttpMessage {
     }
 
     /**
-     * Get the rest request of this request object if it is a "RESTful" request object
-     * <p>
-     * Possible values: GET, POST, PUT, DELETE
+     * Get the rest request method of this request object if it is a "RESTful" request object
      * 
-     * @return the get request of this request object if it is a "RESTful" request object, or null if it is not
+     * @return the rest request method of this request object if it is a "RESTful" request object, or null if it is not
      */
     public String getRestRequestMethod() {
         return restRequestMethod;
     }
 
     /**
-     * Set the rest request for this request object
+     * Set the rest request method for this request object
      * 
-     * @param restRequestMethod the new get request for this request object
+     * @param restRequestMethod the new request method for this request object
      */
     public void setRestRequestMethod(String restRequestMethod) {
         this.restRequestMethod = restRequestMethod;
