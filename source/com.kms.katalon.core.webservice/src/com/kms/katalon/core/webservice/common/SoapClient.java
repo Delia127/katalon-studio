@@ -1,10 +1,7 @@
 package com.kms.katalon.core.webservice.common;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -43,7 +40,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -57,11 +53,8 @@ import org.xml.sax.InputSource;
 import com.ibm.wsdl.BindingOperationImpl;
 import com.ibm.wsdl.PortImpl;
 import com.ibm.wsdl.ServiceImpl;
-import com.ibm.wsdl.extensions.http.HTTPAddressImpl;
 import com.ibm.wsdl.extensions.http.HTTPBindingImpl;
-import com.ibm.wsdl.extensions.soap.SOAPAddressImpl;
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
-import com.ibm.wsdl.extensions.soap12.SOAP12AddressImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12BindingImpl;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
@@ -75,10 +68,6 @@ import com.kms.katalon.core.webservice.util.WSDLUtil;
 import com.kms.katalon.util.Tools;
 
 public class SoapClient extends BasicRequestor {
-    
-    private static final String GET = RequestHeaderConstants.GET;
-
-    private static final String POST = RequestHeaderConstants.POST;
 
     private static final String SSL = RequestHeaderConstants.SSL;
 
@@ -95,8 +84,6 @@ public class SoapClient extends BasicRequestor {
     private static final String TEXT_XML_CHARSET_UTF_8 = RequestHeaderConstants.CONTENT_TYPE_TEXT_XML_UTF_8;
 
     private static final String APPLICATION_XML = RequestHeaderConstants.CONTENT_TYPE_APPLICATION_XML;
-
-    private static final int MAX_REDIRECTS = 5;
     
     private String serviceName;
 
@@ -192,10 +179,6 @@ public class SoapClient extends BasicRequestor {
         return objBinding;
     }
 
-    private boolean isHttps(RequestObject request) {
-        return StringUtils.defaultString(request.getWsdlAddress()).toLowerCase().startsWith(HTTPS);
-    }
-
     @Override
     public ResponseObject send(RequestObject request)
             throws Exception {
@@ -215,8 +198,8 @@ public class SoapClient extends BasicRequestor {
         parseWsdl();
        
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
-        URL newUrl = new URL(request.getWsdlAddress());
-        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo, newUrl);
+        URL url = new URL(endPoint);
+        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo, url);
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
             configureProxy(clientBuilder, proxyInfo);
         }
@@ -374,7 +357,10 @@ public class SoapClient extends BasicRequestor {
             }
 
             ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
-            configureProxy(clientBuilder, proxyInfo);
+            Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo, new URL(url));
+            if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
+                configureProxy(clientBuilder, proxyInfo);
+            }
             
             if (StringUtils.defaultString(url).toLowerCase().startsWith(HTTPS)) {
                 //this will be overridden by setting connection manager for clientBuilder

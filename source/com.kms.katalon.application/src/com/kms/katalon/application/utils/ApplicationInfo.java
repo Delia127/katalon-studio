@@ -42,9 +42,6 @@ public class ApplicationInfo {
     private static final String ABOUT_PROFILE_KEY = "2";
     private static final String ABOUT_VERSION_TAG = "3";
     
-    private static final String TRUE_VALUE = "true";
-    private static final String FALSE_VALUE = "false";
-    
     private static final String PROFILE_PROPERTY_KEY = "katalonProfile";
 
     private static Properties aboutMappingsProperties;
@@ -166,24 +163,6 @@ public class ApplicationInfo {
             return appProps.getProperty(key);
         }
         return null;
-    }
-
-    public static void setAppProperty(String key, boolean value, boolean autoSave) {
-        Properties appProps = getAppProperties();
-
-        appProps.setProperty(key, value ? TRUE_VALUE : FALSE_VALUE);
-        if (autoSave) {
-            saveAppProperties();
-        }
-    }
-
-    public static boolean getAppPropertyAsBoolean(String key) {
-        Properties appProps = getAppProperties();
-
-        if (appProps != null && appProps.containsKey(key)) {
-            return TRUE_VALUE.equalsIgnoreCase(appProps.getProperty(key));
-        }
-        return false;
     }
 
     private static void saveAppProperties() {
