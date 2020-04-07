@@ -90,9 +90,21 @@
       </page>
       <page
             category="com.kms.katalon.composer.execution.mail"
-            class="com.kms.katalon.composer.execution.settings.EmailTemplatePage"
+            class="com.kms.katalon.composer.execution.settings.EmptyPreferencesPage"
             id="com.kms.katalon.composer.execution.page.emailTemplate"
             name="Template">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.page.emailTemplate"
+            class="com.kms.katalon.composer.execution.settings.TestSuiteEmailTemplatePage"
+            id="com.kms.katalon.composer.execution.page.testSuiteEmailTemplate"
+            name="Test Suite">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.page.emailTemplate"
+            class="com.kms.katalon.composer.execution.settings.TestSuiteCollectionEmailTemplatePage"
+            id="com.kms.katalon.composer.execution.page.testSuiteCollectionEmailTemplate"
+            name="Test Suite Collection">
       </page>
       <page
             class="com.kms.katalon.composer.execution.settings.DesiredCapabilitiesSettingPage"

@@ -29,7 +29,9 @@ public class EmailConfig {
 
     private String subject = "";
 
-    private String htmlMessage = "";
+    private String htmlTemplateForTestSuite = "";
+    
+    private String htmlTemplateForTestSuiteCollection = "";
 
     private String cc = "";
 
@@ -37,7 +39,13 @@ public class EmailConfig {
 
     private boolean sendAttachment = false;
     
-    private boolean sendEmailTestFailedOnly = false;
+    private boolean sendTestSuiteReportEnabled = true;
+    
+    private boolean sendReportTestFailedOnly = false;
+    
+    private boolean sendTestSuiteCollectionReportEnabled = false;
+    
+    private boolean skipInvidiualTestSuiteReport = false;
     
     private List<ReportFormatType> attachmentOptions;
 
@@ -49,12 +57,36 @@ public class EmailConfig {
         return sendAttachment;
     }
     
-    public void setSendEmailTestFailedOnly(boolean enable) {
-        this.sendEmailTestFailedOnly = enable;
+    public boolean isSendTestSuiteReportEnabled() {
+        return sendTestSuiteReportEnabled;
     }
 
-    public boolean isSendEmailTestFailedOnly() {
-        return sendEmailTestFailedOnly;
+    public void setSendTestSuiteReportEnabled(boolean enabled) {
+        this.sendTestSuiteReportEnabled = enabled;
+    }
+    
+    public void setSendReportTestFailedOnly(boolean enabled) {
+        this.sendReportTestFailedOnly = enabled;
+    }
+
+    public boolean isSendReportTestFailedOnly() {
+        return sendReportTestFailedOnly;
+    }
+
+    public boolean isSendTestSuiteCollectionReportEnabled() {
+        return sendTestSuiteCollectionReportEnabled;
+    }
+
+    public void setSendTestSuiteCollectionReportEnabled(boolean enabled) {
+        this.sendTestSuiteCollectionReportEnabled = enabled;
+    }
+
+    public boolean isSkipInvidiualTestSuiteReport() {
+        return skipInvidiualTestSuiteReport;
+    }
+
+    public void setSkipInvidiualTestSuiteReport(boolean enabled) {
+        this.skipInvidiualTestSuiteReport = enabled;
     }
 
     public boolean canSend() {
@@ -141,12 +173,20 @@ public class EmailConfig {
         this.subject = subject;
     }
 
-    public String getHtmlMessage() {
-        return htmlMessage;
+    public String getHtmlTemplateForTestSuite() {
+        return htmlTemplateForTestSuite;
     }
 
-    public void setHtmlMessage(String htmlMessage) {
-        this.htmlMessage = htmlMessage;
+    public void setHtmTemplateForTestSuite(String htmlTemplate) {
+        this.htmlTemplateForTestSuite = htmlTemplate;
+    }
+
+    public String getHtmlTemplateForTestSuiteCollection() {
+        return htmlTemplateForTestSuiteCollection;
+    }
+
+    public void setHtmlTemplateForTestSuiteCollection(String htmlTemplateForTestSuiteCollection) {
+        this.htmlTemplateForTestSuiteCollection = htmlTemplateForTestSuiteCollection;
     }
 
     public String getCc() {

@@ -169,6 +169,10 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String SETT_ERROR_MSG_UNABLE_TO_SAVE_PROJ_SETTS;
 
+    public static String SETTINGS_EMAIL;
+
+    public static String SETTINGS_EMAIL;
+
     public static String DIA_LBL_TYPE;
 
     public static String DIA_SHELL_ADD_NEW_PREFERENCE;
@@ -275,6 +279,12 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     public static String LBL_ACTION_DELAY;
 
+    public static String MailSettingsPage_MSG_ENABLE_COLLECTION_REPORT;
+
+    public static String MailSettingsPage_MSG_ENABLE_TEST_SUITE_REPORT;
+
+    public static String MailSettingsPage_MSG_SKIP_SENDING_INDIVIDUAL_REPORT;
+
     public static String MSG_DELETING_FILE_X;
 
     public static String MSG_DELETING_LIBRARY_FILES;
@@ -313,7 +323,9 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_LBL_BODY;
 
-    public static String PREF_LNK_EDIT_TEMPLATE;
+    public static String PREF_LNK_EDIT_TEMPLATE_TEST_SUITE;
+
+    public static String PREF_LNK_EDIT_TEMPLATE_TEST_SUITE_COLLECTION;
 
     public static String PREF_LBL_REPORT_FORMAT;
 

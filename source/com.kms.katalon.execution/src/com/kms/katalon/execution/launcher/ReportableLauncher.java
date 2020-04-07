@@ -71,10 +71,17 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     private Date endTime;
     
     private TestSuiteLogRecord suiteLogRecord;
+    
+    private boolean skipSendingReportEmail = false;
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
+        this(manager, runConfig, false);
+    }
+    
+    public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig, boolean skipSendingReportEmail) {
         super(manager, runConfig);
         this.setExecutionUUID(runConfig.getExecutionUUID());
+        this.skipSendingReportEmail = skipSendingReportEmail;
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
@@ -224,14 +231,22 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof TestSuiteExecutedEntity)) {
             return;
         }
+        
+        if (skipSendingReportEmail) {
+            return;
+        }
 
         EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity())
                 .getEmailConfig(ProjectController.getInstance().getCurrentProject());
         if (emailConfig == null || !emailConfig.canSend()) {
             return;
         }
-
-        if (emailConfig.isSendEmailTestFailedOnly() && testSuiteLogRecord.getStatus() != null
+        
+        if (!emailConfig.isSendTestSuiteReportEnabled()) {
+            return;
+        }
+        
+        if (emailConfig.isSendReportTestFailedOnly() && testSuiteLogRecord.getStatus() != null
                 && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
             return;
         }
@@ -241,7 +256,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 Arrays.toString(emailConfig.getTos())));
 
         // Send report email
-        MailUtil.sendSummaryMail(emailConfig, testSuiteLogRecord, new EmailVariableBinding(testSuiteLogRecord));
+        MailUtil.sendSummaryMailForTestSuite(emailConfig, testSuiteLogRecord, EmailVariableBinding.getVariablesForTestSuiteEmail(testSuiteLogRecord));
 
         writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
     }
@@ -535,5 +550,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     public TestSuiteLogRecord getTestSuiteLogRecord() {
         return suiteLogRecord;
+    }
+
+    public boolean isSkipSendingReportEmail() {
+        return skipSendingReportEmail;
+    }
+
+    public void setSkipSendingReportEmail(boolean skip) {
+        this.skipSendingReportEmail = skip;
     }
 }

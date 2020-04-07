@@ -5,7 +5,9 @@ import com.kms.katalon.constants.GlobalStringConstants;
 public class StringConstants extends GlobalStringConstants {
     
     //MailSettingsPage
-    public static final String EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.emailTemplate";
+    public static final String TEST_SUITE_EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.testSuiteEmailTemplate";
+
+    public static final String TEST_SUITE_COLLECTION_EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.testSuiteCollectionEmailTemplate";
 
     // TestExecutionAddon
     public static final String KATALON_COMPOSER_EXECUTION_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.execution/";

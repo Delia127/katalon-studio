@@ -217,6 +217,10 @@ public class SettingHandler {
                                 KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS);
                                 disabled = true;
                                 break;
+                            case StringConstants.TEST_SUITE_COLLECTION_EMAIL_TEMPLATE_SETTING_PAGE_ID:
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL);
+                                disabled = true;
+                                break;
                             default:
                                 disabled = false;
                         }
