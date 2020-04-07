@@ -146,8 +146,7 @@ public class ActivationOfflineDialog extends Dialog {
                         setReturnCode(Window.OK);
                         close();
                     } else {
-                        String errMessage = errorMessage.toString().replace(". ", "\n");
-                        lblError.setText(errMessage);
+                        lblError.setText(errorMessage.toString());
 
                     }
                 }

@@ -391,7 +391,6 @@ public class ActivationDialogV2 extends AbstractDialog {
     private void setProgressMessage(String message, boolean isError) {
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
-            message = message.replace(". ", "\n");
         } else {
             lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
@@ -477,13 +476,13 @@ public class ActivationDialogV2 extends AbstractDialog {
         gdLogInComposite.marginWidth = 0;
         activateComposite.setLayout(gdLogInComposite);
 
-        lblProgressMessage = new Label(activateComposite, SWT.NONE);
-        GridData gdStatus = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-        gdStatus.heightHint = 40;
+        lblProgressMessage = new Label(activateComposite, SWT.WRAP);
+        GridData gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gdStatus.heightHint = 44;
         lblProgressMessage.setLayoutData(gdStatus);
 
         Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
-        activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
+        activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, false, false));
         GridLayout gdActivateRight = new GridLayout(1, false);
         gdActivateRight.marginHeight = 0;
         gdActivateRight.marginWidth = 0;

@@ -105,11 +105,11 @@ public class ActivationDialog extends Dialog {
         gdTxtPassword.heightHint = 22;
         txtPassword.setLayoutData(gdTxtPassword);
 
-        lblError = new Label(container, SWT.NONE);
+        lblError = new Label(container, SWT.WRAP);
         lblError.setAlignment(SWT.CENTER);
-        GridData gdLblError = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
+        GridData gdLblError = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
         gdLblError.verticalIndent = 5;
-        gdLblError.heightHint = 22;
+        gdLblError.heightHint = 44;
         lblError.setLayoutData(gdLblError);
         lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 
@@ -254,8 +254,7 @@ public class ActivationDialog extends Dialog {
                     setReturnCode(Window.OK);
                     close();
                 } else {
-                    String errMessage = errorMessage.toString().replace(". ", "\n");
-                    lblError.setText(errMessage);
+                    lblError.setText(errorMessage.toString());
                 }
             }
         });

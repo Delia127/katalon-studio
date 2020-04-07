@@ -224,7 +224,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         btnChooseFile.setText(MessageConstants.ActivationOfflineDialogV2_BTN_CHOOSE_FILE);
 
         lblProgressMessage = new Label(container, SWT.WRAP);
-        GridData gdLblProgressMessage = new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1);
+        GridData gdLblProgressMessage = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
         lblProgressMessage.setLayoutData(gdLblProgressMessage);
 
         Composite offlineComposite = new Composite(container, SWT.NONE);
@@ -283,7 +283,6 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     private void setProgressMessage(String message, boolean isError) {
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
-            message = message.replace(". ", "\n");
         } else {
             lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
