@@ -477,12 +477,13 @@ public class ActivationDialogV2 extends AbstractDialog {
         activateComposite.setLayout(gdLogInComposite);
 
         lblProgressMessage = new Label(activateComposite, SWT.WRAP);
-        GridData gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        GridData gdStatus = new GridData(SWT.CENTER, SWT.CENTER, false, false);
         gdStatus.heightHint = 44;
+        gdStatus.widthHint = 320;
         lblProgressMessage.setLayoutData(gdStatus);
 
         Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
-        activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, false, false));
+        activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
         GridLayout gdActivateRight = new GridLayout(1, false);
         gdActivateRight.marginHeight = 0;
         gdActivateRight.marginWidth = 0;
