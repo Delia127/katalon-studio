@@ -18,6 +18,7 @@ import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
+import com.kms.katalon.custom.util.BuiltinPluginUtil;
 
 public class GroovyConstants {
     public static final String DF_CHARSET = "UTF-8";
@@ -25,6 +26,8 @@ public class GroovyConstants {
     public static final String GROOVY_FILE_EXTENSION = ".groovy";
     
     public static final String JAVA_FILE_EXTENSION = ".java";
+    
+    public static final String TESTNG_ALIAS_NAME = "TestNGKW";
 
     public static final String CUSTOM_KEYWORD_LIB_FILE_NAME = "CustomKeywords";
 
@@ -73,7 +76,12 @@ public class GroovyConstants {
         classList.add(Checkpoint.class.getName());
         classList.add(GlobalVariableParser.INTERNAL_PACKAGE_NAME + "."
                 + GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME);
+        
+        boolean isTestNGPluginInstalled = BuiltinPluginUtil.isTestNGPluginInstalled();
         DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS.entrySet().forEach(e -> {
+            if (TESTNG_ALIAS_NAME.equals(e.getKey()) && !isTestNGPluginInstalled) {
+                return;
+            }
             classList.add(e.getValue() + " as " + e.getKey());
         });
         return classList.toArray(new String[classList.size()]);
