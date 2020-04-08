@@ -90,15 +90,19 @@ public class ImprovedGroovyCompletionProposalComputer extends GroovyCompletionPr
         if (!commitWorkingCopy(unit, javaContext)) {
             return Collections.emptyList();
         }
-
-        GroovyCompilationUnit gunit = (GroovyCompilationUnit) unit;
-        ContentAssistContext assistContext = createContentAssistContext(gunit, context.getInvocationOffset(),
-                context.getDocument());
-        if (assistContext == null) {
-            return Collections.emptyList();
+        
+        if (unit instanceof GroovyCompilationUnit) {
+            GroovyCompilationUnit gunit = (GroovyCompilationUnit) unit;
+            ContentAssistContext assistContext = createContentAssistContext(gunit, context.getInvocationOffset(),
+                    context.getDocument());
+            if (assistContext == null) {
+                return Collections.emptyList();
+            }
+            List<ICompletionProposal> interalComputeProposals = interalComputeProposals(context, assistContext, monitor);
+            return filterProposal(context, assistContext, interalComputeProposals);
+        } else {
+            return super.computeCompletionProposals(javaContext, monitor);
         }
-        List<ICompletionProposal> interalComputeProposals = interalComputeProposals(context, assistContext, monitor);
-        return filterProposal(context, assistContext, interalComputeProposals);
     }
 
     private List<ICompletionProposal> interalComputeProposals(ContentAssistInvocationContext context,
