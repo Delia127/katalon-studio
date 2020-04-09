@@ -255,12 +255,12 @@ public class ActivationDialog extends Dialog {
                     close();
                 } else {
                     lblError.setText(errorMessage.toString());
+
                     lblError.getParent().layout();
-                    Composite parent = lblError.getParent();
-                    ((GridData) parent.getLayoutData()).widthHint = parent.getSize().x;
+                    GridData gdError = ((GridData) lblError.getLayoutData());
+                    gdError.widthHint = lblError.getSize().x;
                     lblError.getShell().pack();
-                    ((GridData) parent.getLayoutData()).widthHint = SWT.DEFAULT;
-                    lblError.getParent().layout();
+                    gdError.widthHint = SWT.DEFAULT;
                 }
             }
         });
