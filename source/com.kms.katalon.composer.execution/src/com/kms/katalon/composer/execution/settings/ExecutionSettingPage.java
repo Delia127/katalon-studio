@@ -323,7 +323,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             public void widgetSelected(SelectionEvent e) {
                 if (LicenseUtil.isFreeLicense()) {
                     KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CONSOLE_LOG_CUSTOMIZATION);
-                    cbLogTestSteps.select(1); // reselect "Disable" item
+                    cbLogTestSteps.select(0); // Free users cannot disable this setting
                 }
             }
         });
@@ -433,7 +433,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(selectedLogTestSteps.booleanValue() ? 0 : 1);
         if (LicenseUtil.isFreeLicense()) {
-            cbLogTestSteps.select(1); // disable by default for free user
+            cbLogTestSteps.select(0); // Enable by default for free user
         }
         
         txtDefaultElementTimeout.setText(Integer.toString(defaultSettingStore.getElementTimeout()));
@@ -501,11 +501,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         }
         
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
-        if (LicenseUtil.isNotFreeLicense()) {
-            cbLogTestSteps.select(0);
-        } else {
-            cbLogTestSteps.select(1);
-        }
+        cbLogTestSteps.select(0);
         
         txtDefaultElementTimeout
                 .setText(Integer.toString(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_TIMEOUT_VALUE));

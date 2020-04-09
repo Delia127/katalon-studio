@@ -153,9 +153,9 @@ public class ExecutionUtil {
         
         executionProperties.put(RunConfiguration.GLOBAL_SMART_WAIT_MODE,
                 ExecutionUtil.getDefaultSmartWaitMode().booleanValue());
-        
-        executionProperties.put(RunConfiguration.LOG_TEST_STEPS,
-        		LicenseUtil.isNotFreeLicense() && ExecutionUtil.getLogTestSteps().booleanValue());
+
+        boolean doLogTestStep = LicenseUtil.isNotFreeLicense() ? ExecutionUtil.getLogTestSteps().booleanValue() : true;
+        executionProperties.put(RunConfiguration.LOG_TEST_STEPS, doLogTestStep);
 
         propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
 
