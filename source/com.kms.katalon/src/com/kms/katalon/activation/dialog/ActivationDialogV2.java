@@ -389,12 +389,17 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
 
     private void setProgressMessage(String message, boolean isError) {
+        lblProgressMessage.setText(message);
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
+            lblProgressMessage.getParent().layout();
+            Composite parent = lblProgressMessage.getParent();
+            ((GridData) parent.getLayoutData()).widthHint = parent.getSize().x;
+            lblProgressMessage.getShell().pack();
+            ((GridData) parent.getLayoutData()).widthHint = SWT.DEFAULT;
         } else {
             lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
-        lblProgressMessage.setText(message);
         lblProgressMessage.getParent().layout();
     }
 
@@ -477,20 +482,13 @@ public class ActivationDialogV2 extends AbstractDialog {
         activateComposite.setLayout(gdLogInComposite);
 
         lblProgressMessage = new Label(activateComposite, SWT.WRAP);
-        GridData gdStatus = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-        gdStatus.heightHint = 44;
-        gdStatus.widthHint = 320;
+        GridData gdStatus = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         lblProgressMessage.setLayoutData(gdStatus);
 
-        Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
-        activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
-        GridLayout gdActivateRight = new GridLayout(1, false);
-        gdActivateRight.marginHeight = 0;
-        gdActivateRight.marginWidth = 0;
-        activateRightComposite.setLayout(gdActivateRight);
-
-        btnActivate = new Button(activateRightComposite, SWT.NONE);
-        btnActivate.setLayoutData(gdBtn);
+        GridData gdBtnActivate = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+        gdBtnActivate.widthHint = 100;
+        btnActivate = new Button(activateComposite, SWT.NONE);
+        btnActivate.setLayoutData(gdBtnActivate);
         btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
         getShell().setDefaultButton(btnActivate);
 
