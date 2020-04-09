@@ -96,7 +96,7 @@ public class WebDriverManagerRunConfiguration {
     }
 
     private String getProxyCommand() {
-        ProxyInformation proxy = ProxyPreferences.getProxyInformation();
+        ProxyInformation proxy = ProxyPreferences.getSystemProxyInformation();
         switch (ProxyOption.valueOf(proxy.getProxyOption())) {
             case NO_PROXY:
             case USE_SYSTEM:

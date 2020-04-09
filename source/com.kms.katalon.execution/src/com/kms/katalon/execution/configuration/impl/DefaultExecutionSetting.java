@@ -156,6 +156,6 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     }
 
     private String getJsonProxyInformation() {
-        return new Gson().toJson(ProxyPreferences.getProxyInformation());
+        return new Gson().toJson(ProxyPreferences.getSystemProxyInformation());
     }
 }

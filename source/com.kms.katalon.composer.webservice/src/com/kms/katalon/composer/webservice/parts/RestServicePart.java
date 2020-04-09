@@ -185,7 +185,7 @@ public class RestServicePart extends WebServicePart {
                         HarLogger harLogger = new HarLogger();
                         harLogger.initHarFile();
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
-                                projectDir, ProxyPreferences.getProxyInformation(),
+                                projectDir, ProxyPreferences.getSystemProxyInformation(),
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables), false);
                         deleteTempHarFile();
                         

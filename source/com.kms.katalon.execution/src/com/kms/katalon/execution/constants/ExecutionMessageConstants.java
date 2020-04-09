@@ -134,6 +134,8 @@ public class ExecutionMessageConstants extends NLS {
     //ConsoleMain
     public static String MNG_PRT_INVALID_PROPERTY_FILE_ARG;
 
+    public static String MSG_MIXED_PROXIES_DETECTED;
+
     public static String ACTIVATE_MOVE_TO_KATALONC;
 
     public static String ACTIVATE_IN_ACTIVATING;

@@ -69,6 +69,113 @@ public class ProxyConsoleOptionContributor extends PreferenceOptionContributor {
                 return ProxyPreferenceConstants.PROXY_EXCEPTION_LIST;
             }
         });
+
+        // Authentication Proxy
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.AUTH_PROXY_OPTION;
+            }
+        });
+
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.AUTH_PROXY_SERVER_ADDRESS;
+            }
+        });
+
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.AUTH_PROXY_SERVER_TYPE;
+            }
+        });
+
+        options.add(new IntegerConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.AUTH_PROXY_SERVER_PORT;
+            }
+        });
+
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.AUTH_PROXY_USERNAME;
+            }
+        });
+
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.AUTH_PROXY_PASSWORD;
+            }
+        });
+        
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.AUTH_PROXY_EXCEPTION_LIST;
+            }
+        });
+
+        // System Proxy
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.SYSTEM_PROXY_OPTION;
+            }
+        });
+
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.SYSTEM_PROXY_SERVER_ADDRESS;
+            }
+        });
+
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.SYSTEM_PROXY_SERVER_TYPE;
+            }
+        });
+
+        options.add(new IntegerConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.SYSTEM_PROXY_SERVER_PORT;
+            }
+        });
+
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.SYSTEM_PROXY_USERNAME;
+            }
+        });
+
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.SYSTEM_PROXY_PASSWORD;
+            }
+        });
+        
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.SYSTEM_PROXY_EXCEPTION_LIST;
+            }
+        });
+        
+        options.add(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES;
+            }
+        });
     }
 
     @Override

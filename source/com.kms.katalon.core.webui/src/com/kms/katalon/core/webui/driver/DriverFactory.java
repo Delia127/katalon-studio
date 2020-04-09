@@ -49,6 +49,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
+import org.openqa.selenium.remote.http.HttpClient.Builder;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -378,20 +379,21 @@ public class DriverFactory {
         return new CChromeDriver(addCapbilitiesForChrome(desireCapibilities), getActionDelay());
     }
     
-    private static DesiredCapabilities addCapbilitiesForChrome(DesiredCapabilities desireCapibilities) {
+    private static DesiredCapabilities addCapbilitiesForChrome(DesiredCapabilities desiredCapibilities) {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
 
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
-        if (ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
+        if (proxyInformation.isApplyToDesiredCapabilities()
+                && ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
             if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-                WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities,
+                WebDriverPropertyUtil.addArgumentsForChrome(desiredCapibilities,
                         "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
             } else {
-                desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+                desiredCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             }
         }
-        addSmartWaitExtensionToChrome(desireCapibilities);
-        return desireCapibilities;
+        addSmartWaitExtensionToChrome(desiredCapibilities);
+        return desiredCapibilities;
     }
 
     private static DesiredCapabilities addSmartWaitExtensionToChrome(DesiredCapabilities capabilities) {
@@ -455,8 +457,10 @@ public class DriverFactory {
         if (remoteWebServerType == null) {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
-        if (!desiredCapabilities.getCapabilityNames().contains("proxy") && !isEdgeBrowser(desiredCapabilities)) {
-                desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+
+        ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
+        if (proxyInfo.isApplyToDesiredCapabilities() && !isEdgeBrowser(desiredCapabilities)) {
+            desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
 
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
@@ -486,17 +490,22 @@ public class DriverFactory {
             throws URISyntaxException, IOException, GeneralSecurityException {
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo));
+        Proxy proxy = proxyInfo.isApplyToDesiredCapabilities()
+                ? ProxyUtil.getProxy(proxyInfo)
+                : null;
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, url, clientFactory);
         return executor;
     }
 
     private static HttpCommandExecutor getSeleniumExecutorForRemoteDriver(String remoteWebServerUrl)
             throws URISyntaxException, IOException, GeneralSecurityException {
-
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo, url));
+        Proxy proxy = proxyInfo.isApplyToDesiredCapabilities()
+                ? ProxyUtil.getProxy(proxyInfo, url)
+                : null;
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
         HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, clientFactory);
         return executor;
     }
@@ -521,7 +530,10 @@ public class DriverFactory {
 
             @Override
             public org.openqa.selenium.remote.internal.OkHttpClient.Builder builder() {
-                return factory.builder().proxy(proxy);
+                Builder builder = factory.builder();
+                return proxy != null
+                        ? builder.proxy(proxy)
+                        : builder;
             }
         };
     }
@@ -572,14 +584,19 @@ public class DriverFactory {
     }
     
     private static WebDriver createNewEdgeChromiumDriver(Map<String, Object> driverPreferenceProps) throws IOException {
+        DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil
+                .getDesiredCapabilitiesForEdgeChromium(driverPreferenceProps, false);
+
         EdgeDriverService edgeService = localEdgeChromiumDriverServiceStorage.get();
         if (!edgeService.isRunning()) {
             edgeService.start();
         }
-        DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.getDesiredCapabilitiesForEdgeChromium(driverPreferenceProps, false);
-        if (!desiredCapabilities.getCapabilityNames().contains("proxy")) {
+
+        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
+        if (proxyInformation.isApplyToDesiredCapabilities()) {
             desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
+
         addSmartWaitExtensionToEdgeChromium(desiredCapabilities);
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
     }
@@ -600,7 +617,9 @@ public class DriverFactory {
 
     private static WebDriver createNewIEDriver(DesiredCapabilities desireCapibilities) {
         desireCapibilities.setCapability(CAP_IE_USE_PER_PROCESS_PROXY, "true");
-        if (!WebDriverProxyUtil.isNoProxy(RunConfiguration.getProxyInformation())) {
+        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
+        if (proxyInformation.isApplyToDesiredCapabilities()
+                && !WebDriverProxyUtil.isNoProxy(proxyInformation)) {
             desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
 
@@ -616,7 +635,12 @@ public class DriverFactory {
         int actionDelay = getActionDelay();
         int firefoxMajorVersion = FirefoxExecutable.getFirefoxVersion(desiredCapabilities);
         addSmartWaitExtensionToFirefox(desiredCapabilities);
-        desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+
+        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
+        if (proxyInformation.isApplyToDesiredCapabilities()) {
+            desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        }
+
         if (firefoxMajorVersion >= USING_GECKO_VERSION) {
             return CGeckoDriver.from(desiredCapabilities, actionDelay);
         }
