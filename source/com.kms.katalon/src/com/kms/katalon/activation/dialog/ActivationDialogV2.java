@@ -392,15 +392,14 @@ public class ActivationDialogV2 extends AbstractDialog {
         lblProgressMessage.setText(message);
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
-            lblProgressMessage.getParent().layout();
-            Composite parent = lblProgressMessage.getParent();
-            ((GridData) parent.getLayoutData()).widthHint = parent.getSize().x;
-            lblProgressMessage.getShell().pack();
-            ((GridData) parent.getLayoutData()).widthHint = SWT.DEFAULT;
         } else {
             lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
         lblProgressMessage.getParent().layout();
+        Composite parent = lblProgressMessage.getParent();
+        ((GridData) parent.getLayoutData()).widthHint = parent.getSize().x;
+        lblProgressMessage.getShell().pack();
+        ((GridData) parent.getLayoutData()).widthHint = SWT.DEFAULT;
     }
 
     @Override
