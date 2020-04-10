@@ -105,6 +105,6 @@ public class ExecutionProxyUtil {
     }
 
     public static boolean isConfigProxy(ProxyInformation proxyInfo) {
-        return !ProxyOption.NO_PROXY.name().equalsIgnoreCase(proxyInfo.getProxyOption());
+        return ProxyOption.valueOf(proxyInfo.getProxyOption()) != ProxyOption.NO_PROXY;
     }
 }

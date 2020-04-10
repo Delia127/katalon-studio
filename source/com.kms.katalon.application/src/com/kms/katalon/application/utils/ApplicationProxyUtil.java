@@ -22,6 +22,7 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.preference.ProxyPreferences;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.logging.LogUtil;
 
 public class ApplicationProxyUtil {
@@ -69,9 +70,10 @@ public class ApplicationProxyUtil {
     public static Proxy getProxy(ProxyInformation proxyInfo) throws IOException {
         Proxy proxy = Proxy.NO_PROXY;
 
-        if (ApplicationMessageConstants.USE_SYSTEM_PROXY.equals(proxyInfo.getProxyOption())) {
+        ProxyOption proxyOption = ProxyOption.valueOf(proxyInfo.getProxyOption());
+        if (proxyOption == ProxyOption.USE_SYSTEM) {
             proxy = getSystemProxyFor(ServerAPICommunicationUtil.getAPIUrl());
-        } else if (ApplicationMessageConstants.MANUAL_CONFIG_PROXY.equals(proxyInfo.getProxyOption())) {
+        } else if (proxyOption == ProxyOption.MANUAL_CONFIG) {
             System.setProperty(USE_SYSTEM_PROXY_PROP, "false");
             try {
                 switch (proxyInfo.getProxyServerType()) {

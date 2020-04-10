@@ -384,7 +384,7 @@ public class DriverFactory {
 
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
         if (proxyInformation.isApplyToDesiredCapabilities()
-                && ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
+                && ProxyOption.valueOf(proxyInformation.getProxyOption()) == ProxyOption.MANUAL_CONFIG) {
             if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
                 WebDriverPropertyUtil.addArgumentsForChrome(desiredCapibilities,
                         "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));

@@ -319,7 +319,7 @@ public class InspectSession implements Runnable {
         
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
         if (proxyInformation.isApplyToDesiredCapabilities()
-                && ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
+                && ProxyOption.valueOf(proxyInformation.getProxyOption()) == ProxyOption.MANUAL_CONFIG) {
             if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
                 WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
                         "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
