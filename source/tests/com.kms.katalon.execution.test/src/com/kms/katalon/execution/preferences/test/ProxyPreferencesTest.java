@@ -9,7 +9,9 @@ import org.junit.Test;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.network.ProxyServerType;
+import com.kms.katalon.execution.constants.ProxyPreferenceConstants;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -21,10 +23,12 @@ public class ProxyPreferencesTest {
         // Given
         ProxyInformation legacyProxyInfo = generateManualProxyInfo();
         ProxyPreferences.saveProxyInformation(legacyProxyInfo);
-        
-        //When
+        ScopedPreferenceStore store = ProxyPreferences.getPreferenceStore();
+        store.setValue(ProxyPreferenceConstants.AUTH_PROXY_PREFERENCE_SET, false);
+
+        // When
         ProxyInformation authProxyInfo = ProxyPreferences.getAuthProxyInformation();
-        
+
         // Then
         assertEquals(legacyProxyInfo.getProxyOption(), authProxyInfo.getProxyOption());
         assertEquals(legacyProxyInfo.getProxyServerType(), authProxyInfo.getProxyServerType());
@@ -41,10 +45,12 @@ public class ProxyPreferencesTest {
         // Given
         ProxyInformation legacyProxyInfo = generateManualProxyInfo();
         ProxyPreferences.saveProxyInformation(legacyProxyInfo);
-        
-        //When
+        ScopedPreferenceStore store = ProxyPreferences.getPreferenceStore();
+        store.setValue(ProxyPreferenceConstants.SYSTEM_PROXY_PREFERENCE_SET, false);
+
+        // When
         ProxyInformation systemProxyInfo = ProxyPreferences.getSystemProxyInformation();
-        
+
         // Then
         assertEquals(legacyProxyInfo.getProxyOption(), systemProxyInfo.getProxyOption());
         assertEquals(legacyProxyInfo.getProxyServerType(), systemProxyInfo.getProxyServerType());
@@ -64,10 +70,10 @@ public class ProxyPreferencesTest {
 
         ProxyInformation newAuthProxyInfo = generateManualProxyInfo();
         ProxyPreferences.saveAuthProxyInformation(newAuthProxyInfo);
-        
-        //When
-        ProxyInformation authProxyInfo = ProxyPreferences.getSystemProxyInformation();
-        
+
+        // When
+        ProxyInformation authProxyInfo = ProxyPreferences.getAuthProxyInformation();
+
         // Then
         assertEquals(newAuthProxyInfo.getProxyOption(), authProxyInfo.getProxyOption());
         assertEquals(newAuthProxyInfo.getProxyServerType(), authProxyInfo.getProxyServerType());
@@ -87,10 +93,10 @@ public class ProxyPreferencesTest {
 
         ProxyInformation newSystemProxyInfo = generateManualProxyInfo();
         ProxyPreferences.saveSystemProxyInformation(newSystemProxyInfo);
-        
-        //When
+
+        // When
         ProxyInformation systemProxyInfo = ProxyPreferences.getSystemProxyInformation();
-        
+
         // Then
         assertEquals(newSystemProxyInfo.getProxyOption(), systemProxyInfo.getProxyOption());
         assertEquals(newSystemProxyInfo.getProxyServerType(), systemProxyInfo.getProxyServerType());
