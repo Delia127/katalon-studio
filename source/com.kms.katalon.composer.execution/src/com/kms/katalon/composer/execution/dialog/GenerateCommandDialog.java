@@ -970,8 +970,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         ProxyInformation proxyInfo = ApplicationProxyUtil.getAuthProxyInformation();
         args.put(ProxyPreferenceConstants.AUTH_PROXY_OPTION, proxyInfo.getProxyOption());
 
-        boolean useManualConfig = ProxyOption.MANUAL_CONFIG.name().equalsIgnoreCase(proxyInfo.getProxyOption());
-        if (useManualConfig) {
+        ProxyOption proxyOption = ProxyOption.valueOf(proxyInfo.getProxyOption());
+
+        if (proxyOption == ProxyOption.MANUAL_CONFIG) {
             args.put(ProxyPreferenceConstants.AUTH_PROXY_SERVER_TYPE, proxyInfo.getProxyServerType());
             if (StringUtils.isNotBlank(proxyInfo.getProxyServerAddress())) {
                 args.put(ProxyPreferenceConstants.AUTH_PROXY_SERVER_ADDRESS, proxyInfo.getProxyServerAddress());
@@ -997,8 +998,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         ProxyInformation proxyInfo = ApplicationProxyUtil.getSystemProxyInformation();
         args.put(ProxyPreferenceConstants.SYSTEM_PROXY_OPTION, proxyInfo.getProxyOption());
 
-        boolean useManualConfig = ProxyOption.MANUAL_CONFIG.name().equalsIgnoreCase(proxyInfo.getProxyOption());
-        if (useManualConfig) {
+        ProxyOption proxyOption = ProxyOption.valueOf(proxyInfo.getProxyOption());
+
+        if (proxyOption == ProxyOption.MANUAL_CONFIG) {
             args.put(ProxyPreferenceConstants.SYSTEM_PROXY_SERVER_TYPE, proxyInfo.getProxyServerType());
             if (StringUtils.isNotBlank(proxyInfo.getProxyServerAddress())) {
                 args.put(ProxyPreferenceConstants.SYSTEM_PROXY_SERVER_ADDRESS, proxyInfo.getProxyServerAddress());
@@ -1017,6 +1019,9 @@ public class GenerateCommandDialog extends AbstractDialog {
                 args.put(ProxyPreferenceConstants.SYSTEM_PROXY_EXCEPTION_LIST,
                         wrapArgumentValue(proxyInfo.getExceptionList()));
             }
+        }
+
+        if (proxyOption != ProxyOption.NO_PROXY) {
             args.put(ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES,
                     Boolean.toString(proxyInfo.isApplyToDesiredCapabilities()));
         }
