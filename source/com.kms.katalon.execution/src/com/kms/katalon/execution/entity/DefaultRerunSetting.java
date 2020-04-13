@@ -21,6 +21,7 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     private int previousRerunTimes;
     private int remainingRerunTimes;
     private boolean rerunFailedTestCaseOnly;
+    private boolean rerunFailedTestCaseWithTestDataOnly;
     private boolean overrideRerunFailedTestCaseOnly;
     private boolean overrideRemainingRerunTimes;
 
@@ -118,6 +119,15 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
             setRerunFailedTestCaseOnly(rerunable.isRerunFailedTestCasesOnly());
         }
         return this;
+    }
+    
+    public void setRerunFailedTestCasesAndTestDataOnly(boolean val) {
+        this.rerunFailedTestCaseWithTestDataOnly = val;
+    }
+
+    @Override
+    public boolean isRerunFailedTestCasesAndTestDataOnly() {
+        return true;
     }
 
 }

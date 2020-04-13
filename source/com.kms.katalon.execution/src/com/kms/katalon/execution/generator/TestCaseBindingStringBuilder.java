@@ -46,6 +46,11 @@ public class TestCaseBindingStringBuilder {
         }
         return testCaseBindingName;
     }
+    
+    public TestCaseBinding getVariableBinding() {
+        return new TestCaseBinding(getTestCaseBindingName(), testCaseExecutedEntity.getSourceId(),
+                variableBinding.isEmpty() ? null : variableBinding);
+    }
 
     private String getDeclarationWithTestCaseName() {
         return new StringBuilder("new TestCaseBinding('").append(getTestCaseBindingName())

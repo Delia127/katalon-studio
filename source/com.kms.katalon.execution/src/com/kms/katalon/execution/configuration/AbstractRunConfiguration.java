@@ -25,6 +25,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.LogbackUtil;
 import com.kms.katalon.custom.factory.PluginTestListenerFactory;
@@ -66,6 +67,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private String executionUUID;
     
     private String executionSessionId;
+    
+    private FileEntity fileEntity;
 
     private static final String PATH = "PATH";
 
@@ -97,9 +100,9 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
         generateLogFolder(fileEntity);
 
-        generateExecutionProperties();
-
         File scriptFile = generateTempScriptFile(fileEntity);
+        
+        generateExecutionProperties();
 
         executionSetting.setScriptFile(scriptFile);
 
@@ -109,8 +112,19 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
-                return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
-                        (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
+                TestSuiteExecutedEntity t = (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity();
+                
+                if (t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
+                    return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
+                                    .generateScriptFile(
+                                            additionalData.getOrDefault("previousFailedTestCaseBindings", ""));
+                } else {
+                    return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
+                                    .generateScriptFile();
+                }
+                
             } else if (fileEntity instanceof TestCaseEntity)  {
                 return new TestCaseScriptGenerator((TestCaseEntity) fileEntity, this).generateScriptFile();
             } else if (fileEntity instanceof SystemFileEntity) {
@@ -126,7 +140,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (fileEntity == null) {
             return;
         }
-
+        this.fileEntity = fileEntity;
         int timeOut = (fileEntity instanceof TestSuiteEntity
                 && !((TestSuiteEntity) fileEntity).isPageLoadTimeoutDefault())
                         ? ((TestSuiteEntity) fileEntity).getPageLoadTimeout()
@@ -220,6 +234,13 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 //        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
         
         propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, LicenseUtil.isNotFreeLicense());
+        
+        try {
+            propertyMap.put("testCaseBindings",
+                    new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
+                                    .getTestCaseBinding());
+        } catch (IOException ignored) {}
         
         return propertyMap;
     }

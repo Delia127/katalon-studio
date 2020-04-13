@@ -490,4 +490,8 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     public Rerunable mergeWith(Rerunable rerunable) {
         return this;
     }
+
+    public boolean isRerunFailedTestCasesAndTestDataOnly() {
+        return rerunSetting.isRerunFailedTestCasesAndTestDataOnly();
+    }
 }
