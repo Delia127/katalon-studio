@@ -99,6 +99,7 @@ public class ProxyInformation {
         return "ProxyInformation { "
                 + "proxyOption=" + proxyOption + ", "
                 + "proxyServerType=" + proxyServerType + ", "
+                + "username=" + "********" + ", "
                 + "password=" + "********" + ", "
                 + "proxyServerAddress=" + proxyServerAddress + ", "
                 + "proxyServerPort=" + proxyServerPort + ", "

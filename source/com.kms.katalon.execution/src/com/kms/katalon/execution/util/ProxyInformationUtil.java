@@ -41,12 +41,16 @@ public class ProxyInformationUtil {
 
     public static void printSystemProxyInfo() {
         LogUtil.logInfo("INFO: > System Proxy:");
-        printProxyInfo(ExecutionProxyUtil.getSystemProxyInformation());
+        ProxyInformation systemProxyInfo = ExecutionProxyUtil.getSystemProxyInformation();
+        printProxyInfo(systemProxyInfo);
+        if (ProxyOption.NO_PROXY != ProxyOption.valueOf(systemProxyInfo.getProxyOption())) {
+            LogUtil.logInfo("INFO: Auto apply proxy to desired capabilities: " + systemProxyInfo.isApplyToDesiredCapabilities());
+        }
     }
 
     public static void printProxyInfo(ProxyInformation proxyInfo) {
         LogUtil.logInfo("INFO: Proxy option: " + proxyInfo.getProxyOption());
-        if (ProxyOption.MANUAL_CONFIG.name().equalsIgnoreCase(proxyInfo.getProxyOption())) {
+        if (ProxyOption.MANUAL_CONFIG == ProxyOption.valueOf(proxyInfo.getProxyOption())) {
             LogUtil.logInfo("INFO: Proxy server type: " + proxyInfo.getProxyServerType());
             LogUtil.logInfo("INFO: Proxy server address: " + proxyInfo.getProxyServerAddress());
             LogUtil.logInfo("INFO: Proxy server port: " + proxyInfo.getProxyServerPort());
