@@ -769,7 +769,10 @@ public class DriverFactory {
                         ? ((RemoteWebDriver) webDriver).getCapabilities().getPlatform().toString()
                         : System.getProperty("os.name"));
         logger.logRunData(StringConstants.XML_LOG_SELENIUM_VERSION, new BuildInfo().getReleaseLabel());
-        logger.logRunData("proxyInformation", RunConfiguration.getProxyInformation().toString());
+        
+        ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
+        proxyInfo.setPassword(proxyInfo.getPassword().replaceAll(".", "*"));
+        logger.logRunData("proxyInformation", proxyInfo.toString());
     }
 
     public static String getBrowserVersion(WebDriver webDriver) {
