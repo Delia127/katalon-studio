@@ -2,15 +2,18 @@ package com.kms.katalon.execution.configuration.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
@@ -19,6 +22,7 @@ import com.kms.katalon.execution.setting.ExecutionSettingStore;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.CryptoUtil;
 
 public class DefaultExecutionSetting implements IExecutionSetting {
 
@@ -156,6 +160,14 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     }
 
     private String getJsonProxyInformation() {
-        return new Gson().toJson(ProxyPreferences.getSystemProxyInformation());
+        ProxyInformation proxyInfo = ProxyPreferences.getSystemProxyInformation();
+        String password = proxyInfo.getPassword();
+        if (!StringUtils.isEmpty(password)) {
+            try {
+                CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(password);
+                proxyInfo.setPassword(CryptoUtil.encode(cryptoInfo));
+            } catch (GeneralSecurityException | IOException ignored) {}
+        }
+        return new Gson().toJson(proxyInfo);
     }
 }
