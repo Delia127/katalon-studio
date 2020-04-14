@@ -116,6 +116,7 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
             overrideRerunFailedTestCaseOnly = true;
         } else if (consoleOption == RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION) {
             setRerunFailedTestCaseAndTestDataOnly(Boolean.valueOf(argumentValue));
+            overrideRerunFailedTestCaseWithTestDataOnly = true;
         }
     }
 

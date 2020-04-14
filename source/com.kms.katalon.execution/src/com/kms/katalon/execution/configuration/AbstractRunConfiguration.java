@@ -111,6 +111,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
                 TestSuiteExecutedEntity t = (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity();
                 String currentFailedTcBindings = additionalData
                         .getOrDefault(RunConfiguration.CURRENT_FAILED_TC_BINDINGS, StringUtils.EMPTY);
+                
                 if (!StringUtils.EMPTY.equals(currentFailedTcBindings)
                         && t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
                     return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
