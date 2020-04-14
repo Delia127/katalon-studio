@@ -574,7 +574,7 @@ public class TestSuitePart implements EventHandler {
         GridData gdReRunTestCaseTestDataOnly = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
         gdReRunTestCaseTestDataOnly.widthHint = 150;
         lblReRunTestCaseTestDataOnly.setLayoutData(gdReRunTestCaseTestDataOnly);
-        lblReRunTestCaseTestDataOnly.setText(StringConstants.PA_LBL_TEST_CASE_ONLY);
+        lblReRunTestCaseTestDataOnly.setText(StringConstants.PA_LBL_TEST_CASE_TEST_DATA_ONLY);
         lblReRunTestCaseTestDataOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
 
         rerunTestCaseTestDataOnly = new Button(compositeLastRunAndReRun, SWT.CHECK);

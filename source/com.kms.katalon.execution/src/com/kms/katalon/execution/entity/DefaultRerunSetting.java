@@ -14,10 +14,11 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     public static final int DEFAULT_RERUN_TIME = 0;
     private static final int DEFAULT_PREVIOUS_RUN_TIME = 0;
     public static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_ONLY = false;
-
+    public static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_TEST_DATA_ONLY = false;
     public final static String RETRY_OPTION = "retry";
     public final static String RETRY_FAIL_TEST_CASE_ONLY_OPTION = "retryFailedTestCases";
-
+    public final static String RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION = "retryFailedTestCasesTestData";
+    
     private int previousRerunTimes;
     private int remainingRerunTimes;
     private boolean rerunFailedTestCaseOnly;
