@@ -14,7 +14,7 @@ public class TestSuiteEntityUtil {
         des.setPageLoadTimeoutDefault(src.isPageLoadTimeoutDefault());
         des.setNumberOfRerun(src.getNumberOfRerun());
         des.setRerunFailedTestCasesOnly(src.isRerunFailedTestCasesOnly());
-
+        des.setRerunFailedTestCasesTestDataOnly(src.isRerunFailedTestCasesAndTestDataOnly());
         des.getTestSuiteTestCaseLinks().clear();
 
         for (TestSuiteTestCaseLink testCaseLink : src.getTestSuiteTestCaseLinks()) {

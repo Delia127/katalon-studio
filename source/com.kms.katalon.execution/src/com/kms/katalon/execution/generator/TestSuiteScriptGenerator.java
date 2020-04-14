@@ -9,11 +9,8 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
-import com.beust.jcommander.Strings;
-import com.beust.jcommander.internal.Lists;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
@@ -78,7 +75,7 @@ public class TestSuiteScriptGenerator {
         return createTestCaseBindings("");
     }
 
-    public File createTestCaseBindings(String tcBindings) throws IOException {
+   private File createTestCaseBindings(String tcBindings) throws IOException {
         File testCaseBindingFile = new File(config.getExecutionSetting().getFolderPath(), "testCaseBinding");
         testCaseBindingFile.createNewFile();
         
@@ -119,40 +116,7 @@ public class TestSuiteScriptGenerator {
         } else {
             throw new IllegalArgumentException(syntaxErrorCollector.toString());
         }
-    }
-    
-    public List<TestCaseBinding> getTestCaseBinding() throws IOException {
-        List<TestCaseBinding> bindedValues = new ArrayList<>();
-        syntaxErrorCollector = new StringBuilder();
-
-        List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance()
-                .getTestSuiteTestCaseRun(testSuite);
-        for (IExecutedEntity testCaseExecuted : testSuiteExecuted.getExecutedItems()) {
-            String testCaseId = testCaseExecuted.getSourceId();
-            TestSuiteTestCaseLink testCaseLink = null;
-            if (testSuite instanceof FilteringTestSuiteEntity) {
-                testCaseLink = new TestSuiteTestCaseLink();
-                testCaseLink.setTestCaseId(testCaseId);
-                testCaseLink.setIsRun(true);
-            } else {
-                testCaseLink = getTestCaseLink(testCaseId, lstTestCaseRun);
-                // KAT-4017, removing a test case so the next iteration we will consider
-                // the next (possibly duplicate) test cases
-                lstTestCaseRun.remove(testCaseLink);
-            }
-
-            if (testCaseLink == null) {
-                throw new IllegalArgumentException("Test case: '" + testCaseId + "' not found");
-            }
-            bindedValues.addAll(addBindedValue(testCaseLink, (TestCaseExecutedEntity) testCaseExecuted));
-        }
-
-        if (syntaxErrorCollector.toString().isEmpty()) {
-            return bindedValues;
-        } else {
-            throw new IllegalArgumentException(syntaxErrorCollector.toString());
-        }
-    }
+    }    
 
     private TestSuiteTestCaseLink getTestCaseLink(String testCaseId, List<TestSuiteTestCaseLink> distinctTestCaseLink) {
         for (TestSuiteTestCaseLink testCaseLink : distinctTestCaseLink) {
@@ -178,27 +142,6 @@ public class TestSuiteScriptGenerator {
                 break;
             } else {
                 testCaseBindingStrings.add(builder.build());
-            }
-        }
-
-        return testCaseBindingStrings;
-    }
-    
-    private List<TestCaseBinding> addBindedValue(TestSuiteTestCaseLink testCaseLink,
-            TestCaseExecutedEntity testCaseExecutedEntity) {
-        List<TestCaseBinding> testCaseBindingStrings = new ArrayList<TestCaseBinding>();
-        for (int iterationIdx = 0; iterationIdx < testCaseExecutedEntity.getLoopTimes(); iterationIdx++) {
-            TestCaseBindingStringBuilder builder = new TestCaseBindingStringBuilder(iterationIdx, testCaseExecutedEntity);
-
-            for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
-                builder.append(variableLink, testSuiteExecuted.getTestDataMap());
-            }
-
-            if (builder.hasErrors()) {
-                syntaxErrorCollector.append(builder.getErrorMessage()).append(SyntaxUtil.LINE_SEPARATOR);
-                break;
-            } else {
-                testCaseBindingStrings.add(builder.getVariableBinding());
             }
         }
 

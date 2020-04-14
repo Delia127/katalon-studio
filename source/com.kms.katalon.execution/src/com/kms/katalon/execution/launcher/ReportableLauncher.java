@@ -15,14 +15,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.beust.jcommander.internal.Maps;
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
 import com.kms.katalon.application.utils.VersionUtil;
@@ -31,15 +29,14 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
-import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testdata.reader.CSVReader;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
-import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
@@ -110,7 +107,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void preExecutionComplete(boolean runTestSuite) {
         this.endTime = new Date();
@@ -158,9 +154,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteEntity testSuite = getTestSuite();
 
-            String strFailedTcBindings = getPreviousFailedTestCaseBindings();
-            Map<String, String> previousFailedTcBindingsMap = new HashMap<String, String>();
-            previousFailedTcBindingsMap.put("previousFailedTestCaseBindings", strFailedTcBindings);
+            String strFailedTcBindings = readCurrentTestCaseBindings();
+            Map<String, String> currentFailedTcBindings = new HashMap<String, String>();
+            currentFailedTcBindings.put(RunConfiguration.CURRENT_FAILED_TC_BINDINGS, strFailedTcBindings);
 
             try {
                 IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil
@@ -175,7 +171,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
                     ((AbstractRunConfiguration) newConfig)
                             .setOverridingGlobalVariables(getRunConfig().getOverridingGlobalVariables());
-                    ((AbstractRunConfiguration) newConfig).setTestSuiteAdditionalData(previousFailedTcBindingsMap);
+                    ((AbstractRunConfiguration) newConfig).setTestSuiteAdditionalData(currentFailedTcBindings);
                 }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
@@ -187,26 +183,29 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             }
         }
     }
+    
+    private String readCurrentTestCaseBindings() {
+        File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
+        try {
+            List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);
+            List<String> currentFailedTcBindings = new ArrayList<>();
+            List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity()).getExecutedItems();
+            TestStatusValue[] prevResultValues = getResult().getResultValues();
+            int rsIdx = 0;
 
-    private String getPreviousFailedTestCaseBindings() {
-        List<TestCaseBinding> tcBindings = (List<TestCaseBinding>) getRunConfig().getProperties()
-                .get("testCaseBindings");
-        String strFailedTcBindings = "";
-        
-        List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity()).getExecutedItems();
-        TestStatusValue[] prevResultValues = getResult().getResultValues();
-        int rsIdx = 0;
-
-        for (IExecutedEntity prevExecutedItem : prevTestCaseExecutedEntities) {
-            TestCaseExecutedEntity prevExecutedTC = (TestCaseExecutedEntity) prevExecutedItem;
-            for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
-                if (prevResultValues[i] == TestStatusValue.FAILED || prevResultValues[i] == TestStatusValue.ERROR) {
-                    strFailedTcBindings += (JsonUtil.toJson(tcBindings.get(i), false) + "\n");
+            for (IExecutedEntity prevExecutedItem : prevTestCaseExecutedEntities) {
+                TestCaseExecutedEntity prevExecutedTC = (TestCaseExecutedEntity) prevExecutedItem;
+                for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
+                    if (prevResultValues[i] == TestStatusValue.FAILED || prevResultValues[i] == TestStatusValue.ERROR) {
+                        currentFailedTcBindings.add(currentTcBindings.get(i));
+                    }
                 }
+                rsIdx += prevExecutedTC.getLoopTimes();
             }
-            rsIdx += prevExecutedTC.getLoopTimes();
-        }
-        return strFailedTcBindings;
+            return String.join("\n", currentFailedTcBindings);
+        } catch (IOException e) {}
+
+        return "";
     }
 
     protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {

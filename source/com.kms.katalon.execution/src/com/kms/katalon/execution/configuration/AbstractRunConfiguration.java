@@ -14,18 +14,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.Platform;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.application.utils.LicenseUtil;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.LogbackUtil;
 import com.kms.katalon.custom.factory.PluginTestListenerFactory;
@@ -67,8 +64,6 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private String executionUUID;
     
     private String executionSessionId;
-    
-    private FileEntity fileEntity;
 
     private static final String PATH = "PATH";
 
@@ -112,20 +107,21 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
+                // Use pre-computed test case bindings for rerunTestCaseTestData setting
                 TestSuiteExecutedEntity t = (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity();
-                
-                if (t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
+                String currentFailedTcBindings = additionalData
+                        .getOrDefault(RunConfiguration.CURRENT_FAILED_TC_BINDINGS, StringUtils.EMPTY);
+                if (!StringUtils.EMPTY.equals(currentFailedTcBindings)
+                        && t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
                     return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
                             (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
-                                    .generateScriptFile(
-                                            additionalData.getOrDefault("previousFailedTestCaseBindings", ""));
-                } else {
-                    return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
-                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
-                                    .generateScriptFile();
+                                    .generateScriptFile(currentFailedTcBindings);
+
                 }
-                
-            } else if (fileEntity instanceof TestCaseEntity)  {
+                return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                        (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
+
+            } else if (fileEntity instanceof TestCaseEntity) {
                 return new TestCaseScriptGenerator((TestCaseEntity) fileEntity, this).generateScriptFile();
             } else if (fileEntity instanceof SystemFileEntity) {
                 return new FeatureFileScriptGenerator((SystemFileEntity) fileEntity, this).generateScriptFile();
@@ -140,7 +136,6 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (fileEntity == null) {
             return;
         }
-        this.fileEntity = fileEntity;
         int timeOut = (fileEntity instanceof TestSuiteEntity
                 && !((TestSuiteEntity) fileEntity).isPageLoadTimeoutDefault())
                         ? ((TestSuiteEntity) fileEntity).getPageLoadTimeout()
@@ -234,13 +229,6 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 //        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
         
         propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, LicenseUtil.isNotFreeLicense());
-        
-        try {
-            propertyMap.put("testCaseBindings",
-                    new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
-                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
-                                    .getTestCaseBinding());
-        } catch (IOException ignored) {}
         
         return propertyMap;
     }

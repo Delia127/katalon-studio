@@ -23,6 +23,7 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     private boolean rerunFailedTestCaseOnly;
     private boolean rerunFailedTestCaseWithTestDataOnly;
     private boolean overrideRerunFailedTestCaseOnly;
+    private boolean overrideRerunFailedTestCaseWithTestDataOnly;
     private boolean overrideRemainingRerunTimes;
 
     public static final IntegerConsoleOption RETRY_CONSOLE_OPTION = new IntegerConsoleOption() {
@@ -38,6 +39,13 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     };
 
     public static final BooleanConsoleOption RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION = new BooleanConsoleOption() {
+        @Override
+        public String getOption() {
+            return RETRY_FAIL_TEST_CASE_ONLY_OPTION;
+        }
+    };
+    
+    public static final BooleanConsoleOption RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION = new BooleanConsoleOption() {
         @Override
         public String getOption() {
             return RETRY_FAIL_TEST_CASE_ONLY_OPTION;
@@ -90,6 +98,7 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
         consoleOptionList.add(RETRY_CONSOLE_OPTION);
         consoleOptionList.add(RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION);
+        consoleOptionList.add(RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION);
         return consoleOptionList;
     }
 
@@ -104,6 +113,8 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         } else if (consoleOption == RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION) {
             setRerunFailedTestCaseOnly(Boolean.valueOf(argumentValue));
             overrideRerunFailedTestCaseOnly = true;
+        } else if (consoleOption == RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION) {
+            setRerunFailedTestCaseAndTestDataOnly(Boolean.valueOf(argumentValue));
         }
     }
 
@@ -118,16 +129,20 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         if (!overrideRerunFailedTestCaseOnly) {
             setRerunFailedTestCaseOnly(rerunable.isRerunFailedTestCasesOnly());
         }
+        
+        if (!overrideRerunFailedTestCaseWithTestDataOnly) {
+            setRerunFailedTestCaseAndTestDataOnly(rerunable.isRerunFailedTestCasesAndTestDataOnly());
+        }
         return this;
     }
     
-    public void setRerunFailedTestCasesAndTestDataOnly(boolean val) {
+    public void setRerunFailedTestCaseAndTestDataOnly(boolean val) {
         this.rerunFailedTestCaseWithTestDataOnly = val;
     }
 
     @Override
     public boolean isRerunFailedTestCasesAndTestDataOnly() {
-        return true;
+        return rerunFailedTestCaseWithTestDataOnly;
     }
 
 }
