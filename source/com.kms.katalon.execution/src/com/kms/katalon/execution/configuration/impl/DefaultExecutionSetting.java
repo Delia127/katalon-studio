@@ -58,7 +58,7 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         generalProperties.put(RunConfiguration.TIMEOUT_PROPERTY, timeout);
         generalProperties.put(StringConstants.CONF_PROPERTY_REPORT, getReportProperties());
         generalProperties.put(RunConfiguration.EXCUTION_DEFAULT_FAILURE_HANDLING, getDefaultFailureHandlingSetting());
-        generalProperties.put(RunConfiguration.PROXY_PROPERTY, getJsonProxyInformation());
+        generalProperties.put(RunConfiguration.PROXY_PROPERTY, getJsonProxyInformationWithEncryptedPassword());
         generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_CASE,
                 ExecutionUtil.isQuitDriversAfterExecutingTestCase());
         generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_SUITE,
@@ -159,7 +159,7 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         return new TestCaseSettingStore(getCurrentProject().getFolderLocation()).getDefaultFailureHandling().name();
     }
 
-    private String getJsonProxyInformation() {
+    private String getJsonProxyInformationWithEncryptedPassword() {
         ProxyInformation proxyInfo = ProxyPreferences.getSystemProxyInformation();
         String password = proxyInfo.getPassword();
         if (!StringUtils.isEmpty(password)) {
