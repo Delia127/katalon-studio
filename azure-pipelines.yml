@@ -239,6 +239,10 @@ stages:
         echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
       displayName: Set up
 
+    - script: |
+        choco install googlechrome
+      displayName: Install Google Chrome
+
     - checkout: WindowTest
       fetchDepth: 1
       clean: true
