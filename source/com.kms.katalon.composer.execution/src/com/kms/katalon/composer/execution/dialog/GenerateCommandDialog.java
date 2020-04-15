@@ -478,7 +478,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         chkRetryFailedTestCase.setSelection(DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_ONLY);
         chkRetryFailedTestCaseTestData.setSelection(DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_TEST_DATA_ONLY);
         txtStatusDelay.setText(defaultStatusDelay);
-        enableRetryFailedTestCase();
+        enableRetryFailedTestCaseControls();
 
         loadLastWorkingData();
         updatePlatformLayout();
@@ -495,7 +495,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)) {
                 txtRetry.setText(String.valueOf(prefs.getInt(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)));
-                enableRetryFailedTestCase();
+                enableRetryFailedTestCaseControls();
             }
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES)) {
@@ -531,10 +531,13 @@ public class GenerateCommandDialog extends AbstractDialog {
         return TestSuiteCollectionController.getInstance().getTestSuiteCollection(prefSuiteId);
     }
 
-    private void enableRetryFailedTestCase() {
+    private void enableRetryFailedTestCaseControls() {
         String retry = txtRetry.getText();
-        chkRetryFailedTestCase.setEnabled(!(ZERO.equals(retry) || retry.isEmpty()));
+        boolean enableRetryFailedTc = !(ZERO.equals(retry) || retry.isEmpty());
+        chkRetryFailedTestCase.setEnabled(enableRetryFailedTc);
+        chkRetryFailedTestCaseTestData.setEnabled(!(ZERO.equals(retry) || retry.isEmpty() || !enableRetryFailedTc));
     }
+
 
     @Override
     protected void registerControlModifyListeners() {
@@ -585,7 +588,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                enableRetryFailedTestCase();
+                enableRetryFailedTestCaseControls();
             }
         });
         txtRetry.addFocusListener(new FocusListener() {

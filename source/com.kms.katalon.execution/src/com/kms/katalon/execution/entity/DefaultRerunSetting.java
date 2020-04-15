@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.execution.console.entity.BooleanConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
@@ -49,7 +50,7 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     public static final BooleanConsoleOption RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION = new BooleanConsoleOption() {
         @Override
         public String getOption() {
-            return RETRY_FAIL_TEST_CASE_ONLY_OPTION;
+            return RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION;
         }
     };
 
