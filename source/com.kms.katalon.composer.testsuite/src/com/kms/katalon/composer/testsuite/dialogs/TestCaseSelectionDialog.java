@@ -3,13 +3,13 @@ package com.kms.katalon.composer.testsuite.dialogs;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -39,10 +39,8 @@ import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
-import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 /**
@@ -55,8 +53,8 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 	private TestCaseTableViewer tableViewer;
 
 	private List<Object> tcTreeEntities;
-
-	private List<Object> checkedItems;
+	
+	private Map<String, Object> checkedItemsMap;
 
 	/**
 	 * Test Case Selection Dialog for Test Suite
@@ -152,12 +150,16 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 	 * @see org.eclipse.ui.dialogs.ElementTreeSelectionDialog#computeResult()
 	 */
 	@Override
-	protected void computeResult() {
-		ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
-		List<Object> grayedItems = Arrays.asList(treeViewer.getGrayedElements());
-		checkedItems.removeAll(grayedItems);
-		setResult(checkedItems);
-	}
+    protected void computeResult() {
+        ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
+        List<Object> grayedItems = Arrays.asList(treeViewer.getGrayedElements());
+        List<Object> elements = checkedItemsMap.entrySet()
+                .stream()
+                .map(entry -> entry.getValue())
+                .collect(Collectors.toList());
+        elements.removeAll(grayedItems);
+        setResult(elements);
+    }
 
     /**
      * Update test case table viewer
@@ -234,7 +236,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 	 */
 	private void updateTestCaseTreeEntities() {
 		try {
-			tcTreeEntities = new ArrayList<Object>(Arrays.asList(getAddedTestCase(tableViewer.getTestCasesPKs())));
+			tcTreeEntities = new ArrayList<Object>();
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);
 		}
@@ -254,9 +256,8 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 				}
 			}
 		});
-		Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
-		treeViewer.setCheckedElements(addedTestCases);
-		checkedItems = new ArrayList<Object>(Arrays.asList(addedTestCases));
+		treeViewer.setCheckedElements(new Object[0]);
+		checkedItemsMap = new HashMap<String, Object>();
 		return treeViewer;
 	}
 
@@ -269,12 +270,12 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 	 *            whether TreeItem is checked or not
 	 */
 	private void onStageChangedTreeItem(Object element, boolean isChecked) {
-		if (element instanceof TestCaseTreeEntity) {
-			if (isChecked) {
-				checkedItems.add(element);
-			} else {
-				checkedItems.remove(element);
-			}
+        if (element instanceof TestCaseTreeEntity) {
+            if (isChecked) {
+                checkedItemsMap.put(getId(element), element);
+            } else {
+                checkedItemsMap.remove(getId(element));
+            }
 			return;
 		}
 
@@ -288,6 +289,17 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 			}
 		}
 	}
+	
+    private String getId(Object element) {
+        TestCaseEntity tctEntity = null;
+        try {
+            tctEntity = ((TestCaseTreeEntity) element).getObject();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return tctEntity == null ? "" : tctEntity.getId();
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -308,31 +320,11 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 	 * TreeEntitySelectionDialog#filterSearchedText()
 	 */
 	@Override
-	protected void filterSearchedText() {
-		super.filterSearchedText();
-		ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
-		treeViewer.setCheckedElements(checkedItems.toArray());
-	}
+    protected void filterSearchedText() {
+        super.filterSearchedText();
+        ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
+        treeViewer.setCheckedElements(checkedItemsMap.entrySet().stream().map(entry -> entry.getValue()).toArray());
+    }
 
-	/**
-	 * Get all added Test Case(s) in Test Suite
-	 * 
-	 * @param ids
-	 *            Entity ID list
-	 * @return Added Test Case(s)
-	 */
-	private Object[] getAddedTestCase(List<String> ids) {
-		List<TestCaseTreeEntity> testCaseList = new ArrayList<TestCaseTreeEntity>();
-		try {
-			TestCaseController c = TestCaseController.getInstance();
-			for (String id : ids) {
-				TestCaseEntity tc = c.getTestCase(id);
-				TestCaseTreeEntity tcTree = TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject());		
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return testCaseList.toArray();
-	}
 
 }
