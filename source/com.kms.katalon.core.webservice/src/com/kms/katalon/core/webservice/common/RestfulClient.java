@@ -1,47 +1,69 @@
 package com.kms.katalon.core.webservice.common;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.message.BasicHeaderElementIterator;
 
+import com.google.common.net.MediaType;
+import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
+import com.kms.katalon.util.URLBuilder;
+import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestfulClient extends BasicRequestor {
 
     private static final String TLS = "TLS";
 
     private static final String HTTPS = RequestHeaderConstants.HTTPS;
+    
+    private static final int MAX_REDIRECTS = 5;
     
     public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
         super(projectDir, proxyInfomation);
@@ -108,7 +130,7 @@ public class RestfulClient extends BasicRequestor {
             }
         });
         
-        BaseHttpRequest httpRequest = buildHttpRequest(request);
+        BaseHttpRequest httpRequest = getHttpRequest(request);
 
         CloseableHttpClient httpClient = clientBuilder.build();
         
@@ -121,38 +143,39 @@ public class RestfulClient extends BasicRequestor {
 
         return responseObject;
     }
+
+    private static boolean isBodySupported(String requestMethod) {
+        return RestRequestMethodHelper.isBodySupported(requestMethod);
+    }
+
+    private static void setRequestMethod(CustomHttpMethodRequest httpRequest, String method) {
+        httpRequest.setMethod(method);
+    }
     
-    private static BaseHttpRequest buildHttpRequest(RequestObject requestObject) throws UnsupportedOperationException, IOException {
+    private static BaseHttpRequest getHttpRequest(RequestObject request) throws UnsupportedOperationException, IOException {
         BaseHttpRequest httpRequest;
-        String url = requestObject.getRestUrl();
-        if (requestObject.getBodyContent() != null) {
-            httpRequest = buildHttpRequestWithBody(requestObject);
+        String url = request.getRestUrl();
+        if (isBodySupported(request.getRestRequestMethod()) && request.getBodyContent() != null) {
+            httpRequest = new DefaultHttpEntityEnclosingRequest(url);
+            ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+            request.getBodyContent().writeTo(outstream);
+            byte[] bytes = outstream.toByteArray();
+            ByteArrayEntity entity = new ByteArrayEntity(bytes);
+            entity.setChunked(false);
+            ((DefaultHttpEntityEnclosingRequest) httpRequest)
+                    .setEntity(entity);
         } else {
             httpRequest = new DefaultHttpRequest(url);
         }
 
-        setRequestMethod(httpRequest, requestObject);
+        setRequestMethod(httpRequest, request.getRestRequestMethod());
 
         return httpRequest;
     }
 
-    private static BaseHttpRequest buildHttpRequestWithBody(RequestObject request) throws IOException {
-        String url = request.getRestUrl();
-        BaseHttpRequest httpRequest = new DefaultHttpEntityEnclosingRequest(url);
-        
-        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-        request.getBodyContent().writeTo(outstream);
-        byte[] bytes = outstream.toByteArray();
-        ByteArrayEntity entity = new ByteArrayEntity(bytes);
-        entity.setChunked(false);
-        ((DefaultHttpEntityEnclosingRequest) httpRequest).setEntity(entity);
-        
-        return httpRequest;
-    }
-    
-    private static void setRequestMethod(CustomHttpMethodRequest httpRequest, RequestObject requestObject) {
-        String method = requestObject.getRestRequestMethod();
-        httpRequest.setMethod(method);
+    private static String escapeUrl(String url) throws MalformedURLException {
+        String escapedUrl = UrlEscapers.urlFragmentEscaper().escape(url);
+        return escapedUrl;
     }
 
     public static void processRequestParams(RequestObject request) throws MalformedURLException {

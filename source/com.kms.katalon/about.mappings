@@ -1,8 +1,4 @@
 0=${buildNumber}
-<<<<<<< HEAD
-1=7.3.2
-=======
 1=7.4.0
->>>>>>> release-7.4.0
 2=${build.profile}
 3=internal
