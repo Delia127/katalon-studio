@@ -325,14 +325,14 @@ stages:
     - bash: |
         set -xe
         katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
-        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome" --config -autoUpdateWebdrivers=true
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome" --config -webui.autoUpdateDrivers=true
       displayName: Run Web UI Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
     - bash: |
         set -xe
         katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
-        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/calculator-bdd-tests/demo.prj" -testSuitePath="Test Suites/Verify Operations" -executionProfile="default" -browserType="Chrome" --config -autoUpdateWebdrivers=true
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/calculator-bdd-tests/demo.prj" -testSuitePath="Test Suites/Verify Operations" -executionProfile="default" -browserType="Chrome" --config -webui.autoUpdateDrivers=true
       displayName: Run BDD Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
