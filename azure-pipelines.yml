@@ -239,17 +239,17 @@ stages:
         echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
       displayName: Set up
 
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: |
-          $theurl = "http://dl.google.com/edgedl/chrome/install/GoogleChromeStandaloneEnterprise64.msi"
-          mkdir c:\tmp
-          $output = "c:\tmp\chrome.msi"
-          Invoke-WebRequest -Uri $theurl -OutFile $output -ErrorAction SilentlyContinue
-          msiexec /q /i c:\tmp\chrome.msi
-          start-sleep -Seconds 300 # sleep for 5 mins just to allow updates to be processed 
-          Remove-Item -Path c:\tmp\chrome.msi –Force
+    # - task: PowerShell@2
+    #   inputs:
+    #     targetType: 'inline'
+    #     script: |
+    #       $theurl = "http://dl.google.com/edgedl/chrome/install/GoogleChromeStandaloneEnterprise64.msi"
+    #       mkdir c:\tmp
+    #       $output = "c:\tmp\chrome.msi"
+    #       Invoke-WebRequest -Uri $theurl -OutFile $output -ErrorAction SilentlyContinue
+    #       msiexec /q /i c:\tmp\chrome.msi
+    #       start-sleep -Seconds 300 # sleep for 5 mins just to allow updates to be processed 
+    #       Remove-Item -Path c:\tmp\chrome.msi –Force
 
     - checkout: WindowTest
       fetchDepth: 1
@@ -325,14 +325,14 @@ stages:
     - bash: |
         set -xe
         katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
-        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome"
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/web-samples/web-samples.prj" -testSuitePath="Test Suites/WebUI Builtin Keywords Test" -executionProfile="default" -browserType="Chrome" --config -webui.autoUpdateDrivers=true
       displayName: Run Web UI Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
     - bash: |
         set -xe
         katalonc="${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}/katalonc"
-        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/calculator-bdd-tests/demo.prj" -testSuitePath="Test Suites/Verify Operations" -executionProfile="default" -browserType="Chrome"
+        "$katalonc" -noSplash -runMode=console -retry=0 -apiKey="f3238a54-e902-4dd0-8122-c15933ffad19" -projectPath="${WORK_DIR}/calculator-bdd-tests/demo.prj" -testSuitePath="Test Suites/Verify Operations" -executionProfile="default" -browserType="Chrome" --config -webui.autoUpdateDrivers=true
       displayName: Run BDD Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
