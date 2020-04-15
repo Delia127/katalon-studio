@@ -107,18 +107,17 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
-                // Use pre-computed test case bindings for rerunTestCaseTestData setting
+                // Get and use the prepared test case bindings for rerunFailedTestCaseTestData
                 TestSuiteExecutedEntity t = (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity();
                 String currentFailedTcBindings = additionalData
-                        .getOrDefault(RunConfiguration.CURRENT_FAILED_TC_BINDINGS, StringUtils.EMPTY);
-                
+                        .getOrDefault(RunConfiguration.TC_BINDINGS_OF_FAILED_TEST_CASES, StringUtils.EMPTY);
                 if (!StringUtils.EMPTY.equals(currentFailedTcBindings)
                         && t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
                     return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
                             (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
                                     .generateScriptFile(currentFailedTcBindings);
-
                 }
+                // Recalculate the test case bindings for rerunFailedTestCase
                 return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
                         (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
 

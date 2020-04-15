@@ -52,6 +52,23 @@ public class TestSuiteScriptGenerator {
         return generateScriptFile("");
     }
 
+    /**
+     * Generate the testCaseBinding file which contains rows
+     * of Test Case + its Variable Bindings from Test Data. 
+     * 
+     * <p>This file will be used for data-driven testing.</p>
+     * 
+     * <p>
+     * If given a non-empty string,
+     * it will be written to the file, otherwise the content will
+     * be computed based on Test Suite's list of test cases, test case variables,
+     * test data and the combination types (ONE, MANY, etc)
+     * </p>
+     * 
+     * @param tcBindings
+     * @return
+     * @throws Exception
+     */
     public File generateScriptFile(String tcBindings) throws Exception {
         IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(testSuite.getProject());
         File file = new File(libFolder.getRawLocation().toString(),

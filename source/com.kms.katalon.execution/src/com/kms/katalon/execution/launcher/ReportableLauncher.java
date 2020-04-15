@@ -154,9 +154,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteEntity testSuite = getTestSuite();
 
-            String strFailedTcBindings = readCurrentTestCaseBindings();
+            // Prepare and store test case bindings for rerunFailedTestCaseTestData
+            String strFailedTcBindings = getTestCaseBindingsOfFailedTestCases();
             Map<String, String> currentFailedTcBindings = new HashMap<String, String>();
-            currentFailedTcBindings.put(RunConfiguration.CURRENT_FAILED_TC_BINDINGS, strFailedTcBindings);
+            currentFailedTcBindings.put(RunConfiguration.TC_BINDINGS_OF_FAILED_TEST_CASES, strFailedTcBindings);
 
             try {
                 IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil
@@ -184,7 +185,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
     
-    private String readCurrentTestCaseBindings() {
+    /**
+     * @return The lines in testCaseBiding file where the associated test cases failed
+     */
+    private String getTestCaseBindingsOfFailedTestCases() {
         File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
         try {
             List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);

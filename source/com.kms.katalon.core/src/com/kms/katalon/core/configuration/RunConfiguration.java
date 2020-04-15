@@ -122,7 +122,7 @@ public class RunConfiguration {
     
     public static final String VM_ARGUMENTS = "vmArguments";
     
-    public static final String CURRENT_FAILED_TC_BINDINGS = "currentFailedTcBindings";
+    public static final String TC_BINDINGS_OF_FAILED_TEST_CASES = "currentFailedTcBindings";
     
     private static String settingFilePath;
 
