@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.codehaus.groovy.eclipse.refactoring.actions.FormatGroovyAction;
+import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -51,7 +52,8 @@ public class OpenKeywordHandler {
             public void handleEvent(Event event) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof ICompilationUnit
-                        && ((ICompilationUnit) object).getElementName().endsWith(GroovyConstants.GROOVY_FILE_EXTENSION)) {
+                        && (((ICompilationUnit) object).getElementName().endsWith(GroovyConstants.GROOVY_FILE_EXTENSION)
+                                || ((ICompilationUnit) object).getElementName().endsWith(GroovyConstants.JAVA_FILE_EXTENSION))) {
                     excute((ICompilationUnit) object);
                 }
             }
@@ -76,8 +78,10 @@ public class OpenKeywordHandler {
                  desc.getImageDescriptor().createFromImage(ImageConstants.IMG_16_KEYWORD);
                  ITextEditor editor = (ITextEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
                  .openEditor(new FileEditorInput(iFile), desc.getId());
-                 if (editor != null) {
-                     formatEditor(editor);
+                 if (keywordFile instanceof GroovyCompilationUnit) {
+                     if (editor != null) {
+                         formatEditor(editor);
+                     }
                  }
                  if (isKeywordFile(iFile)) {
                      Trackings.trackOpenObject("keyword");

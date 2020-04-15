@@ -243,7 +243,10 @@ public class TestCasePropertiesPart extends CPart {
     }
 
     private String getComments() {
-        return join(parentPart.getChildTestCasePart().getCommentSteps(), "\n");
+        if (parentPart.getChildTestCasePart() != null) {
+            return join(parentPart.getChildTestCasePart().getCommentSteps(), "\n");
+        }
+        return StringUtils.EMPTY;
     }
 
     public MPart getMPart() {

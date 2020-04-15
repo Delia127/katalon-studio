@@ -44,6 +44,8 @@ public class ComposerKeywordMessageConstants extends NLS {
     public static String DIA_MSG_RENAME_KEYWORD;
 
     public static String DIA_MSG_CREATE_KEYWORD;
+    
+    public static String DIA_MSG_CREATE_JAVA_CLASS;
 
     public static String DIA_TITLE_PACKAGE_SELECTION;
 

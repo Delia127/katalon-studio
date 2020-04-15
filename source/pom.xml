@@ -61,6 +61,7 @@
 		<module>com.kms.katalon.core.webui</module>
 		<module>com.kms.katalon.core.cucumber</module>
 		<module>com.kms.katalon.core.windows</module>
+		<module>com.kms.katalon.core.testng</module>
 		<module>com.kms.katalon.core</module>
 		<module>com.kms.katalon.custom</module>
 		<module>com.kms.katalon.dal.file</module>

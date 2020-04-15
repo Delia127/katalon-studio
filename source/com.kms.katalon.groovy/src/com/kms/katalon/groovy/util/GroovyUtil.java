@@ -680,8 +680,8 @@ public class GroovyUtil {
         packageFragment.getResource().refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
         List<ICompilationUnit> groovyClassFiles = new ArrayList<>();
         for (IJavaElement javaElement : packageFragment.getChildren()) {
-            if (javaElement instanceof GroovyCompilationUnit) {
-                groovyClassFiles.add((GroovyCompilationUnit) javaElement);
+            if (javaElement instanceof org.eclipse.jdt.internal.core.CompilationUnit) {
+                groovyClassFiles.add((org.eclipse.jdt.internal.core.CompilationUnit) javaElement);
             }
         }
         return groovyClassFiles;
@@ -743,18 +743,19 @@ public class GroovyUtil {
         packageFragment.copy(packageFragmentRoot, null, newName, false, null);
     }
 
-    public static void copyKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
+    public static void copyKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName, String extension)
             throws JavaModelException {
-        GroovyCompilationUnit compilationUnit = (GroovyCompilationUnit) JavaCore.create(keywordFile);
+        ICompilationUnit compilationUnit = (ICompilationUnit) JavaCore.create(keywordFile);
         compilationUnit.copy(targetPackageFragment, null,
-                newName != null ? newName + GroovyConstants.GROOVY_FILE_EXTENSION : newName, false, null);
+                newName != null ? newName + "." + extension : newName, false, null);
     }
 
-    public static void moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
+    public static void moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName, 
+            String extension)
             throws JavaModelException {
         GroovyCompilationUnit compilationUnit = (GroovyCompilationUnit) JavaCore.create(keywordFile);
         compilationUnit.move(targetPackageFragment, null,
-                newName != null ? newName + GroovyConstants.GROOVY_FILE_EXTENSION : newName, false, null);
+                newName != null ? newName + "." + extension : newName, false, null);
     }
 
     public static String getGroovyClassName(TestCaseEntity testCase) {
