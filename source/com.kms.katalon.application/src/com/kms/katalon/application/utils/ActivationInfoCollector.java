@@ -555,8 +555,8 @@ public class ActivationInfoCollector {
             
             String activationCode = validActivationCodes.stream().findFirst().get();
             return activateOffline(activationCode, errorMessage, RunningMode.CONSOLE);
-        } catch (Exception e) {
-            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
+        } catch (Exception error) {
+            LogUtil.printAndLogError(error, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
             return false;
         }
     }
