@@ -1,0 +1,19 @@
+[
+{
+	"id" : "1",
+	"startDate" : 21,
+	"endDate" : 29,
+	"message": "Your trial is about to expire.\n<a href=\"https://www.katalon.com/pricing/\">Upgrade to ensure your business continuity!</a>"
+},
+{
+	"id" : "2",
+	"startDate" : 30,
+    "endDate" : 30,
+	"message": "Your Enterprise trial expires today.\n<a href=\"https://www.katalon.com/pricing/\">Don't let your workflow get disrupted!</a>"
+},
+{
+	"id" : "3",
+	"startDate" : 31,
+	"message": "Your Enterprise trial has expired. You are using the community Katalon Studio license with limitations of features and support.\n<a href=\"https://www.katalon.com/pricing/\">Don't let your workflow get disrupted!</a>"
+}
+]

@@ -51,13 +51,11 @@ public class OpenGlobalVariableHandler {
     }
 
     protected void execute(ExecutionProfileEntity profileEntity) {
-    	boolean alreadyOpened = false;
         try {
             MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
             if (stack != null) {
                 String globalVariablePartId = getPartId(profileEntity);
                 MPart globalVariablePart = (MPart) modelService.find(globalVariablePartId, application);
-                alreadyOpened = globalVariablePart != null;
                 if (globalVariablePart == null) {
                 	ExecutionProfilePartUI.create(profileEntity, stack);
                 } else {
@@ -68,9 +66,7 @@ public class OpenGlobalVariableHandler {
             LoggerSingleton.logError(e);
         }
         
-        if (!alreadyOpened) {
-            Trackings.trackOpenObject("profile");
-        }
+        Trackings.trackOpenObject("profile");
     }
 
     public String getPartId(ExecutionProfileEntity executionProfile) {

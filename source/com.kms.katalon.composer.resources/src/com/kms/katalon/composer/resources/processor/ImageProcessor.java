@@ -251,6 +251,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.KEYWORD_16);
         ImageManager.registerImage(IImageKeys.PROFILE_FOLDER_ENTITY_16);
         ImageManager.registerImage(IImageKeys.PROFILE_ENTITY_16);
+        ImageManager.registerImage(IImageKeys.DEFAULT_PROFILE_ENTITY_16);
         ImageManager.registerImage(IImageKeys.FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
@@ -313,6 +314,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.KATALON_CHAT_24);
         ImageManager.registerImage(IImageKeys.KATALON_TWEETABOUTUS_24);
         ImageManager.registerImage(IImageKeys.KATALON_FEEDBACK_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_1_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_2_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_3_24);
 
         // Toolbar disabled icons
         ImageManager.registerImage(IImageKeys.BUG_DISABLED_24);

@@ -615,6 +615,32 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void click(TestObject to) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "click", to)
     }
+    
+    /**
+     * Click on the given element using various trial-and-error methods
+     * @param to
+     *       represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void enhancedClick(TestObject to, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "enhancedClick", to, flowControl)
+    }
+
+    /**
+     * Click on the given element using various trial-and-error methods
+     * @param to
+     *       represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void enhancedClick(TestObject to) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "enhancedClick", to)
+    }
 
     /**
      * Click on the given element with the relative position (x, y) from the top-left corner of that element

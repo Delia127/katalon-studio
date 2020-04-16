@@ -13,6 +13,8 @@ Require-Bundle: com.katalon.platform,
  com.fasterxml.jackson.core.jackson-databind,
  org.eclipse.core.runtime,
  com.fasterxml.jackson.core.jackson-core,
- com.kms.katalon.constant
+ com.kms.katalon.constant,
+ com.kms.katalon.application,
+ com.kms.katalon.composer.components.impl
 Bundle-ClassPath: resources/,
  .

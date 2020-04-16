@@ -260,6 +260,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE;
     
     public static String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
+
+    public static String MSG_REQUEST_BODY_NO_CONTENT;
     
     public static String DIA_TITLE_TEST_CASE_BROWSER;
     
@@ -294,6 +296,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String DiaEditWSMethod_TITLE_EDIT;
     
     public static String CB_FOLLOW_REDIRECTS; 
+    
+    public static String PREF_WARN_CLIENT_CERT;
     
     static {
         // initialize resource bundle

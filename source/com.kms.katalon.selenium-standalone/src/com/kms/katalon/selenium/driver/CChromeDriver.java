@@ -11,7 +11,7 @@ public class CChromeDriver extends ChromeDriver implements IDelayableDriver {
 
     public CChromeDriver(Capabilities capabilities, int actionDelay) {
         super(capabilities);
-        this.actionDelayInMiliseconds = actionDelay * 1000;
+        this.actionDelayInMiliseconds = actionDelay;
     }
 
     @Override

@@ -65,8 +65,10 @@ import org.eclipse.ui.IWorkingSet;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.integration.git.components.utils.Protocol;
 import com.kms.katalon.composer.integration.git.constants.GitEventConstants;
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class CustomGitCloneWizard extends Wizard {
@@ -481,6 +483,7 @@ public class CustomGitCloneWizard extends Wizard {
                 SecureStoreUtils.storeCredentials(repositoryInfo.getCredentials(),
                         new URIish(repositoryInfo.getCloneUri()));
             }
+            trackCloneOperation(repositoryInfo.getCloneUri());
         } catch (InterruptedException e) {
             // User cancel, ignore this
             return Status.CANCEL_STATUS;
@@ -496,6 +499,13 @@ public class CustomGitCloneWizard extends Wizard {
             });
         }
         return Status.OK_STATUS;
+    }
+    
+    private void trackCloneOperation(String uri) {
+        try {
+            String protocol = Protocol.fromUri(new URIish(uri)).getDefaultScheme();
+            Trackings.trackGitOperation("clone", protocol);
+        } catch (Exception ignored) {}
     }
 
     /**

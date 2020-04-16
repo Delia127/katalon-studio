@@ -12,6 +12,8 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -25,6 +27,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewFilteringTestSuiteHandler {
@@ -47,6 +50,11 @@ public class NewFilteringTestSuiteHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
         try {
+            if (LicenseUtil.isFreeLicense()) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.DYNAMIC_TEST_SUITE);
+                return;
+            }
+            
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             ITreeEntity parentTreeEntity = NewTestSuiteHandler.findParentTreeEntity(selectedObjects);
             if (parentTreeEntity == null) {

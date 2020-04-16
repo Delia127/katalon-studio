@@ -181,13 +181,11 @@ public class ObjectRepository {
     }
     
     public static WindowsTestObject findWindowsObject(final String windowsObjectRelativeId) {
-    	String windowsObjectId = getTestObjectId(windowsObjectRelativeId);
-        File objectFile = new File(RunConfiguration.getProjectDir(), windowsObjectId + ".wrs");
-        return WindowsObjectRepository.readWindowsTestObjectFile(windowsObjectId, objectFile, RunConfiguration.getProjectDir(), Collections.emptyMap());
+        return findWindowsObject(windowsObjectRelativeId, Collections.emptyMap());
     }
-
+    
     public static WindowsTestObject findWindowsObject(final String windowsObjectRelativeId, Map<String, Object> variables) {
-    	String windowsObjectId = getTestObjectId(windowsObjectRelativeId);
+        String windowsObjectId = getTestObjectId(windowsObjectRelativeId);
         File objectFile = new File(RunConfiguration.getProjectDir(), windowsObjectId + ".wrs");
         return WindowsObjectRepository.readWindowsTestObjectFile(windowsObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
     }
@@ -388,7 +386,6 @@ public class ObjectRepository {
             mergedVariables.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
         } catch (ClassNotFoundException | ResourceException | ScriptException | IOException e) {
         }
-
         
         StrSubstitutor substitutor = new StrSubstitutor(mergedVariables);
         if ("SOAP".equals(serviceType)) {
@@ -406,16 +403,17 @@ public class ObjectRepository {
             requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
             requestObject
                     .setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
-            requestObject.setHttpBody(reqElement.elementText("httpBody"));
+//            requestObject.setHttpBody(reqElement.elementText("httpBody"));
 
             String httpBodyType = reqElement.elementText("httpBodyType");
-            if (StringUtils.isBlank(httpBodyType)) {
+            String oldVersionBodyContent = reqElement.elementText("httpBody");
+            if (StringUtils.isNotBlank(oldVersionBodyContent)) {
                 // migrated from 5.3.1 (KAT-3200)
                 httpBodyType = "text";
                 String body = reqElement.elementText("httpBody");
                 HttpTextBodyContent httpBodyContent = new HttpTextBodyContent(body);
                 requestObject.setBodyContent(httpBodyContent);
-            } else if (isBodySupported(requestObject)) {
+            } else if (StringUtils.isNotBlank(httpBodyType)) {
                 String httpBodyContent = reqElement.elementText("httpBodyContent");
                 HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
                         projectDir, substitutor);

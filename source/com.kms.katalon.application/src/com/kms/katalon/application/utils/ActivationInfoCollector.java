@@ -2,9 +2,7 @@ package com.kms.katalon.application.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,19 +27,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.amazonaws.util.EC2MetadataUtils;
-import com.amazonaws.util.IOUtils;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.preference.ProxyPreferences;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.TestOpsFeatureKey;
@@ -55,8 +50,6 @@ import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationInfoCollector {
-
-    private static final String URL_KATALON_AMI_ID = "https://download.katalon.com/ami-id.json";
     
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
@@ -924,30 +917,25 @@ public class ActivationInfoCollector {
 
     public static boolean getAndCheckAmiMachine() {
         try {
-            String amiID = EC2MetadataUtils.getAmiId();
-            if (StringUtils.isEmpty(amiID)) {
+            List<String> productCodes = EC2MetadataUtils.getProductCodes();
+            if (productCodes == null) {
                 return false;
             }
 
-            String userName = System.getProperty("user.name");
-            String machineIdOfAmi = amiID + "-" + userName;
+            AwsKatalonAmi awsKatalonAmi = AwsKatalonUtil.getAwsKatalonAmi();
+            if (awsKatalonAmi == null) {
+                return false;
+            }
 
-            if (StringUtils.isNotEmpty(machineIdOfAmi)) {
-                URL url = new URL(URL_KATALON_AMI_ID);
-                InputStream is = null;
-                is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
-                String responseBody = IOUtils.toString(is);
-                AwsKatalonAmi awsKatalonAmi = JsonUtil.fromJson(responseBody, AwsKatalonAmi.class);
-
-                if (awsKatalonAmi.getAmiIds().contains(machineIdOfAmi)) {
-                    RunningMode runMode = ApplicationRunningMode.get();
-                    if (runMode == RunningMode.GUI) {
-                        amiLicense = awsKatalonAmi.getKseLicense();
-                    } else {
-                        amiLicense = awsKatalonAmi.getReLicense();
-                    }
-                    return true;
+            productCodes.retainAll(awsKatalonAmi.getAmiIds());
+            if (productCodes.size() > 0) {
+                RunningMode runMode = ApplicationRunningMode.get();
+                if (runMode == RunningMode.GUI) {
+                    amiLicense = awsKatalonAmi.getKseLicense();
+                } else {
+                    amiLicense = awsKatalonAmi.getReLicense();
                 }
+                return true;
             }
         } catch (Exception e) {
             LogUtil.logError(e);

@@ -97,6 +97,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     public static String PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT;
     
+    public static String PREF_LBL_ACTION_DELAY_IN_SECONDS;
+    
+    public static String PREF_LBL_ACTION_DELAY_IN_MILISECONDS;
+    
     public static String PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION;
 
     public static String PREF_GRP_POST_EXECUTION_OPTIONS;
@@ -368,6 +372,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
     
     public static String REPORT_MSG_MUST_ENTER_API_KEY;
+    
+    public static String MSG_WARN_VM_ARGUMENTS;
 
     static {
         // initialize resource bundle

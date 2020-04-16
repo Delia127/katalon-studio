@@ -41,7 +41,7 @@ public class WSDLParserUtil {
 								
 								WSDLHelper helper = WSDLHelper.newInstance(url, null);
 								String location = getLocation(wsdlHelperInstance);
-
+								
 								for(Object objOperationName: SafeUtils.safeList(operationNames)){
 									if(objOperationName != null){
 										String operationName = (String) objOperationName;
@@ -79,25 +79,25 @@ public class WSDLParserUtil {
 			return newWSTestObjects;
 
 	}
-	
-    public static String getLocation(WSDLHelper wsdlHelperInstance) throws WSDLException {
-        String location = null;
-        String definition = wsdlHelperInstance.getDefinition().toString();
-        if (definition != null) {
-            String[] lines = definition.split("\n");
-            for (String line : lines) {
-                if (line.contains("locationURI=")) {
-                    String[] locationURI = line.split("locationURI=");
-                    location = locationURI[1];
-                }
-            }
-        }
-        if (!location.contains("?wsdl")) {
-            location = location + "?wsdl";
-        }
-        return location;
-    }
 
+	 public static String getLocation(WSDLHelper wsdlHelperInstance) throws WSDLException {
+	        String location = null;
+	        String definition = wsdlHelperInstance.getDefinition().toString();
+	        if (definition != null) {
+	            String[] lines = definition.split("\n");
+	            for (String line : lines) {
+	                if (line.contains("locationURI=")) {
+	                    String[] locationURI = line.split("locationURI=");
+	                    location = locationURI[1];
+	                }
+	            }
+	        }
+	        if (!location.contains("?wsdl")) {
+	            location = location + "?wsdl";
+	        }
+	        return location;
+	    }
+	
 	public static List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(String requestMethod, String directory) 
 			throws InvocationTargetException, InterruptedException, WSDLException {
         List<WebServiceRequestEntity> newWSTestObjects = WSDLParserUtil.parseFromFileLocationToWSTestObject(requestMethod, directory);

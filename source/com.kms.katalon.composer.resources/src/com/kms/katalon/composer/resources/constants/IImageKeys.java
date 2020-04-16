@@ -333,6 +333,14 @@ public interface IImageKeys {
     public static final String KATALON_TWEETABOUTUS_24 = "toolbar/tweetaboutus_24.png";//$NON-NLS-1$
     
     public static final String KATALON_FEEDBACK_24 = "toolbar/Feedback_24PX.png";//$NON-NLS-1$
+    
+    public static final String KATALON_NOTIFICATION_24 = "toolbar/noti_blue_32x24.png";//$NON-NLS-1$
+    
+    public static final String KATALON_NOTIFICATION_UNREAD_1_24 = "toolbar/noti_blue_01_32x24.png";//$NON-NLS-1$
+
+    public static final String KATALON_NOTIFICATION_UNREAD_2_24 = "toolbar/noti_blue_02_32x24.png";//$NON-NLS-1$
+
+    public static final String KATALON_NOTIFICATION_UNREAD_3_24 = "toolbar/noti_blue_02_32x24.png";//$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps
@@ -461,6 +469,8 @@ public interface IImageKeys {
     public static final String PROFILE_FOLDER_ENTITY_16 = "entity/profile_16.png"; //$NON-NLS-1$
     
     public static final String PROFILE_ENTITY_16 = "entity/entity_global_variable_16.png"; //$NON-NLS-1$
+    
+    public static final String DEFAULT_PROFILE_ENTITY_16 = "entity/entity_default_global_variable_16.png"; //$NON-NLS-1$
 
     public static final String FEATURE_16 = "entity/feature_16.png"; //$NON-NLS-1$
     

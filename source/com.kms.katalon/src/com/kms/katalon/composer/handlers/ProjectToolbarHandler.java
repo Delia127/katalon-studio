@@ -68,7 +68,7 @@ public class ProjectToolbarHandler {
                         webserviceToolbar.setToBeRendered(false);
                     }
                 }
-                showDebugToolitemForEnterpriseAccount();
+//                showDebugToolitemForEnterpriseAccount();
             }
         });
     }
