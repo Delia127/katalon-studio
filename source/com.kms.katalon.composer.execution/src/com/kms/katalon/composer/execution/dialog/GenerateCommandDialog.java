@@ -472,12 +472,13 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void setDefaultProfile() {
         try {
-            ExecutionProfileEntity defaultExecutionProfile = GlobalVariableController.getInstance()
-                    .getDefaultExecutionProfile(project);
             RunConfigurationDescription runConfigurationDescription = getStoredConfigurationDescription();
-            runConfigurationDescription.setProfileName(defaultExecutionProfile.getName());
 
             if (runConfigurationDescription != null) {
+                ExecutionProfileEntity defaultExecutionProfile = GlobalVariableController.getInstance()
+                        .getDefaultExecutionProfile(project);
+                runConfigurationDescription.setProfileName(defaultExecutionProfile.getName());
+
                 ScopedPreferenceStore prefs = getPreference();
                 prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION,
                         JsonUtil.toJson(runConfigurationDescription));
