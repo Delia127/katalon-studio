@@ -771,7 +771,7 @@ public class DriverFactory {
         logger.logRunData(StringConstants.XML_LOG_SELENIUM_VERSION, new BuildInfo().getReleaseLabel());
         
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        proxyInfo.setPassword(proxyInfo.getPassword().replaceAll(".", "*"));
+        proxyInfo.setPassword("******");
         logger.logRunData("proxyInformation", proxyInfo.toString());
     }
 
