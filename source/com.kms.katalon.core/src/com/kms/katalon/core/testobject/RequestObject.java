@@ -15,6 +15,10 @@ import com.kms.katalon.core.testobject.impl.HttpUrlEncodedBodyContent;
 
 public class RequestObject extends TestObject implements HttpMessage {
 
+    public static final int TIMEOUT_UNSET = -1;
+
+    public static final int DEFAULT_TIMEOUT = 0;
+
     private static final String DF_CHARSET = "UTF-8";
 
     private String name;
@@ -52,6 +56,10 @@ public class RequestObject extends TestObject implements HttpMessage {
     
     private int redirectTimes = 0;
     
+    private int connectionTimeout = TIMEOUT_UNSET;
+    
+    private int socketTimeout = TIMEOUT_UNSET;
+
     private ProxyInformation proxy;
 
     public RequestObject(String objectId) {
@@ -364,5 +372,35 @@ public class RequestObject extends TestObject implements HttpMessage {
      */
     public void setProxy(ProxyInformation proxy) {
         this.proxy = proxy;
+    }
+
+    /**
+     * Get the connection timeout of this request.
+     */
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    /**
+     * Set the connection timeout for this request.
+     * @param connectionTimeout The timeout in milliseconds
+     */
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    /**
+     * Get the socket timeout of this request.
+     */
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    /**
+     * Set the socket timeout for this request.
+     * @param socketTimeout The timeout in milliseconds
+     */
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
     }
 }

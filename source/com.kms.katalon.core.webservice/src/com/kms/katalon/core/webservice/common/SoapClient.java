@@ -3,6 +3,7 @@ package com.kms.katalon.core.webservice.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Proxy;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +39,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -62,6 +64,8 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.exception.WSConnectionTimeoutException;
+import com.kms.katalon.core.webservice.exception.WSSocketTimeoutException;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.util.WSDLUtil;
@@ -191,6 +195,8 @@ public class SoapClient extends BasicRequestor {
             clientBuilder.setRedirectStrategy(new WebServiceRedirectStrategy());
         }
         
+        configTimeout(clientBuilder, request);
+        
         clientBuilder.setConnectionManager(connectionManager);
         clientBuilder.setConnectionManagerShared(true);
         
@@ -245,7 +251,16 @@ public class SoapClient extends BasicRequestor {
         CloseableHttpClient httpClient = clientBuilder.build();
         
         long startTime = System.currentTimeMillis();
-        CloseableHttpResponse response = httpClient.execute(post, getHttpContext());
+
+        CloseableHttpResponse response;
+        try {
+            response = httpClient.execute(post, getHttpContext());
+        } catch (ConnectTimeoutException exception) {
+            throw new WSConnectionTimeoutException(exception);
+        } catch (SocketTimeoutException exception) {
+            throw new WSSocketTimeoutException(exception);
+        }
+
         int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         

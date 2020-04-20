@@ -3,6 +3,7 @@ package com.kms.katalon.entity.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class WebServiceRequestEntity extends WebElementEntity {
@@ -75,6 +76,10 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private String migratedVersion;
     
     private boolean followRedirects = false;
+    
+    private int connectionTimeout = RequestObject.TIMEOUT_UNSET;
+    
+    private int socketTimeout = RequestObject.TIMEOUT_UNSET;
     
     private List<VariableEntity> variables = new ArrayList<>();
 
@@ -229,6 +234,22 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public void setFollowRedirects(boolean followRedirects) {
         this.followRedirects = followRedirects;
+    }
+
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
     }
 
     @Override

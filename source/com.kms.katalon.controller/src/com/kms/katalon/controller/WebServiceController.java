@@ -1,19 +1,13 @@
 package com.kms.katalon.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 
 import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
@@ -24,8 +18,6 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
-import com.kms.katalon.core.util.BrowserMobProxyManager;
-import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -33,8 +25,6 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
-
-import groovy.text.GStringTemplateEngine;
 
 public class WebServiceController extends EntityController {
 
@@ -61,6 +51,9 @@ public class WebServiceController extends EntityController {
         
         requestObject.setName(entity.getName());
         StrSubstitutor substitutor = new StrSubstitutor(variables);
+        
+        requestObject.setConnectionTimeout(entity.getConnectionTimeout());
+        requestObject.setSocketTimeout(entity.getSocketTimeout());
         
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(substitutor.replace(entity.getWsdlAddress()));

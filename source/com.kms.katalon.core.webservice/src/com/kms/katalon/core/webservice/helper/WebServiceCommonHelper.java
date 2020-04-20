@@ -1,16 +1,19 @@
 package com.kms.katalon.core.webservice.helper;
 
 import java.net.HttpURLConnection;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.webservice.common.ServiceRequestFactory;
 import com.kms.katalon.core.webservice.constants.StringConstants;
+import com.kms.katalon.core.webservice.util.WebServiceCommonUtil;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -18,6 +21,39 @@ import groovy.lang.GroovyShell;
 public class WebServiceCommonHelper {
 	
     private static final KeywordLogger logger = KeywordLogger.getInstance(WebServiceCommonHelper.class);
+
+    public static ResponseObject sendRequest(RequestObject request) throws Exception {
+        configRequestTimeout(request);
+        ResponseObject responseObject = ServiceRequestFactory.getInstance(request).send(request);
+        return responseObject;
+    }
+    
+    private static void configRequestTimeout(RequestObject request) {
+        if (RunConfiguration.canCustomizeRequestTimeout()) {
+            Map<String, Object> executionSettings = RunConfiguration.getExecutionGeneralProperties();
+
+            if (WebServiceCommonUtil.isUnsetRequestTimeout(request.getConnectionTimeout())) {
+                Object connectionTimeout = executionSettings.get(RunConfiguration.REQUEST_CONNECTION_TIMEOUT);
+                if (connectionTimeout != null) {
+                    int validConnectionTimeout = WebServiceCommonUtil
+                            .getValidRequestTimeout(((Number) connectionTimeout).intValue());
+                    request.setConnectionTimeout(validConnectionTimeout);
+                }
+            }
+
+            if (WebServiceCommonUtil.isUnsetRequestTimeout(request.getSocketTimeout())) {
+                Object socketTimeout = executionSettings.get(RunConfiguration.REQUEST_SOCKET_TIMEOUT);
+                if (socketTimeout != null) {
+                    int validSocketTimeout = WebServiceCommonUtil
+                            .getValidRequestTimeout(((Number) socketTimeout).intValue());
+                    request.setSocketTimeout(validSocketTimeout);
+                }
+            }
+        } else {
+            request.setConnectionTimeout(RequestObject.TIMEOUT_UNSET);
+            request.setSocketTimeout(RequestObject.TIMEOUT_UNSET);
+        }
+    }
 
 	public static void checkRequestObject(RequestObject requestObject) throws IllegalArgumentException {
 	    logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_REQUEST_OBJECT);

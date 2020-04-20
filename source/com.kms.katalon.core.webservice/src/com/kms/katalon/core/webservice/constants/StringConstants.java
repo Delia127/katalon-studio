@@ -59,4 +59,9 @@ public class StringConstants {
     public static final String KW_LOG_VERIFICATION_STEP_FAILED_BECAUSE_OF_ERROR = CoreWebserviceMessageConstants.KW_LOG_VERIFICATION_STEP_FAILED_BECAUSE_OF_ERROR;
     
     public static final String KW_LOG_VERIFICATION_STEP_PASSED = CoreWebserviceMessageConstants.KW_LOG_VERIFICATION_STEP_PASSED;
+    
+    // Exception Messages
+    public static final String MSG_CONNECTION_TIMEOUT_EXCEPTION = CoreWebserviceMessageConstants.MSG_CONNECTION_TIMEOUT_EXCEPTION;
+
+    public static final String MSG_SOCKET_TIMEOUT_EXCEPTION = CoreWebserviceMessageConstants.MSG_SOCKET_TIMEOUT_EXCEPTION;
 }

@@ -1,49 +1,36 @@
 package com.kms.katalon.core.webservice.common;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Proxy;
+import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.security.GeneralSecurityException;
 
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
-import org.apache.http.message.BasicHeaderElementIterator;
 
-import com.google.common.net.MediaType;
 import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
@@ -51,11 +38,11 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.exception.WSConnectionTimeoutException;
+import com.kms.katalon.core.webservice.exception.WSSocketTimeoutException;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
-import com.kms.katalon.util.URLBuilder;
-import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestfulClient extends BasicRequestor {
 
@@ -84,6 +71,8 @@ public class RestfulClient extends BasicRequestor {
         } else {
             clientBuilder.setRedirectStrategy(new WebServiceRedirectStrategy());
         }
+        
+        configTimeout(clientBuilder, request);
         
         clientBuilder.setConnectionManager(connectionManager);
         clientBuilder.setConnectionManagerShared(true);
@@ -204,7 +193,16 @@ public class RestfulClient extends BasicRequestor {
         }
         
         long startTime = System.currentTimeMillis();
-        CloseableHttpResponse response = httpClient.execute(httpRequest, getHttpContext());
+
+        CloseableHttpResponse response;
+        try {
+            response = httpClient.execute(httpRequest, getHttpContext());
+        } catch (ConnectTimeoutException exception) {
+            throw new WSConnectionTimeoutException(exception);
+        } catch (SocketTimeoutException exception) {
+            throw new WSSocketTimeoutException(exception);
+        }
+
         int statusCode = response.getStatusLine().getStatusCode();
         long waitingTime = System.currentTimeMillis() - startTime;
         long contentDownloadTime = 0L;

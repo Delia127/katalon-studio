@@ -41,8 +41,10 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -64,6 +66,7 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
@@ -180,6 +183,8 @@ public class RestServicePart extends WebServicePart {
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
                         
+                        configRequest(requestEntity);
+                        
                         Map<String, Object> evaluatedVariables = evaluateRequestVariables();
                         
                         HarLogger harLogger = new HarLogger();
@@ -282,7 +287,6 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void createParamsComposite(Composite parent) {
-        createCustomizeApiMethodsLink(parent);
         ExpandableComposite paramsExpandableComposite = new ExpandableComposite(parent, StringConstants.PA_LBL_PARAMS,
                 1, true);
         Composite paramsComposite = paramsExpandableComposite.createControl();
@@ -314,19 +318,41 @@ public class RestServicePart extends WebServicePart {
             }
         });
     }
-    
+
+    @Override
+    protected Composite createRequestOptionsComposite(Composite parent) {
+        Composite requestOptionsComposite = super.createRequestOptionsComposite(parent);
+        createCustomizeApiMethodsLink(requestOptionsComposite);
+        createSetRequestTimeoutLink(requestOptionsComposite);
+
+        return requestOptionsComposite;
+    }
+
     private void createCustomizeApiMethodsLink(Composite parent) {
         Link lnkCustomizeApiMethods = new Link(parent, SWT.NONE);
-        lnkCustomizeApiMethods.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
         lnkCustomizeApiMethods.setText(StringConstants.LINK_CUSTOMIZE_API_METHODS);
         lnkCustomizeApiMethods.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,StringConstants.WEBSERVICE_METHOD_SETTING_PAGE);
+                eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE, StringConstants.WEBSERVICE_METHOD_SETTING_PAGE);
             }
         });
-        
-       
+    }
+
+    private void createSetRequestTimeoutLink(Composite parent) {
+        Link lnkSetTimeout = new Link(parent, SWT.NONE);
+        lnkSetTimeout.setText(StringConstants.LINK_SET_REQUEST_TIMEOUT_AND_LIMIT);
+        lnkSetTimeout.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (LicenseUtil.isNotFreeLicense()) {
+                    eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,
+                            StringConstants.EXECUTION_WEB_SERVICE_SETTING_PAGE_ID);
+                } else {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CUSTOM_WEB_SERVICE_REQUEST_TIMEOUT);
+                }
+            }
+        });
     }
 
     @Override

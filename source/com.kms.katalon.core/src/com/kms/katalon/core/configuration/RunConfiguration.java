@@ -119,6 +119,12 @@ public class RunConfiguration {
     public static final String ALLOW_IMAGE_RECOGNITION = "allowImageRecognition";
 
     public static final String IMAGE_RECOGNITION_ENABLED = "imageRecognitionEnabled";
+
+    public static final String ALLOW_CUSTOMIZE_REQUEST_TIMEOUT = "allowCustomizeRequestTimeout";
+
+    public static final String REQUEST_CONNECTION_TIMEOUT = "requestConnectionTimeout";
+
+    public static final String REQUEST_SOCKET_TIMEOUT = "requestSocketTimeout";
     
     public static final String VM_ARGUMENTS = "vmArguments";
     
@@ -591,5 +597,9 @@ public class RunConfiguration {
     public static boolean shouldApplyImageRecognition() {
         return Boolean.TRUE.equals(getProperty(ALLOW_IMAGE_RECOGNITION))
                 && Boolean.TRUE.equals(getExecutionGeneralProperties().getOrDefault(IMAGE_RECOGNITION_ENABLED, true));
+    }
+    
+    public static boolean canCustomizeRequestTimeout() {
+        return Boolean.TRUE.equals(getProperty(ALLOW_CUSTOMIZE_REQUEST_TIMEOUT));
     }
 }

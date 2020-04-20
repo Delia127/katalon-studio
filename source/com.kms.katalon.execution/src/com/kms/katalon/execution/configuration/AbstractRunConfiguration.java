@@ -221,6 +221,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         
         propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, LicenseUtil.isNotFreeLicense());
         
+        propertyMap.put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_TIMEOUT, LicenseUtil.isNotFreeLicense());
+        
         return propertyMap;
     }
     

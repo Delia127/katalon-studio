@@ -42,6 +42,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_URL = ComposerWebserviceMessageConstants.PA_LBL_URL;
     public static final String PA_LBL_REQ_METHOD = ComposerWebserviceMessageConstants.PA_LBL_REQ_METHOD;
     public static final String LINK_CUSTOMIZE_API_METHODS = ComposerWebserviceMessageConstants.LINK_CUSTOMIZE_API_METHODS;
+    public static final String LINK_SET_REQUEST_TIMEOUT_AND_LIMIT = ComposerWebserviceMessageConstants.LINK_SET_REQUEST_TIMEOUT_AND_LIMIT;
 
 	// SoapRequestObjectPart
     public static final String PA_TITLE_SOAP = ComposerWebserviceMessageConstants.PA_TITLE_SOAP;
@@ -115,4 +116,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DiaEditWSMethod_MSG_DUPLICATED_METHOD_NAME = ComposerWebserviceMessageConstants.DiaEditWSMethod_MSG_DUPLICATED_METHOD_NAME;
     public static final String DiaEditWSMethod_TITLE_ADD_NEW = ComposerWebserviceMessageConstants.DiaEditWSMethod_TITLE_ADD_NEW;
     public static final String DiaEditWSMethod_TITLE_EDIT = ComposerWebserviceMessageConstants.DiaEditWSMethod_TITLE_EDIT;
+    
+    // Execution Setting page
+    public static final String EXECUTION_WEB_SERVICE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.webservice";
 }

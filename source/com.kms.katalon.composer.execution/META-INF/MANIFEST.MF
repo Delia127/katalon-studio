@@ -88,7 +88,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.tracking,
  com.katalon.platform,
  org.eclipse.core.filesystem,
- com.kms.katalon.integration.analytics
+ com.kms.katalon.integration.analytics,
+ com.kms.katalon.execution.webservice
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.base,

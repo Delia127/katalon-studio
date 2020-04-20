@@ -32,6 +32,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.routing.HttpRoute;
@@ -66,6 +67,7 @@ import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
+import com.kms.katalon.core.webservice.util.WebServiceCommonUtil;
 
 public abstract class BasicRequestor implements Requestor {
     private static final String TLS = "TLS";
@@ -338,6 +340,15 @@ public abstract class BasicRequestor implements Requestor {
                 }
             }
         }).setDefaultCredentialsProvider(credentialsProvider);
+    }
+    
+    protected void configTimeout(HttpClientBuilder httpClientBuilder, RequestObject request) throws IOException {
+        int connectionTimeout = WebServiceCommonUtil.getValidRequestTimeout(request.getConnectionTimeout());
+        int socketTimeout = WebServiceCommonUtil.getValidRequestTimeout(request.getSocketTimeout());
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(connectionTimeout)
+                .setSocketTimeout(socketTimeout).build();
+        httpClientBuilder.setDefaultRequestConfig(config);
     }
     
     protected HttpContext getHttpContext() throws KeyManagementException, GeneralSecurityException, IOException {
