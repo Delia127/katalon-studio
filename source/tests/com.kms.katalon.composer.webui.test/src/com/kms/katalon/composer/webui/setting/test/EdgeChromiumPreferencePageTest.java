@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,11 +23,9 @@ import com.kms.katalon.execution.configuration.IDriverConnector;
 
 public class EdgeChromiumPreferencePageTest {
 	private File testProjectFolder;
-
-	@Mock
+	
     private ProjectEntity testProject;
-    
-	@InjectMocks
+    	
 	private EdgeChromiumPreferencePage page;
 	
 	@Rule
@@ -39,8 +38,13 @@ public class EdgeChromiumPreferencePageTest {
         testProject = ProjectController.getInstance().addNewProject("test-project", "", location);
         ProjectController.getInstance().openProjectForUI(testProject.getId(), false, new NullProgressMonitor());
         page = new EdgeChromiumPreferencePage();
-        MockitoAnnotations.initMocks(page);
     }
+	
+	@After
+	public void closeProject() throws Exception{
+		ProjectController.getInstance().closeAndCleanupProject(testProject);
+		testProjectFolder.delete();
+	}
 	
 	@Test
 	public void getDriverConnectorTest() throws Exception{
@@ -51,10 +55,8 @@ public class EdgeChromiumPreferencePageTest {
 		Method method = page.getClass().getDeclaredMethod("getDriverConnector", String.class);
 		method.setAccessible(true);
 		IDriverConnector connector = (IDriverConnector) method.invoke(page, folderPath);
-		//System.out.println(connector.getSettingFileName());
-		//System.out.println(connector.getSystemProperties());
-		//System.out.println(connector.getUserConfigProperties());
-		assertEquals(connector.getParentFolderPath().contains(folderPath), true);
 		
+		boolean expected = connector.getParentFolderPath().contains(folderPath);
+		assertEquals(expected, true);
 	}
 }

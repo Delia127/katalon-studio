@@ -27,7 +27,7 @@ public class EdgeChromiumExecutionHandlerTest {
 		boolean result = handler.canExecute();
 	}
 	
-	@Test
+	/*@Test
 	public void getRunConfigurationForExecutionTest() throws Exception{
 		folder.create();
 		File newFolder = folder.newFolder("testTempFolder");
@@ -35,5 +35,5 @@ public class EdgeChromiumExecutionHandlerTest {
 		method.setAccessible(true);
 		IRunConfiguration config = (IRunConfiguration) method.invoke(handler, newFolder.getAbsolutePath());
 		
-	}
+	}*/
 }

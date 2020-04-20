@@ -14,27 +14,6 @@ import com.kms.katalon.composer.webui.execution.menu.EdgeChromiumExecutionDynami
 public class EdgeChromiumExecutionDynamicContributionTest {
 
 	private EdgeChromiumExecutionDynamicContribution contribution;
-	/*EdgeChromiumExecutionDynamicContribution contribution;
-	
-	@Test
-	public void aboutToShowTest() throws Exception{
-		
-		Bundle bundle = Platform.getBundle("com.kms.katalon.composer.webui");
-		PlatformUI.getWorkbench().
-		BundleContext context = bundle.getBundleContext();
-		ServiceReference<ECommandService> serviceReference = bundle.getBundleContext().getServiceReference(ECommandService.class);
-		ECommandService service = bundle.getBundleContext().getService(serviceReference);
-		
-		contribution = new EdgeChromiumExecutionDynamicContribution();
-//		MockitoAnnotations.initMocks(this);
-		
-		List<MMenuElement> items = new ArrayList<>();
-		//items.add(MenuFactory.createPopupMenuItem(null, null, null) );
-		System.out.println("Is Empty: " + items.isEmpty()); 
-		contribution.aboutToShow(items);
-		System.out.println(items.toString());
-		assertEquals(false, items.isEmpty());
-	}*/
 	
 	@Before
 	public void setUp(){

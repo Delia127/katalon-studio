@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.FileSystems;
 
 import org.eclipse.core.runtime.Platform;
 import org.junit.Before;
@@ -32,9 +33,7 @@ public class WebDriverCleanerUtilTest {
 	public void cleanUpTest() throws Exception{		
 		File logFile = folder.newFile();
 		File errorLogFile = folder.newFile();
-		//File driverDirectory = SeleniumWebDriverProvider.getDriverDirectory();
 		File path = getDriverPath();
-		System.out.println(path.getAbsolutePath());
 		if (OSUtil.isWindows() && OSUtil.is64Bit()) {
 			
         	ProcessBuilder pb = new ProcessBuilder();
@@ -51,12 +50,13 @@ public class WebDriverCleanerUtilTest {
     		check = isProcessExists();
     		assertEquals("Process does not exist anymore", false, check);
     		
-        }else{};		
+        }	
 	}
 	
 	private File getDriverPath(){
 		//String packageName = this.getClass().getPackage().getName();
-		String packageName = System.getProperty("user.dir");
+		String packageName = FileSystems.getDefault().getPath("").toAbsolutePath().toString();
+		System.out.println(packageName);
 		File f = new File(packageName + File.separator + "os_resources" + File.separator + "win64" + File.separator + "resources" + File.separator + "drivers");
 		return f;
 	}
