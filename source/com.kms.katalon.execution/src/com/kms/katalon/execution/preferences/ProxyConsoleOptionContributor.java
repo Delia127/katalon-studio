@@ -219,7 +219,6 @@ public class ProxyConsoleOptionContributor extends PreferenceOptionContributor {
         @SuppressWarnings({ "serial" })
         List<String> sensitiveArgs = new ArrayList<String>() {
             {
-                add(ProxyPreferenceConstants.PROXY_PASSWORD);
                 add(ProxyPreferenceConstants.AUTH_PROXY_PASSWORD);
                 add(ProxyPreferenceConstants.SYSTEM_PROXY_PASSWORD);
             }
