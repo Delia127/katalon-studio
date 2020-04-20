@@ -6,7 +6,9 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.security.GeneralSecurityException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -985,7 +987,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 args.put(ProxyPreferenceConstants.AUTH_PROXY_USERNAME, proxyInfo.getUsername());
             }
             if (StringUtils.isNotBlank(proxyInfo.getPassword())) {
-                args.put(ProxyPreferenceConstants.AUTH_PROXY_PASSWORD, proxyInfo.getPassword());
+                args.put(ProxyPreferenceConstants.AUTH_PROXY_PASSWORD, encodeSensitiveInfo(proxyInfo.getPassword()));
             }
             if (StringUtils.isNotBlank(proxyInfo.getExceptionList())) {
                 args.put(ProxyPreferenceConstants.AUTH_PROXY_EXCEPTION_LIST,
@@ -1013,7 +1015,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 args.put(ProxyPreferenceConstants.SYSTEM_PROXY_USERNAME, proxyInfo.getUsername());
             }
             if (StringUtils.isNotBlank(proxyInfo.getPassword())) {
-                args.put(ProxyPreferenceConstants.SYSTEM_PROXY_PASSWORD, proxyInfo.getPassword());
+                args.put(ProxyPreferenceConstants.SYSTEM_PROXY_PASSWORD, encodeSensitiveInfo(proxyInfo.getPassword()));
             }
             if (StringUtils.isNotBlank(proxyInfo.getExceptionList())) {
                 args.put(ProxyPreferenceConstants.SYSTEM_PROXY_EXCEPTION_LIST,
@@ -1024,6 +1026,20 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (proxyOption != ProxyOption.NO_PROXY) {
             args.put(ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES,
                     Boolean.toString(proxyInfo.isApplyToDesiredCapabilities()));
+        }
+    }
+
+    private String encodeSensitiveInfo(String sensitiveInfo) {
+        if (StringUtils.isBlank(sensitiveInfo)) {
+            return StringUtils.EMPTY;
+        }
+
+        try {
+            CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(sensitiveInfo);
+            return CryptoUtil.encode(cryptoInfo);
+        } catch (UnsupportedEncodingException | GeneralSecurityException error) {
+            LoggerSingleton.logError(error);
+            return StringUtils.EMPTY;
         }
     }
 

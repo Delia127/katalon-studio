@@ -1,8 +1,11 @@
 package com.kms.katalon.execution.preferences;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.execution.console.entity.BooleanConsoleOption;
@@ -12,7 +15,9 @@ import com.kms.katalon.execution.console.entity.PreferenceOptionContributor;
 import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.constants.ProxyPreferenceConstants;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.util.CryptoUtil;
 
 public class ProxyConsoleOptionContributor extends PreferenceOptionContributor {
 
@@ -188,7 +193,10 @@ public class ProxyConsoleOptionContributor extends PreferenceOptionContributor {
         IPreferenceStore store = PreferenceStoreManager
                 .getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
         if (consoleOption instanceof StringConsoleOption) {
-            store.setValue(consoleOption.getOption(), argumentValue);
+            String value = isSensitiveInfo(consoleOption.getOption())
+                    ? decodeSensitiveInfo(argumentValue)
+                    : argumentValue;
+            store.setValue(consoleOption.getOption(), value);
             return;
         }
         if (consoleOption instanceof IntegerConsoleOption) {
@@ -205,5 +213,31 @@ public class ProxyConsoleOptionContributor extends PreferenceOptionContributor {
     @Override
     public String getPreferenceId() {
         return ExecutionPreferenceConstants.EXECUTION_QUALIFIER;
+    }
+
+    private boolean isSensitiveInfo(String sensityInfoName) {
+        @SuppressWarnings({ "serial" })
+        List<String> sensitiveArgs = new ArrayList<String>() {
+            {
+                add(ProxyPreferenceConstants.PROXY_PASSWORD);
+                add(ProxyPreferenceConstants.AUTH_PROXY_PASSWORD);
+                add(ProxyPreferenceConstants.SYSTEM_PROXY_PASSWORD);
+            }
+        };
+        return sensitiveArgs.contains(sensityInfoName);
+    }
+
+    private String decodeSensitiveInfo(String sensitiveInfo) {
+        if (StringUtils.isBlank(sensitiveInfo)) {
+            return StringUtils.EMPTY;
+        }
+
+        try {
+            CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(sensitiveInfo);
+            return CryptoUtil.decode(cryptoInfo);
+        } catch (GeneralSecurityException | IOException error) {
+            LogUtil.logError(error);
+            return StringUtils.EMPTY;
+        }
     }
 }

@@ -58,7 +58,7 @@ public class ProxyInformationUtil {
                 LogUtil.logInfo("INFO: Proxy exception list: " + proxyInfo.getExceptionList());
             }
             if (StringUtils.isNotBlank(proxyInfo.getUsername())) {
-                LogUtil.logInfo("INFO: Proxy username: " + "********");
+                LogUtil.logInfo("INFO: Proxy username: " + proxyInfo.getUsername());
                 LogUtil.logInfo("INFO: Proxy password: " + "********");
             }
         }

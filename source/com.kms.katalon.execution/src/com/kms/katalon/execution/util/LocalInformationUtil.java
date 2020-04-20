@@ -137,11 +137,8 @@ public class LocalInformationUtil {
                 add("password");
                 add("apiKeyOP");
                 add("apiKeyOnPremise");
-                add(ProxyPreferenceConstants.PROXY_USERNAME);
                 add(ProxyPreferenceConstants.PROXY_PASSWORD);
-                add(ProxyPreferenceConstants.AUTH_PROXY_USERNAME);
                 add(ProxyPreferenceConstants.AUTH_PROXY_PASSWORD);
-                add(ProxyPreferenceConstants.SYSTEM_PROXY_USERNAME);
                 add(ProxyPreferenceConstants.SYSTEM_PROXY_PASSWORD);
             }
         };
