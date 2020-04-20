@@ -8,16 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
 
-import org.eclipse.core.runtime.Platform;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.osgi.framework.Bundle;
 
 import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.core.webui.util.WebDriverCleanerUtil;
-import com.kms.katalon.execution.webui.driver.SeleniumWebDriverProvider;
 
 public class WebDriverCleanerUtilTest {
 	private final String PROCESS_NAME_CHROMIUM = "msedgedriver.exe";
