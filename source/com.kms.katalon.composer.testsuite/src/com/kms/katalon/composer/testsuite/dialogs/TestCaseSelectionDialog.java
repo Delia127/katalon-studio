@@ -295,8 +295,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
         try {
             tctEntity = ((TestCaseTreeEntity) element).getObject();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LoggerSingleton.logError(e);
         }
         return tctEntity == null ? "" : tctEntity.getId();
     }
