@@ -922,8 +922,8 @@ public class ActivationInfoCollector {
 
     public static boolean getAndCheckAmiMachine() {
         try {
-            String amiID = EC2MetadataUtils.getAmiId();
-            if (StringUtils.isEmpty(amiID)) {
+            List<String> productCodes = EC2MetadataUtils.getProductCodes();
+            if (productCodes == null) {
                 return false;
             }
 
@@ -931,7 +931,9 @@ public class ActivationInfoCollector {
             if (awsKatalonAmi == null) {
                 return false;
             }
-            if (awsKatalonAmi.getAmiIds().contains(amiID)) {
+
+            productCodes.retainAll(awsKatalonAmi.getAmiIds());
+            if (productCodes.size() > 0) {
                 RunningMode runMode = ApplicationRunningMode.get();
                 if (runMode == RunningMode.GUI) {
                     amiLicense = awsKatalonAmi.getKseLicense();
