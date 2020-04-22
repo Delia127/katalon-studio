@@ -15,9 +15,13 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.entity.file.SystemFileEntity;
+import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -47,6 +51,19 @@ public class PackageTreeEntity implements ITreeEntity {
         for (ICompilationUnit childGroovyClass : GroovyUtil.getAllGroovyClasses(packageFragment)) {
             if (childGroovyClass.getResource().exists()) {
                 children.add(new KeywordTreeEntity(childGroovyClass, this));
+            }
+        }
+
+        FolderEntity parentFolder = (FolderEntity) getParent().getObject();
+        String folderId = packageFragment.getResource().getProjectRelativePath().toString();
+        FolderTreeEntity folderTree = new FolderTreeEntity(FolderController.getInstance()
+                .getFolderByDisplayId(parentFolder.getProject(), folderId), getParent());
+        for (ITreeEntity child : TreeEntityUtil.getChildren(folderTree)) {
+            if (child instanceof SystemFileTreeEntity) {
+                String extension = ((SystemFileTreeEntity) child).getObject().getFileExtension();
+                if (!extension.equals(".groovy") && !extension.equals(".java")) {                    
+                    children.add(new SystemFileTreeEntity((SystemFileEntity) child.getObject(), this));
+                }
             }
         }
 

@@ -362,6 +362,8 @@ public class MessageConstants extends NLS {
     
     public static String ActivationDialogV2_LBL_LEARN_ABOUT_KSE;
     
+    public static String ActivationDialogV2_LBL_TROUBLESHOOT;
+    
     public static String ActivationDialogV2_LBL_AGREE_TERM;
     
     public static String ActivationDialogV2_LBL_LEARN_ABOUT_KS;
