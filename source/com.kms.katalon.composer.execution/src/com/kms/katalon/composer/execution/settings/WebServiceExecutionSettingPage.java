@@ -73,8 +73,10 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
 
     @Override
     protected void registerListeners() {
-        addNumberVerification(txtConnectionTimeout, TIMEOUT_MIN_VALUE_IN_MILISEC, TIMEOUT_MAX_VALUE_IN_MILISEC);
-        addNumberVerification(txtSocketTimeout, TIMEOUT_MIN_VALUE_IN_MILISEC, TIMEOUT_MAX_VALUE_IN_MILISEC);
+        addNumberVerification(txtConnectionTimeout, TIMEOUT_MIN_VALUE_IN_MILISEC, TIMEOUT_MAX_VALUE_IN_MILISEC, true,
+                StringUtils.EMPTY);
+        addNumberVerification(txtSocketTimeout, TIMEOUT_MIN_VALUE_IN_MILISEC, TIMEOUT_MAX_VALUE_IN_MILISEC, true,
+                StringUtils.EMPTY);
 
         if (!canCustomizeRequestTimeout()) {
             KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CUSTOM_WEB_SERVICE_REQUEST_TIMEOUT);
@@ -83,8 +85,16 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
 
     @Override
     protected void initialize() throws IOException {
-        txtConnectionTimeout.setText(String.valueOf(webServiceSettingStore.getConnectionTimeout()));
-        txtSocketTimeout.setText(String.valueOf(webServiceSettingStore.getSocketTimeout()));
+        int connectionTimeout = webServiceSettingStore.getConnectionTimeout();
+        boolean isDefaultConnectionTimeout = connectionTimeout == WebServiceExecutionSettingStore.EXECUTION_DEFAULT_CONNECTION_TIMEOUT_MS;
+        if (!isDefaultConnectionTimeout) {
+            txtConnectionTimeout.setText(String.valueOf(connectionTimeout));
+        }
+        int socketTimeout = webServiceSettingStore.getSocketTimeout();
+        boolean isDefaultSocketTimeout = socketTimeout == WebServiceExecutionSettingStore.EXECUTION_DEFAULT_SOCKET_TIMEOUT_MS;
+        if (!isDefaultSocketTimeout) {
+            txtSocketTimeout.setText(String.valueOf(socketTimeout));
+        }
     }
 
     @Override
@@ -93,11 +103,8 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
             return;
         }
 
-        int defaultConnectionTimeout = WebServiceExecutionSettingStore.EXECUTION_DEFAULT_CONNECTION_TIMEOUT_MS;
-        txtConnectionTimeout.setText(String.valueOf(defaultConnectionTimeout));
-
-        int defaultSocketTimeout = WebServiceExecutionSettingStore.EXECUTION_DEFAULT_SOCKET_TIMEOUT_MS;
-        txtSocketTimeout.setText(String.valueOf(defaultSocketTimeout));
+        txtConnectionTimeout.setText(StringUtils.EMPTY);
+        txtSocketTimeout.setText(StringUtils.EMPTY);
 
         super.performDefaults();
     }

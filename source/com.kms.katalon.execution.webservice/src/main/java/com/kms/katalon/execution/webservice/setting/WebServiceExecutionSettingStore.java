@@ -6,14 +6,15 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.webservice.constants.WebServiceExecutionSettingConstants;
 
 public class WebServiceExecutionSettingStore extends BundleSettingStore {
 
-    public static final int EXECUTION_DEFAULT_CONNECTION_TIMEOUT_MS = 0;
+    public static final int EXECUTION_DEFAULT_CONNECTION_TIMEOUT_MS = RequestObject.DEFAULT_TIMEOUT;
 
-    public static final int EXECUTION_DEFAULT_SOCKET_TIMEOUT_MS = 0;
+    public static final int EXECUTION_DEFAULT_SOCKET_TIMEOUT_MS = RequestObject.DEFAULT_TIMEOUT;
 
     public static WebServiceExecutionSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();

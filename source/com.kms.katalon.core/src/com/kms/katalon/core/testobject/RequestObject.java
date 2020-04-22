@@ -2,7 +2,6 @@ package com.kms.katalon.core.testobject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +14,9 @@ import com.kms.katalon.core.testobject.impl.HttpUrlEncodedBodyContent;
 
 public class RequestObject extends TestObject implements HttpMessage {
 
-    public static final int TIMEOUT_UNSET = -1;
+    public static final int TIMEOUT_UNSET = -2;
 
-    public static final int DEFAULT_TIMEOUT = 0;
+    public static final int DEFAULT_TIMEOUT = -1;
 
     private static final String DF_CHARSET = "UTF-8";
 

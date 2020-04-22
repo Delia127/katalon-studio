@@ -3,7 +3,6 @@ package com.kms.katalon.core.webservice.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Proxy;
-import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -64,8 +63,8 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
-import com.kms.katalon.core.webservice.exception.WSConnectionTimeoutException;
-import com.kms.katalon.core.webservice.exception.WSSocketTimeoutException;
+import com.kms.katalon.core.webservice.exception.ConnectionTimeoutException;
+import com.kms.katalon.core.webservice.exception.SocketTimeoutException;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.util.WSDLUtil;
@@ -256,9 +255,9 @@ public class SoapClient extends BasicRequestor {
         try {
             response = httpClient.execute(post, getHttpContext());
         } catch (ConnectTimeoutException exception) {
-            throw new WSConnectionTimeoutException(exception);
-        } catch (SocketTimeoutException exception) {
-            throw new WSSocketTimeoutException(exception);
+            throw new ConnectionTimeoutException(exception);
+        } catch (java.net.SocketTimeoutException exception) {
+            throw new SocketTimeoutException(exception);
         }
 
         int statusCode = response.getStatusLine().getStatusCode();

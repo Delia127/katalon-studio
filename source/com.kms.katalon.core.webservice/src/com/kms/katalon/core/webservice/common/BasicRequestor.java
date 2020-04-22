@@ -343,11 +343,9 @@ public abstract class BasicRequestor implements Requestor {
     }
     
     protected void configTimeout(HttpClientBuilder httpClientBuilder, RequestObject request) throws IOException {
-        int connectionTimeout = WebServiceCommonUtil.getValidRequestTimeout(request.getConnectionTimeout());
-        int socketTimeout = WebServiceCommonUtil.getValidRequestTimeout(request.getSocketTimeout());
         RequestConfig config = RequestConfig.custom()
-                .setConnectTimeout(connectionTimeout)
-                .setSocketTimeout(socketTimeout).build();
+                .setConnectTimeout(request.getConnectionTimeout())
+                .setSocketTimeout(request.getSocketTimeout()).build();
         httpClientBuilder.setDefaultRequestConfig(config);
     }
     

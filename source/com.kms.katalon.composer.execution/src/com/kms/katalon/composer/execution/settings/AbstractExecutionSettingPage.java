@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.settings;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -76,12 +77,23 @@ public abstract class AbstractExecutionSettingPage extends PreferencePageWithHel
     }
 
     protected void addNumberVerification(Text txtInput, final int min, final int max) {
+        addNumberVerification(txtInput, min, max, false, min);
+    }
+
+    protected void addNumberVerification(Text txtInput, final int min, final int max, boolean canBeBlank) {
+        addNumberVerification(txtInput, min, max, canBeBlank, min);
+    }
+
+    protected void addNumberVerification(Text txtInput, final int min, final int max, boolean canBeBlank, int defaultValue) {
+        addNumberVerification(txtInput, min, max, canBeBlank, String.valueOf(defaultValue));
+    }
+
+    protected void addNumberVerification(Text txtInput, final int min, final int max, boolean canBeBlank, String defaultValue) {
         if (txtInput == null || txtInput.isDisposed()) {
             return;
         }
 
         txtInput.addModifyListener(new ModifyListener() {
-
             @Override
             public void modifyText(ModifyEvent event) {
                 handleInputChanged(txtInput, event);
@@ -89,53 +101,55 @@ public abstract class AbstractExecutionSettingPage extends PreferencePageWithHel
         });
 
         txtInput.addVerifyListener(new VerifyListener() {
-
             @Override
-            public void verifyText(VerifyEvent e) {
-                String oldValue = ((Text) e.getSource()).getText();
-                String enterValue = e.text;
-                String newValue = oldValue.substring(0, e.start) + enterValue + oldValue.substring(e.end);
-                if (!newValue.matches("\\d+")) {
-                    e.doit = false;
+            public void verifyText(VerifyEvent event) {
+                String oldValue = ((Text) event.getSource()).getText();
+                String enterValue = event.text;
+                String newValue = oldValue.substring(0, event.start) + enterValue + oldValue.substring(event.end);
+                if (StringUtils.isBlank(newValue)) {
+                    event.doit = true;
+                    return;
+                }
+                if (newValue.equals("-")) {
+                    event.doit = true;
+                    return;
+                }
+                if (!newValue.matches("-?\\d+")) {
+                    event.doit = false;
                     return;
                 }
                 try {
                     int val = Integer.parseInt(newValue);
-                    e.doit = val >= min && val <= max;
+                    event.doit = val >= min && val <= max;
                 } catch (NumberFormatException ex) {
-                    e.doit = false;
+                    event.doit = false;
                 }
             }
         });
 
         txtInput.addFocusListener(new FocusAdapter() {
-
             @Override
-            public void focusGained(FocusEvent e) {
-                ((Text) e.getSource()).selectAll();
+            public void focusGained(FocusEvent event) {
+                ((Text) event.getSource()).selectAll();
             }
 
             @Override
-            public void focusLost(FocusEvent e) {
-                Text inputField = (Text) e.getSource();
+            public void focusLost(FocusEvent event) {
+                Text inputField = (Text) event.getSource();
                 String value = inputField.getText();
-                if (value.length() <= 1 || !value.startsWith("0")) {
-                    return;
+                if (value.equals("-")) {
+                    inputField.setText(defaultValue);
                 }
-                try {
-                    int val = Integer.parseInt(value);
-                    inputField.setText(String.valueOf(val));
-                } catch (NumberFormatException ex) {
-                    // Do nothing
+                if (!canBeBlank && StringUtils.isBlank(value)) {
+                    inputField.setText(String.valueOf(defaultValue));
                 }
             }
         });
 
         txtInput.addMouseListener(new MouseAdapter() {
-
             @Override
-            public void mouseUp(MouseEvent e) {
-                ((Text) e.getSource()).selectAll();
+            public void mouseUp(MouseEvent event) {
+                ((Text) event.getSource()).selectAll();
             }
         });
     }
@@ -182,7 +196,7 @@ public abstract class AbstractExecutionSettingPage extends PreferencePageWithHel
 
     @Override
     public boolean isValid() {
-        return super.isValid();
+        return super.isValid() && container != null;
     }
 
     protected boolean hasChanged() {

@@ -28,25 +28,23 @@ public class WebServiceCommonHelper {
         return responseObject;
     }
     
-    private static void configRequestTimeout(RequestObject request) {
+    public static void configRequestTimeout(RequestObject request) {
         if (RunConfiguration.canCustomizeRequestTimeout()) {
             Map<String, Object> executionSettings = RunConfiguration.getExecutionGeneralProperties();
 
             if (WebServiceCommonUtil.isUnsetRequestTimeout(request.getConnectionTimeout())) {
                 Object connectionTimeout = executionSettings.get(RunConfiguration.REQUEST_CONNECTION_TIMEOUT);
                 if (connectionTimeout != null) {
-                    int validConnectionTimeout = WebServiceCommonUtil
-                            .getValidRequestTimeout(((Number) connectionTimeout).intValue());
-                    request.setConnectionTimeout(validConnectionTimeout);
+                    int connectionTimeoutIntVal = ((Number) connectionTimeout).intValue();
+                    request.setConnectionTimeout(connectionTimeoutIntVal);
                 }
             }
 
             if (WebServiceCommonUtil.isUnsetRequestTimeout(request.getSocketTimeout())) {
                 Object socketTimeout = executionSettings.get(RunConfiguration.REQUEST_SOCKET_TIMEOUT);
                 if (socketTimeout != null) {
-                    int validSocketTimeout = WebServiceCommonUtil
-                            .getValidRequestTimeout(((Number) socketTimeout).intValue());
-                    request.setSocketTimeout(validSocketTimeout);
+                    int socketTimeoutIntVal = ((Number) socketTimeout).intValue();
+                    request.setSocketTimeout(socketTimeoutIntVal);
                 }
             }
         } else {

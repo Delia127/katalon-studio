@@ -2,25 +2,25 @@ package com.kms.katalon.core.webservice.exception;
 
 import com.kms.katalon.core.webservice.constants.StringConstants;
 
-public class WSSocketTimeoutException extends WebServiceException {
+public class SocketTimeoutException extends WebServiceException {
 
     private static final long serialVersionUID = -1096596641112244215L;
 
     private Throwable coreException;
 
-    public WSSocketTimeoutException() {
+    public SocketTimeoutException() {
         this(StringConstants.MSG_SOCKET_TIMEOUT_EXCEPTION);
     }
 
-    public WSSocketTimeoutException(String message) {
+    public SocketTimeoutException(String message) {
         this(message, null);
     }
 
-    public WSSocketTimeoutException(Throwable exception) {
+    public SocketTimeoutException(Throwable exception) {
         this(StringConstants.MSG_SOCKET_TIMEOUT_EXCEPTION, exception);
     }
 
-    public WSSocketTimeoutException(String message, Throwable exception) {
+    public SocketTimeoutException(String message, Throwable exception) {
         super(message);
         this.coreException = exception;
     }
