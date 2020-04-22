@@ -66,18 +66,7 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
         glContainer.marginWidth = 0;
         settingsComposite.setLayout(glContainer);
 
-        Group grpImageRecognition = new Group(parent, SWT.NONE);
-        grpImageRecognition.setText("Image Recognition");
-        GridLayout glGrpImageRecognition = new GridLayout(3, false);
-        glGrpImageRecognition.marginLeft = 15;
-        grpImageRecognition.setLayout(glGrpImageRecognition);
-        grpImageRecognition.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-        chckEnableImageRecognition = new Button(grpImageRecognition, SWT.CHECK);
-        GridData gdChckEnableImageRecognition = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        chckEnableImageRecognition.setText("Enable Image Recognition");
-        chckEnableImageRecognition.setLayoutData(gdChckEnableImageRecognition);
-
+        // Smart Wait
         Label lblDefaultSmartWait = new Label(settingsComposite, SWT.NONE);
         lblDefaultSmartWait.setText("Default Smart Wait");
         GridData gdLblDefaultSmartWait = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -87,6 +76,19 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
         GridData gdCbDefaultSmartWait = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdCbDefaultSmartWait.widthHint = INPUT_WIDTH * 2;
         cbDefaultSmartWait.setLayoutData(gdCbDefaultSmartWait);
+
+        // Image Recognition
+        Group grpImageRecognition = new Group(settingsComposite, SWT.NONE);
+        grpImageRecognition.setText("Image Recognition");
+        GridLayout glGrpImageRecognition = new GridLayout(3, false);
+        glGrpImageRecognition.marginLeft = 15;
+        grpImageRecognition.setLayout(glGrpImageRecognition);
+        grpImageRecognition.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+
+        chckEnableImageRecognition = new Button(grpImageRecognition, SWT.CHECK);
+        GridData gdChckEnableImageRecognition = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        chckEnableImageRecognition.setText("Enable Image Recognition");
+        chckEnableImageRecognition.setLayoutData(gdChckEnableImageRecognition);
 
         /*
          * // Smart XPath's related functionality - only supported in commercial ver
