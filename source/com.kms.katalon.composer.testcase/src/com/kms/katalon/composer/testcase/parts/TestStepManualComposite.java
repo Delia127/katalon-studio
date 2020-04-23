@@ -990,6 +990,7 @@ public class TestStepManualComposite {
         executeFromTestStepEntity.setRemoteServerUrl(executionSession.getRemoteUrl());
         executeFromTestStepEntity.setTestCase(parentPart.getTestCase());
         executeFromTestStepEntity.setSessionId(executionSession.getSessionId());
+        executeFromTestStepEntity.setLaunchMode(launchMode);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXECUTE_FROM_TEST_STEP,
                 executeFromTestStepEntity);
     }
