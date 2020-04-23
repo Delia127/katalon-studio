@@ -278,8 +278,11 @@ public class TestExecutionAddon implements EventHandler {
                     .setRawScript(executeFromTestStepEntity.getRawScript());
             ExistingExecutionHandler handler = new ExistingExecutionHandler();
             handler.setExistingRunConfig(existingRunConfiguration);
+            if (executeFromTestStepEntity.getLaunchMode() == null) {
+                executeFromTestStepEntity.setLaunchMode(LaunchMode.RUN);
+            }
             Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE,
-                    executeFromTestStepEntity.getTestCase(), LaunchMode.RUN, sync, handler);
+                    executeFromTestStepEntity.getTestCase(), executeFromTestStepEntity.getLaunchMode(), sync, handler);
             job.setUser(true);
             job.schedule();
         } catch (Exception e) {
