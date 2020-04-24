@@ -106,11 +106,16 @@ public class TestExecutionAddon implements EventHandler {
                     return;
                 }
                 if (partService.saveAll(true) && partService.getDirtyParts().isEmpty()) {
+                    ExecuteFromTestStepEntity executeFromTestStepEntity = (ExecuteFromTestStepEntity) object;
                     if (LicenseUtil.isFreeLicense()) {
-                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP);
+                        if (executeFromTestStepEntity.getLaunchMode() == LaunchMode.DEBUG) {
+                            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_DEBUG_FROM_SELECTED_STEP);
+                        } else {
+                            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP);
+                        }
                         return;
                     }
-                    executeTestCaseFromTestStep((ExecuteFromTestStepEntity) object);
+                    executeTestCaseFromTestStep(executeFromTestStepEntity);
                 }
             }
         });
