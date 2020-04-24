@@ -239,6 +239,19 @@ stages:
         echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
       displayName: Set up
 
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+          $theurl = "http://dl.google.com/edgedl/chrome/install/GoogleChromeStandaloneEnterprise64.msi"
+          mkdir c:\tmp
+          $output = "c:\tmp\chrome.msi"
+          Invoke-WebRequest -Uri $theurl -OutFile $output -ErrorAction SilentlyContinue
+          msiexec /q /i c:\tmp\chrome.msi
+          start-sleep -Seconds 300 # sleep for 5 mins just to allow updates to be processed 
+          Remove-Item -Path c:\tmp\chrome.msi –Force
+      displayName: Install Chrome
+
     - checkout: WindowTest
       fetchDepth: 1
       clean: true

@@ -2710,9 +2710,16 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
+         
    <plugin
          id="com.microsoft.sqlserver.mssql-jdbc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.core.testng"
          download-size="0"
          install-size="0"
          version="0.0.0"
