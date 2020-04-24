@@ -427,7 +427,7 @@ public class NotificationToolControl {
     
     private List<KatalonNotificationContent> getKatalonNotificationContent() {
         try {
-            URI uri = new URIBuilder().setPath("http://localhost:3000" + "/katalon-notifications").build();
+            URI uri = new URIBuilder().setPath("https://backend-dev.katalon.com" + "/katalon-notifications").build();
             HttpGet httpPost = new HttpGet(uri);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
