@@ -668,7 +668,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         String testObject = "";
         try {
             testObject = msg.substring(msg.indexOf("'Object Repository"));
-            testObject = testObject.substring(0, testObject.indexOf("\n"));
+            testObject = testObject.substring(0, testObject.indexOf("'", 1) + 1);
         } catch (Exception e) {
             return "";
         }
