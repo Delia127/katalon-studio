@@ -242,7 +242,9 @@ public class ExecutionUtil {
 
         DefaultRerunSetting rerunSetting = new DefaultRerunSetting(prevExecuted.getPreviousRerunTimes() + 1,
                 prevExecuted.getRemainingRerunTimes() - 1, prevExecuted.isRerunFailedTestCasesOnly());
-
+        // We need to remember this setting to use it later 
+        rerunSetting.setRerunFailedTestCaseAndTestDataOnly(prevExecuted.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly());
+        
         TestSuiteExecutedEntity newExecutedEntity = new TestSuiteExecutedEntity(testSuite, rerunSetting);
         newExecutedEntity.setReportLocation(prevExecuted.getReportLocationSetting());
         newExecutedEntity.setTestDataMap(prevExecuted.getTestDataMap());
