@@ -34,12 +34,12 @@ public class RequestObject extends TestObject implements HttpMessage {
      * Set max response size to this value mean to unset its current max response size.
      * The project's max response size will be used.
      */
-    public static final long MAX_RESPONSE_SIZE_UNSET = -2;
+    public static final long MAX_RESPONSE_SIZE_UNSET = -1;
 
     /**
      * Set response size limit to this value mean to this request has no response size limit.
      */
-    public static final long MAX_RESPONSE_SIZE_UNLIMITED = -1;
+    public static final long MAX_RESPONSE_SIZE_UNLIMITED = 0;
 
     /**
      * The default maximum response size. Default value is same to unlimited.
