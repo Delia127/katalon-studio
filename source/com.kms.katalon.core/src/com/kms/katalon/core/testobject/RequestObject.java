@@ -30,10 +30,14 @@ public class RequestObject extends TestObject implements HttpMessage {
      */
     public static final int DEFAULT_TIMEOUT = TIMEOUT_UNLIMITED;
 
+    /**
+     * Set max response size to this value mean to unset its current max response size.
+     * The project's max response size will be used.
+     */
     public static final long MAX_RESPONSE_SIZE_UNSET = -2;
 
     /**
-     * Set response size limit to this value mean to this request has no response size limit
+     * Set response size limit to this value mean to this request has no response size limit.
      */
     public static final long MAX_RESPONSE_SIZE_UNLIMITED = -1;
 
@@ -456,9 +460,9 @@ public class RequestObject extends TestObject implements HttpMessage {
      * @param maxResponseSize The response size limit in bytes
      * <br>Additional available values:
      * <ul>
-     *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNLIMITED</b>: Set the maximum response size of this request to unlimited</li>
-     *  <li><b>RequestObject.DEFAULT_MAX_RESPONSE_SIZE</b>: Set the maximum response size of this request to the default value (unlimited)</li>
-     *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNSET</b>: Unset the maximum response size of this request. The project's maximum response size will be used</li>
+     *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNLIMITED</b>: Set the maximum response size of this request to unlimited.</li>
+     *  <li><b>RequestObject.DEFAULT_MAX_RESPONSE_SIZE</b>: Set the maximum response size of this request to the default value (The default value is set to unlimited).</li>
+     *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNSET</b>: Unset the maximum response size of this request. The project's maximum response size will be used.</li>
      * </ul>
      * @since 7.6.0
      */
