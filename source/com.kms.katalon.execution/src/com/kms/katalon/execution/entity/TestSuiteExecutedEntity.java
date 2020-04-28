@@ -71,6 +71,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         rerunSetting.setPreviousRerunTimes(rerunnable.getPreviousRerunTimes());
         rerunSetting.setRemainingRerunTimes(rerunnable.getRemainingRerunTimes());
         rerunSetting.setRerunFailedTestCaseOnly(rerunnable.isRerunFailedTestCasesOnly());
+        rerunSetting.setRerunFailedTestCaseAndTestDataOnly(rerunnable.isRerunFailedTestCasesAndTestDataOnly());
     }
 
     public void setTestSuite(TestSuiteEntity testSuite) throws IOException, Exception {
@@ -79,6 +80,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
                 .addRecipients(MailUtil.splitRecipientsString(testSuite.getMailRecipient()));
         rerunSetting.setRemainingRerunTimes(testSuite.getNumberOfRerun());
         rerunSetting.setRerunFailedTestCaseOnly(testSuite.isRerunFailedTestCasesOnly());
+        rerunSetting.setRerunFailedTestCaseAndTestDataOnly(testSuite.isRerunFailedTestCasesAndTestDataOnly());
     }
 
     public void prepareTestCases() throws Exception {
@@ -489,5 +491,9 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     @Override
     public Rerunable mergeWith(Rerunable rerunable) {
         return this;
+    }
+
+    public boolean isRerunFailedTestCasesAndTestDataOnly() {
+        return rerunSetting.isRerunFailedTestCasesAndTestDataOnly();
     }
 }

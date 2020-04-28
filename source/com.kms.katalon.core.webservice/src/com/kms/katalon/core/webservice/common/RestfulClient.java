@@ -28,12 +28,14 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
 
+import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
@@ -42,7 +44,7 @@ public class RestfulClient extends BasicRequestor {
     private static final String TLS = "TLS";
 
     private static final String HTTPS = RequestHeaderConstants.HTTPS;
-    
+        
     public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
         super(projectDir, proxyInfomation);
     }
@@ -108,7 +110,7 @@ public class RestfulClient extends BasicRequestor {
             }
         });
         
-        BaseHttpRequest httpRequest = buildHttpRequest(request);
+        BaseHttpRequest httpRequest = getHttpRequest(request);
 
         CloseableHttpClient httpClient = clientBuilder.build();
         
@@ -121,38 +123,39 @@ public class RestfulClient extends BasicRequestor {
 
         return responseObject;
     }
+
+    private static boolean isBodySupported(String requestMethod) {
+        return RestRequestMethodHelper.isBodySupported(requestMethod);
+    }
+
+    private static void setRequestMethod(CustomHttpMethodRequest httpRequest, String method) {
+        httpRequest.setMethod(method);
+    }
     
-    private static BaseHttpRequest buildHttpRequest(RequestObject requestObject) throws UnsupportedOperationException, IOException {
+    private static BaseHttpRequest getHttpRequest(RequestObject request) throws UnsupportedOperationException, IOException {
         BaseHttpRequest httpRequest;
-        String url = requestObject.getRestUrl();
-        if (requestObject.getBodyContent() != null) {
-            httpRequest = buildHttpRequestWithBody(requestObject);
+        String url = request.getRestUrl();
+        if (isBodySupported(request.getRestRequestMethod()) && request.getBodyContent() != null) {
+            httpRequest = new DefaultHttpEntityEnclosingRequest(url);
+            ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+            request.getBodyContent().writeTo(outstream);
+            byte[] bytes = outstream.toByteArray();
+            ByteArrayEntity entity = new ByteArrayEntity(bytes);
+            entity.setChunked(false);
+            ((DefaultHttpEntityEnclosingRequest) httpRequest)
+                    .setEntity(entity);
         } else {
             httpRequest = new DefaultHttpRequest(url);
         }
 
-        setRequestMethod(httpRequest, requestObject);
+        setRequestMethod(httpRequest, request.getRestRequestMethod());
 
         return httpRequest;
     }
 
-    private static BaseHttpRequest buildHttpRequestWithBody(RequestObject request) throws IOException {
-        String url = request.getRestUrl();
-        BaseHttpRequest httpRequest = new DefaultHttpEntityEnclosingRequest(url);
-        
-        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-        request.getBodyContent().writeTo(outstream);
-        byte[] bytes = outstream.toByteArray();
-        ByteArrayEntity entity = new ByteArrayEntity(bytes);
-        entity.setChunked(false);
-        ((DefaultHttpEntityEnclosingRequest) httpRequest).setEntity(entity);
-        
-        return httpRequest;
-    }
-    
-    private static void setRequestMethod(CustomHttpMethodRequest httpRequest, RequestObject requestObject) {
-        String method = requestObject.getRestRequestMethod();
-        httpRequest.setMethod(method);
+    private static String escapeUrl(String url) throws MalformedURLException {
+        String escapedUrl = UrlEscapers.urlFragmentEscaper().escape(url);
+        return escapedUrl;
     }
 
     public static void processRequestParams(RequestObject request) throws MalformedURLException {

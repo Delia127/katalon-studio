@@ -1,13 +1,19 @@
 package com.kms.katalon.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 
 import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
@@ -18,6 +24,8 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
+import com.kms.katalon.core.util.BrowserMobProxyManager;
+import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -25,6 +33,8 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
+
+import groovy.text.GStringTemplateEngine;
 
 public class WebServiceController extends EntityController {
 
@@ -66,17 +76,16 @@ public class WebServiceController extends EntityController {
             requestObject.setRestParameters(parseProperties(entity.getRestParameters(), new StrSubstitutor()));
             requestObject
                     .setHttpHeaderProperties(parseProperties(entity.getHttpHeaderProperties(), substitutor));
-//            requestObject.setHttpBody(entity.getHttpBody());
+            requestObject.setHttpBody(entity.getHttpBody());
 
             String httpBodyType = entity.getHttpBodyType();
-            String oldVersionBodyContent = entity.getHttpBody();
-            if (StringUtils.isNotBlank(oldVersionBodyContent)) {
+            if (StringUtils.isBlank(httpBodyType)) {
                 // migrated from 5.3.1 (KAT-3200)
                 httpBodyType = "text";
                 String body = entity.getHttpBody();
                 HttpTextBodyContent httpBodyContent = new HttpTextBodyContent(body);
                 requestObject.setBodyContent(httpBodyContent);
-            } else if (StringUtils.isNotBlank(httpBodyType)) {
+            } else if (isBodySupported(requestObject)) {
                 String httpBodyContent = entity.getHttpBodyContent();
                 HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
                         projectDir, substitutor);
