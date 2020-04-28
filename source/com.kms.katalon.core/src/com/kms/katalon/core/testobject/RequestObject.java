@@ -14,9 +14,21 @@ import com.kms.katalon.core.testobject.impl.HttpUrlEncodedBodyContent;
 
 public class RequestObject extends TestObject implements HttpMessage {
 
-    public static final int TIMEOUT_UNSET = -2;
+    /**
+     * Set connection/socket timeout to this value mean to unset its current timeout.
+     * The project's socket timeout will be used.
+     */
+    public static final int TIMEOUT_UNSET = -1;
 
-    public static final int DEFAULT_TIMEOUT = -1;
+    /**
+     * Set connection/socket timeout to this value mean to this request has no connection/socket timeout limit.
+     */
+    public static final int TIMEOUT_UNLIMITED = 0;
+
+    /**
+     * The default connection/socket timeout. The default value is set to unlimited.
+     */
+    public static final int DEFAULT_TIMEOUT = TIMEOUT_UNLIMITED;
 
     public static final long MAX_RESPONSE_SIZE_UNSET = -2;
 
@@ -396,7 +408,14 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     /**
      * Set the connection timeout for this request.
-     * @param connectionTimeout The timeout in milliseconds
+     * @param connectionTimeout The connection timeout in milliseconds.
+     * <br>Additional available values:
+     * <ul>
+     *  <li><b>RequestObject.TIMEOUT_UNLIMITED</b>: Set the connection timeout of this request to unlimited.</li>
+     *  <li><b>RequestObject.DEFAULT_TIMEOUT</b>: Set the connection timeout of this request to the default value (The default value is set to unlimited).</li>
+     *  <li><b>RequestObject.TIMEOUT_UNSET</b>: Unset the connection timeout of this request. The project's connection timeout will be used.</li>
+     * </ul>
+     * @since 7.6.0
      */
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
@@ -411,7 +430,14 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     /**
      * Set the socket timeout for this request.
-     * @param socketTimeout The timeout in milliseconds
+     * @param socketTimeout The socket timeout in milliseconds.
+     * <br>Additional available values:
+     * <ul>
+     *  <li><b>RequestObject.TIMEOUT_UNLIMITED</b>: Set the socket timeout of this request to unlimited.</li>
+     *  <li><b>RequestObject.DEFAULT_TIMEOUT</b>: Set the socket timeout of this request to the default value (The default value is set to unlimited).</li>
+     *  <li><b>RequestObject.TIMEOUT_UNSET</b>: Unset the socket timeout of this request. The project's socket timeout will be used.</li>
+     * </ul>
+     * @since 7.6.0
      */
     public void setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;

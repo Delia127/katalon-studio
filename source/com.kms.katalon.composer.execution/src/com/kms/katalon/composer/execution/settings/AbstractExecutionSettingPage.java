@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 
 public abstract class AbstractExecutionSettingPage extends PreferencePageWithHelp {
 
@@ -31,6 +32,9 @@ public abstract class AbstractExecutionSettingPage extends PreferencePageWithHel
     public static final short TIMEOUT_MIN_VALUE_IN_MILISEC = 0;
 
     public static final int TIMEOUT_MAX_VALUE_IN_MILISEC = 9999999;
+
+    protected static final String[] ENABLE_DISABLE_ITEMS = new String[] { GlobalStringConstants.ENABLE,
+            GlobalStringConstants.DISABLE };
 
     protected static final int INPUT_WIDTH = 60;
 
@@ -84,11 +88,13 @@ public abstract class AbstractExecutionSettingPage extends PreferencePageWithHel
         addNumberVerification(txtInput, min, max, canBeBlank, min);
     }
 
-    protected void addNumberVerification(Text txtInput, final int min, final int max, boolean canBeBlank, int defaultValue) {
+    protected void addNumberVerification(Text txtInput, final int min, final int max, boolean canBeBlank,
+            int defaultValue) {
         addNumberVerification(txtInput, min, max, canBeBlank, String.valueOf(defaultValue));
     }
 
-    protected void addNumberVerification(Text txtInput, final int min, final int max, boolean canBeBlank, String defaultValue) {
+    protected void addNumberVerification(Text txtInput, final int min, final int max, boolean canBeBlank,
+            String defaultValue) {
         if (txtInput == null || txtInput.isDisposed()) {
             return;
         }
@@ -161,6 +167,10 @@ public abstract class AbstractExecutionSettingPage extends PreferencePageWithHel
     @Override
     protected void applyDialogFont(Composite composite) {
         super.applyDialogFont(composite);
+        handlePageLoad();
+    }
+
+    protected void handlePageLoad() {
         updateApplyButton();
     }
 
