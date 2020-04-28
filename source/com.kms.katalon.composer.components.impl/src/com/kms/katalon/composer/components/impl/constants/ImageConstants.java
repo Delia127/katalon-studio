@@ -64,6 +64,9 @@ public class ImageConstants {
     
     // ProfileTreeEntity
     public static final Image IMG_16_PROFILE_ENTITY = ImageManager.getImage(IImageKeys.PROFILE_ENTITY_16);
+    
+    // default ProfileTreeEntity
+    public static final Image IMG_16_DEFAULT_PROFILE_ENTITY = ImageManager.getImage(IImageKeys.DEFAULT_PROFILE_ENTITY_16);
 
     // WebElementTreeEntity
     public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);

@@ -28,6 +28,8 @@ public class TestSuiteEntity extends IntegratedFileEntity {
     private boolean isPageLoadTimeoutDefault;
 
     private boolean rerunFailedTestCasesOnly;
+    
+    private boolean rerunFailedTestCasesTestDataOnly;
 
     public TestSuiteEntity() {
         super();
@@ -116,6 +118,14 @@ public class TestSuiteEntity extends IntegratedFileEntity {
     public void setRerunFailedTestCasesOnly(boolean rerunFailedTestCasesOnly) {
         this.rerunFailedTestCasesOnly = rerunFailedTestCasesOnly;
     }
+    
+    public void setRerunFailedTestCasesTestDataOnly(boolean rerunFailedTestCasesOnly) {
+        this.rerunFailedTestCasesTestDataOnly = rerunFailedTestCasesOnly;
+    }
+
+    public boolean isRerunFailedTestCasesAndTestDataOnly() {
+        return rerunFailedTestCasesTestDataOnly;
+    }
 
     @Override
     public boolean equals(Object that) {
@@ -149,6 +159,7 @@ public class TestSuiteEntity extends IntegratedFileEntity {
         result = prime * result + (isRerun ? 1231 : 1237);
         result = prime * result + (isPageLoadTimeoutDefault ? 1231 : 1237);
         result = prime * result + (rerunFailedTestCasesOnly ? 1231 : 1237);
+        result = prime * result + (rerunFailedTestCasesTestDataOnly ? 1231 : 1237);
         result = prime * result + pageLoadTimeout;
         result = prime * result + numberOfRerun;
         return result;

@@ -44,8 +44,10 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
@@ -59,6 +61,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.feature.KSEFeature;
 
 public class TestSuitePart implements EventHandler {
 
@@ -97,7 +100,7 @@ public class TestSuitePart implements EventHandler {
 
     private ImageButton btnExpandExecutionComposite;
 
-    private Button rerunTestCaseOnly;
+    private Button rerunTestCaseOnly, rerunTestCaseTestDataOnly;
 
     private TestSuiteCompositePart parentTestSuiteCompositePart;
 
@@ -319,7 +322,22 @@ public class TestSuitePart implements EventHandler {
         rerunTestCaseOnly.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                getTestSuite().setRerunFailedTestCasesOnly(rerunTestCaseOnly.getSelection());
+                boolean val = rerunTestCaseOnly.getSelection();
+                getTestSuite().setRerunFailedTestCasesOnly(val);
+                rerunTestCaseTestDataOnly.setEnabled(val);
+                setDirty(true);
+            }
+        });
+        
+        rerunTestCaseTestDataOnly.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if(LicenseUtil.isFreeLicense()) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY);
+                    rerunTestCaseTestDataOnly.setSelection(false);
+                }
+                boolean value = rerunTestCaseTestDataOnly.getSelection();
+                getTestSuite().setRerunFailedTestCasesTestDataOnly(value);
                 setDirty(true);
             }
         });
@@ -364,7 +382,16 @@ public class TestSuitePart implements EventHandler {
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
         txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
         rerunTestCaseOnly.setSelection(testSuite.isRerunFailedTestCasesOnly());
+        boolean rerunTcOnly = rerunTestCaseOnly.getSelection();
 
+        rerunTestCaseTestDataOnly.setEnabled(rerunTcOnly);
+        if(rerunTcOnly) {
+            rerunTestCaseTestDataOnly.setSelection(testSuite.isRerunFailedTestCasesAndTestDataOnly());
+        } else {
+
+            rerunTestCaseTestDataOnly.setSelection(false);
+        }
+ 
         // binding mailRecipient
         listMailRcpViewer
                 .setInput(TestSuiteController.getInstance().mailRcpStringToArray(testSuite.getMailRecipient()));
@@ -539,6 +566,23 @@ public class TestSuitePart implements EventHandler {
         gdRerunTestCase.minimumWidth = 20;
         rerunTestCaseOnly.setLayoutData(gdRerunTestCase);
         rerunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+        
+        Label placeHolder1 = new Label(compositeLastRunAndReRun, SWT.NONE);
+        Label placeHolder2 = new Label(compositeLastRunAndReRun, SWT.NONE);
+        
+        Label lblReRunTestCaseTestDataOnly = new Label(compositeLastRunAndReRun, SWT.NONE);
+        GridData gdReRunTestCaseTestDataOnly = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
+        gdReRunTestCaseTestDataOnly.widthHint = 150;
+        lblReRunTestCaseTestDataOnly.setLayoutData(gdReRunTestCaseTestDataOnly);
+        lblReRunTestCaseTestDataOnly.setText(StringConstants.PA_LBL_TEST_CASE_TEST_DATA_ONLY);
+        lblReRunTestCaseTestDataOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+
+        rerunTestCaseTestDataOnly = new Button(compositeLastRunAndReRun, SWT.CHECK);
+        GridData gdRerunTestCaseTestData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        gdRerunTestCaseTestData.heightHint = 20;
+        gdRerunTestCaseTestData.minimumWidth = 20;
+        rerunTestCaseTestDataOnly.setLayoutData(gdRerunTestCaseTestData);
+        rerunTestCaseTestDataOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
 
         Composite compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
         GridData gdCompositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);

@@ -42,12 +42,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.keys.CharacterKey;
 
 import com.google.common.base.Strings;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -90,6 +93,7 @@ import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
@@ -128,6 +132,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Button chkRetryFailedTestCase;
     
+    private Button chkRetryFailedTestCaseTestData;
+    
     private ProjectEntity project;
 
     private static final String ZERO = "0";
@@ -151,7 +157,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY = DefaultRerunSetting.RETRY_OPTION;
 
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
-
+    
+    private static final String ARG_RETRY_FAILED_TEST_CASES_TEST_DATA = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION;
+    
     private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
 
     private static final String ARG_API_KEY_ON_PREMISE = OsgiConsoleOptionContributor.API_KEY_ON_PREMISE_OPTION;
@@ -352,7 +360,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         grpOptionsContainer.setText(StringConstants.DIA_GRP_OTHER_OPTIONS);
 
         Composite compRetry = new Composite(grpOptionsContainer, SWT.NONE);
-        GridLayout glRetry = new GridLayout(4, false);
+        GridLayout glRetry = new GridLayout(5, false);
         glRetry.marginWidth = 0;
         glRetry.marginHeight = 0;
         compRetry.setLayout(glRetry);
@@ -379,7 +387,13 @@ public class GenerateCommandDialog extends AbstractDialog {
         chkRetryFailedTestCase.setText(StringConstants.DIA_CHK_FOR_FAILED_TEST_CASES);
         chkRetryFailedTestCase.setToolTipText(
                 com.kms.katalon.composer.testsuite.constants.StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
-
+        
+        chkRetryFailedTestCaseTestData = new Button(compRetry, SWT.CHECK);
+        chkRetryFailedTestCaseTestData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        chkRetryFailedTestCaseTestData.setText(StringConstants.DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA);
+        chkRetryFailedTestCaseTestData.setToolTipText(
+                com.kms.katalon.composer.testsuite.constants.StringConstants.PA_LBL_TOOLTIP_TEST_CASE_TEST_DATA_ONLY);
+        
         Label lblUpdateStatusTiming = new Label(grpOptionsContainer, SWT.NONE);
         lblUpdateStatusTiming.setText(StringConstants.DIA_LBL_UPDATE_EXECUTION_STATUS);
 
@@ -462,11 +476,31 @@ public class GenerateCommandDialog extends AbstractDialog {
     protected void setInput() {
         txtRetry.setText(DEFAULT_RETRY_TIME);
         chkRetryFailedTestCase.setSelection(DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_ONLY);
+        chkRetryFailedTestCaseTestData.setSelection(DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_TEST_DATA_ONLY);
         txtStatusDelay.setText(defaultStatusDelay);
-        enableRetryFailedTestCase();
+        enableRetryFailedTestCaseControls();
 
+        setDefaultProfile();
         loadLastWorkingData();
         updatePlatformLayout();
+    }
+
+    private void setDefaultProfile() {
+        try {
+            RunConfigurationDescription runConfigurationDescription = getStoredConfigurationDescription();
+
+            if (runConfigurationDescription != null) {
+                ExecutionProfileEntity defaultExecutionProfile = GlobalVariableController.getInstance()
+                        .getDefaultExecutionProfile(project);
+                runConfigurationDescription.setProfileName(defaultExecutionProfile.getName());
+
+                ScopedPreferenceStore prefs = getPreference();
+                prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION,
+                        JsonUtil.toJson(runConfigurationDescription));
+            }
+        } catch (ControllerException error) {
+            LoggerSingleton.logError(error);
+        }
     }
 
     private void loadLastWorkingData() {
@@ -480,12 +514,22 @@ public class GenerateCommandDialog extends AbstractDialog {
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)) {
                 txtRetry.setText(String.valueOf(prefs.getInt(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)));
-                enableRetryFailedTestCase();
+                enableRetryFailedTestCaseControls();
             }
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES)) {
                 chkRetryFailedTestCase.setSelection(
                         prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES));
+            }
+            
+            if (!prefs
+                    .isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES_TEST_DATA)) {
+                if (LicenseUtil.isFreeLicense()) {
+                    chkRetryFailedTestCaseTestData.setSelection(false);
+                } else {
+                    chkRetryFailedTestCaseTestData.setSelection(prefs.getBoolean(
+                            GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES_TEST_DATA));
+                }
             }
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID)) {
@@ -506,10 +550,13 @@ public class GenerateCommandDialog extends AbstractDialog {
         return TestSuiteCollectionController.getInstance().getTestSuiteCollection(prefSuiteId);
     }
 
-    private void enableRetryFailedTestCase() {
+    private void enableRetryFailedTestCaseControls() {
         String retry = txtRetry.getText();
-        chkRetryFailedTestCase.setEnabled(!(ZERO.equals(retry) || retry.isEmpty()));
+        boolean enableRetryFailedTc = !(ZERO.equals(retry) || retry.isEmpty());
+        chkRetryFailedTestCase.setEnabled(enableRetryFailedTc);
+        chkRetryFailedTestCaseTestData.setEnabled(!(ZERO.equals(retry) || retry.isEmpty() || !enableRetryFailedTc));
     }
+
 
     @Override
     protected void registerControlModifyListeners() {
@@ -560,7 +607,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                enableRetryFailedTestCase();
+                enableRetryFailedTestCaseControls();
             }
         });
         txtRetry.addFocusListener(new FocusListener() {
@@ -639,7 +686,21 @@ public class GenerateCommandDialog extends AbstractDialog {
                 }
             }
         });
-                
+        chkRetryFailedTestCase.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                chkRetryFailedTestCaseTestData.setEnabled(chkRetryFailedTestCase.getSelection());
+            }
+        });
+        chkRetryFailedTestCaseTestData.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (LicenseUtil.isFreeLicense()) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY);
+                    chkRetryFailedTestCaseTestData.setSelection(false);
+                }
+            }
+        });
     }
 
     private void onRunConfigurationDataChanged() {
@@ -892,6 +953,10 @@ public class GenerateCommandDialog extends AbstractDialog {
         args.put(ARG_RETRY, numOfRetry);
         if (!StringUtils.equals(numOfRetry, ZERO) && chkRetryFailedTestCase.isEnabled()) {
             args.put(ARG_RETRY_FAILED_TEST_CASES, Boolean.toString(chkRetryFailedTestCase.getSelection()));
+            if (chkRetryFailedTestCaseTestData.isEnabled()) {
+                args.put(ARG_RETRY_FAILED_TEST_CASES_TEST_DATA,
+                        Boolean.toString(chkRetryFailedTestCaseTestData.getSelection()));
+            }
         }
 
         String entityId = txtTestSuite.getText();
@@ -1045,6 +1110,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             TestSuiteEntity testSuiteEntity = (TestSuiteEntity) testSuite;
             txtRetry.setText(Integer.toString(testSuiteEntity.getNumberOfRerun()));
             chkRetryFailedTestCase.setSelection(testSuiteEntity.isRerunFailedTestCasesOnly());
+            chkRetryFailedTestCaseTestData.setSelection(testSuiteEntity.isRerunFailedTestCasesAndTestDataOnly());
             isTestSuite = true;
         }
         ControlUtils.recursiveSetEnabled(grpPlatform, isTestSuite);
@@ -1061,6 +1127,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY, txtRetry.getText());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES,
                 chkRetryFailedTestCase.getSelection());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES_TEST_DATA,
+                chkRetryFailedTestCaseTestData.getSelection());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL,
                 txtStatusDelay.getText());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION,
