@@ -135,8 +135,7 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
 
     @Override
     protected boolean hasChanged() {
-        if (webServiceSettingStore == null || txtConnectionTimeout == null || txtConnectionTimeout.isDisposed()
-                || txtSocketTimeout == null || txtSocketTimeout.isDisposed()) {
+        if (!isValid()) {
             return false;
         }
 

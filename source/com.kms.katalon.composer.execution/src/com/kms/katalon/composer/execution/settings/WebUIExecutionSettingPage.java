@@ -68,7 +68,7 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
 
         // Smart Wait
         Label lblDefaultSmartWait = new Label(settingsComposite, SWT.NONE);
-        lblDefaultSmartWait.setText("Default Smart Wait");
+        lblDefaultSmartWait.setText(ComposerExecutionMessageConstants.PREF_WEBUI_LBL_DEFAULT_SMART_WAIT);
         GridData gdLblDefaultSmartWait = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         lblDefaultSmartWait.setLayoutData(gdLblDefaultSmartWait);
 
@@ -79,7 +79,7 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
 
         // Image Recognition
         Group grpImageRecognition = new Group(settingsComposite, SWT.NONE);
-        grpImageRecognition.setText("Image Recognition");
+        grpImageRecognition.setText(ComposerExecutionMessageConstants.PREF_WEBUI_GROUP_LBL_IMAGE_RECOGNITION);
         GridLayout glGrpImageRecognition = new GridLayout(3, false);
         glGrpImageRecognition.marginLeft = 15;
         grpImageRecognition.setLayout(glGrpImageRecognition);
@@ -87,7 +87,7 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
 
         chckEnableImageRecognition = new Button(grpImageRecognition, SWT.CHECK);
         GridData gdChckEnableImageRecognition = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        chckEnableImageRecognition.setText("Enable Image Recognition");
+        chckEnableImageRecognition.setText(ComposerExecutionMessageConstants.PREF_WEBUI_LBL_ENABLE_IMAGE_RECOGNITION);
         chckEnableImageRecognition.setLayoutData(gdChckEnableImageRecognition);
 
         /*
@@ -233,7 +233,7 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
     @Override
     protected void initialize() throws IOException {
         Boolean selectedSmartWaitMode = defaultSettingStore.getDefaultSmartWaitMode();
-        cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
+        cbDefaultSmartWait.setItems(ENABLE_DISABLE_ITEMS);
         cbDefaultSmartWait.select(selectedSmartWaitMode.booleanValue() ? 0 : 1);
 
         /*
@@ -290,7 +290,7 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
                     .setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED);
         }
 
-        cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
+        cbDefaultSmartWait.setItems(ENABLE_DISABLE_ITEMS);
         cbDefaultSmartWait.select(0);
 
         radioUsePageLoadTimeout.setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ENABLE_PAGE_LOAD_TIMEOUT);
@@ -327,6 +327,10 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
 
     @Override
     protected boolean saveSettings() {
+        if (!isValid()) {
+            return false;
+        }
+
         try {
             if (chckEnableImageRecognition != null) {
                 webUISettingStore.setDefaultImageRecognitionEnabled(chckEnableImageRecognition.getSelection());
