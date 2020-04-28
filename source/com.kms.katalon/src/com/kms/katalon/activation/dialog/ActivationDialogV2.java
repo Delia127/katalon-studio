@@ -93,7 +93,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Link lnkAgreeTerm;
     
-    private Link lnkLearnAboutKSE;
+    private Link lnkTroubleshoot;
 
     private Composite organizationComposite;
     
@@ -150,7 +150,7 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
         
-        lnkLearnAboutKSE.addSelectionListener(new SelectionAdapter() {
+        lnkTroubleshoot.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch(e.text);
@@ -396,6 +396,10 @@ public class ActivationDialogV2 extends AbstractDialog {
             lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
         lblProgressMessage.getParent().layout();
+        Composite parent = lblProgressMessage.getParent();
+        ((GridData) parent.getLayoutData()).widthHint = parent.getSize().x;
+        lblProgressMessage.getShell().pack();
+        ((GridData) parent.getLayoutData()).widthHint = SWT.DEFAULT;
     }
 
     @Override
@@ -476,20 +480,14 @@ public class ActivationDialogV2 extends AbstractDialog {
         gdLogInComposite.marginWidth = 0;
         activateComposite.setLayout(gdLogInComposite);
 
-        lblProgressMessage = new Label(activateComposite, SWT.NONE);
-        GridData gdStatus = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-        gdStatus.heightHint = 40;
+        lblProgressMessage = new Label(activateComposite, SWT.WRAP);
+        GridData gdStatus = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         lblProgressMessage.setLayoutData(gdStatus);
 
-        Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
-        activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
-        GridLayout gdActivateRight = new GridLayout(1, false);
-        gdActivateRight.marginHeight = 0;
-        gdActivateRight.marginWidth = 0;
-        activateRightComposite.setLayout(gdActivateRight);
-
-        btnActivate = new Button(activateRightComposite, SWT.NONE);
-        btnActivate.setLayoutData(gdBtn);
+        GridData gdBtnActivate = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+        gdBtnActivate.widthHint = 100;
+        btnActivate = new Button(activateComposite, SWT.NONE);
+        btnActivate.setLayoutData(gdBtnActivate);
         btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
         getShell().setDefaultButton(btnActivate);
 
@@ -563,10 +561,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         gdBottomBarTerm.marginWidth = 10;
         gdBottomBarTerm.marginHeight = 0;
         bottomTerm.setLayout(gdBottomBarTerm);
-        
-        lnkLearnAboutKSE = new Link(bottomTerm, SWT.WRAP);
-        lnkLearnAboutKSE.setText(MessageConstants.ActivationDialogV2_LBL_LEARN_ABOUT_KSE);
-        
+
         lnkAgreeTerm = new Link(bottomTerm, SWT.WRAP);
         lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);
         
@@ -587,6 +582,13 @@ public class ActivationDialogV2 extends AbstractDialog {
         lnkSwitchToSignupDialog = new Link(bottomLeftComposite, SWT.NONE);
         lnkSwitchToSignupDialog.setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_REGISTER));
 
+        Composite bottomRightComposite = new Composite(bottomBar, SWT.NONE);
+        bottomRightComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        bottomRightComposite.setLayout(new GridLayout(1, false));
+        
+        lnkTroubleshoot = new Link(bottomRightComposite, SWT.WRAP);
+        lnkTroubleshoot.setText(MessageConstants.ActivationDialogV2_LBL_TROUBLESHOOT);
+        
         Composite linkBar = new Composite(buttonBar, SWT.NONE);
         linkBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         linkBar.setLayout(new GridLayout(7, false));

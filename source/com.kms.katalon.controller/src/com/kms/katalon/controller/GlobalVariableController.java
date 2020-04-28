@@ -105,6 +105,19 @@ public class GlobalVariableController extends EntityController {
         }
     }
 
+    public ExecutionProfileEntity getDefaultExecutionProfile(ProjectEntity project) throws ControllerException {
+        try {
+            return getDataProviderSetting().getGlobalVariableDataProvider()
+                    .getAll(project)
+                    .stream()
+                    .filter(profile -> profile.isDefaultProfile())
+                    .findAny()
+                    .orElse(null);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
+    }
+
     public ExecutionProfileEntity newExecutionProfile(String newName, ProjectEntity project) throws ControllerException {
         ExecutionProfileEntity newProfile;
         try {
