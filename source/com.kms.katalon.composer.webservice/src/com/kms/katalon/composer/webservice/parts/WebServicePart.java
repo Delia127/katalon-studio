@@ -864,6 +864,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             requestEntity.setConnectionTimeout(RequestObject.TIMEOUT_UNSET);
             requestEntity.setSocketTimeout(RequestObject.TIMEOUT_UNSET);
         }
+
+        if (LicenseUtil.isNotFreeLicense()) {
+            WebServiceExecutionSettingStore settingStore = WebServiceExecutionSettingStore.getStore();
+            requestEntity.setMaxResponseSize(settingStore.getMaxResponseSize());
+        } else {
+            requestEntity.setMaxResponseSize(RequestObject.MAX_RESPONSE_SIZE_UNSET);
+        }
     }
 
     protected void deleteTempHarFile() {

@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.webservice.constants;
+package com.kms.katalon.execution.constants;
 
 public class WebServiceExecutionSettingConstants {
 

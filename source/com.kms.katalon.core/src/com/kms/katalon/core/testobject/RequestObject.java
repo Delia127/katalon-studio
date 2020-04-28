@@ -18,6 +18,18 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     public static final int DEFAULT_TIMEOUT = -1;
 
+    public static final long MAX_RESPONSE_SIZE_UNSET = -2;
+
+    /**
+     * Set response size limit to this value mean to this request has no response size limit
+     */
+    public static final long MAX_RESPONSE_SIZE_UNLIMITED = -1;
+
+    /**
+     * The default maximum response size. Default value is same to unlimited.
+     */
+    public static final long DEFAULT_MAX_RESPONSE_SIZE = MAX_RESPONSE_SIZE_UNLIMITED;
+
     private static final String DF_CHARSET = "UTF-8";
 
     private String name;
@@ -58,6 +70,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     private int connectionTimeout = TIMEOUT_UNSET;
     
     private int socketTimeout = TIMEOUT_UNSET;
+    
+    private long maxResponseSize = RequestObject.MAX_RESPONSE_SIZE_UNSET;
 
     private ProxyInformation proxy;
 
@@ -374,7 +388,7 @@ public class RequestObject extends TestObject implements HttpMessage {
     }
 
     /**
-     * Get the connection timeout of this request.
+     * Get the connection timeout of this request in milliseconds.
      */
     public int getConnectionTimeout() {
         return connectionTimeout;
@@ -389,7 +403,7 @@ public class RequestObject extends TestObject implements HttpMessage {
     }
 
     /**
-     * Get the socket timeout of this request.
+     * Get the socket timeout of this request in milliseconds.
      */
     public int getSocketTimeout() {
         return socketTimeout;
@@ -401,5 +415,28 @@ public class RequestObject extends TestObject implements HttpMessage {
      */
     public void setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
+    }
+
+    /**
+     * Get the maximum response size of this request in bytes.
+     * @since 7.6.0
+     */
+    public long getMaxResponseSize() {
+        return maxResponseSize;
+    }
+
+    /**
+     * Set the maximum response size for this request.
+     * @param maxResponseSize The response size limit in bytes
+     * <br>Additional available values:
+     * <ul>
+     *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNLIMITED</b>: Set the maximum response size of this request to unlimited</li>
+     *  <li><b>RequestObject.DEFAULT_MAX_RESPONSE_SIZE</b>: Set the maximum response size of this request to the default value (unlimited)</li>
+     *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNSET</b>: Unset the maximum response size of this request. The project's maximum response size will be used</li>
+     * </ul>
+     * @since 7.6.0
+     */
+    public void setMaxResponseSize(long maxResponseSize) {
+        this.maxResponseSize = maxResponseSize;
     }
 }

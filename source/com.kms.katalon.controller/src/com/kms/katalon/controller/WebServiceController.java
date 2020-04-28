@@ -54,6 +54,7 @@ public class WebServiceController extends EntityController {
         
         requestObject.setConnectionTimeout(entity.getConnectionTimeout());
         requestObject.setSocketTimeout(entity.getSocketTimeout());
+        requestObject.setMaxResponseSize(entity.getMaxResponseSize());
         
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(substitutor.replace(entity.getWsdlAddress()));

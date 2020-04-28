@@ -223,6 +223,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         
         propertyMap.put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_TIMEOUT, LicenseUtil.isNotFreeLicense());
         
+        propertyMap.put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_RESPONSE_SIZE_LIMIT, LicenseUtil.isNotFreeLicense());
+        
         return propertyMap;
     }
     

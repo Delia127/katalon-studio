@@ -64,10 +64,12 @@ import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.ConnectionTimeoutException;
+import com.kms.katalon.core.webservice.exception.ResponseSizeLimitException;
 import com.kms.katalon.core.webservice.exception.SocketTimeoutException;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.util.WSDLUtil;
+import com.kms.katalon.core.webservice.util.WebServiceCommonUtil;
 import com.kms.katalon.util.Tools;
 
 public class SoapClient extends BasicRequestor {
@@ -272,6 +274,15 @@ public class SoapClient extends BasicRequestor {
         HttpEntity responseEntity = response.getEntity();
         if (responseEntity != null) {
             bodyLength = responseEntity.getContentLength();
+
+            long totalResponseSize = headerLength + bodyLength;
+            long maxResponseSize = requestObject.getMaxResponseSize();
+            boolean shouldLimitResponseSize = WebServiceCommonUtil.isLimitedRequestResponseSize(maxResponseSize);
+            if (shouldLimitResponseSize && totalResponseSize > maxResponseSize) {
+                post.abort();
+                throw new ResponseSizeLimitException();
+            }
+
             startTime = System.currentTimeMillis();
             try {
                 responseBody = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
@@ -297,7 +308,6 @@ public class SoapClient extends BasicRequestor {
         
         return responseObject;
     }
-    
     
 
     public String getServiceName() {

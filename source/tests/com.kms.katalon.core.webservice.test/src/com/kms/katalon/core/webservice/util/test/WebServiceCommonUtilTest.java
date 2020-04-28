@@ -7,6 +7,7 @@ import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.webservice.util.WebServiceCommonUtil;
 
 public class WebServiceCommonUtilTest {
+
     @Test
     public void isUnsetRequestTimeoutTest() {
         // Given
@@ -17,5 +18,17 @@ public class WebServiceCommonUtilTest {
 
         // Then
         Assert.assertEquals(true, isUnsetTimeout);
+    }
+
+    @Test
+    public void isUnsetRequestMaxResponseSizeTest() {
+        // Given
+        long maxResponseSizeUnset = RequestObject.MAX_RESPONSE_SIZE_UNSET;
+
+        // When
+        boolean isUnsetMaxResponseSize = WebServiceCommonUtil.isUnsetMaxRequestResponseSize(maxResponseSizeUnset);
+
+        // Then
+        Assert.assertEquals(true, isUnsetMaxResponseSize);
     }
 }

@@ -20,9 +20,13 @@ import com.kms.katalon.feature.KSEFeature;
 
 public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage {
 
+    public static final short RESPONSE_SIZE_MIN_VALUE = 0;
+
+    public static final int RESPONSE_SIZE_MAX_VALUE = Integer.MAX_VALUE;
+
     private WebServiceExecutionSettingStore webServiceSettingStore;
 
-    private Text txtConnectionTimeout, txtSocketTimeout;
+    private Text txtConnectionTimeout, txtSocketTimeout, txtResponseSizeLimit;
 
     public WebServiceExecutionSettingPage() {
         webServiceSettingStore = WebServiceExecutionSettingStore.getStore();
@@ -69,6 +73,17 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
         gdTxtSocketTimeout.widthHint = INPUT_WIDTH;
         txtSocketTimeout.setLayoutData(gdTxtSocketTimeout);
         txtSocketTimeout.setEnabled(canCustomizeRequestTimeout());
+
+        Label lblResponseSizeLimit = new Label(httpComposite, SWT.NONE);
+        lblResponseSizeLimit.setText(ComposerExecutionMessageConstants.PREF_WEBSERVICE_LBL_MAX_RESPONSE_SIZE);
+        GridData gdLblResponseSizeLimit = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblResponseSizeLimit.setLayoutData(gdLblResponseSizeLimit);
+
+        txtResponseSizeLimit = new Text(httpComposite, SWT.BORDER);
+        GridData gdTxtResponseSizeLimit = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdTxtResponseSizeLimit.widthHint = INPUT_WIDTH;
+        txtResponseSizeLimit.setLayoutData(gdTxtResponseSizeLimit);
+        txtResponseSizeLimit.setEnabled(canCustomizeResponseSize());
     }
 
     @Override
@@ -76,6 +91,8 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
         addNumberVerification(txtConnectionTimeout, TIMEOUT_MIN_VALUE_IN_MILISEC, TIMEOUT_MAX_VALUE_IN_MILISEC, true,
                 StringUtils.EMPTY);
         addNumberVerification(txtSocketTimeout, TIMEOUT_MIN_VALUE_IN_MILISEC, TIMEOUT_MAX_VALUE_IN_MILISEC, true,
+                StringUtils.EMPTY);
+        addNumberVerification(txtResponseSizeLimit, RESPONSE_SIZE_MIN_VALUE, RESPONSE_SIZE_MAX_VALUE, true,
                 StringUtils.EMPTY);
 
         if (!canCustomizeRequestTimeout()) {
@@ -95,6 +112,11 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
         if (!isDefaultSocketTimeout) {
             txtSocketTimeout.setText(String.valueOf(socketTimeout));
         }
+        long responseSizeLimit = webServiceSettingStore.getMaxResponseSize();
+        boolean isDefaultResponseSizeLimit = responseSizeLimit == WebServiceExecutionSettingStore.EXECUTION_DEFAULT_MAX_RESPONSE_SIZE;
+        if (!isDefaultResponseSizeLimit) {
+            txtResponseSizeLimit.setText(String.valueOf(responseSizeLimit));
+        }
     }
 
     @Override
@@ -105,6 +127,7 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
 
         txtConnectionTimeout.setText(StringUtils.EMPTY);
         txtSocketTimeout.setText(StringUtils.EMPTY);
+        txtResponseSizeLimit.setText(StringUtils.EMPTY);
 
         super.performDefaults();
     }
@@ -125,6 +148,11 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
                     ? Integer.parseInt(txtSocketTimeout.getText())
                     : WebServiceExecutionSettingStore.EXECUTION_DEFAULT_SOCKET_TIMEOUT_MS;
             webServiceSettingStore.setSocketTimeout(socketTimeout);
+
+            long responseSizeLimit = StringUtils.isNotBlank(txtResponseSizeLimit.getText())
+                    ? Integer.parseInt(txtResponseSizeLimit.getText())
+                    : WebServiceExecutionSettingStore.EXECUTION_DEFAULT_MAX_RESPONSE_SIZE;
+            webServiceSettingStore.setMaxResponseSize(responseSizeLimit);
         } catch (IOException error) {
             LoggerSingleton.logError(error);
             return false;
@@ -136,7 +164,8 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
     @Override
     protected boolean hasChanged() {
         if (webServiceSettingStore == null || txtConnectionTimeout == null || txtConnectionTimeout.isDisposed()
-                || txtSocketTimeout == null || txtSocketTimeout.isDisposed()) {
+                || txtSocketTimeout == null || txtSocketTimeout.isDisposed() || txtResponseSizeLimit == null
+                || txtResponseSizeLimit.isDisposed()) {
             return false;
         }
 
@@ -153,13 +182,23 @@ public class WebServiceExecutionSettingPage extends AbstractExecutionSettingPage
                     : WebServiceExecutionSettingStore.EXECUTION_DEFAULT_SOCKET_TIMEOUT_MS;
             boolean hasSocketTimeoutChanged = currentSocketTimeout != originalSocketTimeout;
 
-            return hasConnectionTimeoutChanged || hasSocketTimeoutChanged;
+            long originalResponseSizeLimit = webServiceSettingStore.getMaxResponseSize();
+            long currentResponseSizeLimit = StringUtils.isNotBlank(txtResponseSizeLimit.getText())
+                    ? Integer.parseInt(txtResponseSizeLimit.getText())
+                    : WebServiceExecutionSettingStore.EXECUTION_DEFAULT_MAX_RESPONSE_SIZE;
+            boolean hasResponseSizeLimitChanged = currentResponseSizeLimit != originalResponseSizeLimit;
+
+            return hasConnectionTimeoutChanged || hasSocketTimeoutChanged || hasResponseSizeLimitChanged;
         } catch (IOException e) {
             return false;
         }
     }
 
     private boolean canCustomizeRequestTimeout() {
+        return LicenseUtil.isNotFreeLicense();
+    }
+
+    private boolean canCustomizeResponseSize() {
         return LicenseUtil.isNotFreeLicense();
     }
 }

@@ -140,7 +140,19 @@ public class MultiStatusErrorDialog extends AbstractDialog {
         lblTitle.setText(StringUtils.defaultString(title));
         lblDescription.setText(StringUtils.defaultString(errorDescription));
         txtDetails.setText(StringUtils.defaultString(detailsMessage));
+        updateLayout();
+    }
+    
+    private void updateLayout() {
         updateDetailsCompositeAndButton();
+        updateDescriptionLayout();
+    }
+    
+    private void updateDescriptionLayout() {
+        GridData gdLblDescription = (GridData) lblDescription.getLayoutData();
+        gdLblDescription.widthHint = lblDescription.getSize().x;
+        lblDescription.getShell().pack();
+        gdLblDescription.widthHint = SWT.DEFAULT;
     }
 
     private void updateDetailsCompositeAndButton() {

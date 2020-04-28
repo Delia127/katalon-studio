@@ -37,10 +37,12 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.ConnectionTimeoutException;
+import com.kms.katalon.core.webservice.exception.ResponseSizeLimitException;
 import com.kms.katalon.core.webservice.exception.SocketTimeoutException;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
+import com.kms.katalon.core.webservice.util.WebServiceCommonUtil;
 
 public class RestfulClient extends BasicRequestor {
 
@@ -124,7 +126,7 @@ public class RestfulClient extends BasicRequestor {
         // Default if not set
         setHttpConnectionHeaders(httpRequest, request);
         
-        ResponseObject responseObject = response(httpClient, httpRequest);
+        ResponseObject responseObject = response(httpClient, httpRequest, request);
         
         IOUtils.closeQuietly(httpClient);
 
@@ -185,7 +187,7 @@ public class RestfulClient extends BasicRequestor {
         }
     }
     
-    private ResponseObject response(CloseableHttpClient httpClient, BaseHttpRequest httpRequest) throws Exception {
+    private ResponseObject response(CloseableHttpClient httpClient, BaseHttpRequest httpRequest, RequestObject requestObject) throws Exception {
         if (httpClient == null || httpRequest == null) {
             return null;
         }
@@ -206,11 +208,21 @@ public class RestfulClient extends BasicRequestor {
         long contentDownloadTime = 0L;
         String responseBody = StringUtils.EMPTY;
 
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(response);
         long bodyLength = 0L;
         
         HttpEntity responseEntity = response.getEntity();
         if (responseEntity != null) {
             bodyLength = responseEntity.getContentLength();
+
+            long totalResponseSize = headerLength + bodyLength;
+            long maxResponseSize = requestObject.getMaxResponseSize();
+            boolean isLimitResponseSize = WebServiceCommonUtil.isLimitedRequestResponseSize(maxResponseSize);
+            if (isLimitResponseSize && totalResponseSize > maxResponseSize) {
+                httpRequest.abort();
+                throw new ResponseSizeLimitException();
+            }
+
             startTime = System.currentTimeMillis();
             try {
                 responseBody = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
@@ -219,8 +231,6 @@ public class RestfulClient extends BasicRequestor {
             }
             contentDownloadTime = System.currentTimeMillis() - startTime;
         }
-        
-        long headerLength = WebServiceCommonHelper.calculateHeaderLength(response);
 
         ResponseObject responseObject = new ResponseObject(responseBody);
         responseObject.setContentType(getResponseContentType(response));
