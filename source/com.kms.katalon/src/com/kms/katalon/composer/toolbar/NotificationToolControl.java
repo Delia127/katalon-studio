@@ -442,17 +442,18 @@ public class NotificationToolControl {
     }
     
     private List<PopupNotification> getPopupKatalonNotifications() {
-        List<TrackedNotification> trackedNotifications = InternallyGetTrackedNotifications(TRACKED_KATALON_NOTIFICATIONS_FILE_NAME);
+        List<TrackedNotification> trackedNotifications = InternallyGetTrackedNotifications(
+                TRACKED_KATALON_NOTIFICATIONS_FILE_NAME);
         Map<String, TrackedNotification> trackedById = trackedById(trackedNotifications);
         Date currentDate = new Date();
         List<KatalonNotificationContent> notifications = getKatalonNotificationContent().stream().filter(content -> {
             if (trackedById.containsKey(content.getId())) {
                 return true;
             }
-            if(content.getStartDate() != null && content.getStartDate().after(currentDate)) {
+            if (content.getStartDate() != null && content.getStartDate().after(currentDate)) {
                 return false;
             }
-            if(content.getEndDate() != null && content.getEndDate().before(currentDate)) {
+            if (content.getEndDate() != null && content.getEndDate().before(currentDate)) {
                 return false;
             }
             return true;
@@ -487,7 +488,8 @@ public class NotificationToolControl {
     }
     
     private static String executeRequest(HttpUriRequest httpRequest, boolean isSilent) throws Exception {
-        HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation(), httpRequest.getURI().toURL().toString());
+        HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation(),
+                httpRequest.getURI().toURL().toString());
 
         HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
         HttpResponse httpResponse = httpClient.execute(httpRequest);
@@ -499,13 +501,13 @@ public class NotificationToolControl {
             responseString = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
         }
 
-        if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_CREATED || statusCode == HttpStatus.SC_NO_CONTENT) {
+        if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_CREATED
+                || statusCode == HttpStatus.SC_NO_CONTENT) {
             return responseString;
         }
 
         if (!isSilent) {
-            LogUtil.logError(MessageFormat.format(
-                    "Katalon notifications, URL: {0}, Status: {1}, Response: {2}",
+            LogUtil.logError(MessageFormat.format("Katalon notifications, URL: {0}, Status: {1}, Response: {2}",
                     httpRequest.getURI().toString(), statusCode, responseString));
         }
         throw new Exception(responseString);
