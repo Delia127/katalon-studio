@@ -120,7 +120,7 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
                 if (packageList.contains(packageName)) {
                     KeywordBrowserFolderTreeEntity classFolder = (KeywordBrowserFolderTreeEntity) childTreeEntityList
                             .get(packageList.indexOf(packageName));
-                    classFolder.appendNewChildren(keywordFolder);
+                    classFolder.appendNewChild(keywordFolder);
                 } else {
                     packageList.add(packageName);
                     childTreeEntityList.add(packageFolder);
