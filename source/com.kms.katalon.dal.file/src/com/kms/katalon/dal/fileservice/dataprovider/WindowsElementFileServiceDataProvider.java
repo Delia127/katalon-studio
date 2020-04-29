@@ -92,7 +92,7 @@ public class WindowsElementFileServiceDataProvider implements IWindowsElementDat
             if (currentWindowsElementEntity == null) {
                 return null;
             }
-
+            String oldId = currentWindowsElementEntity.getIdForDisplay();
             checkDuplicate(currentWindowsElementEntity.getParentFolder(), newName);
 
             getEntityService().deleteEntity(currentWindowsElementEntity);
@@ -100,7 +100,8 @@ public class WindowsElementFileServiceDataProvider implements IWindowsElementDat
             currentWindowsElementEntity.setName(newName);
 
             getEntityService().saveEntity(currentWindowsElementEntity);
-
+            TestArtifactScriptRefactor.createForWindowsObjectEntity(oldId).updateReferenceForProject(
+                    currentWindowsElementEntity.getIdForDisplay(), currentWindowsElementEntity.getProject());
             return currentWindowsElementEntity;
         } catch (Exception e) {
             throw new DALException(e);

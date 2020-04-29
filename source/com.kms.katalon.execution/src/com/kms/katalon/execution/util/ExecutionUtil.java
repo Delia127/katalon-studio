@@ -158,9 +158,9 @@ public class ExecutionUtil {
         
         executionProperties.put(RunConfiguration.GLOBAL_SMART_WAIT_MODE,
                 ExecutionUtil.getDefaultSmartWaitMode().booleanValue());
-        
-        executionProperties.put(RunConfiguration.LOG_TEST_STEPS,
-                featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION) && ExecutionUtil.getLogTestSteps().booleanValue());
+
+        boolean doLogTestStep = featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION) ? ExecutionUtil.getLogTestSteps().booleanValue() : true;
+        executionProperties.put(RunConfiguration.LOG_TEST_STEPS, doLogTestStep);
 
         propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
 
@@ -247,7 +247,9 @@ public class ExecutionUtil {
 
         DefaultRerunSetting rerunSetting = new DefaultRerunSetting(prevExecuted.getPreviousRerunTimes() + 1,
                 prevExecuted.getRemainingRerunTimes() - 1, prevExecuted.isRerunFailedTestCasesOnly());
-
+        // We need to remember this setting to use it later 
+        rerunSetting.setRerunFailedTestCaseAndTestDataOnly(prevExecuted.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly());
+        
         TestSuiteExecutedEntity newExecutedEntity = new TestSuiteExecutedEntity(testSuite, rerunSetting);
         newExecutedEntity.setReportLocation(prevExecuted.getReportLocationSetting());
         newExecutedEntity.setTestDataMap(prevExecuted.getTestDataMap());

@@ -259,12 +259,14 @@ public class EntityFileServiceManager {
 
     public static void deleteFolder(FolderEntity folder) throws Exception {
         if (folder != null) {
-            List<FileEntity> childEntities = getChildren(folder, FileEntity.class);
-            for (FileEntity childEntity : childEntities) {
-                if (childEntity instanceof FolderEntity) {
-                    deleteFolder((FolderEntity) childEntity);
-                } else {
-                    delete(childEntity);
+            if (folder.getFolderType() != FolderType.USER) {
+                List<FileEntity> childEntities = getChildren(folder, FileEntity.class);
+                for (FileEntity childEntity : childEntities) {
+                    if (childEntity instanceof FolderEntity) {
+                        deleteFolder((FolderEntity) childEntity);
+                    } else {
+                        delete(childEntity);
+                    }
                 }
             }
             EntityService.getInstance().deleteEntity(folder);

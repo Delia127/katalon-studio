@@ -151,6 +151,10 @@ public class LocalInformationUtil {
                 markedArgs.add("-apiKeyOnPremise=******");
                 continue;
             }
+            if(arg.startsWith("-proxy.password=")) {
+                markedArgs.add("-proxy.password=******");
+                continue;
+            }
             markedArgs.add(arg);
         }
         return StringUtils.join(markedArgs.toArray(new String[0]), " ");

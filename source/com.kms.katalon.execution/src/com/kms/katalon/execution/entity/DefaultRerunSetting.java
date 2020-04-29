@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.execution.console.entity.BooleanConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
@@ -14,14 +15,17 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     public static final int DEFAULT_RERUN_TIME = 0;
     private static final int DEFAULT_PREVIOUS_RUN_TIME = 0;
     public static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_ONLY = false;
-
+    public static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_TEST_DATA_ONLY = false;
     public final static String RETRY_OPTION = "retry";
     public final static String RETRY_FAIL_TEST_CASE_ONLY_OPTION = "retryFailedTestCases";
-
+    public final static String RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION = "retryFailedTestCasesTestData";
+    
     private int previousRerunTimes;
     private int remainingRerunTimes;
     private boolean rerunFailedTestCaseOnly;
+    private boolean rerunFailedTestCaseWithTestDataOnly;
     private boolean overrideRerunFailedTestCaseOnly;
+    private boolean overrideRerunFailedTestCaseWithTestDataOnly;
     private boolean overrideRemainingRerunTimes;
 
     public static final IntegerConsoleOption RETRY_CONSOLE_OPTION = new IntegerConsoleOption() {
@@ -40,6 +44,13 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         @Override
         public String getOption() {
             return RETRY_FAIL_TEST_CASE_ONLY_OPTION;
+        }
+    };
+    
+    public static final BooleanConsoleOption RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION = new BooleanConsoleOption() {
+        @Override
+        public String getOption() {
+            return RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION;
         }
     };
 
@@ -89,6 +100,7 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
         consoleOptionList.add(RETRY_CONSOLE_OPTION);
         consoleOptionList.add(RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION);
+        consoleOptionList.add(RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION);
         return consoleOptionList;
     }
 
@@ -103,6 +115,9 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         } else if (consoleOption == RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION) {
             setRerunFailedTestCaseOnly(Boolean.valueOf(argumentValue));
             overrideRerunFailedTestCaseOnly = true;
+        } else if (consoleOption == RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION) {
+            setRerunFailedTestCaseAndTestDataOnly(Boolean.valueOf(argumentValue));
+            overrideRerunFailedTestCaseWithTestDataOnly = true;
         }
     }
 
@@ -117,7 +132,20 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         if (!overrideRerunFailedTestCaseOnly) {
             setRerunFailedTestCaseOnly(rerunable.isRerunFailedTestCasesOnly());
         }
+        
+        if (!overrideRerunFailedTestCaseWithTestDataOnly) {
+            setRerunFailedTestCaseAndTestDataOnly(rerunable.isRerunFailedTestCasesAndTestDataOnly());
+        }
         return this;
+    }
+    
+    public void setRerunFailedTestCaseAndTestDataOnly(boolean val) {
+        this.rerunFailedTestCaseWithTestDataOnly = val;
+    }
+
+    @Override
+    public boolean isRerunFailedTestCasesAndTestDataOnly() {
+        return rerunFailedTestCaseWithTestDataOnly;
     }
 
 }

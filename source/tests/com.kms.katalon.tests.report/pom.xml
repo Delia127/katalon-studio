@@ -103,11 +103,23 @@
 		</dependency>
 		<dependency>
 			<groupId>com.kms</groupId>
-			<artifactId>com.kms.katalon.composer.testcase</artifactId>
+			<artifactId>com.kms.katalon.composer.webui</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.composer.webui.test</artifactId>	
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+    <dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.composer.testcase</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>  	
+    <dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.composer.testcase.test</artifactId>
 			<version>${project.version}</version>
@@ -115,10 +127,23 @@
 		</dependency>
 		<dependency>
 			<groupId>com.kms</groupId>
-			<artifactId>com.kms.katalon.execution.mobile</artifactId>
+			<artifactId>com.kms.katalon.core.webui</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
+	<dependency>
+			<groupId>com.kms</groupId>
+			 <artifactId>com.kms.katalon.core.webui.test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>		
+    </dependency> 
+    <dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.execution.mobile</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency> 
+     
 		<dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.execution.mobile.test</artifactId>
@@ -146,18 +171,6 @@
 		<dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.execution.webui.test</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.kms</groupId>
-			<artifactId>com.kms.katalon.core.webui</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.kms</groupId>
-			<artifactId>com.kms.katalon.core.webui.test</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

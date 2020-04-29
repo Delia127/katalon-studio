@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerTestsuiteMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.testsuite.constants.composerTestsuiteMessages";
 
+    public static String PA_LBL_TEST_CASE_TEST_DATA_ONLY;
+
     public static String INFORMATION_TITLE;
 
     public static String CONS_ADD_BEFORE;
@@ -174,6 +176,8 @@ public class ComposerTestsuiteMessageConstants extends NLS {
     public static String HAND_WARN_TS_REQUIRES_PLUGIN_DYNAMIC_EXECUTION_TO_OPEN;
     
     public static String DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE;
+
+    public static String PA_LBL_TOOLTIP_TEST_CASE_TEST_DATA_ONLY;
 
     static {
         // initialize resource bundle
