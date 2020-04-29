@@ -124,6 +124,8 @@ public class RunConfiguration {
     
     public static final String VM_ARGUMENTS = "vmArguments";
     
+    public static final String TC_BINDINGS_OF_FAILED_TEST_CASES = "currentFailedTcBindings";
+    
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>(){

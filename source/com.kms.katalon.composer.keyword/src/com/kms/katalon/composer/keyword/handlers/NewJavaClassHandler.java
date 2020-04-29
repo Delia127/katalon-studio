@@ -131,7 +131,7 @@ public class NewJavaClassHandler {
         valuePlaceholder.put("class", typeName);
         String javaFileContent = StrSubstitutor.replace(javaTemplateContent, valuePlaceholder);
 
-        File newJavaFile = new File(parentPackage.getResource().getRawLocationURI().toURL().getFile(),
+        File newJavaFile = new File(parentPackage.getResource().getRawLocation().toFile(),
                 typeName + GroovyConstants.JAVA_FILE_EXTENSION);
         FileUtils.write(newJavaFile, javaFileContent, StandardCharsets.UTF_8);
         return parentPackage.getCompilationUnit(typeName+ GroovyConstants.JAVA_FILE_EXTENSION);

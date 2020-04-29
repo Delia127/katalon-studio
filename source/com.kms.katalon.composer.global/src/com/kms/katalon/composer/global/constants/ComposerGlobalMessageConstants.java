@@ -53,6 +53,9 @@ public class ComposerGlobalMessageConstants extends NLS {
     
     // NewExecutionProfilePopupMenu
     public static String ITEM_LBL_NEW_EXECUTION_PROFILE;
+    
+    // SetDefaultExecutionProfilePopupMenu
+    public static String ITEM_LBL_SET_DEFAULT_EXECUTION_PROFILE;
 
     static {
         // initialize resource bundle
