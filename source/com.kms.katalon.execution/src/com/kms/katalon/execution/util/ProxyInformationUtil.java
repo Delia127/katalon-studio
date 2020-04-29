@@ -1,9 +1,6 @@
 package com.kms.katalon.execution.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.kms.katalon.core.network.ProxyInformation;
-import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.logging.LogUtil;
 
@@ -30,37 +27,35 @@ public class ProxyInformationUtil {
 
     @SuppressWarnings("deprecation")
     public static void printLegacyProxyInfo() {
-        LogUtil.logInfo("INFO: > Legacy Proxy:");
-        printProxyInfo(ExecutionProxyUtil.getProxyInformation());
+        String rawLegacyProxyInfo = getRawProxyInfo(ExecutionProxyUtil.getProxyInformation());
+        LogUtil.logInfo("INFO: > Legacy Proxy: " + rawLegacyProxyInfo);
     }
 
     public static void printAuthProxyInfo() {
-        LogUtil.logInfo("INFO: > Authentication Proxy:");
-        printProxyInfo(ExecutionProxyUtil.getAuthProxyInformation());
+        String rawAuthProxyInfo = getRawProxyInfo(ExecutionProxyUtil.getAuthProxyInformation());
+        LogUtil.logInfo("INFO: > Authentication Proxy: " + rawAuthProxyInfo);
     }
 
     public static void printSystemProxyInfo() {
-        LogUtil.logInfo("INFO: > System Proxy:");
-        ProxyInformation systemProxyInfo = ExecutionProxyUtil.getSystemProxyInformation();
-        printProxyInfo(systemProxyInfo);
-        if (ProxyOption.NO_PROXY != ProxyOption.valueOf(systemProxyInfo.getProxyOption())) {
-            LogUtil.logInfo("INFO: Auto apply proxy to desired capabilities: " + systemProxyInfo.isApplyToDesiredCapabilities());
-        }
+        String rawSystemProxyInfo = getRawProxyInfo(ExecutionProxyUtil.getSystemProxyInformation());
+        LogUtil.logInfo("INFO: > System Proxy: " + rawSystemProxyInfo);
     }
 
-    public static void printProxyInfo(ProxyInformation proxyInfo) {
-        LogUtil.logInfo("INFO: Proxy option: " + proxyInfo.getProxyOption());
-        if (ProxyOption.MANUAL_CONFIG == ProxyOption.valueOf(proxyInfo.getProxyOption())) {
-            LogUtil.logInfo("INFO: Proxy server type: " + proxyInfo.getProxyServerType());
-            LogUtil.logInfo("INFO: Proxy server address: " + proxyInfo.getProxyServerAddress());
-            LogUtil.logInfo("INFO: Proxy server port: " + proxyInfo.getProxyServerPort());
-            if (StringUtils.isNotBlank(proxyInfo.getExceptionList())) {
-                LogUtil.logInfo("INFO: Proxy exception list: " + proxyInfo.getExceptionList());
-            }
-            if (StringUtils.isNotBlank(proxyInfo.getUsername())) {
-                LogUtil.logInfo("INFO: Proxy username: " + proxyInfo.getUsername());
-                LogUtil.logInfo("INFO: Proxy password: " + "********");
-            }
-        }
+    public static String getRawProxyInfo(ProxyInformation proxyInfo) {
+        return getRawProxyInfo(proxyInfo, false);
+    }
+
+    public static String getRawProxyInfo(ProxyInformation proxyInfo, boolean isSystemProxy) {
+        String rawProxyInfo = "{ "
+                + "proxyOption=" + proxyInfo.getProxyOption() + ", "
+                + "proxyServerType=" + proxyInfo.getProxyServerType() + ", "
+                + "proxyServerAddress=" + proxyInfo.getProxyServerAddress() + ", "
+                + "proxyServerPort=" + proxyInfo.getProxyServerPort() + ", "
+                + "username=" + proxyInfo.getUsername() + ", "
+                + "password=" + "********" + ", "
+                + "executionList=\"" + proxyInfo.getExceptionList() + "\""
+                + (isSystemProxy ? (", isApplyToDesiredCapabilities=" + proxyInfo.isApplyToDesiredCapabilities()) : "")
+                + " }";
+        return rawProxyInfo;
     }
 }
