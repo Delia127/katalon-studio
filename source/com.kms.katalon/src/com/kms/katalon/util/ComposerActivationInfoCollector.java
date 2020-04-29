@@ -55,7 +55,9 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                     }
                     ApplicationInfo.cleanAll();
                 }
+                LogUtil.logInfo("Start checking and mark activated for GUI mode");
                 isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+                LogUtil.logInfo("End checking and mark activated for GUI mode");
                 monitor.done();
             }
         });

@@ -2,11 +2,8 @@ package com.kms.katalon.crypto;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.EncodedKeySpec;
@@ -14,12 +11,14 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
-import com.kms.katalon.license.constants.LicenseConstants;
 import com.google.api.client.util.PemReader;
+import com.kms.katalon.license.constants.LicenseConstants;
 
 public class LicenseHelper {
     private static LicenseHelper serviceInstance;
@@ -36,11 +35,19 @@ public class LicenseHelper {
     
     
     public Map<String, Claim> parseJws(String jws) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+        return parseJws(jws, LicenseConstants.LICENSE_PUBLIC_KEY);
+    }
+    
+    public Map<String, Claim> parseJws(String jws, String publicKeyString) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         if (jws.isEmpty()) {
             return null;
         }
+        
+        if (StringUtils.isBlank(publicKeyString)) {
+            return null;
+        }
 
-        RSAPublicKey publicKey = (RSAPublicKey) getPublicKey();
+        RSAPublicKey publicKey = (RSAPublicKey) getPublicKey(publicKeyString);
         Algorithm algorithm = Algorithm.RSA256(publicKey, null);
 
         JWTVerifier verifier = JWT.require(algorithm)
@@ -53,12 +60,18 @@ public class LicenseHelper {
 //        return parseJws(jws);
 //    }
     
-    public PublicKey getPublicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException  {
-        PublicKey publicKey = null;
+    public PublicKey getDefaultPublicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException  {
+        return getPublicKey(LicenseConstants.LICENSE_PUBLIC_KEY);
+    }
+    
+    public PublicKey getPublicKey(String publicKeyString) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
+        if (StringUtils.isBlank(publicKeyString)) {
+            return null;
+        }
 
         KeyFactory kf = KeyFactory.getInstance("RSA");
-        EncodedKeySpec keySpec = new X509EncodedKeySpec(readPemString(LicenseConstants.LICENSE_PUBLIC_KEY));
-        publicKey = kf.generatePublic(keySpec);
+        EncodedKeySpec keySpec = new X509EncodedKeySpec(readPemString(publicKeyString));
+        PublicKey publicKey = kf.generatePublic(keySpec);
 
         return publicKey;
     }

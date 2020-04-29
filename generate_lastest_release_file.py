@@ -7,19 +7,43 @@ def generate_lastest_release_file(file_path, version):
 [
     {
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
-        "file": "win_32"
+        "file": "win_32",
+        "type": "kse"
     },
     {
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_64-${version}.zip",
-        "file": "win_64"
+        "file": "win_64",
+        "type": "kse"
     },
     {
         "location": "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
-        "file": "mac_64"
+        "file": "mac_64",
+        "type": "kse"
     },
     {
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
-        "file": "linux_64"
+        "file": "linux_64",
+        "type": "kse"
+    },
+    {
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Engine_Windows_32-${version}.zip",
+        "file": "win_32",
+        "type": "re"
+    },
+    {
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Engine_Windows_64-${version}.zip",
+        "file": "win_64",
+        "type": "re"
+    },
+    {
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Engine_MacOS-${version}.tar.gz",
+        "file": "mac_64",
+        "type": "re"
+    },
+    {
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Engine_Linux_64-${version}.tar.gz",
+        "file": "linux_64",
+        "type": "re"
     }
 ]
 """)

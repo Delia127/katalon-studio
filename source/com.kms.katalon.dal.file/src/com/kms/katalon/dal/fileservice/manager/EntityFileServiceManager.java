@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
+import com.kms.katalon.dal.fileservice.dataprovider.WindowsElementFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
@@ -24,6 +25,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
@@ -257,12 +259,14 @@ public class EntityFileServiceManager {
 
     public static void deleteFolder(FolderEntity folder) throws Exception {
         if (folder != null) {
-            List<FileEntity> childEntities = getChildren(folder, FileEntity.class);
-            for (FileEntity childEntity : childEntities) {
-                if (childEntity instanceof FolderEntity) {
-                    deleteFolder((FolderEntity) childEntity);
-                } else {
-                    delete(childEntity);
+            if (folder.getFolderType() != FolderType.USER) {
+                List<FileEntity> childEntities = getChildren(folder, FileEntity.class);
+                for (FileEntity childEntity : childEntities) {
+                    if (childEntity instanceof FolderEntity) {
+                        deleteFolder((FolderEntity) childEntity);
+                    } else {
+                        delete(childEntity);
+                    }
                 }
             }
             EntityService.getInstance().deleteEntity(folder);
@@ -439,6 +443,10 @@ public class EntityFileServiceManager {
                     CheckpointFileServiceManager.move((CheckpointEntity) childEntity, newFolder);
                     continue;
                 }
+
+				if (childEntity instanceof WindowsElementEntity) {
+					new WindowsElementFileServiceDataProvider().move(childEntity.getId(), newFolder);
+				}
 
                 if (childEntity instanceof FolderEntity) {
                     moveFolder((FolderEntity) childEntity, newFolder);

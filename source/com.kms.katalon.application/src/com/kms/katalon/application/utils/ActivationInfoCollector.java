@@ -26,6 +26,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
+import com.amazonaws.util.EC2MetadataUtils;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
@@ -40,6 +41,7 @@ import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.license.LicenseService;
+import com.kms.katalon.license.models.AwsKatalonAmi;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
 import com.kms.katalon.license.models.LicenseResource;
@@ -48,14 +50,22 @@ import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationInfoCollector {
-
+    
+    public static final String MACHINE_ID_BYPASS = "katalon-special-license";
+    
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
     public static final String DEFAULT_REASON = ApplicationMessageConstants.LICENSE_INVALID;
 
     private static final String DEFAULT_LICENSE_FOLDER = "license";
 
-    private static final String DEFALUT_LICENSE_EXTENSION = "lic";
+    private static final String DEFAULT_LICENSE_EXTENSION = "lic";
+    
+    private static final String ENV_KATALON_AMI = "KATALON_AMI";
+    
+    private static final String MACHINE_ID_KATALON_AMI = "katalon-ami";
+    
+    private static final String DEFAULT_KATALON_AMI = "true";
 
     private static boolean activated = false;
 
@@ -72,6 +82,10 @@ public class ActivationInfoCollector {
     private static String activationCode;
 
     private static String expirationDate;
+    
+    private static String publicKey;
+    
+    private static String amiLicense;
 
     protected ActivationInfoCollector() {
     }
@@ -91,46 +105,58 @@ public class ActivationInfoCollector {
     public static boolean checkAndMarkActivatedForGUIMode(StringBuilder errorMessage) {
         activated = false;
         try {
-            Organization org = ApplicationInfo.getOrganization();
-            if (org.getId() == null) {
-                activated = false;
-                return activated;
-            }
+            License license = null;
+            publicKey = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PUBLIC_KEY);
 
-            License license = getValidLicense();
-            boolean isOffline = isOffline(license);
-            isLicenseOffline = isOffline;
-            if (!isOffline) {
-                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+            if (isRunOnAmiMachine()) {
+                if (ActivationInfoCollector.getAndCheckAmiMachine()) {
+                    license = getValidLicense();
+                    isLicenseOffline = true; //by default AMI LICENSE is offline license
+                } else {
+                    activated = false;
+                    return activated;
+                }
+            } else {
+                Organization org = ApplicationInfo.getOrganization();
+                if (org.getId() == null) {
+                    activated = false;
+                    return activated;
+                }
+                license = getValidLicense();
+                boolean isOffline = isOffline(license);
+                isLicenseOffline = isOffline;
+                if (!isOffline) {
+                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
 
-                if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(encryptedPassword)) {
-                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                    String machineId = MachineUtil.getMachineId();
-                    LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
+                    if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(encryptedPassword)) {
+                        String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                        String machineId = MachineUtil.getMachineId();
+                        LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
 
-                    if (licenseResource != null) {
-                        license = licenseResource.getLicense();
-                        if (license != null) {
-                            Long orgId = license.getOrganizationId();
-                            if (orgId != null && !orgId.equals(org.getId())) {
-                                String organization = getOrganization(email, password, orgId);
-                                saveOrganization(organization);
+                        if (licenseResource != null) {
+                            license = licenseResource.getLicense();
+                            if (license != null) {
+                                Long orgId = license.getOrganizationId();
+                                if (orgId != null && !orgId.equals(org.getId())) {
+                                    String organization = getOrganization(email, password, orgId);
+                                    saveOrganization(organization);
+                                }
                             }
-                        }
-                        String message = licenseResource.getMessage();
-                        if (!StringUtils.isEmpty(message)) {
-                            LogUtil.logError(message);
+                            String message = licenseResource.getMessage();
+                            if (!StringUtils.isEmpty(message)) {
+                                LogUtil.logError(message);
+                            }
                         }
                     }
                 }
             }
-
             if (license != null) {
                 enableFeatures(license);
                 markActivatedLicenseCode(license.getJwtCode());
                 saveLicenseType(license.getType());
                 saveExpirationDate(license.getExpirationDate());
+
                 activated = true;
             }
         } catch (Exception ex) {
@@ -168,6 +194,10 @@ public class ActivationInfoCollector {
     private static void saveOrganization(Organization org) {
         organization = org;
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(org), true);
+    }
+    
+    private static void savePublicKey(String publicKey) {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PUBLIC_KEY, publicKey, true);
     }
     
     public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, StringBuilder errorMessage) {
@@ -344,11 +374,20 @@ public class ActivationInfoCollector {
 
     public static LicenseResource activate(String userName, String password, String machineId, StringBuilder errorMessage) {
         License license;
+        ActivationInfoCollector.publicKey = null;
         if (!StringUtils.isBlank(password) && !StringUtils.isBlank(machineId)) {
             try {
                 Map<String, String> respond = getLicenseFromTestOps(userName, password, machineId);
                 String jwtCode = respond.get("license");
                 String message = respond.get("errorMessage");
+                String publicKey = respond.get("publicKey");
+                if (StringUtils.isNotBlank(publicKey)) {
+                    ActivationInfoCollector.publicKey = publicKey;
+                    if (KatalonApplication.getKatalonPackage() == KatalonPackage.KSE) {
+                        savePublicKey(publicKey);
+                    }
+                }
+                    
                 license = parseLicense(jwtCode);
 
                 LicenseResource licenseResource = new LicenseResource();
@@ -431,7 +470,12 @@ public class ActivationInfoCollector {
     private static License parseLicense(String jwtCode) throws Exception {
         try {
             if (jwtCode != null && !jwtCode.isEmpty()) {
-                License license = LicenseService.getInstance().parseJws(jwtCode);
+                License license = null;
+                if (StringUtils.isNotBlank(publicKey)) {
+                    license = LicenseService.getInstance().parseJws(jwtCode, publicKey);
+                } else {
+                    license = LicenseService.getInstance().parseJws(jwtCode);
+                }
                 if (isValidLicense(license)) {
                     return license;
                 }
@@ -461,6 +505,7 @@ public class ActivationInfoCollector {
 
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage, RunningMode runningMode) {
         try {
+            ActivationInfoCollector.publicKey = null;
             License license = parseLicense(activationCode);
             if (license != null) {
                 boolean isOffline = isOffline(license);
@@ -512,10 +557,17 @@ public class ActivationInfoCollector {
             
             String activationCode = validActivationCodes.stream().findFirst().get();
             return activateOffline(activationCode, errorMessage, RunningMode.CONSOLE);
-        } catch (Exception e) {
-            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
+        } catch (Exception error) {
+            LogUtil.printAndLogError(error, ApplicationMessageConstants.ACTIVATION_OFFLINE_FAIL);
             return false;
         }
+    }
+    
+    public static boolean activateOfflineForEngineAmiMachine(StringBuilder errorMessage) {
+        if (isRunOnAmiMachine() && getAndCheckAmiMachine()) {
+            return activateOffline(amiLicense, errorMessage, RunningMode.CONSOLE);
+        }
+        return false;
     }
     
     private static boolean isValidLicense(License license, String licenseFileName) {
@@ -563,7 +615,12 @@ public class ActivationInfoCollector {
     }
 
     private static boolean isValidLicense(License license) {
-        boolean isValidMachineId = hasValidMachineId(license);
+        boolean isValidMachineId = false;
+        if (isValidAmiMachineId(license)) {
+            isValidMachineId = true;
+        } else {
+            isValidMachineId = hasValidMachineId(license);
+        }
         boolean isExpired = isExpired(license);
 
         if (isValidMachineId && !isExpired && !license.isTesting()) {
@@ -587,8 +644,15 @@ public class ActivationInfoCollector {
         return false;
     }
 
+    private static boolean isValidAmiMachineId(License license) {
+        return MACHINE_ID_KATALON_AMI.contains(license.getMachineId());
+    }
+
     private static boolean hasValidMachineId(License license) {
         try {
+            if (MACHINE_ID_BYPASS.equals(license.getMachineId())) {
+                return true;
+            }
             String machineId = MachineUtil.getMachineId();
             return machineId.equals(license.getMachineId());
         } catch (Exception e) {
@@ -766,6 +830,14 @@ public class ActivationInfoCollector {
     }
 
     private static License getValidLicense() throws Exception {
+        if (isRunOnAmiMachine()) {
+            License license = LicenseService.getInstance().parseJws(amiLicense);
+            if (MACHINE_ID_KATALON_AMI.contains(license.getMachineId())) {
+                return license;
+            } else {
+                return null;
+            }
+        }
         String jwsCode = getActivationCode();
         License license = ActivationInfoCollector.parseLicense(jwsCode);
         return license;
@@ -783,7 +855,12 @@ public class ActivationInfoCollector {
         try {
             String jwtCode = getActivationCode();
             if (jwtCode != null && !jwtCode.isEmpty()) {
-                License license = LicenseService.getInstance().parseJws(jwtCode);
+                License license = null;
+                if (StringUtils.isNotBlank(publicKey)) {
+                    license = LicenseService.getInstance().parseJws(jwtCode, publicKey);
+                } else {
+                    license = LicenseService.getInstance().parseJws(jwtCode);
+                }
                 if (hasValidMachineId(license)) {
                     return license;
                 }
@@ -811,7 +888,7 @@ public class ActivationInfoCollector {
             if (licenseFolder.exists() && licenseFolder.isDirectory()) {
                 Files.walk(Paths.get(licenseFolder.getAbsolutePath()))
                         .filter(p -> Files.isRegularFile(p)
-                                && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals(DEFALUT_LICENSE_EXTENSION))
+                                && FilenameUtils.getExtension(p.toFile().getAbsolutePath()).equals(DEFAULT_LICENSE_EXTENSION))
                         .forEach(p -> {
                             try {
                                 File licenseFile = p.toFile();
@@ -831,5 +908,47 @@ public class ActivationInfoCollector {
             LogUtil.logError(e);
         }
         return validActivationCodes;
+    }
+
+    public static boolean isRunOnAmiMachine() {
+        try {
+            String hasKatalonAmi = System.getenv(ENV_KATALON_AMI);
+            return DEFAULT_KATALON_AMI.equalsIgnoreCase(hasKatalonAmi);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        return false;
+    }
+
+    public static boolean getAndCheckAmiMachine() {
+        try {
+            List<String> productCodes = EC2MetadataUtils.getProductCodes();
+            if (productCodes == null) {
+                return false;
+            }
+
+            AwsKatalonAmi awsKatalonAmi = AwsKatalonUtil.getAwsKatalonAmi();
+            if (awsKatalonAmi == null) {
+                return false;
+            }
+
+            productCodes.retainAll(awsKatalonAmi.getAmiIds());
+            if (productCodes.size() > 0) {
+                RunningMode runMode = ApplicationRunningMode.get();
+                if (runMode == RunningMode.GUI) {
+                    amiLicense = awsKatalonAmi.getKseLicense();
+                } else {
+                    amiLicense = awsKatalonAmi.getReLicense();
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        return false;
+    }
+    
+    public static String getAmiLicense() {
+        return amiLicense;
     }
 }

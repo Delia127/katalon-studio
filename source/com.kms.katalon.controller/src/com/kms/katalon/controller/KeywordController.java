@@ -2,6 +2,7 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,10 +22,12 @@ import com.kms.katalon.custom.factory.PluginTestListenerFactory;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.parser.CustomKeywordParser;
+import com.kms.katalon.custom.util.BuiltinPluginUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class KeywordController extends EntityController {
+    private static final String TESTNG_BUILTIN_KEYWORDS_CLASS_NAME = "TestNGBuiltinKeywords";
     private static EntityController _instance;
 
     private KeywordController() {
@@ -39,7 +42,18 @@ public class KeywordController extends EntityController {
     }
 
     public List<KeywordClass> getBuiltInKeywordClasses() {
-        return BuiltInMethodNodeFactory.getKeywordClasses();
+        List<KeywordClass> keywordClasses = BuiltInMethodNodeFactory.getKeywordClasses();
+        boolean isTestNGPluginInstalled = BuiltinPluginUtil.isTestNGPluginInstalled();
+        if (isTestNGPluginInstalled) {
+            return keywordClasses;
+        }
+        List<KeywordClass> filteredClasses = new ArrayList<>();
+        for (KeywordClass keywordClass : keywordClasses) {
+            if (!TESTNG_BUILTIN_KEYWORDS_CLASS_NAME.equals(keywordClass.getSimpleName())) {
+                filteredClasses.add(keywordClass);
+            }
+        }
+        return filteredClasses;
     }
 
     public KeywordClass getBuiltInKeywordClassByName(String builtInKeywordClassName) {

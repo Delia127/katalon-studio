@@ -644,6 +644,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         saveTestScript();
         saveTestCase();
         updateDirty();
+        
+        Trackings.trackSaveObject("testCase");
     }
 
     public void addVariables(VariableEntity[] variables) {

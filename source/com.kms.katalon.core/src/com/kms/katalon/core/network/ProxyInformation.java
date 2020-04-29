@@ -89,10 +89,11 @@ public class ProxyInformation {
         return "ProxyInformation{"
                 + "proxyOption=" + proxyOption + ", "
                 + "proxyServerType=" + proxyServerType + ", "
+                + "username=" + username + ", "
                 + "password=" + password + ", "
                 + "proxyServerAddress=" + proxyServerAddress + ", "
                 + "proxyServerPort=" + proxyServerPort + ", "
-                + "executionList=" + exceptionList
+                + "exceptionList=" + exceptionList
                 + "}";
     }
 }

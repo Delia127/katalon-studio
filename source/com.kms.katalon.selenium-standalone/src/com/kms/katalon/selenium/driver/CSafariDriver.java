@@ -12,7 +12,7 @@ public class CSafariDriver extends SafariDriver implements IDelayableDriver {
 
     public CSafariDriver(Capabilities capabilities, int actionDelay) {
         super(SafariOptions.fromCapabilities(capabilities));
-        this.actionDelayInMiliseconds = actionDelay * 1000;
+        this.actionDelayInMiliseconds = actionDelay;
     }
 
     @Override

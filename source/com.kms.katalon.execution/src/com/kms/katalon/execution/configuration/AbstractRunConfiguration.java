@@ -14,14 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.Platform;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.application.utils.LicenseUtil;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -71,12 +69,19 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     public AbstractRunConfiguration() {
         doInitExecutionSetting();
+        initVmArguments();
     }
     
     protected void doInitExecutionSetting() {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         this.executionSessionId =  dateFormat.format(new Date());
         initExecutionSetting();
+    }
+    
+    protected void initVmArguments() {
+        if (LicenseUtil.isNotFreeLicense()) {
+            vmArgs.addAll(Arrays.asList(ExecutionUtil.getVmArgs()));
+        }
     }
 
     @Override
@@ -90,9 +95,9 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
         generateLogFolder(fileEntity);
 
-        generateExecutionProperties();
-
         File scriptFile = generateTempScriptFile(fileEntity);
+        
+        generateExecutionProperties();
 
         executionSetting.setScriptFile(scriptFile);
 
@@ -102,9 +107,21 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
+                // Get and use the prepared test case bindings for rerunFailedTestCaseTestData
+                TestSuiteExecutedEntity t = (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity();
+                String currentFailedTcBindings = additionalData
+                        .getOrDefault(RunConfiguration.TC_BINDINGS_OF_FAILED_TEST_CASES, StringUtils.EMPTY);
+                if (!StringUtils.EMPTY.equals(currentFailedTcBindings)
+                        && t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
+                    return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
+                                    .generateScriptFile(currentFailedTcBindings);
+                }
+                // Recalculate the test case bindings for rerunFailedTestCase
                 return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
                         (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
-            } else if (fileEntity instanceof TestCaseEntity)  {
+
+            } else if (fileEntity instanceof TestCaseEntity) {
                 return new TestCaseScriptGenerator((TestCaseEntity) fileEntity, this).generateScriptFile();
             } else if (fileEntity instanceof SystemFileEntity) {
                 return new FeatureFileScriptGenerator((SystemFileEntity) fileEntity, this).generateScriptFile();
@@ -119,7 +136,6 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (fileEntity == null) {
             return;
         }
-
         int timeOut = (fileEntity instanceof TestSuiteEntity
                 && !((TestSuiteEntity) fileEntity).isPageLoadTimeoutDefault())
                         ? ((TestSuiteEntity) fileEntity).getPageLoadTimeout()

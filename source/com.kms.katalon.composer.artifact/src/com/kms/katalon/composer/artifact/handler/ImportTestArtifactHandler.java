@@ -46,6 +46,7 @@ import com.kms.katalon.composer.artifact.dialog.ImportTestArtifactDialog.ImportT
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportTestArtifactHandler {
 
@@ -58,6 +59,7 @@ public class ImportTestArtifactHandler {
     }
 
     public void execute() {
+        Trackings.trackOpenImportTestArtifactsDialog();
         ImportTestArtifactDialog dialog = new ImportTestArtifactDialog(activeShell);
         if (dialog.open() == Window.OK) {
             ImportTestArtifactDialogResult result = dialog.getResult();

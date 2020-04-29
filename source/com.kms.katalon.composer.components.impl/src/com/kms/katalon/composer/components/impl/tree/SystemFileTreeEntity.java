@@ -5,6 +5,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
@@ -13,7 +14,7 @@ public class SystemFileTreeEntity extends AbstractTreeEntity {
     
     public static final String[] SEARCH_TAGS = new String[] { "id", "name" };
 
-    public SystemFileTreeEntity(SystemFileEntity entity, FolderTreeEntity parentTreeEntity) {
+    public SystemFileTreeEntity(SystemFileEntity entity, ITreeEntity parentTreeEntity) {
         super(entity, parentTreeEntity);
     }
     
@@ -29,12 +30,23 @@ public class SystemFileTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
-        if (".feature".equals(getObject().getFileExtension())) {
-            return ImageConstants.IMG_16_FEATURE;
-        } else if (".properties".equals(getObject().getFileExtension())) {
-            return ImageConstants.IMG_16_CONFIG;
+        switch (entity.getFileExtension()) {
+            case ".png":
+            case ".jpg":
+            case ".bmp":
+            case ".jpeg":
+                return ImageConstants.IMG_16_IMG_TEST_OBJECT;
+            case ".feature":
+                return ImageConstants.IMG_16_FEATURE;
+            case ".git":
+            case ".gitignore":
+                return ImageConstants.IMG_16_GIT_FILE;
+            case ".txt":
+                return ImageConstants.IMG_16_TXT_TEST_OBJECT;
+            case ".jar":
+                return ImageConstants.IMG_16_JAVA;
         }
-        return null;
+        return ImageConstants.IMG_16_CONFIG;
     }
 
     @Override

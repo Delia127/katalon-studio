@@ -19,6 +19,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -48,7 +49,9 @@ import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.exception.MissingProjectSettingPageException;
@@ -59,6 +62,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.preferences.PreferenceNodeDescription;
 import com.kms.katalon.preferences.internal.PreferenceNodeDescriptionImpl;
@@ -155,7 +159,7 @@ public class SettingHandler {
                 pluginPreferences);
 
         hideQTestIntegrationPageIfQTestPluginNotInstalled(pm);
-        hidePagesIfNotEnterpriseAccount(pm);
+//        hidePagesIfNotEnterpriseAccount(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
@@ -197,10 +201,34 @@ public class SettingHandler {
                 if (success) {
                     IPreferencePage shownPage = getCurrentPage();
                     showHelpButtonForPage(shownPage);
+                    if (LicenseUtil.isFreeLicense()) {
+                        String nodeId = node.getId();
+                        boolean disabled = false;
+                        switch (nodeId) {
+                            case StringConstants.WEB_LOCATORS_SETTING_PAGE_ID:
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.WEB_LOCATOR_SETTINGS);
+                                disabled = true;
+                                break;
+                            case StringConstants.WS_METHOD_SETTING_PAGE_ID:
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CUSTOM_WEB_SERVICE_METHOD);
+                                disabled = true;
+                                break;
+                            case StringConstants.LAUNCH_ARGUMENTS_SETTING_PAGE_ID:
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS);
+                                disabled = true;
+                                break;
+                            default:
+                                disabled = false;
+                        }
+                        
+                        if (disabled) {
+                            ControlUtils.recursiveSetEnabled(shownPage.getControl(), false);
+                        }
+                    }
                 }
                 return success;
             }
-
+            
             private void showHelpButtonForPage(IPreferencePage page) {
                 Control[] helpCompositeChildren = helpComposite.getChildren();
                 if (helpCompositeChildren.length > 0) {

@@ -95,6 +95,9 @@ public class MailUtil {
 
         email.setAuthenticator(new DefaultAuthenticator(conf.getUsername(), conf.getPassword()));
         switch (conf.getSecurityProtocol()) {
+            case None:
+                email.setSmtpPort(Integer.parseInt(conf.getPort()));
+                break;
             case SSL:
                 email.setSSLOnConnect(true);
                 email.setSslSmtpPort(conf.getPort());

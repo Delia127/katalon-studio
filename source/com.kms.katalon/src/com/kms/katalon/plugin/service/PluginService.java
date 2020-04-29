@@ -288,6 +288,9 @@ public class PluginService {
 
         List<OfflinePlugin> offlinePlugins = new ArrayList<>();
 
+        int customKeywordPluginCount = 0;
+        int idePluginCount = 0;
+        
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         if (project != null) {
             File pluginsFolder = new File(project.getFolderLocation(), "Plugins");
@@ -301,6 +304,7 @@ public class PluginService {
                             plugin.setFile(file);
                             plugin.setCustomKeywordPlugin(true);
                             offlinePlugins.add(plugin);
+                            customKeywordPluginCount++;
                         }
                     }
                 }
@@ -318,6 +322,7 @@ public class PluginService {
                             plugin.setFile(file);
                             plugin.setCustomKeywordPlugin(false);
                             offlinePlugins.add(plugin);
+                            idePluginCount++;
                         }
                     }
                 }
@@ -326,6 +331,9 @@ public class PluginService {
         }
         
         if (canUsePrivatePlugins) {
+            if (offlinePlugins.size() > 0) {
+                Trackings.trackUsePrivatePlugins(customKeywordPluginCount, idePluginCount);
+            }
             return offlinePlugins;
         } else {
             //restric to use 1 custom keyword plugin only

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.util.CryptoUtil;
 
 /**
  * Provides access to execution properties and settings
@@ -119,6 +121,10 @@ public class RunConfiguration {
     public static final String ALLOW_IMAGE_RECOGNITION = "allowImageRecognition";
 
     public static final String IMAGE_RECOGNITION_ENABLED = "imageRecognitionEnabled";
+    
+    public static final String VM_ARGUMENTS = "vmArguments";
+    
+    public static final String TC_BINDINGS_OF_FAILED_TEST_CASES = "currentFailedTcBindings";
     
     private static String settingFilePath;
 
@@ -490,7 +496,16 @@ public class RunConfiguration {
             return null;
         }
         Gson gson = new Gson();
-        return gson.fromJson((String) generalProperties.get(PROXY_PROPERTY), ProxyInformation.class);
+        ProxyInformation proxyInfo = gson.fromJson((String) generalProperties.get(PROXY_PROPERTY),
+                ProxyInformation.class);
+        String password = proxyInfo.getPassword();
+        if (!StringUtils.isEmpty(password)) {
+            try {
+                CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(password);
+                proxyInfo.setPassword(CryptoUtil.decode(cryptoInfo));
+            } catch (GeneralSecurityException | IOException ignored) {}
+        }
+        return proxyInfo;
     }
 
     public static boolean shouldTerminateDriverAfterTestCase() {

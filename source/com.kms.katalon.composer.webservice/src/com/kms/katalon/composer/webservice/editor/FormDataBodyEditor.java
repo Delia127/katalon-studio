@@ -1,7 +1,8 @@
 package com.kms.katalon.composer.webservice.editor;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
+import java.lang.reflect.Field;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -14,29 +15,37 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
+
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.composer.components.impl.editors.SingleFileSelectionDialogCellEditor;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
+import com.kms.katalon.composer.webservice.constants.MediaTypes;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
-import com.kms.katalon.entity.webservice.FormDataBodyParameter;;
+import com.kms.katalon.core.util.internal.PathUtil;
+import com.kms.katalon.entity.webservice.FormDataBodyParameter;
+import com.kms.katalon.entity.webservice.ParameterizedBodyContent;;
 
 public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBodyParameter> {
 
-    private static final String DEFAULT_CONTENT_TYPE = "multipart/form-data";
+    private static final String DEFAULT_CONTENT_TYPE = "multipart/form-data"; //$NON-NLS-1$
 
-    private static final String DEFAULT_CHARSET = "UTF-8";
+    private static final String DEFAULT_CHARSET = "UTF-8"; //$NON-NLS-1$
 
     private boolean initialized = false;
 
-    private TableColumn cName, cValue, cType;
+    private TableColumn cName, cValue, cType, cContentType;
 
     public FormDataBodyEditor(Composite parent, int style) {
         super(parent, style);
@@ -63,7 +72,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
 
         TableViewerColumn cvName = new TableViewerColumn(tvParams, SWT.LEFT);
         cName = cvName.getColumn();
-        cName.setText(StringConstants.NAME);
+        cName.setText(ComposerWebserviceMessageConstants.FormDataBodyEditor_COL_NAME);
         cvName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -97,7 +106,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
 
         TableViewerColumn cvType = new TableViewerColumn(tvParams, SWT.LEFT);
         cType = cvType.getColumn();
-        cType.setText(StringConstants.TYPE);
+        cType.setText(ComposerWebserviceMessageConstants.FormDataBodyEditor_COL_TYPE);
         cvType.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -133,9 +142,63 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             }
         });
 
+        TableViewerColumn cvContentType = new TableViewerColumn(tvParams, SWT.LEFT);
+        cContentType = cvContentType.getColumn();
+        cContentType.setText(ComposerWebserviceMessageConstants.FormDataBodyEditor_COL_CONTENT_TYPE);
+        cvContentType.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                String contentType = ((FormDataBodyParameter) element).getContentType();
+                if (StringUtils.isEmpty(contentType)) {
+                    return ComposerWebserviceMessageConstants.FormDataBodyEditor_CONTENT_TYPE_AUTO;
+                }
+                return contentType;
+            }
+
+            @Override
+            public Color getForeground(Object element) {
+                String contentType = ((FormDataBodyParameter) element).getContentType();
+                if (StringUtils.isEmpty(contentType)) {
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
+                }
+                return super.getForeground(element);
+            }
+        });
+
+        cvContentType.setEditingSupport(new EditingSupport(cvContentType.getViewer()) {
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return new ContentTypeValueCellEditor(tParams) {
+                    @Override
+                    protected String getMessage() {
+                        return ComposerWebserviceMessageConstants.FormDataBodyEditor_CONTENT_TYPE_AUTO;
+                    }
+                };
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                return true;
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                return ((FormDataBodyParameter) element).getContentType();
+            }
+
+            @Override
+            protected void setValue(Object element, Object value) {
+                String contentType = (String) value;
+                ((FormDataBodyParameter) element).setContentType(contentType);
+                tvParams.update(element, null);
+                fireModifyEvent();
+            }
+        });
+
         TableViewerColumn cvValue = new TableViewerColumn(tvParams, SWT.LEFT);
         cValue = cvValue.getColumn();
-        cValue.setText(StringConstants.VALUE);
+        cValue.setText(ComposerWebserviceMessageConstants.FormDataBodyEditor_COL_VALUE);
         cvValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -173,19 +236,19 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             }
         });
 
-        tableColumnLayout.setColumnData(cName, new ColumnWeightData(40, 100));
-        tableColumnLayout.setColumnData(cValue, new ColumnWeightData(40, 100));
+        tableColumnLayout.setColumnData(cName, new ColumnWeightData(30, 100));
+        tableColumnLayout.setColumnData(cValue, new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(cType, new ColumnWeightData(20, 100));
+        tableColumnLayout.setColumnData(cContentType, new ColumnWeightData(20, 100));
 
         return tvParams;
     }
 
     private String convertToRelativePathIfPossible(String filePath) {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-        if (filePath.startsWith(projectDir)) {
-            Path basePath = Paths.get(projectDir);
-            Path absolutePath = Paths.get(filePath);
-            return basePath.relativize(absolutePath).toString();
+        File file = new File(filePath);
+        if (file.isAbsolute() && file.getAbsolutePath().startsWith(projectDir)) {
+            return PathUtil.absoluteToRelativePath(filePath, projectDir);
         } else {
             return filePath;
         }
@@ -196,6 +259,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
         FormDataBodyParameter param = new FormDataBodyParameter();
         param.setName(StringUtils.EMPTY);
         param.setType(FormDataBodyParameter.PARAM_TYPE_TEXT);
+        param.setContentType(StringUtils.EMPTY);
         param.setValue(StringUtils.EMPTY);
         return param;
     }
@@ -221,6 +285,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
         if (!bodyContent.getParameters().isEmpty()) {
             btnRemove.setEnabled(true);
         }
+        updateViewModel();
     }
 
     @Override
@@ -238,7 +303,34 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             }
             initialized = true;
         }
-
+        updateViewModel();
         setContentTypeUpdated(true);
+    }
+    
+    private class ContentTypeValueCellEditor extends StringComboBoxCellEditor {
+
+        public ContentTypeValueCellEditor(Composite parent) {
+            super(parent, MediaTypes.PREDEFINED_MEDIA_TYPES);
+            setMessage(getMessage());
+        }
+
+        private void setMessage(String message) {
+            CCombo combo = (CCombo) getControl();
+
+            try {
+                Field textField = combo.getClass().getDeclaredField("text"); //$NON-NLS-1$
+                textField.setAccessible(true);
+                if (textField != null) {
+                    Text text = (Text) textField.get(combo);
+                    text.setMessage(message);
+                }
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        
+        protected String getMessage() {
+            return StringUtils.EMPTY;
+        }
     }
 }

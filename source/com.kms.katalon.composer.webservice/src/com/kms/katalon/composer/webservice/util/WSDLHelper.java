@@ -496,5 +496,4 @@ public class WSDLHelper {
 
         return post;
     }
-
 }

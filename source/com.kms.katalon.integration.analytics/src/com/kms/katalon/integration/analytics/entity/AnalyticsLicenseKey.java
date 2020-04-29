@@ -18,6 +18,8 @@ public class AnalyticsLicenseKey {
 	
 	private String errorMessage;
 	
+	private String publicKey;
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -72,5 +74,13 @@ public class AnalyticsLicenseKey {
 	
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
     }
 }

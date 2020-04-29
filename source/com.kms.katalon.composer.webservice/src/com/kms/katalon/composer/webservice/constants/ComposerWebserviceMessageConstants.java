@@ -232,6 +232,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PARAM_TABLE_MENU_ITEM_REMOVE;
 
     public static String PA_LBL_WRAP_LINE;
+    
+    public static String PA_LBL_AUTO_UPDATE_CONTENT_TYPE;
 
     public static String MSG_CANNOT_OPEN_REQUEST;
     
@@ -292,6 +294,18 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String DiaEditWSMethod_TITLE_EDIT;
     
     public static String CB_FOLLOW_REDIRECTS; 
+    
+    public static String FormDataBodyEditor_COL_CONTENT_TYPE;
+
+    public static String FormDataBodyEditor_COL_NAME;
+
+    public static String FormDataBodyEditor_COL_TYPE;
+
+    public static String FormDataBodyEditor_COL_VALUE;
+
+    public static String FormDataBodyEditor_CONTENT_TYPE_AUTO;
+
+    public static String PREF_WARN_CLIENT_CERT;
     
     static {
         // initialize resource bundle

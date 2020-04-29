@@ -22,10 +22,9 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
@@ -39,15 +38,14 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
-import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ShowUnusedTestObjectHandler {
 
     private static final String UNUSED_TEST_OBJECTS_PART_URI = "bundleclass://com.kms.katalon.composer.objectrepository/"
             + UnusedTestObjectsPart.class.getName();
-
     @Inject
     MApplication application;
 
@@ -62,57 +60,63 @@ public class ShowUnusedTestObjectHandler {
 
     @CanExecute
     public boolean canExecute() {
-        // Hide this feature for normal users
-        return LicenseUtil.isNotFreeLicense();
+        return true;
     }
 
     @Execute
     public void execute(Shell shell) throws IOException, InterruptedException {
-        ProgressMonitorDialog monitor = new ProgressMonitorDialog(shell);
-        List<FileEntity> unusedTestObject = new ArrayList<FileEntity>();
-        try {
-            monitor.run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-                        FolderEntity folder = FolderController.getInstance().getObjectRepositoryRoot(project);
+        if (LicenseUtil.isNotFreeLicense()) {
+            ProgressMonitorDialog monitor = new ProgressMonitorDialog(shell);
+            List<FileEntity> unusedTestObject = new ArrayList<FileEntity>();
+            try {
+                monitor.run(true, false, new IRunnableWithProgress() {
+                    @Override
+                    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                        try {
+                            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+                            FolderEntity folder = FolderController.getInstance().getObjectRepositoryRoot(project);
 
-                        List<Object> descendantEntities = FolderController.getInstance()
-                                .getAllDescentdantEntities(folder);
+                            List<Object> descendantEntities = FolderController.getInstance()
+                                    .getAllDescentdantEntities(folder);
 
-                        monitor.beginTask(StringConstants.DIA_TITLE_FIND_UNUSED_TEST_OBJECT, descendantEntities.size());
-                        for (Object entity : descendantEntities) {
-                            if (entity instanceof WebElementEntity) {
-                                FileEntity element = (FileEntity) entity;
-                                String testObjectId = element.getIdForDisplay();
-                                List<IFile> affectedScripts = TestArtifactScriptRefactor
-                                        .createForTestObjectEntity(testObjectId).findReferrersInScriptsAndVariables(project);
-                                if (affectedScripts.isEmpty()) {
-                                    unusedTestObject.add(element);
+                            monitor.beginTask(StringConstants.DIA_TITLE_FIND_UNUSED_TEST_OBJECT,
+                                    descendantEntities.size());
+                            for (Object entity : descendantEntities) {
+                                if (entity instanceof WebElementEntity) {
+                                    FileEntity element = (FileEntity) entity;
+                                    String testObjectId = element.getIdForDisplay();
+                                    List<IFile> affectedScripts = TestArtifactScriptRefactor
+                                            .createForTestObjectEntity(testObjectId)
+                                            .findReferrersInScriptsAndVariables(project);
+                                    if (affectedScripts.isEmpty()) {
+                                        unusedTestObject.add(element);
+                                    }
+                                } else if (entity instanceof WindowsElementEntity) {
+                                    FileEntity element = (FileEntity) entity;
+                                    String testObjectId = element.getIdForDisplay();
+                                    List<IFile> affectedScripts = TestArtifactScriptRefactor
+                                            .createForWindowsObjectEntity(testObjectId)
+                                            .findReferrersInScriptsAndVariables(project);
+                                    if (affectedScripts.isEmpty()) {
+                                        unusedTestObject.add(element);
+                                    }
                                 }
-                            } else if (entity instanceof WindowsElementEntity) {
-                                FileEntity element = (FileEntity) entity;
-                                String testObjectId = element.getIdForDisplay();
-                                List<IFile> affectedScripts = TestArtifactScriptRefactor
-                                        .createForWindowsObjectEntity(testObjectId).findReferrersInScriptsAndVariables(project);
-                                if (affectedScripts.isEmpty()) {
-                                    unusedTestObject.add(element);
-                                }
+                                monitor.worked(1);
                             }
-                            monitor.worked(1);
+                        } catch (Exception e) {
+                            throw new InvocationTargetException(e);
+                        } finally {
+                            monitor.done();
                         }
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
                     }
-                }
-            });
-        } catch (InvocationTargetException | InterruptedException exception) {
-            MultiStatusErrorDialog.showErrorDialog(exception, StringConstants.ERROR, exception.getMessage());
+                });
+            } catch (InvocationTargetException | InterruptedException exception) {
+                MultiStatusErrorDialog.showErrorDialog(exception, StringConstants.ERROR, exception.getMessage());
+            }
+            openTab(unusedTestObject);
+        } else {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_OBJECT_REFACTORING);
         }
-        openTab(unusedTestObject);
 
     }
 
@@ -120,7 +124,6 @@ public class ShowUnusedTestObjectHandler {
         String partId = EntityPartUtil.getUnusedTestObjectsPartId();
         MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         MPart mPart = (MPart) modelService.find(partId, application);
-        boolean alreadyOpened = true;
         if (mPart == null) {
             mPart = modelService.createModelElement(MPart.class);
             mPart.setElementId(partId);
@@ -130,7 +133,6 @@ public class ShowUnusedTestObjectHandler {
             mPart.setCloseable(true);
             mPart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
             stack.getChildren().add(mPart);
-            alreadyOpened = false;
         } else {
             eventBroker.post(EventConstants.UNUSED_TEST_OBJECTS_UPDATED, unusedTestObjects);
         }
@@ -142,9 +144,6 @@ public class ShowUnusedTestObjectHandler {
         partService.bringToTop(mPart);
         stack.setSelectedElement(mPart);
 
-        if (!alreadyOpened) {
-            Trackings.trackOpenObject("unusedTestObject");
-        }
-
+        Trackings.trackOpenObject("unusedTestObject");
     }
 }

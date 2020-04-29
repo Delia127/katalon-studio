@@ -38,7 +38,9 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.control.PartListenerAdapter;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.debug.CustomSourceLookupService;
@@ -60,6 +62,7 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
+import com.kms.katalon.feature.KSEFeature;
 
 @SuppressWarnings("restriction")
 public class TestExecutionAddon implements EventHandler {
@@ -103,6 +106,10 @@ public class TestExecutionAddon implements EventHandler {
                     return;
                 }
                 if (partService.saveAll(true) && partService.getDirtyParts().isEmpty()) {
+                    if (LicenseUtil.isFreeLicense()) {
+                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP);
+                        return;
+                    }
                     executeTestCaseFromTestStep((ExecuteFromTestStepEntity) object);
                 }
             }

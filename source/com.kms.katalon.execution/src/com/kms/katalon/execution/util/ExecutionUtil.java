@@ -18,8 +18,10 @@ import java.util.Properties;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -53,7 +55,7 @@ public class ExecutionUtil {
     public static boolean isRunningInKatalonC() {
         Properties props = System.getProperties();
         String launcherName = props.getProperty("eclipse.launcher.name");
-        return launcherName.equalsIgnoreCase("katalonc");
+        return "katalonc".equalsIgnoreCase(launcherName);
     }
 
     public static String getLocalHostAddress() {
@@ -119,6 +121,11 @@ public class ExecutionUtil {
     public static boolean isQuitDriversAfterExecutingTestSuite() {
         return getStore().isPostTestSuiteExecQuitDriver();
     }
+    
+    public static String[] getVmArgs() {
+        String vmArgsString = getStore().getVmArgs();
+        return StringUtils.split(vmArgsString);
+    }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {
         for (Entry<String, Object> entry : propertiesMap.entrySet()) {
@@ -146,9 +153,9 @@ public class ExecutionUtil {
         
         executionProperties.put(RunConfiguration.GLOBAL_SMART_WAIT_MODE,
                 ExecutionUtil.getDefaultSmartWaitMode().booleanValue());
-        
-        executionProperties.put(RunConfiguration.LOG_TEST_STEPS,
-        		ExecutionUtil.getLogTestSteps().booleanValue());
+
+        boolean doLogTestStep = LicenseUtil.isNotFreeLicense() ? ExecutionUtil.getLogTestSteps().booleanValue() : true;
+        executionProperties.put(RunConfiguration.LOG_TEST_STEPS, doLogTestStep);
 
         propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
 
@@ -235,7 +242,9 @@ public class ExecutionUtil {
 
         DefaultRerunSetting rerunSetting = new DefaultRerunSetting(prevExecuted.getPreviousRerunTimes() + 1,
                 prevExecuted.getRemainingRerunTimes() - 1, prevExecuted.isRerunFailedTestCasesOnly());
-
+        // We need to remember this setting to use it later 
+        rerunSetting.setRerunFailedTestCaseAndTestDataOnly(prevExecuted.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly());
+        
         TestSuiteExecutedEntity newExecutedEntity = new TestSuiteExecutedEntity(testSuite, rerunSetting);
         newExecutedEntity.setReportLocation(prevExecuted.getReportLocationSetting());
         newExecutedEntity.setTestDataMap(prevExecuted.getTestDataMap());

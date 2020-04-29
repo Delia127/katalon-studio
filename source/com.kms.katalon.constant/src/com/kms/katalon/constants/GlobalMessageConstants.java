@@ -259,6 +259,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String DIA_TITLE_QUICKSTART;
     
+    public static String MSG_ACCESS_KSE_FEATURES_WARNING;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, GlobalMessageConstants.class);
