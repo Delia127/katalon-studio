@@ -12,7 +12,7 @@ import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
-public class SystemProxyConfigurationPreferencesPage extends ProxyConfigurationPreferencesPage {
+public class SystemProxyConfigurationPreferencesPage extends AbstractProxyConfigurationPreferencesPage {
 
     private Button chkAutoApplyToDesiredCapabilities;
 

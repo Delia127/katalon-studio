@@ -37,7 +37,7 @@ public class ProxyInformationUtil {
     }
 
     public static void printSystemProxyInfo() {
-        String rawSystemProxyInfo = getRawProxyInfo(ExecutionProxyUtil.getSystemProxyInformation());
+        String rawSystemProxyInfo = getRawProxyInfo(ExecutionProxyUtil.getSystemProxyInformation(), true);
         LogUtil.logInfo("INFO: > System Proxy: " + rawSystemProxyInfo);
     }
 

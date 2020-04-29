@@ -42,7 +42,7 @@
    <extension point="com.kms.katalon.preferences.PreferencePages">
       <page
             category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
-            class="com.kms.katalon.composer.execution.preferences.ProxyConfigurationPreferencesBlankPage"
+            class="com.kms.katalon.composer.execution.preferences.MainProxyConfigurationPreferencesPage"
             id="com.kms.katalon.composer.execution.proxy"
             name="Proxy">
       </page>

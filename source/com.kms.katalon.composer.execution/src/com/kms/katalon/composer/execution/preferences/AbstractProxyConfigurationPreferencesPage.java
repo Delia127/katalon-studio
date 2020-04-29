@@ -30,7 +30,7 @@ import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.network.ProxyServerType;
 import com.kms.katalon.execution.preferences.ProxyPreferenceDefaultValueInitializer;
 
-public abstract class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
+public abstract class AbstractProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
     private Text txtAddress;
 
     private Text txtPort;
@@ -49,7 +49,7 @@ public abstract class ProxyConfigurationPreferencesPage extends PreferencePageWi
 
     private static final int MAX_PORT_VALUE = 65535;
 
-    public ProxyConfigurationPreferencesPage() {
+    public AbstractProxyConfigurationPreferencesPage() {
         super();
         noDefaultButton();
     }

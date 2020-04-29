@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Label;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.constants.MessageConstants;
 
-public class ProxyConfigurationPreferencesBlankPage extends PreferencePageWithHelp {
+public class MainProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
 
     @Override
     protected Control createContents(Composite parent) {
