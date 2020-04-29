@@ -535,7 +535,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         String retry = txtRetry.getText();
         boolean enableRetryFailedTc = !(ZERO.equals(retry) || retry.isEmpty());
         chkRetryFailedTestCase.setEnabled(enableRetryFailedTc);
-        chkRetryFailedTestCaseTestData.setEnabled(!(ZERO.equals(retry) || retry.isEmpty() || !enableRetryFailedTc));
+        chkRetryFailedTestCaseTestData.setEnabled(!(ZERO.equals(retry) || retry.isEmpty() || enableRetryFailedTc));
     }
 
 

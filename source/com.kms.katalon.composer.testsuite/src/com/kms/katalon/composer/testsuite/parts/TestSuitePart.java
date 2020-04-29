@@ -324,6 +324,9 @@ public class TestSuitePart implements EventHandler {
             public void widgetSelected(SelectionEvent e) {
                 boolean val = rerunTestCaseOnly.getSelection();
                 getTestSuite().setRerunFailedTestCasesOnly(val);
+                if (!val) {
+                    rerunTestCaseTestDataOnly.setSelection(false);
+                }
                 rerunTestCaseTestDataOnly.setEnabled(val);
                 setDirty(true);
             }
