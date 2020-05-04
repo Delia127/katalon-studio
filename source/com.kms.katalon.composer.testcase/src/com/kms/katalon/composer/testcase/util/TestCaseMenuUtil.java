@@ -291,8 +291,11 @@ public class TestCaseMenuUtil {
         TreeTableMenuItemConstants
                 .generateBuiltInKeywordMenuItemIDs(KeywordController.getInstance().getBuiltInKeywordClasses());
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
-            addNewMenuItem(addAction, selectionListener, actionMenu, contributor.getLabelName(),
-                    TreeTableMenuItemConstants.getMenuItemID(contributor.getAliasName()), SWT.PUSH);
+            int menuItemID = TreeTableMenuItemConstants.getMenuItemID(contributor.getAliasName());
+            if (menuItemID >= 0) {
+                addNewMenuItem(addAction, selectionListener, actionMenu, contributor.getLabelName(),
+                        menuItemID, SWT.PUSH);
+            }
         }
     }
 }

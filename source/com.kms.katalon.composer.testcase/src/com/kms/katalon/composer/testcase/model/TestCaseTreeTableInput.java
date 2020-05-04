@@ -995,7 +995,7 @@ public class TestCaseTreeTableInput {
 			newBuiltinKeywordStatement = AstKeywordsInputUtil
 					.createBuiltInKeywordStatement(
 							keywordClass.getAliasName(), KeywordController.getInstance()
-									.getBuiltInKeywords(keywordClass.getAliasName(), true).get(0).getName(),
+									.getBuiltInKeywords(keywordClass.getName(), true).get(0).getName(),
 							parentNodeWrapper);
 		}
 		addNewAstObject(newBuiltinKeywordStatement, destinationNode, addType);

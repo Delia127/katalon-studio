@@ -303,6 +303,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_CHK_FOR_FAILED_TEST_CASES = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES;
     
+    public static final String DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA;
+    
     public static final String DIA_LBL_API_KEY_USAGE = ComposerExecutionMessageConstants.API_KEY_USAGE;
     
     public static final String MSG_CONSOLE_MODE_REQUIREMENT = ComposerExecutionMessageConstants.MSG_CONSOLE_MODE_REQUIREMENT;

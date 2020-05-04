@@ -33,6 +33,7 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
@@ -386,7 +387,8 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
     private boolean getLogTestStepsEnabled() {
         ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
-        return store.getLogTestSteps();
+        boolean doLogTestStep = LicenseUtil.isNotFreeLicense() ? store.getLogTestSteps().booleanValue() : true;
+        return doLogTestStep;
     }
     
     private boolean getImageRecognitionEnabled() {

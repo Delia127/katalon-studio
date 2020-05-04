@@ -7,6 +7,8 @@ public interface Rerunable {
     int getRemainingRerunTimes();
     
     boolean isRerunFailedTestCasesOnly();
+    
+    boolean isRerunFailedTestCasesAndTestDataOnly();
 
     Rerunable mergeWith(Rerunable rerunable);
 }

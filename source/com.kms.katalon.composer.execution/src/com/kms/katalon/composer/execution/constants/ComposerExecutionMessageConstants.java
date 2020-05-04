@@ -383,6 +383,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     public static String MSG_WARN_VM_ARGUMENTS;
 
+    public static String DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);

@@ -289,8 +289,16 @@ public class TreeEntityUtil {
         if ("executeJavaScript".equals(keywordMethodName)) {
             return "Execute JavaScript";
         }
-        return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
+        String readableName = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
                 " ");
+        if (readableName.contains("Test NG")) {
+            return readableName.replace("Test NG", "TestNG");
+        }
+        if (readableName.contains("J Unit")) {
+            return readableName.replace("J Unit", "JUnit");
+        }
+        
+        return readableName;
     }
 
     /**
