@@ -150,7 +150,7 @@ public class UpdateManager {
     }
 
     public Proxy getProxy() throws URISyntaxException, IOException {
-        return ProxyUtil.getProxy(ProxyPreferences.getProxyInformation());
+        return ProxyUtil.getProxy(ProxyPreferences.getAuthProxyInformation());
     }
 
     public AppInfo getCurrentVersionLocalAppInfo() throws IOException {
