@@ -26,6 +26,6 @@ public class WindowsServerSocketMessage {
     }
 
     public enum ServerMessageType {
-        START_RECORDING, STOP_RECORDING, PAUSE_RECORDING, EXIT
+        START_RECORDING, STOP_RECORDING, PAUSE_RECORDING, CLOSE_APPLICATION, EXIT
     }
 }

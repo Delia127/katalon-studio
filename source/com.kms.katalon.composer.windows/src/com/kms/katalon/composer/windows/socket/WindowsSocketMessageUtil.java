@@ -20,4 +20,10 @@ public class WindowsSocketMessageUtil {
         message.setAppPath(appPath);
         return message;
     }
+
+    public static WindowsStopRecordingPayload createStopRecordingPayload(String appPath) {
+        WindowsStopRecordingPayload message = new WindowsStopRecordingPayload();
+        message.setAppPath(appPath);
+        return message;
+    }
 }

@@ -46,8 +46,8 @@ import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.windows.action.WindowsAction;
 import com.kms.katalon.composer.windows.action.WindowsActionMapping;
-import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialog.RecordActionResult;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.nativerecorder.NativeRecorderDriver;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementLabelProvider;
@@ -56,7 +56,7 @@ import com.kms.katalon.composer.windows.socket.WindowsServerSocketMessage.Server
 import com.kms.katalon.composer.windows.socket.WindowsSocketMessageUtil;
 import com.kms.katalon.composer.windows.socket.WindowsSocketServer;
 import com.kms.katalon.composer.windows.socket.WindowsStartRecordingPayload;
-import com.kms.katalon.composer.windows.spy.HighlightElementComposite;
+import com.kms.katalon.composer.windows.socket.WindowsStopRecordingPayload;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
@@ -83,7 +83,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     private WindowsElementPropertiesComposite propertiesComposite;
 
     private WindowsSocketServer socketServer = new WindowsSocketServer(this);
-    
+
     private NativeRecorderDriver nativeRecorderDriver = new NativeRecorderDriver();
 
     private RecordActionResult recordActionResult;
@@ -287,6 +287,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
+                    closeApplication();
                     stopServer();
 
                     isStarting = false;
@@ -344,7 +345,8 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     private void startServer() throws Exception {
         startNativeRecorderDriver();
-        WindowsStartRecordingPayload message = WindowsSocketMessageUtil.createStartRecordingPayload(mobileComposite.getAppFile());
+        WindowsStartRecordingPayload message = WindowsSocketMessageUtil
+                .createStartRecordingPayload(mobileComposite.getAppFile());
         String data = JsonUtil.toJson(message);
         socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.START_RECORDING, data));
     }
@@ -352,7 +354,18 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     private void stopServer() throws Exception {
         socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.STOP_RECORDING, ""));
     }
-    
+
+    private void closeApplication() throws IOException, ClassNotFoundException {
+        WindowsActionMapping stopAction = new WindowsActionMapping(WindowsAction.CloseApplication, null);
+        stepView.addNode(stopAction);
+
+        WindowsStopRecordingPayload message = WindowsSocketMessageUtil
+                .createStopRecordingPayload(mobileComposite.getAppFile());
+        String data = JsonUtil.toJson(message);
+        socketServer
+                .sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.CLOSE_APPLICATION, data));
+    }
+
     private void startNativeRecorderDriver() {
         try {
             nativeRecorderDriver.start();
@@ -422,7 +435,8 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         UISynchronizeService.syncExec(() -> {
             try {
                 if (actionMapping.getTargetElement() != null) {
-                    CapturedWindowsElement finalCapturedElement = capturedObjectsTableViewer.addCapturedObject(actionMapping.getTargetElement());
+                    CapturedWindowsElement finalCapturedElement = capturedObjectsTableViewer
+                            .addCapturedObject(actionMapping.getTargetElement());
                     actionMapping.setTargetElement(finalCapturedElement);
                 }
                 stepView.refreshTree();
