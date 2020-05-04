@@ -41,14 +41,14 @@ import com.katalon.platform.api.Extension;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.extension.PluginPreferencePage;
 import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.exception.MissingProjectSettingPageException;
@@ -59,7 +59,9 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.preferences.PreferenceNodeDescription;
 import com.kms.katalon.preferences.internal.PreferenceNodeDescriptionImpl;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
@@ -72,6 +74,8 @@ public class SettingHandler {
     private IEclipseContext eclipseContext;
 
     private static SettingHandler instance;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
     
     @PostConstruct
     public void onPostConstruct() {
@@ -155,7 +159,7 @@ public class SettingHandler {
                 pluginPreferences);
 
         hideQTestIntegrationPageIfQTestPluginNotInstalled(pm);
-        hidePagesIfNotEnterpriseAccount(pm);
+//        hidePagesIfNotEnterpriseAccount(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
 
@@ -197,10 +201,45 @@ public class SettingHandler {
                 if (success) {
                     IPreferencePage shownPage = getCurrentPage();
                     showHelpButtonForPage(shownPage);
+
+                    String nodeId = node.getId();
+                    boolean disabled = false;
+                    switch (nodeId) {
+                        case StringConstants.WEB_LOCATORS_SETTING_PAGE_ID:
+                            if (!featureService.canUse(KSEFeature.WEB_LOCATOR_SETTINGS)) {
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.WEB_LOCATOR_SETTINGS);
+                                disabled = true;
+                            }
+                            break;
+                        case StringConstants.WS_METHOD_SETTING_PAGE_ID:
+                            if (!featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_METHOD)) {
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CUSTOM_WEB_SERVICE_METHOD);
+                                disabled = true;
+                            }
+                            break;
+                        case StringConstants.LAUNCH_ARGUMENTS_SETTING_PAGE_ID:
+                            if (!featureService.canUse(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS)) {
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS);
+                                disabled = true;
+                            }
+                            break;
+                        case StringConstants.TEST_SUITE_COLLECTION_EMAIL_TEMPLATE_SETTING_PAGE_ID:
+                            if (!featureService.canUse(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL)) {
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL);
+                                disabled = true;
+                            }
+                            break;
+                        default:
+                            disabled = false;
+                    }
+
+                    if (disabled) {
+                        ControlUtils.recursiveSetEnabled(shownPage.getControl(), false);
+                    }
                 }
                 return success;
             }
-
+            
             private void showHelpButtonForPage(IPreferencePage page) {
                 Control[] helpCompositeChildren = helpComposite.getChildren();
                 if (helpCompositeChildren.length > 0) {

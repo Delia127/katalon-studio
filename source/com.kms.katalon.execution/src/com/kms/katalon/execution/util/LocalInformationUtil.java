@@ -1,7 +1,9 @@
 package com.kms.katalon.execution.util;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -15,6 +17,7 @@ import org.eclipse.core.runtime.Platform;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.execution.constants.ProxyPreferenceConstants;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.SystemInformationUtil;
 
@@ -110,34 +113,48 @@ public class LocalInformationUtil {
         LogUtil.logInfo("\n");
     }
 
+    public static void printLicenseServerInfo(String serverURL, String apiKey) {
+        LogUtil.logInfo("\n");
+        LogUtil.logInfo("INFO: Katalon TestOps server URL: " + serverURL);
+
+        int length = apiKey.length();
+        if (length > 7) {
+            LogUtil.logInfo(
+                    "INFO: API key: " + apiKey.substring(0, 3) + "*****" + apiKey.substring(length - 3, length));
+        } else {
+            LogUtil.logError("Make sure your API key is valid.");
+        }
+        LogUtil.logInfo("\n");
+    }
+    
     private static String maskSensitiveArgs() {
+        @SuppressWarnings({ "serial" })
+        List<String> sensitiveArgs = new ArrayList<String>() {
+            {
+                add("apiKey");
+                add("apikey");
+                add("username");
+                add("password");
+                add("apiKeyOP");
+                add("apiKeyOnPremise");
+                add(ProxyPreferenceConstants.PROXY_PASSWORD);
+                add(ProxyPreferenceConstants.AUTH_PROXY_PASSWORD);
+                add(ProxyPreferenceConstants.SYSTEM_PROXY_PASSWORD);
+            }
+        };
         List<String> markedArgs = new ArrayList<>();
         for (String arg : Platform.getCommandLineArgs()) {
-            if (arg.startsWith("-apiKey=")) {
-                markedArgs.add("-apiKey=******");
-                continue;
+            Optional<String> findSensitiveArgResult = sensitiveArgs.stream()
+                    .filter(sensitiveArgument -> {
+                        return arg.startsWith(MessageFormat.format("-{0}=", sensitiveArgument));
+                    })
+                    .findAny();
+            if (findSensitiveArgResult.isPresent()) {
+                String sensitiveArgument = findSensitiveArgResult.get();
+                markedArgs.add(MessageFormat.format("-{0}=********", sensitiveArgument));
+            } else {
+                markedArgs.add(arg);
             }
-            if (arg.startsWith("-apikey=")) {
-                markedArgs.add("-apikey=******");
-                continue;
-            }
-            if (arg.startsWith("-username=")) {
-                markedArgs.add("-username=******");
-                continue;
-            }
-            if (arg.startsWith("-password=")) {
-                markedArgs.add("-password=******");
-                continue;
-            }
-            if (arg.startsWith("-apiKeyOP=")) {
-                markedArgs.add("-apiKeyOP=******");
-                continue;
-            }
-            if (arg.startsWith("-apiKeyOnPremise=")) {
-                markedArgs.add("-apiKeyOnPremise=******");
-                continue;
-            }
-            markedArgs.add(arg);
         }
         return StringUtils.join(markedArgs.toArray(new String[0]), " ");
     }

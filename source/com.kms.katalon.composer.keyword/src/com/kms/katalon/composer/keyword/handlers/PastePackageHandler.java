@@ -139,8 +139,9 @@ public class PastePackageHandler {
     private void copyKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
             throws Exception {
         try {
-            GroovyUtil.copyKeyword(keywordFile, targetPackageFragment, newName);
-            String copiedKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
+            String extension = keywordFile.getFileExtension();
+            GroovyUtil.copyKeyword(keywordFile, targetPackageFragment, newName, extension);
+            String copiedKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName, extension);
             
             KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(
                     copiedKeywordFilePath, ProjectController.getInstance().getCurrentProject());
@@ -160,8 +161,9 @@ public class PastePackageHandler {
     private void moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
             throws Exception {
         try {
-            GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName);
-            String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
+            String extension = keywordFile.getFileExtension();
+            GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName, extension);
+            String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName, extension);
             
             KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(
                     cutKeywordFilePath, ProjectController.getInstance().getCurrentProject());
@@ -188,13 +190,13 @@ public class PastePackageHandler {
      * @param newName String
      * @return Project relative path for Keyword file (String)
      * */
-    private String getPastedFilePath(IFile keywordFile, IPackageFragment targetPackageFragment, String newName) {
+    private String getPastedFilePath(IFile keywordFile, IPackageFragment targetPackageFragment, String newName, String extension) {
         String keywordRootPath = targetPackageFragment.getParent().getElementName() + IPath.SEPARATOR;
         String packageName = targetPackageFragment.getElementName();
         String packagePath = keywordRootPath
                 + (packageName.isEmpty() ? packageName : packageName.replaceAll("[.]", String.valueOf(IPath.SEPARATOR))
                         + IPath.SEPARATOR);
-        String kwFileName = (newName != null) ? newName + GroovyConstants.GROOVY_FILE_EXTENSION : keywordFile.getName();
+        String kwFileName = (newName != null) ? newName + "." + extension : keywordFile.getName();
         String copiedKeywordFilePath = packagePath + kwFileName;
         return copiedKeywordFilePath;
     }
@@ -228,6 +230,7 @@ public class PastePackageHandler {
     private void openRenameDialog(IFile keywordFile, IPackageFragment parentPackage, boolean isMoving) throws Exception {
         RenameKeywordDialog dialog = new RenameKeywordDialog(parentShell, parentPackage);
         String kwName = StringUtils.removeEndIgnoreCase(keywordFile.getName(), GroovyConstants.GROOVY_FILE_EXTENSION);
+        kwName = StringUtils.removeEndIgnoreCase(kwName, GroovyConstants.JAVA_FILE_EXTENSION);
         dialog.setName(kwName);
         dialog.setWindowTitle(StringConstants.HAND_TITLE_NAME_CONFLICT);
         dialog.setDialogMsg(MessageFormat.format(StringConstants.HAND_MSG_KW_NAME_ALREADY_EXISTS, kwName));

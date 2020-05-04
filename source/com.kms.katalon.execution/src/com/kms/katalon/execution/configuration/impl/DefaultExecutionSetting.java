@@ -2,15 +2,18 @@ package com.kms.katalon.execution.configuration.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
@@ -19,6 +22,7 @@ import com.kms.katalon.execution.setting.ExecutionSettingStore;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.CryptoUtil;
 
 public class DefaultExecutionSetting implements IExecutionSetting {
 
@@ -31,14 +35,11 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     private File scriptFile;
     
     private String rawScript;
-    
-    private Boolean autoApplyNeighborXpaths;
 
     private Map<String, Object> generalProperties;
 
     public DefaultExecutionSetting() {
         timeout = 0;
-        setAutoApplyNeighborXpaths(ExecutionUtil.getAutoApplyNeighborXpaths());
     }
 
     @Override
@@ -48,23 +49,27 @@ public class DefaultExecutionSetting implements IExecutionSetting {
 
     @Override
     public Map<String, Object> getGeneralProperties() {
+        return getDefaultGeneralProperties();
+    }
+    
+    public Map<String, Object> getDefaultGeneralProperties() {
         generalProperties = new HashMap<>();
 
         generalProperties.put(RunConfiguration.TIMEOUT_PROPERTY, timeout);
         generalProperties.put(StringConstants.CONF_PROPERTY_REPORT, getReportProperties());
         generalProperties.put(RunConfiguration.EXCUTION_DEFAULT_FAILURE_HANDLING, getDefaultFailureHandlingSetting());
-        generalProperties.put(RunConfiguration.PROXY_PROPERTY, getJsonProxyInformation());
-        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_CASE, ExecutionUtil.isQuitDriversAfterExecutingTestCase());
-        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_SUITE, ExecutionUtil.isQuitDriversAfterExecutingTestSuite());
-        
+        generalProperties.put(RunConfiguration.PROXY_PROPERTY, getJsonProxyInformationWithEncryptedPassword());
+        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_CASE,
+                ExecutionUtil.isQuitDriversAfterExecutingTestCase());
+        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_SUITE,
+                ExecutionUtil.isQuitDriversAfterExecutingTestSuite());
+        generalProperties.put(RunConfiguration.AUTO_APPLY_NEIGHBOR_XPATHS, ExecutionUtil.getAutoApplyNeighborXpaths());
+
         if (executedEntity != null) {
-            generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY, executedEntity.getCollectedDataInfo());
+            generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY,
+                    executedEntity.getCollectedDataInfo());
         }
-        
-        if(this.autoApplyNeighborXpaths != null){
-        	generalProperties.put(RunConfiguration.AUTO_APPLY_NEIGHBOR_XPATHS, this.autoApplyNeighborXpaths);
-        }
-        
+
         return generalProperties;
     }
 
@@ -93,14 +98,6 @@ public class DefaultExecutionSetting implements IExecutionSetting {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-    
-    public Boolean getAutoApplyNeighborXpaths(){
-    	return this.autoApplyNeighborXpaths;
-    }
-    
-    public void setAutoApplyNeighborXpaths(Boolean val){
-    	this.autoApplyNeighborXpaths = val;
     }
 
     public String getLogFileName() {
@@ -162,7 +159,15 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         return new TestCaseSettingStore(getCurrentProject().getFolderLocation()).getDefaultFailureHandling().name();
     }
 
-    private String getJsonProxyInformation() {
-        return new Gson().toJson(ProxyPreferences.getProxyInformation());
+    private String getJsonProxyInformationWithEncryptedPassword() {
+        ProxyInformation proxyInfo = ProxyPreferences.getSystemProxyInformation();
+        String password = proxyInfo.getPassword();
+        if (!StringUtils.isEmpty(password)) {
+            try {
+                CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(password);
+                proxyInfo.setPassword(CryptoUtil.encode(cryptoInfo));
+            } catch (GeneralSecurityException | IOException ignored) {}
+        }
+        return new Gson().toJson(proxyInfo);
     }
 }

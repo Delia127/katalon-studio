@@ -1,11 +1,14 @@
 package com.kms.katalon.controller;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,16 +16,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jdt.core.JavaModelException;
+import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
@@ -64,7 +73,7 @@ public class ProjectController extends EntityController {
         return newProject;
     }
 
-    public ProjectEntity openProjectForUI(String projectPk, boolean isEnterpriseAccount, IProgressMonitor monitor) throws Exception {
+    public ProjectEntity openProjectForUI(String projectPk, boolean allowSourceAttachment, IProgressMonitor monitor) throws Exception {
         try {
             if (monitor == null) {
                 monitor = new NullProgressMonitor();
@@ -87,9 +96,10 @@ public class ProjectController extends EntityController {
                 // KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
 
                 try {
+                    addJdtSettings(project);
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
-                            isEnterpriseAccount,
+                            allowSourceAttachment,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                     updateProjectClassLoader(project);
                 } catch (JavaModelException e) {
@@ -97,7 +107,7 @@ public class ProjectController extends EntityController {
                     cleanupGroovyProject(project);
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
-                            isEnterpriseAccount,
+                            allowSourceAttachment,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 }
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
@@ -169,13 +179,15 @@ public class ProjectController extends EntityController {
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
             
-            LogUtil.printOutputLine("Generating global variables...");
-            GlobalVariableController.getInstance().generateGlobalVariableLibFileFromRawTextTemplate(project, null);
+            addJdtSettings(project);
 
             // LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
             // KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
             GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
                     isEnterpriseAccount, null);
+
+            LogUtil.printOutputLine("Generating global variables...");
+            GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
 
             LogUtil.printOutputLine("Parsing custom keywords...");
             KeywordController.getInstance().parseAllCustomKeywords(project, null);
@@ -196,6 +208,31 @@ public class ProjectController extends EntityController {
                 // Remote all existing projects out of workspace
                 project.delete(false, true, null);
             } catch (Exception ignored) {}
+        }
+    }
+    
+    private static void addJdtSettings(ProjectEntity project) {
+        File jdtSettingFile = new File(project.getFolderLocation(), ".settings/org.eclipse.jdt.core.prefs");
+        if (jdtSettingFile.exists()) {
+            return;
+        }
+        String fileContent = getFileContent("resources/template/project_jdt_setting.tpl");
+        try {
+            FileUtils.write(jdtSettingFile, fileContent, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LogUtil.logError(e);
+        }
+    }
+
+    private static String getFileContent(String filePath) {
+        URL url = FileLocator.find(FrameworkUtil.getBundle(ProjectController.class), new Path(filePath), null);
+        try {
+            return StringUtils.join(
+                    IOUtils.readLines(new BufferedInputStream(url.openStream()), GlobalStringConstants.DF_CHARSET),
+                    "\n");
+        } catch (IOException e) {
+            LogUtil.logError(e);
+            return StringUtils.EMPTY;
         }
     }
 

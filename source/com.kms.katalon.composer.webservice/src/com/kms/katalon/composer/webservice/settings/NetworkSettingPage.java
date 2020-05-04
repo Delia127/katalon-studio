@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -19,11 +20,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
@@ -31,7 +30,9 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
-import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 
 public class NetworkSettingPage extends PreferencePageWithHelp {
 
@@ -48,6 +49,8 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
     private Button btnBrowse;
 
     private GridData gdClientCert;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public NetworkSettingPage() {
         settingStore = WebServiceSettingStore
@@ -133,10 +136,10 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
             txtKeyStorePassword.setText(clientCertSettings.getKeyStorePassword());
 
             // Hide this feature for normal users
-            if (!LicenseUtil.isNotFreeLicense()) {
-                gdClientCert.heightHint = 0;
-                container.layout(true);
-            }
+//            if (!LicenseUtil.isNotFreeLicense()) {
+//                gdClientCert.heightHint = 0;
+//                container.layout(true);
+//            }
         } catch (IOException e) {
             MultiStatusErrorDialog.showErrorDialog(e,
                     ComposerWebserviceMessageConstants.DIA_MSG_UNABLE_TO_LOAD_NETWORK_PAGE,
@@ -155,6 +158,14 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
     public boolean performOk() {
         if (!isInitialized()) {
             return true;
+        }
+        
+        boolean useClientCert = StringUtils.isNotBlank(txtKeyStore.getText())
+                || StringUtils.isNotBlank(txtKeyStorePassword.getText());
+        if (!featureService.canUse(KSEFeature.SSL_CLIENT_CERTIFICATE) && useClientCert) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SSL_CLIENT_CERTIFICATE,
+                    ComposerWebserviceMessageConstants.PREF_WARN_CLIENT_CERT);
+            return false;
         }
 
         SSLCertificateOption selectedSSLOption = sslCertButtons.entrySet()

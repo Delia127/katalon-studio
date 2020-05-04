@@ -155,9 +155,49 @@ public class SeleniumWebDriverProvider {
         }
     }
     
+    public static String getEdgeChromiumDriverPath() {
+        try {
+            switch (getOS()) {
+                case OS_WIN32:
+                    return getEdgeChromiumDriverPathForWindows();
+                case OS_MACOSX:
+                    return getEdgeChromiumDriverPathForMac();
+            }
+        } catch (IOException e) {
+            // do nothing
+        }
+        return "";
+    }
+
+    private static String getEdgeChromiumDriverPathForWindows() throws IOException {
+        String driverPath = getDriverDirectory().getAbsolutePath() + File.separator;
+        if (getOSArch().equals(ARCH_X86_64)) {
+            driverPath += "edgechromium_win64" + File.separator + "msedgedriver.exe";
+        } else {
+            driverPath += "edgechromium_win32" + File.separator + "msedgedriver.exe";
+        }
+        return driverPath;
+    }
+    
+    private static String getEdgeChromiumDriverPathForMac() throws IOException {
+        String driverPath = getDriverDirectory().getAbsolutePath() + File.separator + "edgechromium_mac" + File.separator + "msedgedriver";
+        FileExcutableUtil.makeFileExecutable(driverPath);
+        return driverPath;
+    }
+
     public static String getTempEdgeDriverPath() throws IOException {
         File parentFolder = getTempDriverDirectory();
         return new File(parentFolder, "MicrosoftWebDriver.exe").getAbsolutePath();
+    }
+    
+    public static String getTempEdgeChromiumDriverPath() throws IOException {
+        File parentFolder = getTempDriverDirectory();
+        switch (getOS()) {
+            case OS_WIN32:
+                return new File(parentFolder, "msedgedriver.exe").getAbsolutePath();
+            default:
+                return new File(parentFolder, "msedgedriver").getAbsolutePath();
+        }
     }
 
     public static String getGeckoDriverPath() throws IOException {

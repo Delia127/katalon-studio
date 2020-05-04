@@ -1151,7 +1151,7 @@
          id="org.junit"
          download-size="0"
          install-size="0"
-         version="4.12.0"/>
+         version="4.12.0.v201504281640"/>
 
    <plugin
          id="org.eclipse.update.configurator"
@@ -1848,20 +1848,6 @@
 
    <plugin
          id="org.eclipse.jgit"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jgit.lfs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jgit.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -2703,19 +2689,40 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
-    <plugin
+
+   <plugin
          id="com.kms.katalon.proxyvole"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
-     <plugin
-	     id="com.katalon.katalon-studio-smart-xpath"
-	     download-size="0"
-	     install-size="0"
-	     version="0.0.0"
-	     unpack="false"/>
+
+   <plugin
+         id="com.katalon.katalon-studio-smart-xpath"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.amazonaws.aws-java-sdk-core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.bouncy-gpg"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.core.testng"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>

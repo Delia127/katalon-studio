@@ -79,6 +79,8 @@ public class ComposerMobileMessageConstants extends NLS {
 
     public static String MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER;
 
+    public static String MSG_IOS_BUILD_INTEGRATION_APP;
+
     public static String MSG_IOS_CANCELLED_WEB_DRIVER_AGENT_INSTALLATION;
 
     public static String MSG_IOS_CANCELLED_DEPENDENCIES_INSTALLATION;

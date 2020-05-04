@@ -46,8 +46,10 @@ import com.kms.katalon.execution.handler.ApiKeyOnPremiseHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.execution.util.ExecutionProxyUtil;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.LocalInformationUtil;
+import com.kms.katalon.execution.util.ProxyInformationUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.logging.LogUtil;
@@ -60,6 +62,8 @@ public class ConsoleMain {
     public static final String ARGUMENT_SPLITTER = "=";
 
     public static final String ARGUMENT_PREFIX = "-";
+
+    public static final String CONFIG = "config";
 
     public static final String PROPERTIES_FILE_OPTION = "propertiesFile";
 
@@ -101,6 +105,8 @@ public class ConsoleMain {
 
     public static final String KATALON_TESTOP_SERVER = "serverUrl";
 
+    public static final String KATALON_TESTOP_SERVER_SECOND_OPTION = "serverURL";
+
     public static final String KATALON_API_KEY_ON_PREMISE_OPTION = "apiKeyOnPremise";
 
     public static final String KATALON_API_KEY_ON_PREMISE_SECOND_OPTION = "apiKeyOP";
@@ -132,12 +138,46 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
             
+            // Set option value to application configuration
+            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
+                String optionName = opt.getOption();
+                if (options.hasArgument(optionName)) {
+                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
+                }
+            }
+
+            if (ExecutionProxyUtil.checkMixedProxies(options)) {
+                LogUtil.printErrorLine(ExecutionMessageConstants.MSG_MIXED_PROXIES_DETECTED);
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+            }
+
+            if (ExecutionProxyUtil.isUseLegacyProxyConfig(options)) {
+                ExecutionProxyUtil.useLegacyProxyConfig();
+            }
+
+            if (ExecutionProxyUtil.isUseNewProxyConfig(options)) {
+                ExecutionProxyUtil.useNewProxyConfig();
+            }
+
+            String serverUrl = null;
             if (options.has(KATALON_TESTOP_SERVER)) {
-                String serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+                serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER));
+            }
+
+            if (options.has(KATALON_TESTOP_SERVER_SECOND_OPTION)) {
+                serverUrl = String.valueOf(options.valueOf(KATALON_TESTOP_SERVER_SECOND_OPTION));
+            }
+
+            if (!StringUtils.isEmpty(serverUrl)) {
                 ApplicationInfo.setTestOpsServer(serverUrl);
             }
+
             //Set server URL before show in log
             LocalInformationUtil.printSystemInformation();
+
+            if (ExecutionProxyUtil.isConfigProxy()) {
+                ProxyInformationUtil.printCurrentProxyInformation();
+            }
 
             String apiKeyValue = null;
             if (options.has(KATALON_API_KEY_OPTION)) {
@@ -166,15 +206,21 @@ public class ConsoleMain {
                 if (!isActivated) {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_OFFLINE);
                     StringBuilder errorMessage = new StringBuilder();
-                    isActivated = ActivationInfoCollector.activateOfflineForEngine(errorMessage);
+                    
+                    if (ActivationInfoCollector.activateOfflineForEngineAmiMachine(errorMessage)) {
+                        isActivated = true;
+                        LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_SUCCESS_BY_AMI);
+                    } else {
+                        isActivated = ActivationInfoCollector.activateOfflineForEngine(errorMessage);
 
-                    String error = errorMessage.toString();
-                    if (StringUtils.isNotBlank(error)) {
-                        LogUtil.printErrorLine(error);
-                    }
+                        String error = errorMessage.toString();
+                        if (StringUtils.isNotBlank(error)) {
+                            LogUtil.printErrorLine(error);
+                        }
 
-                    if (!isActivated) {
-                        LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
+                        if (!isActivated) {
+                            LogUtil.printErrorLine(ExecutionMessageConstants.ACTIVATE_FAIL_OFFLINE);
+                        }
                     }
                 }
 
@@ -182,7 +228,7 @@ public class ConsoleMain {
                     LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE);
 
                     //Test connection
-                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    serverUrl = ApplicationInfo.getTestOpsServer();
                     boolean testConnection = KatalonApplicationActivator.getFeatureActivator().testConnection(serverUrl);
                     if (!testConnection) {
                         LogUtil.logError(ExecutionMessageConstants.ACTIVATE_CANNOT_CONNECT_TO_SERVER);
@@ -202,8 +248,14 @@ public class ConsoleMain {
                         String apiKey = LicenseInfo.getApiKey();
 
                         if (!StringUtils.isEmpty(server) && !StringUtils.isEmpty(apiKey)) {
+                            server = server.trim();
+                            apiKey = apiKey.trim();
+
                             LogUtil.logInfo(ExecutionMessageConstants.ACTIVATE_START_ACTIVATE_ONLINE_WITH_LICENSE_SERVER);
                             ApplicationInfo.setTestOpsServer(server);
+
+                            LocalInformationUtil.printLicenseServerInfo(server, apiKey);
+
                             errorMessage = new StringBuilder();
                             isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
                             error = errorMessage.toString();
@@ -228,14 +280,6 @@ public class ConsoleMain {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
                 addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
-            }
-            
-            // Set option value to application configuration
-            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
-                String optionName = opt.getOption();
-                if (options.hasArgument(optionName)) {
-                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
-                }
             }
 
             boolean isCliEnabled = FeatureServiceConsumer.getServiceInstance().canUse(TestOpsFeatureKey.CLI);

@@ -49,7 +49,7 @@ public class WelcomeLeftPart extends Composite {
 
     private Composite pluginComposite;
 
-    private Composite supportComposite;
+//    private Composite supportComposite;
     
     public WelcomeLeftPart(Composite parent, int style) {
         super(parent, style);
@@ -125,8 +125,8 @@ public class WelcomeLeftPart extends Composite {
                 PLUGIN_STORE_ITEM_BACKGROUND_COLOR, ColorUtil.getTextColor());
 
         addMenuSeparator(lowerComposite);
-        supportComposite =addMenuItem(lowerComposite, ImageConstants.IMG_BUSSINESS_SUPPORT, StringConstants.PA_LBL_BUSINESS_SUPPORT,
-                StringConstants.URL_KATALON_SUPPORT_SERVICE, null, ColorUtil.getTextWhiteColor());
+//        supportComposite =addMenuItem(lowerComposite, ImageConstants.IMG_BUSSINESS_SUPPORT, StringConstants.PA_LBL_BUSINESS_SUPPORT,
+//                StringConstants.URL_KATALON_SUPPORT_SERVICE, null, ColorUtil.getTextWhiteColor());
     }
 
     private Composite addMenuItem(Composite parent, Image icon, String label, String url, Color backgroundColor, Color foregroundColor) {
@@ -196,7 +196,7 @@ public class WelcomeLeftPart extends Composite {
         lblVersion.setForeground(ColorUtil.getTextWhiteColor());
         ControlUtils.recursivelySetColor(faqComposite, ColorUtil.getTextWhiteColor(), null);
         ControlUtils.recursivelySetColor(tutComposite, ColorUtil.getTextWhiteColor(), null);
-        ControlUtils.recursivelySetColor(supportComposite, ColorUtil.getTextWhiteColor(), null);
+//        ControlUtils.recursivelySetColor(supportComposite, ColorUtil.getTextWhiteColor(), null);
         ControlUtils.recursivelySetColor(pluginComposite, ColorUtil.getTextBlackColor(), PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
     }
 }

@@ -42,9 +42,21 @@
    <extension point="com.kms.katalon.preferences.PreferencePages">
       <page
             category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
-            class="com.kms.katalon.composer.execution.preferences.ProxyConfigurationPreferencesPage"
+            class="com.kms.katalon.composer.execution.preferences.MainProxyConfigurationPreferencesPage"
             id="com.kms.katalon.composer.execution.proxy"
             name="Proxy">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.proxy"
+            class="com.kms.katalon.composer.execution.preferences.AuthenticationProxyConfigurationPreferencesPage"
+            id="com.kms.katalon.composer.execution.proxy.authentication"
+            name="Authentication">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.proxy"
+            class="com.kms.katalon.composer.execution.preferences.SystemProxyConfigurationPreferencesPage"
+            id="com.kms.katalon.composer.execution.proxy.system"
+            name="System">
       </page>
    </extension>
    
@@ -67,6 +79,12 @@
             name="Execution">
       </page>
       <page
+      		class="com.kms.katalon.composer.execution.settings.LaunchArgumentsSettingPage"
+      		category="com.kms.katalon.composer.execution.settings"
+      		id="com.kms.katalon.composer.execution.settings.launchArgs"
+      		name="Launch Arguments">
+	  </page>
+      <page
             class="com.kms.katalon.composer.execution.settings.CustomExecutionSettingPage"
             category="com.kms.katalon.composer.execution.desiredcapabilities"
             id="com.kms.katalon.composer.execution.settings.custom"
@@ -84,9 +102,21 @@
       </page>
       <page
             category="com.kms.katalon.composer.execution.mail"
-            class="com.kms.katalon.composer.execution.settings.EmailTemplatePage"
+            class="com.kms.katalon.composer.execution.settings.EmptyPreferencesPage"
             id="com.kms.katalon.composer.execution.page.emailTemplate"
             name="Template">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.page.emailTemplate"
+            class="com.kms.katalon.composer.execution.settings.TestSuiteEmailTemplatePage"
+            id="com.kms.katalon.composer.execution.page.testSuiteEmailTemplate"
+            name="Test Suite">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.page.emailTemplate"
+            class="com.kms.katalon.composer.execution.settings.TestSuiteCollectionEmailTemplatePage"
+            id="com.kms.katalon.composer.execution.page.testSuiteCollectionEmailTemplate"
+            name="Test Suite Collection">
       </page>
       <page
             class="com.kms.katalon.composer.execution.settings.DesiredCapabilitiesSettingPage"

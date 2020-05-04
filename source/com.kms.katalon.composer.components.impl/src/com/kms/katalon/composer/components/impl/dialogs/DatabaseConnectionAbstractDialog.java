@@ -33,11 +33,15 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.DatabaseController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
+import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
 
@@ -70,6 +74,8 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
     private GridData gdTxtDriverClassName;
 
     private Label lblOptionsDB;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public DatabaseConnectionAbstractDialog(Shell parentShell) {
         super(parentShell);
@@ -338,20 +344,41 @@ public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
     @Override
     protected void okPressed() {
         String connectionUrl = txtConnectionURL.getText();
-        if (!isEnterpriseAccount()) {
-            if (isOracleSql(connectionUrl)) {
-                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
+        boolean useGlobalDBSetting = chkGlobalDBSetting.getSelection() == true;
+        if (!useGlobalDBSetting) {
+            if (isOracleSql(connectionUrl) && !featureService.canUse(KSEFeature.ORACLE_EXTERNAL_DATA)) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ORACLE_EXTERNAL_DATA,
                         ComposerComponentsImplMessageConstants.PREF_WARN_KSE_ORACLE_SQL);
                 return;
             }
 
-            if (isMicrosoftSqlServer(connectionUrl)) {
-                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
+            if (isMicrosoftSqlServer(connectionUrl) && !featureService.canUse(KSEFeature.SQL_SERVER_EXTERNAL_DATA)) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SQL_SERVER_EXTERNAL_DATA,
                         ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
                 return;
             }
-        }
 
+            if (StringUtils.isNotBlank(txtDriverClassName.getText()) && !featureService.canUse(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE)) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE,
+                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_CUSTOM_DB_CONNECTION);
+                return;
+            }
+        }
+        
+        if (!useGlobalDBSetting) {
+            if (isOracleSql(connectionUrl)) {
+                Trackings.trackUseDatabaseConnectionForEnterpriseAccount("oracle");
+            }
+            
+            if (isMicrosoftSqlServer(connectionUrl)) {
+                Trackings.trackUseDatabaseConnectionForEnterpriseAccount("mssql");
+            }
+            
+            if (StringUtils.isNotBlank(txtDriverClassName.getText())) {
+                Trackings.trackUseAdditionalTestDataSource();
+            }
+        }
+        
         updateChanges();
         super.okPressed();
     }

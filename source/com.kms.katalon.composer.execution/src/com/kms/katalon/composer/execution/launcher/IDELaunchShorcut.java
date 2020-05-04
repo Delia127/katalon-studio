@@ -80,12 +80,14 @@ public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
         String vmArguments = workingConfig.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
         if (!vmArguments.contains(JVM_ARGUMENT_MAX_MEMORY_KEY)) {
             vmArguments += " " + JVM_ARGUMENT_MAX_MEMORY_KEY + byteToMegabytes(Runtime.getRuntime().maxMemory()) + "m";
-            workingConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments);
+            
         }
         List<String> vmArgs = Arrays.asList(runConfiguration.getVmArgs());
         for (String eachArg : vmArgs) {
             vmArguments += " " + eachArg;
         }
+        workingConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments);
+        
         workingConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH,
                 Arrays.asList(JavaRuntime.computeDefaultRuntimeClassPath(javaProject)));
         ILaunchConfiguration config = workingConfig.doSave();

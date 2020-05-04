@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.dnd.DND;
@@ -14,23 +13,27 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 
-import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 
 public class TestDataTableDropListener extends TableDropTargetEffect {
     private TableViewer tableViewer;
 
     private TestSuitePartDataBindingView part;
+
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public TestDataTableDropListener(TableViewer tableViewer, TestSuitePartDataBindingView view) {
         super(tableViewer.getTable());
@@ -41,7 +44,7 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
     @Override
     public void drop(DropTargetEvent event) {
         event.detail = DND.DROP_COPY;
-        boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
+        boolean isEnableMultipleDataSource = featureService.canUse(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION);
         if (part != null && part.getSelectedTestCaseLink() != null
                 && part.getSelectedTestCaseLink().getTestDataLinks() != null) {
             List<TestCaseTestDataLink> inputs = part.getSelectedTestCaseLink().getTestDataLinks();
@@ -55,8 +58,10 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
                 List<TestCaseTestDataLink> movedItems = new ArrayList<TestCaseTestDataLink>();
                 List<String> testDataIds = Arrays.asList(String.valueOf(event.data).split("\n"));
                 
-                if (!isEnterpriseAccount && (testDataIds.size() + inputs.size()) > 1) {
-                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+                if (!isEnableMultipleDataSource && (testDataIds.size() + inputs.size()) > 1) {
+//                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+//                            ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION,
                             ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
                     return;
                 }
@@ -92,8 +97,10 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
                         }
                     }
 
-                    if (!isEnterpriseAccount && (addedTestDataLinkTreeNodes.size() + inputs.size()) > 1) {
-                        MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+                    if (!isEnableMultipleDataSource && (addedTestDataLinkTreeNodes.size() + inputs.size()) > 1) {
+//                        MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
+//                                ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
+                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION,
                                 ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
                         return;
                     }

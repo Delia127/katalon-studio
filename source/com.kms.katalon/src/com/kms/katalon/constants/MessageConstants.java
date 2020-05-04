@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class MessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.constants.messages";
 
+    public static String LBL_EXCEPTION_LIST;
+    
     public static String HAND_QUIT_DIA_TITLE;
 
     public static String HAND_QUIT_DIA_MSG;
@@ -193,6 +195,12 @@ public class MessageConstants extends NLS {
 
     public static String MSG_PRG_SUBMITTING_TICKET;
 
+    public static String LBL_CHANGE_PROXY_CONFIGURATIONS;
+
+    public static String LBL_AUTHENTICATION_PROXY_GUIDE_MESSAGE;
+
+    public static String LBL_SYSTEM_PROXY_GUIDE_MESSAGE;
+
     public static String LBL_PROXY_OPTION;
 
     public static String LBL_PROXY_SERVER_TYPE;
@@ -220,6 +228,8 @@ public class MessageConstants extends NLS {
     public static String LBL_PORT;
 
     public static String CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION;
+
+    public static String CHK_TEXT_AUTO_APPLY_TO_DESIRED_CAPABILITIES;
 
     public static String ERR_MSG_ATTACHMENTS_SIZE_MUST_BE_LESS_OR_EQUAL_X_MB;
 
@@ -359,6 +369,8 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
     
     public static String ActivationDialogV2_LBL_LEARN_ABOUT_KSE;
+    
+    public static String ActivationDialogV2_LBL_TROUBLESHOOT;
     
     public static String ActivationDialogV2_LBL_AGREE_TERM;
     
@@ -607,6 +619,21 @@ public class MessageConstants extends NLS {
     public static String Account_LOG_IN;
 
     public static String Account_HELP;
+
+    // First Time Use Katalon Survey Dialog
+    public static String DIALOG_TITLE_FIRST_TIME_USE_SURVEY;
+
+    public static String BTN_YES_CONTINUE_USE;
+
+    public static String BTN_NO_QUIT_USING;
+
+    public static String BTN_SEND;
+
+    public static String MSG_QUESTION_WILL_CONTINUE_TO_USE;
+
+    public static String MSG_QUIT_USING_KATALON_REASON;
+
+    public static String MSG_QUIT_USING_KATALON_REASON_PLACEHOLDER;
 
     static {
         // initialize resource bundle

@@ -1,49 +1,33 @@
 package com.kms.katalon.core.webservice.common;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
-import org.apache.http.message.BasicHeaderElementIterator;
 
-import com.google.common.net.MediaType;
 import com.google.common.net.UrlEscapers;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
@@ -54,17 +38,13 @@ import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
-import com.kms.katalon.util.URLBuilder;
-import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestfulClient extends BasicRequestor {
 
     private static final String TLS = "TLS";
 
     private static final String HTTPS = RequestHeaderConstants.HTTPS;
-    
-    private static final int MAX_REDIRECTS = 5;
-    
+        
     public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
         super(projectDir, proxyInfomation);
     }
@@ -96,7 +76,11 @@ public class RestfulClient extends BasicRequestor {
         }
         
         ProxyInformation proxyInfo = request.getProxy() != null ? request.getProxy() : proxyInformation;
-        configureProxy(clientBuilder, proxyInfo);
+        URL newUrl = new URL(request.getRestUrl());
+        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo, newUrl);
+        if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
+            configureProxy(clientBuilder, proxyInfo);
+        }
 
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
             //this will be overridden by setting connection manager for clientBuilder
@@ -213,7 +197,7 @@ public class RestfulClient extends BasicRequestor {
             bodyLength = responseEntity.getContentLength();
             startTime = System.currentTimeMillis();
             try {
-                responseBody = EntityUtils.toString(responseEntity);
+                responseBody = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
             } catch (Exception e) {
                 responseBody = ExceptionUtils.getFullStackTrace(e);
             }

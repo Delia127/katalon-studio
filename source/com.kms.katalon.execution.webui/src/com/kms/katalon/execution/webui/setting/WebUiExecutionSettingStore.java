@@ -3,6 +3,7 @@ package com.kms.katalon.execution.webui.setting;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,12 +34,14 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
      */
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES = "id,true;name,true;alt,true;checked,true;form,true;href,true;placeholder,true;selected,true;src,true;title,true;type,true;text,true;linked_text,true";
     
-    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true;";
+    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true";
     
 
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
 
     public static final boolean EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED = false;
+    
+    public static final String EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT = TimeUnit.SECONDS.toString();
 
     
     public static WebUiExecutionSettingStore getStore() {
@@ -210,5 +213,17 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public void setDefaultImageRecognitionEnabled(boolean selection) throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, selection);
     }
+    
+    public void setUseDelayActionTimeUnit(TimeUnit timeUnit) throws IOException {
+        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_TIME_UNIT, timeUnit.toString());
+    }
 
+    public TimeUnit getUseDelayActionTimeUnit() {
+        try {
+            return TimeUnit.valueOf(getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_TIME_UNIT,
+                    EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT));
+        } catch (IOException e) {
+            return TimeUnit.valueOf(EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT);
+        }
+    }
 }

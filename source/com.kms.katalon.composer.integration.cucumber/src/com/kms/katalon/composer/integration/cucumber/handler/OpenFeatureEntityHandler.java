@@ -72,8 +72,8 @@ public class OpenFeatureEntityHandler {
                 activePage.activate(editor);
             } else {
                 editor = (ITextEditor) activePage.openEditor(new FileEditorInput(iFile), desc.getId());
-                Trackings.trackOpenObject("bddFeatureFile");
             }
+            Trackings.trackOpenObject("bddFeatureFile");
             addTestObjectDropListener(editor);
             
             return editor;

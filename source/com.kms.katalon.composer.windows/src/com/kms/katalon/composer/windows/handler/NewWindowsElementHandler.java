@@ -7,6 +7,8 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.composer.windows.constant.ComposerWindowsMessage;
 import com.kms.katalon.composer.windows.dialog.NewWindowsElementDialog;
@@ -21,11 +23,16 @@ public class NewWindowsElementHandler {
     @Execute
     public void createNewWindowsElement(Shell activeShell) {
         try {
-            FolderTreeEntity folderTreeEntity = (FolderTreeEntity) ExplorerPart.getInstance()
-                    .getSelectedTreeEntities()
-                    .get(0);
+            ITreeEntity selectedTreeEntity = (ITreeEntity) ExplorerPart.getInstance().getSelectedTreeEntities().get(0);
 
-            FolderEntity folder = folderTreeEntity.getObject();
+            FolderTreeEntity folderTreeEntity = null;
+            if (selectedTreeEntity instanceof FolderTreeEntity) {
+                folderTreeEntity = (FolderTreeEntity) selectedTreeEntity;
+            } else {
+                folderTreeEntity = (FolderTreeEntity) selectedTreeEntity.getParent();
+            }
+
+            FolderEntity folder = (FolderEntity) folderTreeEntity.getObject();
 
             String suggestedName = EntityNameController.getInstance()
                     .getAvailableName(ComposerWindowsMessage.TITLE_NEW_WINDOWS_OBJECT_NAME, folder, false);
@@ -52,6 +59,7 @@ public class NewWindowsElementHandler {
 
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, "Unable to create Windows object", e.getMessage());
+            LoggerSingleton.logError(e);
         }
     }
 }

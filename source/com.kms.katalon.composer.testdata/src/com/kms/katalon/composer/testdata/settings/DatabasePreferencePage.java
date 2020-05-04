@@ -26,23 +26,23 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 
 public class DatabasePreferencePage extends PreferencePageWithHelp {
-
-    private static final String PROJECT_DIR = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
     private static final String SETTING_NAME = DatabaseSettings.class.getName();
 
@@ -71,6 +71,8 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
     private GridData gdTxtDriverClassName;
 
     private Label lblOptionsDB;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     @Override
     protected Control createContents(Composite parent) {
@@ -282,7 +284,7 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
 
     private void loadSettings() {
         try {
-            dbSettings = new DatabaseSettings(PROJECT_DIR);
+            dbSettings = new DatabaseSettings(getCurrentProjectDir());
             chkSecureUserPassword.setSelection(dbSettings.isSecureUserAccount());
             txtUser.setText(StringUtils.defaultString(dbSettings.getUser()));
             txtPassword.setText(StringUtils.defaultString(dbSettings.getPassword()));
@@ -291,13 +293,13 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             enableUserPassword(chkSecureUserPassword.getSelection());
             
             // Hide this feature for normal users
-            if (!isEnterpriseAccount()) {
-                gdLblOptionsDB.heightHint = 0;
-                gdTxtDriverClassName.heightHint = 0;
-                lblOptionsDB.setVisible(false);
-                txtDriverClassName.setVisible(false);
-                compContainer.layout(true, true);
-            }
+//            if (!isEnterpriseAccount()) {
+//                gdLblOptionsDB.heightHint = 0;
+//                gdTxtDriverClassName.heightHint = 0;
+//                lblOptionsDB.setVisible(false);
+//                txtDriverClassName.setVisible(false);
+//                compContainer.layout(true, true);
+//            }
         } catch (IOException e) {
             setStatusLabel(e.getMessage(), ColorUtil.getTextErrorColor());
         }
@@ -330,22 +332,27 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         String connectionUrl = txtConnectionURL.getText();
         dbSettings.setUrl(connectionUrl);
         dbSettings.setDriverClassName(txtDriverClassName.getText());
-        if (!isEnterpriseAccount()) {
-            if (isOracleSql(connectionUrl)) {
-                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
-                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_ORACLE_SQL);
-                return false;
-            }
 
-            if (isMicrosoftSqlServer(connectionUrl)) {
-                MessageDialog.openWarning(getShell(), GlobalStringConstants.INFO,
-                        ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
-                return false;
-            }
+        if (isOracleSql(connectionUrl) && !featureService.canUse(KSEFeature.ORACLE_EXTERNAL_DATA)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ORACLE_EXTERNAL_DATA,
+                    ComposerComponentsImplMessageConstants.PREF_WARN_KSE_ORACLE_SQL);
+            return false;
+        }
+
+        if (isMicrosoftSqlServer(connectionUrl) && !featureService.canUse(KSEFeature.SQL_SERVER_EXTERNAL_DATA)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SQL_SERVER_EXTERNAL_DATA,
+                    ComposerComponentsImplMessageConstants.PREF_WARN_KSE_SQL_SERVER);
+            return false;
+        }
+
+        if (StringUtils.isNotBlank(txtDriverClassName.getText()) && !featureService.canUse(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE,
+                    ComposerComponentsImplMessageConstants.PREF_WARN_KSE_CUSTOM_DB_CONNECTION);
+            return false;
         }
 
         try {
-            PropertySettingStoreUtil.saveExternalSettings(PROJECT_DIR, SETTING_NAME, dbSettings.getSettings(),
+            PropertySettingStoreUtil.saveExternalSettings(getCurrentProjectDir(), SETTING_NAME, dbSettings.getSettings(),
                     com.kms.katalon.composer.testdata.constants.StringConstants.DIA_DB_SETTING_COMMENT);
             return true;
         } catch (IOException e) {
@@ -353,6 +360,10 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
                     com.kms.katalon.composer.testdata.constants.StringConstants.DIA_MSG_UNABLE_TO_SAVE_DB_SETTING_PAGE);
             return false;
         }
+    }
+    
+    private String getCurrentProjectDir() {
+        return ProjectController.getInstance().getCurrentProject().getFolderLocation();
     }
     
     @Override
@@ -377,9 +388,5 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             return false;
         }
         return connectionUrl.startsWith("jdbc:sqlserver");
-    }
-
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
     }
 }

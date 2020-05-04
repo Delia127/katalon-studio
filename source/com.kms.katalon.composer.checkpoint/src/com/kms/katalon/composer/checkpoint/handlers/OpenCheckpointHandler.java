@@ -20,12 +20,16 @@ import com.kms.katalon.composer.checkpoint.parts.CheckpointDatabasePart;
 import com.kms.katalon.composer.checkpoint.parts.CheckpointExcelPart;
 import com.kms.katalon.composer.checkpoint.parts.CheckpointTestDataPart;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 
 public class OpenCheckpointHandler {
 
@@ -49,6 +53,8 @@ public class OpenCheckpointHandler {
 
     @Inject
     EModelService modelService;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     @PostConstruct
     public void openCheckpointTreeEntity(IEventBroker eventBroker) {
@@ -69,6 +75,11 @@ public class OpenCheckpointHandler {
     public void openCheckpointEntity(@UIEventTopic(EventConstants.CHECKPOINT_OPEN) CheckpointEntity checkpoint) {
         try {
             if (checkpoint == null) {
+                return;
+            }
+            
+            if (!featureService.canUse(KSEFeature.CHECKPOINT)) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CHECKPOINT);
                 return;
             }
 

@@ -61,6 +61,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER = ComposerMobileMessageConstants.MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER;
 
+    public static final String MSG_IOS_BUILD_INTEGRATION_APP = ComposerMobileMessageConstants.MSG_IOS_BUILD_INTEGRATION_APP;
+
     public static final String MSG_IOS_CANCELLED_WEB_DRIVER_AGENT_INSTALLATION = ComposerMobileMessageConstants.MSG_IOS_CANCELLED_WEB_DRIVER_AGENT_INSTALLATION;
 
     public static final String MSG_IOS_CANCELLED_DEPENDENCIES_INSTALLATION = ComposerMobileMessageConstants.MSG_IOS_CANCELLED_DEPENDENCIES_INSTALLATION;

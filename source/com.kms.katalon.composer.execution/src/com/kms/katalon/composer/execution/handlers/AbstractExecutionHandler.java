@@ -50,7 +50,9 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.katalon.platform.api.exception.PlatformException;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
@@ -87,6 +89,9 @@ import com.kms.katalon.execution.exception.ExtensionRequiredException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
@@ -113,6 +118,8 @@ public abstract class AbstractExecutionHandler {
 
     @Inject
     protected static IEventBroker eventBroker;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     /**
      * Cleans all run configuration before any execution is started
@@ -311,11 +318,22 @@ public abstract class AbstractExecutionHandler {
 	}
 
     private void processToRun(LaunchMode launchMode, Entity targetEntity) throws Exception {
+        boolean isEnableDebugFeature = featureService.canUse(KSEFeature.DEBUG_MODE);
         if (targetEntity instanceof TestCaseEntity) {
+            if (!isEnableDebugFeature && launchMode == LaunchMode.DEBUG) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.DEBUG_MODE);
+                return;
+            }
+            
         	TestCaseEntity testCase = (TestCaseEntity) targetEntity;
         	executeTestCase(testCase, launchMode);
         	eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
         } else if (targetEntity instanceof TestSuiteEntity) {
+            if (!isEnableDebugFeature && launchMode == LaunchMode.DEBUG) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.DEBUG_MODE);
+                return;
+            }
+            
         	TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
         	executeTestSuite(testSuite, launchMode);
         	eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);

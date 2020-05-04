@@ -71,7 +71,6 @@ public class OpenWindowsElementHandler {
                 MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                         application);
                 MPart mPart = (MPart) modelService.find(partId, application);
-                boolean alreadyOpened = true;
                 if (mPart == null) {
                     mPart = modelService.createModelElement(MPart.class);
                     mPart.setElementId(partId);
@@ -82,7 +81,6 @@ public class OpenWindowsElementHandler {
                     mPart.setCloseable(true);
                     mPart.setTooltip(windowsElementEntity.getIdForDisplay());
                     stack.getChildren().add(mPart);
-                    alreadyOpened = false;
                 }
 
                 if (mPart.getObject() == null) {
@@ -92,9 +90,7 @@ public class OpenWindowsElementHandler {
                 partService.showPart(mPart, PartState.ACTIVATE);
                 stack.setSelectedElement(mPart);
                 
-                if (!alreadyOpened) {
-                    Trackings.trackOpenObject("windowsObject");
-                }
+                Trackings.trackOpenObject("windowsObject");
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);

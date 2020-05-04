@@ -14,7 +14,7 @@ import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 public class AndroidRunConfigurationContributor extends MobileRunConfigurationContributor {
     @Override
     public int getPreferredOrder() {
-        return 6;
+        return 9;
     }
     
     @Override

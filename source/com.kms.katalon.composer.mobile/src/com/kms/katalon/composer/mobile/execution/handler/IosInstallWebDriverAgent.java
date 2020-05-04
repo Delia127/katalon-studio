@@ -31,6 +31,8 @@ public class IosInstallWebDriverAgent {
 
     private static final String WEB_DRIVER_AGENT_RUNNER_TARGET_NAME = "WebDriverAgentRunner";
 
+    private static final String INTEGRATION_APP_TARGET_NAME = "IntegrationApp";
+
     private static final String INSTALL_WEB_DRIVER_AGENT_LOG_NAME = "InstallWebDriverAgent";
 
     private IosIdentitySelectionDialog identitySelectionDialog;
@@ -83,6 +85,10 @@ public class IosInstallWebDriverAgent {
             appendStep(installationManager, installationLog, installationErrorLog,
                     StringConstants.MSG_IOS_BUILD_WEB_DRIVER_AGENT_RUNNER,
                     generateBuildCommand(WEB_DRIVER_AGENT_RUNNER_TARGET_NAME, identity.getId()),
+                    WEB_DRIVER_AGENT_FOLDER);
+            appendStep(installationManager, installationLog, installationErrorLog,
+                    StringConstants.MSG_IOS_BUILD_INTEGRATION_APP,
+                    generateBuildCommand(INTEGRATION_APP_TARGET_NAME, identity.getId()),
                     WEB_DRIVER_AGENT_FOLDER);
 
             installationManager.startInstallation();

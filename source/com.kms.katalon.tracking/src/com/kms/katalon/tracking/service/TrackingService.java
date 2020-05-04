@@ -10,15 +10,18 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.tracking.model.TrackInfo;
 
 public class TrackingService {
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     private ExecutorService executor = Executors.newFixedThreadPool(10);
 
@@ -26,8 +29,8 @@ public class TrackingService {
         IPreferenceStore prefStore = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
         boolean checkAllowUsage = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
                 ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
-        boolean isPaidLicense = LicenseUtil.isPaidLicense();
-        if (isPaidLicense && !checkAllowUsage) {
+        boolean canConfigUsageTracking = featureService.canUse(KSEFeature.CONFIGURE_USAGE_TRACKING);
+        if (canConfigUsageTracking && !checkAllowUsage) {
             return;
         } else {
             executor.submit(() -> {
@@ -35,7 +38,7 @@ public class TrackingService {
                     String payload = buildEventPayload(trackInfo);
                     sendEventPayload(payload);
                 } catch (Exception e) {
-                    LogUtil.logError(e);
+//                    LogUtil.logError(e);
                 }
             });
         }

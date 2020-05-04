@@ -5,11 +5,16 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.activation.FileDataSource;
@@ -22,8 +27,11 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
+import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
@@ -68,7 +76,7 @@ public class MailUtil {
     public static void sendTestMail(EmailConfig conf) throws Exception {
         HtmlEmail email = initEmail(conf);
         email.setHtmlMsg("<html>"
-                + GroovyStringUtil.evaluate(conf.getHtmlMessage(), EmailVariableBinding.getTestEmailVariables())
+                + GroovyStringUtil.evaluate(conf.getHtmlTemplateForTestSuite(), EmailVariableBinding.getTestEmailVariables())
                 + "</html>");
         email.send();
     }
@@ -95,6 +103,9 @@ public class MailUtil {
 
         email.setAuthenticator(new DefaultAuthenticator(conf.getUsername(), conf.getPassword()));
         switch (conf.getSecurityProtocol()) {
+            case None:
+                email.setSmtpPort(Integer.parseInt(conf.getPort()));
+                break;
             case SSL:
                 email.setSSLOnConnect(true);
                 email.setSslSmtpPort(conf.getPort());
@@ -109,8 +120,8 @@ public class MailUtil {
         return email;
     }
 
-    public static void sendSummaryMail(EmailConfig conf, TestSuiteLogRecord suiteLogRecord,
-            EmailVariableBinding variableBinding) throws Exception {
+    public static void sendSummaryMailForTestSuite(EmailConfig conf, TestSuiteLogRecord suiteLogRecord,
+            Map<String, Object> variables) throws Exception {
         if (conf == null || !conf.canSend()) {
             return;
         }
@@ -131,7 +142,7 @@ public class MailUtil {
         }
 
         // Set HTML formatted message
-        email.setHtmlMsg("<html>" + GroovyStringUtil.evaluate(conf.getHtmlMessage(), variableBinding.getVariables())
+        email.setHtmlMsg("<html>" + GroovyStringUtil.evaluate(conf.getHtmlTemplateForTestSuite(), variables)
                 + "</html>");
 
         try {
@@ -184,7 +195,102 @@ public class MailUtil {
             return null;
         }
     }
+    
+    public static void sendSummaryMailForTestSuiteCollection(EmailConfig conf, ReportCollectionEntity reportEntity,
+            Map<String, Object> variables) throws Exception {
+        if (conf == null || !conf.canSend()) {
+            return;
+        }
 
+        HtmlEmail email = initEmail(conf);
+
+        EmailAttachment attachment = addAttachment(email, conf, reportEntity);
+
+        email.setHtmlMsg("<html>" + GroovyStringUtil.evaluate(conf.getHtmlTemplateForTestSuiteCollection(), variables)
+                + "</html>");
+
+        try {
+            email.send();
+        } finally {
+            if (attachment != null) {
+                try {
+                    FileUtils.forceDelete(new File(attachment.getURL().toURI()));
+                } catch (IOException e) {
+                    LogUtil.logError(e);
+                }
+            }
+        }
+    }
+
+    private static EmailAttachment addAttachment(HtmlEmail email, EmailConfig conf,
+            ReportCollectionEntity reportEntity) throws Exception {
+        EmailAttachment attachment = null;
+        if (conf.isSendAttachmentEnable()) {
+            File tmpReportDir = prepareAttachmentFiles(reportEntity, conf.getAttachmentOptions());
+
+            if (tmpReportDir != null && tmpReportDir.listFiles() != null && tmpReportDir.listFiles().length > 0) {
+                File zipFile = zip(tmpReportDir.getAbsolutePath(), tmpReportDir.getName());
+                if (zipFile.length() > EMAIL_WARNING_SIZE) {
+                    LogUtil.printOutputLine(ExecutionMessageConstants.MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE);
+                }
+
+                attachment = new EmailAttachment();
+                attachment.setName(zipFile.getName());
+                attachment.setURL(zipFile.toURI().toURL());
+                attachment.setDisposition(EmailAttachment.ATTACHMENT);
+
+                try {
+                    FileUtils.forceDelete(tmpReportDir);
+                } catch (IOException e) {
+                    LogUtil.logError(e);
+                }
+            }
+
+            if (attachment != null) {
+                File attachedFile = new File(attachment.getURL().toURI());
+                email.attach(new FileDataSource(attachedFile), attachment.getName(), attachment.getDescription(),
+                        attachment.getDisposition());
+            }
+        }
+        return attachment;
+    }
+
+    private static File prepareAttachmentFiles(ReportCollectionEntity reportEntity,
+            List<ReportFormatType> attachmentOptions) throws IOException {
+        File tmpReportDir = Files.createTempDirectory("").toFile();
+
+        String projectFolder = reportEntity.getProject().getFolderLocation();
+        List<ReportItemDescription> reportItemDescriptions = reportEntity.getReportItemDescriptions();
+        Set<String> copiedPaths = new HashSet<>();
+        for (ReportItemDescription desc : reportItemDescriptions) {
+            File copied = (new File(projectFolder, desc.getReportLocation()))
+                .getParentFile()
+                .getParentFile();
+            
+            if (!copiedPaths.contains(copied.getAbsolutePath())) {
+                FileUtils.copyDirectoryToDirectory(copied, tmpReportDir);
+                copiedPaths.add(copied.getAbsolutePath());
+            }
+        }
+
+        Files.walk(Paths.get(tmpReportDir.toURI()))
+            .filter(Files::isRegularFile)
+            .filter(p -> !attachmentIncludes(attachmentOptions, p.toFile()))
+            .map(Path::toFile)
+            .forEach(FileUtils::deleteQuietly);
+
+        return tmpReportDir;
+    }
+
+    private static boolean attachmentIncludes(List<ReportFormatType> attachmentOptions, File file) {
+        String fileName = file.getName();
+        return (fileName.endsWith(".html") && attachmentOptions.contains(ReportFormatType.HTML))
+                || (fileName.endsWith(".csv") && attachmentOptions.contains(ReportFormatType.CSV))
+                || (isLogFile(fileName) && attachmentOptions.contains(ReportFormatType.LOG))
+                || (fileName.endsWith(".pdf") && attachmentOptions.contains(ReportFormatType.PDF)
+                || (ReportUtil.JUNIT_REPORT_FILE_NAME.equals(fileName)));
+    }
+    
     private static boolean isLogFile(String fileName) {
         return fileName.endsWith(".log") || fileName.endsWith(".meta") || fileName.endsWith("execution.properties");
     }
@@ -251,9 +357,14 @@ public class MailUtil {
             conf.setBcc(store.getEmailBcc());
             conf.addRecipients(splitRecipientsString(store.getRecipients(encryptionEnabled)));
             conf.setSubject(store.getEmailSubject());
-            conf.setHtmlMessage(store.getEmailHTMLTemplate());
+            conf.setHtmTemplateForTestSuite(store.getEmailHTMLTemplateForTestSuite());
             conf.setAttachmentOptions(store.getReportFormatOptions());
-            conf.setSendEmailTestFailedOnly(store.isSendEmailTestFailedOnly());
+            conf.setSendTestSuiteReportEnabled(store.isSendTestSuiteReportEnabled());
+            conf.setSendReportTestFailedOnly(store.isSendEmailTestFailedOnly());
+            conf.setHtmlTemplateForTestSuiteCollection(store.getEmailHTMLTemplateForTestSuiteCollection());
+            conf.setSendTestSuiteCollectionReportEnabled(store.isSendTestSuiteCollectionReportEnabled());
+            conf.setSkipInvidiualTestSuiteReport(store.isSkipInvidualTestSuiteReport());
+            
             return conf;
         } catch (IOException | URISyntaxException | GeneralSecurityException e) {
             LogUtil.logError(e);

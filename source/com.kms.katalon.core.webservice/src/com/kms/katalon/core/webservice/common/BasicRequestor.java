@@ -84,6 +84,8 @@ public abstract class BasicRequestor implements Requestor {
     private String projectDir;
 
     protected ProxyInformation proxyInformation;
+    
+    protected WebServiceSettingStore settingStore;
 
     public BasicRequestor(String projectDir, ProxyInformation proxyInformation) {
         this.projectDir = projectDir;
@@ -91,11 +93,11 @@ public abstract class BasicRequestor implements Requestor {
     }
 
     private SSLCertificateOption getSslCertificateOption() throws IOException {
-        return WebServiceSettingStore.create(projectDir).getSSLCertificateOption();
+        return getSettingStore().getSSLCertificateOption();
     }
     
     private SSLClientCertificateSettings getSSLSettings() throws IOException {
-        return WebServiceSettingStore.create(projectDir).getClientCertificateSettings();
+        return getSettingStore().getClientCertificateSettings();
     }
 
     protected TrustManager[] getTrustManagers() throws IOException {
@@ -365,5 +367,16 @@ public abstract class BasicRequestor implements Requestor {
             headerFields.put("#status#", Arrays.asList(String.valueOf(statusLine)));
         }
         return headerFields;
+    }
+    
+    public WebServiceSettingStore getSettingStore() {
+        if (settingStore == null) {
+            settingStore = WebServiceSettingStore.create(projectDir);
+        }
+        return settingStore;
+    }
+    
+    public void setSettingStore(WebServiceSettingStore store) {
+        this.settingStore = store;
     }
 }

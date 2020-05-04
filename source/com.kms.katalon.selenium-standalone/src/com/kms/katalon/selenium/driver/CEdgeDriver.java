@@ -12,7 +12,7 @@ public class CEdgeDriver extends EdgeDriver implements IDelayableDriver {
 
     public CEdgeDriver(EdgeDriverService service, Capabilities capabilities, int actionDelay) {
         super(service, capabilities);
-        this.actionDelayInMiliseconds = actionDelay * 1000;
+        this.actionDelayInMiliseconds = actionDelay;
     }
 
     @Override

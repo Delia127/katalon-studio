@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core TestNG
+Bundle-SymbolicName: com.kms.katalon.core.testng;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.kms.katalon.core,
+ com.kms.katalon.selenium-standalone,
+ slf4j.api,
+ com.kms.katalon.custom,
+ org.eclipse.core.runtime,
+ org.codehaus.groovy,
+ org.junit
+Export-Package: com.kms.katalon.core.testng.keyword

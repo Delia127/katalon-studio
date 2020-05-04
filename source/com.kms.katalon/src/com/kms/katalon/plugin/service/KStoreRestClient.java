@@ -61,7 +61,7 @@ public class KStoreRestClient {
                 try {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
-                        String responseContent = EntityUtils.toString(response.getEntity());
+                        String responseContent = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
                         LogUtil.writeOutputLine("Latest plugins responses: " + responseContent);
                         responseContent = responseContent.replace("{}", "null");
                         LogService.getInstance().logInfo("Katalon version: " + appVersion);
@@ -94,7 +94,7 @@ public class KStoreRestClient {
                 try {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
-                        String responseContent = EntityUtils.toString(response.getEntity());
+                        String responseContent = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
                         //LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
                         responseContent = responseContent.replace("{}", "null");
                         //LogService.getInstance().logInfo("Katalon version: " + appVersion);
@@ -166,7 +166,7 @@ public class KStoreRestClient {
             post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
             
-            try (CloseableHttpClient client = getHttpClient();
+            try (CloseableHttpClient client = getHttpClient(KStoreUrls.getAuthenticateAPIUrl());
                 CloseableHttpResponse response = client.execute(post);) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 AuthenticationResult result = new AuthenticationResult();
@@ -174,7 +174,7 @@ public class KStoreRestClient {
                     result.setAuthenticated(true);
                     HttpEntity responseEntity = response.getEntity();
                     if (responseEntity != null) { // just in case
-                        String token = EntityUtils.toString(responseEntity);
+                        String token = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
                         result.setToken(token);
                     }
                     return result;
@@ -206,7 +206,8 @@ public class KStoreRestClient {
             post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
 
-            try (CloseableHttpClient client = getHttpClient(); CloseableHttpResponse response = client.execute(post);) {
+            try (CloseableHttpClient client = getHttpClient(KStoreUrls.getInstallRecommendedPluginsAPIUrl());
+                    CloseableHttpResponse response = client.execute(post);) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode == HttpStatus.SC_OK) {
                     LoggerSingleton.logInfo("Successful");
@@ -322,7 +323,7 @@ public class KStoreRestClient {
         
         HttpGet get = new HttpGet(url);
         addAuthenticationHeaders(credentials, get);
-        CloseableHttpClient client = getHttpClient();
+        CloseableHttpClient client = getHttpClient(url);
         CloseableHttpResponse response = client.execute(get);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode == HttpStatus.SC_OK) {
@@ -343,8 +344,8 @@ public class KStoreRestClient {
         }
     }
     
-    private CloseableHttpClient getHttpClient() throws URISyntaxException, IOException, GeneralSecurityException {
-        return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
+    private CloseableHttpClient getHttpClient(String url) throws URISyntaxException, IOException, GeneralSecurityException {
+        return HttpClientProxyBuilder.create(ProxyPreferences.getAuthProxyInformation(), url).getClientBuilder().build();
     }
     
     private void addAuthenticationHeaders(KStoreCredentials credentials, HttpRequestBase request) {

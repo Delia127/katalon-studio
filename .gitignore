@@ -1,5 +1,9 @@
 bin/
 *.class
+!tools/sonar-scanner/jre/bin/
+!tools/sonar-scanner/bin
+!tools/sonar-scanner-windows/jre/bin/
+!tools/sonar-scanner-windows/bin
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -39,3 +43,7 @@ source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/R
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release/Setup.msi
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release/setup.exe
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release.7z
+
+.mvn
+mvnw
+mvnw.cmd

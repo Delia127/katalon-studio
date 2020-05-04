@@ -289,8 +289,16 @@ public class TreeEntityUtil {
         if ("executeJavaScript".equals(keywordMethodName)) {
             return "Execute JavaScript";
         }
-        return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
+        String readableName = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
                 " ");
+        if (readableName.contains("Test NG")) {
+            return readableName.replace("Test NG", "TestNG");
+        }
+        if (readableName.contains("J Unit")) {
+            return readableName.replace("J Unit", "JUnit");
+        }
+        
+        return readableName;
     }
 
     /**
@@ -533,24 +541,16 @@ public class TreeEntityUtil {
             return treeEntities;
         }
 
-        boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
-
         FolderController folderController = FolderController.getInstance();
         treeEntities.add(new ProfileRootTreeEntity(folderController.getProfileRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getTestCaseRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getObjectRepositoryRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getTestSuiteRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getTestDataRoot(project), null));
-
-        if (isEnterpriseAccount) {
-            treeEntities.add(new FolderTreeEntity(folderController.getCheckpointRoot(project), null));
-        }
+        treeEntities.add(new FolderTreeEntity(folderController.getCheckpointRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
         treeEntities.add(new TestListenerFolderTreeEntity(folderController.getTestListenerRoot(project), null));
-
-        if (isEnterpriseAccount) {
-            treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
-        }
+        treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
         treeEntities.add(new IncludeTreeRootEntity(folderController.getIncludeRoot(project)));
         
         List<FileEntity> fileEntities = folderController.getRootUserFilesOrFolders(project);

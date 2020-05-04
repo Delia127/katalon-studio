@@ -58,7 +58,7 @@ public class ActiveEventLogPartHandler {
     public void onDestroy() {
         LogManager.getOutputLogger().setWriter(null);
 
-        LogManager.getOutputLogger().setWriter(null);
+        LogManager.getErrorLogger().setWriter(null);
     }
 
     private void writeLog(byte[] buf, int off, int len) {

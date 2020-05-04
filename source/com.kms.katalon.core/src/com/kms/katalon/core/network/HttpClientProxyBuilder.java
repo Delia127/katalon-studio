@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 
 import javax.net.ssl.HostnameVerifier;
@@ -104,6 +105,58 @@ public class HttpClientProxyBuilder {
             @Override
             public long getKeepAliveDuration(final HttpResponse response, final HttpContext context) {
 		// copied from source
+                Args.notNull(response, "HTTP response");
+                final HeaderElementIterator it = new BasicHeaderElementIterator(
+                        response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+                while (it.hasNext()) {
+                    final HeaderElement he = it.nextElement();
+                    final String param = he.getName();
+                    final String value = he.getValue();
+                    if (value != null && param.equalsIgnoreCase("timeout")) {
+                        try {
+                            return Long.parseLong(value) * 1000;
+                        } catch (final NumberFormatException ignore) {}
+                    }
+                }
+                // If the server indicates no timeout, then let it be 1ms so that connection is not kept alive
+                // indefinitely
+                return 1;
+            }
+        });
+        
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(DEFAULT_CONNECT_TIMEOUT)
+                .build();
+        
+        clientBuilder.setDefaultRequestConfig(config);
+        
+        return new HttpClientProxyBuilder(clientBuilder);
+    }
+    
+    public static HttpClientProxyBuilder create(ProxyInformation proxyInfo, String url)
+            throws URISyntaxException, IOException, GeneralSecurityException {
+        URL newUrl = new URL(url);
+        
+        HttpClientBuilder clientBuilder = HttpClients.custom();
+        
+        clientBuilder.setConnectionManager(connectionManager);
+        clientBuilder.setConnectionManagerShared(true);
+        
+        SSLContext sc = SSLContext.getInstance(TLS);
+        sc.init(getKeyManagers(), getTrustManagers(), null);
+        clientBuilder.setSSLContext(sc);
+        
+        Proxy proxy = proxyInfo == null ? Proxy.NO_PROXY : ProxyUtil.getProxy(proxyInfo, newUrl);
+        if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
+            configureProxy(clientBuilder, proxyInfo);
+        }
+        
+        clientBuilder.setSSLHostnameVerifier(getHostnameVerifier());
+        
+        clientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration(final HttpResponse response, final HttpContext context) {
+        // copied from source
                 Args.notNull(response, "HTTP response");
                 final HeaderElementIterator it = new BasicHeaderElementIterator(
                         response.headerIterator(HTTP.CONN_KEEP_ALIVE));

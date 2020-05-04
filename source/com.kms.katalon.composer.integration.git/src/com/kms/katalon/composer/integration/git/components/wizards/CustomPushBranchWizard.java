@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.egit.core.op.PushOperationResult;
 import org.eclipse.egit.core.op.PushOperationSpecification;
@@ -25,7 +27,9 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 
+import com.kms.katalon.composer.integration.git.components.utils.Protocol;
 import com.kms.katalon.composer.integration.git.internal.push.CustomConfirmationPage;
+import com.kms.katalon.tracking.service.Trackings;
 
 /**
  * A wizard dedicated to pushing a commit.
@@ -235,6 +239,15 @@ public class CustomPushBranchWizard extends Wizard {
         pushOperationUI.setCredentialsProvider(new EGitCredentialsProvider());
         pushOperationUI.setShowConfigureButton(false);
         pushOperationUI.start();
+        trackPushOperation(result.getURIs());
+    }
+    
+    private void trackPushOperation(Collection<URIish> uris) {
+        try {
+            URIish uri = uris.stream().findFirst().get();
+            String protocol = Protocol.fromUri(uri).getDefaultScheme();
+            Trackings.trackGitOperation("push", protocol);
+        } catch (Exception ignored) {}
     }
 
     private String getRemoteName() {

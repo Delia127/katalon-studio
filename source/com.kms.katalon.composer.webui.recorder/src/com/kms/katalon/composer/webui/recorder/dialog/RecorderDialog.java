@@ -21,8 +21,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -73,15 +73,13 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
 import com.google.common.hash.Hashing;
-import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.handler.WorkbenchUtilizer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -146,6 +144,9 @@ import com.kms.katalon.execution.configuration.contributor.CustomRunConfiguratio
 import com.kms.katalon.execution.webservice.RecordingScriptGenerator;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
@@ -259,6 +260,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private boolean isUsingIE = false;
     
     private boolean isNavigationAdded = false;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     /**
      * Create the dialog.
@@ -868,34 +871,40 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         });
         runAllStepsItem.setSelection(true);
 
-        if (isEnterpriseAccount()) {
-            MenuItem runSelectedSteps = new MenuItem(playMenu, SWT.PUSH);
-            runSelectedSteps.setText(
-                    ControlUtils.createMenuItemText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
-                            KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
-            runSelectedSteps.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
+        MenuItem runSelectedSteps = new MenuItem(playMenu, SWT.PUSH);
+        runSelectedSteps.setText(
+                ControlUtils.createMenuItemText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
+        runSelectedSteps.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (featureService.canUse(KSEFeature.RECORDER_RUN_SELECTED_STEPS)) {
                     runSelectedSteps();
+                } else {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RECORDER_RUN_SELECTED_STEPS);
                 }
-            });
-            if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
-                runSelectedSteps.setEnabled(false);
             }
+        });
+        if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
+            runSelectedSteps.setEnabled(false);
+        }
 
-            MenuItem runFromSelectedStep = new MenuItem(playMenu, SWT.PUSH);
-            runFromSelectedStep.setText(ControlUtils.createMenuItemText(
-                    ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_SELECTED_STEP,
-                    KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
-            runFromSelectedStep.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
+        MenuItem runFromSelectedStep = new MenuItem(playMenu, SWT.PUSH);
+        runFromSelectedStep.setText(ControlUtils.createMenuItemText(
+                ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_SELECTED_STEP,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
+        runFromSelectedStep.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (featureService.canUse(KSEFeature.RECORDER_RUN_FROM_SELECTED_STEP)) {
                     runFromStep();
+                } else {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RECORDER_RUN_FROM_SELECTED_STEP);
                 }
-            });
-            if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
-                runFromSelectedStep.setEnabled(false);
             }
+        });
+        if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
+            runFromSelectedStep.setEnabled(false);
         }
     }
 
@@ -1873,13 +1882,17 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 runAllSteps();
                 return;
             case EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD:
-                if (isEnterpriseAccount()) {
+                if (featureService.canUse(KSEFeature.RECORDER_RUN_SELECTED_STEPS)) {
                     runSelectedSteps();
+                } else {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RECORDER_RUN_SELECTED_STEPS);
                 }
                 return;
             case EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD:
-                if (isEnterpriseAccount()) {
+                if (featureService.canUse(KSEFeature.RECORDER_RUN_FROM_SELECTED_STEP)) {
                     runFromStep();
+                } else {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RECORDER_RUN_FROM_SELECTED_STEP);
                 }
                 return;
         }
@@ -2059,9 +2072,4 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
         return (WebUIDriverType) selectedBrowser.getDriverType();
     }
-
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
-    }
-
 }

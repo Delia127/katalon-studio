@@ -16,4 +16,6 @@ public class ExecutionDefaultSettingConstants {
     public static final String WEB_UI_DEFAULT_SMART_WAIT_MODE = "execution.default.smartWaitMode";
 
     public static final String WEB_UI_LOG_TEST_STEPS = "execution.logTestSteps";
+    
+    public static final String LAUNCH_VM_ARGS = "execution.launch.vmArgs";
 }

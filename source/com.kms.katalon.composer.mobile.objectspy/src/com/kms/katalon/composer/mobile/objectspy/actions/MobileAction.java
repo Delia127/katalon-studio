@@ -12,6 +12,7 @@ public enum MobileAction implements IMobileAction {
     Swipe("swipe", "Simulate swiping fingers on the mobile device"),
     GetText("getText", "Get text of a mobile element"),
     SetText("setText", "Set text to the given element"),
+    SetEncryptedText("setEncryptedText", "Set encrypted text to the given element"),
     ClearText("clearText", "Clear text on the given element"),
     ScrollToText("scrollToText", "Scroll to an element which contains the given text"),
     HideKeyboard("hideKeyboard", "Hide the on-screen keyboard"),

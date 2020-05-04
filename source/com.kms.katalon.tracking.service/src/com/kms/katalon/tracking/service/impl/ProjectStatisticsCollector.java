@@ -8,10 +8,14 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.application.utils.FileUtil;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.dal.exception.DALException;
@@ -30,6 +34,9 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 import com.kms.katalon.logging.LogUtil;
@@ -98,6 +105,14 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         statistics.setContinueOnFailure(isAutoApplyNeighborXpathsEnabled());
         
         statistics.setWebLocatorConfig(getWebLocatorConfig());
+        
+        statistics.setLogTestStepsEnabled(getLogTestStepsEnabled());
+        
+        statistics.setImageRecognitionEnabled(getImageRecognitionEnabled());
+        
+        statistics.setAdditionalTestDataSourceForEnterpriseUser(getAdditionalTestDataSourceForEnterpriseUser());
+        
+        statistics.setAllowUsageTracking(getAllowUsageTracking());
         
         return statistics;
     }
@@ -368,5 +383,44 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     private boolean isAutoApplyNeighborXpathsEnabled() {
         ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
         return store.getAutoApplyNeighborXpathsEnabled();
+    }
+    
+    private boolean getLogTestStepsEnabled() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
+        boolean doLogTestStep = featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION)
+                ? store.getLogTestSteps().booleanValue() : true;
+        return doLogTestStep;
+    }
+    
+    private boolean getImageRecognitionEnabled() {
+        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+        return store.getImageRecognitionEnabled();
+    }
+    
+    private String getAdditionalTestDataSourceForEnterpriseUser() throws IOException {
+        DatabaseSettings databaseSettings = new DatabaseSettings(project.getFolderLocation());
+        String url = databaseSettings.getUrl();
+        if (StringUtils.isNotBlank(url)) {
+            if (url.startsWith("jdbc:oracle")) {
+                return "oracle";
+            }
+            
+            if (url.startsWith("jdbc:sqlserver")) {
+                return "mssql";
+            }
+        }
+        return StringUtils.EMPTY;
+    }
+    
+    private boolean getAllowUsageTracking() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        IPreferenceStore prefStore = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
+        boolean allowUsageTracking = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
+                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
+        if (featureService.canUse(KSEFeature.CONFIGURE_USAGE_TRACKING)) {
+            return allowUsageTracking;
+        }
+        return true;
     }
 }

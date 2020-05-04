@@ -1,33 +1,62 @@
 package com.kms.katalon.execution.setting;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.util.internal.DateUtil;
 
 public class EmailVariableBinding {
-    private final TestSuiteLogRecord testSuiteLogRecord;
 
-    public EmailVariableBinding(TestSuiteLogRecord testSuiteLogRecord) {
-        this.testSuiteLogRecord = testSuiteLogRecord;
-    }
-
-    public Map<String, Object> getVariables() {
+    public static Map<String, Object> getVariablesForTestSuiteEmail(TestSuiteLogRecord logRecord) {
         Map<String, Object> binding = new HashMap<>();
-        binding.put("hostName", testSuiteLogRecord.getHostName());
-        binding.put("os", testSuiteLogRecord.getOs());
-        binding.put("browser", testSuiteLogRecord.getBrowser());
-        binding.put("suiteId", testSuiteLogRecord.getId());
-        binding.put("suiteName", testSuiteLogRecord.getName());
-        binding.put("deviceId", testSuiteLogRecord.getDeviceId());
-        binding.put("deviceName", testSuiteLogRecord.getDeviceName());
-        binding.put("totalPassed", testSuiteLogRecord.getTotalPassedTestCases());
-        binding.put("totalFailed", testSuiteLogRecord.getTotalFailedTestCases());
-        binding.put("totalError", testSuiteLogRecord.getTotalErrorTestCases());
-        binding.put("totalTestCases", testSuiteLogRecord.getTotalTestCases());
+        binding.put("hostName", logRecord.getHostName());
+        binding.put("os", logRecord.getOs());
+        binding.put("browser", logRecord.getBrowser());
+        binding.put("suiteId", logRecord.getId());
+        binding.put("suiteName", logRecord.getName());
+        binding.put("deviceId", logRecord.getDeviceId());
+        binding.put("deviceName", logRecord.getDeviceName());
+        binding.put("totalPassed", logRecord.getTotalPassedTestCases());
+        binding.put("totalFailed", logRecord.getTotalFailedTestCases());
+        binding.put("totalError", logRecord.getTotalErrorTestCases());
+        binding.put("totalTestCases", logRecord.getTotalTestCases());
         return binding;
     }
-    
+
+    public static Map<String, Object> getVariablesForTestSuiteCollectionEmail(TestSuiteCollectionLogRecord logRecord) {
+        List<TestSuiteLogRecord> testSuiteRecords = logRecord.getTestSuiteRecords();
+        if (testSuiteRecords == null || testSuiteRecords.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, Object> binding = new HashMap<>();
+        
+        TestSuiteLogRecord childRecord =  testSuiteRecords.get(0);
+        if (testSuiteRecords != null && testSuiteRecords.size() > 0) {
+            childRecord = testSuiteRecords.get(0);
+        }
+        binding.put("hostName", childRecord != null ? childRecord.getHostName() : StringUtils.EMPTY);
+        binding.put("os", childRecord != null ? childRecord.getOs() : StringUtils.EMPTY);
+
+        long startTime = logRecord.getStartTime();
+        long endTime = logRecord.getEndTime();
+        binding.put("startTime", DateUtil.getDateTimeFormatted(startTime));
+        binding.put("duration", DateUtil.getElapsedTime(startTime, endTime));
+
+        binding.put("suiteCollectionName", logRecord.getTestSuiteCollectionId());
+        binding.put("totalPassed", logRecord.getTotalPassedTestCases());
+        binding.put("totalFailed", logRecord.getTotalFailedTestCases());
+        binding.put("totalError", logRecord.getTotalErrorTestCases());
+        binding.put("totalTestCases", logRecord.getTotalTestCases());
+        return binding;
+    }
+
     public static Map<String, Object> getTestEmailVariables() {
         Map<String, Object> binding = new HashMap<>();
         binding.put("hostName", "localhost");

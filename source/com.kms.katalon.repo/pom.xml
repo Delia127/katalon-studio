@@ -234,9 +234,6 @@
 									<id>atu.testrecorder:screen-recorder:2.1</id>
 								</artifact>
 								<artifact>
-									<id>org.junit:junit:4.12</id>
-								</artifact>
-								<artifact>
 									<id>org.beanshell:bsh:2.0b4</id>
 								</artifact>
 								<artifact>
@@ -293,6 +290,13 @@
                                 <artifact>
                                 	<id>ca.juliusdavies:not-yet-commons-ssl:0.3.11</id>
                                 </artifact>
+                                <artifact>
+                                    <id>com.amazonaws:aws-java-sdk-core:1.11.716</id>
+                                    <excludes>
+                                        <exclude>commons-codec</exclude>
+                                        <exclude>org.apache.httpcomponents</exclude>
+                                    </excludes>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>
@@ -319,7 +323,7 @@
 		<pluginRepository>
 			<id>central</id>
 			<name>Maven Plugin Repository</name>
-			<url>http://repo1.maven.org/maven2</url>
+			<url>https://repo1.maven.org/maven2</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>

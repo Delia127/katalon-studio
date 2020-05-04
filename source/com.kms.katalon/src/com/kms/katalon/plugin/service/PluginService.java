@@ -14,14 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.activation.dialog.WarningReactivateDialog;
 import com.kms.katalon.application.KatalonApplication;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -38,6 +33,8 @@ import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.constants.PluginOptions;
 import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.license.models.LicenseType;
@@ -64,6 +61,8 @@ public class PluginService {
     private static PluginService instance;
 
     private IEventBroker eventBroker;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     private PluginService() {
         eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
@@ -288,6 +287,9 @@ public class PluginService {
 
         List<OfflinePlugin> offlinePlugins = new ArrayList<>();
 
+        int customKeywordPluginCount = 0;
+        int idePluginCount = 0;
+        
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         if (project != null) {
             File pluginsFolder = new File(project.getFolderLocation(), "Plugins");
@@ -301,6 +303,7 @@ public class PluginService {
                             plugin.setFile(file);
                             plugin.setCustomKeywordPlugin(true);
                             offlinePlugins.add(plugin);
+                            customKeywordPluginCount++;
                         }
                     }
                 }
@@ -318,6 +321,7 @@ public class PluginService {
                             plugin.setFile(file);
                             plugin.setCustomKeywordPlugin(false);
                             offlinePlugins.add(plugin);
+                            idePluginCount++;
                         }
                     }
                 }
@@ -326,6 +330,9 @@ public class PluginService {
         }
         
         if (canUsePrivatePlugins) {
+            if (offlinePlugins.size() > 0) {
+                Trackings.trackUsePrivatePlugins(customKeywordPluginCount, idePluginCount);
+            }
             return offlinePlugins;
         } else {
             //restric to use 1 custom keyword plugin only
@@ -375,7 +382,7 @@ public class PluginService {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();
         if (currentProject != null) {
-            boolean allowSourceAttachment = LicenseUtil.isNotFreeLicense();
+            boolean allowSourceAttachment = featureService.canUse(KSEFeature.SOURCE_CODE_FOR_DEBUGGING);
             GroovyUtil.initGroovyProjectClassPath(currentProject,
                     projectController.getCustomKeywordPlugins(currentProject), false, allowSourceAttachment, monitor);
             projectController.updateProjectClassLoader(currentProject);

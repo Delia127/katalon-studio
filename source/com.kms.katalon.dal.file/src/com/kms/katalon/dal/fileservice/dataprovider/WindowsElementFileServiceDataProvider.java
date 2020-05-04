@@ -12,6 +12,7 @@ import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class WindowsElementFileServiceDataProvider implements IWindowsElementDataProvider {
     
@@ -91,7 +92,7 @@ public class WindowsElementFileServiceDataProvider implements IWindowsElementDat
             if (currentWindowsElementEntity == null) {
                 return null;
             }
-
+            String oldId = currentWindowsElementEntity.getIdForDisplay();
             checkDuplicate(currentWindowsElementEntity.getParentFolder(), newName);
 
             getEntityService().deleteEntity(currentWindowsElementEntity);
@@ -99,7 +100,8 @@ public class WindowsElementFileServiceDataProvider implements IWindowsElementDat
             currentWindowsElementEntity.setName(newName);
 
             getEntityService().saveEntity(currentWindowsElementEntity);
-
+            TestArtifactScriptRefactor.createForWindowsObjectEntity(oldId).updateReferenceForProject(
+                    currentWindowsElementEntity.getIdForDisplay(), currentWindowsElementEntity.getProject());
             return currentWindowsElementEntity;
         } catch (Exception e) {
             throw new DALException(e);
@@ -124,8 +126,12 @@ public class WindowsElementFileServiceDataProvider implements IWindowsElementDat
             return null;
         }
 
+        String oldId = windowsElementEntity.getIdForDisplay();
         try {
-            return EntityFileServiceManager.move(windowsElementEntity, newLocation);
+            WindowsElementEntity movedElement = EntityFileServiceManager.move(windowsElementEntity, newLocation);
+            TestArtifactScriptRefactor.createForWindowsObjectEntity(oldId)
+                    .updateReferenceForProject(movedElement.getIdForDisplay(), windowsElementEntity.getProject());
+            return movedElement;
         } catch (Exception e) {
             throw new DALException(e);
         }

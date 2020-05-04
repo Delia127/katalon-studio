@@ -75,8 +75,9 @@ public class WindowsDriverFactory {
                 : new DesiredCapabilities();
         logger.logRunData(DESIRED_CAPABILITIES_PROPERTY, JsonUtil.toJson(desiredCapabilities.toJson(), false));
 
-        Proxy proxy = ProxyUtil.getProxy(RunConfiguration.getProxyInformation());
+        Proxy proxy = ProxyUtil.getProxy(RunConfiguration.getProxyInformation(), remoteAddressURL);
         return startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
+
     }
 
     public static WindowsSession startApplication(URL remoteAddressURL, String appFile,

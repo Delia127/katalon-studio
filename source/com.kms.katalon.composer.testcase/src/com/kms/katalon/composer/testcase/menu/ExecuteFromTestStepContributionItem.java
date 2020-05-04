@@ -17,7 +17,9 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
@@ -37,6 +39,7 @@ import com.kms.katalon.composer.testcase.providers.AstTestScriptGeneratorProvide
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.execution.session.ExecutionSession;
+import com.kms.katalon.feature.KSEFeature;
 
 @SuppressWarnings("restriction")
 public class ExecuteFromTestStepContributionItem extends ContributionItem implements SelectionListener {
@@ -54,7 +57,7 @@ public class ExecuteFromTestStepContributionItem extends ContributionItem implem
         if (findCompositeParentPart(getActiveGroovyEditor()) == null) {
             return;
         }
-        TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, this, index);
+        TestCaseMenuUtil.generateExecuteFromTestStepMenuItem(menu, this, index);
     }
 
     private void executeFromTestStep(ExecutionSession executionSession) {
@@ -207,10 +210,12 @@ public class ExecuteFromTestStepContributionItem extends ContributionItem implem
         if (!(item instanceof MenuItem)) {
             return;
         }
+        
         MenuItem menuItem = (MenuItem) item;
         if (!(menuItem.getData() instanceof ExecutionSession)) {
             return;
         }
+        
         executeFromTestStep((ExecutionSession) menuItem.getData());
     }
 

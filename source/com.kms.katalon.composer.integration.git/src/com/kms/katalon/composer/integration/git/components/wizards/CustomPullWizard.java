@@ -21,6 +21,8 @@ import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.git.components.utils.Protocol;
+import com.kms.katalon.tracking.service.Trackings;
 
 /**
  * A wizard to allow to specify a pull operation with options
@@ -154,6 +156,15 @@ public class CustomPullWizard extends Wizard {
         repos.put(repository, config);
         PullOperationUI pullOperationUI = new PullOperationUI(repos);
         pullOperationUI.start();
+        trackPullOperation();
+    }
+    
+    private void trackPullOperation() {
+        try {
+            URIish uri = page.getRemoteConfig().getURIs().get(0);
+            String protocol = Protocol.fromUri(uri).getDefaultScheme();
+            Trackings.trackGitOperation("pull", protocol);
+        } catch (Exception ignored) {}
     }
 
 }

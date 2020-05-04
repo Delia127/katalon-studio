@@ -21,9 +21,10 @@
         <coreCucumberModule>com.kms.katalon.core.cucumber</coreCucumberModule>
         <coreWebserviceModule>com.kms.katalon.core.webservice</coreWebserviceModule>
         <coreWebUiModule>com.kms.katalon.core.webui</coreWebUiModule>
+        <coreTestNGModule>com.kms.katalon.core.testng</coreTestNGModule>
 
         <apidocDirectory>${project.build.directory}/${resourcesDiretory}/apidocs</apidocDirectory>
-        <apidocSourcePath>${project.basedir}/../${coreModule}/src${path.separator}${project.basedir}/../${coreMobileModule}/src${path.separator}${project.basedir}/../${coreWindowsModule}/src${path.separator}${project.basedir}/../${coreCucumberModule}/src${path.separator}${project.basedir}/../${coreWebserviceModule}/src${path.separator}${project.basedir}/../${coreWebUiModule}/src</apidocSourcePath>
+        <apidocSourcePath>${project.basedir}/../${coreModule}/src${path.separator}${project.basedir}/../${coreMobileModule}/src${path.separator}${project.basedir}/../${coreWindowsModule}/src${path.separator}${project.basedir}/../${coreCucumberModule}/src${path.separator}${project.basedir}/../${coreWebserviceModule}/src${path.separator}${project.basedir}/../${coreWebUiModule}/src${path.separator}${project.basedir}/../${coreTestNGModule}/src</apidocSourcePath>
         <apidocPackageNames>**.*</apidocPackageNames>
         <apidocFooter>
             <![CDATA[

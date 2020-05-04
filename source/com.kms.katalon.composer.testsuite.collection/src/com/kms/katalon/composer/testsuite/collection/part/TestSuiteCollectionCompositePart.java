@@ -38,6 +38,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuiteCollectionCompositePart extends EventServiceAdapter
         implements IComposerPartEvent, SavableCompositePart {
@@ -255,6 +256,7 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter
     @Override
     public void save() throws Exception {
         testSuiteCollectionMainPart.save();
+        Trackings.trackSaveObject("testSuiteCollection");
     }
 
     @Override

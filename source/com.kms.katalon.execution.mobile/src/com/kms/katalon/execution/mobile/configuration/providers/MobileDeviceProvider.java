@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
@@ -35,6 +37,9 @@ public class MobileDeviceProvider {
 
     private static final String[] GET_SIMULATOR_LIST_COMMAND = new String[] { "/bin/sh", "-c",
             "xcrun simctl list | sed -e '/== Devices ==/,/== Device Pairs ==/!d'" };
+    
+    private static final Pattern IOS_UUID_PATTERN = Pattern
+            .compile("[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"); 
 
     private MobileDeviceProvider() {
     }
@@ -66,10 +71,15 @@ public class MobileDeviceProvider {
         if (!isRunningOnMacOSX()) {
             return Collections.emptyList();
         }
-        List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
         Map<String, String> iosAdditionalEnvironmentVariables = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
         List<String> simulatorsList = ConsoleCommandExecutor
                 .runConsoleCommandAndCollectResults(GET_SIMULATOR_LIST_COMMAND, iosAdditionalEnvironmentVariables);
+        return getIosSimulatorsFromCommandResult(simulatorsList);
+    }
+
+    public static List<IosDeviceInfo> getIosSimulatorsFromCommandResult(List<String> simulatorsList)
+            throws IOException, InterruptedException {
+        List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
         String currentOsVersion = null;
         for (String simulatorLine : simulatorsList) {
             if (isIosSimulatorVersionLine(simulatorLine)) {
@@ -79,10 +89,13 @@ public class MobileDeviceProvider {
             if (!isIosSimulatorInfoLine(simulatorLine)) {
                 continue;
             }
-            int firstIndexOfOpenQuote = simulatorLine.indexOf("(");
-            String simulatorName = simulatorLine.substring(0, firstIndexOfOpenQuote).trim();
-            String simulatorId = simulatorLine.substring(firstIndexOfOpenQuote + 1, simulatorLine.indexOf(")")).trim();
-            iosDevices.add(new IosSimulatorInfo(simulatorId, simulatorName, currentOsVersion));
+
+            Matcher matcher = IOS_UUID_PATTERN.matcher(simulatorLine);
+            if (matcher.find()) {
+                String simulatorId = matcher.group();
+                String simulatorName = simulatorLine.substring(0, matcher.start() - 1).trim();
+                iosDevices.add(new IosSimulatorInfo(simulatorId, simulatorName, currentOsVersion));
+            }
         }
         return iosDevices;
     }
