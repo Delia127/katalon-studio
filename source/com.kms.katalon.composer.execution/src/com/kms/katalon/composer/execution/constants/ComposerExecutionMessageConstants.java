@@ -169,10 +169,6 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String SETT_ERROR_MSG_UNABLE_TO_SAVE_PROJ_SETTS;
 
-    public static String SETTINGS_EMAIL;
-
-    public static String SETTINGS_EMAIL;
-
     public static String DIA_LBL_TYPE;
 
     public static String DIA_SHELL_ADD_NEW_PREFERENCE;

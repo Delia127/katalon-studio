@@ -44,6 +44,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.ReportFormatType;
@@ -621,7 +622,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     @Override
     public String getDocumentationUrl() {
-        return ComposerExecutionMessageConstants.SETTINGS_EMAIL;
+        return DocumentationMessageConstants.SETTINGS_EMAIL;
     }
 
     private class EmailConfigValidator {
