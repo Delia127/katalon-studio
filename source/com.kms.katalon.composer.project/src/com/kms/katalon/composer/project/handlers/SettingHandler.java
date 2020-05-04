@@ -203,27 +203,37 @@ public class SettingHandler {
                     showHelpButtonForPage(shownPage);
 
                     String nodeId = node.getId();
-                    boolean shouldDisable = false;
-
-                    if (StringConstants.WEB_LOCATORS_SETTING_PAGE_ID.equalsIgnoreCase(nodeId)
-                            && !featureService.canUse(KSEFeature.WEB_LOCATOR_SETTINGS)) {
-                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.WEB_LOCATOR_SETTINGS);
-                        shouldDisable = true;
+                    boolean disabled = false;
+                    switch (nodeId) {
+                        case StringConstants.WEB_LOCATORS_SETTING_PAGE_ID:
+                            if (!featureService.canUse(KSEFeature.WEB_LOCATOR_SETTINGS)) {
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.WEB_LOCATOR_SETTINGS);
+                                disabled = true;
+                            }
+                            break;
+                        case StringConstants.WS_METHOD_SETTING_PAGE_ID:
+                            if (!featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_METHOD)) {
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CUSTOM_WEB_SERVICE_METHOD);
+                                disabled = true;
+                            }
+                            break;
+                        case StringConstants.LAUNCH_ARGUMENTS_SETTING_PAGE_ID:
+                            if (!featureService.canUse(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS)) {
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS);
+                                disabled = true;
+                            }
+                            break;
+                        case StringConstants.TEST_SUITE_COLLECTION_EMAIL_TEMPLATE_SETTING_PAGE_ID:
+                            if (!featureService.canUse(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL)) {
+                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL);
+                                disabled = true;
+                            }
+                            break;
+                        default:
+                            disabled = false;
                     }
 
-                    if (StringConstants.WS_METHOD_SETTING_PAGE_ID.equalsIgnoreCase(nodeId)
-                            && !featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_METHOD)) {
-                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CUSTOM_WEB_SERVICE_METHOD);
-                        shouldDisable = true;
-                    }
-
-                    if (StringConstants.LAUNCH_ARGUMENTS_SETTING_PAGE_ID.equalsIgnoreCase(nodeId)
-                            && !featureService.canUse(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS)) {
-                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS);
-                        shouldDisable = true;
-                    }
-
-                    if (shouldDisable) {
+                    if (disabled) {
                         ControlUtils.recursiveSetEnabled(shownPage.getControl(), false);
                     }
                 }

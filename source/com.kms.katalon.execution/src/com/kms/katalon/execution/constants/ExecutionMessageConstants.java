@@ -112,7 +112,7 @@ public class ExecutionMessageConstants extends NLS {
     public static String LAU_MESSAGE_UPLOADING_RPT;
 
     public static String LAU_MESSAGE_SENDING_EMAIL;
-    
+        
     public static String LAU_MESSAGE_UNABLE_TO_EXECUTE_TEST_SUITE;
     
     public static String LAU_MESSAGE_EMPTY_TEST_SUITE;

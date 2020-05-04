@@ -2,10 +2,13 @@ package com.kms.katalon.execution.launcher;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,6 +16,7 @@ import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
@@ -22,6 +26,8 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
+import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutionContextImpl;
 import com.kms.katalon.execution.handler.OrganizationHandler;
@@ -36,6 +42,8 @@ import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.launcher.result.TestSuiteCollectionLauncherResult;
 import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
+import com.kms.katalon.execution.setting.EmailVariableBinding;
+import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
@@ -84,9 +92,22 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         this.executedEntity = executedEntity;
         this.executionMode = executionMode;
         this.reportCollection = reportCollection;
+        
+        EmailConfig emailConfig = executedEntity.getEmailConfig(ProjectController.getInstance().getCurrentProject());
+        boolean skipReportEmailForSubLaunchers = shouldSkipSendingEmailForSubLaunchers(emailConfig);
+        for (ReportableLauncher subLauncher : subLaunchers) {
+            subLauncher.setSkipSendingReportEmail(skipReportEmailForSubLaunchers);
+        }
+        
         addListenerForChildren(subLaunchers);
     }
-
+    
+    private boolean shouldSkipSendingEmailForSubLaunchers(EmailConfig emailConfig) {
+        return featureService.canUse(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL)
+                && emailConfig.isSendTestSuiteCollectionReportEnabled()
+                && emailConfig.isSkipInvidiualTestSuiteReport();
+    }
+    
     private void addListenerForChildren(List<? extends ReportableLauncher> subLaunchers) {
         for (ReportableLauncher childLauncher : subLaunchers) {
             childLauncher.addListener(this);
@@ -150,7 +171,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                 
                 endTime = new Date();
                 
-                prepareReport();
+                TestSuiteCollectionLogRecord logRecord = prepareReport();
+                
+                sendReportEmail(reportCollection, logRecord);
                 
                 setStatus(LauncherStatus.UPLOAD_REPORT);
                 reportLauncher.uploadReportTestSuiteCollection(
@@ -182,7 +205,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             suiteCollectionLogRecord.setTotalFailedTestCases(String.valueOf(result.getNumFailures()));
             suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
             suiteCollectionLogRecord.setTotalTestCases(String.valueOf(result.getExecutedTestCases()));
-
+            suiteCollectionLogRecord.setReportLocation(
+                    reportCollection.getParentFolder().getParentFolder().getParentFolder().getLocation());
+            
             if (featureService.canUse(KSEFeature.EXPORT_JUNIT_REPORT)) {
                 ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
             }
@@ -192,6 +217,32 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             LogUtil.printAndLogError(e);
             return null;
         }
+    }
+    
+    private void sendReportEmail(ReportCollectionEntity reportEntity, TestSuiteCollectionLogRecord logRecord) {
+        try {
+            EmailConfig emailConfig = executedEntity
+                    .getEmailConfig(ProjectController.getInstance().getCurrentProject());
+            if (canSendReport(emailConfig)) {
+                Map<String, Object> variables = EmailVariableBinding.getVariablesForTestSuiteCollectionEmail(logRecord);
+
+                setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
+
+                LogUtil.logInfo(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
+                        Arrays.toString(emailConfig.getTos())));
+                
+                MailUtil.sendSummaryMailForTestSuiteCollection(emailConfig, reportEntity, variables);
+
+                LogUtil.logInfo(StringConstants.LAU_PRT_EMAIL_SENT);
+            }
+        } catch (Exception e) {
+            LogUtil.printAndLogError(e);
+        }
+    }
+    
+    private boolean canSendReport(EmailConfig emailConfig) {
+        return featureService.canUse(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL)
+                && emailConfig != null && emailConfig.isSendTestSuiteCollectionReportEnabled();
     }
     
     protected File getReportFolder() {
