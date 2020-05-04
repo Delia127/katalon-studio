@@ -54,8 +54,6 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
     private static final String EXECUTION_PROPERTIES_FILE_EXTENSION = "properties";
     
-    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
-    
     private ProjectEntity project;
     
     private FolderController folderController = FolderController.getInstance();
@@ -388,6 +386,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     }
     
     private boolean getLogTestStepsEnabled() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
         boolean doLogTestStep = featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION)
                 ? store.getLogTestSteps().booleanValue() : true;
