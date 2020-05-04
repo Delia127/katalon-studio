@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ProjectController;
@@ -45,6 +44,9 @@ import com.kms.katalon.execution.launcher.result.TestSuiteCollectionLauncherResu
 import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.MailUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
@@ -73,6 +75,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     private Date endTime;
     
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+    
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
             List<ReportableLauncher> subLaunchers, ExecutionMode executionMode,
             ReportCollectionEntity reportCollection,
@@ -99,7 +103,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     }
     
     private boolean shouldSkipSendingEmailForSubLaunchers(EmailConfig emailConfig) {
-        return LicenseUtil.isNotFreeLicense() && emailConfig.isSendTestSuiteCollectionReportEnabled()
+        return featureService.canUse(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL)
+                && emailConfig.isSendTestSuiteCollectionReportEnabled()
                 && emailConfig.isSkipInvidiualTestSuiteReport();
     }
     
@@ -203,7 +208,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             suiteCollectionLogRecord.setReportLocation(
                     reportCollection.getParentFolder().getParentFolder().getParentFolder().getLocation());
             
-            if (LicenseUtil.isNotFreeLicense()) {
+            if (featureService.canUse(KSEFeature.EXPORT_JUNIT_REPORT)) {
                 ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
             }
 
@@ -236,8 +241,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     }
     
     private boolean canSendReport(EmailConfig emailConfig) {
-        return emailConfig != null && emailConfig.isSendTestSuiteCollectionReportEnabled()
-                && LicenseUtil.isNotFreeLicense();
+        return featureService.canUse(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL)
+                && emailConfig != null && emailConfig.isSendTestSuiteCollectionReportEnabled();
     }
     
     protected File getReportFolder() {
