@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.ui.IEditorDescriptor;
@@ -199,8 +200,19 @@ public class editor {
         IEditorInput editorInput = editor.getEditorInput();
         IDocument document = editor.getDocumentProvider().getDocument(editorInput);
         
+        
         InsertEdit insertEdit = new InsertEdit(offset, script);
         insertEdit.apply(document);
     }
+    
+	public static void deleteScript(GroovyEditor editor, int offset, int length)
+			throws MalformedTreeException, BadLocationException {
+
+		IEditorInput editorInput = editor.getEditorInput();
+		IDocument document = editor.getDocumentProvider().getDocument(editorInput);
+
+		DeleteEdit deleteEdit = new DeleteEdit(offset, length);
+		deleteEdit.apply(document);
+	}
 
 }

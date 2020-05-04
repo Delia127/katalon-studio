@@ -297,6 +297,12 @@
                                         <exclude>org.apache.httpcomponents</exclude>
                                     </excludes>
                                 </artifact>
+                                <artifact>
+                                	<id>io.github.kostaskougios:cloning:1.10.3</id>
+                                	<excludes>
+                                		<exclude>junit</exclude>
+                                	</excludes>
+                               	</artifact>
 							</artifacts>
 						</configuration>
 					</execution>

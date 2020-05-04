@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.kms.katalon.constants.SystemProperties;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.Entity;
@@ -107,7 +108,7 @@ public class ObjectRepositoryController extends EntityController {
     public DraftWebServiceRequestEntity newDraftWebServiceEntity(ProjectEntity project) {
         DraftWebServiceRequestEntity newWebElement = new DraftWebServiceRequestEntity();
         newWebElement.setProject(project);
-
+        newWebElement.setKatalonVersion(System.getProperty(SystemProperties.KATALON_VERSION));
         return newWebElement;
     }
 
@@ -135,7 +136,8 @@ public class ObjectRepositoryController extends EntityController {
         newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
         newWS.setParentFolder(parentFolder);
         newWS.setProject(parentFolder.getProject());
-
+        newWS.setKatalonVersion(System.getProperty(SystemProperties.KATALON_VERSION));
+        
         return newWS;
     }
     

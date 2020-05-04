@@ -3,6 +3,8 @@ package com.kms.katalon.entity.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class WebServiceRequestEntity extends WebElementEntity {
@@ -61,6 +63,10 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private String soapRequestMethod = "";
 
     private String soapServiceFunction = "";
+    
+    private String soapServiceEndpoint = "";
+    
+    private Boolean useServiceInfoFromWsdl;
 
     private List<WebElementPropertyEntity> soapParameters;
 
@@ -77,6 +83,8 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private boolean followRedirects = false;
     
     private List<VariableEntity> variables = new ArrayList<>();
+    
+    private String katalonVersion = null;
 
     public String getSoapRequestMethod() {
         return soapRequestMethod;
@@ -94,7 +102,23 @@ public class WebServiceRequestEntity extends WebElementEntity {
         this.soapServiceFunction = soapServiceFunction;
     }
 
-    public List<WebElementPropertyEntity> getSoapParameters() {
+    public String getSoapServiceEndpoint() {
+		return soapServiceEndpoint;
+	}
+
+	public void setSoapServiceEndpoint(String soapServiceEndpoint) {
+		this.soapServiceEndpoint = soapServiceEndpoint;
+	}
+
+	public boolean isUseServiceInfoFromWsdl() {
+		return useServiceInfoFromWsdl == null || useServiceInfoFromWsdl == true;
+	}
+
+	public void setUseServiceInfoFromWsdl(boolean useServiceInfoFromWsdl) {
+		this.useServiceInfoFromWsdl = useServiceInfoFromWsdl;
+	}
+
+	public List<WebElementPropertyEntity> getSoapParameters() {
         if (soapParameters == null) {
             soapParameters = new ArrayList<WebElementPropertyEntity>();
         }
@@ -231,7 +255,19 @@ public class WebServiceRequestEntity extends WebElementEntity {
         this.followRedirects = followRedirects;
     }
 
-    @Override
+    public String getKatalonVersion() {
+		return katalonVersion;
+	}
+
+	public void setKatalonVersion(String katalonVersion) {
+		this.katalonVersion = katalonVersion;
+	}
+	
+	public boolean isCreatedBeforeV7_4_5() {
+		return StringUtils.isBlank(katalonVersion);
+	}
+
+	@Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();

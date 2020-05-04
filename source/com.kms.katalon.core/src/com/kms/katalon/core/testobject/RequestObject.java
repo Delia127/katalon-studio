@@ -2,7 +2,6 @@ package com.kms.katalon.core.testobject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,354 +14,427 @@ import com.kms.katalon.core.testobject.impl.HttpUrlEncodedBodyContent;
 
 public class RequestObject extends TestObject implements HttpMessage {
 
-    private static final String DF_CHARSET = "UTF-8";
+	private static final String DF_CHARSET = "UTF-8";
 
-    private String name;
+	private String name;
 
-    private String serviceType;
+	private String serviceType;
 
-    private List<TestObjectProperty> httpHeaderProperties;
+	private List<TestObjectProperty> httpHeaderProperties;
 
-    @Deprecated
-    private String httpBody = "";
+	@Deprecated
+	private String httpBody = "";
 
-    private String wsdlAddress = "";
+	private String wsdlAddress = "";
 
-    private String soapBody = "";
+	private String soapBody = "";
 
-    private String soapRequestMethod = "";
+	private String soapRequestMethod = "";
 
-    private String restUrl = "";
+	private String restUrl = "";
 
-    private String restRequestMethod = "";
+	private String restRequestMethod = "";
 
-    private String soapServiceFunction = "";
+	private String soapServiceFunction = "";
+	
+	private String soapServiceEndpoint = "";
 
-    private List<TestObjectProperty> restParameters;
+	private boolean useServiceInfoFromWsdl;
 
-    private HttpBodyContent bodyContent;
+	private List<TestObjectProperty> restParameters;
 
-    private String objectId;
-    
-    private String verificationScript;
-    
-    private Map<String, Object> variables;
-    
-    private boolean followRedirects;
-    
-    private int redirectTimes = 0;
-    
-    private ProxyInformation proxy;
+	private HttpBodyContent bodyContent;
 
-    public RequestObject(String objectId) {
-        this.objectId = objectId;
-    }
+	private String objectId;
 
-    /**
-     * Get the id of this request object
-     * 
-     * @return the id of this request object
-     */
-    public String getObjectId() {
-        return objectId;
-    }
+	private String verificationScript;
 
-    /**
-     * Set the id for this request object
-     * 
-     * @param objectId the new id of this request object
-     */
-    public void setObjectId(String objectId) {
-        this.objectId = objectId;
-    }
+	private Map<String, Object> variables;
 
-    /**
-     * Get the name of this request object
-     * 
-     * @return the name of this request object
-     */
-    public String getName() {
-        return name;
-    }
+	private boolean followRedirects;
 
-    /**
-     * Set the name for this request object
-     * 
-     * @param name the new name of this request object
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	private int redirectTimes = 0;
 
-    /**
-     * Return the request type for this request object
-     * <p>
-     * Possible values: SOAP, RESTful
-     * 
-     * @return the request type for this request object
-     */
-    public String getServiceType() {
-        return serviceType;
-    }
+	private ProxyInformation proxy;
 
-    /**
-     * Set the service type for this request object
-     * 
-     * @param serviceType the new request type for this request object
-     */
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
-    }
+	public RequestObject(String objectId) {
+		this.objectId = objectId;
+	}
 
-    /**
-     * Get the http headers of this request object
-     * 
-     * @return the list contains the http headers of this request object
-     */
-    public List<TestObjectProperty> getHttpHeaderProperties() {
-        if (httpHeaderProperties == null) {
-            httpHeaderProperties = new ArrayList<TestObjectProperty>();
-        }
-        return httpHeaderProperties;
-    }
+	/**
+	 * Get the id of this request object
+	 * 
+	 * @return the id of this request object
+	 */
+	public String getObjectId() {
+		return objectId;
+	}
 
-    /**
-     * Set the http headers of this request object
-     * 
-     * @param httpHeaderProperties the new list contains the http headers for this request object
-     */
-    public void setHttpHeaderProperties(List<TestObjectProperty> httpHeaderProperties) {
-        this.httpHeaderProperties = httpHeaderProperties;
-    }
+	/**
+	 * Set the id for this request object
+	 * 
+	 * @param objectId
+	 *            the new id of this request object
+	 */
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
+	}
 
-    /**
-     * Get the http body for this request object
-     * 
-     * @return the http body for this request object as a String
-     * @deprecated Deprecated from 5.4. Please use {@link #setBodyContent(HttpBodyContent)} instead.
-     */
-    public String getHttpBody() {
-        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-        try {
-            bodyContent.writeTo(outstream);
-            return outstream.toString(DF_CHARSET);
-        } catch (IOException ignored) {
-        }
-        return httpBody;
-    }
+	/**
+	 * Get the name of this request object
+	 * 
+	 * @return the name of this request object
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Set the http body for this request object
-     * 
-     * @param httpBody the new http body for this request object as a String
-     * @deprecated Deprecated from 5.4. Please use {@link #setBodyContent(HttpBodyContent)} instead.
-     */
-    public void setHttpBody(String httpBody) {
-        this.bodyContent = new HttpTextBodyContent(httpBody);
-        this.httpBody = httpBody;
-    }
+	/**
+	 * Set the name for this request object
+	 * 
+	 * @param name
+	 *            the new name of this request object
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * Get the wsdl address of this request object if it is a "SOAP" request object
-     * 
-     * @return the wsdl address of this request object if it is a "SOAP" request object, or null if it is not
-     */
-    public String getWsdlAddress() {
-        return wsdlAddress;
-    }
+	/**
+	 * Return the request type for this request object
+	 * <p>
+	 * Possible values: SOAP, RESTful
+	 * 
+	 * @return the request type for this request object
+	 */
+	public String getServiceType() {
+		return serviceType;
+	}
 
-    /**
-     * Set the wsdl address of this request object
-     * 
-     * @param wsdlAddress the new wsdl address of this request object
-     */
-    public void setWsdlAddress(String wsdlAddress) {
-        this.wsdlAddress = wsdlAddress;
-    }
+	/**
+	 * Set the service type for this request object
+	 * 
+	 * @param serviceType
+	 *            the new request type for this request object
+	 */
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
 
-    /**
-     * Get the soap body of this request object if it is a "SOAP" request object
-     * 
-     * @return the soap body of this request object if it is a "SOAP" request object, or null if it is not
-     */
-    public String getSoapBody() {
-        return soapBody;
-    }
+	/**
+	 * Get the http headers of this request object
+	 * 
+	 * @return the list contains the http headers of this request object
+	 */
+	public List<TestObjectProperty> getHttpHeaderProperties() {
+		if (httpHeaderProperties == null) {
+			httpHeaderProperties = new ArrayList<TestObjectProperty>();
+		}
+		return httpHeaderProperties;
+	}
 
-    /**
-     * Set the soap body for this request object
-     * 
-     * @param soapBody the new soap body for this request object
-     */
-    public void setSoapBody(String soapBody) {
-        this.soapBody = soapBody;
-    }
+	/**
+	 * Set the http headers of this request object
+	 * 
+	 * @param httpHeaderProperties
+	 *            the new list contains the http headers for this request object
+	 */
+	public void setHttpHeaderProperties(List<TestObjectProperty> httpHeaderProperties) {
+		this.httpHeaderProperties = httpHeaderProperties;
+	}
 
-    /**
-     * Get the soap request method of this request object if it is a "SOAP" request object
-     * <p>
-     * Possible values: SOAP, SOAP12, GET, POST
-     * 
-     * @return the soap request method of this request object if it is a "SOAP" request object, or null if it is not
-     */
-    public String getSoapRequestMethod() {
-        return soapRequestMethod;
-    }
+	/**
+	 * Get the http body for this request object
+	 * 
+	 * @return the http body for this request object as a String
+	 * @deprecated Deprecated from 5.4. Please use
+	 *             {@link #setBodyContent(HttpBodyContent)} instead.
+	 */
+	public String getHttpBody() {
+		ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+		try {
+			bodyContent.writeTo(outstream);
+			return outstream.toString(DF_CHARSET);
+		} catch (IOException ignored) {
+		}
+		return httpBody;
+	}
 
-    /**
-     * Set the soap request method for this request object
-     * 
-     * @param soapRequestMethod the new soap request method for this request object
-     */
-    public void setSoapRequestMethod(String soapRequestMethod) {
-        this.soapRequestMethod = soapRequestMethod;
-    }
+	/**
+	 * Set the http body for this request object
+	 * 
+	 * @param httpBody
+	 *            the new http body for this request object as a String
+	 * @deprecated Deprecated from 5.4. Please use
+	 *             {@link #setBodyContent(HttpBodyContent)} instead.
+	 */
+	public void setHttpBody(String httpBody) {
+		this.bodyContent = new HttpTextBodyContent(httpBody);
+		this.httpBody = httpBody;
+	}
 
-    /**
-     * Get the rest url of this request object if it is a "RESTful" request object
-     * 
-     * @return the rest url of this request object if it is a "RESTful" request object, or null if it is not
-     */
-    public String getRestUrl() {
-        return restUrl;
-    }
+	/**
+	 * Get the wsdl address of this request object if it is a "SOAP" request
+	 * object
+	 * 
+	 * @return the wsdl address of this request object if it is a "SOAP" request
+	 *         object, or null if it is not
+	 */
+	public String getWsdlAddress() {
+		return wsdlAddress;
+	}
 
-    /**
-     * Set the rest url for this request object
-     * 
-     * @param restUrl the new rest url for this request object
-     */
-    public void setRestUrl(String restUrl) {
-        this.restUrl = restUrl;
-    }
+	/**
+	 * Set the wsdl address of this request object
+	 * 
+	 * @param wsdlAddress
+	 *            the new wsdl address of this request object
+	 */
+	public void setWsdlAddress(String wsdlAddress) {
+		this.wsdlAddress = wsdlAddress;
+	}
 
-    /**
-     * Get the rest request of this request object if it is a "RESTful" request object
-     * <p>
-     * Possible values: GET, POST, PUT, DELETE
-     * 
-     * @return the get request of this request object if it is a "RESTful" request object, or null if it is not
-     */
-    public String getRestRequestMethod() {
-        return restRequestMethod;
-    }
+	/**
+	 * Get the soap body of this request object if it is a "SOAP" request object
+	 * 
+	 * @return the soap body of this request object if it is a "SOAP" request
+	 *         object, or null if it is not
+	 */
+	public String getSoapBody() {
+		return soapBody;
+	}
 
-    /**
-     * Set the rest request for this request object
-     * 
-     * @param restRequestMethod the new get request for this request object
-     */
-    public void setRestRequestMethod(String restRequestMethod) {
-        this.restRequestMethod = restRequestMethod;
-    }
+	/**
+	 * Set the soap body for this request object
+	 * 
+	 * @param soapBody
+	 *            the new soap body for this request object
+	 */
+	public void setSoapBody(String soapBody) {
+		this.soapBody = soapBody;
+	}
 
-    /**
-     * Get the rest parameters of this request object if it is a "RESTful" request object
-     * 
-     * @return the rest parameters of this request object if it is a "RESTful" request object, or empty list if it is
-     * not
-     */
-    public List<TestObjectProperty> getRestParameters() {
-        if (restParameters == null) {
-            restParameters = new ArrayList<TestObjectProperty>();
-        }
-        return restParameters;
-    }
+	/**
+	 * Get the soap request method of this request object if it is a "SOAP"
+	 * request object
+	 * <p>
+	 * Possible values: SOAP, SOAP12, GET, POST
+	 * 
+	 * @return the soap request method of this request object if it is a "SOAP"
+	 *         request object, or null if it is not
+	 */
+	public String getSoapRequestMethod() {
+		return soapRequestMethod;
+	}
 
-    /**
-     * Set the rest parameters for this request object
-     * 
-     * @param restParameters the new rest parameters of this request object
-     */
-    public void setRestParameters(List<TestObjectProperty> restParameters) {
-        this.restParameters = restParameters;
-    }
+	/**
+	 * Set the soap request method for this request object
+	 * 
+	 * @param soapRequestMethod
+	 *            the new soap request method for this request object
+	 */
+	public void setSoapRequestMethod(String soapRequestMethod) {
+		this.soapRequestMethod = soapRequestMethod;
+	}
 
-    /**
-     * Get the soap service function of this request object if it is a "SOAP" request object
-     * 
-     * @return the soap service function of this request object if it is a "SOAP" request object, or null if it is not
-     */
-    public String getSoapServiceFunction() {
-        return soapServiceFunction;
-    }
+	/**
+	 * Get a flag that determines whether to use the service info (service
+	 * endpoint, SOAP action,...) parsed from WSDL when sending a SOAP request.
+	 * 
+	 * @since 7.4.5
+	 */
+	public boolean useServiceInfoFromWsdl() {
+		return useServiceInfoFromWsdl;
+	}
 
-    /**
-     * Set the soap service function for this request object
-     * 
-     * @param soapServiceFunction the new soap service function for this request object
-     */
-    public void setSoapServiceFunction(String soapServiceFunction) {
-        this.soapServiceFunction = soapServiceFunction;
-    }
+	/**
+	 * Set a flag that determines whether to use the service info (service
+	 * endpoint, SOAP action,...) parsed from WSDL when sending a SOAP request.
+	 * 
+	 * @param useServiceInfoFromWsdl
+	 * @since 7.4.5
+	 */
+	public void setUseServiceInfoFromWsdl(boolean useServiceInfoFromWsdl) {
+		this.useServiceInfoFromWsdl = useServiceInfoFromWsdl;
+	}
 
-    /**
-     * Gets the body content of request.
-     * 
-     * @see {@link HttpTextBodyContent}
-     * @since 5.4
-     */
-    @Override
-    public HttpBodyContent getBodyContent() {
-        return bodyContent;
-    }
+	/**
+	 * Get the rest url of this request object if it is a "RESTful" request
+	 * object
+	 * 
+	 * @return the rest url of this request object if it is a "RESTful" request
+	 *         object, or null if it is not
+	 */
+	public String getRestUrl() {
+		return restUrl;
+	}
 
-    /**
-     * Sets the body content for this request.
-     * @param bodyContent an implementation of {@link HttpBodyContent}
-     * 
-     * @see {@link HttpTextBodyContent}
-     * @see {@link HttpFileBodyContent}
-     * @see {@link HttpFormDataBodyContent}
-     * @see {@link HttpUrlEncodedBodyContent}
-     */
-    public void setBodyContent(HttpBodyContent bodyContent) {
-        this.bodyContent = bodyContent;
-    }
+	/**
+	 * Set the rest url for this request object
+	 * 
+	 * @param restUrl
+	 *            the new rest url for this request object
+	 */
+	public void setRestUrl(String restUrl) {
+		this.restUrl = restUrl;
+	}
 
-    public String getVerificationScript() {
-        return verificationScript;
-    }
+	/**
+	 * Get the rest request of this request object if it is a "RESTful" request
+	 * object
+	 * <p>
+	 * Possible values: GET, POST, PUT, DELETE
+	 * 
+	 * @return the get request of this request object if it is a "RESTful"
+	 *         request object, or null if it is not
+	 */
+	public String getRestRequestMethod() {
+		return restRequestMethod;
+	}
 
-    public void setVerificationScript(String verificationScript) {
-        this.verificationScript = verificationScript;
-    }
+	/**
+	 * Set the rest request for this request object
+	 * 
+	 * @param restRequestMethod
+	 *            the new get request for this request object
+	 */
+	public void setRestRequestMethod(String restRequestMethod) {
+		this.restRequestMethod = restRequestMethod;
+	}
 
-    public Map<String, Object> getVariables() {
-        return variables;
-    }
+	/**
+	 * Get the rest parameters of this request object if it is a "RESTful"
+	 * request object
+	 * 
+	 * @return the rest parameters of this request object if it is a "RESTful"
+	 *         request object, or empty list if it is not
+	 */
+	public List<TestObjectProperty> getRestParameters() {
+		if (restParameters == null) {
+			restParameters = new ArrayList<TestObjectProperty>();
+		}
+		return restParameters;
+	}
 
-    public void setVariables(Map<String, Object> variables) {
-        this.variables = variables;
-    }
+	/**
+	 * Set the rest parameters for this request object
+	 * 
+	 * @param restParameters
+	 *            the new rest parameters of this request object
+	 */
+	public void setRestParameters(List<TestObjectProperty> restParameters) {
+		this.restParameters = restParameters;
+	}
 
-    public boolean isFollowRedirects() {
-        return followRedirects;
-    }
+	/**
+	 * Get the soap service function of this request object if it is a "SOAP"
+	 * request object
+	 * 
+	 * @return the soap service function of this request object if it is a
+	 *         "SOAP" request object, or null if it is not
+	 */
+	public String getSoapServiceFunction() {
+		return soapServiceFunction;
+	}
 
-    public void setFollowRedirects(boolean followRedirects) {
-        this.followRedirects = followRedirects;
-    }
+	/**
+	 * Set the soap service function for this request object
+	 * 
+	 * @param soapServiceFunction
+	 *            the new soap service function for this request object
+	 */
+	public void setSoapServiceFunction(String soapServiceFunction) {
+		this.soapServiceFunction = soapServiceFunction;
+	}
 
-    public int getRedirectTimes() {
-        return redirectTimes;
-    }
+	/** 
+	 * Get SOAP service endpoint
+	 * 
+	 * @since 7.4.5
+	 */
+	public String getSoapServiceEndpoint() {
+		return soapServiceEndpoint;
+	}
 
-    public void setRedirectTimes(int redirectTimes) {
-        this.redirectTimes = redirectTimes;
-    }
+	/**
+	 * Set SOAP service endpoint
+	 * 
+	 * @since 7.4.5
+	 */
+	public void setSoapServiceEndpoint(String soapServiceEndpoint) {
+		this.soapServiceEndpoint = soapServiceEndpoint;
+	}
 
-    /**
-     * Get the proxy of this request. This proxy will take precedence over proxy settings in Preferences.
-     */
-    public ProxyInformation getProxy() {
-        return proxy;
-    }
+	/**
+	 * Gets the body content of request.
+	 * 
+	 * @see {@link HttpTextBodyContent}
+	 * @since 5.4
+	 */
+	@Override
+	public HttpBodyContent getBodyContent() {
+		return bodyContent;
+	}
 
-    /**
-     * Set the proxy for this request. This proxy will take precedence over proxy settings in Preferences.
-     */
-    public void setProxy(ProxyInformation proxy) {
-        this.proxy = proxy;
-    }
+	/**
+	 * Sets the body content for this request.
+	 * 
+	 * @param bodyContent
+	 *            an implementation of {@link HttpBodyContent}
+	 * 
+	 * @see {@link HttpTextBodyContent}
+	 * @see {@link HttpFileBodyContent}
+	 * @see {@link HttpFormDataBodyContent}
+	 * @see {@link HttpUrlEncodedBodyContent}
+	 */
+	public void setBodyContent(HttpBodyContent bodyContent) {
+		this.bodyContent = bodyContent;
+	}
+
+	public String getVerificationScript() {
+		return verificationScript;
+	}
+
+	public void setVerificationScript(String verificationScript) {
+		this.verificationScript = verificationScript;
+	}
+
+	public Map<String, Object> getVariables() {
+		return variables;
+	}
+
+	public void setVariables(Map<String, Object> variables) {
+		this.variables = variables;
+	}
+
+	public boolean isFollowRedirects() {
+		return followRedirects;
+	}
+
+	public void setFollowRedirects(boolean followRedirects) {
+		this.followRedirects = followRedirects;
+	}
+
+	public int getRedirectTimes() {
+		return redirectTimes;
+	}
+
+	public void setRedirectTimes(int redirectTimes) {
+		this.redirectTimes = redirectTimes;
+	}
+
+	/**
+	 * Get the proxy of this request. This proxy will take precedence over proxy
+	 * settings in Preferences.
+	 */
+	public ProxyInformation getProxy() {
+		return proxy;
+	}
+
+	/**
+	 * Set the proxy for this request. This proxy will take precedence over
+	 * proxy settings in Preferences.
+	 */
+	public void setProxy(ProxyInformation proxy) {
+		this.proxy = proxy;
+	}
 }

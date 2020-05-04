@@ -123,7 +123,7 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String MSG_CANNOT_PARSE_WSDL;
 
-    public static String LBL_LOAD_FROM_WSDL;
+    public static String LBL_LOAD_SERVICE_FUNCTION;
 
     public static String MSG_FETCHING_FROM_WSDL;
 
@@ -248,8 +248,24 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String HIDE_SNIPPETS;
             
     public static String SHOW_SNIPPETS;
+
+	public static String SoapServicePart_BTN_LOAD_NEW_CONTENT;
+
+	public static String SoapServicePart_CB_USE_SERVICE_INFO_FROM_WSDL;
+
+	public static String SoapServicePart_LBL_SERVICE_ENDPOINT;
     
-    public static String HOW_TO_ADD_JSON_AND_XML_PATH_TO_VERIFICATION_SCRIPT;
+    public static String SoapServicePart_MSG_SERVICE_ENDPOINT_UNDEFINED;
+
+	public static String SoapServicePart_MSG_SERVICE_FUNCTION_EMPTY;
+
+	public static String SoapServicePart_MSG_UNABLE_TO_LOAD_CONTENT_FROM_URL;
+
+	public static String SoapServicePart_MSG_UNABLE_TO_LOAD_SERVICE_FUNCTION;
+
+	public static String SoapServicePart_MSG_WSDL_LOCATION_UNDEFINED;
+
+	public static String HOW_TO_ADD_JSON_AND_XML_PATH_TO_VERIFICATION_SCRIPT;
     
     public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
     

@@ -2,7 +2,7 @@ package com.kms.katalon.core.webservice.common;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
-public class BaseHttpRequest extends HttpRequestBase implements CustomHttpMethodRequest {
+public class HttpUriRequest extends HttpRequestBase implements CustomHttpMethodRequest {
 
     protected String method;
     

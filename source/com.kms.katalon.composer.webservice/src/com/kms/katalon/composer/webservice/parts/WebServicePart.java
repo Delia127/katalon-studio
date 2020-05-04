@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -446,7 +445,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     private Text txtScope;
     
-    private Button cbFollowRedirects;
+    private boolean invalidScheme = false;
+    
+    protected Button cbFollowRedirects;
 
     protected CCombo ccbOAuth1SignatureMethod;
 
@@ -457,8 +458,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected List<WebElementPropertyEntity> oauth2Headers = new ArrayList<WebElementPropertyEntity>();
 
     protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
-
-    protected ScriptSnippet verificationScriptImport;
 
     @Inject
     protected MDirtyable dirtyable;
@@ -497,8 +496,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     private Composite verificationResultComposite;
 
-    private boolean invalidScheme = false;
-
     private boolean variableTab = true;
 
     @PostConstruct
@@ -508,7 +505,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
         this.parent = parent;
         verificationScriptSnippets = VerificationScriptSnippetFactory.getSnippets();
-        verificationScriptImport = VerificationScriptSnippetFactory.getCommonScriptSnippet();
     }
 
     public Composite getComposite() {
@@ -527,16 +523,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         scriptEditorPart = ui.getScriptEditorPart();
         verificationScriptEditor = (GroovyEditor) editor.getEditor(scriptEditorPart);
         if (StringUtils.isBlank(originalWsObject.getVerificationScript())) {
-            insertImportsForVerificationScript();
+            setDefaultVerificationScriptToEditor();
         }
 
         Composite apiControlsPartComposite = ui.getApiControlsPartComposite();
         Composite apiControlsPartInnerComposite = new Composite(apiControlsPartComposite, SWT.NONE);
         apiControlsPartInnerComposite.setLayout(new GridLayout());
 
-        createAPIControls(apiControlsPartInnerComposite);
-
-        createParamsComposite(apiControlsPartInnerComposite);
+        createServiceInfoComposite(apiControlsPartInnerComposite);
 
         createVariableComposite();
 
@@ -564,20 +558,33 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         populateDataToUI();
         updatePartImage();
         registerListeners();
-        
-        cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
     }
+    
+    protected abstract void createServiceInfoComposite(Composite parent);
 
-    private void insertImportsForVerificationScript() {
-        StringBuilder importBuilder = new StringBuilder().append(verificationScriptImport.getScript()).append("\n");
-        insertVerificationScript(0, importBuilder.toString());
+    private void setDefaultVerificationScriptToEditor() {
+    	 StringBuilder importBuilder = new StringBuilder().append(getDefaultVerificationScript()).append("\n");
+         insertVerificationScript(0, importBuilder.toString());
         // Insert Import <=> content changed <=> ScriptEditorPart marked dirty <=> Save All icon enabled
         // Since this "content changed" is irrelevant to the users, ix to the above problem
         // scriptEditorPart.setDirty(false);
         GroovyEditorUtil.saveEditor(scriptEditorPart);
     }
-
-    private void insertVerificationScript(int offset, String script) {
+    
+    protected String getDefaultVerificationScript() {
+    	return VerificationScriptSnippetFactory.getCommonScriptSnippet().getScript();
+    }
+    
+    protected void reloadVerificationScript() {
+    	deleteVerificationScript(0, getVerificationScript().length());
+    	
+    	String verificationScript = originalWsObject.getVerificationScript();
+    	if (StringUtils.isBlank(verificationScript)) {
+    		verificationScript = getDefaultVerificationScript();
+    	}
+    	insertVerificationScript(0, verificationScript);
+    }
+    protected void insertVerificationScript(int offset, String script) {
         try {
             editor.insertScript(verificationScriptEditor, offset, script);
         } catch (MalformedTreeException e) {
@@ -585,6 +592,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         } catch (BadLocationException e) {
             LoggerSingleton.logError(e);
         }
+    }
+    
+    protected void deleteVerificationScript(int offset, int length) {
+    	try {
+			editor.deleteScript(verificationScriptEditor, offset, length);
+		} catch (MalformedTreeException | BadLocationException e) {
+			LoggerSingleton.logError(e);
+		}
     }
 
     protected String getVerificationScript() {
@@ -604,37 +619,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         executor.execute(originalWsObject.getIdForDisplay(), verificationScript, responseObject);
     }
 
-    protected void createAPIControls(Composite parent) {
+    protected void createApiControls(Composite parent) {
         // String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
         wsApiControl = new WebServiceAPIControl(parent, originalWsObject);
-        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (requestBody != null && !isSOAP()) {
-                    tabBody.getControl().setEnabled(isBodySupported());
-                }
-                setDirty(true);
-            }
-        });
-
-        wsApiControl.addRequestMethodModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (!isSOAP()) {
-                    tabBody.getControl().setEnabled(isBodySupported());
-                }
-                setDirty(true);
-            }
-        });
-
-        wsApiControl.addRequestURLModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                setDirty(true);
-            }
-        });
 
         wsApiControl.addSendSelectionListener(new DropdownToolItemSelectionListener() {
 
@@ -874,8 +861,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         return evaluatedVariables;
     }
 
-    protected abstract void createParamsComposite(Composite parent);
-
     protected ToolBar createAddRemoveToolBar(Composite parent, SelectionListener addSelectionListener,
             SelectionListener removeSelectionListener) {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
@@ -927,7 +912,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 if (tabFolder.getSelectionIndex() == 5) {
                     variableTab = false;
                     if (dirtyable.isDirty())
-                        updateVariableScriptView();
+                        populateVariableScriptView();
                     return;
                 }
             }
@@ -935,7 +920,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         });
         tabFolder.layout();
         // Initialize editor's content
-        updateVariableScriptView();
+        populateVariableScriptView();
 
         tabFolder.setSelection(0);
     }
@@ -963,18 +948,22 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 tableColumn.setResizable(false);
             }
         }
-
-        //List<VariableEntity> variables = originalWsObject.getVariables();
-        List<VariableEntity> variables = new ArrayList<VariableEntity>();
-        for (VariableEntity variable : originalWsObject.getVariables()) {
-            VariableEntity newVariable = new VariableEntity();
-            newVariable.setName(variable.getName());
-            newVariable.setDefaultValue(variable.getDefaultValue());
-            newVariable.setDescription(variable.getDescription());
-            newVariable.setId(variable.getId());
-            variables.add(newVariable);
-        }
-        variableView.addVariable(variables.toArray(new VariableEntity[variables.size()]));
+        
+        populateVariableManualView();
+    }
+    
+    protected void populateVariableManualView() {
+    	 List<VariableEntity> variables = new ArrayList<VariableEntity>();
+         for (VariableEntity variable : originalWsObject.getVariables()) {
+             VariableEntity newVariable = new VariableEntity();
+             newVariable.setName(variable.getName());
+             newVariable.setDefaultValue(variable.getDefaultValue());
+             newVariable.setDescription(variable.getDescription());
+             newVariable.setId(variable.getId());
+             variables.add(newVariable);
+         }
+         variableView.deleteVariables(variableView.getVariablesList());
+         variableView.addVariable(variables.toArray(new VariableEntity[variables.size()]));
     }
 
     private void createVariableEditorComposite() {
@@ -2352,6 +2341,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected abstract void populateDataToUI();
 
+    public void updateHeaders(WebServiceRequestEntity cloneWS) {
+		tempPropList = new ArrayList<WebElementPropertyEntity>(cloneWS.getHttpHeaderProperties());
+		httpHeaders.clear();
+		httpHeaders.addAll(tempPropList);
+		tblHeaders.refresh();
+	}
+    
     @Persist
     public void save() {
         try {
@@ -2359,7 +2355,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             // then they are already in sync. If user only interact on VariableView so far
             // then update VariableEditorView (vice versa)
             if (variableTab == true) {
-                updateVariableScriptView();
+                populateVariableScriptView();
             } else {
                 updateVariableManualView();
             }
@@ -2394,7 +2390,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
     }
 
-    private void updateVariableScriptView() {
+    protected void populateVariableScriptView() {
         try {
             variableEditorView.setScriptContentFrom(variableView.getVariableEntityWrapper());
             setInvalidScheme(false);
@@ -2625,11 +2621,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         txtUsername.setText(usernamePassword[0]);
         txtPassword.setText(usernamePassword[1]);
         ccbAuthType.select(Arrays.asList(ccbAuthType.getItems()).indexOf(BASIC_AUTH));
-    }
-
-    protected boolean isBodySupported() {
-        String requestMethod = wsApiControl.getRequestMethod();
-        return RestRequestMethodHelper.isBodySupported(requestMethod);
     }
 
     protected boolean isSOAP() {
