@@ -1,10 +1,15 @@
 package com.kms.katalon.composer.toolbar;
 
+import static com.kms.katalon.core.network.HttpClientProxyBuilder.create;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -22,6 +27,14 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.util.EntityUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
@@ -45,28 +58,44 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.toolbar.notification.INotificationContent;
+import com.kms.katalon.composer.toolbar.notification.KatalonNotificationContent;
 import com.kms.katalon.composer.toolbar.notification.NotificationContent;
 import com.kms.katalon.composer.toolbar.notification.PopupNotification;
 import com.kms.katalon.composer.toolbar.notification.TrackedNotification;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.ImageConstants;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
-import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
 
 public class NotificationToolControl {
+
+    private static final String UNIDENTIFIED = "unidentified";
+
+    private static final String KATALON_NOTIFICATION = "katalon_notification";
+
+    private static final String TRIAL_NOTIFICATION = "trial_notification";
+
+    private static final String TRACKED_NOTIFICATIONS_JSON_FILE_NAME = "tracked_notifications.json";
+
+    private static final String TRACKED_KATALON_NOTIFICATIONS_FILE_NAME = "tracked_katalon_notifications.json";
 
     @Inject
     private IEventBroker eventBroker;
@@ -82,19 +111,21 @@ public class NotificationToolControl {
             @Override
             public void handleEvent(Event event) {
                 Executors.newFixedThreadPool(1).submit(() -> {
-                    popupNotifications = getPopupNotificationsForTrialUser();
-                  
+                    List<PopupNotification> trialAndKataloNoti = new ArrayList<>();
+                    List<PopupNotification> list1 =  getPopupNotificationsForTrialUser();
+                    List<PopupNotification> list2 = getPopupKatalonNotifications();
+                    trialAndKataloNoti.addAll(list2);
+                    trialAndKataloNoti.addAll(list1);
+                    popupNotifications = trialAndKataloNoti;
+
                     UISynchronizeService.asyncExec(() -> {
 
                         long unreadMessageCount = popupNotifications.stream().filter(p -> {
                             return p.getTracked() == null;
                         }).count();
-                        if (unreadMessageCount == 1) {                            
+                        
+                        if (unreadMessageCount > 0) {                            
                             communityToolItem.setImage(ImageConstants.IMG_KATALON_NOTIFICATION_1_24);
-                        } else if (unreadMessageCount == 2) {
-                            communityToolItem.setImage(ImageConstants.IMG_KATALON_NOTIFICATION_2_24);
-                        } else if (unreadMessageCount == 3) {
-                            communityToolItem.setImage(ImageConstants.IMG_KATALON_NOTIFICATION_3_24);
                         }
                     });
                 });
@@ -169,6 +200,7 @@ public class NotificationToolControl {
                                 TrackedNotification tracked = new TrackedNotification();
                                 tracked.setId(noti.getContent().getId());
                                 tracked.setTrackedDate(new Date());
+                                tracked.setType(getType(noti.getContent()));
                                 noti.setTracked(tracked);
                             }
                             Label lbl = new Label(composite, SWT.NONE);
@@ -236,6 +268,15 @@ public class NotificationToolControl {
                     popup.dispose();
                 }
             }
+
+            private String getType(INotificationContent content) {
+                if(content instanceof NotificationContent) {
+                    return TRIAL_NOTIFICATION;
+                } else if(content instanceof KatalonNotificationContent) {
+                    return KATALON_NOTIFICATION;
+                }
+                return UNIDENTIFIED;
+            }
         });
     }
 
@@ -250,10 +291,10 @@ public class NotificationToolControl {
             return Collections.emptyList();
         }
     }
-
-    private List<TrackedNotification> getTrackedNotifications() {
+    
+    private List<TrackedNotification> InternallyGetTrackedNotifications(String fileName) {
         File trackedNotificationFile = new File(GlobalStringConstants.APP_USER_DIR_LOCATION,
-                "notification/tracked_notifications.json");
+                "notification/" + fileName);
         if (!trackedNotificationFile.exists()) {
             return Collections.emptyList();
         }
@@ -269,10 +310,19 @@ public class NotificationToolControl {
             return Collections.emptyList();
         }
     }
-
+    
     private void saveTrackedNotifications(List<TrackedNotification> trackedNotifications) {
+        internallySaveTrackedNotifications(trackedNotifications.stream()
+                .filter(noti -> TRIAL_NOTIFICATION.equals(noti.getType()))
+                .collect(Collectors.toList()), TRACKED_NOTIFICATIONS_JSON_FILE_NAME);
+        internallySaveTrackedNotifications(trackedNotifications.stream()
+                .filter(noti -> KATALON_NOTIFICATION.equals(noti.getType()))
+                .collect(Collectors.toList()), TRACKED_KATALON_NOTIFICATIONS_FILE_NAME);
+    }
+
+    private void internallySaveTrackedNotifications(List<TrackedNotification> trackedNotifications, String fileName) {
         File trackedNotificationFile = new File(GlobalStringConstants.APP_USER_DIR_LOCATION,
-                "notification/tracked_notifications.json");
+                "notification/" + fileName);
         try {
 
             Type mapType = new TypeToken<Map<String, List<TrackedNotification>>>() {}.getType();
@@ -289,13 +339,13 @@ public class NotificationToolControl {
         }
     }
 
-    private List<PopupNotification> getPopupNotifications(List<NotificationContent> contentList,
+    private List<PopupNotification> getPopupNotifications(List<? extends INotificationContent> contentList,
             List<TrackedNotification> trackedNotifications) {
         Map<String, TrackedNotification> trackedById = trackedById(trackedNotifications);
 
         List<PopupNotification> popupNotifications = new ArrayList<>();
 
-        for (NotificationContent content : contentList) {
+        for (INotificationContent content : contentList) {
             PopupNotification popup = new PopupNotification();
             popup.setContent(content);
 
@@ -304,13 +354,6 @@ public class NotificationToolControl {
 
             popupNotifications.add(popup);
         }
-        
-        popupNotifications.sort(new Comparator<PopupNotification>() {
-            @Override
-            public int compare(PopupNotification notiA, PopupNotification notiB) {
-                return notiB.getContent().getStartDate() - notiA.getContent().getStartDate();
-            }
-        });
 
         return popupNotifications;
     }
@@ -342,9 +385,9 @@ public class NotificationToolControl {
     }
 
     private List<PopupNotification> getPopupNotificationsForTrialUser() {
-        if (ActivationInfoCollector.getLicenseType() == LicenseType.ENTERPRISE) {
-            return Collections.emptyList();
-        }
+//        if (ActivationInfoCollector.getLicenseType() == LicenseType.ENTERPRISE) {
+//            return Collections.emptyList();
+//        }
         try {
             Date expiredDate = getExpiredDate();
             if (getExpiredDate() == null) {
@@ -352,7 +395,8 @@ public class NotificationToolControl {
             }
             Date activationDate = DateUtils.addDays(expiredDate, -30);
             long diffDays = diffDays(activationDate, new Date());
-            List<TrackedNotification> trackedNotifications = getTrackedNotifications();
+            List<TrackedNotification> trackedNotifications = InternallyGetTrackedNotifications(
+                    TRACKED_NOTIFICATIONS_JSON_FILE_NAME);
             Map<String, TrackedNotification> trackedById = trackedById(trackedNotifications);
             List<NotificationContent> notifications = getNotificationContents().stream().filter(content -> {
                 if (trackedById.containsKey(content.getId())) {
@@ -366,11 +410,66 @@ public class NotificationToolControl {
                 }
                 return true;
             }).collect(Collectors.toList());
+            
+            notifications.sort(new Comparator<NotificationContent>() {
+                @Override
+                public int compare(NotificationContent notiA, NotificationContent notiB) {
+                    return notiB.getStartDate() - notiA.getStartDate();
+                }
+            });
+            
             return getPopupNotifications(notifications, trackedNotifications);
         } catch (GeneralSecurityException | IOException | AnalyticsApiExeception e) {
             LoggerSingleton.logError(e);
             return Collections.emptyList();
         }
+    }
+    
+    private List<KatalonNotificationContent> getKatalonNotificationContent() {
+        try {
+            URI uri = new URIBuilder().setPath("https://backend.katalon.com" + "/katalon-notifications").build();
+            HttpGet httpPost = new HttpGet(uri);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            Type type = new TypeToken<List<KatalonNotificationContent>>() {}.getType();
+            String responseString = executeRequest(httpPost, true);
+            Gson gson = new GsonBuilder().setDateFormat("dd-MM-yyyy").create();
+            return gson.fromJson(responseString, type);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return Collections.emptyList();
+        }
+    }
+    
+    private List<PopupNotification> getPopupKatalonNotifications() {
+        List<TrackedNotification> trackedNotifications = InternallyGetTrackedNotifications(
+                TRACKED_KATALON_NOTIFICATIONS_FILE_NAME);
+        Map<String, TrackedNotification> trackedById = trackedById(trackedNotifications);
+        Date currentDate = new Date();
+        List<KatalonNotificationContent> notifications = getKatalonNotificationContent().stream().filter(content -> {
+            if (trackedById.containsKey(content.getId())) {
+                return true;
+            }
+            if (content.getStartDate() != null && content.getStartDate().after(currentDate)) {
+                return false;
+            }
+            if (content.getEndDate() != null && content.getEndDate().before(currentDate)) {
+                return false;
+            }
+            return true;
+        }).filter(element -> shouldShowForCurrentLicense(element)).collect(Collectors.toList());
+        notifications.sort(new Comparator<KatalonNotificationContent>() {
+            @Override
+            public int compare(KatalonNotificationContent notiA, KatalonNotificationContent notiB) {
+                return notiB.getStartDate().compareTo(notiA.getStartDate());
+            }
+        });
+        return getPopupNotifications(notifications, trackedNotifications);
+    }
+    
+    private boolean shouldShowForCurrentLicense(KatalonNotificationContent element) {
+        return (LicenseUtil.isPaidLicense() && "KSE".equals(element.getType()))
+                || (LicenseUtil.isNonPaidLicense() && "KS".equals(element.getType()));
     }
 
     private Date getExpiredDate() throws GeneralSecurityException, IOException, AnalyticsApiExeception {
@@ -386,5 +485,31 @@ public class NotificationToolControl {
             }
         }
         return null;
+    }
+    
+    private static String executeRequest(HttpUriRequest httpRequest, boolean isSilent) throws Exception {
+        HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation(),
+                httpRequest.getURI().toURL().toString());
+
+        HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
+        HttpResponse httpResponse = httpClient.execute(httpRequest);
+        int statusCode = httpResponse.getStatusLine().getStatusCode();
+
+        HttpEntity entity = httpResponse.getEntity();
+        String responseString = StringUtils.EMPTY;
+        if (entity != null) {
+            responseString = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
+        }
+
+        if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_CREATED
+                || statusCode == HttpStatus.SC_NO_CONTENT) {
+            return responseString;
+        }
+
+        if (!isSilent) {
+            LogUtil.logError(MessageFormat.format("Katalon notifications, URL: {0}, Status: {1}, Response: {2}",
+                    httpRequest.getURI().toString(), statusCode, responseString));
+        }
+        throw new Exception(responseString);
     }
 }

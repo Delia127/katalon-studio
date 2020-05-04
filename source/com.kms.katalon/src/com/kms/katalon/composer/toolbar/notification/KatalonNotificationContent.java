@@ -1,14 +1,17 @@
 package com.kms.katalon.composer.toolbar.notification;
 
-public class NotificationContent implements INotificationContent {
+import java.util.Date;
 
+public class KatalonNotificationContent implements INotificationContent {
     private String id;
-    
-    private int startDate;
-    
-    private int endDate;
-    
+
+    private Date startDate;
+
+    private Date endDate;
+
     private String message;
+    
+    private String type;
 
     public String getId() {
         return id;
@@ -18,19 +21,27 @@ public class NotificationContent implements INotificationContent {
         this.id = id;
     }
 
-    public int getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(int startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
+    
+    public void setType(String type) {
+        this.type = type;
+    }
+    
+    public String getType() {
+        return type;
+    }
 
-    public int getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(int endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
@@ -41,5 +52,5 @@ public class NotificationContent implements INotificationContent {
     public void setMessage(String message) {
         this.message = message;
     }
-    
+
 }
