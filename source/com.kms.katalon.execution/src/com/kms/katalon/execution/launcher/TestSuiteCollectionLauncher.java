@@ -11,16 +11,13 @@ import java.util.concurrent.Executors;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
-import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
@@ -39,7 +36,9 @@ import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.launcher.result.TestSuiteCollectionLauncherResult;
 import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
-import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
@@ -67,6 +66,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     private Date startTime;
 
     private Date endTime;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
     
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
             List<ReportableLauncher> subLaunchers, ExecutionMode executionMode,
@@ -182,7 +183,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
             suiteCollectionLogRecord.setTotalTestCases(String.valueOf(result.getExecutedTestCases()));
 
-            if (LicenseUtil.isNotFreeLicense()) {
+            if (featureService.canUse(KSEFeature.EXPORT_JUNIT_REPORT)) {
                 ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
             }
 
