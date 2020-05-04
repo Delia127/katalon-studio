@@ -11,10 +11,12 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.core.keyword.internal.KeywordExecutor;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.WindowsTestObject;
 import com.kms.katalon.core.windows.constants.StringConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 
+import groovy.transform.CompileStatic;
 import io.appium.java_client.windows.WindowsDriver;
 
 public class WindowsBuiltinKeywords extends BuiltinKeywords {
@@ -220,6 +222,54 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setText", windowsObject, text,
                 flowControl);
     }
+    
+
+    /**
+     * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
+     * windowsObject.<br>
+     * This action will append the given text on the element and doesn't clear the current text of the element.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * @param encryptedText
+     * The encrypted text content to set on the element.
+     * @throws StepFailedException
+     * If the Windows element doesn't exist, or KS could not perform set text action on the element.
+     * @since 7.7.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText)
+            throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setEncryptedText", windowsObject, encryptedText);
+    }
+    
+    /**
+     * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
+     * windowsObject.<br>
+     * This action will append the given text on the element and doesn't clear the current text of the element.
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * @param encryptedText
+     * The encrypted text content to set on the element.
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @throws StepFailedException
+     * If the Windows element doesn't exist, or KS could not perform set text action on the element.
+     * @since 7.7.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText, FailureHandling flowControl)
+            throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setEncryptedText", windowsObject, encryptedText,
+                flowControl);
+    }
 
     /**
      * Gets text content of the {@link WebElement} that is found by using locator value of the given windowsObject.<br>
@@ -262,6 +312,48 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
                 windowsObject, flowControl);
     }
 
+    /**
+     * Get attribute value of a Windows element
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * @param flowControl
+     * 
+     * @param attribute
+     *      name of the attribute
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @throws StepFailedException
+     * If the Windows element doesn't exist, or KS could not get text of the element.
+     * @since 7.7.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static String getAttribute(WindowsTestObject windowsObject, String attribute, FailureHandling flowControl) throws StepFailedException {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getAttribute", windowsObject, attribute, flowControl);
+    }
+
+    /**
+     * Get attribute value of a Windows element
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find Windows Element.
+     * @param flowControl
+     * 
+     * @param attribute
+     *      name of the attribute
+     * @throws StepFailedException
+     * If the Windows element doesn't exist, or KS could not get text of the element.
+     * @since 7.7.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static String getAttribute(WindowsTestObject windowsObject, String attribute) throws StepFailedException {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getAttribute", windowsObject, attribute);
+    }
+    
     /**
      * Clears text content of the {@link WebElement} that is found by using locator value of the given windowsObject.
      * 
