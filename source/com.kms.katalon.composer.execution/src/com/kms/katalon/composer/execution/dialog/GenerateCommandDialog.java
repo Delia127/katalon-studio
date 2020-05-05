@@ -715,6 +715,9 @@ public class GenerateCommandDialog extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 chkRetryFailedTestCaseTestData.setEnabled(chkRetryFailedTestCase.getSelection());
+                if (!chkRetryFailedTestCase.getSelection()) {
+                    chkRetryFailedTestCaseTestData.setSelection(false);
+                }
             }
         });
         chkRetryFailedTestCaseTestData.addSelectionListener(new SelectionAdapter() {
