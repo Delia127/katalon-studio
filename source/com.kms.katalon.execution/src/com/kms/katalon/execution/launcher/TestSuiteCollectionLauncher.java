@@ -93,19 +93,11 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         this.executionMode = executionMode;
         this.reportCollection = reportCollection;
         
-        EmailConfig emailConfig = executedEntity.getEmailConfig(ProjectController.getInstance().getCurrentProject());
-        boolean skipReportEmailForSubLaunchers = shouldSkipSendingEmailForSubLaunchers(emailConfig);
         for (ReportableLauncher subLauncher : subLaunchers) {
-            subLauncher.setSkipSendingReportEmail(skipReportEmailForSubLaunchers);
+            subLauncher.setRunInTestSuiteCollection(true);
         }
         
         addListenerForChildren(subLaunchers);
-    }
-    
-    private boolean shouldSkipSendingEmailForSubLaunchers(EmailConfig emailConfig) {
-        return featureService.canUse(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL)
-                && emailConfig.isSendTestSuiteCollectionReportEnabled()
-                && emailConfig.isSkipInvidiualTestSuiteReport();
     }
     
     private void addListenerForChildren(List<? extends ReportableLauncher> subLaunchers) {
