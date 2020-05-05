@@ -160,7 +160,7 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     }
 
     private String getJsonProxyInformationWithEncryptedPassword() {
-        ProxyInformation proxyInfo = ProxyPreferences.getProxyInformation();
+        ProxyInformation proxyInfo = ProxyPreferences.getSystemProxyInformation();
         String password = proxyInfo.getPassword();
         if (!StringUtils.isEmpty(password)) {
             try {

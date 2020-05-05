@@ -181,8 +181,6 @@ public class MessageConstants extends NLS {
 
     public static String CONFIG_PROXY;
 
-    public static String TITLE_DLG_PROXY_SETTING;
-
     public static String TITLE_DLG_REPORT_ISSUE;
 
     public static String TITLE_WINDOW_DLG_PROXY_SETTING;
@@ -194,6 +192,12 @@ public class MessageConstants extends NLS {
     public static String MSG_DLG_SUBMIT_ISSUE_SUCCESS;
 
     public static String MSG_PRG_SUBMITTING_TICKET;
+
+    public static String LBL_CHANGE_PROXY_CONFIGURATIONS;
+
+    public static String LBL_AUTHENTICATION_PROXY_GUIDE_MESSAGE;
+
+    public static String LBL_SYSTEM_PROXY_GUIDE_MESSAGE;
 
     public static String LBL_PROXY_OPTION;
 
@@ -222,6 +226,8 @@ public class MessageConstants extends NLS {
     public static String LBL_PORT;
 
     public static String CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION;
+
+    public static String CHK_TEXT_AUTO_APPLY_TO_DESIRED_CAPABILITIES;
 
     public static String ERR_MSG_ATTACHMENTS_SIZE_MUST_BE_LESS_OR_EQUAL_X_MB;
 

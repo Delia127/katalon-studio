@@ -47,9 +47,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.application.KatalonApplicationActivator;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
@@ -68,8 +65,9 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
-import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewProjectDialog extends TitleAreaDialog {
@@ -125,6 +123,8 @@ public class NewProjectDialog extends TitleAreaDialog {
     private GridData gdGenericProjectType;
 
     private Composite container;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public NewProjectDialog(Shell parentShell) {
         this(parentShell, (SampleRemoteProject) null);
@@ -336,15 +336,11 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private void hideGenericProjectTypeIfNotEnterprise() {
-        if (!isEnterpriseAccount()) {
+        if (!featureService.canUse(KSEFeature.CREATE_GENERIC_PROJECT_TYPE)) {
             gdGenericProjectType.exclude = true;
             rbGenericProjectType.setVisible(false);
             container.layout(true);
         }
-    }
-
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
     }
     
     private void initSampleProjects() {
@@ -599,7 +595,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         desc = txtProjectDescription.getText();
         
         ProjectType projectType = getSelectedProjectType();
-        if (!isEnterpriseAccount() && projectType == ProjectType.GENERIC) {
+        if (projectType == ProjectType.GENERIC && !featureService.canUse(KSEFeature.CREATE_GENERIC_PROJECT_TYPE)) {
             KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CREATE_GENERIC_PROJECT_TYPE,
                     ComposerProjectMessageConstants.MSG_WARN_GENERIC_PROJECT_TYPE);
             return;

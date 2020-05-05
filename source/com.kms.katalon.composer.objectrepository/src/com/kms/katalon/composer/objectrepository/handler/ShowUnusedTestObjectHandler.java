@@ -22,7 +22,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
@@ -38,6 +37,8 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 import com.kms.katalon.tracking.service.Trackings;
@@ -58,6 +59,8 @@ public class ShowUnusedTestObjectHandler {
     @Inject
     private IEventBroker eventBroker;
 
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+
     @CanExecute
     public boolean canExecute() {
         return true;
@@ -65,7 +68,7 @@ public class ShowUnusedTestObjectHandler {
 
     @Execute
     public void execute(Shell shell) throws IOException, InterruptedException {
-        if (LicenseUtil.isNotFreeLicense()) {
+        if (featureService.canUse(KSEFeature.TEST_OBJECT_REFACTORING)) {
             ProgressMonitorDialog monitor = new ProgressMonitorDialog(shell);
             List<FileEntity> unusedTestObject = new ArrayList<FileEntity>();
             try {
