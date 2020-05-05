@@ -196,9 +196,6 @@ public class ProxyConfigurationDialog extends MessageDialog {
         gdPass.widthHint = 207;
         txtPass.setLayoutData(gdPass);
 
-//        setTitle(MessageConstants.TITLE_DLG_PROXY_SETTING);
-//        setMessage(MessageConstants.MSG_DLG_PROXY_SETTING, IMessageProvider.INFORMATION);
-
         initialize();
 
         return area;
