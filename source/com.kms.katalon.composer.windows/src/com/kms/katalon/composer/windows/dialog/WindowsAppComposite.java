@@ -25,9 +25,11 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.UISynchronizer;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.project.handlers.SettingHandler;
@@ -212,10 +214,14 @@ public class WindowsAppComposite {
     }
     
     public void saveSettings() throws IOException {
-        String appFile = txtAppFile.getText();
-        String appTitle = txtApplicationTitle.getText();
-        store.setValue(PREF_LAST_STARTED_APP, appFile);
-        store.setValue(PREF_LAST_STARTED_WINDOW_TITLE, appTitle);
+        StringBuilder appFile = new StringBuilder();
+        StringBuilder appTitle = new StringBuilder();
+        UISynchronizeService.syncExec(() -> {
+            appFile.append(txtAppFile.getText());
+            appTitle.append(txtApplicationTitle.getText());
+        });
+        store.setValue(PREF_LAST_STARTED_APP, appFile.toString());
+        store.setValue(PREF_LAST_STARTED_WINDOW_TITLE, appTitle.toString());
         store.save();
     }
 
