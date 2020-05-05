@@ -3,6 +3,7 @@ package com.kms.katalon.activation.dialog;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -31,7 +32,7 @@ import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.execution.preferences.ProxyPreferenceDefaultValueInitializer;
 
-public class ProxyConfigurationDialog extends TitleAreaDialog {
+public class ProxyConfigurationDialog extends MessageDialog {
     private Text txtAddress;
 
     private Text txtPort;
@@ -49,7 +50,8 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
     private static final int MAX_PORT_VALUE = 65535;
 
     public ProxyConfigurationDialog(Shell shell) {
-        super(shell);
+        super(shell, MessageConstants.TITLE_WINDOW_DLG_PROXY_SETTING, null, MessageConstants.MSG_DLG_PROXY_SETTING,
+                MessageDialog.INFORMATION, 0, StringConstants.OK, StringConstants.BTN_CANCEL);
     }
 
     @Override
@@ -61,10 +63,10 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
 
         GridLayout glContainer = new GridLayout(2, false);
         glContainer.verticalSpacing = 10;
-        glContainer.marginTop = 20;
+        glContainer.marginTop = 0;
         glContainer.marginLeft = 10;
         glContainer.marginRight = 10;
-        glContainer.marginBottom = 30;
+        glContainer.marginBottom = 10;
         innerComposite.setLayout(glContainer);
 
         Label lblProxyOption = new Label(innerComposite, SWT.NONE);
@@ -194,8 +196,8 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         gdPass.widthHint = 207;
         txtPass.setLayoutData(gdPass);
 
-        setTitle(MessageConstants.TITLE_DLG_PROXY_SETTING);
-        setMessage(MessageConstants.MSG_DLG_PROXY_SETTING, IMessageProvider.INFORMATION);
+//        setTitle(MessageConstants.TITLE_DLG_PROXY_SETTING);
+//        setMessage(MessageConstants.MSG_DLG_PROXY_SETTING, IMessageProvider.INFORMATION);
 
         initialize();
 
@@ -259,11 +261,14 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         txtUsername.setText(proxyInfo.getUsername());
         txtPass.setText(proxyInfo.getPassword());
     }
-
+    
     @Override
-    protected void configureShell(Shell newShell) {
-        super.configureShell(newShell);
-        newShell.setText(MessageConstants.TITLE_WINDOW_DLG_PROXY_SETTING);
+    protected void buttonPressed(int buttonId) {
+        if (buttonId == IDialogConstants.OK_ID) {
+            okPressed();
+        } else {
+            close();
+        }
     }
 
     @Override

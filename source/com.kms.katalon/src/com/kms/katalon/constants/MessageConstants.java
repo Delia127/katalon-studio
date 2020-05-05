@@ -181,8 +181,6 @@ public class MessageConstants extends NLS {
 
     public static String CONFIG_PROXY;
 
-    public static String TITLE_DLG_PROXY_SETTING;
-
     public static String TITLE_DLG_REPORT_ISSUE;
 
     public static String TITLE_WINDOW_DLG_PROXY_SETTING;
