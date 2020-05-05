@@ -29,9 +29,9 @@ public class FeatureConfigurationsTest {
     @Mock
     private LicenseHelper licenseHelperEnterprise;
 
-    private static final KSEFeature FREE_FEATURE_KEY = KSEFeature.DEBUG_MODE;
+    private static final KSEFeature FREE_FEATURE = KSEFeature.DEBUG_MODE;
 
-    private static final KSEFeature ENTERPRISE_FEATURE_KEY = KSEFeature.SMART_XPATH;
+    private static final KSEFeature ENTERPRISE_FEATURE = KSEFeature.SMART_XPATH;
 
     @Spy
     private FeatureConfigurations featureService = new FeatureConfigurations();
@@ -45,8 +45,8 @@ public class FeatureConfigurationsTest {
     @SuppressWarnings("serial")
     private static final Map<KSEFeature, Boolean> featuresMap = new HashMap<KSEFeature, Boolean>() {
         {
-            put(ENTERPRISE_FEATURE_KEY, Boolean.TRUE);
-            put(FREE_FEATURE_KEY, Boolean.FALSE);
+            put(ENTERPRISE_FEATURE, Boolean.TRUE);
+            put(FREE_FEATURE, Boolean.FALSE);
         }
     };
 
@@ -117,10 +117,10 @@ public class FeatureConfigurationsTest {
         Assert.assertNotNull("The coreFeatures field must be not null", coreFeatures);
         Assert.assertNotNull("The customFeatures field must be not null", customFeatures);
 
-        Assert.assertTrue(String.format("The coreFeatures must contains key \"%s\"", FREE_FEATURE_KEY),
-                coreFeatures.containsKey(FREE_FEATURE_KEY.name()));
-        Assert.assertTrue(String.format("The coreFeatures must contains key \"%s\"", ENTERPRISE_FEATURE_KEY),
-                coreFeatures.containsKey(ENTERPRISE_FEATURE_KEY.name()));
+        Assert.assertTrue(String.format("The coreFeatures must contains key \"%s\"", FREE_FEATURE),
+                coreFeatures.containsKey(FREE_FEATURE.name()));
+        Assert.assertTrue(String.format("The coreFeatures must contains key \"%s\"", ENTERPRISE_FEATURE),
+                coreFeatures.containsKey(ENTERPRISE_FEATURE.name()));
     }
 
     @Test
@@ -178,9 +178,9 @@ public class FeatureConfigurationsTest {
         setUpFeatureService();
 
         // Then
-        Assert.assertTrue("Free users must be able to use free features", featureService.canUse(FREE_FEATURE_KEY));
+        Assert.assertTrue("Free users must be able to use free features", featureService.canUse(FREE_FEATURE));
         Assert.assertFalse("Free users must not be able to use enterprise features",
-                featureService.canUse(ENTERPRISE_FEATURE_KEY));
+                featureService.canUse(ENTERPRISE_FEATURE));
     }
 
     @Test
@@ -193,9 +193,9 @@ public class FeatureConfigurationsTest {
 
         // Then
         Assert.assertTrue("Enterprise users must be able to use free features",
-                featureService.canUse(FREE_FEATURE_KEY));
+                featureService.canUse(FREE_FEATURE));
         Assert.assertTrue("Enterprise users must be able to use enterprise features",
-                featureService.canUse(ENTERPRISE_FEATURE_KEY));
+                featureService.canUse(ENTERPRISE_FEATURE));
     }
 
     @Test
