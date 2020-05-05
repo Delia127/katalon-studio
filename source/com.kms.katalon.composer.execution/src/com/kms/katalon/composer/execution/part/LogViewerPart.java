@@ -62,6 +62,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -108,6 +109,7 @@ import com.kms.katalon.composer.execution.trace.TestObjectStyleRangeMatcher;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.composer.execution.util.TestCaseEditorUtil;
+import com.kms.katalon.composer.handlers.UpdateChromeWebdriverHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.TestCaseController;
@@ -124,6 +126,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
 
@@ -168,6 +171,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     // For log table viewer
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
             btnShowWarningLogs, btnShowNotRunLogs;
+    
+    private boolean userDecidedOnUpdateWebDriverOrNot = false;
 
     // For log tree viewer
     private ToolItem tltmFilterFailedLogs;
@@ -634,6 +639,10 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             writeMessage(false, messageBuilder.toString());
         }
     }
+    
+    private boolean failedDueToOutdatedChromeDriver(String message) {
+        return message.contains("This version of ChromeDriver only supports Chrome version");
+    }
 
     private StringBuilder insertRootCauseToTop(StringBuilder messageBuilder, XmlLogRecord result) {
         StringBuilder causedByStrBuilder = new StringBuilder();
@@ -654,7 +663,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private String getCausedBySentence(String msg) {
-        if (msg.contains("This version of ChromeDriver only supports Chrome version")) {
+        if (failedDueToOutdatedChromeDriver(msg)) {
             return "It seems like your Chrome Webdriver is not up to date with your Chrome browser. Please go to Tools > Update webdrivers to upgrade and try again";
         }
         String causedBy = "";

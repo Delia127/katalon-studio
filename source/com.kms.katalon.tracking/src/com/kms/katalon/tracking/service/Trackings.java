@@ -426,6 +426,18 @@ public class Trackings {
     public static void trackOpenKSEBrochurePage() {
         trackUserAction("openKSEBrochurePage");
     }
+
+    public static void trackFailedToSpyRecordDueToOutdatedChromeDriver() {
+        trackUserAction("failedToSpyRecordDueToOutdatedChromeDriver");
+    }
+    
+    public static void trackFailedToExecuteDueToOutdatedChromeDriver() {
+        trackUserAction("failedToExecuteDueToOutdatedChromeDriver");
+    }
+
+    public static void trackUseAutoUpdateChromeDriver() {
+        trackUserAction("autoUpdateChromeDriver");
+    }
     
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
