@@ -23,7 +23,7 @@ import com.kms.katalon.util.CryptoUtil
 @Action(value = StringConstants.SET_ENCRYPTED_TEXT_KEYWORD)
 public class SetEncryptedTextKeyword extends AbstractKeyword {
     
-    private KeywordLogger logger = KeywordLogger.getInstance(SetTextKeyword.class)
+    private KeywordLogger logger = KeywordLogger.getInstance(SetEncryptedTextKeyword.class)
 
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
@@ -54,14 +54,14 @@ public class SetEncryptedTextKeyword extends AbstractKeyword {
 
             WindowsActionHelper windowsActionHelper = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession())
             
-            logger.logDebug("Clearing text of object " + testObject.getObjectId())
+            logger.logDebug(String.format("Clearing text of object '%s'", testObject.getObjectId()))
             windowsActionHelper.clearText(testObject);
-            logger.logDebug("Setting  text of object " + testObject.getObjectId() + " to value ******")
+            logger.logDebug(String.format("Setting  text of object '%s' to value ******", testObject.getObjectId()))
             windowsActionHelper.setText(testObject, rawText)
 
-            logger.logPassed("Text ****** has been set on object " + testObject.getObjectId())
+            logger.logPassed(String.format("Text ****** has been set on object '%s'", testObject.getObjectId()))
 
-        }, flowControl, (testObject != null) ? "Unable to set encrypted text for object " + testObject.getObjectId()
+        }, flowControl, (testObject != null) ? String.format("Unable to set encrypted text for object '%s'", testObject.getObjectId())
         : "Unable to set text")
     }
 }

@@ -48,7 +48,7 @@ import com.kms.katalon.core.util.internal.PathUtil
 @Action(value = StringConstants.GET_ATTRIBUTE_KEYWORD)
 public class GetAttributeKeyword extends AbstractKeyword {
     
-    private KeywordLogger logger = KeywordLogger.getInstance(GetTextKeyword.class)
+    private KeywordLogger logger = KeywordLogger.getInstance(GetAttributeKeyword.class)
     
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
@@ -66,24 +66,25 @@ public class GetAttributeKeyword extends AbstractKeyword {
     public String getAttribute(WindowsTestObject testObject, String attribute, FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
             String attrValue = ""
-            
-            logger.logDebug("Checking attribute")
-            if (attribute == null) {
-                throw new IllegalArgumentException("Attribute is null")
-            }
-            
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
             
+            logger.logDebug("Checking attribute")
+            if (attribute == null) {
+                throw new IllegalArgumentException("Attribute is null")
+            }
+
+            
             WebElement element = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject)
-            logger.logDebug("Getting attribute " + attribute + " of object " + testObject.getObjectId())
+            logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attribute, testObject.getObjectId()))
            
              attrValue = element.getAttribute(attribute)
-             logger.logPassed("Attribute " + attribute + " of object " + testObject.getObjectId() +" is: " + attrValue)
+             
+             logger.logPassed(String.format("Attribute '%s' of object '%s' is: '%s'" , attribute, testObject.getObjectId(), attrValue))
              return attrValue
-        }, flowControl, (testObject != null && attribute != null) ? "Unable to get attribute " + attribute + " of object " + testObject.getObjectId()
+        }, flowControl, (testObject != null && attribute != null) ? String.format("Unable to get attribute '%s' of object '%s'" , attribute, testObject.getObjectId())
         : "Unable to get attribute")
     }
 }

@@ -18,10 +18,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -37,7 +34,6 @@ import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWit
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.dialogs.KeysInputBuilderDialog;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.dialogs.TextEncryptionDialog;
 import com.kms.katalon.composer.testcase.groovy.ast.AnnonatedNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;

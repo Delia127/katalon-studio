@@ -12,7 +12,8 @@ Require-Bundle: com.kms.katalon.core,
  com.kms.katalon.custom,
  org.eclipse.core.runtime,
  org.apache.commons.io,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ com.kms.katalon.util
 Export-Package: com.kms.katalon.core.windows.constants,
  com.kms.katalon.core.windows.driver,
  com.kms.katalon.core.windows.keyword,
