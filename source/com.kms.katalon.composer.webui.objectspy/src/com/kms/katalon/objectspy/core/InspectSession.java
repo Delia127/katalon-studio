@@ -240,13 +240,20 @@ public class InspectSession implements Runnable {
                 }
             }
         } catch (WebDriverException e) {
-            showErrorMessageDialog(e.getMessage());
+            showErrorMessageDialog(extractMessageUpdateWebDriverIfNeeded(e));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             showErrorMessageDialog(e.getMessage());
         } finally {
             dispose();
         }
+    }
+
+    private String extractMessageUpdateWebDriverIfNeeded(WebDriverException e) {
+        if (e.getMessage().contains("This version of ChromeDriver only supports Chrome version")) {
+            return "It seems like your Chrome Webdriver is not up to date with your Chrome browser. Please go to Tools > Update webdrivers to upgrade and try again";
+        }
+        return e.getMessage();
     }
 
     protected void handleForFirefoxAddon() throws InterruptedException {

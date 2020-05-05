@@ -78,6 +78,7 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleConstants;
+import org.openqa.selenium.WebDriverException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -654,6 +655,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private String getCausedBySentence(String msg) {
+        if (msg.contains("This version of ChromeDriver only supports Chrome version")) {
+            return "It seems like your Chrome Webdriver is not up to date with your Chrome browser. Please go to Tools > Update webdrivers to upgrade and try again";
+        }
         String causedBy = "";
         try {
             causedBy = msg.substring(msg.indexOf("Caused by:"));
