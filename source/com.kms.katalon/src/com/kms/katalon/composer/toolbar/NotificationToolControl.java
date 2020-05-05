@@ -62,6 +62,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -81,6 +82,7 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
@@ -385,9 +387,9 @@ public class NotificationToolControl {
     }
 
     private List<PopupNotification> getPopupNotificationsForTrialUser() {
-//        if (ActivationInfoCollector.getLicenseType() == LicenseType.ENTERPRISE) {
-//            return Collections.emptyList();
-//        }
+        if (ActivationInfoCollector.getLicenseType() == LicenseType.ENTERPRISE) {
+            return Collections.emptyList();
+        }
         try {
             Date expiredDate = getExpiredDate();
             if (getExpiredDate() == null) {
