@@ -78,7 +78,6 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleConstants;
-import org.openqa.selenium.WebDriverException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
