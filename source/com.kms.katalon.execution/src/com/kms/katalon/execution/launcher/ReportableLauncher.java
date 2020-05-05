@@ -275,22 +275,22 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
         
         if (runInTestSuiteCollection) {
-        	if (!emailConfig.isSendTestSuiteCollectionReportEnabled()) {
-        		return;
-        	}
-        	
-        	if (emailConfig.isSkipInvidiualTestSuiteReport()) {
-        		return;
-        	}
+            if (!emailConfig.isSendTestSuiteCollectionReportEnabled()) {
+                return;
+            }
+
+            if (emailConfig.isSkipInvidiualTestSuiteReport()) {
+                return;
+            }
         } else {
-	        if (!emailConfig.isSendTestSuiteReportEnabled()) {
-	            return;
-	        }
-	        
-	        if (emailConfig.isSendReportTestFailedOnly() && testSuiteLogRecord.getStatus() != null
-	                && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
-	            return;
-	        }
+            if (!emailConfig.isSendTestSuiteReportEnabled()) {
+                return;
+            }
+
+            if (emailConfig.isSendReportTestFailedOnly() && testSuiteLogRecord.getStatus() != null
+                    && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
+                return;
+            }
         }
         
         setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
