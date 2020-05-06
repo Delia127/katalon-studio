@@ -72,7 +72,7 @@ public class WindowsActionHelper {
         WindowsDriver<WebElement> runningDriver = windowsSession.getRunningDriver();
         FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(runningDriver)
                 .withTimeout(Duration.ofSeconds(timeOut))
-                .pollingEvery(Duration.ofSeconds(5))
+                .pollingEvery(Duration.ofMillis(50))
                 .ignoring(NoSuchElementException.class);
 
         WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
@@ -98,9 +98,8 @@ public class WindowsActionHelper {
                     case XPATH:
                         return windowsDriver.findElementByXPath(locator);
                     default:
-                        break;
+                        return null;
                 }
-                return null;
             }
         });
         return webElement;

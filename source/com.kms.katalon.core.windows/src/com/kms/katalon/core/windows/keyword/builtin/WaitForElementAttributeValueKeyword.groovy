@@ -1,10 +1,11 @@
 package com.kms.katalon.core.windows.keyword.builtin
 
 import groovy.transform.CompileStatic
-
 import io.appium.java_client.windows.WindowsDriver
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
+import java.util.function.Function
+import java.time.Duration;
 
 import org.apache.commons.io.FileUtils
 import org.openqa.selenium.Alert
@@ -41,16 +42,17 @@ import com.kms.katalon.core.testobject.TestObjectProperty
 import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.util.internal.ExceptionsUtil
 import com.kms.katalon.core.util.internal.PathUtil
-import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
+import com.kms.katalon.core.windows.driver.WindowsSession
+import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 
-@Action(value = "verifyElementAttributeValue")
-public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
-
-    private KeywordLogger logger = KeywordLogger.getInstance(VerifyElementAttributeValueKeyword.class)
-
+@Action(value = "waitForElementAttributeValue")
+public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
+    
+    private KeywordLogger logger = KeywordLogger.getInstance(WaitForElementAttributeValueKeyword.class)
+    
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT
@@ -63,10 +65,10 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
         String attributeValue = (String) params[2]
         int timeOut = (int) params[3]
         FailureHandling flowControl = (FailureHandling)(params.length > 4 && params[4] instanceof FailureHandling ? params[4] : RunConfiguration.getDefaultFailureHandling())
-        return verifyElementAttributeValue(testObject,attributeName,attributeValue,timeOut,flowControl)
+        return waitForElementAttributeValue(testObject, attributeName,attributeValue,timeOut,flowControl)
     }
 
-    public boolean verifyElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+    public boolean waitForElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
         KeywordMain.runKeyword({
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
@@ -78,25 +80,25 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
                 throw new IllegalArgumentException("Attribute name is null")
             }
             timeOut = KeywordHelper.checkTimeout(timeOut)
-
+            
             WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut);
             logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
 
-            String actualAttributeValue = foundElement.getAttribute(attributeName)
-            if (actualAttributeValue != null) {
-                if (actualAttributeValue.equals(attributeValue)) {
-                    logger.logPassed(String.format("Object '%s' has attribute '%s' with name '%s'", testObject.getObjectId(), attributeName, attributeValue));
-                    return true
-                } else {
-                    KeywordMain.stepFailed(String.format("Object '%s' has attribute '%s' with actual value '%s' instead of expected value '%s'", testObject.getObjectId(), attributeName, actualAttributeValue, attributeValue));
-                    return false
-                }
-            } else {
-                KeywordMain.stepFailed(String.format("The object '%s' does not have attribute '%s'", testObject.getObjectId(), attributeName));
-                return false
+            FluentWait<WebElement> wait = new FluentWait<WebElement>(foundElement)
+            .withTimeout(Duration.ofSeconds(timeOut))
+            .pollingEvery(Duration.ofMillis(50));
+            
+            Boolean hasAttribute = wait.until(new Function<WebElement, Boolean>(){
+                @Override
+                public Boolean apply(WebElement webElement){
+                    return webElement.getAttribute(attributeName) == attributeValue;
+                    }
+            });
+            if (hasAttribute){
+                logger.logPassed(String.format("Object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue));
+                return true;
             }
-            return false
-        }, flowControl, (testObject != null && attributeName !=null && attributeValue != null) ? String.format("Unable to verify if object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)
-        : "Unable to verify element attribute value")
+        }, flowControl, (testObject != null) ? String.format("Unable to wait for object '%s' to have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)
+        : "Unable to wait for element to have attribute with value");
     }
 }
