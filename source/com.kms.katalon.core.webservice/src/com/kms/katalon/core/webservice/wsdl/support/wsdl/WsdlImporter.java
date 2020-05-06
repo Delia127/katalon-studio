@@ -15,89 +15,87 @@ import com.kms.katalon.entity.util.Util;
 
 public class WsdlImporter {
 
-	private WsdlParser wsdlParser;
-	
-	private WsdlDefinitionLocator wsdlLocator;
+    private WsdlParser wsdlParser;
 
-	public WsdlImporter(WsdlDefinitionLocator wsdlLocator) {
-	    this.wsdlLocator = wsdlLocator;
-		this.wsdlParser = new WsdlParser(wsdlLocator);
-	}
+    private WsdlDefinitionLocator wsdlLocator;
 
-	public List<WebServiceRequestEntity> getImportedEtities(String requestMethod) throws Exception {
-		List<WebServiceRequestEntity> imports = new ArrayList<>();
-		List<String> operations = wsdlParser.getOperationNamesByRequestMethod(requestMethod);
-		for (Object operationObject : SafeHelper.safeList(operations)) {
-			if (operationObject != null) {
-				String operation = (String) operationObject;
-				WebServiceRequestEntity newEntity = getImportedEntity(requestMethod, operation, false);
-				imports.add(newEntity);
-			}
-		}
-		return imports;
-	}
+    public WsdlImporter(WsdlDefinitionLocator wsdlLocator) {
+        this.wsdlLocator = wsdlLocator;
+        this.wsdlParser = new WsdlParser(wsdlLocator);
+    }
 
-	public WebServiceRequestEntity getImportedEntity(
-			String method,
-			String operation,
-			boolean isDraft) throws Exception {
-		
-		WebServiceRequestEntity entity;
-		if (!isDraft) {
-		    entity = new WebServiceRequestEntity();
-		} else {
-		    entity = new DraftWebServiceRequestEntity();
-		}
-		
-		entity.setElementGuidId(Util.generateGuid());
-		entity.setName(operation);
-		entity.setSoapRequestMethod(method);
-		entity.setSoapServiceFunction(operation);
-		entity.setKatalonVersion(System.getProperty(SystemProperties.KATALON_VERSION));
+    public List<WebServiceRequestEntity> getImportedEtities(String requestMethod) throws Exception {
+        List<WebServiceRequestEntity> imports = new ArrayList<>();
+        List<String> operations = wsdlParser.getOperationNamesByRequestMethod(requestMethod);
+        for (Object operationObject : SafeHelper.safeList(operations)) {
+            if (operationObject != null) {
+                String operation = (String) operationObject;
+                WebServiceRequestEntity newEntity = getImportedEntity(requestMethod, operation, false);
+                imports.add(newEntity);
+            }
+        }
+        return imports;
+    }
 
-		String serviceEndpoint = wsdlParser.getPortAddressLocation(method);
-		entity.setSoapServiceEndpoint(serviceEndpoint);
+    public WebServiceRequestEntity getImportedEntity(String method, String operation, boolean isDraft)
+            throws Exception {
 
-		List<WebElementPropertyEntity> headers = new ArrayList<>();
+        WebServiceRequestEntity entity;
+        if (!isDraft) {
+            entity = new WebServiceRequestEntity();
+        } else {
+            entity = new DraftWebServiceRequestEntity();
+        }
 
-		BindingOperationImpl bindingOperation = wsdlParser.getBindingOperationByRequestMethodAndName(method, operation);
-		String soapAction = wsdlParser.getOperationURI(bindingOperation, method);
-		if (WebServiceRequestEntity.SOAP.equals(method) && soapAction != null) {
-			WebElementPropertyEntity soapActionHeader = new WebElementPropertyEntity();
-			soapActionHeader.setName(RequestHeaderConstants.SOAP_ACTION);
-			soapActionHeader.setValue(soapAction);
-			headers.add(soapActionHeader);
-		}
+        entity.setElementGuidId(Util.generateGuid());
+        entity.setName(operation);
+        entity.setSoapRequestMethod(method);
+        entity.setSoapServiceFunction(operation);
+        entity.setKatalonVersion(System.getProperty(SystemProperties.KATALON_VERSION));
 
-		WebElementPropertyEntity contentTypeHeader = new WebElementPropertyEntity();
-		contentTypeHeader.setName(RequestHeaderConstants.CONTENT_TYPE);
-		contentTypeHeader.setValue(RequestHeaderConstants.CONTENT_TYPE_TEXT_XML_UTF_8);
-		headers.add(contentTypeHeader);
+        String serviceEndpoint = wsdlParser.getPortAddressLocation(method);
+        entity.setSoapServiceEndpoint(serviceEndpoint);
 
-		entity.setHttpHeaderProperties(headers);
+        List<WebElementPropertyEntity> headers = new ArrayList<>();
 
-		String requestMessage = wsdlParser.generateInputSOAPMessage(method, operation);
-		entity.setSoapBody(requestMessage != null ? requestMessage : "");
+        BindingOperationImpl bindingOperation = wsdlParser.getBindingOperationByRequestMethodAndName(method, operation);
+        String soapAction = wsdlParser.getOperationURI(bindingOperation, method);
+        if (WebServiceRequestEntity.SOAP.equals(method) && soapAction != null) {
+            WebElementPropertyEntity soapActionHeader = new WebElementPropertyEntity();
+            soapActionHeader.setName(RequestHeaderConstants.SOAP_ACTION);
+            soapActionHeader.setValue(soapAction);
+            headers.add(soapActionHeader);
+        }
 
-		String wsdlAddress = wsdlLocator.getWsdlLocation();
-		String projectLocation = System.getProperty(SystemProperties.PROJECT_LOCATION);
-		if (isFile(wsdlAddress) && wsdlAddress.startsWith(projectLocation)) {
-			wsdlAddress = PathUtil.absoluteToRelativePath(wsdlAddress, projectLocation);
-		}
-		entity.setWsdlAddress(wsdlAddress);
+        WebElementPropertyEntity contentTypeHeader = new WebElementPropertyEntity();
+        contentTypeHeader.setName(RequestHeaderConstants.CONTENT_TYPE);
+        contentTypeHeader.setValue(RequestHeaderConstants.CONTENT_TYPE_TEXT_XML_UTF_8);
+        headers.add(contentTypeHeader);
 
-		return entity;
-	}
-	
-	private static boolean isFile(String url) {
-		return !isWebUrl(url);
-	}
+        entity.setHttpHeaderProperties(headers);
 
-	private static boolean isWebUrl(String url) {
-		return url.startsWith(RequestHeaderConstants.HTTP) || url.startsWith(RequestHeaderConstants.HTTPS);
-	}
-	
-	public interface WebServiceRequestEntityCreator {
-		WebServiceRequestEntity create();
-	}
+        String requestMessage = wsdlParser.generateInputSOAPMessage(method, operation);
+        entity.setSoapBody(requestMessage != null ? requestMessage : "");
+
+        String wsdlAddress = wsdlLocator.getWsdlLocation();
+        String projectLocation = System.getProperty(SystemProperties.PROJECT_LOCATION);
+        if (isFile(wsdlAddress) && wsdlAddress.startsWith(projectLocation)) {
+            wsdlAddress = PathUtil.absoluteToRelativePath(wsdlAddress, projectLocation);
+        }
+        entity.setWsdlAddress(wsdlAddress);
+
+        return entity;
+    }
+
+    private static boolean isFile(String url) {
+        return !isWebUrl(url);
+    }
+
+    private static boolean isWebUrl(String url) {
+        return url.startsWith(RequestHeaderConstants.HTTP) || url.startsWith(RequestHeaderConstants.HTTPS);
+    }
+
+    public interface WebServiceRequestEntityCreator {
+        WebServiceRequestEntity create();
+    }
 }

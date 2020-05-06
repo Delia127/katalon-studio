@@ -24,17 +24,17 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public static final String POST_METHOD = "POST";
 
     public static final String PUT_METHOD = "PUT";
-    
+
     public static final String PATCH_METHOD = "PATCH";
 
     public static final String DELETE_METHOD = "DELETE";
-    
+
     public static final String HEAD_METHOD = "HEAD";
-    
+
     public static final String CONNECT_METHOD = "CONNECT";
-    
+
     public static final String OPTIONS_METHOD = "OPTIONS";
-    
+
     public static final String TRACE_METHOD = "TRACE";
 
     public static final String[] SERVICE_TYPES = new String[] { SOAP, RESTFUL };
@@ -42,14 +42,15 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public static final String[] SOAP_REQUEST_METHODS = new String[] { SOAP, SOAP12, GET_METHOD, POST_METHOD };
 
     public static final String[] REST_REQUEST_METHODS = new String[] { GET_METHOD, POST_METHOD, PUT_METHOD,
-            PATCH_METHOD , DELETE_METHOD, HEAD_METHOD, CONNECT_METHOD, OPTIONS_METHOD, TRACE_METHOD};
+            PATCH_METHOD, DELETE_METHOD, HEAD_METHOD, CONNECT_METHOD, OPTIONS_METHOD, TRACE_METHOD };
 
     private String serviceType = SOAP; // Default
 
     private List<WebElementPropertyEntity> httpHeaderProperties;
-    
-    private String httpBodyType = ""; // text, x-www-form-urlencoded, form-data, file
-    
+
+    private String httpBodyType = ""; // text, x-www-form-urlencoded, form-data,
+                                      // file
+
     private String httpBodyContent = ""; // JSON format of body content
 
     private String httpBody = "";
@@ -63,9 +64,9 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private String soapRequestMethod = "";
 
     private String soapServiceFunction = "";
-    
+
     private String soapServiceEndpoint = "";
-    
+
     private Boolean useServiceInfoFromWsdl;
 
     private List<WebElementPropertyEntity> soapParameters;
@@ -75,15 +76,15 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private String restRequestMethod = "";
 
     private List<WebElementPropertyEntity> restParameters;
-    
+
     private String verificationScript;
 
     private String migratedVersion;
-    
+
     private boolean followRedirects = false;
-    
+
     private List<VariableEntity> variables = new ArrayList<>();
-    
+
     private String katalonVersion = null;
 
     public String getSoapRequestMethod() {
@@ -103,22 +104,22 @@ public class WebServiceRequestEntity extends WebElementEntity {
     }
 
     public String getSoapServiceEndpoint() {
-		return soapServiceEndpoint;
-	}
+        return soapServiceEndpoint;
+    }
 
-	public void setSoapServiceEndpoint(String soapServiceEndpoint) {
-		this.soapServiceEndpoint = soapServiceEndpoint;
-	}
+    public void setSoapServiceEndpoint(String soapServiceEndpoint) {
+        this.soapServiceEndpoint = soapServiceEndpoint;
+    }
 
-	public boolean isUseServiceInfoFromWsdl() {
-		return useServiceInfoFromWsdl == null || useServiceInfoFromWsdl == true;
-	}
+    public boolean isUseServiceInfoFromWsdl() {
+        return useServiceInfoFromWsdl == null || useServiceInfoFromWsdl == true;
+    }
 
-	public void setUseServiceInfoFromWsdl(boolean useServiceInfoFromWsdl) {
-		this.useServiceInfoFromWsdl = useServiceInfoFromWsdl;
-	}
+    public void setUseServiceInfoFromWsdl(boolean useServiceInfoFromWsdl) {
+        this.useServiceInfoFromWsdl = useServiceInfoFromWsdl;
+    }
 
-	public List<WebElementPropertyEntity> getSoapParameters() {
+    public List<WebElementPropertyEntity> getSoapParameters() {
         if (soapParameters == null) {
             soapParameters = new ArrayList<WebElementPropertyEntity>();
         }
@@ -246,7 +247,7 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public void setVariables(List<VariableEntity> variables) {
         this.variables = variables;
     }
-    
+
     public boolean isFollowRedirects() {
         return followRedirects;
     }
@@ -256,18 +257,18 @@ public class WebServiceRequestEntity extends WebElementEntity {
     }
 
     public String getKatalonVersion() {
-		return katalonVersion;
-	}
+        return katalonVersion;
+    }
 
-	public void setKatalonVersion(String katalonVersion) {
-		this.katalonVersion = katalonVersion;
-	}
-	
-	public boolean isCreatedBeforeV7_4_5() {
-		return StringUtils.isBlank(katalonVersion);
-	}
+    public void setKatalonVersion(String katalonVersion) {
+        this.katalonVersion = katalonVersion;
+    }
 
-	@Override
+    public boolean isCreatedBeforeV7_4_5() {
+        return StringUtils.isBlank(katalonVersion);
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();

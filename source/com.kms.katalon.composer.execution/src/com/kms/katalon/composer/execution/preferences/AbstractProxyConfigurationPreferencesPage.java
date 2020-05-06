@@ -25,11 +25,9 @@ import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageCons
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.constants.SystemProperties;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.network.ProxyServerType;
-import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferenceDefaultValueInitializer;
 
 public abstract class AbstractProxyConfigurationPreferencesPage extends PreferencePageWithHelp {

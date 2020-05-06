@@ -43,7 +43,6 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 @SuppressWarnings({ "rawtypes" })
 public final class EntityService {

@@ -40,164 +40,165 @@ import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
 
 public abstract class BasicRequestor implements Requestor {
 
-	protected String projectDir;
+    protected String projectDir;
 
-	protected ProxyInformation proxyInformation;
+    protected ProxyInformation proxyInformation;
 
-	protected WebServiceSettingStore settingStore;
+    protected WebServiceSettingStore settingStore;
 
-	public BasicRequestor(String projectDir, ProxyInformation proxyInformation) {
-		this.projectDir = projectDir;
-		this.proxyInformation = proxyInformation;
-	}
-	
-	public ResponseObject send(RequestObject requestObject) throws Exception {
-		HttpUriRequest httpRequest = buildHttpRequest(requestObject);
+    public BasicRequestor(String projectDir, ProxyInformation proxyInformation) {
+        this.projectDir = projectDir;
+        this.proxyInformation = proxyInformation;
+    }
 
-		long startTime = System.currentTimeMillis();
-		HttpResponse httpResponse = HttpUtil.sendRequest(
-				httpRequest,
-				requestObject.isFollowRedirects(),
-				proxyInformation,
-				getSslCertificateOption(),
-				getSSLSettings());
-		long waitingTime = System.currentTimeMillis() - startTime;
-		
-		ResponseObject responseObject = toResponseObject(httpResponse);
-		responseObject.setWaitingTime(waitingTime);
+    public ResponseObject send(RequestObject requestObject) throws Exception {
+        HttpUriRequest httpRequest = buildHttpRequest(requestObject);
 
-		return responseObject;
-	}
+        long startTime = System.currentTimeMillis();
+        HttpResponse httpResponse = HttpUtil.sendRequest(
+                httpRequest,
+                requestObject.isFollowRedirects(),
+                proxyInformation,
+                getSslCertificateOption(),
+                getSSLSettings());
+        long waitingTime = System.currentTimeMillis() - startTime;
 
-	protected abstract HttpUriRequest buildHttpRequest(RequestObject requestObject) throws Exception;
+        ResponseObject responseObject = toResponseObject(httpResponse);
+        responseObject.setWaitingTime(waitingTime);
 
-	protected SSLCertificateOption getSslCertificateOption() throws IOException {
-		return getSettingStore().getSSLCertificateOption();
-	}
+        return responseObject;
+    }
 
-	protected SSLClientCertificateSettings getSSLSettings() throws IOException {
-		return getSettingStore().getClientCertificateSettings();
-	}
+    protected abstract HttpUriRequest buildHttpRequest(RequestObject requestObject) throws Exception;
 
-	protected void setHttpConnectionHeaders(HttpRequest httpRequest, RequestObject request)
-			throws GeneralSecurityException, IOException {
-		List<TestObjectProperty> headers = getRequestHeaders(request);
+    protected SSLCertificateOption getSslCertificateOption() throws IOException {
+        return getSettingStore().getSSLCertificateOption();
+    }
 
-		headers.forEach(header -> {
-			if (request.getBodyContent() instanceof HttpFormDataBodyContent
-					&& header.getName().equalsIgnoreCase("Content-Type")) {
-				httpRequest.addHeader(header.getName(), request.getBodyContent().getContentType());
-			} else {
-				httpRequest.addHeader(header.getName(), header.getValue());
-			}
-		});
-	}
-	
-	protected List<TestObjectProperty> getRequestHeaders(RequestObject request) throws GeneralSecurityException, IOException {
-		List<TestObjectProperty> headers = new ArrayList<>(request.getHttpHeaderProperties());
+    protected SSLClientCertificateSettings getSSLSettings() throws IOException {
+        return getSettingStore().getClientCertificateSettings();
+    }
 
-		List<TestObjectProperty> complexAuthAttributes = request.getHttpHeaderProperties().stream()
-				.filter(header -> StringUtils.startsWith(header.getName(), RequestHeaderConstants.AUTH_META_PREFIX))
-				.collect(Collectors.toList());
+    protected void setHttpConnectionHeaders(HttpRequest httpRequest, RequestObject request)
+            throws GeneralSecurityException, IOException {
+        List<TestObjectProperty> headers = getRequestHeaders(request);
 
-		if (!complexAuthAttributes.isEmpty()) {
-			headers.removeAll(complexAuthAttributes);
-			String authorizationValue = generateAuthorizationHeader(getRequestUrl(request), complexAuthAttributes);
-			if (!authorizationValue.isEmpty()) {
-				headers.add(new TestObjectProperty(RequestHeaderConstants.AUTHORIZATION, ConditionType.EQUALS,
-						authorizationValue));
-			}
-		}
-		
-		return headers;
-	}
+        headers.forEach(header -> {
+            if (request.getBodyContent() instanceof HttpFormDataBodyContent
+                    && header.getName().equalsIgnoreCase("Content-Type")) {
+                httpRequest.addHeader(header.getName(), request.getBodyContent().getContentType());
+            } else {
+                httpRequest.addHeader(header.getName(), header.getValue());
+            }
+        });
+    }
 
-	private String getRequestUrl(RequestObject request) {
-		return StringUtils.equals(request.getServiceType(), RequestHeaderConstants.RESTFUL) ? request.getRestUrl()
-				: request.getWsdlAddress();
-	}
+    protected List<TestObjectProperty> getRequestHeaders(RequestObject request)
+            throws GeneralSecurityException, IOException {
+        List<TestObjectProperty> headers = new ArrayList<>(request.getHttpHeaderProperties());
 
-	private static String generateAuthorizationHeader(String requestUrl, List<TestObjectProperty> complexAuthAttributes)
-			throws GeneralSecurityException, IOException {
-		Map<String, String> map = complexAuthAttributes.stream()
-				.collect(Collectors.toMap(TestObjectProperty::getName, TestObjectProperty::getValue));
-		String authType = map.get(RequestHeaderConstants.AUTHORIZATION_TYPE);
-		if (StringUtils.isBlank(authType)) {
-			return StringUtils.EMPTY;
-		}
+        List<TestObjectProperty> complexAuthAttributes = request.getHttpHeaderProperties().stream()
+                .filter(header -> StringUtils.startsWith(header.getName(), RequestHeaderConstants.AUTH_META_PREFIX))
+                .collect(Collectors.toList());
 
-		if (RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0.equals(authType)) {
-			return createOAuth1AuthorizationHeaderValue(requestUrl, map);
-		}
+        if (!complexAuthAttributes.isEmpty()) {
+            headers.removeAll(complexAuthAttributes);
+            String authorizationValue = generateAuthorizationHeader(getRequestUrl(request), complexAuthAttributes);
+            if (!authorizationValue.isEmpty()) {
+                headers.add(new TestObjectProperty(RequestHeaderConstants.AUTHORIZATION, ConditionType.EQUALS,
+                        authorizationValue));
+            }
+        }
 
-		// Other authorization type will be handled here
+        return headers;
+    }
 
-		return StringUtils.EMPTY;
-	}
+    private String getRequestUrl(RequestObject request) {
+        return StringUtils.equals(request.getServiceType(), RequestHeaderConstants.RESTFUL) ? request.getRestUrl()
+                : request.getWsdlAddress();
+    }
 
-	public static String createOAuth1AuthorizationHeaderValue(String requestUrl, Map<String, String> map)
-			throws GeneralSecurityException, IOException {
-		OAuthParameters params = new OAuthParameters();
-		params.consumerKey = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_CONSUMER_KEY,
-				StringUtils.EMPTY);
+    private static String generateAuthorizationHeader(String requestUrl, List<TestObjectProperty> complexAuthAttributes)
+            throws GeneralSecurityException, IOException {
+        Map<String, String> map = complexAuthAttributes.stream()
+                .collect(Collectors.toMap(TestObjectProperty::getName, TestObjectProperty::getValue));
+        String authType = map.get(RequestHeaderConstants.AUTHORIZATION_TYPE);
+        if (StringUtils.isBlank(authType)) {
+            return StringUtils.EMPTY;
+        }
 
-		String signatureMethod = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_SIGNATURE_METHOD,
-				StringUtils.EMPTY);
-		String consumerSecret = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_CONSUMER_SECRET,
-				StringUtils.EMPTY);
-		String tokenSecret = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_TOKEN_SECRET,
-				StringUtils.EMPTY);
-		OAuthSigner signer = getSigner(signatureMethod, consumerSecret, tokenSecret);
-		if (signer == null) {
-			return StringUtils.EMPTY;
-		}
+        if (RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0.equals(authType)) {
+            return createOAuth1AuthorizationHeaderValue(requestUrl, map);
+        }
 
-		params.signer = signer;
-		params.computeNonce();
-		params.computeTimestamp();
-		params.version = "1.0";
-		String token = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_TOKEN, StringUtils.EMPTY);
-		if (StringUtils.isNotBlank(token)) {
-			params.token = token;
-		}
-		String realm = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_REALM, StringUtils.EMPTY);
-		if (StringUtils.isNotBlank(realm)) {
-			params.realm = realm;
-		}
-		params.computeSignature(RequestHeaderConstants.GET, new GenericUrl(requestUrl));
-		return params.getAuthorizationHeader();
-	}
+        // Other authorization type will be handled here
 
-	private static OAuthSigner getSigner(String signatureMethod, String consumerSecret, String tokenSecret)
-			throws IOException, GeneralSecurityException {
-		if (StringUtils.equals(signatureMethod, RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1)) {
-			OAuthHmacSigner signer = new OAuthHmacSigner();
-			signer.clientSharedSecret = consumerSecret;
-			if (StringUtils.isNotBlank(tokenSecret)) {
-				signer.tokenSharedSecret = tokenSecret;
-			}
-			return signer;
-		}
+        return StringUtils.EMPTY;
+    }
 
-		if (StringUtils.equals(signatureMethod, RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1)) {
-			OAuthRsaSigner signer = new OAuthRsaSigner();
-			// https://en.wikipedia.org/wiki/PKCS
-			// https://tools.ietf.org/html/rfc5208
-			signer.privateKey = PrivateKeyReader.getPrivateKey(consumerSecret);
-			return signer;
-		}
+    public static String createOAuth1AuthorizationHeaderValue(String requestUrl, Map<String, String> map)
+            throws GeneralSecurityException, IOException {
+        OAuthParameters params = new OAuthParameters();
+        params.consumerKey = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_CONSUMER_KEY,
+                StringUtils.EMPTY);
 
-		return null;
-	}
-	
-	protected ResponseObject toResponseObject(HttpResponse httpResponse) {
-		long startTime = System.currentTimeMillis();
+        String signatureMethod = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_SIGNATURE_METHOD,
+                StringUtils.EMPTY);
+        String consumerSecret = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_CONSUMER_SECRET,
+                StringUtils.EMPTY);
+        String tokenSecret = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_TOKEN_SECRET,
+                StringUtils.EMPTY);
+        OAuthSigner signer = getSigner(signatureMethod, consumerSecret, tokenSecret);
+        if (signer == null) {
+            return StringUtils.EMPTY;
+        }
+
+        params.signer = signer;
+        params.computeNonce();
+        params.computeTimestamp();
+        params.version = "1.0";
+        String token = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_TOKEN, StringUtils.EMPTY);
+        if (StringUtils.isNotBlank(token)) {
+            params.token = token;
+        }
+        String realm = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_REALM, StringUtils.EMPTY);
+        if (StringUtils.isNotBlank(realm)) {
+            params.realm = realm;
+        }
+        params.computeSignature(RequestHeaderConstants.GET, new GenericUrl(requestUrl));
+        return params.getAuthorizationHeader();
+    }
+
+    private static OAuthSigner getSigner(String signatureMethod, String consumerSecret, String tokenSecret)
+            throws IOException, GeneralSecurityException {
+        if (StringUtils.equals(signatureMethod, RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1)) {
+            OAuthHmacSigner signer = new OAuthHmacSigner();
+            signer.clientSharedSecret = consumerSecret;
+            if (StringUtils.isNotBlank(tokenSecret)) {
+                signer.tokenSharedSecret = tokenSecret;
+            }
+            return signer;
+        }
+
+        if (StringUtils.equals(signatureMethod, RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1)) {
+            OAuthRsaSigner signer = new OAuthRsaSigner();
+            // https://en.wikipedia.org/wiki/PKCS
+            // https://tools.ietf.org/html/rfc5208
+            signer.privateKey = PrivateKeyReader.getPrivateKey(consumerSecret);
+            return signer;
+        }
+
+        return null;
+    }
+
+    protected ResponseObject toResponseObject(HttpResponse httpResponse) {
+        long startTime = System.currentTimeMillis();
         int statusCode = httpResponse.getStatusLine().getStatusCode();
         long contentDownloadTime = 0L;
         String responseBody = StringUtils.EMPTY;
 
         long bodyLength = 0L;
-        
+
         HttpEntity responseEntity = httpResponse.getEntity();
         if (responseEntity != null) {
             bodyLength = responseEntity.getContentLength();
@@ -209,7 +210,7 @@ public abstract class BasicRequestor implements Requestor {
             }
             contentDownloadTime = System.currentTimeMillis() - startTime;
         }
-        
+
         long headerLength = WebServiceCommonHelper.calculateHeaderLength(httpResponse);
 
         ResponseObject responseObject = new ResponseObject(responseBody);
@@ -219,68 +220,69 @@ public abstract class BasicRequestor implements Requestor {
         responseObject.setResponseBodySize(bodyLength);
         responseObject.setResponseHeaderSize(headerLength);
         responseObject.setContentDownloadTime(contentDownloadTime);
-        
+
         setResponseBodyContent(httpResponse, responseBody, responseObject);
-        
+
         return responseObject;
-	}
+    }
 
-	protected void setResponseBodyContent(HttpResponse httpResponse, String responseBody, ResponseObject responseObject) {
-		String contentTypeHeader = getResponseContentType(httpResponse);
-		String contentType = contentTypeHeader;
-		String charset = "UTF-8";
-		if (contentTypeHeader != null && contentTypeHeader.contains(";")) {
-			// Content-Type: [content-type]; charset=[charset]
-			contentType = contentTypeHeader.split(";")[0].trim();
-			int charsetIdx = contentTypeHeader.lastIndexOf("charset=");
-			if (charsetIdx >= 0) {
-				int separatorIdx = StringUtils.indexOf(contentTypeHeader, ";", charsetIdx);
-				if (separatorIdx < 0) {
-					separatorIdx = contentTypeHeader.length();
-				}
-				charset = contentTypeHeader.substring(charsetIdx + "charset=".length(), separatorIdx).trim()
-						.replace("\"", "");
-			}
-		}
-		HttpTextBodyContent textBodyContent = new HttpTextBodyContent(responseBody, charset, contentType);
-		responseObject.setBodyContent(textBodyContent);
-		responseObject.setContentCharset(charset);
-	}
+    protected void setResponseBodyContent(HttpResponse httpResponse, String responseBody,
+            ResponseObject responseObject) {
+        String contentTypeHeader = getResponseContentType(httpResponse);
+        String contentType = contentTypeHeader;
+        String charset = "UTF-8";
+        if (contentTypeHeader != null && contentTypeHeader.contains(";")) {
+            // Content-Type: [content-type]; charset=[charset]
+            contentType = contentTypeHeader.split(";")[0].trim();
+            int charsetIdx = contentTypeHeader.lastIndexOf("charset=");
+            if (charsetIdx >= 0) {
+                int separatorIdx = StringUtils.indexOf(contentTypeHeader, ";", charsetIdx);
+                if (separatorIdx < 0) {
+                    separatorIdx = contentTypeHeader.length();
+                }
+                charset = contentTypeHeader.substring(charsetIdx + "charset=".length(), separatorIdx).trim()
+                        .replace("\"", "");
+            }
+        }
+        HttpTextBodyContent textBodyContent = new HttpTextBodyContent(responseBody, charset, contentType);
+        responseObject.setBodyContent(textBodyContent);
+        responseObject.setContentCharset(charset);
+    }
 
-	protected String getResponseContentType(HttpResponse httpResponse) {
-		Header contentTypeHeader = httpResponse.getFirstHeader("Content-Type");
-		if (contentTypeHeader != null) {
-			return contentTypeHeader.getValue();
-		} else {
-			return null;
-		}
-	}
+    protected String getResponseContentType(HttpResponse httpResponse) {
+        Header contentTypeHeader = httpResponse.getFirstHeader("Content-Type");
+        if (contentTypeHeader != null) {
+            return contentTypeHeader.getValue();
+        } else {
+            return null;
+        }
+    }
 
-	protected Map<String, List<String>> getResponseHeaderFields(HttpResponse httpResponse) {
-		Map<String, List<String>> headerFields = new HashMap<>();
-		Header[] headers = httpResponse.getAllHeaders();
-		for (Header header : headers) {
-			String name = header.getName();
-			if (!headerFields.containsKey(name)) {
-				headerFields.put(name, new ArrayList<>());
-			}
-			headerFields.get(name).add(header.getValue());
-		}
-		StatusLine statusLine = httpResponse.getStatusLine();
-		if (statusLine != null) {
-			headerFields.put("#status#", Arrays.asList(String.valueOf(statusLine)));
-		}
-		return headerFields;
-	}
+    protected Map<String, List<String>> getResponseHeaderFields(HttpResponse httpResponse) {
+        Map<String, List<String>> headerFields = new HashMap<>();
+        Header[] headers = httpResponse.getAllHeaders();
+        for (Header header : headers) {
+            String name = header.getName();
+            if (!headerFields.containsKey(name)) {
+                headerFields.put(name, new ArrayList<>());
+            }
+            headerFields.get(name).add(header.getValue());
+        }
+        StatusLine statusLine = httpResponse.getStatusLine();
+        if (statusLine != null) {
+            headerFields.put("#status#", Arrays.asList(String.valueOf(statusLine)));
+        }
+        return headerFields;
+    }
 
-	public WebServiceSettingStore getSettingStore() {
-		if (settingStore == null) {
-			settingStore = WebServiceSettingStore.create(projectDir);
-		}
-		return settingStore;
-	}
+    public WebServiceSettingStore getSettingStore() {
+        if (settingStore == null) {
+            settingStore = WebServiceSettingStore.create(projectDir);
+        }
+        return settingStore;
+    }
 
-	public void setSettingStore(WebServiceSettingStore store) {
-		this.settingStore = store;
-	}
+    public void setSettingStore(WebServiceSettingStore store) {
+        this.settingStore = store;
+    }
 }

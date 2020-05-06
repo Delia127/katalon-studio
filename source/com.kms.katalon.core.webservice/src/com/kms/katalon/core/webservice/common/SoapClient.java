@@ -27,94 +27,93 @@ import com.kms.katalon.core.webservice.wsdl.support.wsdl.WsdlParser;
 
 public class SoapClient extends BasicRequestor {
 
-	private static final String SOAP_ACTION = RequestHeaderConstants.SOAP_ACTION;
+    private static final String SOAP_ACTION = RequestHeaderConstants.SOAP_ACTION;
 
-	private static final String CONTENT_TYPE = RequestHeaderConstants.CONTENT_TYPE;
+    private static final String CONTENT_TYPE = RequestHeaderConstants.CONTENT_TYPE;
 
-	private static final String TEXT_XML_CHARSET_UTF_8 = RequestHeaderConstants.CONTENT_TYPE_TEXT_XML_UTF_8;
+    private static final String TEXT_XML_CHARSET_UTF_8 = RequestHeaderConstants.CONTENT_TYPE_TEXT_XML_UTF_8;
 
-	private static final String APPLICATION_XML = RequestHeaderConstants.CONTENT_TYPE_APPLICATION_XML;
+    private static final String APPLICATION_XML = RequestHeaderConstants.CONTENT_TYPE_APPLICATION_XML;
 
-	private String serviceName;
+    private String serviceName;
 
-	private String endpoint;
+    private String endpoint;
 
-	private String actionUri; // Can be SOAPAction, HTTP location URL
+    private String actionUri; // Can be SOAPAction, HTTP location URL
 
-	public SoapClient(String projectDir, ProxyInformation proxyInformation) {
-		super(projectDir, proxyInformation);
-	}
-	
-	@Override
-	protected HttpUriRequest buildHttpRequest(RequestObject requestObject) throws Exception {
-		populateCommonData(requestObject);
-		
-		HttpPost post = new HttpPost(endpoint);
-		
-		if (requestObject.useServiceInfoFromWsdl()) {
-			post.addHeader(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
-		}
-		if (StringUtils.isNotBlank(actionUri)) {
-			post.addHeader(SOAP_ACTION, actionUri);
-		}
-		setHttpConnectionHeaders(post, requestObject);
+    public SoapClient(String projectDir, ProxyInformation proxyInformation) {
+        super(projectDir, proxyInformation);
+    }
 
-		ByteArrayEntity entity = new ByteArrayEntity(requestObject.getSoapBody().getBytes(StandardCharsets.UTF_8));
-		entity.setChunked(false);
-		post.setEntity(entity);
+    @Override
+    protected HttpUriRequest buildHttpRequest(RequestObject requestObject) throws Exception {
+        populateCommonData(requestObject);
 
-		return post;
-	}
-	
-	private void populateCommonData(RequestObject requestObject) throws WebServiceException {
-		if (requestObject.useServiceInfoFromWsdl()) {
-			populateDataFromWsdl(requestObject);
-		} else {
-			endpoint = requestObject.getSoapServiceEndpoint();
-		}
-	}
-	
-	private void populateDataFromWsdl(RequestObject requestObject) throws WebServiceException {
-		try {
-			WsdlParser parser = getWsdlParser(requestObject);
-			String requestMethod = requestObject.getSoapRequestMethod();
-			endpoint = parser.getPortAddressLocation(requestMethod);
-			BindingOperationImpl bindingOperation = parser.getBindingOperationByRequestMethodAndName(
-					requestMethod,
-					requestObject.getSoapServiceFunction());
-			actionUri = parser.getOperationURI(bindingOperation, requestMethod);
-		} catch (IOException | GeneralSecurityException | WSDLException e) {
-			throw new WebServiceException(e);
-		}
-	}
-	
-	private WsdlParser getWsdlParser(RequestObject requestObject) throws IOException, GeneralSecurityException {
-		String wsdlLocation = requestObject.getWsdlAddress();
-		Map<String, Object> wsdlLocatorParams = new HashMap<>();
-		wsdlLocatorParams.put(WsdlLocatorParams.PROXY, proxyInformation);
-		wsdlLocatorParams.put(WsdlLocatorParams.HTTP_HEADERS, getHttpHeaderMap(requestObject));
-		WsdlDefinitionLocator wsdlLocator = WsdlLocatorProvider.getLocator(wsdlLocation, wsdlLocatorParams);
-		return new WsdlParser(wsdlLocator);
-	}
-	
-	private Map<String, Object> getHttpHeaderMap(RequestObject requestObject) throws GeneralSecurityException, IOException {
-		Map<String, Object> headers = getRequestHeaders(requestObject)
-				.stream()
-				.collect(Collectors.toMap(h -> h.getName(), h -> h.getValue()));
-		return headers;
-				
-	}
+        HttpPost post = new HttpPost(endpoint);
 
-	@Override
-	protected String getResponseContentType(HttpResponse httpResponse) {
-		return APPLICATION_XML;
-	}
+        if (requestObject.useServiceInfoFromWsdl()) {
+            post.addHeader(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
+        }
+        if (StringUtils.isNotBlank(actionUri)) {
+            post.addHeader(SOAP_ACTION, actionUri);
+        }
+        setHttpConnectionHeaders(post, requestObject);
 
-	public String getServiceName() {
-		return serviceName;
-	}
+        ByteArrayEntity entity = new ByteArrayEntity(requestObject.getSoapBody().getBytes(StandardCharsets.UTF_8));
+        entity.setChunked(false);
+        post.setEntity(entity);
 
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
-	}
+        return post;
+    }
+
+    private void populateCommonData(RequestObject requestObject) throws WebServiceException {
+        if (requestObject.useServiceInfoFromWsdl()) {
+            populateDataFromWsdl(requestObject);
+        } else {
+            endpoint = requestObject.getSoapServiceEndpoint();
+        }
+    }
+
+    private void populateDataFromWsdl(RequestObject requestObject) throws WebServiceException {
+        try {
+            WsdlParser parser = getWsdlParser(requestObject);
+            String requestMethod = requestObject.getSoapRequestMethod();
+            endpoint = parser.getPortAddressLocation(requestMethod);
+            BindingOperationImpl bindingOperation = parser.getBindingOperationByRequestMethodAndName(requestMethod,
+                    requestObject.getSoapServiceFunction());
+            actionUri = parser.getOperationURI(bindingOperation, requestMethod);
+        } catch (IOException | GeneralSecurityException | WSDLException e) {
+            throw new WebServiceException(e);
+        }
+    }
+
+    private WsdlParser getWsdlParser(RequestObject requestObject) throws IOException, GeneralSecurityException {
+        String wsdlLocation = requestObject.getWsdlAddress();
+        Map<String, Object> wsdlLocatorParams = new HashMap<>();
+        wsdlLocatorParams.put(WsdlLocatorParams.PROXY, proxyInformation);
+        wsdlLocatorParams.put(WsdlLocatorParams.HTTP_HEADERS, getHttpHeaderMap(requestObject));
+        WsdlDefinitionLocator wsdlLocator = WsdlLocatorProvider.getLocator(wsdlLocation, wsdlLocatorParams);
+        return new WsdlParser(wsdlLocator);
+    }
+
+    private Map<String, Object> getHttpHeaderMap(RequestObject requestObject)
+            throws GeneralSecurityException, IOException {
+        Map<String, Object> headers = getRequestHeaders(requestObject)
+                .stream()
+                .collect(Collectors.toMap(h -> h.getName(), h -> h.getValue()));
+        return headers;
+    }
+
+    @Override
+    protected String getResponseContentType(HttpResponse httpResponse) {
+        return APPLICATION_XML;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
 }

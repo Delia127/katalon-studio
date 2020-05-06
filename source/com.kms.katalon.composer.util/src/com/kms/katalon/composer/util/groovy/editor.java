@@ -205,14 +205,14 @@ public class editor {
         insertEdit.apply(document);
     }
     
-	public static void deleteScript(GroovyEditor editor, int offset, int length)
-			throws MalformedTreeException, BadLocationException {
+    public static void deleteScript(GroovyEditor editor, int offset, int length)
+            throws MalformedTreeException, BadLocationException {
 
-		IEditorInput editorInput = editor.getEditorInput();
-		IDocument document = editor.getDocumentProvider().getDocument(editorInput);
+        IEditorInput editorInput = editor.getEditorInput();
+        IDocument document = editor.getDocumentProvider().getDocument(editorInput);
 
-		DeleteEdit deleteEdit = new DeleteEdit(offset, length);
-		deleteEdit.apply(document);
-	}
+        DeleteEdit deleteEdit = new DeleteEdit(offset, length);
+        deleteEdit.apply(document);
+    }
 
 }

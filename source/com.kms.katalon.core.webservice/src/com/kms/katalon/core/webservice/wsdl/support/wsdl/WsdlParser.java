@@ -81,23 +81,23 @@ public class WsdlParser {
     private Map<String, PortImpl> portMap;
 
     private WSDLLocator wsdlLocator;
-    
+
     public WsdlParser(WsdlDefinitionLocator locator) {
-    	this.wsdlLocator = locator;
+        this.wsdlLocator = locator;
     }
-    
+
     public Definition getDefinition() throws WSDLException {
         if (definition != null) {
-        	return definition;
+            return definition;
         }
-        
+
         WSDLFactory factory = WSDLFactory.newInstance();
         WSDLReader reader = factory.newWSDLReader();
         reader.setFeature("javax.wsdl.verbose", false);
         reader.setFeature("javax.wsdl.importDocuments", true);
-        
+
         definition = reader.readWSDL(wsdlLocator);
-        
+
         return definition;
     }
 
@@ -118,7 +118,7 @@ public class WsdlParser {
 
         return new ArrayList<PortImpl>(ports);
     }
-    
+
     public ServiceImpl getService() throws WSDLException {
         Collection<ServiceImpl> services = getDefinition().getAllServices().values();
         if (services.isEmpty()) {
@@ -159,19 +159,16 @@ public class WsdlParser {
         getBindingOperationsByRequestMethod(requestMethod).forEach(o -> operations.add(o.getOperation()));
         return operations;
     }
-    
-	public BindingOperationImpl getBindingOperationByRequestMethodAndName(String requestMethod, String name)
-			throws WSDLException {
-		if (StringUtils.isBlank(requestMethod) || StringUtils.isBlank(name)) {
-			return null;
-		}
-		
-		return getBindingOperationsByRequestMethod(requestMethod)
-				.stream()
-				.filter(bo -> name.equals(bo.getName()))
-				.findAny()
-				.orElse(null);
-	}
+
+    public BindingOperationImpl getBindingOperationByRequestMethodAndName(String requestMethod, String name)
+            throws WSDLException {
+        if (StringUtils.isBlank(requestMethod) || StringUtils.isBlank(name)) {
+            return null;
+        }
+
+        return getBindingOperationsByRequestMethod(requestMethod).stream().filter(bo -> name.equals(bo.getName()))
+                .findAny().orElse(null);
+    }
 
     public List<BindingOperationImpl> getBindingOperationsByRequestMethod(String requestMethod) throws WSDLException {
         PortImpl port = getPortMap().get(requestMethod);
@@ -185,99 +182,97 @@ public class WsdlParser {
     }
 
     public Operation getOperationByRequestMethodNName(String requestMethod, String operationName) throws WSDLException {
-        return getOperationsByRequestMethod(requestMethod).stream()
-                .filter(o -> o.getName().equals(operationName))
-                .findFirst()
-                .get();
+        return getOperationsByRequestMethod(requestMethod).stream().filter(o -> o.getName().equals(operationName))
+                .findFirst().get();
     }
 
-	public String getOperationURI(BindingOperationImpl bindingOperation, String requestMethod) {
-		if (bindingOperation == null) {
-			return null;
-		}
+    public String getOperationURI(BindingOperationImpl bindingOperation, String requestMethod) {
+        if (bindingOperation == null) {
+            return null;
+        }
 
-		if (StringUtils.isBlank(requestMethod)) {
-			return null;
-		}
+        if (StringUtils.isBlank(requestMethod)) {
+            return null;
+        }
 
-		List<?> extensibilityElements = bindingOperation.getExtensibilityElements();
-		switch (requestMethod.toUpperCase()) {
-			case SOAP: {
-				SOAPOperation operation = getExtensiblityElement(extensibilityElements, SOAPOperation.class);
-				return operation.getSoapActionURI();
-			}
-			case SOAP12: {
-				SOAP12Operation operation = getExtensiblityElement(extensibilityElements, SOAP12Operation.class);
-				return operation.getSoapActionURI();
-			}
-			case GET:
-			case POST: {
-				HTTPOperation operation = getExtensiblityElement(extensibilityElements, HTTPOperation.class);
-				return operation.getLocationURI();
-			}
-			default: {
-				return null;
-			}
-		}
-	}
+        List<?> extensibilityElements = bindingOperation.getExtensibilityElements();
+        switch (requestMethod.toUpperCase()) {
+        case SOAP: {
+            SOAPOperation operation = getExtensiblityElement(extensibilityElements, SOAPOperation.class);
+            return operation.getSoapActionURI();
+        }
+        case SOAP12: {
+            SOAP12Operation operation = getExtensiblityElement(extensibilityElements, SOAP12Operation.class);
+            return operation.getSoapActionURI();
+        }
+        case GET:
+        case POST: {
+            HTTPOperation operation = getExtensiblityElement(extensibilityElements, HTTPOperation.class);
+            return operation.getLocationURI();
+        }
+        default: {
+            return null;
+        }
+        }
+    }
 
-	public String getPortAddressLocation(String requestMethod) throws WSDLException {
-		if (StringUtils.isBlank(requestMethod)) {
-			return null;
-		}
-		
-		PortImpl port = getPortByRequestMethod(requestMethod);
-		if (port == null) {
-			return null;
-		}
+    public String getPortAddressLocation(String requestMethod) throws WSDLException {
+        if (StringUtils.isBlank(requestMethod)) {
+            return null;
+        }
 
-		List<?> extensibilityElements = port.getExtensibilityElements();
+        PortImpl port = getPortByRequestMethod(requestMethod);
+        if (port == null) {
+            return null;
+        }
 
-		switch (requestMethod.toUpperCase()) {
-			case SOAP: {
-				SOAPAddress address = getExtensiblityElement(extensibilityElements, SOAPAddress.class);
-				return address.getLocationURI();
-			}
-			case SOAP12: {
-				SOAP12Address address = getExtensiblityElement(extensibilityElements, SOAP12Address.class);
-				return address.getLocationURI();
-			}
-			default: {
-				HTTPAddress address = getExtensiblityElement(extensibilityElements, HTTPAddress.class);
-				return address.getLocationURI();
-			}
-		}
-	}
+        List<?> extensibilityElements = port.getExtensibilityElements();
 
-	public Map<String, PortImpl> getPortMap() throws WSDLException {
-		if (portMap == null) {
-			portMap = new HashMap<>();
-			for (PortImpl p : getPorts()) {
-				Object binding = getBindingObject(p.getBinding());
+        switch (requestMethod.toUpperCase()) {
+        case SOAP: {
+            SOAPAddress address = getExtensiblityElement(extensibilityElements, SOAPAddress.class);
+            return address.getLocationURI();
+        }
+        case SOAP12: {
+            SOAP12Address address = getExtensiblityElement(extensibilityElements, SOAP12Address.class);
+            return address.getLocationURI();
+        }
+        default: {
+            HTTPAddress address = getExtensiblityElement(extensibilityElements, HTTPAddress.class);
+            return address.getLocationURI();
+        }
+        }
+    }
 
-				if (binding == null) {
-					continue;
-				}
+    public Map<String, PortImpl> getPortMap() throws WSDLException {
+        if (portMap == null) {
+            portMap = new HashMap<>();
+            for (PortImpl p : getPorts()) {
+                Object binding = getBindingObject(p.getBinding());
 
-				if (binding instanceof SOAPBindingImpl) {
-					portMap.put(SOAP, p);
-					continue;
-				}
+                if (binding == null) {
+                    continue;
+                }
 
-				if (binding instanceof SOAP12BindingImpl) {
-					portMap.put(SOAP12, p);
-					continue;
-				}
+                if (binding instanceof SOAPBindingImpl) {
+                    portMap.put(SOAP, p);
+                    continue;
+                }
 
-				if (binding instanceof HTTPBindingImpl) {
-					portMap.put(((HTTPBindingImpl) binding).getVerb().toUpperCase(), p);
-					continue;
-				}
-			}
-		}
-		return portMap;
-	}
-    
+                if (binding instanceof SOAP12BindingImpl) {
+                    portMap.put(SOAP12, p);
+                    continue;
+                }
+
+                if (binding instanceof HTTPBindingImpl) {
+                    portMap.put(((HTTPBindingImpl) binding).getVerb().toUpperCase(), p);
+                    continue;
+                }
+            }
+        }
+        return portMap;
+    }
+
     private static Object getBindingObject(Binding binding) {
         List<?> extensibilityElements = binding.getExtensibilityElements();
         Object objBinding = getExtensiblityElement(extensibilityElements, SOAPBinding.class);
@@ -289,16 +284,17 @@ public class WsdlParser {
         }
         return objBinding;
     }
-    
+
     public static <T extends ExtensibilityElement> T getExtensiblityElement(List<?> list, Class<T> clazz) {
         List<T> elements = getExtensiblityElements(list, clazz);
         return elements.isEmpty() ? null : elements.get(0);
     }
 
-    public static <T extends ExtensibilityElement> List<T> getExtensiblityElements(@SuppressWarnings("rawtypes") List list, Class<T> clazz) {
+    public static <T extends ExtensibilityElement> List<T> getExtensiblityElements(
+            @SuppressWarnings("rawtypes") List list, Class<T> clazz) {
         List<T> result = new ArrayList<T>();
 
-        for (Iterator<T> i = list.iterator(); i.hasNext(); ) {
+        for (Iterator< T>i = list.iterator(); i.hasNext();) {
             T elm = i.next();
             if (clazz.isAssignableFrom(elm.getClass())) {
                 result.add(elm);
@@ -308,54 +304,50 @@ public class WsdlParser {
         return result;
     }
 
-	private Map<String, List<String>> getParamMap(){
-    	Map<String, List<String>> paramMap = new HashMap<>();
-    	try{
-	    	List<String> operationNames = getOperationNamesByRequestMethod(SOAP);
+    private Map<String, List<String>> getParamMap() {
+        Map<String, List<String>> paramMap = new HashMap<>();
+        try {
+            List<String> operationNames = getOperationNamesByRequestMethod(SOAP);
             Types types = getDefinition().getTypes();
-        	for(Object obj : SafeHelper.safeList(types.getExtensibilityElements())){
-        		if(obj != null && obj instanceof Schema){
-        			Schema schema = (Schema) obj;
-        			NodeList nodeList = schema.getElement().getChildNodes();
-        			if(nodeList != null){
-            			for(String name: operationNames){
-            			    if (StringUtils.isEmpty(name)) {
-            			        continue;
-            			    }
-            				List<String> params =
-                			XmlHelper.wrapNodeList(nodeList).stream()
-                			.filter(a -> a.getNodeType() == Node.ELEMENT_NODE)
-                			.filter(a -> {
-                			    Node node = a.getAttributes().getNamedItem("name");
-                			    return node != null && node.getNodeValue().equals(name);
-                			})
-                			.flatMap(WsdlParser::flatten)
-                			.filter(a -> a.getNodeType() == Node.ELEMENT_NODE)
-                			.filter(a -> a.getAttributes().getNamedItem("name") != null)
-                			.filter(a -> !a.getAttributes().getNamedItem("name").getNodeValue().equals(name))
-                			.map(a -> a.getAttributes().getNamedItem("name").getNodeValue())
-                			.filter(a -> a != null)
-                			.collect(Collectors.toList());
-                			paramMap.put(name, params);
-            			}
-        			}
-        		}
-        	}
-        	return paramMap;
-    	} catch (Exception ex){
-    	    return Collections.emptyMap();
-    	}
-    }
-	
-    private static Stream<Node> flatten(Node node){
-    	return Stream.concat(Stream.of(node),
-    			XmlHelper.wrapNodeList(node.getChildNodes()).stream().flatMap(WsdlParser::flatten));
+            for (Object obj : SafeHelper.safeList(types.getExtensibilityElements())) {
+                if (obj != null && obj instanceof Schema) {
+                    Schema schema = (Schema) obj;
+                    NodeList nodeList = schema.getElement().getChildNodes();
+                    if (nodeList != null) {
+                        for (String name : operationNames) {
+                            if (StringUtils.isEmpty(name)) {
+                                continue;
+                            }
+                            List<String> params = XmlHelper.wrapNodeList(nodeList).stream()
+                                    .filter(a -> a.getNodeType() == Node.ELEMENT_NODE).filter(a -> {
+                                        Node node = a.getAttributes().getNamedItem("name");
+                                        return node != null && node.getNodeValue().equals(name);
+                                    }).flatMap(WsdlParser::flatten).filter(a -> a.getNodeType() == Node.ELEMENT_NODE)
+                                    .filter(a -> a.getAttributes().getNamedItem("name") != null)
+                                    .filter(a -> !a.getAttributes().getNamedItem("name").getNodeValue().equals(name))
+                                    .map(a -> a.getAttributes().getNamedItem("name").getNodeValue())
+                                    .filter(a -> a != null).collect(Collectors.toList());
+                            paramMap.put(name, params);
+                        }
+                    }
+                }
+            }
+            return paramMap;
+        } catch (Exception ex) {
+            return Collections.emptyMap();
+        }
     }
 
-    public String generateInputSOAPMessage(String requestMethod, String operationName) throws WSDLException, SOAPException, IOException {
+    private static Stream<Node> flatten(Node node) {
+        return Stream.concat(Stream.of(node),
+                XmlHelper.wrapNodeList(node.getChildNodes()).stream().flatMap(WsdlParser::flatten));
+    }
+
+    public String generateInputSOAPMessage(String requestMethod, String operationName)
+            throws WSDLException, SOAPException, IOException {
         try {
-        	String wsdlLocation = wsdlLocator.getBaseURI();
-        	Wsdl wsdl = Wsdl.parse(wsdlLocation);
+            String wsdlLocation = wsdlLocator.getBaseURI();
+            Wsdl wsdl = Wsdl.parse(wsdlLocation);
             BindingImpl binding = getBindingByRequestMethod(requestMethod);
             SoapBuilder builder = wsdl.binding().name(binding.getQName()).find();
             SoapOperation operation = builder.operation().name(operationName).find();
@@ -363,12 +355,10 @@ public class WsdlParser {
             return message;
         } catch (Exception e) {
             LogUtil.logError(e);
-            //fall back to old mechanism to generate input message in case of exception
-            BindingOperationImpl bindingOperation = getBindingOperationsByRequestMethod(requestMethod)
-              .stream()
-              .filter(bo -> bo.getName().equals(operationName))
-              .findFirst()
-              .get();
+            // fall back to old mechanism to generate input message in case of
+            // exception
+            BindingOperationImpl bindingOperation = getBindingOperationsByRequestMethod(requestMethod).stream()
+                    .filter(bo -> bo.getName().equals(operationName)).findFirst().get();
             String operationURI = getOperationURI(bindingOperation, requestMethod);
 
             String namespaceURI = getService().getQName().getNamespaceURI();
@@ -379,7 +369,7 @@ public class WsdlParser {
             return new String(out.toByteArray(), StandardCharsets.UTF_8);
         }
     }
-    
+
     public SOAPMessage generateInputSOAPMessageOldMechanism(String requestMethod, String namespaceURI, String actionUri,
             String operationName, Map<String, List<String>> paramMap) throws SOAPException, WSDLException {
         SOAPMessage soapMessage = MessageFactory.newInstance().createMessage();
@@ -391,21 +381,21 @@ public class WsdlParser {
 
         // SOAP Body
         SOAPElement soapBodyElemment = envelope.getBody().addChildElement(operationName, THIS_NAMESPACE);
-        if(paramMap.get(operationName) != null){
-            
-        	List<String> params = paramMap.get(operationName);
-            for(String param: params){
-            	soapBodyElemment.addChildElement(param, THIS_NAMESPACE).addTextNode("?");
+        if (paramMap.get(operationName) != null) {
+
+            List<String> params = paramMap.get(operationName);
+            for (String param : params) {
+                soapBodyElemment.addChildElement(param, THIS_NAMESPACE).addTextNode("?");
             }
-            
+
         } else {
             // Input Parameters
             Input input = getOperationByRequestMethodNName(requestMethod, operationName).getInput();
-			Collection<PartImpl> parts = input.getMessage().getParts().values();
-            
+            Collection<PartImpl> parts = input.getMessage().getParts().values();
+
             for (PartImpl part : parts) {
                 soapBodyElemment.addChildElement(part.getName(), THIS_NAMESPACE).addTextNode("?");
-            }   
+            }
         }
 
         MimeHeaders headers = soapMessage.getMimeHeaders();
