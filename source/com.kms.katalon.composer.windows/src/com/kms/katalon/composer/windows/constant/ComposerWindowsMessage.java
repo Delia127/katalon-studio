@@ -9,6 +9,8 @@ public class ComposerWindowsMessage {
 
     public static String NewWindowsElementDialog_MSG_CREATE_NEW_WINDOWS_OBJECT;
 
+    public static String DLG_TITLE_KATALON_NATIVE_RECORDER;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages("com.kms.katalon.composer.windows.constant.composerWindowsMessage", ComposerWindowsMessage.class);

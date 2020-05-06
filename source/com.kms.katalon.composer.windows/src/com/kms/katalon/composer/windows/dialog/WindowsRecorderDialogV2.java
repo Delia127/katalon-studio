@@ -48,6 +48,7 @@ import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.windows.action.WindowsAction;
 import com.kms.katalon.composer.windows.action.WindowsActionMapping;
+import com.kms.katalon.composer.windows.constant.ComposerWindowsMessage;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.nativerecorder.NativeRecorderDriver;
 import com.kms.katalon.composer.windows.record.RecordedWindowsElementLabelProvider;
@@ -92,6 +93,11 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         super(parentShell);
         socketServer.start();
         startNativeRecorderDriver();
+    }
+
+    @Override
+    public String getDialogTitle() {
+        return ComposerWindowsMessage.DLG_TITLE_KATALON_NATIVE_RECORDER;
     }
 
     @Override
