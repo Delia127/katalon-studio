@@ -4,8 +4,7 @@ import groovy.transform.CompileStatic
 import io.appium.java_client.windows.WindowsDriver
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
-import java.time.Duration
+import java.time.Duration;
 
 import org.apache.commons.io.FileUtils
 import org.openqa.selenium.Alert
@@ -14,7 +13,6 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.NoSuchWindowException
-import org.openqa.selenium.NotFoundException
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebDriverException
@@ -48,11 +46,11 @@ import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.helper.KeywordHelper
 
-@Action(value = "verifyElementNotPresent")
-public class VerifyElementNotPresentKeyword extends AbstractKeyword {
-    
-    private KeywordLogger logger = KeywordLogger.getInstance(VerifyElementNotPresentKeyword.class)
-    
+@Action(value = "waitForElementPresent")
+public class WaitForElementPresentKeyword extends AbstractKeyword {
+
+    private KeywordLogger logger = KeywordLogger.getInstance(WaitForElementPresentKeyword.class)
+
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT
@@ -63,43 +61,29 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
         WindowsTestObject testObject = (WindowsTestObject) params[0]
         int timeOut = (int) params[1]
         FailureHandling flowControl = (FailureHandling)(params.length > 2 && params[2] instanceof FailureHandling ? params[2] : RunConfiguration.getDefaultFailureHandling())
-        return verifyElementNotPresent(testObject,timeOut,flowControl)
+        return verifyElementPresent(testObject,timeOut,flowControl)
     }
 
-    public boolean verifyElementNotPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
+    public boolean verifyElementPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            boolean elementNotFound = false;
-            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
-            if (windowsDriver == null) {
-                KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
-            }
-            timeOut = KeywordHelper.checkTimeout(timeOut)
             try {
-                elementNotFound = new FluentWait<WindowsTestObject>(testObject)
-                .withTimeout(Duration.ofSeconds(timeOut))
-                .pollingEvery(Duration.ofMillis(50))
-                .until(new Function<WindowsTestObject, Boolean>() {
+                WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
+                if (windowsDriver == null) {
+                    KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
+                }
 
-                    @Override
-                    public Boolean apply(WindowsTestObject to) {
-                        try {
-                            WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(to, timeOut)
-                            return false
-                        } catch (NoSuchElementException exception) {
-                            return true
-                        }
-                    }
-                })
-            } catch (TimeoutException exception) {
-                /// timeOut, do nothing
-            }
-            if (elementNotFound){
-                logger.logPassed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut))
+                timeOut = KeywordHelper.checkTimeout(timeOut)
+
+                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut);
+                
+                if (foundElement != null){
+                    logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()));
+                }
                 return true
-            } else {
-                logger.logWarning(String.format("Object '%s' is present within %s second(s)", testObject.getObjectId(), timeOut))
+            } catch (NoSuchElementException exception) {
+                logger.logWarning(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
                 return false
             }
-        }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s' is not present", testObject.getObjectId()) : "Unable to verify object is present or not")
+        }, flowControl, (testObject != null) ? String.format("Unable to verify object ''{0}'' is present", testObject.getObjectId()) : "Unable to verify object is present")
+        }
     }
-}

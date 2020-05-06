@@ -11,12 +11,10 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.core.keyword.internal.KeywordExecutor;
 import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.WindowsTestObject;
 import com.kms.katalon.core.windows.constants.StringConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 
-import groovy.transform.CompileStatic;
 import io.appium.java_client.windows.WindowsDriver;
 
 public class WindowsBuiltinKeywords extends BuiltinKeywords {
@@ -1060,5 +1058,83 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = "Element")
     public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName, String attributeValue, int timeOut) {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeOut);
+    }
+    
+    /**
+     * Wait for the given element does not present on the opening Windows application with a specific amount of time
+     *
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find the opening application.
+     * @param timeOut
+     *          system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * </p>
+     * @return true if element does not present; otherwise, false
+     * @throws StepFailedException
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementNotPresent", windowsObject, timeOut, flowControl);
+    }
+    
+    /**
+     * Wait for the given element does not present on the opening Windows application with a specific amount of time
+     *
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find the opening application.
+     * @param timeOut
+     *          system will wait at most timeout (seconds) to return result
+     * @return true if element does not present; otherwise, false
+     * @throws StepFailedException
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeOut) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementNotPresent", windowsObject, timeOut);
+    }
+    
+    /**
+     * Wait for the given element presents on the opening Windows application with a specific amount of time
+     *
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find the opening application.
+     * @param timeOut
+     *          system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * </p>
+     * @return true if element presents; otherwise, false
+     * @throws StepFailedException
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementPresent", windowsObject, timeOut, flowControl);
+    }
+    
+    /**
+     * Wait for the given element presents on the opening Windows application with a specific amount of time
+     *
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find the opening application.
+     * @param timeOut
+     *          system will wait at most timeout (seconds) to return result
+     * @return true if element presents; otherwise, false
+     * @throws StepFailedException
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeOut) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementPresent", windowsObject, timeOut);
     }
 }

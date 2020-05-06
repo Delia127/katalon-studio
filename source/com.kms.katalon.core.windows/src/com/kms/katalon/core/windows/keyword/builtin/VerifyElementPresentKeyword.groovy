@@ -65,19 +65,23 @@ public class VerifyElementPresentKeyword extends AbstractKeyword {
 
     public boolean verifyElementPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
-            if (windowsDriver == null) {
-                KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
-            }
-            
-            timeOut = KeywordHelper.checkTimeout(timeOut)
-            
-            WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut);
-            if (foundElement != null){
-                logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()));
+            try{
+                WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
+                if (windowsDriver == null) {
+                    KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
+                }
+                
+                timeOut = KeywordHelper.checkTimeout(timeOut)
+                
+                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut)
+                if (foundElement != null){
+                    logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()))
+                }
                 return true;
+            } catch (NoSuchElementException exception){
+                KeywordMain.stepFailed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut))
             }
-            return false;
-        }, flowControl, (testObject != null) ? String.format("Unable to verify object ''{0}'' is present", testObject.getObjectId()) : "Unable to verify object is present")
+            return false
+        }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s'' is present", testObject.getObjectId()) : "Unable to verify object is present")
     }
 }
