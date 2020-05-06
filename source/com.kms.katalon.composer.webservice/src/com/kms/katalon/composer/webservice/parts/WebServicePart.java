@@ -1555,7 +1555,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                         monitor.beginTask("Authenticating ...", IProgressMonitor.UNKNOWN);
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(wsObj,
                                 ProjectController.getInstance().getCurrentProject().getFolderLocation(),
-                                ProxyPreferences.getProxyInformation(),
+                                ProxyPreferences.getSystemProxyInformation(),
                                 Collections.<String, Object> unmodifiableMap(Collections.emptyMap()), false);
                         String bodyContent = responseObject.getResponseText();
                         Display.getDefault().asyncExec(new Runnable() {

@@ -74,7 +74,7 @@ public class ProjectController extends EntityController {
         return newProject;
     }
 
-    public ProjectEntity openProjectForUI(String projectPk, boolean isEnterpriseAccount, IProgressMonitor monitor) throws Exception {
+    public ProjectEntity openProjectForUI(String projectPk, boolean allowSourceAttachment, IProgressMonitor monitor) throws Exception {
         try {
             if (monitor == null) {
                 monitor = new NullProgressMonitor();
@@ -100,7 +100,7 @@ public class ProjectController extends EntityController {
                     addJdtSettings(project);
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
-                            isEnterpriseAccount,
+                            allowSourceAttachment,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                     updateProjectClassLoader(project);
                 } catch (JavaModelException e) {
@@ -108,7 +108,7 @@ public class ProjectController extends EntityController {
                     cleanupGroovyProject(project);
                     GroovyUtil.initGroovyProject(project,
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
-                            isEnterpriseAccount,
+                            allowSourceAttachment,
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 }
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,

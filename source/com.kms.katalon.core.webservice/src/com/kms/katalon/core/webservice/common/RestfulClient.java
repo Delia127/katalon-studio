@@ -14,7 +14,7 @@ import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
 public class RestfulClient extends BasicRequestor {
-    
+
     public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
         super(projectDir, proxyInfomation);
     }

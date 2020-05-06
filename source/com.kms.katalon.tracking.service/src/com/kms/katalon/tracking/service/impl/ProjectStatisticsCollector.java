@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.application.utils.FileUtil;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.FolderController;
@@ -33,9 +32,11 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
-import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 import com.kms.katalon.logging.LogUtil;
@@ -44,7 +45,6 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.model.ProjectStatistics;
 import com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
@@ -386,8 +386,10 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     }
     
     private boolean getLogTestStepsEnabled() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
-        boolean doLogTestStep = LicenseUtil.isNotFreeLicense() ? store.getLogTestSteps().booleanValue() : true;
+        boolean doLogTestStep = featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION)
+                ? store.getLogTestSteps().booleanValue() : true;
         return doLogTestStep;
     }
     
@@ -412,10 +414,11 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     }
     
     private boolean getAllowUsageTracking() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         IPreferenceStore prefStore = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
         boolean allowUsageTracking = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)
                 ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING) : true;
-        if (LicenseUtil.isNotFreeLicense()) {
+        if (featureService.canUse(KSEFeature.CONFIGURE_USAGE_TRACKING)) {
             return allowUsageTracking;
         }
         return true;

@@ -75,6 +75,7 @@ import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestServicePart extends WebServicePart {
 
+<<<<<<< HEAD
 	protected HttpBodyEditorComposite requestBodyEditor;
 
 	private URLBuilder urlBuilder;

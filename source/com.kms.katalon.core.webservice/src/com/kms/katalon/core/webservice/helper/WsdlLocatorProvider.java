@@ -136,7 +136,7 @@ public class WsdlLocatorProvider {
             }
 
             if (proxyInformation == null) {
-                String proxyJson = System.getProperty(SystemProperties.PROXY);
+                String proxyJson = System.getProperty(SystemProperties.SYSTEM_PROXY);
                 proxyInformation = JsonUtil.fromJson(proxyJson, ProxyInformation.class);
             }
         }

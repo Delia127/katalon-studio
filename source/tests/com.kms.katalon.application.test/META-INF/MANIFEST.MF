@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Application Test
+Bundle-SymbolicName: com.kms.katalon.application.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Fragment-Host: com.kms.katalon.application;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit,
+ com.kms.katalon.mockito,
+ org.hamcrest.library,
+ org.eclipse.persistence.eclipselink

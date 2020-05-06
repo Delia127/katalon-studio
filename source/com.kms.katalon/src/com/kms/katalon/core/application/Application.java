@@ -166,7 +166,7 @@ public class Application implements IApplication {
     private int runGUI() {
         ApplicationRunningMode.set(RunningMode.GUI);
         System.setProperty(SystemProperties.KATALON_VERSION, VersionUtil.getCurrentVersion().getVersion());
-        System.setProperty(SystemProperties.PROXY, JsonUtil.toJson(ProxyPreferences.getProxyInformation()));
+        System.setProperty(SystemProperties.SYSTEM_PROXY, JsonUtil.toJson(ProxyPreferences.getProxyInformation()));
         int returnCode = internalRunGUI();
         if (returnCode == PlatformUI.RETURN_RESTART) {
             return IApplication.EXIT_RESTART;

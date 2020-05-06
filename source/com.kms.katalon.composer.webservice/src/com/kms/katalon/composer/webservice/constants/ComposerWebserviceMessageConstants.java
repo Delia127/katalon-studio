@@ -311,6 +311,16 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String CB_FOLLOW_REDIRECTS; 
     
+    public static String FormDataBodyEditor_COL_CONTENT_TYPE;
+
+    public static String FormDataBodyEditor_COL_NAME;
+
+    public static String FormDataBodyEditor_COL_TYPE;
+
+    public static String FormDataBodyEditor_COL_VALUE;
+
+    public static String FormDataBodyEditor_CONTENT_TYPE_AUTO;
+
     public static String PREF_WARN_CLIENT_CERT;
     
     static {
