@@ -44,6 +44,7 @@ import com.kms.katalon.core.util.internal.PathUtil
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.helper.KeywordHelper
+import com.kms.katalon.core.windows.keyword.exception.WebElementNotFoundException
 
 @Action(value = "verifyElementNotPresent")
 public class VerifyElementNotPresentKeyword extends AbstractKeyword {
@@ -60,10 +61,10 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
         WindowsTestObject testObject = (WindowsTestObject) params[0]
         int timeOut = (int) params[1]
         FailureHandling flowControl = (FailureHandling)(params.length > 2 && params[2] instanceof FailureHandling ? params[2] : RunConfiguration.getDefaultFailureHandling())
-        return verifyElementPresent(testObject,timeOut,flowControl)
+        return verifyElementNotPresent(testObject,timeOut,flowControl)
     }
 
-    public boolean verifyElementPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
+    public boolean verifyElementNotPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
@@ -77,7 +78,10 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
                 logger.logPassed(String.format("Object '%s' is not present", testObject.getObjectId()));
                 return true;
             }
-            return false;
-        }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s' is present", testObject.getObjectId()) : "Unable to verify object is present")
+            else{
+                KeywordMain.stepFailed(String.format("Object '%s' is present after %s second(s)", testObject.getObjectId(), timeOut), flowControl)
+                return false;
+            }
+        }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s' is not present", testObject.getObjectId()) : "Unable to verify object is present or not")
     }
 }
