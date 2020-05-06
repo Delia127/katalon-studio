@@ -429,7 +429,12 @@ public class NotificationToolControl {
     
     private List<KatalonNotificationContent> getKatalonNotificationContent() {
         try {
-            URI uri = new URIBuilder().setPath("https://backend.katalon.com" + "/katalon-notifications").build();
+            String noti_server_url = ApplicationInfo.getAppProperty("notification_server");
+            if (noti_server_url == null) {
+                noti_server_url = "https://backend.katalon.com";
+                ApplicationInfo.setAppProperty("notification_server", "https://backend.katalon.com", true);
+            }
+            URI uri = new URIBuilder().setPath(noti_server_url + "/katalon-notifications").build();
             HttpGet httpPost = new HttpGet(uri);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
