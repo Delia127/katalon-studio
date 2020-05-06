@@ -3916,7 +3916,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
      * </p>
      * 
-     * @since 7.3.0
+     * @since 7.5.0
+     * @param to TestObject The drop zone on which drag-and-drop can be done
+     * @param filePath The absolute path to the file to be uploaded
+     * @param flowControl failureHandling 
+     * @return 
      * @throws StepFailedException
      */
     @CompileStatic
@@ -3932,7 +3936,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
      * </p>
      *
-     * @since 7.3.0
+     * @since 7.5.0
+     * @param to TestObject The drop zone on which drag-and-drop can be done
+     * @param filePath String The absolute path to the file to be uploaded
+     * @return 
      * @throws StepFailedException
      */
     @CompileStatic
@@ -3949,7 +3956,9 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
      * </p>
      *
-     * @since 7.3.0
+     * @since 7.5.0
+     * @param filePath String The absolute path to the file to be uploaded
+     * @return 
      * @throws StepFailedException
      */
     @CompileStatic
@@ -3967,7 +3976,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
      * </p>
      *
-     * @since 7.3.0
+     * @since 7.5.0
+     * @param filePath String The absolute path to the file to be uploaded
+     * @param flowControl failureHandling 
+     * @return 
      * @throws StepFailedException
      */
     @CompileStatic
