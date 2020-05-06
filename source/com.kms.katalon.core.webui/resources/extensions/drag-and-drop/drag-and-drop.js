@@ -4,10 +4,6 @@ var args = arguments,
   offsetY = args[2],
   doc = (element != null ? element.ownerDocument : document) || document;
 
-  ["dragenter", "dragover", "drop"].forEach(ev => window.addEventListener(ev, e => {
-    console.log(e);
-  }))
-
 // Default drop zone to the body
 target = document.body;
 
