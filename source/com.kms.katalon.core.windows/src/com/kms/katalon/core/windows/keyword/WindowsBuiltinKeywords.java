@@ -942,7 +942,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Verify if the given element presents on the Windows application
+     * Verify if the given element presents on the opening Windows application
      *
      * @param windowsObject
      *      An object that describes locator and locator strategy to find the opening application.
@@ -966,7 +966,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Verify if the given element presents on the Windows application
+     * Verify if the given element presents on the opening Windows application
      *
      * @param windowsObject
      *      An object that describes locator and locator strategy to find the opening application.
@@ -978,6 +978,45 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = "Element")
     public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeOut) throws StepFailedException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementPresent", windowsObject, timeOut);
+    }
+    
+    /**
+     * Verify if the given element does not present on the opening Windows application
+     *
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find the opening application.
+     * @param timeOut
+     *          system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <p>
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * </p>
+     * @return true if element does not present; otherwise, false
+     * @throws StepFailedException
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementNotPresent", windowsObject, timeOut, flowControl);
+    }
+    
+    /**
+     * Verify if the given element does not present on the opening Windows application
+     *
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find the opening application.
+     * @param timeOut
+     *          system will wait at most timeout (seconds) to return result
+     * @return true if element does not present; otherwise, false
+     * @throws StepFailedException
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeOut) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementNotPresent", windowsObject, timeOut);
     }
 
     /**
