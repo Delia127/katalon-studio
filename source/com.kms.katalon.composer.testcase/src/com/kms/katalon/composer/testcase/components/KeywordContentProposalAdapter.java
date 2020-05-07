@@ -236,7 +236,7 @@ public class KeywordContentProposalAdapter {
      */
     private boolean watchModify = false;
 
-    private KeywordNodeTooltip tooltip;
+    private BuiltinKeywordNodeTooltip tooltip;
 
     public KeywordContentProposalAdapter(Control control, IControlContentAdapter controlContentAdapter,
             IContentProposalProvider proposalProvider, KeyStroke keyStroke, char[] autoActivationCharacters) {
@@ -246,7 +246,7 @@ public class KeywordContentProposalAdapter {
         Assert.isNotNull(controlContentAdapter);
         this.control = control;
         this.controlContentAdapter = controlContentAdapter;
-        tooltip = new KeywordNodeTooltip(control);
+        tooltip = new BuiltinKeywordNodeTooltip(control);
         
         // The rest of these may be null
         this.proposalProvider = proposalProvider;

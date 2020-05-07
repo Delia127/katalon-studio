@@ -315,7 +315,7 @@ public class TooltipCCombo extends CCombo {
     private class TooltipHandler implements MouseMoveListener, SelectionListener, MouseTrackListener {
         private int previousSelectionIdx = -1;
 
-        private KeywordNodeTooltip tooltip = null;
+        private BuiltinKeywordNodeTooltip tooltip = null;
 
         private List list;
 
@@ -330,7 +330,7 @@ public class TooltipCCombo extends CCombo {
             this.list.addMouseTrackListener(this);
             
             this.textLookup = textLookup;
-            this.tooltip = new KeywordNodeTooltip(list);
+            this.tooltip = new BuiltinKeywordNodeTooltip(list);
             // show tooltip if currently an item is selected
             if (this.list.getSelectionIndex() != -1) {
                 updateTooltip(this.list.getSelectionIndex());

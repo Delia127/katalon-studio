@@ -94,6 +94,8 @@ public class GroovyUtil {
     private static final String TEST_LISTENERS_ROOT_FOLDER_NAME = "Test Listeners";
 
     private static final String GLOBAL_VARIABLE_ROOT_FOLDER_NAME = "Profiles";
+    
+    private static final String KEYWORD_JAVADOC_FOLDER_NAME = "Keywords Javadoc";
 
     private static final String GROOVY_NATURE = "org.eclipse.jdt.groovy.core.groovyNature";
 
@@ -118,9 +120,13 @@ public class GroovyUtil {
     private static final String API_SOURCE_EXTENSION = "-sources.jar";
 
     public static IProject getGroovyProject(ProjectEntity projectEntity) {
+        return getGroovyProject(projectEntity.getLocation());
+    }
+    
+    public static IProject getGroovyProject(String projectLocation) {
         return ResourcesPlugin.getWorkspace()
                 .getRoot()
-                .getProject(getProjectNameIdFromLocation(projectEntity.getLocation()));
+                .getProject(getProjectNameIdFromLocation(projectLocation));
     }
 
     private static String getProjectNameIdFromLocation(String location) {
@@ -147,7 +153,7 @@ public class GroovyUtil {
     }
 
     public static void initGroovyProject(ProjectEntity projectEntity, List<File> customKeywordPluginFiles,
-            boolean allowSourceAttachment, IProgressMonitor monitor) throws CoreException, IOException, BundleException {
+            boolean allowSourceAttachment, IProgressMonitor monitor) throws Exception {
         SubProgressMonitor subProgressDescription = null;
         SubProgressMonitor subProgressClasspath = null;
         if (monitor != null) {
@@ -208,6 +214,11 @@ public class GroovyUtil {
             keywordSourceFolder.create(true, true, null);
         }
 
+        IFolder keywordJavadocFolder = groovyProject.getFolder(KEYWORD_JAVADOC_FOLDER_NAME);
+        if (!keywordJavadocFolder.exists()) {
+            keywordJavadocFolder.create(true, true, null);
+        }
+        
         IFolder testCaseSourceFolder = groovyProject.getFolder(TEST_SCRIPT_SOURCE_FOLDER_NAME);
         if (!testCaseSourceFolder.exists()) {
             testCaseSourceFolder.create(true, true, null);
@@ -282,11 +293,12 @@ public class GroovyUtil {
 
         // add JRE to classpath
         entries.add(JavaCore.newContainerEntry(new Path(JDT_LAUNCHING)));
-
-        // add source and output folder to classpath
+        
         IPackageFragmentRoot keywordPackageRoot = javaProject.getPackageFragmentRoot(keywordSourceFolder);
+       
+            // add source and output folder to classpath
         entries.add(JavaCore.newSourceEntry(keywordPackageRoot.getPath(), new Path[] {}, new Path[] {},
-                outputKeywordFolder.getFullPath()));
+                outputKeywordFolder.getFullPath(), null));
 
         // add source and output folder to classpath
         IPackageFragmentRoot listenerPackageRoot = javaProject.getPackageFragmentRoot(listenerSourceFolder);
@@ -688,7 +700,7 @@ public class GroovyUtil {
     }
 
     public static void openGroovyProject(ProjectEntity projectEntity, List<File> customKeywordPluginFiles, boolean isEnterpriseAccount)
-            throws CoreException, IOException, BundleException {
+            throws Exception {
         initGroovyProject(projectEntity, customKeywordPluginFiles, isEnterpriseAccount, null);
         IProject groovyProject = getGroovyProject(projectEntity);
         if (groovyProject.exists() && !groovyProject.isOpen()) {
@@ -719,6 +731,11 @@ public class GroovyUtil {
     public static IFolder getGlobalVariableSourceFolder(ProjectEntity project) {
         IProject groovyProject = getGroovyProject(project);
         return groovyProject.getFolder(GLOBAL_VARIABLE_ROOT_FOLDER_NAME);
+    }
+    
+    public static IFolder getCustomKeywordJavadocFolder(ProjectEntity project) {
+        IProject groovyProject = getGroovyProject(project);
+        return groovyProject.getFolder(KEYWORD_JAVADOC_FOLDER_NAME);
     }
 
     public static String getTestCaseIdByScriptPath(String scriptFilePath, ProjectEntity projectEntity) {

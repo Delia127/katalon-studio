@@ -24,6 +24,7 @@ import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.parser.CustomKeywordParser;
 import com.kms.katalon.custom.util.BuiltinPluginUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.groovy.util.CustomKeywordJavadocGenerator;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class KeywordController extends EntityController {
@@ -153,11 +154,19 @@ public class KeywordController extends EntityController {
             parseCustomKeywordInStore(project, libFolder);
 
             refreshCustomKeywordLibFile(project, monitor);
+            
+            generateCustomKeywordJavadoc(project);
         } finally {
             if (monitor != null) {
                 monitor.done();
             }
         }
+    }
+    
+    private void generateCustomKeywordJavadoc(ProjectEntity project) throws Exception {
+        CustomKeywordJavadocGenerator generator = new CustomKeywordJavadocGenerator(project);
+        String destinationFolder = CustomKeywordJavadocGenerator.getDefaultKeywordJavadocFolder(project).getAbsolutePath();
+        generator.generate(destinationFolder);
     }
 
     private void parseCustomKeywordInStore(ProjectEntity project, IFolder libFolder)
@@ -184,22 +193,6 @@ public class KeywordController extends EntityController {
                 .orElse(null);
         if (firstJar != null) {
             CustomKeywordPluginFactory.getInstance().addDevPluginFile(firstJar);
-        }
-    }
-
-    private void parseCustomKeywordInPluginDirectory(ProjectEntity project, IFolder libFolder) throws Exception {
-        IFolder pluginFolder = GroovyUtil.getPluginsFolder(project);
-        ClassLoader projectClassLoader = ProjectController.getInstance().getProjectClassLoader(project);
-        File pluginDir = pluginFolder.getRawLocation().toFile();
-        File[] jarFiles = pluginDir.listFiles();
-        File firstJar = Arrays.asList(jarFiles)
-                .stream()
-                .filter(f -> f.getName().endsWith(".jar"))
-                .findFirst()
-                .orElse(null);
-        if (firstJar != null) {
-            CustomKeywordParser.getInstance().parsePluginKeywords(projectClassLoader, Arrays.asList(firstJar),
-                    libFolder, true);
         }
     }
 

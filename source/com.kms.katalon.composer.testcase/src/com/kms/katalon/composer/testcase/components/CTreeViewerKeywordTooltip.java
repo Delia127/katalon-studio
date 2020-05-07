@@ -1,5 +1,9 @@
 package com.kms.katalon.composer.testcase.components;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -11,9 +15,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCustomKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 
 public class CTreeViewerKeywordTooltip extends TreeViewerKeywordTooltip {
+    
+    private static final String CUSTOM_KEYWORD_CLASS = "CustomKeywords";
 
     public CTreeViewerKeywordTooltip(TreeViewer treeViewer) {
         super(treeViewer);
@@ -31,26 +40,51 @@ public class CTreeViewerKeywordTooltip extends TreeViewerKeywordTooltip {
         ViewerColumn viewerCol = getViewerColumn(treeViewer, point);
         ViewerCell viewerCell = treeViewer.getCell(point);
         if (viewerCol == null || viewerCell.getColumnIndex() != 0
-                || !(row.getItem().getData() instanceof AstBuiltInKeywordTreeTableNode)) {
+                || (!(row.getItem().getData() instanceof AstBuiltInKeywordTreeTableNode)
+                && !(row.getItem().getData() instanceof AstCustomKeywordTreeTableNode))) {
             hideTooltip();
             return;
         }
-        KeywordNodeTooltip tip = getTooltip();
+        AbstractKeywordNodeTooltip tip = getTooltip();
         Object element = row.getItem().getData();
-        AstBuiltInKeywordTreeTableNode node = (AstBuiltInKeywordTreeTableNode) element;
+        AstAbstractKeywordTreeTableNode node = (AstAbstractKeywordTreeTableNode) element;
         CellLabelProvider labelProvider = treeViewer.getLabelProvider(viewerCell.getColumnIndex());
         labelProvider.useNativeToolTip(element);
-        String keyword = node.getKeywordName();
-        String text = labelProvider.getToolTipText(element);
-        if (tip != null && tip.isVisible() && keyword != null && keyword.equals(getCurrentKeyword())) {
+        String keywordName = node.getKeywordName();
+        String classKeyword = node instanceof AstBuiltInKeywordTreeTableNode ?
+                ((AstBuiltInKeywordTreeTableNode) node).getBuiltInKWClassSimpleName()
+                : "CustomKeywords";
+        String text = "";
+        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
+            text = TestCaseEntityUtil.getCustomKeywordJavadocText(node.getKeywordName(), node.getParameterTypes());
+        } else {
+            text = TestCaseEntityUtil.getBuiltinKeywordJavadocText(classKeyword, keywordName);
+            if (text == null || text.length() < 1) {
+                text = keywordName;
+            }
+        }
+        if (tip != null && tip.isVisible() && keywordName != null && keywordName.equals(getCurrentKeyword())) {
             return;
         }
         if (tip != null) {
             tip.hide();
         }
-        setCurrentKeyword(keyword);
-        createTooltip(text, node.getBuiltInKWClassSimpleName(), node.getKeywordName()).show(
+        setCurrentKeyword(keywordName);
+        
+        createTooltip(text, classKeyword, node.getKeywordName()).show(
                 getTooltipLocation(new Point(x, y)));
+    }
+    
+    private String[] getTypes(String[] typeSignatures) {
+        return Stream.of(typeSignatures)
+                .map(t -> {
+                    try {
+                        return Signature.toString(t);
+                    } catch (Exception e) {
+                        return t;
+                    }
+                }).collect(Collectors.toList())
+                .toArray(new String[typeSignatures.length]);
     }
 
     private ViewerColumn getViewerColumn(CTreeViewer treeViewer, Point point) {

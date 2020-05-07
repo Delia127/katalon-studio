@@ -6,6 +6,7 @@ import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 
 public class ArgumentListExpressionWrapper extends TupleExpressionWrapper {
     public ArgumentListExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
@@ -49,9 +50,39 @@ public class ArgumentListExpressionWrapper extends TupleExpressionWrapper {
         String[] paramTypes = new String[this.getExpressions().size()];
         for (int i = 0; i < this.getExpressions().size(); i++) {
             ExpressionWrapper exWrapper = this.getExpression(i);
-            paramTypes[i] = exWrapper.getType().getName();
+            paramTypes[i] = exWrapper.getType().getTypeClass().getName();
+//            String resolvedType = paramTypes[i];
+//            try {
+//                resolvedType = Signature.toString(paramTypes[i]);
+//            } catch (Exception e) {
+//                resolvedType = paramTypes[i];
+//            }
+//            paramTypes[i] = resolvedType;
+//            try {
+//                paramTypes[i] = resolveType1(ProjectController.getInstance()
+//                        .getProjectClassLoader(ProjectController.getInstance().getCurrentProject()), paramTypes[i])
+//                                .getName();
+//            } catch (Exception e) {
+//                paramTypes[i] = resolvedType;
+//            }
         }
         return paramTypes;
+    }
+    
+    public Class<?> resolveType1(ClassLoader classLoader, String type) {
+        Class<?> foundClass = loadClassQuietly1(type, classLoader);
+        if (foundClass != null) {
+            return foundClass;
+        }
+        return null;
+    }
+
+    protected Class<?> loadClassQuietly1(String className, ClassLoader classLoader) {
+        try {
+            return classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            return AstKeywordsInputUtil.loadClassFromImportedPackage(className, classLoader);
+        }
     }
 
 }

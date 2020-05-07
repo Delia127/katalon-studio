@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IFolder;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.annotation.Keyword;
@@ -101,7 +100,7 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
                 for (Method method : pair.getValue()) {
                     keywordFolder.children.add(new KeywordBrowserTreeEntity(CUSTOM_KEYWORD_CLASS_NAME,
                             CUSTOM_KEYWORD_CLASS_NAME, "'" + method.getDeclaringClass().getName() + "."
-                                    + method.getName() + "'", true, keywordFolder));
+                                    + method.getName() + "'", method.getParameterTypes(), true, keywordFolder));
                 }
 
                 Collections.sort(keywordFolder.children, new Comparator<IKeywordBrowserTreeEntity>() {

@@ -1,18 +1,23 @@
 package com.kms.katalon.custom.factory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.eclipse.jdt.core.Signature;
 
 import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.custom.parser.MethodUtils;
+import com.kms.katalon.util.PrimitiveAwareTypeUtil;
+import com.kms.katalon.util.groovy.MethodNodeUtil;
 
 public class CustomMethodNodeFactory {
 
@@ -27,12 +32,15 @@ public class CustomMethodNodeFactory {
      * key: file path, value: class name;
      */
     private Map<String, Set<String>> classPathMap;
+        
+    private Map<String, String> javadocMap;
 
     private static CustomMethodNodeFactory _instance;
 
     private CustomMethodNodeFactory() {
         methodNodesMap = new HashMap<String, List<MethodNode>>();
         classPathMap = new HashMap<>();
+        javadocMap = new HashMap<>();
         methodParameterNamesMap = new HashMap<>();
     }
 
@@ -58,6 +66,15 @@ public class CustomMethodNodeFactory {
         }
         methodNodesMap.put(className, customKeywordMethods);
         addClassToClassPath(className, filePath);
+    }
+    
+    public void addJavadoc(MethodNode methodNode, String htmlJavadoc) {
+        String descriptor = MethodNodeUtil.getDescriptor(methodNode);
+        javadocMap.put(descriptor, htmlJavadoc);
+    }
+    
+    public String getJavadoc(MethodNode methodNode) {
+        return StringUtils.defaultIfBlank(javadocMap.get(MethodNodeUtil.getDescriptor(methodNode)), "");
     }
     
     public void addPluginMethodNodes(String className, List<MethodNode> methodNodes, String filePath, Map<String, List<String>> parameterMaps) {
@@ -128,6 +145,34 @@ public class CustomMethodNodeFactory {
             }
         }
         return false;
+    }
+
+    public MethodNode findMethodNode(
+            String keywordClassName,
+            String methodName,
+            String[] parameterTypes) throws ClassNotFoundException {
+
+        Map<String, List<MethodNode>> customKeywordMethodNodeMap = getMethodNodesMap();
+
+        List<MethodNode> methodNodes = customKeywordMethodNodeMap.get(keywordClassName);
+        for (MethodNode methodNode : methodNodes) {
+            String[] methodParameterTypes = Arrays.asList(methodNode.getParameters())
+                    .stream()
+                    .map(p -> p.getType().getName())
+                    .map(t -> {
+                        try {
+                            return Signature.toString(t);
+                        } catch (Exception e) {
+                            return t;
+                        }
+                    }).collect(Collectors.toList())
+                    .toArray(new String[methodNode.getParameters().length]);
+            if (PrimitiveAwareTypeUtil.areSameTypes(parameterTypes, methodParameterTypes)) {
+                return methodNode;
+            }
+        }
+
+        return null;
     }
     
     public Map<String, List<MethodNode>> getMethodNodesMap() {

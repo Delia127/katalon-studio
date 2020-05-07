@@ -2,6 +2,7 @@ package com.kms.katalon.composer.codeassist.editor;
 
 import java.lang.reflect.Field;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.eclipse.codebrowsing.elements.GroovyResolvedBinaryMethod;
 import org.codehaus.groovy.eclipse.codebrowsing.requestor.CodeSelectHelper;
@@ -11,13 +12,17 @@ import org.codehaus.groovy.eclipse.editor.GroovyExtraInformationHover;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.jdt.core.ICodeAssist;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover;
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+//import org.eclipse.jface.text.Region;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Event;
@@ -53,6 +58,19 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
 
     @Override
     public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion) {
+//        IRegion customKeywordRegion = findCustomKeywordRegion(textViewer, hoverRegion);
+//        if (customKeywordRegion != null) {
+//            try {
+//                String text = extractText(textViewer, customKeywordRegion);
+//                IJavaElement[] elements = getJavaElementsAt(textViewer, customKeywordRegion);
+//                System.out.println(text);
+//            } catch (BadLocationException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//           
+//            
+//        }
         IJavaElement[] elements = getJavaElementsAt(textViewer, hoverRegion);
         updateCurrentKeyword(elements);
         if (elements == null) {
@@ -61,6 +79,60 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
 
         return JavadocHover.getHoverInfo(elements, getEditorInputJavaElement(), hoverRegion, null);
     }
+    
+//    private IRegion getCustomKeywordRegion(ITextViewer textViewer, IRegion hoverRegion) {
+//        
+//    }
+    
+    private IRegion findCustomKeywordRegion(ITextViewer textViewer, IRegion hoverRegion) {
+        try {
+            IDocument document = textViewer.getDocument();
+            int lineNumber = document.getLineOfOffset(hoverRegion.getOffset());
+            int lineOffset = document.getLineOffset(lineNumber);
+            int lineLength = document.getLineLength(lineNumber);
+            int offset = hoverRegion.getOffset();
+            while (offset >= lineOffset) {
+                String character = document.get(offset, 1);
+                if (StringUtils.equals(character, " ") || StringUtils.equals(character, "\n")) {
+                    break;
+                }
+                offset--;
+            }
+            String content = document.get(offset, lineLength);
+            if (content.trim().startsWith("CustomKeywords")) {
+                int methodStartOffset = offset + "CustomKeywords".length() + 2;
+                offset = methodStartOffset;
+                while (offset < lineOffset + lineLength) {
+                    String character = document.get(offset, 1);
+                    if (StringUtils.equals(character, "(")) {
+                        break;
+                    }
+                    offset++;
+                }
+                return new org.eclipse.jface.text.Region(methodStartOffset, offset - methodStartOffset);
+            } else {
+                return null;
+            }
+        } catch (BadLocationException e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
+    }
+    
+    private String extractText(ITextViewer textViewer, IRegion region) throws BadLocationException {
+        IDocument document = textViewer.getDocument();
+        return document.get(region.getOffset(), region.getLength());
+    }
+    
+//    private IMethod getCustomKeywordMethod(String customKeywordExpression) {
+//        int firstQuoteIdx = customKeywordExpression.indexOf('\'');
+//        int lastQuoteIdx = customKeywordExpression.lastIndexOf('\'');
+//        String fullyQualifiedName = customKeywordExpression.substring(firstQuoteIdx + 1, lastQuoteIdx);
+//        
+//        int pkgSeparatorIdx = fullyQualifiedName.lastIndexOf('.');
+//        String keywordClassName = fullyQualifiedName.substring(0, pkgSeparatorIdx);
+//        String keywordMethodName
+//    }
 
     private void updateCurrentKeyword(IJavaElement[] elements) {
         keywordDescURI = null;
@@ -81,6 +153,12 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
         protected CodeSelectRequestor createRequestor(ASTNode node, Region nodeRegion, Region selectRegion,
                 GroovyCompilationUnit unit) {
             return new CustomCodeSelectRequestor(node, unit);
+        }
+        
+        @Override
+        public IJavaElement[] select(GroovyCompilationUnit unit, int start, int length) {
+            // TODO Auto-generated method stub
+            return super.select(unit, start, length);
         }
     }
 
@@ -105,6 +183,7 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
             if (keywordDescURI == null) {
                 return bi;
             }
+            
             addOpenDescKeywordButton(bi);
 
             return bi;

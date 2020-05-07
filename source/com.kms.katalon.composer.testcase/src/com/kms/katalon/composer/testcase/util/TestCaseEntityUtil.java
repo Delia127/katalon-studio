@@ -1,18 +1,28 @@
 package com.kms.katalon.composer.testcase.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.ui.text.javadoc.JavadocContentAccess2;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -20,6 +30,7 @@ import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
+import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.entity.integration.IntegratedEntity;
@@ -28,7 +39,10 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.util.groovy.MethodNodeUtil;
+import com.kms.katalon.util.jdt.JDTUtil;
 
+@SuppressWarnings("restriction")
 public class TestCaseEntityUtil {
     private static boolean reloadJavaDoc = false;
     /**
@@ -96,8 +110,69 @@ public class TestCaseEntityUtil {
     }
     
     private static Map<String, Map<String, String>> keywordMethodJavaDocMap;
+    
+    private static LoadingCache<CustomKeywordInfo, String> customKeywordJavadocCache = CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .build(new CacheLoader<CustomKeywordInfo, String>() {
+                @Override
+                public String load(CustomKeywordInfo customKeywordInfo) {
+                    try {
+                        return findCustomKeywordJavadoc(customKeywordInfo);
+                    } catch (ClassNotFoundException | CoreException e) {
+                        LoggerSingleton.logError(e);
+                        return "";
+                    }
+                }
+            });
+    
+    public static String getBuiltinKeywordJavadocText(String keywordClassName, String keywordName) {
+        Map<String, String> javadocsByMethods = getKeywordMethodJavaDocMap().get(keywordClassName);
+        if (javadocsByMethods == null) {
+            return "";
+        }
+        
+        return StringUtils.defaultIfBlank(javadocsByMethods.get(keywordName), "");  
+    }
+    
+    public static String getCustomKeywordJavadocText(String keywordName, String[] parameterTypes) {
+        try {
+            CustomKeywordInfo keywordInfo = new CustomKeywordInfo(keywordName, parameterTypes);
+            return customKeywordJavadocCache.get(keywordInfo);
+        } catch (ExecutionException e) {
+            LoggerSingleton.logError(e);
+            return "";
+        }
+    }
+    
+    private static String findCustomKeywordJavadoc(CustomKeywordInfo customKeywordInfo)
+            throws ClassNotFoundException, CoreException {
+        String keywordName = customKeywordInfo.getKeywordName();
+        String[] parameterTypes = customKeywordInfo.getParameterTypes();
+        MethodNode methodNode = findCustomMethodNode(keywordName, parameterTypes);
+        IMethod jdtMethod = findJdtMethod(methodNode);
+        return JavadocContentAccess2.getHTMLContent(jdtMethod, true);
+    }
+    
+    private static MethodNode findCustomMethodNode(String keywordName, String[] parameterTypes)
+            throws ClassNotFoundException {
+        int lastDotIdx = keywordName.lastIndexOf(".");
+        String className = keywordName.substring(0, lastDotIdx);
+        String methodName = keywordName.substring(lastDotIdx + 1);
+        return CustomMethodNodeFactory.getInstance().findMethodNode(className, methodName, parameterTypes);
+    }
+    
+    private static IMethod findJdtMethod(MethodNode methodNode) throws JavaModelException {
+        IProject project = getGroovyProject();
+        IMethod method = JDTUtil.findMethod(
+                project,
+                methodNode.getDeclaringClass().getName(),
+                methodNode.getName(),
+                MethodNodeUtil.getParameterTypes(methodNode));
+        return method;
+    }
 
-    public static Map<String, Map<String, String>> getKeywordMethodJavaDocMap() {
+    private static Map<String, Map<String, String>> getKeywordMethodJavaDocMap() {
         if (keywordMethodJavaDocMap == null || reloadJavaDoc) {
             initKeywordJavaDocMap();
         }
@@ -116,7 +191,7 @@ public class TestCaseEntityUtil {
         
         for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
             Map<String, String> allKeywordJavaDocMap = new HashMap<String, String>();
-            String keywordClassName = keywordClass.getSimpleName();
+            String keywordClassName = keywordClass.getName();
             keywordMethodJavaDocMap.put(keywordClassName, allKeywordJavaDocMap);
             try {
                 Class<?> keywordType = AstKeywordsInputUtil.loadType(keywordClass.getName(), null);
@@ -163,14 +238,6 @@ public class TestCaseEntityUtil {
         return null;
     }
 
-    public static String getKeywordJavaDocText(String keywordClassName, String methodName) {
-        Map<String, String> keywordClassMethodJavaDocMap = getKeywordMethodJavaDocMap().get(keywordClassName);
-        if (keywordClassMethodJavaDocMap == null || keywordClassMethodJavaDocMap.get(methodName) == null) {
-            return "";
-        }
-        return keywordClassMethodJavaDocMap.get(methodName);
-    }
-
     /**
      * Get Test Case Entity list from their script file
      * 
@@ -189,5 +256,61 @@ public class TestCaseEntityUtil {
                     file.getRawLocation().toString()));
         }
         return testCaseEntities;
+    }
+    
+    private static class CustomKeywordInfo {
+        private String keywordName;
+        
+        private String[] parameterTypes;
+
+        public CustomKeywordInfo(String keywordName, String[] parameterTypes) {
+            super();
+            this.keywordName = keywordName;
+            this.parameterTypes = parameterTypes;
+        }
+
+        public String getKeywordName() {
+            return keywordName;
+        }
+
+        public void setKeywordName(String keywordName) {
+            this.keywordName = keywordName;
+        }
+
+        public String[] getParameterTypes() {
+            return parameterTypes;
+        }
+
+        public void setParameterTypes(String[] parameterTypes) {
+            this.parameterTypes = parameterTypes;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((keywordName == null) ? 0 : keywordName.hashCode());
+            result = prime * result + Arrays.hashCode(parameterTypes);
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            CustomKeywordInfo other = (CustomKeywordInfo) obj;
+            if (keywordName == null) {
+                if (other.keywordName != null)
+                    return false;
+            } else if (!keywordName.equals(other.keywordName))
+                return false;
+            if (!Arrays.equals(parameterTypes, other.parameterTypes))
+                return false;
+            return true;
+        }
     }
 }
