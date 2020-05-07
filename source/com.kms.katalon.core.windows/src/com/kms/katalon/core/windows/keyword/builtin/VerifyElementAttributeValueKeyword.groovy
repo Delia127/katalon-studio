@@ -68,32 +68,30 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
 
     public boolean verifyElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
         KeywordMain.runKeyword({
-            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
-            if (windowsDriver == null) {
-                KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
-            }
-
-            logger.logDebug("Checking attribute")
-            if (attributeName == null) {
-                throw new IllegalArgumentException("Attribute name is null")
-            }
-            timeOut = KeywordHelper.checkTimeout(timeOut)
-
-            WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut);
-            logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
-
-            String actualAttributeValue = foundElement.getAttribute(attributeName)
-            if (actualAttributeValue != null) {
-                if (actualAttributeValue.equals(attributeValue)) {
-                    logger.logPassed(String.format("Object '%s' has attribute '%s' with name '%s'", testObject.getObjectId(), attributeName, attributeValue));
-                    return true
-                } else {
-                    KeywordMain.stepFailed(String.format("Object '%s' has attribute '%s' with actual value '%s' instead of expected value '%s'", testObject.getObjectId(), attributeName, actualAttributeValue, attributeValue));
-                    return false
+            try {
+                WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
+                if (windowsDriver == null) {
+                    KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }
-            } else {
-                KeywordMain.stepFailed(String.format("The object '%s' does not have attribute '%s'", testObject.getObjectId(), attributeName));
-                return false
+
+                logger.logDebug("Checking attribute")
+                if (attributeName == null) {
+                    throw new IllegalArgumentException("Attribute name is null")
+                }
+                timeOut = KeywordHelper.checkTimeout(timeOut)
+                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true);
+                logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
+
+                String actualAttributeValue = foundElement.getAttribute(attributeName)
+                    if (actualAttributeValue.equals(attributeValue)) {
+                        logger.logPassed(String.format("Object '%s' has attribute '%s' with name '%s'", testObject.getObjectId(), attributeName, attributeValue));
+                        return true
+                    } else {
+                        KeywordMain.stepFailed(String.format("Object '%s' has attribute '%s' with actual value '%s' instead of expected value '%s'", testObject.getObjectId(), attributeName, actualAttributeValue, attributeValue), flowControl)
+                        return false
+                    }
+            } catch (TimeoutException e) {
+                KeywordMain.stepFailed(String.format("Object '%s' is not present", testObject.getObjectId()), flowControl)
             }
             return false
         }, flowControl, (testObject != null && attributeName !=null && attributeValue != null) ? String.format("Unable to verify if object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)
