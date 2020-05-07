@@ -61,10 +61,10 @@ public class WaitForElementPresentKeyword extends AbstractKeyword {
         WindowsTestObject testObject = (WindowsTestObject) params[0]
         int timeOut = (int) params[1]
         FailureHandling flowControl = (FailureHandling)(params.length > 2 && params[2] instanceof FailureHandling ? params[2] : RunConfiguration.getDefaultFailureHandling())
-        return verifyElementPresent(testObject,timeOut,flowControl)
+        waitForElementPresent(testObject,timeOut,flowControl)
     }
 
-    public boolean verifyElementPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
+    public void waitForElementPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             try {
                 WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
@@ -79,10 +79,8 @@ public class WaitForElementPresentKeyword extends AbstractKeyword {
                 if (foundElement != null){
                     logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()));
                 }
-                return true
             } catch (TimeoutException exception) {
                 KeywordMain.stepFailed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
-                return false
             }
         }, flowControl, (testObject != null) ? String.format("Unable to verify object ''{0}'' is present", testObject.getObjectId()) : "Unable to verify object is present")
         }

@@ -65,10 +65,10 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
         String attributeValue = (String) params[2]
         int timeOut = (int) params[3]
         FailureHandling flowControl = (FailureHandling)(params.length > 4 && params[4] instanceof FailureHandling ? params[4] : RunConfiguration.getDefaultFailureHandling())
-        return waitForElementAttributeValue(testObject, attributeName,attributeValue,timeOut,flowControl)
+        waitForElementAttributeValue(testObject, attributeName,attributeValue,timeOut,flowControl)
     }
 
-    public boolean waitForElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+    public void waitForElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
         KeywordMain.runKeyword({
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
@@ -103,12 +103,10 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
                         })
                 if (hasAttribute){
                     logger.logPassed(String.format("Object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue))
-                    return true
                 }
             } catch (TimeoutException e) {
-                KeywordMain.stepFailed(String.format("Object '%s' is not present", testObject.getObjectId()), flowControl)
+                KeywordMain.stepFailed(String.format("Unable to wait for object '%s' to have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue), flowControl)
             }
-            return false
         }, flowControl, (testObject != null) ? String.format("Unable to wait for object '%s' to have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)
         : "Unable to wait for element to have attribute with value");
     }
