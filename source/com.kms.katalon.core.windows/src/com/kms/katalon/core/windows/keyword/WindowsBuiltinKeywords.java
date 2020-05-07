@@ -324,7 +324,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Get attribute value of a Windows element
+     * Get attribute value of a Windows element.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows element.
@@ -340,7 +340,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get text of the element.
      * @throws IllegalArgumentException
-     * If attribute is null
+     * If attribute is null.
      * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
@@ -351,7 +351,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Get attribute value of a Windows element
+     * Get attribute value of a Windows element.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows element.
@@ -360,7 +360,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get text of the element.
      * @throws IllegalArgumentException
-     * If attribute is null
+     * If attribute is null.
      * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
@@ -914,7 +914,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Verify if the element has an attribute with the specific name and value
+     * Verify if the element has an attribute that matches with the specific value
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
@@ -926,7 +926,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -951,7 +951,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Verify if the element has an attribute that matches with the specific value
+     * Verify if the element has an attribute that matches with the specific value.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
@@ -963,7 +963,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @throws StepFailedException
@@ -981,14 +981,14 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Verify if the given element presents on the opening application
+     * Verify if the given element presents on the opening application.
      *
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1013,14 +1013,14 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Verify if the given element presents on the opening application
+     * Verify if the given element presents on the opening application.
      *
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @throws StepFailedException
@@ -1038,14 +1038,14 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     } 
 
     /**
-     * Verify if the given element does not present on the opening Windows application
+     * Verify if the given element does not present on the opening Windows application.
      *
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1055,9 +1055,9 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * @return true if element does not present; otherwise, false
+     * @return true if element does not present; otherwise, false.
      * @throws StepFailedException
-     * If The Windows element exists.
+     * If the Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1070,19 +1070,19 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Verify if the given element does not present on the opening Windows application
+     * Verify if the given element does not present on the opening Windows application.
      *
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
-     * @return true if element does not present; otherwise, false
+     * @return true if element does not present; otherwise, false.
      * @throws StepFailedException
-     * If The Windows element exists.
+     * If the Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1095,7 +1095,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Wait until the given element has an attribute with the specific name and value
+     * Wait until the given element has an attribute with the specific name and value.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
@@ -1107,7 +1107,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1132,7 +1132,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Wait until the given element has an attribute with the specific name and value
+     * Wait until the given element has an attribute with the specific name and value.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
@@ -1144,7 +1144,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @throws StepFailedException
@@ -1163,14 +1163,14 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Wait for the given element does not present on the opening Windows application with a specific amount of time
+     * Wait for the given element does not present on the opening Windows application with a specific amount of time.
      *
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1180,9 +1180,9 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * @return true if element does not present; otherwise, false
+     * @return true if element does not present; otherwise, false.
      * @throws StepFailedException
-     * If The Windows element exists.
+     * If the Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1195,19 +1195,19 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Wait for the given element does not present on the opening Windows application with a specific amount of time
+     * Wait for the given element does not present on the opening Windows application with a specific amount of time.
      *
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
-     * @return true if element does not present; otherwise, false
+     * @return true if element does not present; otherwise, false.
      * @throws StepFailedException
-     * If The Windows element exists.
+     * If the Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1220,14 +1220,14 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Wait for the given element presents on the opening Windows application with a specific amount of time
+     * Wait for the given element presents on the opening Windows application with a specific amount of time.
      *
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1252,17 +1252,17 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Wait for the given element presents on the opening Windows application with a specific amount of time
+     * Wait for the given element presents on the opening Windows application with a specific amount of time.
      *
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>If timeout = 0. Set timeout to default page load timeout.
+     * <li>If timeout = 0, set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
-     * @return true if element presents; otherwise, false
+     * @return true if element presents; otherwise, false.
      * @throws StepFailedException
      * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
