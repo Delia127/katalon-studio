@@ -21,6 +21,7 @@ import com.kms.katalon.composer.mobile.part.MobileTestObjectPart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.repository.MobileElementEntity;
+import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenMobileTestObjectHandler {
@@ -55,8 +56,10 @@ public class OpenMobileTestObjectHandler {
     
     @Inject
     @Optional
-    private void getNotifications(@UIEventTopic(EventConstants.MOBILE_TEST_OBJECT_OPEN) MobileElementEntity entity){
-        execute(entity);
+    private void getNotifications(@UIEventTopic(EventConstants.MOBILE_TEST_OBJECT_OPEN) WebElementEntity entity) {
+        if (entity instanceof MobileElementEntity) {
+            execute((MobileElementEntity) entity);
+        }
     }
     
     public void execute(MobileElementEntity testObject) {

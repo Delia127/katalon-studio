@@ -194,6 +194,8 @@ public class EventConstants {
 
     public static final String MOBILE_TEST_OBJECT_OPEN = "MOBILE_TESTOBJECT/OPEN";
     
+    public static final String WINDOWS_TEST_OBJECT_OPEN = "WINDOWS_TEST_OBJECT/OPEN";
+    
     public static final String TEST_OBJECT_SAVE = "TESTOBJECT/SAVE";
 
     public static final String TEST_OBJECT_UPDATED = "TESTOBJECT/UPDATED";

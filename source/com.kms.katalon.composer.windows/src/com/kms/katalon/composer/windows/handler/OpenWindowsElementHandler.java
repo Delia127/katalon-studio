@@ -3,7 +3,9 @@ package com.kms.katalon.composer.windows.handler;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
@@ -62,6 +64,12 @@ public class OpenWindowsElementHandler {
 
     public static OpenWindowsElementHandler getInstance() {
         return instance;
+    }
+    
+    @Inject
+    @Optional
+    private void getNotifications(@UIEventTopic(EventConstants.WINDOWS_TEST_OBJECT_OPEN) WindowsElementEntity entity) {
+        openWindowsElement(entity);
     }
 
     public void openWindowsElement(WindowsElementEntity windowsElementEntity) {

@@ -16,6 +16,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -45,6 +46,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
+import com.kms.katalon.composer.mobile.dialog.EditMobileElementPropertyDialog;
 import com.kms.katalon.composer.mobile.dialog.NewMobileElementPropertyDialog;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
@@ -227,6 +229,23 @@ public class MobileTestObjectPart implements IComposerPart {
         ToolItem tltmEdit = new ToolItem(tbProperties, SWT.PUSH);
         tltmEdit.setText("Edit");
         tltmEdit.setImage(ImageManager.getImage(IImageKeys.EDIT_16));
+        tltmEdit.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection structuredSelection = tableViewerObjectProperties.getStructuredSelection();
+                if (structuredSelection.isEmpty()) {
+                    return;
+                }
+                WebElementPropertyEntity editingProperty = (WebElementPropertyEntity) structuredSelection
+                        .getFirstElement();
+                EditMobileElementPropertyDialog windowsElementDialog = new EditMobileElementPropertyDialog(getShell(),
+                        editingProperty);
+                if (windowsElementDialog.open() == EditMobileElementPropertyDialog.OK) {
+                    tableViewerObjectProperties.refresh(editingProperty);
+                    mpart.setDirty(true);
+                }
+            }
+        });
 
         ToolItem tltmDelete = new ToolItem(tbProperties, SWT.PUSH);
         tltmDelete.setText("Delete");
@@ -317,7 +336,7 @@ public class MobileTestObjectPart implements IComposerPart {
 
             WebElementTreeEntity treeEntity = TreeEntityUtil.getWebElementTreeEntity(entity,
                     entity.getProject());
-            ExplorerPart.getInstance().refreshTreeEntity(treeEntity);
+            ExplorerPart.getInstance().refreshTreeEntity(treeEntity.getParent());
             mpart.setDirty(false);
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, "Error", "Unable to save mobile test object");

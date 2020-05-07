@@ -19,6 +19,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
@@ -71,50 +72,68 @@ public class MobileHighlightComposite {
     }
 
     private void findAndHighlightEditingElement() {
-        isFinding = true;
-        clearMessage();
-        refreshButtonStates();
-
-        if (editingElement == null) {
-            return;
-        }
-
         LocatorStrategy locatorStrategy = editingElement.getLocatorStrategy();
         String locatorStrategyName = locatorStrategy.getLocatorStrategy();
         String locator = editingElement.getLocator();
-        displayWaitMessage(locator, locatorStrategyName);
+        Thread thread = new Thread(() -> {
+            isFinding = true;
+            UISynchronizeService.syncExec(() -> {
+                clearMessage();
+                refreshButtonStates();
+            });
 
-        // TODO: Run searching task in another thread to prevent UI block
-        try {
-            List<WebElement> webElements = findElements(editingElement);
-
-            if (webElements != null && webElements.size() > 0) {
-                List<Rectangle> elementRects = (List<Rectangle>) webElements.stream().map(webElement -> {
-                    org.openqa.selenium.Point location = webElement.getLocation();
-                    Dimension size = webElement.getSize();
-                    double ratio = parentDialog.getInspectorController().getDriver() instanceof IOSDriver ? 2 : 1;
-                    return new Rectangle(safeRoundDouble(location.x * ratio), safeRoundDouble(location.y * ratio),
-                            safeRoundDouble(size.width * ratio), safeRoundDouble(size.height * ratio));
-                }).collect(Collectors.toList());
-
-                parentDialog.highlightElementRects(elementRects);
+            if (editingElement == null) {
+                return;
             }
+            UISynchronizeService.syncExec(() -> {
+                displayWaitMessage(locator, locatorStrategyName);
+            });
 
-            if (webElements != null && webElements.size() > 0) {
-                displayFoundMessage(webElements.size(), locatorStrategyName, locator);
-            } else {
-                displayNotFoundMessage(locatorStrategyName, locator);
+            // TODO: Run searching task in another thread to prevent UI block
+            try {
+                long startTime = System.currentTimeMillis();
+                List<WebElement> webElements = findElements(editingElement);
+                long elapsedTime = System.currentTimeMillis() - startTime;
+
+                if (webElements != null && webElements.size() > 0) {
+                    List<Rectangle> elementRects = (List<Rectangle>) webElements.stream().map(webElement -> {
+                        org.openqa.selenium.Point location = webElement.getLocation();
+                        Dimension size = webElement.getSize();
+                        double ratio = parentDialog.getInspectorController().getDriver() instanceof IOSDriver ? 2 : 1;
+                        return new Rectangle(safeRoundDouble(location.x * ratio), safeRoundDouble(location.y * ratio),
+                                safeRoundDouble(size.width * ratio), safeRoundDouble(size.height * ratio));
+                    }).collect(Collectors.toList());
+
+                    UISynchronizeService.syncExec(() -> {
+                        parentDialog.highlightElementRects(elementRects);
+                    });
+                }
+
+                UISynchronizeService.syncExec(() -> {
+                    if (webElements != null && webElements.size() > 0) {
+                        displayFoundMessage(webElements.size(), locatorStrategyName, locator, elapsedTime);
+                    } else {
+                        displayNotFoundMessage(locatorStrategyName, locator);
+                    }
+                });
+            } catch (NoSuchElementException e) {
+                UISynchronizeService.syncExec(() -> {
+                    displayNotFoundMessage(locatorStrategyName, locator);
+                });
+            } catch (Exception e) {
+                UISynchronizeService.syncExec(() -> {
+                    MultiStatusErrorDialog.showErrorDialog("Unable to highlight element!", e.getMessage(),
+                            ExceptionsUtil.getStackTraceForThrowable(e));
+                    displayNotFoundMessage(locatorStrategyName, locator);
+                });
+            } finally {
+                UISynchronizeService.syncExec(() -> {
+                    isFinding = false;
+                    refreshButtonStates();
+                });
             }
-        } catch (NoSuchElementException e) {
-            displayNotFoundMessage(locatorStrategyName, locator);
-        } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog("Unable to highlight element!", e.getMessage(),
-                    ExceptionsUtil.getStackTraceForThrowable(e));
-            displayNotFoundMessage(locatorStrategyName, locator);
-        } finally {
-            isFinding = false;
-            refreshButtonStates();
-        }
+        });
+        thread.start();
     }
 
     private List<WebElement> findElements(CapturedMobileElement targetElement) throws Exception {
@@ -150,10 +169,9 @@ public class MobileHighlightComposite {
         lblMessageVerifyObject.getParent().layout(true);
     }
 
-    private void displayFoundMessage(int numElements, String strategy, String selector) {
+    private void displayFoundMessage(int numElements, String strategy, String selector, long elapsedTime) {
         String pluralPostfix = numElements > 1 ? "s" : "";
-        displaySuccessfulMessage(MessageFormat.format(StringConstants.DIA_MSG_ELEMENT_FOUND, numElements, pluralPostfix,
-                strategy, selector));
+        displaySuccessfulMessage(MessageFormat.format(StringConstants.DIA_MSG_ELEMENT_FOUND, numElements, pluralPostfix, strategy, selector, elapsedTime));
     }
 
     private void displayWaitMessage(String strategy, String selector) {

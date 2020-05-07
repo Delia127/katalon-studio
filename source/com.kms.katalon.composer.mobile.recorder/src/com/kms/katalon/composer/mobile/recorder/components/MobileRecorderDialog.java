@@ -1293,6 +1293,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
 	@Override
 	public CapturedMobileElement captureMobileElement(TreeMobileElement treeElement) {
+	    if (treeElement == null) {
+	        return null;
+	    }
+	    
 		return treeElement.newCapturedElement(inspectorController.getDriver());
 	}
 

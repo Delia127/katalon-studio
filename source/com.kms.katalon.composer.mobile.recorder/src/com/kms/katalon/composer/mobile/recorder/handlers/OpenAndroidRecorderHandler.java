@@ -32,7 +32,7 @@ import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectReposi
 import com.kms.katalon.composer.mobile.objectspy.dialog.SaveTestCaseDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.SaveTestCaseDialog.ExportTestCaseOption;
 import com.kms.katalon.composer.mobile.objectspy.dialog.SaveTestCaseDialog.ExportTestCaseSelectionResult;
-import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverterV2;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.recorder.components.MobileRecorderDialog;
 import com.kms.katalon.composer.mobile.recorder.components.MobileRecorderDialog.RecordActionResult;
@@ -53,7 +53,7 @@ import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -131,10 +131,10 @@ public class OpenAndroidRecorderHandler {
             FolderTreeEntity selectedTreeFolder = objectRepositoryDialog.getSelectedFolderTreeEntity();
             FolderEntity folder = getFolder(selectedTreeFolder);
 
-            CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
+            CapturedMobileElementConverterV2 converter = new CapturedMobileElementConverterV2();
             List<ITreeEntity> selectedTreeEntities = new ArrayList<ITreeEntity>();
             for (CapturedMobileElement capturedElement : recordResult.getMobileElements()) {
-                WebElementEntity mobileElement;
+                MobileElementEntity mobileElement;
                 try {
                     mobileElement = converter.convert(capturedElement, folder, driverType);
                     ObjectRepositoryController.getInstance().updateTestObject(mobileElement);
