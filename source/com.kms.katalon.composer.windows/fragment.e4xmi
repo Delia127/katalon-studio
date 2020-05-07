@@ -27,6 +27,7 @@
       <parameters xmi:id="_QI9vgJ78EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
     </elements>
     <elements xsi:type="commands:Command" xmi:id="_5UAakM7KEem9er9qUE62ZQ" elementId="com.kms.katalon.composer.windows.command.installWinAppDrivers" commandName="Install WinAppDrivers"/>
+    <elements xsi:type="commands:Command" xmi:id="_kLrfEJAvEeq0cvfWDXx0eA" elementId="com.kms.katalon.composer.windows.command.installDotNETFramework" commandName="Install .NET Framework 4.5.2"/>
     <elements xsi:type="commands:Command" xmi:id="_rsjD8DECEeqJVMJ_wEBeSg" elementId="com.kms.katalon.composer.windows.command.record2" commandName="Windows Recorder Pro"/>
     <elements xsi:type="commands:Command" xmi:id="_KQ0LoI3WEeqHTrKPNR7eEg" elementId="com.kms.katalon.composer.windows.command.openRecorder" commandName="Open Recorder Menu"/>
   </fragments>
@@ -36,6 +37,7 @@
     <elements xsi:type="commands:Handler" xmi:id="__B2HIM7KEem9er9qUE62ZQ" elementId="com.kms.katalon.composer.windows.handler.installWinAppDrivers" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.InstallWinAppDriversHandler" command="_5UAakM7KEem9er9qUE62ZQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_uh_AADECEeqJVMJ_wEBeSg" elementId="com.kms.katalon.composer.windows.handler.record2" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.WindowsRecorderProHandler" command="_rsjD8DECEeqJVMJ_wEBeSg"/>
     <elements xsi:type="commands:Handler" xmi:id="_UStHUI3WEeqHTrKPNR7eEg" elementId="com.kms.katalon.composer.windows.handler.openRecorder" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.OpenWindowsRecorderHandler" command="_KQ0LoI3WEeqHTrKPNR7eEg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_c9EG0JAwEeq0cvfWDXx0eA" elementId="com.kms.katalon.composer.windows.handler.installDotNETFramework" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.InstallDotNETFrameworkHandler" command="_kLrfEJAvEeq0cvfWDXx0eA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BR0IUJ7sEemdYrYS1JLsZA" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_XRLoAJ7_EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.menuseparator.run.0"/>
@@ -51,6 +53,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_aSA0EM7IEem9er9qUE62ZQ" featurename="children" parentElementId="com.kms.katalon.menu.tools" positionInList="before:com.kms.katalon.composer.objectrepository.menu.testobject">
     <elements xsi:type="menu:Menu" xmi:id="_jGIVEM7IEem9er9qUE62ZQ" elementId="com.kms.katalon.composer.windows.menu.windows" label="Windows">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_xCxkMM7KEem9er9qUE62ZQ" elementId="com.kms.katalon.composer.windows.handledmenuitem.installWinAppDrivers" label="Install WinAppDrivers" command="_5UAakM7KEem9er9qUE62ZQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_Q-yFAJAyEeq0cvfWDXx0eA" elementId="com.kms.katalon.composer.windows.handledmenuitem.installDotNETFramework" label="Install .NET Framework 4.5.2" command="_kLrfEJAvEeq0cvfWDXx0eA"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>
