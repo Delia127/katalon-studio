@@ -69,44 +69,40 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
             URLClassLoader classLoader = ProjectController.getInstance().getProjectClassLoader(projectEntity);
             IFolder srcFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
             IFolder pluginFolder = GroovyUtil.getPluginsFolder(projectEntity);
-            List<Method> allKeywordMethod = CustomKeywordParser.getInstance().parseProjectCustomKeywordsIntoAst(
-            		classLoader, srcFolder);
-            
-            allKeywordMethod.addAll(CustomKeywordParser.getInstance().parsePluginKeywordsIntoAst(
-                    classLoader, pluginFolder));
-            
+            List<Method> allKeywordMethod = CustomKeywordParser.getInstance()
+                    .parseProjectCustomKeywordsIntoAst(classLoader, srcFolder);
+
+            allKeywordMethod
+                    .addAll(CustomKeywordParser.getInstance().parsePluginKeywordsIntoAst(classLoader, pluginFolder));
+
             for (File customKeywordPlugin : ProjectController.getInstance().getCustomKeywordPlugins(projectEntity)) {
                 allKeywordMethod.addAll(CustomKeywordParser.getInstance().parsePluginKeywordJarIntoAst(classLoader,
                         customKeywordPlugin));
             }
-            
+
             Map<String, List<Method>> methodActionMap = new HashMap<String, List<Method>>();
 
             for (Method method : allKeywordMethod) {
-                String declareClassName = method.getDeclaringClass().getName();
-                List<Method> methodList = methodActionMap.get(declareClassName);
-                if (methodList == null) {
-                    methodList = new ArrayList<Method>();
-                    methodActionMap.put(declareClassName, methodList);
+                String keywordObjectParameter = getKeywordObject(method);
+                if (keywordObjectParameter != null) {
+                    List<Method> methodList = methodActionMap.get(keywordObjectParameter);
+                    if (methodList == null) {
+                        methodList = new ArrayList<Method>();
+                        methodActionMap.put(keywordObjectParameter, methodList);
+                    }
+                    methodList.add(method);
                 }
-                methodList.add(method);
             }
-            List<String> packageList = new ArrayList<String>();
+            List<String> listFolder = new ArrayList<String>();
             Iterator<Entry<String, List<Method>>> it = methodActionMap.entrySet().iterator();
             while (it.hasNext()) {
                 Entry<String, List<Method>> pair = (Entry<String, List<Method>>) it.next();
 
-                String declareClassName = pair.getKey();
-                int lastIndexOfDot = declareClassName.lastIndexOf(".");
-                String className = declareClassName.substring(lastIndexOfDot + 1, declareClassName.length());
-                String packageName = declareClassName.substring(0, lastIndexOfDot);
-                KeywordBrowserFolderTreeEntity packageFolder = new KeywordBrowserFolderTreeEntity(packageName, this);
-                KeywordBrowserFolderTreeEntity keywordFolder = new KeywordBrowserFolderTreeEntity(className,
-                        packageFolder);
-                packageFolder.children.add(keywordFolder);
-                for (Method method : pair.getValue()) {
+                KeywordBrowserFolderTreeEntity keywordFolder = new KeywordBrowserFolderTreeEntity(pair.getKey(),
+                        this);
+                for (Method currentMethod : pair.getValue()) {
                     keywordFolder.children.add(new KeywordBrowserTreeEntity(CUSTOM_KEYWORD_CLASS_NAME,
-                            CUSTOM_KEYWORD_CLASS_NAME, method.getName(), true, keywordFolder));
+                            CUSTOM_KEYWORD_CLASS_NAME, currentMethod.getName(), true, keywordFolder));
                 }
 
                 Collections.sort(keywordFolder.children, new Comparator<IKeywordBrowserTreeEntity>() {
@@ -117,16 +113,28 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
                     }
                 });
                 
-                if (packageList.contains(packageName)) {
-                    KeywordBrowserFolderTreeEntity classFolder = (KeywordBrowserFolderTreeEntity) childTreeEntityList
-                            .get(packageList.indexOf(packageName));
-                    classFolder.appendNewChild(keywordFolder);
-                } else {
-                    packageList.add(packageName);
-                    childTreeEntityList.add(packageFolder);
+                if(listFolder.contains(pair.getKey())) {
+                    KeywordBrowserFolderTreeEntity existedKeywordFolder = (KeywordBrowserFolderTreeEntity)this.children.get(listFolder.indexOf(pair.getKey()));
+                    existedKeywordFolder.appendNewChild(keywordFolder);
+                }
+                else {
+                    listFolder.add(pair.getKey());
+                    childTreeEntityList.add(keywordFolder);
                 }
             }
         }
         return childTreeEntityList;
+    }
+    
+    private String getKeywordObject(Method method) throws IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException, NoSuchMethodException, SecurityException {
+        for (Annotation annotation : method.getDeclaredAnnotations()) {
+            if (annotation.annotationType().getName().equals(Keyword.class.getName())) {
+                return (String) annotation.annotationType()
+                        .getMethod(KEYWORD_OBJECT_ANNOTATION_METHOD)
+                        .invoke(annotation);
+            }
+        }
+        return null;
     }
 }
