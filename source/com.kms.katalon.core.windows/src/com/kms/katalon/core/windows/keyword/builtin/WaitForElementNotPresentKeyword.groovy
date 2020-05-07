@@ -73,7 +73,7 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
-            timeOut = KeywordHelper.checkTimeout(timeOut)
+            timeOut = WindowsActionHelper.checkTimeout(timeOut)
             try {
                 elementNotFound = new FluentWait<WindowsTestObject>(testObject)
                 .withTimeout(Duration.ofSeconds(timeOut))
@@ -97,7 +97,7 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
                 logger.logPassed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut))
                 return true
             } else {
-                logger.logWarning(String.format("Object '%s' is present within %s second(s)", testObject.getObjectId(), timeOut))
+                KeywordMain.stepFailed(String.format("Object '%s' is present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
             }
     }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s' is present", testObject.getObjectId()) : "Unable to verify object is present")
 }

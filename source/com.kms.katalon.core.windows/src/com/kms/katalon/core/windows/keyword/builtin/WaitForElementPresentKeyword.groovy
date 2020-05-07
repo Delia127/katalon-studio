@@ -72,7 +72,7 @@ public class WaitForElementPresentKeyword extends AbstractKeyword {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }
 
-                timeOut = KeywordHelper.checkTimeout(timeOut)
+                timeOut = WindowsActionHelper.checkTimeout(timeOut)
 
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true);
                 
@@ -81,7 +81,7 @@ public class WaitForElementPresentKeyword extends AbstractKeyword {
                 }
                 return true
             } catch (TimeoutException exception) {
-                logger.logWarning(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut))
+                KeywordMain.stepFailed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
                 return false
             }
         }, flowControl, (testObject != null) ? String.format("Unable to verify object ''{0}'' is present", testObject.getObjectId()) : "Unable to verify object is present")

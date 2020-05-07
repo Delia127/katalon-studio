@@ -66,7 +66,7 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
         return verifyElementAttributeValue(testObject,attributeName,attributeValue,timeOut,flowControl)
     }
 
-    public boolean verifyElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+    public boolean verifyElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
         KeywordMain.runKeyword({
             try {
                 WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
@@ -74,12 +74,18 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }
 
-                logger.logDebug("Checking attribute")
+                logger.logDebug("Checking attribute name")
                 if (attributeName == null) {
                     throw new IllegalArgumentException("Attribute name is null")
                 }
-                timeOut = KeywordHelper.checkTimeout(timeOut)
-                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true);
+                
+                logger.logDebug("Checking attribute value")
+                if (attributeValue == null) {
+                    throw new IllegalArgumentException("Attribute value is null")
+                }
+                
+                timeout = WindowsActionHelper.checkTimeout(timeout)
+                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeout, true);
                 logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
 
                 String actualAttributeValue = foundElement.getAttribute(attributeName)

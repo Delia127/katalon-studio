@@ -73,7 +73,7 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
-            timeOut = KeywordHelper.checkTimeout(timeOut)
+            timeOut = WindowsActionHelper.checkTimeout(timeOut)
             try {
                 elementNotFound = new FluentWait<WindowsTestObject>(testObject)
                 .withTimeout(Duration.ofSeconds(timeOut))

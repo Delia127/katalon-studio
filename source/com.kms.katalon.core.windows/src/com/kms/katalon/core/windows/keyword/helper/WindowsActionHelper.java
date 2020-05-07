@@ -22,6 +22,8 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.FluentWait;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.WindowsTestObject;
@@ -36,7 +38,7 @@ public class WindowsActionHelper {
 
     private static final int FIND_ELEMENT_TIMEOUT_IN_SECONDS = 1;
 
-    private KeywordLogger logger = KeywordLogger.getInstance(WindowsActionHelper.class);
+    private static KeywordLogger logger = KeywordLogger.getInstance(WindowsActionHelper.class);
 
     private WindowsSession windowsSession;
 
@@ -44,6 +46,19 @@ public class WindowsActionHelper {
         this.windowsSession = windowsSession;
     }
 
+    public static int checkTimeout(int timeout) throws IllegalArgumentException {
+        if (timeout < 0) {
+            throw new IllegalArgumentException(String.format("Timeout '%s' is invalid. Cannot be a negative number", timeout));
+        }
+        else if (timeout == 0) {
+            int defaultPageLoadTimeout = RunConfiguration.getTimeOut();
+            logger.logWarning(
+                    MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_TIMEOUT, timeout, defaultPageLoadTimeout));
+            return defaultPageLoadTimeout;
+        }
+        return timeout;
+    }
+    
     public static WindowsActionHelper create(WindowsSession windowsSession) {
         return new WindowsActionHelper(windowsSession);
     }

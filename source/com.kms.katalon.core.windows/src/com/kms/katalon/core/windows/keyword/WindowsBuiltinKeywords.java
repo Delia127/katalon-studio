@@ -220,7 +220,6 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setText", windowsObject, text,
                 flowControl);
     }
-    
 
     /**
      * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
@@ -228,17 +227,21 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * This action will append the given text on the element and doesn't clear the current text of the element.
      * 
      * @param windowsObject
-     * An object that describes locator and locator strategy to find Windows Element.
+     * An object that describes locator and locator strategy to find Windows element.
      * @param encryptedText
-     * The encrypted text content to set on the element.
+     * The encrypted text content to set on the element. Throws {@link IllegalArgumentException} If encryptedText is
+     * null.
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
+     * @throws IllegalArgumentException
+     * If encryptedText is null.
      * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
     public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText)
             throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setEncryptedText", windowsObject, encryptedText);
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setEncryptedText", windowsObject,
+                encryptedText);
     }
     
     /**
@@ -247,12 +250,12 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * This action will append the given text on the element and doesn't clear the current text of the element.
      * 
      * @param windowsObject
-     * An object that describes locator and locator strategy to find Windows Element.
+     * An object that describes locator and locator strategy to find Windows element.
      * @param encryptedText
-     * The encrypted text content to set on the element.
+     * The encrypted text content to set on the element. Throws {@link IllegalArgumentException} If encryptedText is
+     * null.
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
      * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
@@ -260,13 +263,15 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
+     * @throws IllegalArgumentException
+     * If encryptedText is null.
      * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText, FailureHandling flowControl)
-            throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setEncryptedText", windowsObject, encryptedText,
-                flowControl);
+    public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText,
+            FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setEncryptedText", windowsObject,
+                encryptedText, flowControl);
     }
 
     /**
@@ -312,13 +317,13 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
 
     /**
      * Get attribute value of a Windows element
+     * 
      * @param windowsObject
-     * An object that describes locator and locator strategy to find Windows Element.
+     * An object that describes locator and locator strategy to find Windows element.
      * @param attribute
-     *      name of the attribute
+     * name of the attribute. Throws {@link IllegalArgumentException} If attribute is null.
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
      * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
@@ -326,28 +331,37 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get text of the element.
+     * @throws IllegalArgumentException
+     * If attribute is null
      * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static String getAttribute(WindowsTestObject windowsObject, String attribute, FailureHandling flowControl) throws StepFailedException {
-        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getAttribute", windowsObject, attribute, flowControl);
+    public static String getAttribute(WindowsTestObject windowsObject, String attribute, FailureHandling flowControl)
+            throws StepFailedException {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getAttribute",
+                windowsObject, attribute, flowControl);
     }
 
     /**
      * Get attribute value of a Windows element
+     * 
      * @param windowsObject
-     * An object that describes locator and locator strategy to find Windows Element.
+     * An object that describes locator and locator strategy to find Windows element.
      * @param attribute
-     *      name of the attribute
+     * name of the attribute. Throws {@link IllegalArgumentException} If attribute is null.
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get text of the element.
+     * @throws IllegalArgumentException
+     * If attribute is null
      * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
     public static String getAttribute(WindowsTestObject windowsObject, String attribute) throws StepFailedException {
-        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getAttribute", windowsObject, attribute);
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getAttribute",
+                windowsObject, attribute);
     }
     
+
     /**
      * Clears text content of the {@link WebElement} that is found by using locator value of the given windowsObject.
      * 
@@ -532,7 +546,6 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     public static void sendKeys(WindowsTestObject windowsObject, String strKeys) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "sendKeys", windowsObject, strKeys);
     }
-
 
     /**
      * Get the position of the {@link WebElement} that is found by using locator value of the given
@@ -894,243 +907,415 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
 
     /**
      * Verify if the element has an attribute with the specific name and value
+     * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param attributeName
-     *      the name of the attribute to verify
+     * the name of the attribute name to verify. Throws {@link IllegalArgumentException} If attributeName is null.
      * @param attributeValue
-     *       the value of the attribute to verify
-     * @param timeOut
-     *      system will wait at most timeout (seconds) to return result
+     * the value of the expected attribute value to verify. Throws {@link IllegalArgumentException} If attributeValue is
+     * null.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
      * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * </p>
-     * @return true if element has the attribute with the specific name and value; otherwise, false
+     * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The actual attribute value is different from the expected one.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If attributeName or attributeValue is null. Or timeout < 0.
+     * @return true if element has the attribute with the specific name and value; otherwise, false.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean verifyElementAttributeValue(WindowsTestObject windowsObject, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementAttributeValue", windowsObject, attributeName, attributeValue, timeout, flowControl);
+    public static boolean verifyElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+            String attributeValue, int timeout, FailureHandling flowControl) {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementAttributeValue", windowsObject, attributeName, attributeValue, timeout, flowControl);
     }
     
     /**
      * Verify if the element has an attribute with the specific name and value
+     * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
      * @param attributeName
-     *      the name of the attribute to verify
+     * the name of the attribute name to verify. Throws {@link IllegalArgumentException} If attributeName is null.
      * @param attributeValue
-     *       the value of the attribute to verify
-     * @param timeOut
-     *      system will wait at most timeout (seconds) to return result
-     * @return true if element has the attribute with the specific name and value; otherwise, false
+     * the value of the expected attribute value to verify. Throws {@link IllegalArgumentException} If attributeValue is
+     * null.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
+     * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The actual attribute value is different from the expected one.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If attributeName or attributeValue is null. Or timeout < 0.
+     * @return true if element has the attribute with the specific name and value; otherwise, false.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean verifyElementAttributeValue(WindowsTestObject windowsObject, String attributeName, String attributeValue, int timeout) {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementAttributeValue", windowsObject, attributeName, attributeValue, timeout);
+    public static boolean verifyElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+            String attributeValue, int timeout) {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementAttributeValue", windowsObject, attributeName, attributeValue, timeout);
     }
     
     /**
-     * Verify if the given element presents on the opening Windows application
+     * Verify if the given element presents on the opening application
      *
      * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param timeOut
-     *          system will wait at most timeout (seconds) to return result
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
      * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * </p>
-     * @return true if element presents; otherwise, false
      * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If timeout < 0.
+     * @return true if element presents; otherwise, false.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementPresent", windowsObject, timeOut, flowControl);
+    public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeout,
+            FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementPresent", windowsObject, timeout, flowControl);
     }
     
     /**
-     * Verify if the given element presents on the opening Windows application
+     * Verify if the given element presents on the opening application
      *
      * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param timeOut
-     *          system will wait at most timeout (seconds) to return result
-     * @return true if element presents; otherwise, false
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
      * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If timeout < 0.
+     * @return true if element presents; otherwise, false.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeOut) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementPresent", windowsObject, timeOut);
+    public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeout)
+            throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementPresent", windowsObject, timeout);
+    } 
+
+    /**
+     * Verify if the given element does not present on the opening Windows application
+     *
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
+     * @param flowControl
+     * Optional parameter: Controls the execution flow if the step failed.
+     * <ul>
+     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * </ul>
+     * @return true if element does not present; otherwise, false
+     * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If timeout < 0.
+     * @since 7.7.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeout,
+            FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementNotPresent", windowsObject, timeout, flowControl);
     }
     
     /**
      * Verify if the given element does not present on the opening Windows application
      *
      * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param timeOut
-     *          system will wait at most timeout (seconds) to return result
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
+     * @return true if element does not present; otherwise, false
+     * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If timeout < 0.
+     * @since 7.7.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeout)
+            throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementNotPresent", windowsObject, timeout);
+    }
+
+    /**
+     * Wait until the given element has an attribute with the specific name and value
+     * 
+     * @param windowsObject
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param attributeName
+     * the name of the attribute name to verify. Throws {@link IllegalArgumentException} If attributeName is null.
+     * @param attributeValue
+     * the value of the expected attribute value to verify. Throws {@link IllegalArgumentException} If attributeValue is
+     * null.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
      * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * </p>
-     * @return true if element does not present; otherwise, false
      * @throws StepFailedException
-     */
-    @Keyword(keywordObject = "Element")
-    public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementNotPresent", windowsObject, timeOut, flowControl);
-    }
-    
-    /**
-     * Verify if the given element does not present on the opening Windows application
-     *
-     * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param timeOut
-     *          system will wait at most timeout (seconds) to return result
-     * @return true if element does not present; otherwise, false
-     * @throws StepFailedException
-     */
-    @Keyword(keywordObject = "Element")
-    public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeOut) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "verifyElementNotPresent", windowsObject, timeOut);
-    }
-
-    /**
-     * Wait until the given element has an attribute with the specific name and value
-     * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param attributeName
-     *      the name of the attribute to wait for
-     * @param attributeValue
-     *      the value of the attribute to wait for
-     * @param timeOut
-     *      system will wait at most timeout (seconds) to return result
-     * @param flowControl
-     * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
+     * If one of the following happens:
      * <ul>
-     * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
-     * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
-     * <li>OPTIONAL: continues the test and ignore the test result.</li>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The actual attribute value is different from the expected one.</li>
+     * <li>The given windowsObject is not present.</li>
      * </ul>
-     * </p>
-     * @return true if element has the attribute with the specific name and value; otherwise, false
+     * @throws IllegalArgumentException
+     * If attributeName or attributeValue is null. Or timeout < 0.
+     * @return true if element has the attribute with the specific name and value; otherwise, false.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeOut, flowControl);
+    public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+            String attributeValue, int timeout, FailureHandling flowControl) {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeout, flowControl);
     }
 
     /**
      * Wait until the given element has an attribute with the specific name and value
+     * 
      * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
+     * An object that describes locator and locator strategy to find the opening application.
      * @param attributeName
-     *      the name of the attribute to wait for
+     * the name of the attribute name to verify. Throws {@link IllegalArgumentException} If attributeName is null.
      * @param attributeValue
-     *      the value of the attribute to wait for
-     * @param timeOut
-     *      system will wait at most timeout (seconds) to return result
-     * @return true if element has the attribute with the specific name and value; otherwise, false
+     * the value of the expected attribute value to verify. Throws {@link IllegalArgumentException} If attributeValue is
+     * null.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
+     * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The actual attribute value is different from the expected one.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If attributeName or attributeValue is null. Or timeout < 0.
+     * @return true if element has the attribute with the specific name and value; otherwise, false.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName, String attributeValue, int timeOut) {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeOut);
+    public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+            String attributeValue, int timeout) {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeout);
     }
     
     /**
      * Wait for the given element does not present on the opening Windows application with a specific amount of time
      *
      * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param timeOut
-     *          system will wait at most timeout (seconds) to return result
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
      * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * </p>
      * @return true if element does not present; otherwise, false
      * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If timeout < 0.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementNotPresent", windowsObject, timeOut, flowControl);
+    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeout,
+            FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementNotPresent", windowsObject, timeout, flowControl);
     }
     
     /**
      * Wait for the given element does not present on the opening Windows application with a specific amount of time
      *
      * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param timeOut
-     *          system will wait at most timeout (seconds) to return result
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
      * @return true if element does not present; otherwise, false
      * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If timeout < 0.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeOut) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementNotPresent", windowsObject, timeOut);
+    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeout)
+            throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementNotPresent", windowsObject, timeout);
     }
     
     /**
      * Wait for the given element presents on the opening Windows application with a specific amount of time
      *
      * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param timeOut
-     *          system will wait at most timeout (seconds) to return result
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
-     * <p>
      * <ul>
      * <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * </p>
      * @return true if element presents; otherwise, false
      * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If timeout < 0.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementPresent", windowsObject, timeOut, flowControl);
+    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeout,
+            FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementPresent", windowsObject, timeout, flowControl);
     }
     
     /**
      * Wait for the given element presents on the opening Windows application with a specific amount of time
      *
      * @param windowsObject
-     *      An object that describes locator and locator strategy to find the opening application.
-     * @param timeOut
-     *          system will wait at most timeout (seconds) to return result
+     * An object that describes locator and locator strategy to find the opening application.
+     * @param timeout
+     * system will wait at most timeout (seconds) to return result.
+     * <ul>
+     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>Throws {@link IllegalArgumentException} If timeout < 0.
+     * </ul>
      * @return true if element presents; otherwise, false
      * @throws StepFailedException
+     * If one of the following happens:
+     * <ul>
+     * <li>The Windows element doesn't exist.</li>
+     * <li>The given windowsObject is not present.</li>
+     * </ul>
+     * @throws IllegalArgumentException
+     * If timeout < 0.
+     * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
-    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeOut) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "waitForElementPresent", windowsObject, timeOut);
+    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeout)
+            throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementPresent", windowsObject, timeout);
     }
 }

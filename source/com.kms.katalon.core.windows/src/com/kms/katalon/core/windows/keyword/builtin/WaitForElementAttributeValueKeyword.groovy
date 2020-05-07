@@ -75,14 +75,19 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
 
-            logger.logDebug("Checking attribute")
+            logger.logDebug("Checking attribute name")
             if (attributeName == null) {
                 throw new IllegalArgumentException("Attribute name is null")
             }
-
+            
+            logger.logDebug("Checking attribute value")
+            if (attributeValue == null) {
+                throw new IllegalArgumentException("Attribute value is null")
+            }
+            
+            timeOut = WindowsActionHelper.checkTimeout(timeOut)
+            
             try {
-                timeOut = KeywordHelper.checkTimeout(timeOut)
-
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true)
                 logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()))
 
@@ -101,9 +106,7 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
                     return true
                 }
             } catch (TimeoutException e) {
-                logger.logWarning(String.format("Object '%s' does not have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue))
-            } catch (Exception e) {
-                logger.logWarning(String.format("Object '%s' is not present", testObject.getObjectId()))
+                KeywordMain.stepFailed(String.format("Object '%s' is not present", testObject.getObjectId()), flowControl)
             }
             return false
         }, flowControl, (testObject != null) ? String.format("Unable to wait for object '%s' to have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)

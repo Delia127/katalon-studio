@@ -46,7 +46,7 @@ public class SetEncryptedTextKeyword extends AbstractKeyword {
             }
             
             if(encryptedText == null){
-                KeywordMain.stepFailed(StringConstants.KW_ENCRYPTED_TEXT_IS_NULL, flowControl)
+                throw new IllegalArgumentException(StringConstants.KW_ENCRYPTED_TEXT_IS_NULL)
             }
             
             CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(encryptedText)
