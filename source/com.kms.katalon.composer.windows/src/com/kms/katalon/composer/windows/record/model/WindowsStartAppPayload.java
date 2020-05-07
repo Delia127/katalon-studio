@@ -10,6 +10,12 @@ public class WindowsStartAppPayload {
     @SerializedName("AppPath")
     private String appPath;
 
+    @SerializedName("Success")
+    private boolean Success;
+
+    @SerializedName("Message")
+    private String Message;
+
     public String getAppTitle() {
         return appTitle;
     }
@@ -24,5 +30,21 @@ public class WindowsStartAppPayload {
 
     public void setAppPath(String appPath) {
         this.appPath = appPath;
+    }
+
+    public String getMessage() {
+        return Message;
+    }
+
+    public void setMessage(String message) {
+        Message = message;
+    }
+
+    public boolean isSuccess() {
+        return Success;
+    }
+
+    public void setSuccess(boolean success) {
+        Success = success;
     }
 }

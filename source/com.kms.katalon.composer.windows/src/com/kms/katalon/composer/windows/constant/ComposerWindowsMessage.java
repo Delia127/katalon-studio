@@ -11,6 +11,8 @@ public class ComposerWindowsMessage {
 
     public static String DLG_TITLE_KATALON_NATIVE_RECORDER;
 
+    public static String MSG_FAILED_START_APPLICATION;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages("com.kms.katalon.composer.windows.constant.composerWindowsMessage", ComposerWindowsMessage.class);

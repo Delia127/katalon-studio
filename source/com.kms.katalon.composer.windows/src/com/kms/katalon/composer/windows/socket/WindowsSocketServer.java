@@ -7,10 +7,15 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.windows.action.WindowsAction;
 import com.kms.katalon.composer.windows.action.WindowsActionMapping;
+import com.kms.katalon.composer.windows.constant.ComposerWindowsMessage;
 import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialogV2;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.record.model.RecordedElementLocatorHelper;
@@ -93,10 +98,20 @@ public class WindowsSocketServer {
                 return;
             case APP_INFO: {
                 WindowsStartAppPayload payload = JsonUtil.fromJson(clientMessage.getData(), WindowsStartAppPayload.class);
-                WindowsActionMapping actionMapping = new WindowsActionMapping(WindowsAction.StartApplicationWithTitle, null);
-                actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(payload.getAppPath()));
-                actionMapping.getData()[1].setValue(new ConstantExpressionWrapper(payload.getAppTitle()));
-                recorderDialog.addActionMapping(actionMapping);
+                if (payload.isSuccess()) {
+                    WindowsActionMapping actionMapping = new WindowsActionMapping(WindowsAction.StartApplicationWithTitle, null);
+                    actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(payload.getAppPath()));
+                    actionMapping.getData()[1].setValue(new ConstantExpressionWrapper(payload.getAppTitle()));
+                    recorderDialog.addActionMapping(actionMapping);
+                } else {
+                    UISynchronizeService.asyncExec(() -> {
+                        recorderDialog.setStarting(false);
+                        recorderDialog.refreshButtonsState();
+                        LoggerSingleton.logError(payload.getMessage());
+                        MultiStatusErrorDialog.showErrorDialog(ComposerWindowsMessage.MSG_FAILED_START_APPLICATION,
+                                payload.getMessage(), payload.getAppPath());
+                    });
+                }
                 return;
             }
             case RECORDING_ACTION: {

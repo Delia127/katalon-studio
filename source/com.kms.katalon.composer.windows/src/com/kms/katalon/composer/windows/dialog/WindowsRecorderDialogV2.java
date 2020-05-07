@@ -270,7 +270,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         btnStart.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-
                 isStarting = true;
                 setButtonStates();
                 try {
@@ -293,11 +292,11 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    closeApplication();
-                    stopServer();
-
                     isStarting = false;
                     setButtonStates();
+
+                    closeApplication();
+                    stopServer();
                 } catch (Exception ex) {}
             }
         });
@@ -386,7 +385,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     }
 
     public void refreshButtonsState() {
-
+        setButtonStates();
     }
 
     @Override
@@ -411,6 +410,14 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     public void highlightElementRects(List<Rectangle> rects) {
         // TODO Auto-generated method stub
 
+    }
+
+    public boolean isStarting() {
+        return isStarting;
+    }
+
+    public void setStarting(boolean isStarting) {
+        this.isStarting = isStarting;
     }
 
     public ToolItem getBtnStart() {
