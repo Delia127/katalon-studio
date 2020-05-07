@@ -229,12 +229,16 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows element.
      * @param encryptedText
-     * The encrypted text content to set on the element. Throws {@link IllegalArgumentException} If encryptedText is
+     * The encrypted text content to set on the element. 
+     * Throws {@link IllegalArgumentException} If encryptedText is
      * null.
+     * Throws {@link ArrayIndexOutOfBoundsException} If something went wrong while decoding encryptedText.
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
      * @throws IllegalArgumentException
      * If encryptedText is null.
+     * @throws ArrayIndexOutOfBoundsException
+     * If something went wrong while decoding encryptedText
      * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
@@ -252,8 +256,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows element.
      * @param encryptedText
-     * The encrypted text content to set on the element. Throws {@link IllegalArgumentException} If encryptedText is
+     * The encrypted text content to set on the element. 
+     * Throws {@link IllegalArgumentException} If encryptedText is
      * null.
+     * Throws {@link ArrayIndexOutOfBoundsException} If something went wrong while decoding encryptedText.
      * @param flowControl
      * Optional parameter: Controls the execution flow if the step failed.
      * <ul>
@@ -265,6 +271,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
      * @throws IllegalArgumentException
      * If encryptedText is null.
+     * @throws ArrayIndexOutOfBoundsException
+     * If something went wrong while decoding encryptedText.
      * @since 7.7.0
      */
     @Keyword(keywordObject = "Element")
@@ -918,7 +926,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -929,12 +937,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The actual attribute value is different from the expected one.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If attributeName or attributeValue is null. Or timeout < 0.
      * @return true if element has the attribute with the specific name and value; otherwise, false.
@@ -948,7 +951,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Verify if the element has an attribute with the specific name and value
+     * Verify if the element has an attribute that matches with the specific value
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find the opening application.
@@ -960,16 +963,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The actual attribute value is different from the expected one.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If attributeName or attributeValue is null. Or timeout < 0.
      * @return true if element has the attribute with the specific name and value; otherwise, false.
@@ -990,7 +988,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1000,12 +998,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
-     * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * @throws StepFailedException 
+     * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @return true if element presents; otherwise, false.
@@ -1026,15 +1020,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @return true if element presents; otherwise, false.
@@ -1055,7 +1045,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1067,11 +1057,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @return true if element does not present; otherwise, false
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1091,16 +1077,12 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @return true if element does not present; otherwise, false
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1125,7 +1107,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1136,12 +1118,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * <li>OPTIONAL: continues the test and ignore the test result.</li>
      * </ul>
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The actual attribute value is different from the expected one.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If attributeName or attributeValue is null. Or timeout < 0.
      * @return true if element has the attribute with the specific name and value; otherwise, false.
@@ -1167,16 +1144,12 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The actual attribute value is different from the expected one.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element doesn't exist.
+     * Or the actual attribute value is different from the expected one.
      * @throws IllegalArgumentException
      * If attributeName or attributeValue is null. Or timeout < 0.
      * @return true if element has the attribute with the specific name and value; otherwise, false.
@@ -1197,7 +1170,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1209,11 +1182,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @return true if element does not present; otherwise, false
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1233,16 +1202,12 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @return true if element does not present; otherwise, false
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1262,7 +1227,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @param flowControl
@@ -1274,11 +1239,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @return true if element presents; otherwise, false
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
@@ -1298,16 +1259,12 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param timeout
      * system will wait at most timeout (seconds) to return result.
      * <ul>
-     * <li>Throws WARNING if timeout = 0 and set timeout to default page load timeout.
+     * <li>If timeout = 0. Set timeout to default page load timeout.
      * <li>Throws {@link IllegalArgumentException} If timeout < 0.
      * </ul>
      * @return true if element presents; otherwise, false
      * @throws StepFailedException
-     * If one of the following happens:
-     * <ul>
-     * <li>The Windows element doesn't exist.</li>
-     * <li>The given windowsObject is not present.</li>
-     * </ul>
+     * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.7.0
