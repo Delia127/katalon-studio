@@ -314,8 +314,6 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * Get attribute value of a Windows element
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows Element.
-     * @param flowControl
-     * 
      * @param attribute
      *      name of the attribute
      * @param flowControl
@@ -339,8 +337,6 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * Get attribute value of a Windows element
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows Element.
-     * @param flowControl
-     * 
      * @param attribute
      *      name of the attribute
      * @throws StepFailedException

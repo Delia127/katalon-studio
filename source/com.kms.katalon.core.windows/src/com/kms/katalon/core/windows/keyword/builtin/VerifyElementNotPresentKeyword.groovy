@@ -83,7 +83,7 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
                     @Override
                     public Boolean apply(WindowsTestObject to) {
                         try {
-                            WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(to, timeOut)
+                            WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(to, timeOut, false)
                             return false
                         } catch (NoSuchElementException exception) {
                             return true
@@ -97,7 +97,7 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
                 logger.logPassed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut))
                 return true
             } else {
-                logger.logWarning(String.format("Object '%s' is present within %s second(s)", testObject.getObjectId(), timeOut))
+                KeywordMain.stepFailed(String.format("Object '%s' is present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
                 return false
             }
         }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s' is not present", testObject.getObjectId()) : "Unable to verify object is present or not")

@@ -79,25 +79,33 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
             if (attributeName == null) {
                 throw new IllegalArgumentException("Attribute name is null")
             }
-            timeOut = KeywordHelper.checkTimeout(timeOut)
-            
-            WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut);
-            logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
 
-            FluentWait<WebElement> wait = new FluentWait<WebElement>(foundElement)
-            .withTimeout(Duration.ofSeconds(timeOut))
-            .pollingEvery(Duration.ofMillis(50));
-            
-            Boolean hasAttribute = wait.until(new Function<WebElement, Boolean>(){
-                @Override
-                public Boolean apply(WebElement webElement){
-                    return webElement.getAttribute(attributeName) == attributeValue;
-                    }
-            });
-            if (hasAttribute){
-                logger.logPassed(String.format("Object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue));
-                return true;
+            try {
+                timeOut = KeywordHelper.checkTimeout(timeOut)
+
+                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true)
+                logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()))
+
+                FluentWait<WebElement> wait = new FluentWait<WebElement>(foundElement)
+                        .withTimeout(Duration.ofSeconds(timeOut))
+                        .pollingEvery(Duration.ofMillis(500))
+
+                Boolean hasAttribute = wait.until(new Function<WebElement, Boolean>(){
+                            @Override
+                            public Boolean apply(WebElement element){
+                                return element.getAttribute(attributeName) == attributeValue
+                            }
+                        })
+                if (hasAttribute){
+                    logger.logPassed(String.format("Object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue))
+                    return true
+                }
+            } catch (TimeoutException e) {
+                logger.logWarning(String.format("Object '%s' does not have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue))
+            } catch (Exception e) {
+                logger.logWarning(String.format("Object '%s' is not present", testObject.getObjectId()))
             }
+            return false
         }, flowControl, (testObject != null) ? String.format("Unable to wait for object '%s' to have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)
         : "Unable to wait for element to have attribute with value");
     }

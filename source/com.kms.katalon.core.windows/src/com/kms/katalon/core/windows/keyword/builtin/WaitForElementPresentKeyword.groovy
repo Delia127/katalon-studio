@@ -74,14 +74,14 @@ public class WaitForElementPresentKeyword extends AbstractKeyword {
 
                 timeOut = KeywordHelper.checkTimeout(timeOut)
 
-                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut);
+                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true);
                 
                 if (foundElement != null){
                     logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()));
                 }
                 return true
-            } catch (NoSuchElementException exception) {
-                logger.logWarning(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
+            } catch (TimeoutException exception) {
+                logger.logWarning(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut))
                 return false
             }
         }, flowControl, (testObject != null) ? String.format("Unable to verify object ''{0}'' is present", testObject.getObjectId()) : "Unable to verify object is present")

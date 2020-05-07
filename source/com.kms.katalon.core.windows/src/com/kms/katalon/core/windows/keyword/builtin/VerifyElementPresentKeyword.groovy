@@ -78,8 +78,8 @@ public class VerifyElementPresentKeyword extends AbstractKeyword {
                     logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()))
                 }
                 return true;
-            } catch (NoSuchElementException exception){
-                KeywordMain.stepFailed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut))
+            } catch (TimeoutException exception){
+                KeywordMain.stepFailed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
             }
             return false
         }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s'' is present", testObject.getObjectId()) : "Unable to verify object is present")

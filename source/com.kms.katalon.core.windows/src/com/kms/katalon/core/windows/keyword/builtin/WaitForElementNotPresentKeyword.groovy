@@ -83,7 +83,7 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
                     @Override
                     public Boolean apply(WindowsTestObject to) {
                         try {
-                            WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(to, timeOut)
+                            WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(to, timeOut, false)
                             return false
                         } catch (NoSuchElementException exception) {
                             return true

@@ -65,7 +65,7 @@ public class GetAttributeKeyword extends AbstractKeyword {
 
     public String getAttribute(WindowsTestObject testObject, String attribute, FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
-            String attrValue = ""
+            String attrValue = null
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
@@ -75,7 +75,6 @@ public class GetAttributeKeyword extends AbstractKeyword {
             if (attribute == null) {
                 throw new IllegalArgumentException("Attribute is null")
             }
-
             
             WebElement element = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject)
             logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attribute, testObject.getObjectId()))
