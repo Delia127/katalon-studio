@@ -32,25 +32,30 @@
 <unit id="io.cucumber.tag-expressions" version="1.1.1"/>
 <unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.1"/>
 <unit id="org.apache.commons.commons-text" version="1.6.0"/>
+<unit id="io.netty.transport-native-unix-common" version="4.1.32.Final"/>
 <unit id="jackson-core-asl" version="1.9.13"/>
 <unit id="wsdl4j" version="1.6.2"/>
+<unit id="io.netty.transport" version="4.1.32.Final"/>
 <unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml" version="2.9.6"/>
 <unit id="javax.enterprise.cdi-api" version="1.2.0"/>
 <unit id="io.cucumber.datatable" version="1.0.3"/>
 <unit id="joda-time" version="2.8.1"/>
 <unit id="javax.xml.jaxp-api" version="1.4.2"/>
 <unit id="com.amazonaws.aws-java-sdk-core" version="1.11.716"/>
+<unit id="io.netty.common" version="4.1.32.Final"/>
 <unit id="org.dom4j" version="1.6.1.v201312101416"/>
 <unit id="io.swagger.parser-core" version="2.0.0.rc1"/>
 <unit id="com.google.guava" version="23.0.0"/>
 <unit id="org.apache.ant.launcher" version="1.9.6"/>
 <unit id="org.eclipse.jetty.websocket.client" version="9.3.9.v20160517"/>
 <unit id="io.swagger.parser-v3" version="2.0.0.rc1"/>
+<unit id="io.netty.transport-native-epoll" version="4.1.32.Final"/>
 <unit id="org.javalite.common" version="1.4.12"/>
 <unit id="javax.persistence.api" version="1.0.2"/>
 <unit id="org.apache.aries.spifly.dynamic.bundle" version="1.0.8"/>
 <unit id="org.eclipse.jetty.websocket.javax.websocket.server" version="9.3.9.v20160517"/>
 <unit id="org.objectweb.asm.commons" version="5.0.1"/>
+<unit id="io.netty.codec-http" version="4.1.32.Final"/>
 <unit id="org.codehaus.mojo.animal-sniffer-annotations" version="1.14.0"/>
 <unit id="net.lingala.zip4j" version="1.2.5"/>
 <unit id="io.cucumber.datatable-dependencies" version="1.0.3"/>
@@ -113,6 +118,7 @@
 <unit id="classmate" version="1.0.0"/>
 <unit id="org.apache.commons.logging" version="1.2.0"/>
 <unit id="javax.persistence" version="2.1.0.v201304241213"/>
+<unit id="io.netty.buffer" version="4.1.32.Final"/>
 <unit id="net.sf.jopt-simple.jopt-simple" version="5.0.0"/>
 <unit id="io.cucumber.java" version="3.0.2"/>
 <unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-xml" version="2.9.1"/>
@@ -124,6 +130,7 @@
 <unit id="javax.servlet-api" version="3.1.0"/>
 <unit id="org.eclipse.jetty.server" version="9.3.9.v20160517"/>
 <unit id="software.amazon.ion.java" version="1.0.2"/>
+<unit id="com.corundumstudio.socketio.netty-socketio" version="1.7.17"/>
 <unit id="org.eclipse.jetty.xml" version="9.3.9.v20160517"/>
 <unit id="commonj.sdo" version="2.1.1.v201112051852"/>
 <unit id="org.eclipse.jetty.io" version="9.3.9.v20160517"/>
@@ -141,12 +148,14 @@
 <unit id="org.apache.commons.beanutils" version="1.9.2"/>
 <unit id="org.apache.commons.codec" version="1.7.0"/>
 <unit id="dom4j" version="1.6.1"/>
+<unit id="io.netty.codec" version="4.1.32.Final"/>
 <unit id="com.katalon.platform" version="1.0.15"/>
 <unit id="org.apache.xmlbeans" version="2.6.0"/>
 <unit id="org.apache.commons.digester" version="1.8.1"/>
 <unit id="org.apache.commons.email" version="1.4.0"/>
 <unit id="stax.api" version="1.0.1"/>
 <unit id="stax2-api" version="3.1.4"/>
+<unit id="io.netty.handler" version="4.1.32.Final"/>
 <unit id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
 <unit id="javax.ws.rs" version="1.1.1.v20130318-1750"/>
 <unit id="org.zeroturnaround.zt-exec" version="1.7.0"/>
@@ -170,6 +179,7 @@
 <unit id="io.swagger.parser-v2-converter" version="2.0.0.rc1"/>
 <unit id="org.hibernate.javax.persistence.hibernate-jpa-2.1-api" version="1.0.0.Final"/>
 <unit id="io.cucumber.gherkin" version="5.0.0"/>
+<unit id="io.netty.resolver" version="4.1.32.Final"/>
 <unit id="org.eclipse.jetty.websocket.api" version="9.3.9.v20160517"/>
 <repository location="http://localhost:9999/site"/>
 </location>
@@ -185,6 +195,7 @@
 <plugin id="classmate"/>
 <plugin id="com.amazonaws.aws-java-sdk-core"/>
 <plugin id="com.auth0.java-jwt"/>
+<plugin id="com.corundumstudio.socketio.netty-socketio"/>
 <plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
 <plugin id="com.fasterxml.jackson.core.jackson-core"/>
 <plugin id="com.fasterxml.jackson.core.jackson-databind"/>
@@ -231,6 +242,15 @@
 <plugin id="io.cucumber.java"/>
 <plugin id="io.cucumber.junit"/>
 <plugin id="io.cucumber.tag-expressions"/>
+<plugin id="io.netty.buffer"/>
+<plugin id="io.netty.codec"/>
+<plugin id="io.netty.codec-http"/>
+<plugin id="io.netty.common"/>
+<plugin id="io.netty.handler"/>
+<plugin id="io.netty.resolver"/>
+<plugin id="io.netty.transport"/>
+<plugin id="io.netty.transport-native-epoll"/>
+<plugin id="io.netty.transport-native-unix-common"/>
 <plugin id="io.swagger.annotations"/>
 <plugin id="io.swagger.core"/>
 <plugin id="io.swagger.models"/>

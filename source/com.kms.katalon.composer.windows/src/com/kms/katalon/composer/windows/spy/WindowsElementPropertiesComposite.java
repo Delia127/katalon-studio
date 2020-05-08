@@ -136,7 +136,7 @@ public class WindowsElementPropertiesComposite {
         lblLocator.setLayoutData(gdLocator);
         lblLocator.setText("Locator");
 
-        txtLocator = new StyledText(locatorComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+        txtLocator = new StyledText(locatorComposite, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
         GridData gdTxtEditor = new GridData(SWT.FILL, SWT.FILL, true, false);
         gdTxtEditor.heightHint = 50;
         txtLocator.setLayoutData(gdTxtEditor);
@@ -338,7 +338,7 @@ public class WindowsElementPropertiesComposite {
 
         if (editingElement != null) {
             txtObjectName.setText(editingElement.getName());
-            txtLocator.setText(editingElement.getLocator());
+            txtLocator.setText(StringUtils.defaultString(editingElement.getLocator()));
             int selectedIndex = Arrays.asList(strategies)
                     .indexOf(editingElement.getLocatorStrategy().getLocatorStrategy());
             cbbLocatorStrategy.select(selectedIndex);
