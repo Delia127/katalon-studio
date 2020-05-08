@@ -32,6 +32,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.constants.SystemProperties;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
@@ -114,6 +115,7 @@ public class ProjectController extends EntityController {
                         progress.newChild(20, SubMonitor.SUPPRESS_SUBTASK));
                 KeywordController.getInstance().parseAllCustomKeywords(project,
                         progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
+                System.setProperty(SystemProperties.PROJECT_LOCATION, project.getFolderLocation());
             }
             return project;
         } finally {
@@ -192,6 +194,8 @@ public class ProjectController extends EntityController {
             LogUtil.printOutputLine("Parsing custom keywords...");
             KeywordController.getInstance().parseAllCustomKeywords(project, null);
             LogUtil.printOutputLine(MessageFormat.format("Project ''{0}'' opened", project.getName()));
+            
+            System.setProperty(SystemProperties.PROJECT_LOCATION, project.getFolderLocation());
         }
         return project;
     }
