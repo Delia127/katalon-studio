@@ -5,6 +5,10 @@ import org.eclipse.osgi.util.NLS;
 public class CoreWebuiMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.core.webui.constants.coreWebuiMessages";
 
+    public static String KW_LOG_INFO_INJECTED_INPUT;
+    
+    public static String KW_LOG_INFO_EMITTED_DRAG_AND_DROP_EVENT;
+
 	public static String KW_LOG_INFO_SCREENSHOTS_BY_SMART_XPATH_ARE_SAVED;
 	
 	public static String KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT;
