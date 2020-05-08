@@ -17,6 +17,8 @@ public class ProxyInformation {
     
     private String exceptionList;
     
+    private boolean applyToDesiredCapabilities;
+    
     public String getExceptionList() {
         return exceptionList;
     }
@@ -84,15 +86,25 @@ public class ProxyInformation {
         }
     }
 
+    public boolean isApplyToDesiredCapabilities() {
+        return applyToDesiredCapabilities;
+    }
+
+    public void setApplyToDesiredCapabilities(boolean applyToDesiredCapabilities) {
+        this.applyToDesiredCapabilities = applyToDesiredCapabilities;
+    }
+
     @Override
     public String toString() {
-        return "ProxyInformation{"
+        return "ProxyInformation { "
                 + "proxyOption=" + proxyOption + ", "
                 + "proxyServerType=" + proxyServerType + ", "
-                + "password=" + password + ", "
+                + "username=" + username + ", "
+                + "password=" + "********" + ", "
                 + "proxyServerAddress=" + proxyServerAddress + ", "
                 + "proxyServerPort=" + proxyServerPort + ", "
-                + "executionList=" + exceptionList
-                + "}";
+                + "executionList=\"" + exceptionList + "\", "
+                + "isApplyToDesiredCapabilities=" + applyToDesiredCapabilities
+                + " }";
     }
 }

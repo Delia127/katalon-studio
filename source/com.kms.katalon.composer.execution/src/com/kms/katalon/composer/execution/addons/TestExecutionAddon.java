@@ -38,7 +38,6 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.control.PartListenerAdapter;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -62,6 +61,8 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 
 @SuppressWarnings("restriction")
@@ -89,6 +90,8 @@ public class TestExecutionAddon implements EventHandler {
 
     @Inject
     private EPartService partService;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     @PostConstruct
     public void initHandlers(IEventBroker eventBroker) {
@@ -107,13 +110,16 @@ public class TestExecutionAddon implements EventHandler {
                 }
                 if (partService.saveAll(true) && partService.getDirtyParts().isEmpty()) {
                     ExecuteFromTestStepEntity executeFromTestStepEntity = (ExecuteFromTestStepEntity) object;
-                    if (LicenseUtil.isFreeLicense()) {
-                        if (executeFromTestStepEntity.getLaunchMode() == LaunchMode.DEBUG) {
+                    if (executeFromTestStepEntity.getLaunchMode() == LaunchMode.DEBUG) {
+                        if (!featureService.canUse(KSEFeature.TEST_CASE_DEBUG_FROM_SELECTED_STEP)) {
                             KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_DEBUG_FROM_SELECTED_STEP);
-                        } else {
-                            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP);
+                            return;
                         }
-                        return;
+                    } else {
+                        if (!featureService.canUse(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP)) {
+                            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP);
+                            return;
+                        }
                     }
                     executeTestCaseFromTestStep(executeFromTestStepEntity);
                 }

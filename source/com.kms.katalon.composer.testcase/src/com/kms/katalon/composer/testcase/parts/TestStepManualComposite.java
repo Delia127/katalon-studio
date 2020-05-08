@@ -58,7 +58,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
@@ -126,6 +125,8 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSession;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -166,6 +167,8 @@ public class TestStepManualComposite {
     private Menu recentMenu;
 
     private TestCaseCompositePart parentTestCaseCompositePart;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public TestStepManualComposite(ITestCasePart parentPart, Composite parent) {
         this(parentPart, parent, null);
@@ -938,15 +941,15 @@ public class TestStepManualComposite {
             removeTestStep();
             break;
         case TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID:
-            if (!isEnterpriseAccount()) {
-                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_ENABLE_STEP);
+            if (!featureService.canUse(KSEFeature.TEST_CASE_TOGGLE_STEP)) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_TOGGLE_STEP);
             } else {
                 getTreeTableInput().enable();
             }
             break;
         case TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID:
-            if (!isEnterpriseAccount()) {
-                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_DISABLE_STEP);
+            if (!featureService.canUse(KSEFeature.TEST_CASE_TOGGLE_STEP)) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_TOGGLE_STEP);
             } else {
                 getTreeTableInput().disable();
             }
@@ -961,10 +964,6 @@ public class TestStepManualComposite {
             getTreeTableInput().addNewAstObject(menuItem.getID(), treeTableInput.getSelectedNode(), addType);
             break;
         }
-    }
-
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
     }
 
     public void addStepByActionID(int id) {

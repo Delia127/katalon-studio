@@ -143,7 +143,7 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
 
     private Proxy getProxy() throws IOException, AndroidSetupException {
         try {
-            return ProxyUtil.getProxy(ProxyPreferences.getProxyInformation());
+            return ProxyUtil.getProxy(ProxyPreferences.getSystemProxyInformation());
         } catch (URISyntaxException e) {
             throw new AndroidSetupException(e.getMessage());
         }

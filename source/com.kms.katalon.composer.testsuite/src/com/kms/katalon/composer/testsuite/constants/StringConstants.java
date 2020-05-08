@@ -139,6 +139,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_RETRY = ComposerTestsuiteMessageConstants.PA_LBL_RETRY;
     
     public static final String PA_LBL_TEST_CASE_ONLY = ComposerTestsuiteMessageConstants.PA_LBL_TEST_CASE_ONLY;
+    
+    public static final String PA_LBL_TEST_CASE_TEST_DATA_ONLY = ComposerTestsuiteMessageConstants.PA_LBL_TEST_CASE_TEST_DATA_ONLY;
 
     public static final String PA_LBL_TIP_LAST_RUN = ComposerTestsuiteMessageConstants.PA_LBL_TIP_LAST_RUN;
 
@@ -212,6 +214,8 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String PA_LBL_TOOLTIP_TEST_CASE_ONLY = ComposerTestsuiteMessageConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY;
 
+    public static final String PA_LBL_TOOLTIP_TEST_CASE_TEST_DATA_ONLY = ComposerTestsuiteMessageConstants.PA_LBL_TOOLTIP_TEST_CASE_TEST_DATA_ONLY;
+    
     // VariableValueEditingSupport
     public static final String SUP_WARN_MSG_TEST_DATA_NOT_FOUND = ComposerTestsuiteMessageConstants.SUP_WARN_MSG_TEST_DATA_NOT_FOUND;
     
