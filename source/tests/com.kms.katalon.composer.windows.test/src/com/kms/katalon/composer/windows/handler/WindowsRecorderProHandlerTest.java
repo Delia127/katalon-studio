@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.windows.handler;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -25,6 +26,6 @@ public class WindowsRecorderProHandlerTest {
 
         WindowsRecorderProHandler handler = new WindowsRecorderProHandler();
 
-        assertFalse("Should disable when a project is opened but don't have any valid license", handler.canExecute());
+        assertTrue("Should enable when a project is opened with free license", handler.canExecute());
     }
 }
