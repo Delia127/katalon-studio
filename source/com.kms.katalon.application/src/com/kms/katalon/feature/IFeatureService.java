@@ -27,8 +27,15 @@ public interface IFeatureService {
      * @return true if the feature is available, false otherwise
      */
     boolean canUse(String featureKey);
-
     
+    /**
+     * Verify if the feature is available for this user
+     * 
+     * @param feature Feature
+     * @return true if the feature is available, false otherwise
+     */
+    boolean canUse(KSEFeature feature);
+
     /**
      * Clear all available features
      */

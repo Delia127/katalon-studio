@@ -34,9 +34,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -48,7 +46,9 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenProjectHandler {
@@ -157,13 +157,14 @@ public class OpenProjectHandler {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
+                    IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
                     monitor.beginTask(StringConstants.HAND_OPENING_PROJ, 10);
                     SubMonitor progress = SubMonitor.convert(monitor, 10);
                     monitor.worked(1);
                     monitor.subTask(StringConstants.HAND_LOADING_PROJ);
-                    boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
+                    boolean allowSourceAttachment = featureService.canUse(KSEFeature.SOURCE_CODE_FOR_DEBUGGING);
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
-                            isEnterpriseAccount,
+                            allowSourceAttachment,
                             progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));                    
 
                     monitor.subTask(StringConstants.HAND_REFRESHING_EXPLORER);

@@ -16,11 +16,14 @@ public class TestSuiteCollectionExecutedEntity extends ExecutedEntity implements
     private Reportable reportable;
 
     private Rerunable rerunable;
+    
+    private EmailSettings emailSettings;
 
     public TestSuiteCollectionExecutedEntity(TestSuiteCollectionEntity entity) {
         super(entity);
         executedItems = new ArrayList<>();
         testSuiteCollectionEntity = entity;
+        emailSettings = new EmailSettings();
     }
 
     public void addTestSuiteExecutedEntity(TestSuiteExecutedEntity testSuiteExecuted) {
@@ -82,5 +85,6 @@ public class TestSuiteCollectionExecutedEntity extends ExecutedEntity implements
     @Override
     public EmailConfig getEmailConfig(ProjectEntity project) {
         return reportable.getEmailConfig(project);
+//        return emailSettings.getEmailConfig(project);
     }
 }

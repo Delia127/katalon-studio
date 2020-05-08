@@ -30,7 +30,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -45,6 +44,9 @@ import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -64,6 +66,8 @@ public class ProjectSessionHandler {
 
     @Inject
     private UISynchronize sync;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public static ScopedPreferenceStore getGeneralStore() {
         return getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
@@ -193,15 +197,20 @@ public class ProjectSessionHandler {
     
     private boolean shouldRestoreOpenedEntity(ITreeEntity entity) throws Exception {
         Object object = entity.getObject();
-        if (LicenseUtil.isFreeLicense() && (
-                object instanceof ReportEntity ||
-                object instanceof ReportCollectionEntity ||
-                object instanceof CheckpointEntity ||
-                object instanceof FilteringTestSuiteEntity)) {
-            return false;
-        } else {
-            return true;
-        }
+        boolean shouldNotRestoreReport = object instanceof ReportEntity
+                && !featureService.canUse(KSEFeature.REPORT_HISTORY);
+        boolean shouldNotRestoreReportCollection = object instanceof ReportCollectionEntity
+                && !featureService.canUse(KSEFeature.REPORT_HISTORY);
+        boolean shouldNotRestoreCheckpoint = object instanceof CheckpointEntity
+                && !featureService.canUse(KSEFeature.CHECKPOINT);
+        boolean shouldNotRestoreFilteringTestSuite = object instanceof FilteringTestSuiteEntity
+                && !featureService.canUse(KSEFeature.DYNAMIC_TEST_SUITE);
+        boolean shouldNotRestoreEntity =
+                shouldNotRestoreReport
+                || shouldNotRestoreReportCollection
+                || shouldNotRestoreCheckpoint
+                || shouldNotRestoreFilteringTestSuite;
+        return !shouldNotRestoreEntity;
     }
 
     private String[] rememberExpandedTreeEntities() throws Exception {
