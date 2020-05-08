@@ -1,6 +1,5 @@
 package com.kms.katalon.core.windows.keyword.builtin
 
-import groovy.transform.CompileStatic
 import io.appium.java_client.windows.WindowsDriver
 import java.text.MessageFormat
 import java.time.Duration

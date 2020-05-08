@@ -1,6 +1,5 @@
 package com.kms.katalon.core.windows.keyword.builtin
 
-import groovy.transform.CompileStatic
 import io.appium.java_client.windows.WindowsDriver
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
@@ -45,7 +44,7 @@ import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.util.internal.PathUtil
 
-@Action(value = StringConstants.GET_ATTRIBUTE_KEYWORD)
+@Action(value = "getAttribute")
 public class GetAttributeKeyword extends AbstractKeyword {
     
     private KeywordLogger logger = KeywordLogger.getInstance(GetAttributeKeyword.class)

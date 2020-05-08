@@ -1,6 +1,5 @@
 package com.kms.katalon.core.windows.keyword.builtin;
 
-import groovy.transform.CompileStatic
 import io.appium.java_client.windows.WindowsDriver
 import java.text.MessageFormat
 import org.openqa.selenium.WebElement
@@ -20,7 +19,7 @@ import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.util.CryptoUtil
 
-@Action(value = StringConstants.SET_ENCRYPTED_TEXT_KEYWORD)
+@Action(value = "setEncryptedText")
 public class SetEncryptedTextKeyword extends AbstractKeyword {
     
     private KeywordLogger logger = KeywordLogger.getInstance(SetEncryptedTextKeyword.class)

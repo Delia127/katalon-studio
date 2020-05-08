@@ -239,7 +239,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If encryptedText is null.
      * @throws ArrayIndexOutOfBoundsException
      * If something went wrong while decoding encryptedText
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText)
@@ -273,7 +273,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If encryptedText is null.
      * @throws ArrayIndexOutOfBoundsException
      * If something went wrong while decoding encryptedText.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText,
@@ -341,7 +341,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If the Windows element doesn't exist, or KS could not get text of the element.
      * @throws IllegalArgumentException
      * If attribute is null.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static String getAttribute(WindowsTestObject windowsObject, String attribute, FailureHandling flowControl)
@@ -361,7 +361,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If the Windows element doesn't exist, or KS could not get text of the element.
      * @throws IllegalArgumentException
      * If attribute is null.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static String getAttribute(WindowsTestObject windowsObject, String attribute) throws StepFailedException {
@@ -941,7 +941,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      * If attributeName or attributeValue is null. Or timeout < 0.
      * @return true if element has the attribute with the specific name and value; otherwise, false.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static boolean verifyElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
@@ -971,7 +971,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      * If attributeName or attributeValue is null. Or timeout < 0.
      * @return true if element has the attribute with the specific name and value; otherwise, false.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static boolean verifyElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
@@ -1003,7 +1003,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @return true if element presents; otherwise, false.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeout,
@@ -1028,7 +1028,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @return true if element presents; otherwise, false.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeout)
@@ -1060,7 +1060,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If the Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeout,
@@ -1085,7 +1085,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If the Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeout)
@@ -1121,7 +1121,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If attributeName or attributeValue is null. Or timeout < 0.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static void waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
@@ -1151,7 +1151,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * Or the actual attribute value is different from the expected one.
      * @throws IllegalArgumentException
      * If attributeName or attributeValue is null. Or timeout < 0.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static void waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
@@ -1182,7 +1182,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If the Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static void waitForElementNotPresent(WindowsTestObject windowsObject, int timeout,
@@ -1206,7 +1206,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If the Windows element exists.
      * @throws IllegalArgumentException
      * If timeout < 0.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static void waitForElementNotPresent(WindowsTestObject windowsObject, int timeout)
@@ -1237,7 +1237,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If timeout < 0.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static void waitForElementPresent(WindowsTestObject windowsObject, int timeout,
@@ -1261,7 +1261,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If timeout < 0.
-     * @since 7.7.0
+     * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
     public static void waitForElementPresent(WindowsTestObject windowsObject, int timeout)
