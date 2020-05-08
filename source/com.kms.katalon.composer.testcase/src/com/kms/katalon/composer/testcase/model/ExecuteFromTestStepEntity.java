@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.model;
 
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.execution.launcher.model.LaunchMode;
 
 public class ExecuteFromTestStepEntity {
     private String rawScript;
@@ -12,6 +13,8 @@ public class ExecuteFromTestStepEntity {
     private String remoteServerUrl;
 
     private String driverTypeName;
+
+    private LaunchMode launchMode;
 
     public String getRawScript() {
         return rawScript;
@@ -53,4 +56,11 @@ public class ExecuteFromTestStepEntity {
         this.driverTypeName = driverTypeName;
     }
 
+    public LaunchMode getLaunchMode() {
+        return launchMode;
+    }
+
+    public void setLaunchMode(LaunchMode launchMode) {
+        this.launchMode = launchMode;
+    }
 }

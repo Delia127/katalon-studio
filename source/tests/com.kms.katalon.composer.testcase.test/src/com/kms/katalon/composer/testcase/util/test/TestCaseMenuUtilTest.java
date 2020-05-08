@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.util.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionListener;
@@ -35,9 +36,13 @@ public class TestCaseMenuUtilTest {
         SelectionListener selectionListener = new SelectionAdapter() {};
         
         Menu menu = new Menu(shell, SWT.NONE);
-        MenuItem runFromHereMenuItem = TestCaseMenuUtil.generateExecuteFromTestStepMenuItem(menu, selectionListener);
-        assertTrue(runFromHereMenuItem != null);
-        assertFalse("RUN_FROM_HERE item should be disabled", runFromHereMenuItem.getEnabled());
+        List<MenuItem> executeFromHereMenuItems = TestCaseMenuUtil.generateExecuteFromTestStepMenuItems(menu,
+                selectionListener);
+        assertTrue(executeFromHereMenuItems.size() == 2);
+        for (MenuItem menuItem : executeFromHereMenuItems) {
+            assertTrue(menuItem != null);
+            assertFalse(menuItem.getText() + " item should be disabled", menuItem.getEnabled());
+        }
     }
     
     @Test
@@ -50,9 +55,12 @@ public class TestCaseMenuUtilTest {
         executionSessionSocketServer.addExecutionSession(executionSession);
         
         Menu menu = new Menu(shell, SWT.NONE);
-        MenuItem runFromHereMenuItem = TestCaseMenuUtil.generateExecuteFromTestStepMenuItem(menu, selectionListener);
-        assertTrue(runFromHereMenuItem != null);
-        assertTrue("RUN_FROM_HERE item should be enabled", runFromHereMenuItem.getEnabled());
+        List<MenuItem> executeFromHereMenuItems = TestCaseMenuUtil.generateExecuteFromTestStepMenuItems(menu, selectionListener);
+        assertTrue(executeFromHereMenuItems.size() == 2);
+        for (MenuItem menuItem : executeFromHereMenuItems) {
+            assertTrue(menuItem != null);
+            assertTrue(menuItem.getText() + " item should be enabled", menuItem.getEnabled());
+        }
     }
     
     private ExecutionSession getDummyAvailableExecutionSession() {
