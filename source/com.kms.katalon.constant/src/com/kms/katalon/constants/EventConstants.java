@@ -409,6 +409,8 @@ public class EventConstants {
     public static final String JIRA_PLUGIN_UNINSTALLED = "PLUGIN/JIRA_UNINSTALLED";
     
     public static final String BASIC_REPORT_PLUGIN_INSTALLED = "PLUGIN/BASIC_REPORT_INSTALLED";
+    
+    public static final String APPLITOOLS_PLUGIN_INSTALLED = "PLUGIN/APPLITOOOLS_INSTALLED";
 
     public static final String REPORT_EXPORT_PROVIDERS_COLLECTED = "PLUGIN/EXPORT_PROVIDER_COLLECTED";
     
