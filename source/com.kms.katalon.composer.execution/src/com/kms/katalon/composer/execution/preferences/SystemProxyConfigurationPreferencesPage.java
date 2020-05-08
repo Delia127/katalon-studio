@@ -32,7 +32,7 @@ public class SystemProxyConfigurationPreferencesPage extends AbstractProxyConfig
     @Override
     protected void selectNoProxyOption() {
         super.selectNoProxyOption();
-        chkAutoApplyToDesiredCapabilities.setEnabled(false);
+        chkAutoApplyToDesiredCapabilities.setEnabled(true);
     }
 
     @Override
