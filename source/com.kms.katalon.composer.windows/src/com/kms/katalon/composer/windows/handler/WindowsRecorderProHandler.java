@@ -11,8 +11,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
@@ -42,16 +42,25 @@ import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 
 public class WindowsRecorderProHandler {
 
     @CanExecute
     public boolean canExecute() {
-        return ProjectController.getInstance().getCurrentProject() != null && LicenseUtil.isPaidLicense();
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
     public void execute() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        if (!featureService.canUse(KSEFeature.WINDOWS_NATIVE_RECORDER)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.WINDOWS_NATIVE_RECORDER);
+            return;
+        }
+
         Shell shell = getShell(Display.getCurrent().getActiveShell());
         try {
             WindowsRecorderDialogV2 dialog = new WindowsRecorderDialogV2(shell);

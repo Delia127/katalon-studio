@@ -54,6 +54,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.composer.objectrepository,
  com.kms.katalon.composer.webui.recorder,
  com.kms.katalon.composer.webui.objectspy,
- com.google.gson
+ com.google.gson,
+ com.kms.katalon.application
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.application.utils
