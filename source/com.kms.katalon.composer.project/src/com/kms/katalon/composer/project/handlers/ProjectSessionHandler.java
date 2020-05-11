@@ -30,6 +30,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -40,6 +41,10 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
+import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -152,7 +157,7 @@ public class ProjectSessionHandler {
                         if (monitor.isCanceled()) {
                             return Status.CANCEL_STATUS;
                         }
-                        if (entity != null && entity.getObject() != null) {
+                        if (entity != null && entity.getObject() != null && shouldRestoreOpenedEntity(entity)) {
                             sync.syncExec(() -> {
                                 try {
                                     eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, entity.getObject());
@@ -184,6 +189,19 @@ public class ProjectSessionHandler {
         };
         job.setUser(true);
         job.schedule();
+    }
+    
+    private boolean shouldRestoreOpenedEntity(ITreeEntity entity) throws Exception {
+        Object object = entity.getObject();
+        if (LicenseUtil.isFreeLicense() && (
+                object instanceof ReportEntity ||
+                object instanceof ReportCollectionEntity ||
+                object instanceof CheckpointEntity ||
+                object instanceof FilteringTestSuiteEntity)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private String[] rememberExpandedTreeEntities() throws Exception {

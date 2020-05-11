@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
@@ -29,6 +31,7 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenReportHandler {
@@ -55,6 +58,10 @@ public class OpenReportHandler {
             public void handleEvent(Event event) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof ReportEntity) {
+                    if (LicenseUtil.isFreeLicense()) {
+                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.REPORT_HISTORY);
+                        return;
+                    }
                     excute((ReportEntity) object);
                 }
             }
@@ -84,7 +91,6 @@ public class OpenReportHandler {
             String partId = IdConstants.REPORT_CONTENT_PART_ID_PREFIX + "(" + report.getId() + ")";
             MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
             MPart mPart = (MPart) modelService.find(partId, application);
-            boolean alreadyOpened = true;
             if (mPart == null) {
                 mPart = modelService.createModelElement(MPart.class);
                 mPart.setElementId(partId);
@@ -94,16 +100,13 @@ public class OpenReportHandler {
                 mPart.setIconURI(ImageConstants.URL_16_REPORT);
                 mPart.setTooltip(report.getIdForDisplay());
                 stack.getChildren().add(mPart);
-                alreadyOpened = false;
             }
             context.set(ReportEntity.class, report);
             partService.activate(mPart);
 
             stack.setSelectedElement(mPart);
             
-            if (!alreadyOpened) {
-                Trackings.trackOpenObject("report");
-            }
+            Trackings.trackOpenObject("report");
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",

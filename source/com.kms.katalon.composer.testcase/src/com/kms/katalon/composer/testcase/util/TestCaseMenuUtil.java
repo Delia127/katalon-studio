@@ -177,11 +177,11 @@ public class TestCaseMenuUtil {
                 TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID, SWT.PUSH);
     }
 
-    public static void generateExecuteFromTestStepSubMenu(Menu menu, SelectionListener selectionListener) {
-        generateExecuteFromTestStepSubMenu(menu, selectionListener, -1);
+    public static MenuItem generateExecuteFromTestStepMenuItem(Menu menu, SelectionListener selectionListener) {
+        return generateExecuteFromTestStepMenuItem(menu, selectionListener, -1);
     }
 
-    public static void generateExecuteFromTestStepSubMenu(Menu menu, SelectionListener selectionListener,
+    public static MenuItem generateExecuteFromTestStepMenuItem(Menu menu, SelectionListener selectionListener,
             int menuIndex) {
         List<ExecutionSession> allAvailableExecutionSessions = ExecutionSessionSocketServer.getInstance()
                 .getAllAvailableExecutionSessions();
@@ -194,7 +194,7 @@ public class TestCaseMenuUtil {
         executeFromTestStepMenuItem.addSelectionListener(selectionListener);
         if (isExecutionSessionsEmpty) {
             executeFromTestStepMenuItem.setEnabled(false);
-            return;
+            return executeFromTestStepMenuItem;
         }
         Map<String, Integer> labelMap = new HashMap<>();
         Menu executeSessionMenu = new Menu(executeFromTestStepMenuItem);
@@ -215,6 +215,7 @@ public class TestCaseMenuUtil {
             executionSessionMenuItem.setImage(getImageForDriverType(executionSession));
         }
         executeFromTestStepMenuItem.setMenu(executeSessionMenu);
+        return executeFromTestStepMenuItem;
     }
 
     private static String getLabelForExecutionSession(ExecutionSession executionSession) {
@@ -290,8 +291,11 @@ public class TestCaseMenuUtil {
         TreeTableMenuItemConstants
                 .generateBuiltInKeywordMenuItemIDs(KeywordController.getInstance().getBuiltInKeywordClasses());
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
-            addNewMenuItem(addAction, selectionListener, actionMenu, contributor.getLabelName(),
-                    TreeTableMenuItemConstants.getMenuItemID(contributor.getAliasName()), SWT.PUSH);
+            int menuItemID = TreeTableMenuItemConstants.getMenuItemID(contributor.getAliasName());
+            if (menuItemID >= 0) {
+                addNewMenuItem(addAction, selectionListener, actionMenu, contributor.getLabelName(),
+                        menuItemID, SWT.PUSH);
+            }
         }
     }
 }

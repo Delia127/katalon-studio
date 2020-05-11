@@ -367,4 +367,7 @@ public interface IdConstants {
     
     // QTest Plugin
     public static final String QTEST_PLUGIN_ID = "com.katalon.katalon-studio-qtest";
+    
+    // TestNG Plugin
+    public static final String TESTNG_PLUGIN_ID = "com.katalon.katalon-studio-testng";
 }

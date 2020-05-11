@@ -17,6 +17,8 @@ public class SystemLogger extends PrintStream {
     private boolean locked;
 
     private PrintStream writer;
+    
+    private boolean shouldIgnoreErrorMessage = false;
 
     SystemLogger(OutputStream os, LogMode defaultMode) {
         super(os, true);
@@ -56,6 +58,20 @@ public class SystemLogger extends PrintStream {
         waitFor();
         lock();
     }
+    
+    @Override
+    public void println(String message) {
+        if (shouldIgnoreErrorMessage) {
+            if (message.contains("Groovy:unable to resolve")) {
+                return;
+            }
+            //Fix STUDIO-136
+            if (message.contains("Groovy:class") && message.contains("is not an annotation in")) {
+                return;
+            }
+        }
+        super.println(message);
+    }
 
     @Override
     public synchronized void write(byte buf[], int off, int len) {
@@ -85,4 +101,13 @@ public class SystemLogger extends PrintStream {
     public void setWriter(PrintStream printStream) {
         this.writer = printStream;
     }
+
+    public boolean isShouldIgnoreErrorMessage() {
+        return shouldIgnoreErrorMessage;
+    }
+
+    public void setShouldIgnoreErrorMessage(boolean shouldIgnoreErrorMessage) {
+        this.shouldIgnoreErrorMessage = shouldIgnoreErrorMessage;
+    }
 }
+

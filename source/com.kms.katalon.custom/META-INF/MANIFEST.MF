@@ -8,7 +8,8 @@ Export-Package: com.kms.katalon.custom.addon,
  com.kms.katalon.custom.contribution,
  com.kms.katalon.custom.factory,
  com.kms.katalon.custom.keyword,
- com.kms.katalon.custom.parser;uses:="org.eclipse.jdt.core,org.eclipse.core.resources,com.kms.katalon.entity.project"
+ com.kms.katalon.custom.parser;uses:="org.eclipse.jdt.core,org.eclipse.core.resources,com.kms.katalon.entity.project",
+ com.kms.katalon.custom.util
 Require-Bundle: org.codehaus.groovy,
  org.eclipse.core.resources,
  com.kms.katalon.constant,
@@ -26,7 +27,8 @@ Require-Bundle: org.codehaus.groovy,
  org.eclipse.core.filesystem,
  org.apache.commons.lang,
  org.dom4j,
- com.kms.katalon.logging
+ com.kms.katalon.logging,
+ com.katalon.platform
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: com.kms.katalon.custom.addon.CustomBundleActivator
 Bundle-ActivationPolicy: lazy

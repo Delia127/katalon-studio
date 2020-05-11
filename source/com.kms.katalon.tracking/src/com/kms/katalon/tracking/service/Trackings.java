@@ -15,6 +15,7 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.constant.TrackEvents;
@@ -192,6 +193,11 @@ public class Trackings {
         String action = "open" + StringUtils.capitalize(objectType);
         trackUserAction(action);
     }
+    
+    public static void trackSaveObject(String objectType) {
+        String action = "save" + StringUtils.capitalize(objectType);
+        trackUserAction(action);
+    }
 
     public static void trackOpenHelp(String url) {
         trackUserAction("openHelp", "url", url);
@@ -356,6 +362,10 @@ public class Trackings {
     public static void trackInAppSurveyRatingAndIdea(int numberOfStars, String userIdea) {
         trackUserAction("katalonStudioSurvey", "star", numberOfStars, "content", userIdea);
     }
+
+    public static void trackInAppSurveyWillContinueToUse(boolean willContinueToUse, String quitUsingReason) {
+        trackUserAction("willContinueToUseSurvey", "willContinueToUse", willContinueToUse, "quitUsingReason", quitUsingReason);
+    }
     
     public static void trackClickWalkthroughDialogLink(String dialogId, String linkName, String link){
     	trackUserAction("clickWalkthroughLink", "dialogId", dialogId, "linkName", linkName, "link", link);
@@ -375,6 +385,46 @@ public class Trackings {
     public static void trackInstallPlugins(List<Long> installedPluginIds, String apiKey, RunningMode runningMode) {
         trackUserAction("installPlugins", "pluginIdList", JsonUtil.toJson(installedPluginIds), "apiKey",
                 StringUtils.isNotBlank(apiKey) ? apiKey : StringUtils.EMPTY, "runningMode", runningMode.toString());
+    }
+    
+    public static void trackUsePrivatePlugins(int customKeywordPluginCount, int idePluginCount) {
+        trackUserAction("usePrivatePlugin", "customKeywordPluginsCount", customKeywordPluginCount, "idePluginsCount", idePluginCount);
+    }
+    
+    public static void trackOpenExportTestArtifactsDialog() {
+        trackUserAction("openExportTestArtifactsDialog");
+    }
+    
+    public static void trackOpenImportTestArtifactsDialog() {
+        trackUserAction("openImportTestArtifactsDialog");
+    }
+
+    public static void trackOpenConsoleView() {
+        trackUserAction("openConsoleView");
+    }
+    
+    public static void trackGitOperation(String operationName, String protocol) {
+        trackUserAction("performGitOperation", "operationName", operationName, "protocol", protocol);
+    }
+    
+    public static void trackUseSourceCodeForDebugging(String className) {
+        trackUserAction("useSourceCodeForDebugging", "className", className);
+    }
+    
+    public static void trackUseDatabaseConnectionForEnterpriseAccount(String dataSourceType) {
+        trackUserAction("useDatabaseConnectionForEnterpriseAccount", "type", dataSourceType);
+    }
+    
+    public static void trackUseAdditionalTestDataSource() {
+        trackUserAction("useAdditionalTestDataSource");
+    }
+    
+    public static void trackUnauthorizedAccessOfKSEFeatures(KSEFeature feature) {
+        trackUserAction("unauthorizedAccessKSEFeature", "featureKey", feature.toString());
+    }
+    
+    public static void trackOpenKSEBrochurePage() {
+        trackUserAction("openKSEBrochurePage");
     }
     
     private static void trackUserAction(String actionName, Object... properties) {
@@ -428,5 +478,13 @@ public class Trackings {
         }
 
         return jsonObject;
+    }
+    
+    public static void trackClickOnTrialNotification(String message) {
+        trackUserAction("clickOnTrialNotification", "message", message);
+    }
+    
+    public static void trackClickOnTrialNotificationButton() {
+        trackUserAction("clickOnTrialNotificationButton");
     }
 }

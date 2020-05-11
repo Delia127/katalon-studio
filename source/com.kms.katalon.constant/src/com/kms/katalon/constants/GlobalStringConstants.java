@@ -303,6 +303,9 @@ public class GlobalStringConstants {
     public static final String APP_INFO_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
             + "application.properties";
 
+    public static final String USER_PROFILES_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
+            + "userProfiles.json";
+
     public static final String APP_LICENSE_SERVER_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
             + "licenseServer.properties";
 
@@ -355,5 +358,7 @@ public class GlobalStringConstants {
     public static final String URL_TROUBLESHOOTING_MOBILE_TESTING = GlobalMessageConstants.URL_TROUBLESHOOTING_MOBILE_TESTING;
     
     public static final String DIA_TITLE_QUICKSTART = GlobalMessageConstants.DIA_TITLE_QUICKSTART;
+    
+    public static final String MSG_ACCESS_KSE_FEATURES_WARNING = GlobalMessageConstants.MSG_ACCESS_KSE_FEATURES_WARNING;
 
 }

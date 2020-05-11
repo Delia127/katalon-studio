@@ -36,6 +36,7 @@ import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -44,6 +45,7 @@ import com.kms.katalon.composer.integration.analytics.dialog.NewProjectDialog;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -623,6 +625,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         enableOverrideAuthentication.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                if (!isEnterpriseAccount()) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.OVERRIDE_TESTOPS_AUTHENTICATION);
+                    enableOverrideAuthentication.setSelection(false);
+                    return;
+                }
+                
                 setProgressMessageOnPremise(StringUtils.EMPTY, false);
                 isUseOnPremise = enableOverrideAuthentication.getSelection();
                 if (isUseOnPremise) {
@@ -681,6 +689,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                if (!isEnterpriseAccount()) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.OVERRIDE_TESTOPS_AUTHENTICATION);
+                    return;
+                }
+                
                 serverUrl = txtServerUrl.getText().trim();
                 email = txtEmail.getText();
                 password = txtPassword.getText();
@@ -905,15 +918,16 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void hideOverrideAuthenticationIfNotEnterprise() {
         if (!isEnterpriseAccount()) {
-            enableOverrideAuthentication.setVisible(false);
-            gdEnableOverrideAuthentication.exclude = true;
-            enableOverrideAuthentication.setSelection(false);
+//            enableOverrideAuthentication.setVisible(false);
+//            gdEnableOverrideAuthentication.exclude = true;
+//            enableOverrideAuthentication.setSelection(false);
 
-            btnConnect.setVisible(false);
-            gdBtnConnect.exclude = true;
+//            btnConnect.setVisible(false);
+//            gdBtnConnect.exclude = true;
+//            enableAuthentiacation(false);
 
-            lblStatusOnPremise.setVisible(false);
-            gdLblStatus.exclude = true;
+//            lblStatusOnPremise.setVisible(false);
+//            gdLblStatus.exclude = true;
 
             isUseOnPremise = false;
             getInfoFromCloud();

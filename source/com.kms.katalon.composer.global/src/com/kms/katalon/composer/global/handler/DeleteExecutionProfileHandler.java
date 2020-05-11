@@ -39,6 +39,15 @@ public class DeleteExecutionProfileHandler implements IDeleteEntityHandler {
         try {
             executionProfile = (ExecutionProfileEntity) treeEntity.getObject();
             GlobalVariableController.getInstance().deleteExecutionProfile(executionProfile);
+
+            if (executionProfile.isDefaultProfile()) {
+                ExecutionProfileEntity defaultProfile = GlobalVariableController.getInstance()
+                        .getExecutionProfile(ExecutionProfileEntity.DF_PROFILE_NAME, project);
+                defaultProfile.setDefaultProfile(true);
+                GlobalVariableController.getInstance().updateExecutionProfile(defaultProfile);
+                eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity.getParent());
+            }
+
             List<TestSuiteCollectionEntity> updatedTestSuiteCollections = TestSuiteCollectionController.getInstance().
                 updateProfileNameInAllTestSuiteCollections(
                         project,

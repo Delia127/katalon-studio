@@ -4,18 +4,21 @@ import java.io.File;
 
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.jdt.internal.launching.JavaSourceLookupDirector;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class SourceLocator extends JavaSourceLookupDirector {
@@ -49,7 +52,11 @@ public class SourceLocator extends JavaSourceLookupDirector {
                 
                 if (stackFrame.getDeclaringTypeName() != null) {
                     IJavaProject javaProject = JavaCore.create(GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject()));
-                    return JavaDebugUtils.findElement(stackFrame.getDeclaringTypeName(), javaProject);
+                    IJavaElement javaElement = JavaDebugUtils.findElement(stackFrame.getDeclaringTypeName(), javaProject);
+                    if (javaElement != null && className.startsWith("com.kms.katalon.core")) {
+                        Trackings.trackUseSourceCodeForDebugging(className);
+                    }
+                    return javaElement;
                 }
             } catch (Exception e) {
                 // cannot find test case, let the super do this.

@@ -10,12 +10,16 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.controller.GlobalVariableController;
+import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.collection.provider.CustomTestExecutionGroup;
 import com.kms.katalon.execution.collection.provider.TestExecutionConfigurationProvider;
 import com.kms.katalon.execution.collection.provider.TestExecutionGroup;
 import com.kms.katalon.execution.collection.provider.TestExecutionItem;
+import com.kms.katalon.logging.LogUtil;
 
 public class TestExecutionGroupCollector {
     private static TestExecutionGroupCollector instance;
@@ -93,7 +97,17 @@ public class TestExecutionGroupCollector {
                     continue;
                 }
                 TestExecutionConfigurationProvider executionProvider = (TestExecutionConfigurationProvider) item;
-                return executionProvider.toConfigurationEntity(null);
+                RunConfigurationDescription runConfigurationDescription = executionProvider.toConfigurationEntity(null);
+
+                try {
+                    ExecutionProfileEntity defaultExecutionProfile = GlobalVariableController.getInstance()
+                            .getDefaultExecutionProfile(project);
+                    runConfigurationDescription.setProfileName(defaultExecutionProfile.getName());
+                } catch (ControllerException error) {
+                    LogUtil.logError(error);
+                }
+
+                return runConfigurationDescription;
             }
         }
         return null;

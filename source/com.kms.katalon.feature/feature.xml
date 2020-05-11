@@ -2683,8 +2683,22 @@
          version="0.0.0"
          unpack="false"/>
 
-    <plugin
+   <plugin
          id="com.amazonaws.aws-java-sdk-core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.bouncy-gpg"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.core.testng"
          download-size="0"
          install-size="0"
          version="0.0.0"

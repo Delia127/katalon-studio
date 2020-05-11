@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.URLConnection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -17,7 +18,8 @@ import com.kms.katalon.core.testobject.FormDataBodyParameter;
 import com.kms.katalon.core.testobject.HttpBodyContent;
 
 /**
- * Represents the body content of a HTTP message (request/response) that obtains content from a form.
+ * Represents the body content of a HTTP message (request/response) that obtains
+ * content from a form.
  * 
  * @since 5.4
  */
@@ -39,19 +41,29 @@ public class HttpFormDataBodyContent implements HttpBodyContent {
         for (FormDataBodyParameter parameter : parameters) {
             if (parameter.getType().equals(FormDataBodyParameter.PARAM_TYPE_FILE)) {
                 multipartEntityBuilder.addBinaryBody(parameter.getName(), new FileInputStream(parameter.getValue()),
-                        ContentType.create(getContentType(parameter)), parameter.getValue());
+                        ContentType.create(getFileContentType(parameter)), parameter.getValue());
             } else {
-                multipartEntityBuilder.addTextBody(parameter.getName(), parameter.getValue());
+                String contentType = parameter.getContentType();
+                if (StringUtils.isEmpty(contentType)) {
+                    multipartEntityBuilder.addTextBody(parameter.getName(), parameter.getValue());
+                } else {
+                    multipartEntityBuilder.addTextBody(parameter.getName(), parameter.getValue(),
+                            ContentType.create(contentType));
+                }
             }
         }
 
         multipartEntity = multipartEntityBuilder.build();
     }
 
-    private String getContentType(FormDataBodyParameter parameter) {
+    private String getFileContentType(FormDataBodyParameter parameter) {
         try {
-            URLConnection connection = new File(parameter.getValue()).toURI().toURL().openConnection();
-            return connection.getContentType();
+            if (StringUtils.isEmpty(parameter.getContentType())) {
+                URLConnection connection = new File(parameter.getValue()).toURI().toURL().openConnection();
+                return connection.getContentType();
+            } else {
+                return parameter.getContentType();
+            }
         } catch (IOException e) {
             return ContentType.DEFAULT_BINARY.getMimeType();
         }

@@ -29,6 +29,9 @@ import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
 
+import com.kms.katalon.composer.integration.git.components.utils.Protocol;
+import com.kms.katalon.tracking.service.Trackings;
+
 /**
  * Wizard allowing user to specify all needed data to fetch from another
  * repository - including selection of remote repository, ref specifications,
@@ -135,8 +138,21 @@ public class CustomGitFetchWizard extends Wizard {
             op.setCredentialsProvider(new EGitCredentialsProvider(credentials.getUser(), credentials.getPassword()));
         }
         op.start();
+        trackFetchOperation();
         saveConfig();
         return true;
+    }
+    
+    private void trackFetchOperation() {
+        try {
+            RepositorySelection repoSelection = repoPage.getSelection();
+            URIish remoteURI = repoSelection.getURI(false);
+            if (remoteURI != null) {
+                String protocol = Protocol.fromUri(remoteURI).getDefaultScheme();
+                Trackings.trackGitOperation("fetch", protocol);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     private void saveConfig() {

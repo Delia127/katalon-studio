@@ -52,7 +52,9 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.project.constants.ComposerProjectMessageConstants;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.sample.SampleLocalProject;
 import com.kms.katalon.composer.project.sample.SampleProject;
@@ -66,6 +68,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -325,7 +328,8 @@ public class NewProjectDialog extends TitleAreaDialog {
         enableGenerateGitignoreFileBySelectedProject();
         enableGenerateGradleFileBySelectedProject();
 
-        hideGenericProjectTypeIfNotEnterprise();
+//        hideGenericProjectTypeIfNotEnterprise();
+
         addControlModifyListeners();
 
         return area;
@@ -593,6 +597,13 @@ public class NewProjectDialog extends TitleAreaDialog {
         name = txtProjectName.getText().trim();
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
+        
+        ProjectType projectType = getSelectedProjectType();
+        if (!isEnterpriseAccount() && projectType == ProjectType.GENERIC) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CREATE_GENERIC_PROJECT_TYPE,
+                    ComposerProjectMessageConstants.MSG_WARN_GENERIC_PROJECT_TYPE);
+            return;
+        }
 
         int selectionIdx = cboProjects.getSelectionIndex();
         String selectedProjectName = cboProjects.getItem(selectionIdx);
@@ -667,6 +678,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             String projectLocation = getProjectLocation();
             String projectDescription = getProjectDescription();
             ProjectType projectType = getSelectedProjectType();
+            
             boolean generateGitignoreFile = cbGenerateGitignoreFile.isEnabled() && cbGenerateGitignoreFile.getSelection();
             boolean generateGradleFile = cbGenerateGradleFile.isEnabled() && cbGenerateGradleFile.getSelection();
 

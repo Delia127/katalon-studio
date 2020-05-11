@@ -22,7 +22,7 @@ public class EditTestDataQueryDialog extends DatabaseConnectionAbstractDialog {
 
     @Override
     protected void setInput() {
-        showDriverComposite();
+//        showDriverComposite();
 
         chkGlobalDBSetting.setSelection(testData.isUsingGlobalDBSetting());
 

@@ -22,7 +22,7 @@ public class CRemoteWebDriver extends RemoteWebDriver implements IDelayableDrive
     }
     
     private void setActionDelayInMilliseconds(int actionDelay) {
-        this.actionDelayInMiliseconds = actionDelay * 1000;
+        this.actionDelayInMiliseconds = actionDelay;
     }
 
     @Override

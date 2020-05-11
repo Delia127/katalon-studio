@@ -71,6 +71,14 @@ public class ProjectStatistics {
     private boolean continueOnFailure = false;
     
     private String webLocatorConfig;
+    
+    private boolean logTestStepsEnabled = false;
+    
+    private boolean imageRecognitionEnabled = false;
+    
+    private String additionalTestDatasourceForEnterpriseUser;
+    
+    private boolean allowUsageTracking = false;
 
     public String getProjectId() {
         return projectId;
@@ -352,4 +360,35 @@ public class ProjectStatistics {
         this.webLocatorConfig = webLocatorConfig;
     }
 
+    public boolean getLogTestStepsEnabled() {
+        return logTestStepsEnabled;
+    }
+
+    public void setLogTestStepsEnabled(boolean logTestStepsEnabled) {
+        this.logTestStepsEnabled = logTestStepsEnabled;
+    }
+
+    public boolean getImageRecognitionEnabled() {
+        return imageRecognitionEnabled;
+    }
+
+    public void setImageRecognitionEnabled(boolean imageRecognitionEnabled) {
+        this.imageRecognitionEnabled = imageRecognitionEnabled;
+    }
+
+    public String getAdditionalTestDataSourceForEnterpriseUser() {
+        return additionalTestDatasourceForEnterpriseUser;
+    }
+
+    public void setAdditionalTestDataSourceForEnterpriseUser(String dataSourceType) {
+        this.additionalTestDatasourceForEnterpriseUser = dataSourceType;
+    }
+
+    public boolean getAllowUsageTracking() {
+        return allowUsageTracking;
+    }
+
+    public void setAllowUsageTracking(boolean allowUsageTracking) {
+        this.allowUsageTracking = allowUsageTracking;
+    }
 }

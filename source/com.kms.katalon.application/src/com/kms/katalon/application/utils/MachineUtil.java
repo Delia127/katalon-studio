@@ -45,15 +45,21 @@ public class MachineUtil {
         }
 
         if (SystemUtils.IS_OS_MAC) {
+            LogUtil.logInfo("Start getting machine ID on Mac");
             machineId = parseMachineIdForMac();
             machineId = hash(machineId.matches(UUID_REGEX) ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
+            LogUtil.logInfo("End getting machine ID on Mac " + machineId);
         } else if (SystemUtils.IS_OS_LINUX) {
+            LogUtil.logInfo("Start getting machine ID on Linux");
             machineId = parseMachineIdForLinux();
+            LogUtil.logInfo("End getting machine ID on Linux " + machineId);
             // machine id on a linux is not a UUID
             machineId = hash(machineId.length() == 32 ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
         } else if (SystemUtils.IS_OS_WINDOWS) {
+            LogUtil.logInfo("Start getting machine ID on Windows");
             machineId = parseMachineIdForWindows();
             machineId = hash(machineId.matches(UUID_REGEX) ? appendAdditionalSignatures(machineId) : UNAVAILABLE);
+            LogUtil.logInfo("End getting machine ID on Windows " + machineId);
         }
         return machineId;
     }
@@ -88,7 +94,14 @@ public class MachineUtil {
     }
 
     private static String appendAdditionalSignatures(String str) {
-        return str + "_" + Hardware.getSerialNumber().toLowerCase() + "_" + getOsDependentUsername().toLowerCase();
+        LogUtil.logInfo("Start appending additional signatures");
+        String hardwareSerialNumber = Hardware.getSerialNumber().toLowerCase();
+        String osDependentUsername = getOsDependentUsername().toLowerCase();
+        String signature =  str + "_" + Hardware.getSerialNumber().toLowerCase() + "_" + getOsDependentUsername().toLowerCase();
+        LogUtil.logInfo("hardwareSerialNumber " + hardwareSerialNumber);
+        LogUtil.logInfo("osDependentUsername " + osDependentUsername);
+        LogUtil.logInfo("End appending additional signatures " + signature);
+        return signature;
     }
 
     private static String hash(String str) {

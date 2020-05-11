@@ -38,6 +38,26 @@ public class LogManager {
         }
         return outputLogger;
     }
+    
+    public static void disableIgnoreError() {
+        if (outputLogger != null) {
+            outputLogger.setShouldIgnoreErrorMessage(false);
+        }
+
+        if (errorLogger != null) {
+            errorLogger.setShouldIgnoreErrorMessage(false);
+        }
+    }
+    
+    public static void enableIgnoreError() {
+        if (outputLogger != null) {
+            outputLogger.setShouldIgnoreErrorMessage(true);
+        }
+
+        if (errorLogger != null) {
+            errorLogger.setShouldIgnoreErrorMessage(true);
+        }
+    }
 
     public static void stop() {
         getErrorLogger().close();

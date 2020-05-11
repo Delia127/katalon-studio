@@ -112,7 +112,7 @@ public class TreeTableMenuItemConstants {
 	}
 	
 	public static int getMenuItemID(String className) {
-	    int offset = keywordClassOffsets.get(className);
+	    int offset = keywordClassOffsets.getOrDefault(className, -1);
 	    return (offset >= 0) ? BUILTIN_KEYWORD_MENU_ITEM_ID + offset : offset;
 	}
 	
@@ -127,7 +127,7 @@ public class TreeTableMenuItemConstants {
 	public static String getContributingClassName(int id) {
 	    if (isBuildInKeywordID(id)) {
 	        for (String className : keywordClassOffsets.keySet()) {
-	            if (keywordClassOffsets.get(className) == id - BUILTIN_KEYWORD_MENU_ITEM_ID) {
+	            if (keywordClassOffsets.getOrDefault(className, -1) == id - BUILTIN_KEYWORD_MENU_ITEM_ID) {
 	                return className;
 	            }
 	        }

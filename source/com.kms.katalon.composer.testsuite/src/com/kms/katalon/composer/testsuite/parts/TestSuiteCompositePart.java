@@ -64,6 +64,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteCompositePart, IComposerPartEvent {
@@ -361,6 +362,8 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
             updateTestSuitePart(originalTestSuite);
 
             afterSaving();
+            
+            Trackings.trackSaveObject("testSuite");
         } catch (Exception e) {
             // revert to original test suite
             TestSuiteEntityUtil.copyTestSuiteProperties(temp, originalTestSuite);
