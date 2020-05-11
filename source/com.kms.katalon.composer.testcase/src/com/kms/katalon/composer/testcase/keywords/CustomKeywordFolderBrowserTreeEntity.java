@@ -113,11 +113,11 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
                     }
                 });
                 
-                if(listFolder.contains(pair.getKey())) {
-                    KeywordBrowserFolderTreeEntity existedKeywordFolder = (KeywordBrowserFolderTreeEntity)this.children.get(listFolder.indexOf(pair.getKey()));
+                if (listFolder.contains(pair.getKey())) {
+                    KeywordBrowserFolderTreeEntity existedKeywordFolder = (KeywordBrowserFolderTreeEntity) this.children
+                            .get(listFolder.indexOf(pair.getKey()));
                     existedKeywordFolder.appendNewChild(keywordFolder);
-                }
-                else {
+                } else {
                     listFolder.add(pair.getKey());
                     childTreeEntityList.add(keywordFolder);
                 }

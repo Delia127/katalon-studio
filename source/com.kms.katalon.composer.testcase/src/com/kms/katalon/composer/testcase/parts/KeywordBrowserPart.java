@@ -12,7 +12,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MDirectToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
-import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -391,13 +390,44 @@ public class KeywordBrowserPart implements EventHandler {
 
         return controlKeywordFolderTreeEntity;
     }
+    
+    @SuppressWarnings("unchecked")
+    private void refreshCustomKeywordFolder() {
+        List<Object> keywordTreeEntities = (List<Object>) treeViewer.getInput();
+        int keywordTreeEntitiesSize = keywordTreeEntities.size();
+
+        for (int i = 0; i < keywordTreeEntitiesSize; i++) {
+            if (!(keywordTreeEntities.get(i) instanceof KeywordBrowserFolderTreeEntity)) {
+                continue;
+            }
+            
+            KeywordBrowserFolderTreeEntity keywordTreeEntity = (KeywordBrowserFolderTreeEntity) keywordTreeEntities.get(i);
+            if (keywordTreeEntity.getName().equals(StringConstants.KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL)) {
+                treeViewer.getTree().setRedraw(false);
+                keywordTreeEntities.set(i, new CustomKeywordFolderBrowserTreeEntity(null));
+                boolean isExpanded = treeViewer.getTree().getItem(i).getExpanded();
+
+                KeywordTreeContentProvider contentProvider = (KeywordTreeContentProvider) treeViewer.getContentProvider();
+                if (contentProvider.hasChildren(keywordTreeEntity)) {
+                    treeViewer.refresh(true);
+                    List<Object> newKeywordTreeEntities = (List<Object>) treeViewer.getInput();
+                    treeViewer.setExpandedState(newKeywordTreeEntities.get(i), isExpanded);
+                }
+                treeViewer.getTree().setRedraw(true);
+                break;
+            }
+        }
+    }
 
     @Override
     public void handleEvent(Event event) {
         if (event.getTopic().equals(EventConstants.PROJECT_OPENED)
-                || event.getTopic().equals(EventConstants.KEYWORD_BROWSER_REFRESH)
-                || event.getTopic().equals(EventConstants.CUSTOMKEYWORD_REFRESH)) {
+                || event.getTopic().equals(EventConstants.KEYWORD_BROWSER_REFRESH)) {
             loadTreeData();
+        }
+
+        if (event.getTopic().equals(EventConstants.CUSTOMKEYWORD_REFRESH)) {
+            refreshCustomKeywordFolder();
         }
     }
 }
