@@ -395,6 +395,7 @@ public class KeywordBrowserPart implements EventHandler {
     private void refreshCustomKeywordFolder() {
         List<Object> keywordTreeEntities = (List<Object>) treeViewer.getInput();
         int keywordTreeEntitiesSize = keywordTreeEntities.size();
+        treeViewer.getTree().setRedraw(false);
 
         for (int i = 0; i < keywordTreeEntitiesSize; i++) {
             if (!(keywordTreeEntities.get(i) instanceof KeywordBrowserFolderTreeEntity)) {
@@ -403,7 +404,6 @@ public class KeywordBrowserPart implements EventHandler {
             
             KeywordBrowserFolderTreeEntity keywordTreeEntity = (KeywordBrowserFolderTreeEntity) keywordTreeEntities.get(i);
             if (keywordTreeEntity.getName().equals(StringConstants.KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL)) {
-                treeViewer.getTree().setRedraw(false);
                 keywordTreeEntities.set(i, new CustomKeywordFolderBrowserTreeEntity(null));
                 boolean isExpanded = treeViewer.getTree().getItem(i).getExpanded();
 
@@ -413,10 +413,10 @@ public class KeywordBrowserPart implements EventHandler {
                     List<Object> newKeywordTreeEntities = (List<Object>) treeViewer.getInput();
                     treeViewer.setExpandedState(newKeywordTreeEntities.get(i), isExpanded);
                 }
-                treeViewer.getTree().setRedraw(true);
                 break;
             }
         }
+        treeViewer.getTree().setRedraw(true);
     }
 
     @Override
