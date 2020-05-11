@@ -37,22 +37,22 @@ public class TestSuiteSelectionDialog extends TreeEntitySelectionDialog {
 		checkedItems = new ArrayList<>();
 	}
 
-	@Override
-	public TreeViewer createTreeViewer(Composite parent) {
-		final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
-		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+    @Override
+    public TreeViewer createTreeViewer(Composite parent) {
+        final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
+        treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-		        if (e.detail == SWT.CHECK) {
-		            TreeItem item = (TreeItem) e.item;
-		            treeViewer.getTree().setSelection(item);
-		            onStateChangedTreeItem(item.getData(), item.getChecked());
-		        }
-			}
-		});
-		return treeViewer;
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (e.detail == SWT.CHECK) {
+                    TreeItem item = (TreeItem) e.item;
+                    treeViewer.getTree().setSelection(item);
+                    onStateChangedTreeItem(item.getData(), item.getChecked());
+                }
+            }
+        });
+        return treeViewer;
+    }
 
 	@Override
 	protected TreeViewer doCreateTreeViewer(Composite parent, int style) {

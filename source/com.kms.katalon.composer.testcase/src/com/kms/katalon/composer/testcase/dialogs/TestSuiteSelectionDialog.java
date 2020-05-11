@@ -37,9 +37,9 @@ public class TestSuiteSelectionDialog extends TreeEntitySelectionDialog {
 		checkedItems = new ArrayList<>();
 	}
 
-	@Override
-	public TreeViewer createTreeViewer(Composite parent) {
-		final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
+    @Override
+    public TreeViewer createTreeViewer(Composite parent) {
+        final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
         treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -51,8 +51,8 @@ public class TestSuiteSelectionDialog extends TreeEntitySelectionDialog {
                 }
             }
         });
-		return treeViewer;
-	}
+        return treeViewer;
+    }
 
 	@Override
 	protected TreeViewer doCreateTreeViewer(Composite parent, int style) {

@@ -235,9 +235,9 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		}
 	}
 
-	@Override
-	public TreeViewer createTreeViewer(Composite parent) {
-		final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
+    @Override
+    public TreeViewer createTreeViewer(Composite parent) {
+        final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
         treeViewer.getTree().addListener(SWT.Selection, new Listener() {
 
             @Override
@@ -249,11 +249,11 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                 }
             }
         });
-		Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
-		treeViewer.setCheckedElements(addedTestCases);
-		checkedItems = new ArrayList<Object>(Arrays.asList(addedTestCases));
-		return treeViewer;
-	}
+        Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
+        treeViewer.setCheckedElements(addedTestCases);
+        checkedItems = new ArrayList<Object>(Arrays.asList(addedTestCases));
+        return treeViewer;
+    }
 	
 	/**
 	 * Check/Uncheck TreeItem action
