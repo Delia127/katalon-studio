@@ -169,9 +169,9 @@ public class MultiStatusErrorDialog extends AbstractDialog {
         showErrorDialog(error, title, errorDescription, Display.getCurrent().getActiveShell());
     }
 
-    public static void showErrorDialog(Throwable e, String title, String errorDescription, Shell shell) {
+    public static void showErrorDialog(Throwable error, String title, String errorDescription, Shell shell) {
         MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(shell, title, errorDescription,
-                ExceptionUtils.getFullStackTrace(e));
+                ExceptionUtils.getFullStackTrace(error));
         dialog.open();
     }
 
