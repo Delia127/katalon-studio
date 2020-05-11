@@ -46,6 +46,7 @@ import com.kms.katalon.core.windows.driver.WindowsSession
 import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
+import com.kms.katalon.core.windows.constants.WindowsDriverConstants
 
 @Action(value = "waitForElementAttributeValue")
 public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
@@ -92,7 +93,7 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
 
                 FluentWait<WebElement> wait = new FluentWait<WebElement>(foundElement)
                         .withTimeout(Duration.ofSeconds(timeOut))
-                        .pollingEvery(Duration.ofMillis(500))
+                        .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT))
 
                 Boolean hasAttribute = wait.until(new Function<WebElement, Boolean>(){
                             @Override

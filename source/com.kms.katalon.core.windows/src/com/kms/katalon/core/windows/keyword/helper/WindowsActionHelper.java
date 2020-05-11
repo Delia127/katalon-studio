@@ -27,6 +27,7 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.WindowsTestObject;
+import com.kms.katalon.core.windows.constants.WindowsDriverConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.core.windows.driver.WindowsSession;
 import com.kms.katalon.core.windows.keyword.exception.DriverNotStartedException;
@@ -71,7 +72,7 @@ public class WindowsActionHelper {
         }
     }
 
-    public WebElement findElement(WindowsTestObject testObject, int timeOut, boolean ignoreNoSuchElementException)
+    public WebElement findElement(WindowsTestObject testObject, int timeout, boolean ignoreNoSuchElementException)
             throws IllegalArgumentException, DriverNotStartedException {
         if (testObject == null) {
             throw new IllegalArgumentException("Test object cannot be null");
@@ -88,9 +89,11 @@ public class WindowsActionHelper {
             throw new SessionNotStartedException("Windows Session has not started yet!");
         }
 
+        timeout = WindowsActionHelper.checkTimeout(timeout);
         WindowsDriver<WebElement> runningDriver = windowsSession.getRunningDriver();
         FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(runningDriver)
-                .withTimeout(Duration.ofSeconds(timeOut)).pollingEvery(Duration.ofMillis(50));
+                .withTimeout(Duration.ofSeconds(timeout))
+                .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT));
         if (ignoreNoSuchElementException) {
             wait.ignoring(NoSuchElementException.class);
         }

@@ -46,6 +46,7 @@ import com.kms.katalon.core.util.internal.PathUtil
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.helper.KeywordHelper
+import com.kms.katalon.core.windows.constants.WindowsDriverConstants
 
 @Action(value = "verifyElementNotPresent")
 public class VerifyElementNotPresentKeyword extends AbstractKeyword {
@@ -76,7 +77,7 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
             try {
                 elementNotFound = new FluentWait<WindowsTestObject>(testObject)
                 .withTimeout(Duration.ofSeconds(timeOut))
-                .pollingEvery(Duration.ofMillis(50))
+                .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT))
                 .until(new Function<WindowsTestObject, Boolean>() {
 
                     @Override
