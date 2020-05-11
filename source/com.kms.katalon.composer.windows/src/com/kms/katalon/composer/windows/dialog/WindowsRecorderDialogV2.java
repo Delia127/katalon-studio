@@ -94,6 +94,11 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         socketServer.start();
         startNativeRecorderDriver();
     }
+    
+    @Override
+    protected void setShellStyle(int arg) {
+        super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
+    }
 
     @Override
     public String getDialogTitle() {
