@@ -245,14 +245,13 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
 		treeViewer.getTree().addListener(SWT.Selection, new Listener() {
 
-			@Override
-			public void handleEvent(Event event) {
-				if (event.detail == SWT.CHECK) {
-					TreeItem item = (TreeItem) event.item;
-					treeViewer.getTree().setSelection(item);
-					onStageChangedTreeItem(item.getData(), item.getChecked());
-				}
-			}
+            @Override
+            public void handleEvent(Event event) {
+                TreeItem item = (TreeItem) event.item;
+                treeViewer.getTree().setSelection(item);
+                item.setChecked(!item.getChecked());
+                onStageChangedTreeItem(item.getData(), item.getChecked());
+            }
 		});
 		Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
 		treeViewer.setCheckedElements(addedTestCases);
