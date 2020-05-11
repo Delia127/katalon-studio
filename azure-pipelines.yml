@@ -8,8 +8,7 @@ trigger:
   branches:
     include:
       # - staging-*
-      # - release-*
-      - STUDIO-70
+      - release-*
 
 # pr:
 # - staging-*
@@ -100,13 +99,6 @@ stages:
         ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
       displayName: Build
 
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: './source/tests/com.kms.katalon.tests.report/target/site/jacoco-aggregate/jacoco.xml'
-        artifact: 'jacoco-xml'
-        publishLocation: 'pipeline'
-      displayName: Publish Jacoco Report
-        
     - bash: |
         source ./variable.sh
         echo "##vso[task.setvariable variable=VERSION]${version}"
@@ -128,19 +120,19 @@ stages:
     #   displayName: Upload Update Package
     #   condition: eq(variables.WITH_UPDATE, 'true')
 
-    # - task: AWSCLI@1
-    #   inputs:
-    #     awsCredentials: 'aws'
-    #     regionName: 'us-east-1'
-    #     awsCommand: 's3'
-    #     awsSubCommand: 'cp'
-    #     awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
-    #   displayName: Upload Update Package
-    #   condition: eq(variables.IS_RELEASE, 'true')
+    - task: AWSCLI@1
+      inputs:
+        awsCredentials: 'aws'
+        regionName: 'us-east-1'
+        awsCommand: 's3'
+        awsSubCommand: 'cp'
+        awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
+      displayName: Upload Update Package
+      condition: eq(variables.IS_RELEASE, 'true')
 
-    # - bash: |
-    #     rm -rf $(TMP_DIR)/update/$(TAG)
-    #   displayName: Delete Update Packages
+    - bash: |
+        rm -rf $(TMP_DIR)/update/$(TAG)
+      displayName: Delete Update Packages
 
     # - task: S3Upload@1
     #   inputs:
@@ -160,9 +152,9 @@ stages:
         regionName: 'us-east-1'
         awsCommand: 's3'
         awsSubCommand: 'cp'
-        awsArguments: '$(TMP_DIR)/ s3://katalon/STUDIO-70 --recursive --acl public-read'
+        awsArguments: '$(TMP_DIR)/ s3://katalon/$(S3_LOCATION) --recursive --acl public-read'
       displayName: Upload Build Package
-      # condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.IS_RELEASE, 'true')
 
     # - task: S3Upload@1
     #   inputs:
@@ -176,30 +168,30 @@ stages:
     #   displayName: Upload Build Package
     #   condition: eq(variables.IS_RELEASE, 'false')
 
-    # - task: AWSCLI@1
-    #   inputs:
-    #     awsCredentials: 'aws'
-    #     regionName: 'us-east-1'
-    #     awsCommand: 'cloudfront'
-    #     awsSubCommand: 'create-invalidation'
-    #     awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
-    #   displayName: Invalidate CloudFront
-    #   condition: eq(variables.IS_RELEASE, 'true')
+    - task: AWSCLI@1
+      inputs:
+        awsCredentials: 'aws'
+        regionName: 'us-east-1'
+        awsCommand: 'cloudfront'
+        awsSubCommand: 'create-invalidation'
+        awsArguments: '--distribution-id E1S9HCHW5N31CV --paths "/$(TAG)/*"'
+      displayName: Invalidate CloudFront
+      condition: eq(variables.IS_RELEASE, 'true')
 
-    # - task: GitHubRelease@0
-    #   inputs:
-    #     gitHubConnection: 'github.com/katalon-studio'
-    #     repositoryName: 'katalon-studio/katalon-studio'
-    #     action: 'edit'
-    #     target: 'master'
-    #     tagSource: 'manual'
-    #     tag: 'v$(TAG)'
-    #     title: 'v$(TAG)'
-    #     assets: '$(TMP_DIR)/*'
-    #     isDraft: true
-    #     addChangeLog: false
-    #   displayName: Create Github Release
-    #   condition: eq(variables.IS_RELEASE, 'true')
+    - task: GitHubRelease@0
+      inputs:
+        gitHubConnection: 'github.com/katalon-studio'
+        repositoryName: 'katalon-studio/katalon-studio'
+        action: 'edit'
+        target: 'master'
+        tagSource: 'manual'
+        tag: 'v$(TAG)'
+        title: 'v$(TAG)'
+        assets: '$(TMP_DIR)/*'
+        isDraft: true
+        addChangeLog: false
+      displayName: Create Github Release
+      condition: eq(variables.IS_RELEASE, 'true')
 
     # - task: PublishBuildArtifacts@1
     #   inputs:
@@ -211,7 +203,7 @@ stages:
 - stage: Test
   jobs:
   - job: Test
-    timeoutInMinutes: 90
+    timeoutInMinutes: 360
     
     pool:
       vmImage: 'windows-latest'
@@ -236,22 +228,11 @@ stages:
         pip3 install pyjavaproperties
         python get_version.py $BRANCH
         source ./variable.sh
+        tag=7.2.5
+        isRelease=true
         echo "##vso[task.setvariable variable=VERSION]${tag}"
         echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
       displayName: Set up
-
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: |
-          $theurl = "http://dl.google.com/edgedl/chrome/install/GoogleChromeStandaloneEnterprise64.msi"
-          mkdir c:\tmp
-          $output = "c:\tmp\chrome.msi"
-          Invoke-WebRequest -Uri $theurl -OutFile $output -ErrorAction SilentlyContinue
-          msiexec /q /i c:\tmp\chrome.msi
-          start-sleep -Seconds 300 # sleep for 5 mins just to allow updates to be processed 
-          Remove-Item -Path c:\tmp\chrome.msi –Force
-      displayName: Install Chrome
 
     - checkout: WindowTest
       fetchDepth: 1
@@ -363,14 +344,6 @@ stages:
       displayName: Run Window Test
       condition: eq(variables.SETUP_SUCCESS, 'true')
 
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        buildType: 'current'
-        artifactName: 'jacoco-xml'
-        targetPath: '$(WORK_DIR)'
-      displayName: Download Jacoco Report
-      condition: eq(variables.SETUP_SUCCESS, 'true')
-
     - bash: |
         set -xe
         WORK_DIR="${WORK_DIR//\\/\/}"
@@ -381,13 +354,6 @@ stages:
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/calculator-bdd-tests"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-service-tests"
         "tools/web-test/generate-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/mobile-samples"
-        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml,${WORK_DIR}/web-service-tests/jacoco-report/jacoco.xml,${WORK_DIR}/calculator-bdd-tests/jacoco-report/jacoco.xml,${WORK_DIR}/jacoco.xml"
+        "tools/web-test/upload-report.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-samples/jacoco-report/jacoco.xml,${WORK_DIR}/katalon-windows-test/jacoco-report/jacoco.xml,${TMP_DIR}/${VERSION}/Katalon_Studio_Windows_64-${VERSION}/jacoco-report/jacoco.xml,${WORK_DIR}/mobile-samples/jacoco-report/jacoco.xml,${WORK_DIR}/web-service-tests/jacoco-report/jacoco.xml,${WORK_DIR}/calculator-bdd-tests/jacoco-report/jacoco.xml"
       displayName: Generate and upload report
       condition: eq(variables.SETUP_SUCCESS, 'true')
-
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/JUnit_Report.xml' 
-        searchFolder: '$(System.DefaultWorkingDirectory)'
-        mergeTestResults: true
