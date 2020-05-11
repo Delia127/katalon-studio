@@ -52,6 +52,7 @@ public class WsdlImporter {
         entity.setSoapRequestMethod(method);
         entity.setSoapServiceFunction(operation);
         entity.setKatalonVersion(System.getProperty(SystemProperties.KATALON_VERSION));
+        entity.setUseServiceInfoFromWsdl(false);
 
         String serviceEndpoint = wsdlParser.getPortAddressLocation(method);
         entity.setSoapServiceEndpoint(serviceEndpoint);
