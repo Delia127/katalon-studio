@@ -44,10 +44,11 @@ public class TestSuiteSelectionDialog extends TreeEntitySelectionDialog {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TreeItem item = (TreeItem) e.item;
-				treeViewer.getTree().setSelection(item);
-				item.setChecked(!item.getChecked());
-				onStateChangedTreeItem(item.getData(), item.getChecked());
+		        if (e.detail == SWT.CHECK) {
+		            TreeItem item = (TreeItem) e.item;
+		            treeViewer.getTree().setSelection(item);
+		            onStateChangedTreeItem(item.getData(), item.getChecked());
+		        }
 			}
 		});
 		return treeViewer;
