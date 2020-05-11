@@ -408,8 +408,8 @@ public class KeywordBrowserPart implements EventHandler {
                 boolean isExpanded = treeViewer.getTree().getItem(i).getExpanded();
 
                 KeywordTreeContentProvider contentProvider = (KeywordTreeContentProvider) treeViewer.getContentProvider();
+                treeViewer.refresh(true);
                 if (contentProvider.hasChildren(keywordTreeEntity)) {
-                    treeViewer.refresh(true);
                     List<Object> newKeywordTreeEntities = (List<Object>) treeViewer.getInput();
                     treeViewer.setExpandedState(newKeywordTreeEntities.get(i), isExpanded);
                 }
