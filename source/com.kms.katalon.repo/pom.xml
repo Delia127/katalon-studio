@@ -298,6 +298,12 @@
                                     </excludes>
                                 </artifact>
                                 <artifact>
+                                	<id>io.github.kostaskougios:cloning:1.10.3</id>
+                                	<excludes>
+                                		<exclude>junit</exclude>
+                                	</excludes>
+                               	</artifact>
+                               	<artifact>
                                 	<id>com.corundumstudio.socketio:netty-socketio:1.7.17</id>
                                 	<excludes>
         								<exclude>org.slf4j:*</exclude>
