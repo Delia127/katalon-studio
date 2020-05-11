@@ -3,6 +3,7 @@ package com.kms.katalon.composer.windows.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -50,7 +51,7 @@ public class WindowsRecorderProHandler {
 
     @CanExecute
     public boolean canExecute() {
-        return ProjectController.getInstance().getCurrentProject() != null;
+        return ProjectController.getInstance().getCurrentProject() != null && SystemUtils.IS_OS_WINDOWS;
     }
 
     @Execute
