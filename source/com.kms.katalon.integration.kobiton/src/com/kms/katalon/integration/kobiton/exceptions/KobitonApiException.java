@@ -7,6 +7,11 @@ public class KobitonApiException extends Exception {
 
     private String message;
 
+    public KobitonApiException(String message) {
+        super(message);
+        this.message = message;
+    }
+
     public boolean isError() {
         return error;
     }
