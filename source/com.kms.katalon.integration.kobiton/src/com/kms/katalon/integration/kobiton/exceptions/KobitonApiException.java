@@ -7,11 +7,14 @@ public class KobitonApiException extends Exception {
 
     private String message;
 
+<<<<<<< HEAD
     public KobitonApiException(String message) {
         super(message);
         this.message = message;
     }
 
+=======
+>>>>>>> parent of 3ff1921f4...  Use proxy when connecting to Kobiton
     public boolean isError() {
         return error;
     }
