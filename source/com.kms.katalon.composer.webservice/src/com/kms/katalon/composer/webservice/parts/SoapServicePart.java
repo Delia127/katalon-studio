@@ -546,6 +546,7 @@ public class SoapServicePart extends WebServicePart {
         cbbServiceFunction.setText(originalWsObject.getSoapServiceFunction());
         cbUseOldMechanism.setSelection(originalWsObject.isUseServiceInfoFromWsdl());
         txtServiceEndpoint.setText(originalWsObject.getSoapServiceEndpoint());
+        txtServiceEndpoint.setEnabled(useCustomServiceEndpoint());
 
         tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getHttpHeaderProperties());
         httpHeaders.clear();
