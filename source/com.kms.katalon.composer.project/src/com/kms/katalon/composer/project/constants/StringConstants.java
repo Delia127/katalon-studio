@@ -53,8 +53,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PROJECT_EXECUTION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.execution.settings";
 
-    public static final String PROJECT_INTEGRATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.preferences.integration";
-    
     public static final String PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.intergration.qtest.setting";
     // Setting Page Id
     public static final String PROJECT_INFORMATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.project.information";
@@ -99,10 +97,10 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String ANDROID_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.2.1";
 
-    public static final String INTEGRATION_SETTING_PAGE_ID = "com.kms.katalon.composer.preferences.integration";
-
     public static final String KATALON_ANALYTICS_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.analytics.page";
 
+    public static final String PLUGINS_SETTING_PAGE_ID = "com.kms.katalon.composer.project.preference.pluginPreferencePage";
+    
     public static final String QTEST_SETTING_PAGE_ID = "com.kms.katalon.composer.intergration.qtest.setting";
 
     public static final String TEST_CASE_REPOSITORIES_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.qtest.testCaseRepoMapping";
