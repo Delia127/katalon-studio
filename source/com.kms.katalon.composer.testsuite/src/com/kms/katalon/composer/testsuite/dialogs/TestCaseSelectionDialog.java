@@ -6,7 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -36,8 +39,10 @@ import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 /**
@@ -235,26 +240,26 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		}
 	}
 
-    @Override
-    public TreeViewer createTreeViewer(Composite parent) {
-        final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
-        treeViewer.getTree().addListener(SWT.Selection, new Listener() {
+	@Override
+	public TreeViewer createTreeViewer(Composite parent) {
+		final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
+		treeViewer.getTree().addListener(SWT.Selection, new Listener() {
 
-            @Override
-            public void handleEvent(Event event) {
-                if (event.detail == SWT.CHECK) {
-                    TreeItem item = (TreeItem) event.item;
-                    treeViewer.getTree().setSelection(item);
-                    onStageChangedTreeItem(item.getData(), item.getChecked());
-                }
-            }
-        });
-        Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
-        treeViewer.setCheckedElements(addedTestCases);
-        checkedItems = new ArrayList<Object>(Arrays.asList(addedTestCases));
-        return treeViewer;
-    }
-	
+			@Override
+			public void handleEvent(Event event) {
+				if (event.detail == SWT.CHECK) {
+					TreeItem item = (TreeItem) event.item;
+					treeViewer.getTree().setSelection(item);
+					onStageChangedTreeItem(item.getData(), item.getChecked());
+				}
+			}
+		});
+		Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
+		treeViewer.setCheckedElements(addedTestCases);
+		checkedItems = new ArrayList<Object>(Arrays.asList(addedTestCases));
+		return treeViewer;
+	}
+
 	/**
 	 * Check/Uncheck TreeItem action
 	 * 
