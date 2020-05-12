@@ -179,6 +179,8 @@ public class ComposerTestsuiteMessageConstants extends NLS {
 
     public static String PA_LBL_TOOLTIP_TEST_CASE_TEST_DATA_ONLY;
 
+    public static String PA_LBL_STOP_IMMEDIATELY;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestsuiteMessageConstants.class);

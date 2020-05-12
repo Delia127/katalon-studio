@@ -2,9 +2,7 @@ package com.kms.katalon.core.main;
 
 import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -17,6 +15,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
 
 import com.google.common.base.Optional;
@@ -35,16 +34,16 @@ import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.util.internal.JsonUtil;
 
 import groovy.lang.Binding;
-import groovy.util.GroovyScriptEngine;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 public class TestSuiteExecutor {
+
+    private static final String SHOULD_STOP_IMMEDIATELY_KEY = "stopImmediately";
 
     private final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
@@ -88,7 +87,7 @@ public class TestSuiteExecutor {
 
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
 
-        accessTestSuiteMainPhase(testCaseBindingFile);
+        accessTestSuiteMainPhase(suiteProperties, testCaseBindingFile);
 
         String status = "COMPLETE";
         if (ErrorCollector.getCollector().containsErrors()) {
@@ -107,7 +106,7 @@ public class TestSuiteExecutor {
         eventManger.publicEvent(ExecutionListenerEvent.AFTER_TEST_EXECUTION, new Object[0]);
     }
 
-    private void accessTestSuiteMainPhase(File testCaseBindingFile) {
+    private void accessTestSuiteMainPhase(Map<String, String> suiteProperties, File testCaseBindingFile) {
         ErrorCollector errorCollector = ErrorCollector.getCollector();
         try {
             this.scriptCache = new ScriptCache(testSuiteId);
@@ -139,7 +138,10 @@ public class TestSuiteExecutor {
                     }
                 }
                 testCaseBinding.setBindedValues(bindedValues);
-                accessTestCaseMainPhase(i, testCaseBinding);
+                TestResult tcExecutedResult = accessTestCaseMainPhase(i, testCaseBinding);
+                if (shouldStopImmediately(suiteProperties, tcExecutedResult)) {
+                    break;
+                }
             }
         } catch (IOException e) {
             errorCollector.addError(e);
@@ -148,7 +150,18 @@ public class TestSuiteExecutor {
         invokeTestSuiteMethod(TearDown.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true);
     }
 
-    private void accessTestCaseMainPhase(int index, TestCaseBinding tcBinding) {
+    private boolean shouldStopImmediately(Map<String, String> suiteProperties, TestResult tcExecutedResult) {
+        if (TestStatusValue.ERROR.equals(tcExecutedResult.getTestStatus().getStatusValue())
+                || TestStatusValue.FAILED.equals(tcExecutedResult.getTestStatus().getStatusValue())) {
+            String stopImmediatelyWhenTestCaseFails = suiteProperties.get(SHOULD_STOP_IMMEDIATELY_KEY);
+            if (!StringUtils.isEmpty(stopImmediatelyWhenTestCaseFails)) {
+                return Boolean.valueOf(stopImmediatelyWhenTestCaseFails).booleanValue();
+            }
+        }
+        return false;
+    }
+
+    private TestResult accessTestCaseMainPhase(int index, TestCaseBinding tcBinding) {
         ErrorCollector errorCollector = ErrorCollector.getCollector();
         List<Throwable> coppiedErrors = errorCollector.getCoppiedErrors();
         errorCollector.clearErrors();
@@ -166,7 +179,7 @@ public class TestSuiteExecutor {
             TestCaseExecutor testCaseExecutor = new TestCaseExecutor(tcBinding, scriptEngine, eventManger,
                     testCaseContext);
             testCaseExecutor.setTestSuiteExecutor(this);
-            testCaseExecutor.execute(FailureHandling.STOP_ON_FAILURE);
+            return testCaseExecutor.execute(FailureHandling.STOP_ON_FAILURE);
         } finally {
             errorCollector.clearErrors();
             errorCollector.getErrors().addAll(coppiedErrors);

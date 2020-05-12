@@ -27,12 +27,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -41,6 +44,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TypedListener;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -50,6 +54,8 @@ import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.TestSuiteEventConstants;
@@ -62,6 +68,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.feature.KSEFeature;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuitePart implements EventHandler {
 
@@ -95,6 +102,8 @@ public class TestSuitePart implements EventHandler {
     private Button btnAddMailRcp, btnDeleteMailRcp, btnClearMailRcp;
 
     private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
+    
+    private Button chkShouldStopImmediately;
 
     private Composite compositeLastRunAndReRun;
 
@@ -300,7 +309,20 @@ public class TestSuitePart implements EventHandler {
             }
         });
         txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
-
+        
+        chkShouldStopImmediately.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (LicenseUtil.isFreeLicense()) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY);
+                    chkShouldStopImmediately.setSelection(false);
+                }
+                boolean value = chkShouldStopImmediately.getSelection();
+                getTestSuite().setShouldStopImmediatelyWhenTestCaseFails(value);
+                setDirty(true);
+            }
+        });
+        
         txtRerun.addModifyListener(new ModifyListener() {
 
             @Override
@@ -386,7 +408,7 @@ public class TestSuitePart implements EventHandler {
         txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
         rerunTestCaseOnly.setSelection(testSuite.isRerunFailedTestCasesOnly());
         boolean rerunTcOnly = rerunTestCaseOnly.getSelection();
-
+        chkShouldStopImmediately.setSelection(testSuite.shouldStopImmediatelyWhenTestCaseFails());
         rerunTestCaseTestDataOnly.setEnabled(rerunTcOnly);
         if(rerunTcOnly) {
             rerunTestCaseTestDataOnly.setSelection(testSuite.isRerunFailedTestCasesAndTestDataOnly());
@@ -538,9 +560,36 @@ public class TestSuitePart implements EventHandler {
         gdCompositeTestDataAndLastRun.minimumWidth = MINIMUM_COMPOSITE_SIZE;
         compositeLastRunAndReRun.setLayoutData(gdCompositeTestDataAndLastRun);
         GridLayout glCompositeTestDataAndLastRun = new GridLayout(4, false);
-        glCompositeTestDataAndLastRun.verticalSpacing = 10;
+        glCompositeTestDataAndLastRun.verticalSpacing = 15;
         compositeLastRunAndReRun.setLayout(glCompositeTestDataAndLastRun);
-
+        
+        Label lblStopImmediately = new Label(compositeLastRunAndReRun, SWT.NONE);
+        GridData gdLblStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        lblStopImmediately.setLayoutData(gdLblStopImmediately);
+        lblStopImmediately.setText(StringConstants.PA_LBL_STOP_IMMEDIATELY);
+        
+        chkShouldStopImmediately = new Button(compositeLastRunAndReRun, SWT.CHECK);
+        GridData gdChkShouldStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblStopImmediately.setLayoutData(gdChkShouldStopImmediately);
+        
+        Label lblDocumentLink = new Label(compositeLastRunAndReRun, SWT.PUSH);
+        GridData gdLblDocumentLink = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        lblDocumentLink.setLayoutData(gdLblDocumentLink);
+        lblDocumentLink.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        lblDocumentLink.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseUp(MouseEvent mouseEvent) {
+                Program.launch(
+                        "https://docs.katalon.com/katalon-studio/docs/use-online-license.html#katalon-studio-enterprise");
+                Trackings.trackOpenHelp(
+                        "https://docs.katalon.com/katalon-studio/docs/use-online-license.html#katalon-studio-enterprise");
+            }
+        });
+        
+        Label lblPlaceHolder = new Label(compositeLastRunAndReRun, SWT.NONE);
+        GridData gdlblPlaceHolder = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        lblStopImmediately.setLayoutData(gdlblPlaceHolder);
+                
         Label lblReRun = new Label(compositeLastRunAndReRun, SWT.NONE);
         GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLblReRun.widthHint = 85;

@@ -20,7 +20,6 @@ import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testdata.TestDataInfo;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestDataCombinationType;
@@ -39,6 +38,8 @@ import com.kms.katalon.execution.platform.ExecutionPlatformServiceProvider;
 import com.kms.katalon.execution.util.MailUtil;
 
 public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportable, Rerunable, ConsoleOptionContributor {
+    public static final String SHOULD_STOP_IMMEDIATELY_KEY = "stopImmediately";
+
     private List<IExecutedEntity> executedItems;
 
     private Map<String, TestData> testDataMap;
@@ -53,12 +54,15 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     private EmailSettings emailSettings;
 
+    private boolean shouldStopImmediatelyWhenTestCaseFails;
+
     public TestSuiteExecutedEntity() {
         testDataMap = new HashMap<>();
         reportLocationSetting = new ReportLocationSetting();
         emailSettings = new EmailSettings();
         rerunSetting = new DefaultRerunSetting();
         executedItems = new ArrayList<IExecutedEntity>();
+        shouldStopImmediatelyWhenTestCaseFails = false;
     }
 
     public TestSuiteExecutedEntity(TestSuiteEntity testSuite) throws Exception {
@@ -72,6 +76,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         rerunSetting.setRemainingRerunTimes(rerunnable.getRemainingRerunTimes());
         rerunSetting.setRerunFailedTestCaseOnly(rerunnable.isRerunFailedTestCasesOnly());
         rerunSetting.setRerunFailedTestCaseAndTestDataOnly(rerunnable.isRerunFailedTestCasesAndTestDataOnly());
+        setShouldStopImmediatelyWhenTestCaseFails(testSuite.shouldStopImmediatelyWhenTestCaseFails());
     }
 
     public void setTestSuite(TestSuiteEntity testSuite) throws IOException, Exception {
@@ -81,6 +86,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         rerunSetting.setRemainingRerunTimes(testSuite.getNumberOfRerun());
         rerunSetting.setRerunFailedTestCaseOnly(testSuite.isRerunFailedTestCasesOnly());
         rerunSetting.setRerunFailedTestCaseAndTestDataOnly(testSuite.isRerunFailedTestCasesAndTestDataOnly());
+        setShouldStopImmediatelyWhenTestCaseFails(testSuite.shouldStopImmediatelyWhenTestCaseFails());
     }
 
     public void prepareTestCases() throws Exception {
@@ -486,6 +492,21 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             }
         }
         return collectedInfo;
+    }
+    
+    @Override
+    public Map<String, Object> getAttributes() {
+        Map<String, Object> attributes = super.getAttributes();
+        attributes.put(SHOULD_STOP_IMMEDIATELY_KEY, shouldStopImmediatelyWhenTestCaseFails());
+        return attributes;
+    }
+
+    private boolean shouldStopImmediatelyWhenTestCaseFails() {
+        return shouldStopImmediatelyWhenTestCaseFails;
+    }
+
+    private void setShouldStopImmediatelyWhenTestCaseFails(boolean val) {
+        shouldStopImmediatelyWhenTestCaseFails = val;
     }
 
     @Override

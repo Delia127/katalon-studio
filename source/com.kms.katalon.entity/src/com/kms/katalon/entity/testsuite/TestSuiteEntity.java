@@ -30,6 +30,8 @@ public class TestSuiteEntity extends IntegratedFileEntity {
     private boolean rerunFailedTestCasesOnly;
     
     private boolean rerunFailedTestCasesTestDataOnly;
+    
+    private boolean shouldStopImmediatelyWhenTestCaseFails;
 
     public TestSuiteEntity() {
         super();
@@ -126,6 +128,14 @@ public class TestSuiteEntity extends IntegratedFileEntity {
     public boolean isRerunFailedTestCasesAndTestDataOnly() {
         return rerunFailedTestCasesTestDataOnly;
     }
+    
+    public boolean shouldStopImmediatelyWhenTestCaseFails() {
+        return shouldStopImmediatelyWhenTestCaseFails;
+    }
+
+    public void setShouldStopImmediatelyWhenTestCaseFails(boolean val) {
+        shouldStopImmediatelyWhenTestCaseFails = val;
+    }
 
     @Override
     public boolean equals(Object that) {
@@ -158,6 +168,7 @@ public class TestSuiteEntity extends IntegratedFileEntity {
         result = prime * result + ((mailRecipient == null) ? 0 : mailRecipient.hashCode());
         result = prime * result + (isRerun ? 1231 : 1237);
         result = prime * result + (isPageLoadTimeoutDefault ? 1231 : 1237);
+        result = prime * result + (shouldStopImmediatelyWhenTestCaseFails ? 1231 : 1237);
         result = prime * result + (rerunFailedTestCasesOnly ? 1231 : 1237);
         result = prime * result + (rerunFailedTestCasesTestDataOnly ? 1231 : 1237);
         result = prime * result + pageLoadTimeout;

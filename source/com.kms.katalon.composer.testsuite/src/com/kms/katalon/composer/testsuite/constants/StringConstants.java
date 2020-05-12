@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testsuite.constants;
 
+import org.eclipse.osgi.util.NLS;
+
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
@@ -135,6 +137,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_DESC = DESCRIPTION;
 
     public static final String PA_LBL_LAST_RUN = ComposerTestsuiteMessageConstants.PA_LBL_LAST_RUN;
+    
+    public static final String PA_LBL_STOP_IMMEDIATELY = ComposerTestsuiteMessageConstants.PA_LBL_STOP_IMMEDIATELY;
 
     public static final String PA_LBL_RETRY = ComposerTestsuiteMessageConstants.PA_LBL_RETRY;
     
