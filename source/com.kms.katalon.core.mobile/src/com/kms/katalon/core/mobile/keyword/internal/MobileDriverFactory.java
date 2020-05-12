@@ -60,27 +60,6 @@ public class MobileDriverFactory {
     }
 
     /**
-     * Get the type of the remote server
-     * <p>
-     * Possible values: "Selenium", "Appium"
-     * 
-     * @return the type of the remote server
-     */
-    public static String getRemoteServerType() {
-        return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, "remoteWebDriverType");
-    }
-
-    /**
-     * Set the type of the remote server
-     * <p>
-     * Possible values: "Selenium", "Appium"
-     */
-    public static void setRemoteServerType(String serverType) {
-        Map<String, Object> remoteDriverProp = RunConfiguration.getDriverSystemProperties(RunConfiguration.REMOTE_DRIVER_PROPERTY);
-        remoteDriverProp.put("remoteWebDriverType", serverType);
-    }
-
-    /**
      * Get the native app mobile driver type of the current active driver
      * 
      * @see MobileDriverType
@@ -100,14 +79,6 @@ public class MobileDriverFactory {
     }
 
     /**
-     * @return set the remote mobile driver url for running Mobile keyword on cloud services
-     */
-    public static void setRemoteWebDriverServerUrl(String remoteWebDriverServerUrl) {
-        Map<String, Object> remoteDriverProp = RunConfiguration.getDriverSystemProperties(RunConfiguration.REMOTE_DRIVER_PROPERTY);
-        remoteDriverProp.put("remoteWebDriverUrl", remoteWebDriverServerUrl);
-    }
-
-    /**
      * @return the remote web driver type if running Mobile keyword on cloud services
      */
     public static String getRemoteWebDriverType() {
@@ -117,14 +88,6 @@ public class MobileDriverFactory {
     public static MobileDriverType getRemoteMobileDriver() {
         return MobileDriverType.valueOf(RunConfiguration
                 .getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, "remoteMobileDriver"));
-    }
-
-    /**
-     * @return set the remote mobile driver type for running Mobile keyword on cloud services
-     */
-    public static void setRemoteMobileDriver(MobileDriverType mobileDriverType) {
-        Map<String, Object> remoteDriverProp = RunConfiguration.getDriverSystemProperties(RunConfiguration.REMOTE_DRIVER_PROPERTY);
-        remoteDriverProp.put("remoteMobileDriver", mobileDriverType.getName());
     }
 
     /**
@@ -219,6 +182,16 @@ public class MobileDriverFactory {
             }
             throw e;
         }
+    }
+
+    /**
+     * Sets the current active mobile driver.
+     * 
+     * @param driver the mobile driver to set
+     * @since 7.6.0
+     */
+    public static void setDriver(AppiumDriver<?> driver) {
+        AppiumDriverManager.setDriver(driver);
     }
 
     /**

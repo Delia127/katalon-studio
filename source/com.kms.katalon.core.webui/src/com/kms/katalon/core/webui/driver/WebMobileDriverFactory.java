@@ -60,9 +60,11 @@ public class WebMobileDriverFactory {
     }
 
     /**
-     * Set the current active web mobile driver
+     * Sets the current active web mobile driver.
      * 
-     * @param driver the mobile driver to set
+     * @param driver    the mobile driver to be set
+     * @see             AppiumDriver
+     * @since           7.6.0
      */
     public static void setDriver(AppiumDriver<?> driver) {
         AppiumDriverManager.setDriver(driver);
