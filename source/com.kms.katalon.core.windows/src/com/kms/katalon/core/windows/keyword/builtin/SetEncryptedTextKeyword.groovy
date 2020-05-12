@@ -55,7 +55,7 @@ public class SetEncryptedTextKeyword extends AbstractKeyword {
             
             logger.logDebug(String.format("Clearing text of object '%s'", testObject.getObjectId()))
             windowsActionHelper.clearText(testObject);
-            logger.logDebug(String.format("Setting  text of object '%s' to value ******", testObject.getObjectId()))
+            logger.logDebug(String.format("Setting text of object '%s' to value ******", testObject.getObjectId()))
             windowsActionHelper.setText(testObject, rawText)
 
             logger.logPassed(String.format("Text ****** has been set on object '%s'", testObject.getObjectId()))
