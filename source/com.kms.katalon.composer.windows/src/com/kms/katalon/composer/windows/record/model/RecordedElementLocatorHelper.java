@@ -71,20 +71,27 @@ public class RecordedElementLocatorHelper {
             locator = "";
             return;
         }
-
-        String automationId = attributes.get("AutomationId");
-        if (StringUtils.isNotEmpty(automationId)) {
-            locatorStrategy = LocatorStrategy.ACCESSIBILITY_ID;
-            locator = automationId;
+        
+        String name = attributes.get("Name");
+        if (StringUtils.isNotEmpty(name)) {
+            locatorStrategy = LocatorStrategy.NAME;
+            locator = name;
             return;
         }
+
+//        String automationId = attributes.get("AutomationId");
+//        if (StringUtils.isNotEmpty(automationId)) {
+//            locatorStrategy = LocatorStrategy.ACCESSIBILITY_ID;
+//            locator = automationId;
+//            return;
+//        }
         
         locatorStrategy = LocatorStrategy.XPATH;
         locator = buildXPath();
     }
 
     private String buildXPath() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("//");
         List<WindowsRecordedElement> elements = payload.getParent();
         for (int i = 0; i < elements.size(); i++) {
             WindowsRecordedElement p = elements.get(i);
