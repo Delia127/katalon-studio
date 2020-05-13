@@ -91,7 +91,7 @@ public class RecordedElementLocatorHelper {
     }
 
     private String buildXPath() {
-        StringBuilder sb = new StringBuilder("//");
+        StringBuilder sb = new StringBuilder("/");
         List<WindowsRecordedElement> elements = payload.getParent();
         for (int i = 0; i < elements.size(); i++) {
             WindowsRecordedElement p = elements.get(i);
