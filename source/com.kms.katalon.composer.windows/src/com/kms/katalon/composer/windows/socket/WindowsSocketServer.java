@@ -109,7 +109,7 @@ public class WindowsSocketServer {
                         recorderDialog.refreshButtonsState();
                         LoggerSingleton.logError(payload.getMessage());
                         MultiStatusErrorDialog.showErrorDialog(ComposerWindowsMessage.MSG_FAILED_START_APPLICATION,
-                                payload.getMessage(), payload.getAppPath());
+                                payload.getMessage(), payload.getAppPath(), recorderDialog.getShell());
                     });
                 }
                 return;

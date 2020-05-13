@@ -53,10 +53,10 @@ public class SoapClient extends BasicRequestor {
 
         if (requestObject.useServiceInfoFromWsdl()) {
             post.addHeader(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
-        }
-        if (StringUtils.isNotBlank(actionUri)) {
-            post.addHeader(SOAP_ACTION, actionUri);
-        }
+            if (StringUtils.isNotBlank(actionUri)) {
+                post.addHeader(SOAP_ACTION, actionUri);
+            }
+        }       
         setHttpConnectionHeaders(post, requestObject);
 
         ByteArrayEntity entity = new ByteArrayEntity(requestObject.getSoapBody().getBytes(StandardCharsets.UTF_8));
