@@ -68,17 +68,21 @@ public class WindowsSocketServer {
                             isClientConnected = false;
                         }
                     }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
+                } catch (Exception exception) {
+                    MultiStatusErrorDialog.showErrorDialog(exception,
+                            ComposerWindowsMessage.MSG_KATALON_NATIVE_RECORDER_SERVER_EXCEPTION,
+                            exception.getMessage(),
+                            recorderDialog.getShell());
+                    LoggerSingleton.logError(exception);
                 } finally {
-                    if (socket != null & !socket.isClosed()) {
+                    if (socket != null && !socket.isClosed()) {
                         try {
                             socket.close();
                         } catch (IOException ignored) {
 
                         }
                     }
-                    if (server != null & !server.isClosed()) {
+                    if (server != null && !server.isClosed()) {
                         try {
                             server.close();
                         } catch (IOException ignored) {
@@ -164,13 +168,15 @@ public class WindowsSocketServer {
     }
 
     public void close() {
-        if (socket != null) {
+        if (socket != null && !socket.isClosed()) {
             try {
                 sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.EXIT, ""));
             } catch (IOException ignored) {}
         }
         try {
-            server.close();
+            if (server != null && !server.isClosed()) {
+                server.close();
+            }
         } catch (IOException e) {
         }
         shouldReturn = true;

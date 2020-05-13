@@ -283,7 +283,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
                 setButtonStates();
                 try {
                     mobileComposite.saveSettings();
-                    startServer();
+                    startRecording();
                 } catch (Exception ex) {
                     isStarting = false;
                     setButtonStates();
@@ -305,7 +305,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
                     setButtonStates();
 
                     closeApplication();
-                    stopServer();
+                    stopRecordind();
                 } catch (Exception ex) {}
             }
         });
@@ -357,7 +357,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         return layout;
     }
 
-    private void startServer() throws Exception {
+    private void startRecording() throws Exception {
         startNativeRecorderDriver();
         WindowsStartRecordingPayload message = WindowsSocketMessageUtil
                 .createStartRecordingPayload(mobileComposite.getAppFile());
@@ -365,7 +365,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.START_RECORDING, data));
     }
 
-    private void stopServer() throws Exception {
+    private void stopRecordind() throws Exception {
         socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.STOP_RECORDING, ""));
     }
 
@@ -382,7 +382,8 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     private void startNativeRecorderDriver() {
         try {
-            nativeRecorderDriver.start();
+            boolean shouldStartANewClient = !socketServer.isClientConnected();
+            nativeRecorderDriver.start(shouldStartANewClient);
         } catch (IOException exception) {
             LoggerSingleton.logError(exception);
         }
