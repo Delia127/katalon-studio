@@ -30,6 +30,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -124,6 +125,15 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     }
 
     @Override
+    protected Point getInitialLocation(Point initialSize) {
+        Shell parentShell = Display.getCurrent().getActiveShell();
+        Rectangle parentSize = parentShell.getBounds();
+        int locationX = (parentSize.width - initialSize.x) / 2 + parentSize.x;
+        int locationY = (parentSize.height - initialSize.y) / 2 + parentSize.y;
+        return new Point(locationX, locationY);
+    }
+
+    @Override
     protected int getShellStyle() {
         if (!Platform.OS_LINUX.equals(Platform.getOS())) {
             return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
@@ -140,7 +150,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     @Override
     protected void setInput() {
-
         setButtonStates();
         stepView.setCapturedElementsTableViewer(capturedObjectsTableViewer);
 
@@ -396,8 +405,12 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     @Override
     public void updateSelectedElement(CapturedWindowsElement editingElement) {
-        // TODO Auto-generated method stub
-
+        capturedObjectsTableViewer.refresh(editingElement);
+        try {
+            stepView.refreshTree();
+        } catch (InvocationTargetException | InterruptedException ex) {
+            LoggerSingleton.logError(ex);
+        }
     }
 
     @Override

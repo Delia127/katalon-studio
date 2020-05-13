@@ -13,6 +13,8 @@ public class ComposerWindowsMessage {
 
     public static String MSG_FAILED_START_APPLICATION;
 
+    public static String MSG_APP_CLOSED_UNEXPECTEDLY;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages("com.kms.katalon.composer.windows.constant.composerWindowsMessage", ComposerWindowsMessage.class);

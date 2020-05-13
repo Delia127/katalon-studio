@@ -9,7 +9,6 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -55,14 +54,14 @@ public class WindowsRecorderProHandler {
     }
 
     @Execute
-    public void execute() {
+    public void execute(Shell activeShell) {
         IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         if (!featureService.canUse(KSEFeature.WINDOWS_NATIVE_RECORDER)) {
             KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.WINDOWS_NATIVE_RECORDER);
             return;
         }
 
-        Shell shell = getShell(Display.getCurrent().getActiveShell());
+        Shell shell = getShell(activeShell);
         try {
             WindowsRecorderDialogV2 dialog = new WindowsRecorderDialogV2(shell);
             if (dialog.open() != WindowsRecorderDialog.OK) {

@@ -26,6 +26,6 @@ public class WindowsClientSocketMessage {
     }
 
     public enum ClientMessageType {
-        CONNECT, APP_INFO, RECORDING_ACTION
+        CONNECT, APP_INFO, APP_CLOSED_UNEXPECTEDLY, RECORDING_ACTION
     }
 }
