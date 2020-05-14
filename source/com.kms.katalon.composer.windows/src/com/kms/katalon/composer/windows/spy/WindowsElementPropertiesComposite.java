@@ -247,9 +247,9 @@ public class WindowsElementPropertiesComposite {
     
     private void setLocatorByLocatorStrategy() {
         LocatorStrategy locatorStrategy = editingElement.getLocatorStrategy();
-        String locator = WindowsElementHelper.getLocatorByStrategy(locatorStrategy, editingElement.getSnapshotWindowsElement());
+        String locator = WindowsElementHelper.getLocatorByStrategy(locatorStrategy, editingElement);
         editingElement.setLocator(locator);
-        txtLocator.setText(locator);
+        txtLocator.setText(StringUtils.defaultString(locator));
     }
 
     private void createColumns(TableViewer viewer, TableColumnLayout tableColumnLayout) {
