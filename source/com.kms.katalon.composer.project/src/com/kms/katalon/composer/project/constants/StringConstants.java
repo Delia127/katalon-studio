@@ -35,6 +35,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_REFRESHING_EXPLORER = ComposerProjectMessageConstants.HAND_REFRESHING_EXPLORER;
 
+    // Self Healing
+    public static final String PROJECT_EXECUTION_SELF_HEALING_ID = "com.katalon.composer.self_healing";
+    
     // RebuildProjectHandler
     public static final String HAND_REBUILD_PROJ = ComposerProjectMessageConstants.HAND_REBUILD_PROJ;
 

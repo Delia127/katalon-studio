@@ -3,8 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: smart-xpath
 Bundle-SymbolicName: com.katalon.katalon-studio-smart-xpath;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: resources/,
+ .
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: com.katalon.platform,
  org.eclipse.osgi.services,
  org.eclipse.swt,
@@ -15,6 +16,13 @@ Require-Bundle: com.katalon.platform,
  com.fasterxml.jackson.core.jackson-core,
  com.kms.katalon.constant,
  com.kms.katalon.application,
- com.kms.katalon.composer.components.impl
-Bundle-ClassPath: resources/,
- .
+ com.kms.katalon.composer.components,
+ com.kms.katalon.composer.components.impl,
+ com.kms.katalon.core,
+ com.kms.katalon.util,
+ com.kms.katalon.execution,
+ com.kms.katalon.execution.webui,
+ com.kms.katalon.controller,
+ com.kms.katalon.entity,
+ org.eclipse.e4.ui.model.workbench;bundle-version="1.2.0.v20160229-1459"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
