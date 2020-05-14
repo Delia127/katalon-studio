@@ -26,8 +26,10 @@ public class RecordedElementLocatorHelper {
     
     public CapturedWindowsElement getCapturedElement() {
         CapturedWindowsElement element = new CapturedWindowsElement();
+        element.setTagName(getTitleCaseName(recordedElement.getType()));
         element.setName(getTitleCaseName(recordedElement.getType()));
         element.setProperties(recordedElement.getAttributes());
+        element.getProperties().put("XPath", buildXPath());
         
         buildLocator();
         
@@ -69,20 +71,27 @@ public class RecordedElementLocatorHelper {
             locator = "";
             return;
         }
-
-        String automationId = attributes.get("AutomationId");
-        if (StringUtils.isNotEmpty(automationId)) {
-            locatorStrategy = LocatorStrategy.ACCESSIBILITY_ID;
-            locator = automationId;
+        
+        String name = attributes.get("Name");
+        if (StringUtils.isNotEmpty(name)) {
+            locatorStrategy = LocatorStrategy.NAME;
+            locator = name;
             return;
         }
+
+//        String automationId = attributes.get("AutomationId");
+//        if (StringUtils.isNotEmpty(automationId)) {
+//            locatorStrategy = LocatorStrategy.ACCESSIBILITY_ID;
+//            locator = automationId;
+//            return;
+//        }
         
         locatorStrategy = LocatorStrategy.XPATH;
         locator = buildXPath();
     }
 
     private String buildXPath() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("/");
         List<WindowsRecordedElement> elements = payload.getParent();
         for (int i = 0; i < elements.size(); i++) {
             WindowsRecordedElement p = elements.get(i);
@@ -124,7 +133,7 @@ public class RecordedElementLocatorHelper {
         
         if (StringUtils.isNotEmpty(name)) {
             if (StringUtils.isNotEmpty(predicate)) {
-                sb.append(" && ");
+                sb.append(" and ");
             }
             sb.append(String.format("@Name = \"%s\"", name));
         }

@@ -3,12 +3,11 @@ package com.kms.katalon.composer.windows.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -50,18 +49,18 @@ public class WindowsRecorderProHandler {
 
     @CanExecute
     public boolean canExecute() {
-        return ProjectController.getInstance().getCurrentProject() != null;
+        return ProjectController.getInstance().getCurrentProject() != null && SystemUtils.IS_OS_WINDOWS;
     }
 
     @Execute
-    public void execute() {
+    public void execute(Shell activeShell) {
         IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         if (!featureService.canUse(KSEFeature.WINDOWS_NATIVE_RECORDER)) {
             KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.WINDOWS_NATIVE_RECORDER);
             return;
         }
 
-        Shell shell = getShell(Display.getCurrent().getActiveShell());
+        Shell shell = getShell(activeShell);
         try {
             WindowsRecorderDialogV2 dialog = new WindowsRecorderDialogV2(shell);
             if (dialog.open() != WindowsRecorderDialog.OK) {
@@ -91,9 +90,6 @@ public class WindowsRecorderProHandler {
             return null;
         }
         Shell shell = new Shell();
-        Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2,
-                (activeShellSize.height - shell.getBounds().height) / 2);
         return shell;
     }
 

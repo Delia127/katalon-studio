@@ -30,6 +30,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -124,9 +125,18 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     }
 
     @Override
+    protected Point getInitialLocation(Point initialSize) {
+        Shell parentShell = Display.getCurrent().getActiveShell();
+        Rectangle parentSize = parentShell.getBounds();
+        int locationX = (parentSize.width - initialSize.x) / 2 + parentSize.x;
+        int locationY = (parentSize.height - initialSize.y) / 2 + parentSize.y;
+        return new Point(locationX, locationY);
+    }
+
+    @Override
     protected int getShellStyle() {
         if (!Platform.OS_LINUX.equals(Platform.getOS())) {
-            return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
+            return SWT.SHELL_TRIM;
         } else {
             return SWT.SHELL_TRIM | SWT.CENTER;
         }
@@ -140,7 +150,6 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     @Override
     protected void setInput() {
-
         setButtonStates();
         stepView.setCapturedElementsTableViewer(capturedObjectsTableViewer);
 
@@ -274,7 +283,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
                 setButtonStates();
                 try {
                     mobileComposite.saveSettings();
-                    startServer();
+                    startRecording();
                 } catch (Exception ex) {
                     isStarting = false;
                     setButtonStates();
@@ -296,7 +305,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
                     setButtonStates();
 
                     closeApplication();
-                    stopServer();
+                    stopRecordind();
                 } catch (Exception ex) {}
             }
         });
@@ -348,7 +357,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         return layout;
     }
 
-    private void startServer() throws Exception {
+    private void startRecording() throws Exception {
         startNativeRecorderDriver();
         WindowsStartRecordingPayload message = WindowsSocketMessageUtil
                 .createStartRecordingPayload(mobileComposite.getAppFile());
@@ -356,7 +365,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.START_RECORDING, data));
     }
 
-    private void stopServer() throws Exception {
+    private void stopRecordind() throws Exception {
         socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.STOP_RECORDING, ""));
     }
 
@@ -373,7 +382,8 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     private void startNativeRecorderDriver() {
         try {
-            nativeRecorderDriver.start();
+            boolean shouldStartANewClient = !socketServer.isClientConnected();
+            nativeRecorderDriver.start(shouldStartANewClient);
         } catch (IOException exception) {
             LoggerSingleton.logError(exception);
         }
@@ -396,8 +406,12 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     @Override
     public void updateSelectedElement(CapturedWindowsElement editingElement) {
-        // TODO Auto-generated method stub
-
+        capturedObjectsTableViewer.refresh(editingElement);
+        try {
+            stepView.refreshTree();
+        } catch (InvocationTargetException | InterruptedException ex) {
+            LoggerSingleton.logError(ex);
+        }
     }
 
     @Override
