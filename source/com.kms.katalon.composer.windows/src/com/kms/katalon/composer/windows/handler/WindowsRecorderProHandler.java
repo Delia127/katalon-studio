@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -87,14 +86,10 @@ public class WindowsRecorderProHandler {
 
     private Shell getShell(Shell activeShell) {
         String os = Platform.getOS();
-//        if (Platform.OS_WIN32.equals(os) || Platform.OS_LINUX.equals(os)) {
-//            return null;
-//        }
+        if (Platform.OS_WIN32.equals(os) || Platform.OS_LINUX.equals(os)) {
+            return null;
+        }
         Shell shell = new Shell();
-        Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2,
-                (activeShellSize.height - shell.getBounds().height) / 2);
-        shell.setParent(activeShell);
         return shell;
     }
 

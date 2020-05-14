@@ -136,7 +136,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     @Override
     protected int getShellStyle() {
         if (!Platform.OS_LINUX.equals(Platform.getOS())) {
-            return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
+            return SWT.SHELL_TRIM;
         } else {
             return SWT.SHELL_TRIM | SWT.CENTER;
         }
