@@ -46,7 +46,7 @@ public class AwsKatalonUtil {
     public static AwsKatalonAmi getAwsKatalonAmi() {
         try {
             URL url = new URL(URL_KATALON_AMI_ID);
-            InputStream is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getProxyInformation())).getInputStream();
+            InputStream is = url.openConnection(ProxyUtil.getProxy(ProxyPreferences.getAuthProxyInformation())).getInputStream();
             String responseBody = decrypGpg(is);
             is.close();
             if (StringUtils.isEmpty(responseBody)) {

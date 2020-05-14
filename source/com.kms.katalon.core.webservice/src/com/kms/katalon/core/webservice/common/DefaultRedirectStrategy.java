@@ -15,7 +15,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 
-public class WebServiceRedirectStrategy extends LaxRedirectStrategy {
+public class DefaultRedirectStrategy extends LaxRedirectStrategy {
     
     private static final int SC_PERMANENT_REDIRECT = 308;
     

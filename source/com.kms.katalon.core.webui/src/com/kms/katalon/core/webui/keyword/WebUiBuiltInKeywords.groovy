@@ -3908,4 +3908,83 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void disableSmartWait() throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "disableSmartWait")
     }
+
+    /**
+     * Inject an input that will disappear by the end of this method. This keyword set files to
+     * the input and then emit <i>dragenter</i>, <i>dragover</i>, <i>drop</i> events that carry the files to the provided drop zone.
+     * <p>
+     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
+     * </p>
+     * 
+     * @since 7.5.0
+     * @param to TestObject The drop zone on which drag-and-drop can be done
+     * @param filePath The absolute path to the file to be uploaded
+     * @param flowControl failureHandling 
+     * @return 
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void uploadFileWithDragAndDrop(TestObject to, String filePath, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "uploadFileWithDragAndDrop", to, filePath, flowControl)
+    }
+    
+    /**
+     * Inject an input that will disappear by the end of this method. This keyword set files to
+     * the input and then emit <i>dragenter</i>, <i>dragover</i>, <i>drop</i> events that carry the files to the provided drop zone.
+     * <p>
+     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
+     * </p>
+     *
+     * @since 7.5.0
+     * @param to TestObject The drop zone on which drag-and-drop can be done
+     * @param filePath String The absolute path to the file to be uploaded
+     * @return 
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void uploadFileWithDragAndDrop(TestObject to, String filePath) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "uploadFileWithDragAndDrop", to, filePath)
+    }
+    
+    /**
+     * Inject an input that will disappear by the end of this method. This keyword set files to
+     * the input and then emit <i>dragenter</i>, <i>dragover</i>, <i>drop</i> events that carry the files to the drop zone which 
+     * is defaulted to the <i>body</i> element. To specify your own drop zone, refer to other variations of this keyword
+     * <p>
+     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
+     * </p>
+     *
+     * @since 7.5.0
+     * @param filePath String The absolute path to the file to be uploaded
+     * @return 
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void uploadFileWithDragAndDrop(String filePath) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "uploadFileWithDragAndDrop", null, filePath)
+    }
+    
+    /**
+     * Inject an input that will disappear by the end of this method. This keyword set files to
+     * the input and then emit <i>dragenter</i>, <i>dragover</i>, <i>drop</i> events that carry the files to the drop zone which 
+     * is defaulted to the <i>body</i> element. To specify your own drop zone, refer to other variations of this keyword
+     * 
+     * <p>
+     * To upload multiple files, please provide the string of the format: <b>pathToFile 1 + "\n" + pathToFile2 + "\n" + pathToFile3</b>
+     * </p>
+     *
+     * @since 7.5.0
+     * @param filePath String The absolute path to the file to be uploaded
+     * @param flowControl failureHandling 
+     * @return 
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void uploadFileWithDragAndDrop(String filePath, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "uploadFileWithDragAndDrop", null, filePath, flowControl)
+    }
 }

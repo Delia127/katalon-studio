@@ -89,6 +89,8 @@ import com.kms.katalon.execution.exception.ExtensionRequiredException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
@@ -116,6 +118,8 @@ public abstract class AbstractExecutionHandler {
 
     @Inject
     protected static IEventBroker eventBroker;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     /**
      * Cleans all run configuration before any execution is started
@@ -314,8 +318,9 @@ public abstract class AbstractExecutionHandler {
 	}
 
     private void processToRun(LaunchMode launchMode, Entity targetEntity) throws Exception {
+        boolean isEnableDebugFeature = featureService.canUse(KSEFeature.DEBUG_MODE);
         if (targetEntity instanceof TestCaseEntity) {
-            if (!isEnterpriseAccount() && launchMode == LaunchMode.DEBUG) {
+            if (!isEnableDebugFeature && launchMode == LaunchMode.DEBUG) {
                 KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.DEBUG_MODE);
                 return;
             }
@@ -324,7 +329,7 @@ public abstract class AbstractExecutionHandler {
         	executeTestCase(testCase, launchMode);
         	eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
         } else if (targetEntity instanceof TestSuiteEntity) {
-            if (!isEnterpriseAccount() && launchMode == LaunchMode.DEBUG) {
+            if (!isEnableDebugFeature && launchMode == LaunchMode.DEBUG) {
                 KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.DEBUG_MODE);
                 return;
             }
@@ -336,10 +341,6 @@ public abstract class AbstractExecutionHandler {
         	SystemFileEntity feature = (SystemFileEntity) targetEntity;
         	executeFeatureFile(feature, launchMode);
         }
-    }
-    
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
     }
 
     public void settingDebugUI(){
