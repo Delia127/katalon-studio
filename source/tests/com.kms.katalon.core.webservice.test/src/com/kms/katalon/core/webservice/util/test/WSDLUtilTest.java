@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.ibm.wsdl.PortImpl;
 import com.ibm.wsdl.ServiceImpl;
-import com.kms.katalon.core.webservice.util.WSDLUtil;
+import com.kms.katalon.core.webservice.wsdl.support.wsdl.WsdlParser;
 
 public class WSDLUtilTest {
     
@@ -41,7 +41,7 @@ public class WSDLUtilTest {
        Service service = getService(wsdlDefinition);
        Map<?, ?> ports = service.getPorts();
        PortImpl port = (PortImpl) ports.get("CalculatorSoap");
-       List<SOAPAddress> soapAddresses = WSDLUtil.getExtensiblityElements(port.getExtensibilityElements(), SOAPAddress.class);
+       List<SOAPAddress> soapAddresses = WsdlParser.getExtensiblityElements(port.getExtensibilityElements(), SOAPAddress.class);
        assertNotNull(soapAddresses);
        assertEquals(soapAddresses.size(), 1);
     }
@@ -51,7 +51,7 @@ public class WSDLUtilTest {
         Service service = getService(wsdlDefinition);
         Map<?, ?> ports = service.getPorts();
         PortImpl port = (PortImpl) ports.get("CalculatorSoap");
-        SOAPAddress soapAddress = WSDLUtil.getExtensiblityElement(port.getExtensibilityElements(), SOAPAddress.class);
+        SOAPAddress soapAddress = WsdlParser.getExtensiblityElement(port.getExtensibilityElements(), SOAPAddress.class);
         assertNotNull(soapAddress);
     }
     

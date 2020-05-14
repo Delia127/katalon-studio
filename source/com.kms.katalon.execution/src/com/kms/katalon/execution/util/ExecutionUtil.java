@@ -21,7 +21,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -40,10 +39,16 @@ import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.logging.LogUtil;
 
 public class ExecutionUtil {
+    
+    private static IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+
     private static final String BIT = "bit";
 
     private static final String OS_ARCHITECTURE_PROPERTY = "sun.arch.data.model";
@@ -154,7 +159,7 @@ public class ExecutionUtil {
         executionProperties.put(RunConfiguration.GLOBAL_SMART_WAIT_MODE,
                 ExecutionUtil.getDefaultSmartWaitMode().booleanValue());
 
-        boolean doLogTestStep = LicenseUtil.isNotFreeLicense() ? ExecutionUtil.getLogTestSteps().booleanValue() : true;
+        boolean doLogTestStep = featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION) ? ExecutionUtil.getLogTestSteps().booleanValue() : true;
         executionProperties.put(RunConfiguration.LOG_TEST_STEPS, doLogTestStep);
 
         propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
@@ -242,7 +247,9 @@ public class ExecutionUtil {
 
         DefaultRerunSetting rerunSetting = new DefaultRerunSetting(prevExecuted.getPreviousRerunTimes() + 1,
                 prevExecuted.getRemainingRerunTimes() - 1, prevExecuted.isRerunFailedTestCasesOnly());
-
+        // We need to remember this setting to use it later 
+        rerunSetting.setRerunFailedTestCaseAndTestDataOnly(prevExecuted.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly());
+        
         TestSuiteExecutedEntity newExecutedEntity = new TestSuiteExecutedEntity(testSuite, rerunSetting);
         newExecutedEntity.setReportLocation(prevExecuted.getReportLocationSetting());
         newExecutedEntity.setTestDataMap(prevExecuted.getTestDataMap());

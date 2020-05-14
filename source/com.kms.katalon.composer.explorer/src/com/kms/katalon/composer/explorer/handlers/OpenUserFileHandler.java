@@ -6,19 +6,22 @@ import javax.inject.Inject;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -27,10 +30,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class OpenUserFileHandler {
-    
-    private static final String GRADLE_FILE_EXTENSION = ".gradle";
-    
-    private static final String FEATURE_FILE_EXTENSION = ".feature";
 
     @Inject
     private IEventBroker eventBroker;
@@ -53,56 +52,28 @@ public class OpenUserFileHandler {
         });
     }
     
-    public static IEditorPart openEditor(UserFileEntity userFile) {
+    public static IEditorPart openEditor(UserFileEntity object) {
         try {
-            IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(userFile.toFile().getName());
-            if (desc == null || GRADLE_FILE_EXTENSION.equalsIgnoreCase(userFile.getFileExtension())) {
+            IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(object.toFile().getName());
+            if (desc == null || desc.getId().equals("org.codehaus.groovy.eclipse.editor.GroovyEditor")) {
                 desc = PlatformUI.getWorkbench().getEditorRegistry().findEditor("org.eclipse.ui.DefaultTextEditor");
             }
             
             IWorkbenchPage activePage = PlatformUI.getWorkbench()
                     .getActiveWorkbenchWindow()
                     .getActivePage();
-
-            IEditorPart editor = getEditor(userFile, desc, activePage);
-
+            IFileStore fileStore = EFS.getStore(object.toFile().toURI());
+            IEditorPart editor = (IEditorPart) activePage.findEditor(new FileStoreEditorInput(fileStore));
+            if (editor != null) {
+                activePage.activate(editor);
+            } else {
+                editor = activePage.openEditor(new FileStoreEditorInput(fileStore), desc.getId()); 
+            }
+            
             return editor;
         } catch (CoreException e) {
             LoggerSingleton.logError(e);
             return null;
         }
-    }
-
-    private static IEditorPart getEditor(UserFileEntity userFile, IEditorDescriptor desc, IWorkbenchPage activePage)
-            throws CoreException {
-        IEditorInput editorInput = getEditorInput(userFile);
-        IEditorPart editor = activePage.findEditor(editorInput);
-
-        if (editor != null) {
-            activePage.activate(editor);
-        } else {
-            editor = activePage.openEditor(editorInput, desc.getId());
-        }
-
-        return editor;
-    }
-
-    private static IEditorInput getEditorInput(UserFileEntity userFile) throws CoreException {
-        String extension = userFile.getFileExtension();
-        if (FEATURE_FILE_EXTENSION.equalsIgnoreCase(extension)) {
-            return getFeatureFileEditorInput(userFile);
-        }
-        return getDefaultFileEditorInput(userFile);
-    }
-
-    private static IEditorInput getDefaultFileEditorInput(UserFileEntity userFile) throws CoreException {
-        IFileStore fileStore = EFS.getStore(userFile.toFile().toURI());
-        return new FileStoreEditorInput(fileStore);
-    }
-
-    private static IEditorInput getFeatureFileEditorInput(UserFileEntity userFile) throws PartInitException {
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        IFile iFile = GroovyUtil.getGroovyProject(currentProject).getFile(userFile.getRelativePath());
-        return new FileEditorInput(iFile);
     }
 }

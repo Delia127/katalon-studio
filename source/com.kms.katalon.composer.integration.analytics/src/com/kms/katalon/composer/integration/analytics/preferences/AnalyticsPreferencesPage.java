@@ -32,7 +32,6 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -45,6 +44,8 @@ import com.kms.katalon.composer.integration.analytics.dialog.NewProjectDialog;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
@@ -105,6 +106,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private AnalyticsOrganization organization;
 
     private GridData gdEnableOverrideAuthentication, gdBtnConnect, gdLblStatus;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
     
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
@@ -625,7 +628,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         enableOverrideAuthentication.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (!isEnterpriseAccount()) {
+                if (!featureService.canUse(KSEFeature.OVERRIDE_TESTOPS_AUTHENTICATION)) {
                     KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.OVERRIDE_TESTOPS_AUTHENTICATION);
                     enableOverrideAuthentication.setSelection(false);
                     return;
@@ -689,7 +692,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (!isEnterpriseAccount()) {
+                if (!featureService.canUse(KSEFeature.OVERRIDE_TESTOPS_AUTHENTICATION)) {
                     KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.OVERRIDE_TESTOPS_AUTHENTICATION);
                     return;
                 }
@@ -917,7 +920,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     private void hideOverrideAuthenticationIfNotEnterprise() {
-        if (!isEnterpriseAccount()) {
+        if (!featureService.canUse(KSEFeature.OVERRIDE_TESTOPS_AUTHENTICATION)) {
 //            enableOverrideAuthentication.setVisible(false);
 //            gdEnableOverrideAuthentication.exclude = true;
 //            enableOverrideAuthentication.setSelection(false);
@@ -932,10 +935,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             isUseOnPremise = false;
             getInfoFromCloud();
         }
-    }
-
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
     }
 
     protected boolean isInitialized() {

@@ -187,7 +187,7 @@ public class ZendeskHTTPRequestHelper {
     }
 
     private static void addProxy(HttpClientBuilder builder) throws IOException {
-        Proxy proxy = ApplicationProxyUtil.getProxy();
+        Proxy proxy = ApplicationProxyUtil.getAuthProxy();
         if (proxy != Proxy.NO_PROXY && proxy.address() instanceof InetSocketAddress) {
             InetSocketAddress socketAddress = (InetSocketAddress) proxy.address();
             builder.setProxy(

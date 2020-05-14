@@ -28,6 +28,8 @@ public interface ExecutionPreferenceConstants {
     public static final String MAIL_CONFIG_ATTACHMENT = "mailConfig.attachment";
 
     public static final String MAIL_CONFIG_HTML_TEMPLATE = "mailConfig.htmlTemplate";
+    
+    public static final String MAIL_CONFIG_COLLECTION_HTML_TEMPLATE = "mailConfig.collectionHtmlTemplate";
 
     public static final String MAIL_CONFIG_SUBJECT = "mailConfig.subject";
 
@@ -38,4 +40,10 @@ public interface ExecutionPreferenceConstants {
     public static final String MAIL_CONFIG_REPORT_FORMAT = "mailConfig.reportFormat";
     
     public static final String MAIL_CONFIG_SEND_REPORT_TEST_FAILED_ONLY = "mailConfig.sendReportTestFailedOnly";
+    
+    public static final String MAIL_CONFIG_SEND_TEST_SUITE_REPORT = "mailConfig.sendTestSuiteReport";
+    
+    public static final String MAIL_CONFIG_SEND_TEST_SUITE_COLLECTION_REPORT = "mailConfig.sendTestSuiteCollectionReport";
+    
+    public static final String MAIL_CONFIG_SKIP_INDIVIDUAL_TEST_SUITE_REPORT = "mailConfig.skipIndividualTestSuiteReport";
 }

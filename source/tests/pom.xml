@@ -25,6 +25,7 @@
 		<module>com.kms.katalon.tests.report</module>
 		<module>com.kms.katalon.composer.webui.test</module>
 		<module>com.kms.katalon.composer.testcase.test</module>
+		<module>com.kms.katalon.application.test</module>
 	</modules>
 
 	<properties>

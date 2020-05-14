@@ -1,16 +1,11 @@
 package com.kms.katalon.execution.generator;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
@@ -52,15 +47,36 @@ public class TestSuiteScriptGenerator {
         this.config = config;
         this.testSuiteExecuted = testSuiteExecutedEntity;
     }
-
+    
     public File generateScriptFile() throws Exception {
+        return generateScriptFile("");
+    }
+
+    /**
+     * Generate the testCaseBinding file which contains rows
+     * of Test Case + its Variable Bindings from Test Data. 
+     * 
+     * <p>This file will be used for data-driven testing.</p>
+     * 
+     * <p>
+     * If given a non-empty string,
+     * it will be written to the file, otherwise the content will
+     * be computed based on Test Suite's list of test cases, test case variables,
+     * test data and the combination types (ONE, MANY, etc)
+     * </p>
+     * 
+     * @param tcBindings
+     * @return
+     * @throws Exception
+     */
+    public File generateScriptFile(String tcBindings) throws Exception {
         IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(testSuite.getProject());
         File file = new File(libFolder.getRawLocation().toString(),
                 TEMP_TEST_SUITE_FILE_NAME + System.currentTimeMillis() + GroovyConstants.GROOVY_FILE_EXTENSION);
         file.createNewFile();
         GroovyObject object = (GroovyObject) Class.forName(TEMPLATE_CLASS_NAME).newInstance();
         object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME,
-                new Object[] { file, testSuite, createTestCaseBindings(), config, testSuiteExecuted });
+                new Object[] { file, testSuite, createTestCaseBindings(tcBindings), config, testSuiteExecuted });
 
         libFolder.refreshLocal(IResource.DEPTH_ONE, null);
         return file;
@@ -71,10 +87,19 @@ public class TestSuiteScriptGenerator {
         return (String) object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME,
                 new Object[] { null, testSuite, createTestCaseBindings(), config });
     }
-
+    
     public File createTestCaseBindings() throws IOException {
+        return createTestCaseBindings("");
+    }
+
+   private File createTestCaseBindings(String tcBindings) throws IOException {
         File testCaseBindingFile = new File(config.getExecutionSetting().getFolderPath(), "testCaseBinding");
         testCaseBindingFile.createNewFile();
+        
+        if (!tcBindings.isEmpty()) {
+            FileUtils.write(testCaseBindingFile, tcBindings, "UTF-8", false);
+            return testCaseBindingFile;
+        }
         
         syntaxErrorCollector = new StringBuilder();
 
@@ -108,7 +133,7 @@ public class TestSuiteScriptGenerator {
         } else {
             throw new IllegalArgumentException(syntaxErrorCollector.toString());
         }
-    }
+    }    
 
     private TestSuiteTestCaseLink getTestCaseLink(String testCaseId, List<TestSuiteTestCaseLink> distinctTestCaseLink) {
         for (TestSuiteTestCaseLink testCaseLink : distinctTestCaseLink) {

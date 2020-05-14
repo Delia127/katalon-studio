@@ -33,25 +33,30 @@
 <unit id="io.cucumber.tag-expressions" version="1.1.1"/>
 <unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.1"/>
 <unit id="org.apache.commons.commons-text" version="1.6.0"/>
+<unit id="io.netty.transport-native-unix-common" version="4.1.32.Final"/>
 <unit id="jackson-core-asl" version="1.9.13"/>
 <unit id="wsdl4j" version="1.6.2"/>
+<unit id="io.netty.transport" version="4.1.32.Final"/>
 <unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml" version="2.9.6"/>
 <unit id="javax.enterprise.cdi-api" version="1.2.0"/>
 <unit id="io.cucumber.datatable" version="1.0.3"/>
 <unit id="joda-time" version="2.8.1"/>
 <unit id="javax.xml.jaxp-api" version="1.4.2"/>
 <unit id="com.amazonaws.aws-java-sdk-core" version="1.11.716"/>
+<unit id="io.netty.common" version="4.1.32.Final"/>
 <unit id="org.dom4j" version="1.6.1.v201312101416"/>
 <unit id="io.swagger.parser-core" version="2.0.0.rc1"/>
 <unit id="com.google.guava" version="23.0.0"/>
 <unit id="org.apache.ant.launcher" version="1.9.6"/>
 <unit id="org.eclipse.jetty.websocket.client" version="9.3.9.v20160517"/>
 <unit id="io.swagger.parser-v3" version="2.0.0.rc1"/>
+<unit id="io.netty.transport-native-epoll" version="4.1.32.Final"/>
 <unit id="org.javalite.common" version="1.4.12"/>
 <unit id="javax.persistence.api" version="1.0.2"/>
 <unit id="org.apache.aries.spifly.dynamic.bundle" version="1.0.8"/>
 <unit id="org.eclipse.jetty.websocket.javax.websocket.server" version="9.3.9.v20160517"/>
 <unit id="org.objectweb.asm.commons" version="5.0.1"/>
+<unit id="io.netty.codec-http" version="4.1.32.Final"/>
 <unit id="org.codehaus.mojo.animal-sniffer-annotations" version="1.14.0"/>
 <unit id="net.lingala.zip4j" version="1.2.5"/>
 <unit id="io.cucumber.datatable-dependencies" version="1.0.3"/>
@@ -82,6 +87,7 @@
 <unit id="org.apache.httpcomponents.httpmime" version="4.5.1"/>
 <unit id="org.postgresql.jdbc41" version="9.4.1208.jre7"/>
 <unit id="net.sf.supercsv.super-csv" version="2.1.0"/>
+<unit id="io.github.kostaskougios.cloning" version="1.10.3"/>
 <unit id="javassist" version="3.18.1.GA"/>
 <unit id="ch.qos.logback.core" version="1.2.3"/>
 <unit id="antlr" version="2.7.7"/>
@@ -99,6 +105,7 @@
 <unit id="org.objectweb.asm" version="5.0.1"/>
 <unit id="io.swagger.core" version="2.0.0.rc2"/>
 <unit id="org.eclipse.jetty.servlet" version="9.3.9.v20160517"/>
+<unit id="org.objenesis" version="3.0.1"/>
 <unit id="org.apache.commons.io" version="2.4.0"/>
 <unit id="javax.inject" version="1.0.0"/>
 <unit id="com.oracle.jdbc.ojdbc7" version="12.1.0.2"/>
@@ -112,6 +119,7 @@
 <unit id="classmate" version="1.0.0"/>
 <unit id="org.apache.commons.logging" version="1.2.0"/>
 <unit id="javax.persistence" version="2.1.0.v201304241213"/>
+<unit id="io.netty.buffer" version="4.1.32.Final"/>
 <unit id="net.sf.jopt-simple.jopt-simple" version="5.0.0"/>
 <unit id="io.cucumber.java" version="3.0.2"/>
 <unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-xml" version="2.9.1"/>
@@ -123,6 +131,7 @@
 <unit id="javax.servlet-api" version="3.1.0"/>
 <unit id="org.eclipse.jetty.server" version="9.3.9.v20160517"/>
 <unit id="software.amazon.ion.java" version="1.0.2"/>
+<unit id="com.corundumstudio.socketio.netty-socketio" version="1.7.17"/>
 <unit id="org.eclipse.jetty.xml" version="9.3.9.v20160517"/>
 <unit id="commonj.sdo" version="2.1.1.v201112051852"/>
 <unit id="org.eclipse.jetty.io" version="9.3.9.v20160517"/>
@@ -139,12 +148,14 @@
 <unit id="org.apache.commons.beanutils" version="1.9.2"/>
 <unit id="org.apache.commons.codec" version="1.7.0"/>
 <unit id="dom4j" version="1.6.1"/>
+<unit id="io.netty.codec" version="4.1.32.Final"/>
 <unit id="com.katalon.platform" version="1.0.15"/>
 <unit id="org.apache.xmlbeans" version="2.6.0"/>
 <unit id="org.apache.commons.digester" version="1.8.1"/>
 <unit id="org.apache.commons.email" version="1.4.0"/>
 <unit id="stax.api" version="1.0.1"/>
 <unit id="stax2-api" version="3.1.4"/>
+<unit id="io.netty.handler" version="4.1.32.Final"/>
 <unit id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
 <unit id="javax.ws.rs" version="1.1.1.v20130318-1750"/>
 <unit id="org.zeroturnaround.zt-exec" version="1.7.0"/>
@@ -168,6 +179,7 @@
 <unit id="io.swagger.parser-v2-converter" version="2.0.0.rc1"/>
 <unit id="org.hibernate.javax.persistence.hibernate-jpa-2.1-api" version="1.0.0.Final"/>
 <unit id="io.cucumber.gherkin" version="5.0.0"/>
+<unit id="io.netty.resolver" version="4.1.32.Final"/>
 <unit id="org.eclipse.jetty.websocket.api" version="9.3.9.v20160517"/>
 <repository location="http://localhost:9999/site"/>
 </location>
@@ -183,6 +195,7 @@
 <plugin id="classmate"/>
 <plugin id="com.amazonaws.aws-java-sdk-core"/>
 <plugin id="com.auth0.java-jwt"/>
+<plugin id="com.corundumstudio.socketio.netty-socketio"/>
 <plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
 <plugin id="com.fasterxml.jackson.core.jackson-core"/>
 <plugin id="com.fasterxml.jackson.core.jackson-databind"/>
@@ -229,6 +242,15 @@
 <plugin id="io.cucumber.java"/>
 <plugin id="io.cucumber.junit"/>
 <plugin id="io.cucumber.tag-expressions"/>
+<plugin id="io.netty.buffer"/>
+<plugin id="io.netty.codec"/>
+<plugin id="io.netty.codec-http"/>
+<plugin id="io.netty.common"/>
+<plugin id="io.netty.handler"/>
+<plugin id="io.netty.resolver"/>
+<plugin id="io.netty.transport"/>
+<plugin id="io.netty.transport-native-epoll"/>
+<plugin id="io.netty.transport-native-unix-common"/>
 <plugin id="io.swagger.annotations"/>
 <plugin id="io.swagger.core"/>
 <plugin id="io.swagger.models"/>
@@ -257,8 +279,8 @@
 <plugin id="javax.naming.jndi"/>
 <plugin id="javax.persistence"/>
 <plugin id="javax.persistence.api"/>
-<plugin id="javax.servlet" version="3.0.0.v201112011016"/>
 <plugin id="javax.servlet" version="3.1.0.v201410161800"/>
+<plugin id="javax.servlet" version="3.0.0.v201112011016"/>
 <plugin id="javax.servlet-api"/>
 <plugin id="javax.servlet.jsp"/>
 <plugin id="javax.servlet.jsp.source"/>
@@ -331,8 +353,8 @@
 <plugin id="org.apache.xmlrpc"/>
 <plugin id="org.assertj.core"/>
 <plugin id="org.beanshell.bsh"/>
-<plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.4.3.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.3.10.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
@@ -340,20 +362,20 @@
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.m2eclipse"/>
 <plugin id="org.dom4j"/>
 <plugin id="org.eclipse.aether.api"/>
@@ -632,8 +654,8 @@
 <plugin id="org.eclipse.jdt.apt.ui"/>
 <plugin id="org.eclipse.jdt.compiler.apt"/>
 <plugin id="org.eclipse.jdt.compiler.tool"/>
-<plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201608111517-e46"/>
+<plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.core.manipulation"/>
 <plugin id="org.eclipse.jdt.debug"/>
 <plugin id="org.eclipse.jdt.debug.ui"/>
@@ -1115,11 +1137,12 @@
 <plugin id="org.objectweb.asm.commons"/>
 <plugin id="org.objectweb.asm.tree" version="5.0.1"/>
 <plugin id="org.objectweb.asm.tree" version="5.0.1.v201404251740"/>
+<plugin id="org.objenesis"/>
 <plugin id="org.postgresql.jdbc41"/>
 <plugin id="org.qas.qtest.sdk-java"/>
 <plugin id="org.sat4j.core"/>
 <plugin id="org.sat4j.pb"/>
-<plugin id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
+<plugin id="org.slf4j.api"/>
 <plugin id="org.slf4j.impl.log4j12"/>
 <plugin id="org.tukaani.xz"/>
 <plugin id="org.tukaani.xz.source"/>

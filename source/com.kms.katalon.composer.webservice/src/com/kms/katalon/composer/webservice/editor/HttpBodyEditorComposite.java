@@ -19,14 +19,10 @@ import com.kms.katalon.composer.webservice.viewmodel.HttpBodyEditorCompositeView
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class HttpBodyEditorComposite extends Composite {
-    
-    private static final String NONE = "none";
 
     private Map<String, HttpBodyEditor> bodyEditors = new HashMap<>();
 
     private Map<String, Button> bodySelectionButtons = new HashMap<>();
-    
-    private Button tltmNone;
 
     private Button tltmText;
 
@@ -60,12 +56,7 @@ public class HttpBodyEditorComposite extends Composite {
         bodyTypeComposite.setLayout(glBodyType);
 
         Composite tbBodyType = new Composite(bodyTypeComposite, SWT.NONE);
-        tbBodyType.setLayout(new GridLayout(5, false));
-        
-        tltmNone = new Button(tbBodyType, SWT.RADIO);
-        tltmNone.setText(NONE);
-        bodySelectionButtons.put(NONE, tltmNone);
-        
+        tbBodyType.setLayout(new GridLayout(4, false));
         tltmText = new Button(tbBodyType, SWT.RADIO);
         tltmText.setText("text");
         bodySelectionButtons.put("text", tltmText);
@@ -86,9 +77,6 @@ public class HttpBodyEditorComposite extends Composite {
         bodyContentComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         slBodyContent = new StackLayout();
         bodyContentComposite.setLayout(slBodyContent);
-        
-        NoContentBodyEditor noContentBodyEditor = new NoContentBodyEditor(bodyContentComposite, SWT.NONE);
-        bodyEditors.put(NONE, noContentBodyEditor);
 
         TextBodyEditor textBodyEditor = new TextBodyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put("text", textBodyEditor);
@@ -119,7 +107,7 @@ public class HttpBodyEditorComposite extends Composite {
 
         migrateFromOldVersion(viewModel.getModel());
 
-        selectedBodyType = StringUtils.defaultIfEmpty(viewModel.getModel().getHttpBodyType(), NONE);
+        selectedBodyType = StringUtils.defaultIfEmpty(viewModel.getModel().getHttpBodyType(), "text");
         Button selectedButton = bodySelectionButtons.get(selectedBodyType);
 
         if (bodyEditors.get(selectedBodyType) != null) {
@@ -174,18 +162,11 @@ public class HttpBodyEditorComposite extends Composite {
     }
 
     public String getHttpBodyType() {
-        if (!isNoContent()) {
-            return selectedBodyType;
-        } else {
-            return "";
-        }
+        return selectedBodyType;
     }
 
     public String getHttpBodyContent() {
         return bodyEditors.get(selectedBodyType).getContentData();
     }
 
-    private boolean isNoContent() {
-        return NONE.equals(selectedBodyType);
-    }
 }
