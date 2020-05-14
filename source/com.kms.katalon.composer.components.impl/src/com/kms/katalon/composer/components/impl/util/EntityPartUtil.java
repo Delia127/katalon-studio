@@ -162,6 +162,16 @@ public class EntityPartUtil {
             if (testObjectId != null) {
                 return ObjectRepositoryController.getInstance().getWebElement(testObjectId);
             }
+            
+            String mobileTestObjectId = getEntityIdFromPartId(partElementId, IdConstants.MOBILE_TESTOBJECT_CONTENT_PART_ID_PREFIX);
+            if (mobileTestObjectId != null) {
+                return ObjectRepositoryController.getInstance().getWebElement(mobileTestObjectId);
+            }
+            
+            String windowTestObjectId = getEntityIdFromPartId(partElementId, IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX);
+            if (windowTestObjectId != null) {
+                return WindowsElementController.getInstance().getWindowsElementEntity(windowTestObjectId);
+            }
 
             String testDataId = getEntityIdFromPartId(partElementId, IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX);
             if (testDataId != null) {

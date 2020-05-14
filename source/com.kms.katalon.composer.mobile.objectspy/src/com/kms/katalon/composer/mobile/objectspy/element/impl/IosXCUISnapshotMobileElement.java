@@ -125,6 +125,10 @@ public class IosXCUISnapshotMobileElement extends RenderedTreeSnapshotMobileElem
     	for (Entry<String, String> attr : getAttributes().entrySet()) {
     		TestObjectProperty prop = new TestObjectProperty(attr.getKey(), ConditionType.EQUALS, attr.getValue());
     		prop.setActive(true);
+
+            if (attr.getKey().equals("visible")) {
+                prop.setActive(false);
+            }
     		properties.add(prop);
     	}
     	testObject.setProperties(properties);

@@ -43,7 +43,7 @@ public class MobileSearchEngine {
 		for (TestObjectProperty property : element.getActiveProperties()) {
 			String name = property.getName();
 			String value = property.getValue();
-    		if (value == null) {
+    		if (value == null || !property.isActive()) {
     			continue;
     		}
 			switch (name) {
@@ -92,7 +92,7 @@ public class MobileSearchEngine {
 		for (TestObjectProperty property : element.getProperties()) {
 			String name = property.getName();
 			String value = property.getValue();
-    		if (value == null) {
+    		if (value == null && !property.isActive()) {
     			continue;
     		}
 			switch (name) {
