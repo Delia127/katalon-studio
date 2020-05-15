@@ -31,6 +31,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -41,6 +42,7 @@ import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileLocatorFinder;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.repository.MobileElementEntity.LocatorStrategy;
@@ -57,6 +59,8 @@ public class MobileElementPropertiesComposite extends Composite {
     private Combo cbbLocatorStrategy;
 
     private StyledText txtLocator;
+
+    private Button btnGenerate;
 
     private static String[] strategies = MobileElementEntity.LocatorStrategy.getStrategies();
 
@@ -117,8 +121,20 @@ public class MobileElementPropertiesComposite extends Composite {
         GridData gdLocatorStrategy = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         lblLocatorStrategy.setLayoutData(gdLocatorStrategy);
 
-        cbbLocatorStrategy = new Combo(locatorComposite, SWT.READ_ONLY);
+        Composite locatorStrategyComposite = new Composite(locatorComposite, SWT.NONE);
+        locatorStrategyComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        
+        GridLayout glLocatorStrategy = new GridLayout(2, false);
+        glLocatorStrategy.marginWidth = 0;
+        glLocatorStrategy.marginHeight = 0;
+        locatorStrategyComposite.setLayout(glLocatorStrategy);
+
+        cbbLocatorStrategy = new Combo(locatorStrategyComposite, SWT.READ_ONLY);
         cbbLocatorStrategy.setItems(strategies);
+        cbbLocatorStrategy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        btnGenerate = new Button(locatorStrategyComposite, SWT.PUSH);
+        btnGenerate.setText("Generate");
 
         // Locator
         Label lblLocator = new Label(locatorComposite, SWT.NONE);
@@ -231,6 +247,15 @@ public class MobileElementPropertiesComposite extends Composite {
                 }
             }
         });
+        
+        btnGenerate.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String locator = new MobileLocatorFinder(editingElement).findLocator(
+                        parentDialog.getInspectorController().getDriver(), editingElement.getLocatorStrategy());
+                txtLocator.setText(locator);
+            }
+        });
     }
 
     private void createColumns(TableViewer viewer, TableColumnLayout tableColumnLayout) {
@@ -334,12 +359,13 @@ public class MobileElementPropertiesComposite extends Composite {
         }
         attributesTableViewer.refresh();
     }
-    
+
     private void refreshButtonStates() {
         boolean isActive = editingElement != null;
         txtObjectName.setEnabled(isActive);
         txtLocator.setEnabled(isActive);
         cbbLocatorStrategy.setEnabled(isActive);
+        btnGenerate.setEnabled(isActive);
     }
 
     public void focusAndEditCapturedElementName() {

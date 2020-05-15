@@ -92,7 +92,7 @@ public class MobileSearchEngine {
 		for (TestObjectProperty property : element.getProperties()) {
 			String name = property.getName();
 			String value = property.getValue();
-    		if (value == null && !property.isActive()) {
+    		if (value == null || !property.isActive()) {
     			continue;
     		}
 			switch (name) {
@@ -136,6 +136,14 @@ public class MobileSearchEngine {
     	builder.append(String.format("[`%s`]", StringUtils.join(predicates, " AND ")));
 
 		return builder.toString();
+    }
+    
+    public String findAndroidName() {
+        TestObjectProperty property = element.findProperty("name");
+        if (property != null) {
+            return property.getValue();
+        }
+        return StringUtils.EMPTY;
     }
 
     public String findIOSName() {

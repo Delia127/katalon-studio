@@ -2,9 +2,14 @@ package com.kms.katalon.core.testobject;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * An extended class of {@link TestObject} for the Mobile object specifically. MobileTestObject describes the way
+ * Katalon Studio finds Appium Element via the <b>mobileLocator</b> and <b>mobileLocatorStrategy</b>.
+ * 
+ * @since 7.6.0
+ * @see MobileLocatorStrategy
+ */
 public class MobileTestObject extends TestObject {
-
-    private boolean useMobileLocator = false;
     
     private MobileLocatorStrategy mobileLocatorStrategy;
 
@@ -14,30 +19,46 @@ public class MobileTestObject extends TestObject {
         super(objectId);
     }
 
+    /**
+     * The locator value of the test object.
+     * @since 7.6.0
+     */
     public String getMobileLocator() {
         return mobileLocator;
     }
 
+    /**
+     * Sets the locator value for the test object
+     * @param mobileLocator the locator value
+     * @since 7.6.0
+     */
     public void setMobileLocator(String mobileLocator) {
         this.mobileLocator = mobileLocator;
     }
 
+    /**
+     * The selected locator strategy of the test object.
+     * @since 7.6.0
+     */
     public MobileLocatorStrategy getMobileLocatorStrategy() {
         return mobileLocatorStrategy;
     }
 
+    /**
+     * Sets the selected locator strategy for the test object
+     * @param mobileLocatorStrategy an enum value of {@link MobileLocatorStrategy}
+     * @since 7.6.0
+     */
     public void setMobileLocatorStrategy(MobileLocatorStrategy mobileLocatorStrategy) {
         this.mobileLocatorStrategy = mobileLocatorStrategy;
     }
 
-    public boolean isUseMobileLocator() {
-        return useMobileLocator;
-    }
-
-    public void setUseMobileLocator(boolean useMobileLocator) {
-        this.useMobileLocator = useMobileLocator;
-    }
-
+    /**
+     * Support almost of Appium selector strategies that describes via this link <a href="http://appium.io/docs/en/commands/element/find-elements/#selector-strategies">
+     * http://appium.io/docs/en/commands/element/find-elements/#selector-strategies</a>
+     *
+     * @since 7.6.0
+     */
     public static enum MobileLocatorStrategy {
         ACCESSIBILITY("Accessibility ID"),
         CLASS_NAME("Class Name"),

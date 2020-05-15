@@ -532,7 +532,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private MobileActionMapping performAction(MobileAction action, TreeMobileElement treeElement)
             throws MobileRecordException {
         try {
-        	CapturedMobileElement targetElement = captureMobileElement(treeElement);
+        	CapturedMobileElement targetElement = null;
+        	if (action.hasElement()) {
+        	    targetElement = captureMobileElement(treeElement);
+        	}
             TestObject testObject = convertMobileElementToTestObject(targetElement, getCurrentMobileDriverType());
             final MobileActionMapping mobileActionMapping = new MobileActionMapping(action, targetElement);
             MobileActionHelper mobileActionHelper = new MobileActionHelper(inspectorController.getDriver());
