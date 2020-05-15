@@ -1149,12 +1149,13 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *      	<li>attributeName or attributeValue is null.</li>
      *      	<li>Timeout < 0.</li>
      *      </ul>     
+     * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
-    public static void waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+    public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
             String attributeValue, int timeout, FailureHandling flowControl) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
                 "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeout, flowControl);
     }
 
@@ -1183,12 +1184,13 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *      	<li>attributeName or attributeValue is null.</li>
      *      	<li>Timeout < 0.</li>
      *      </ul>
+     * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
-    public static void waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+    public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
             String attributeValue, int timeout) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
                 "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeout);
     }
     
@@ -1212,6 +1214,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      *          <li>OPTIONAL: continues the test and ignore the test result.</li>
      *      </ul>
+     * @return true if element does not present; Otherwise, false.
      * @throws StepFailedException
      *      If the Windows element exists.
      * @throws IllegalArgumentException
@@ -1219,9 +1222,9 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
-    public static void waitForElementNotPresent(WindowsTestObject windowsObject, int timeout,
+    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeout,
             FailureHandling flowControl) throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
                 "waitForElementNotPresent", windowsObject, timeout, flowControl);
     }
     
@@ -1238,6 +1241,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
      *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
      *      </ul>
+     * @return true if element does not present; Otherwise, false.
      * @throws StepFailedException
      *      If the Windows element exists.
      * @throws IllegalArgumentException
@@ -1245,9 +1249,9 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
-    public static void waitForElementNotPresent(WindowsTestObject windowsObject, int timeout)
+    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeout)
             throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
                 "waitForElementNotPresent", windowsObject, timeout);
     }
     
@@ -1271,6 +1275,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
      *          <li>OPTIONAL: continues the test and ignore the test result.</li>
      *      </ul>
+     * @return true if element presents; Otherwise, false
      * @throws StepFailedException
      *      If The Windows element doesn't exist.
      * @throws IllegalArgumentException
@@ -1278,9 +1283,9 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
-    public static void waitForElementPresent(WindowsTestObject windowsObject, int timeout,
+    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeout,
             FailureHandling flowControl) throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
                 "waitForElementPresent", windowsObject, timeout, flowControl);
     }
     
@@ -1297,6 +1302,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
      *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
      *      </ul>
+     * @return true if element presents; Otherwise, false.
      * @throws StepFailedException
      *      If The Windows element doesn't exist.
      * @throws IllegalArgumentException
@@ -1304,9 +1310,9 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
-    public static void waitForElementPresent(WindowsTestObject windowsObject, int timeout)
+    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeout)
             throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
                 "waitForElementPresent", windowsObject, timeout);
     }
 }

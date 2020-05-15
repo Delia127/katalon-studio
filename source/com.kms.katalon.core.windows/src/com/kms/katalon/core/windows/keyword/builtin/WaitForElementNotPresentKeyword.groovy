@@ -63,10 +63,10 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
         WindowsTestObject testObject = (WindowsTestObject) params[0]
         int timeOut = (int) params[1]
         FailureHandling flowControl = (FailureHandling)(params.length > 2 && params[2] instanceof FailureHandling ? params[2] : RunConfiguration.getDefaultFailureHandling())
-        waitForElementNotPresent(testObject,timeOut,flowControl)
+        return waitForElementNotPresent(testObject,timeOut,flowControl)
     }
 
-    public void waitForElementNotPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
+    public boolean waitForElementNotPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             boolean elementNotFound = false;
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
@@ -95,6 +95,7 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
             }
             if (elementNotFound){
                 logger.logPassed(String.format("Object '%s' is not present within %s second(s)", testObject.getObjectId(), timeOut))
+                return true
             } else {
                 KeywordMain.stepFailed(String.format("Object '%s' is present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
             }
