@@ -112,7 +112,6 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity.getParent());
                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetTreeEntity);
                 KeywordController.getInstance().parseCustomKeywordFile(file, ProjectController.getInstance().getCurrentProject());
-                eventBroker.post(EventConstants.CUSTOMKEYWORD_REFRESH, null);
             }
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
