@@ -325,6 +325,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
                 ImageConstants.IMG_16_NEW_BROWSER);
         addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
         addNewBrowserItem(newBrowser, WebUIDriverType.CHROME_DRIVER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.EDGE_CHROMIUM_DRIVER);
 
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
                 ImageConstants.IMG_16_ACTIVE_BROWSER);
@@ -480,6 +481,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
                 return ImageConstants.IMG_16_BROWSER_CHROME;
             case IE_DRIVER:
                 return ImageConstants.IMG_16_BROWSER_IE;
+            case EDGE_CHROMIUM_DRIVER:
+                return ImageConstants.IMG_16_BROWSER_EDGE_CHROMIUM;
             default:
                 return null;
         }
@@ -493,6 +496,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
                 return ImageConstants.IMG_24_CHROME;
             case IE_DRIVER:
                 return ImageConstants.IMG_24_IE;
+            case EDGE_CHROMIUM_DRIVER:
+                return ImageConstants.IMG_24_EDGE_CHROMIUM;
             default:
                 return null;
         }
