@@ -4,9 +4,7 @@ import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialo
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,6 +65,7 @@ import com.kms.katalon.composer.mobile.objectspy.composites.MobileHighlightCompo
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceView;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
@@ -81,14 +80,14 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageCon
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
 import com.kms.katalon.composer.testcase.ast.dialogs.ArgumentInputBuilderDialog;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 import com.kms.katalon.composer.testcase.model.InputParameterClass;
-import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
-import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
@@ -100,7 +99,6 @@ import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
-    private static final int DIALOG_MARGIN_OFFSET = 5;
 
     private MobileConfigurationsComposite mobileConfigurationsComposite;
 
@@ -122,7 +120,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     private ToolItem btnStart, btnCapture, btnStop;
 
-    private MobileDeviceDialog deviceView;
+    private MobileDeviceView deviceView;
 
     private TreeMobileElement appRootElement;
 
@@ -171,7 +169,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(900, 800);
+        return new Point(1100, 800);
     }
 
     @Override
@@ -184,22 +182,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         shell.setText(MobileRecoderMessagesConstants.DLG_TITLE_MOBILE_RECORDER);
-    }
-
-    private boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
-        return startX < 0 || startX + dialogSize.x > displayBounds.width + displayBounds.x;
-    }
-
-    private int getDeviceViewStartXIfPlaceRight(Rectangle objectSpyViewBounds) {
-        return objectSpyViewBounds.x + objectSpyViewBounds.width + DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDeviceViewStartXIfPlaceLeft(Rectangle objectSpyViewBounds, Point dialogSize) {
-        return objectSpyViewBounds.x - dialogSize.x - DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDefaultDeviceViewDialogStartX(Rectangle displayBounds, Point dialogSize) {
-        return displayBounds.width - dialogSize.x;
     }
 
     private int calculateDialogStartX(Rectangle displayBounds, Point dialogSize) {
@@ -220,20 +202,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 calculateDialogStartY(displayBounds, initialSize));
     }
 
-    private Point calculateInitPositionForDeviceViewDialog() {
-        Rectangle displayBounds = getShell().getMonitor().getBounds();
-        Point dialogSize = new Point(MobileDeviceDialog.DIALOG_WIDTH, MobileDeviceDialog.DIALOG_HEIGHT);
-        Rectangle objectSpyViewBounds = getShell().getBounds();
-        int startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
-        if (isOutOfBound(displayBounds, dialogSize, startX)) {
-            startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
-            if (isOutOfBound(displayBounds, dialogSize, startX)) {
-                startX = getDefaultDeviceViewDialogStartX(displayBounds, dialogSize);
-            }
-        }
-        return new Point(startX, objectSpyViewBounds.y);
-    }
-
     @Override
     protected Control createDialogContainer(Composite parent) {
         container = new Composite(parent, SWT.NONE);
@@ -243,7 +211,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         SashForm sashForm = createMainSashForm(container);
         sashForm.setBackground(ColorUtil.getCompositeBackgroundColorForSashform());
         populateSashForm(sashForm);
-        sashForm.setWeights(new int[] { 5, 6 });
+        sashForm.setWeights(new int[] { 4, 4, 4 });
 
         return container;
     }
@@ -335,6 +303,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     protected void populateSashForm(SashForm sashForm) {
         createLeftPaneComposite(sashForm);
         createMiddlePaneComposite(sashForm);
+        
+        deviceView = new MobileDeviceView(this);
+        deviceView.createControls(sashForm);
     }
 
     private void createLeftPaneComposite(SashForm sashForm) {
@@ -857,14 +828,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         });
     }
 
-    private void openDeviceView() {
-        if (deviceView != null && !deviceView.isDisposed()) {
-            return;
-        }
-        deviceView = new MobileDeviceDialog(getParentShell(), this, calculateInitPositionForDeviceViewDialog());
-        deviceView.open();
-    }
-
     private void startObjectInspectorAction() {
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
@@ -949,13 +912,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
                 refreshDeviceView(imgPath, newAppRootElement);
 
-                UISynchronizeService.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceView.getShell().forceActive();
-                    }
-                });
-
                 appRootElement = newAppRootElement;
 
                 monitor.done();
@@ -991,7 +947,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         try {
             btnCapture.setEnabled(false);
-            openDeviceView();
             dialog.run(true, false, runnable);
         } catch (InterruptedException ignored) {
             // User canceled
@@ -1042,7 +997,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
 
         if (deviceView != null) {
-            deviceView.closeApp();
+            deviceView.dispose();
         }
 
         try {

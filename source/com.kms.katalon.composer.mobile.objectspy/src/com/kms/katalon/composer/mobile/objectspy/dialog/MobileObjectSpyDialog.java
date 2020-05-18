@@ -56,7 +56,6 @@ import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverterV2;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
-import com.kms.katalon.composer.mobile.objectspy.element.SnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
@@ -73,11 +72,9 @@ import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog {
 
-    public static final Point DIALOG_SIZE = new Point(900, 800);
+    public static final Point DIALOG_SIZE = new Point(1100, 800);
 
     private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_SPY;
-
-    private static final int DIALOG_MARGIN_OFFSET = 5;
 
     private ToolItem btnStart, btnCapture, btnAdd, btnStop;
 
@@ -86,8 +83,8 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     private boolean disposed;
 
     private MobileInspectorController inspectorController;
-
-    private MobileDeviceDialog deviceView;
+    
+    private MobileDeviceView deviceView;
 
     private Composite container;
 
@@ -138,8 +135,11 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         createLeftPanel(sashForm);
         createRightPanel(sashForm);
+        
+        deviceView = new MobileDeviceView(this);
+        deviceView.createControls(sashForm);
 
-        sashForm.setWeights(new int[] { 6, 6 });
+        sashForm.setWeights(new int[] { 4, 4, 4 });
 
         new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_OBJECT_SPY_MOBILE);
 
@@ -488,22 +488,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         deviceView.highlightRects(rects);
     }
 
-    private boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
-        return startX < 0 || startX + dialogSize.x > displayBounds.width + displayBounds.x;
-    }
-
-    private int getDeviceViewStartXIfPlaceRight(Rectangle objectSpyViewBounds) {
-        return objectSpyViewBounds.x + objectSpyViewBounds.width + DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDeviceViewStartXIfPlaceLeft(Rectangle objectSpyViewBounds, Point dialogSize) {
-        return objectSpyViewBounds.x - dialogSize.x - DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDefaultDeviceViewDialogStartX(Rectangle displayBounds, Point dialogSize) {
-        return displayBounds.width - dialogSize.x;
-    }
-
     private int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
         int dialogsWidth = dialogSize.x + MobileDeviceDialog.DIALOG_WIDTH;
         int startX = (displayBounds.width - dialogsWidth) / 2 + displayBounds.x;
@@ -513,29 +497,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     private int calculateObjectSpyDialogStartY(Rectangle displayBounds, Point dialogSize) {
         int startY = displayBounds.height - dialogSize.y;
         return Math.max(startY, 0) / 2;
-    }
-
-    private Point calculateInitPositionForDeviceViewDialog() {
-        Rectangle displayBounds = getShell().getMonitor().getBounds();
-        Point dialogSize = new Point(MobileDeviceDialog.DIALOG_WIDTH, MobileDeviceDialog.DIALOG_HEIGHT);
-        Rectangle objectSpyViewBounds = getShell().getBounds();
-        int startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
-        if (isOutOfBound(displayBounds, dialogSize, startX)) {
-            startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
-            if (isOutOfBound(displayBounds, dialogSize, startX)) {
-                startX = getDefaultDeviceViewDialogStartX(displayBounds, dialogSize);
-            }
-        }
-        return new Point(startX, objectSpyViewBounds.y);
-    }
-
-    private void openDeviceView() {
-        if (deviceView != null && !deviceView.isDisposed()) {
-            return;
-        }
-        deviceView = new MobileDeviceDialog(getParentShell(), this, calculateInitPositionForDeviceViewDialog());
-        deviceView.open();
-        setDeviceView(deviceView);
     }
 
     @Override
@@ -610,12 +571,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
                 refreshDeviceView(imgPath);
 
-                UISynchronizeService.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceView.getShell().forceActive();
-                    }
-                });
                 monitor.done();
             }
 
@@ -652,7 +607,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         try {
             btnCapture.setEnabled(false);
-            openDeviceView();
+            //openDeviceView();
             dialog.run(true, true, runnable);
         } catch (InterruptedException ignored) {
             // User canceled
@@ -750,7 +705,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
 
         if (deviceView != null) {
-            deviceView.closeApp();
+            deviceView.dispose();
         }
 
         dispose();
@@ -791,10 +746,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         Rectangle displayBounds = getShell().getMonitor().getBounds();
         return new Point(calculateObjectSpyDialogStartX(displayBounds, initialSize),
                 calculateObjectSpyDialogStartY(displayBounds, initialSize));
-    }
-
-    private void setDeviceView(MobileDeviceDialog deviceView) {
-        this.deviceView = deviceView;
     }
 
     public void addElements(List<WebElementEntity> webElements) {
