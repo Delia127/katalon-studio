@@ -73,7 +73,7 @@ public class WindowsActionHelper {
 
 	public WebElement findElement(WindowsTestObject testObject, int timeout) {
 		try {
-			return this.findElement(testObject, timeout, false);
+			return this.findElement(testObject, timeout, true);
 		} catch (NoSuchElementException exception) {
 			throw new StepFailedException("Element: " + testObject.getObjectId() + " not found");
 		}
