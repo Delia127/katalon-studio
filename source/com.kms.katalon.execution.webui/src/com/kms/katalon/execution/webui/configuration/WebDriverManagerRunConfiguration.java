@@ -71,10 +71,13 @@ public class WebDriverManagerRunConfiguration {
     }
 
     private String getArchitecture(WebUIDriverType webUIDriverType) {
-        if (webUIDriverType == WebUIDriverType.IE_DRIVER) {
-            return "-Dwdm.architecture=32";
+        switch (webUIDriverType) {
+            case IE_DRIVER:
+            case EDGE_CHROMIUM_DRIVER:
+                return "-Dwdm.architecture=32";
+            default:
+                return "";
         }
-        return "";
     }
 
     private String getDriverName(WebUIDriverType webUIDriverType) {
