@@ -263,7 +263,6 @@ public class MobileInspectorController {
                 ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(kobitonDevice.toDesireCapabilitiesMap());
         desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
-        desiredCapabilities.setCapability("autoAcceptAlerts", true);
         driver = MobileDriverFactory.startRemoteMobileDriver(connector.getRemoteServerUrl(), desiredCapabilities,
                 connector.getMobileDriverType(), kobitonApplication.buildAutomationKey());
     }
