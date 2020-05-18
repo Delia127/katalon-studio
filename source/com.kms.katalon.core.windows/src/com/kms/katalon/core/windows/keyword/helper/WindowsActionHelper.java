@@ -72,7 +72,7 @@ public class WindowsActionHelper {
         }
     }
 
-    public WebElement findElement(WindowsTestObject testObject, int timeout, boolean ignoreNoSuchElementException)
+    public WebElement findElement(WindowsTestObject testObject, int timeout, boolean continueWhenNotFound)
             throws IllegalArgumentException, DriverNotStartedException {
         if (testObject == null) {
             throw new IllegalArgumentException("Test object cannot be null");
@@ -94,7 +94,7 @@ public class WindowsActionHelper {
         FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(runningDriver)
                 .withTimeout(Duration.ofSeconds(timeout))
                 .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT));
-        if (ignoreNoSuchElementException) {
+        if (continueWhenNotFound) {
             wait.ignoring(NoSuchElementException.class);
         }
         WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
