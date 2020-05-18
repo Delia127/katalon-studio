@@ -7,6 +7,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -166,12 +167,15 @@ public class WindowsDriverFactory {
 
     public static WindowsDriver<WebElement> newWindowsDriver(URL remoteAddressURL,
             DesiredCapabilities desiredCapabilities, Proxy proxy) throws IOException, URISyntaxException {
-        if (remoteAddressURL != null) {
-            return new WindowsDriver<WebElement>(getAppiumExecutorForRemoteDriver(remoteAddressURL, proxy),
+    	WindowsDriver<WebElement> windowsDriver = null;
+    	if (remoteAddressURL != null) {
+    		windowsDriver = new WindowsDriver<WebElement>(getAppiumExecutorForRemoteDriver(remoteAddressURL, proxy),
                     desiredCapabilities);
         } else {
-            return new WindowsDriver<WebElement>(desiredCapabilities);
+        	windowsDriver = new WindowsDriver<WebElement>(desiredCapabilities);
         }
+    	windowsDriver.manage().timeouts().implicitlyWait(RunConfiguration.getTimeOut(), TimeUnit.SECONDS);
+    	return windowsDriver;
     }
 
     public static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl, Proxy proxy)

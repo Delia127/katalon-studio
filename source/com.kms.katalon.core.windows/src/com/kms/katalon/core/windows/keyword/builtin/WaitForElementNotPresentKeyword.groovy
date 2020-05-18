@@ -99,6 +99,6 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
             } else {
                 KeywordMain.stepFailed(String.format("Object '%s' is present within %s second(s)", testObject.getObjectId(), timeOut), flowControl)
             }
-    }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s' is present", testObject.getObjectId()) : "Unable to verify object is present")
+    }, flowControl, (testObject != null) ? String.format("Unable to verify object '%s' is not present", testObject.getObjectId()) : "Unable to verify object is not present")
 }
 }
