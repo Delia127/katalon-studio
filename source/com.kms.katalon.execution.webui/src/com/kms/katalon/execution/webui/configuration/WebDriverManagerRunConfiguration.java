@@ -17,6 +17,7 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.webui.util.PlatformUtil;
 
 public class WebDriverManagerRunConfiguration {
 
@@ -73,8 +74,12 @@ public class WebDriverManagerRunConfiguration {
     private String getArchitecture(WebUIDriverType webUIDriverType) {
         switch (webUIDriverType) {
             case IE_DRIVER:
-            case EDGE_CHROMIUM_DRIVER:
                 return "-Dwdm.architecture=32";
+            case EDGE_CHROMIUM_DRIVER: {
+                if (PlatformUtil.isWindowsOS()) {
+                    return "-Dwdm.architecture=32";
+                }
+            }
             default:
                 return "";
         }
