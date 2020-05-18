@@ -213,7 +213,7 @@ public class WindowsActionHelper {
         try {
             return RunConfiguration.getTimeOut();
         } catch (Exception exception1) {
-            return 30;
+            return 0;
         }
     }
 
