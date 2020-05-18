@@ -194,7 +194,7 @@ public class InstallApplitoolsPluginHandler {
 
             @Override
             public Object execute(ExecutionEvent event) throws ExecutionException {
-                Program.launch("https://github.com/");
+                Program.launch("https://docs.katalon.com/katalon-studio/docs/applitools-integration.html#applitools-settings");
                 return null;
             }
         });
@@ -212,7 +212,8 @@ public class InstallApplitoolsPluginHandler {
         toolItem.setLabel(APPLITOOLS_ID);
         toolItem.setWbCommand(parameterizedCommand);
         toolItem.setCommand(MCommandsFactory.INSTANCE.createCommand());
-        toolItem.setIconURI("");
+        toolItem.setIconURI(FileLocator.find(FrameworkUtil.getBundle(InstallApplitoolsPluginHandler.class),
+                new Path("/resources/icons/applitools_active_32x24.png"), null).toString());
         toolItem.setElementId(APPLITOOLS_ID);
 
         UISynchronizeService.syncExec(() -> {
