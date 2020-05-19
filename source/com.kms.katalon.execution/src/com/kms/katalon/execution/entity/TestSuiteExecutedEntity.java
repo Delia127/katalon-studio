@@ -76,7 +76,8 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         rerunSetting.setRemainingRerunTimes(rerunnable.getRemainingRerunTimes());
         rerunSetting.setRerunFailedTestCaseOnly(rerunnable.isRerunFailedTestCasesOnly());
         rerunSetting.setRerunFailedTestCaseAndTestDataOnly(rerunnable.isRerunFailedTestCasesAndTestDataOnly());
-        setShouldStopImmediatelyWhenTestCaseFails(testSuite.shouldStopImmediatelyWhenTestCaseFails());
+        rerunSetting.setRerunImmediately(rerunnable.isRerunImmediately());
+        setShouldStopImmediatelyWhenTestCaseFails(testSuite.isRerunImmediately());
     }
 
     public void setTestSuite(TestSuiteEntity testSuite) throws IOException, Exception {
@@ -86,7 +87,8 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         rerunSetting.setRemainingRerunTimes(testSuite.getNumberOfRerun());
         rerunSetting.setRerunFailedTestCaseOnly(testSuite.isRerunFailedTestCasesOnly());
         rerunSetting.setRerunFailedTestCaseAndTestDataOnly(testSuite.isRerunFailedTestCasesAndTestDataOnly());
-        setShouldStopImmediatelyWhenTestCaseFails(testSuite.shouldStopImmediatelyWhenTestCaseFails());
+        rerunSetting.setRerunImmediately(testSuite.isRerunImmediately());
+        setShouldStopImmediatelyWhenTestCaseFails(testSuite.isRerunImmediately());
     }
 
     public void prepareTestCases() throws Exception {
@@ -516,5 +518,10 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     public boolean isRerunFailedTestCasesAndTestDataOnly() {
         return rerunSetting.isRerunFailedTestCasesAndTestDataOnly();
+    }
+
+    @Override
+    public boolean isRerunImmediately() {
+        return rerunSetting.isRerunImmediately();
     }
 }

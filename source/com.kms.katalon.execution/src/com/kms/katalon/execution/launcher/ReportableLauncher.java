@@ -161,10 +161,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteEntity testSuite = getTestSuite();
 
-            // Prepare and store test case bindings for rerunFailedTestCaseTestData
-            String strFailedTcBindings = getTestCaseBindingsOfFailedTestCases();
+            String strRetryFailedExecutionsTcBindings = getRetryFailedExecutionsOnlyTcBindings();
+            String strRetryImmediatelyTcBindings = getRetryImmediatelyTcBindings();
             Map<String, String> currentFailedTcBindings = new HashMap<String, String>();
-            currentFailedTcBindings.put(RunConfiguration.TC_BINDINGS_OF_FAILED_TEST_CASES, strFailedTcBindings);
+            currentFailedTcBindings.put(RunConfiguration.TC_RETRY_FAILED_EXECUTIONS_ONLY, strRetryFailedExecutionsTcBindings);
+            currentFailedTcBindings.put(RunConfiguration.TC_RETRY_IMMEDIATELY_BINDINGS, strRetryImmediatelyTcBindings);
 
             try {
                 IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil
@@ -195,7 +196,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     /**
      * @return The lines in testCaseBiding file where the associated test cases failed
      */
-    private String getTestCaseBindingsOfFailedTestCases() {
+    private String getRetryFailedExecutionsOnlyTcBindings() {
         File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
         try {
             List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);
@@ -214,6 +215,39 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 rsIdx += prevExecutedTC.getLoopTimes();
             }
             return String.join("\n", currentFailedTcBindings);
+        } catch (IOException e) {}
+
+        return "";
+    }
+    
+    /**
+     * @return The lines in testCaseBiding file where the associated test cases failed
+     */
+    private String getRetryImmediatelyTcBindings() {
+        File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
+        try {
+            List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);
+            List<String> retryImmediatelyTcBindinngs = new ArrayList<>();
+            List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity()).getExecutedItems();
+            TestStatusValue[] prevResultValues = getResult().getResultValues();
+            int rsIdx = 0;
+            boolean failedRecorded = false;
+
+            for (IExecutedEntity prevExecutedItem : prevTestCaseExecutedEntities) {
+                TestCaseExecutedEntity prevExecutedTC = (TestCaseExecutedEntity) prevExecutedItem;
+                for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
+                    if (!failedRecorded && (prevResultValues[i] == TestStatusValue.FAILED
+                            || prevResultValues[i] == TestStatusValue.ERROR)) {
+                        retryImmediatelyTcBindinngs.add(currentTcBindings.get(i));
+                        failedRecorded = true;
+                    }
+                    if (failedRecorded && prevResultValues[i] == TestStatusValue.NOT_RUN) {
+                        retryImmediatelyTcBindinngs.add(currentTcBindings.get(i));
+                    }
+                }
+                rsIdx += prevExecutedTC.getLoopTimes();
+            }
+            return String.join("\n", retryImmediatelyTcBindinngs);
         } catch (IOException e) {}
 
         return "";

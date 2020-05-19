@@ -19,13 +19,16 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     public final static String RETRY_OPTION = "retry";
     public final static String RETRY_FAIL_TEST_CASE_ONLY_OPTION = "retryFailedTestCases";
     public final static String RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION = "retryFailedTestCasesTestData";
+    public final static String RETRY_IMMEDIATELY = "retryImmediately";
     
     private int previousRerunTimes;
     private int remainingRerunTimes;
     private boolean rerunFailedTestCaseOnly;
     private boolean rerunFailedTestCaseWithTestDataOnly;
+    private boolean rerunImmediately;
     private boolean overrideRerunFailedTestCaseOnly;
     private boolean overrideRerunFailedTestCaseWithTestDataOnly;
+    private boolean overrideRerunImmediately;
     private boolean overrideRemainingRerunTimes;
 
     public static final IntegerConsoleOption RETRY_CONSOLE_OPTION = new IntegerConsoleOption() {
@@ -51,6 +54,13 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         @Override
         public String getOption() {
             return RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION;
+        }
+    };
+    
+    public static final BooleanConsoleOption RERUN_IMMEDIATELY_CONSOLE_OPTION = new BooleanConsoleOption() {
+        @Override
+        public String getOption() {
+            return RETRY_IMMEDIATELY;
         }
     };
 
@@ -118,6 +128,9 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         } else if (consoleOption == RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION) {
             setRerunFailedTestCaseAndTestDataOnly(Boolean.valueOf(argumentValue));
             overrideRerunFailedTestCaseWithTestDataOnly = true;
+        } else if(consoleOption == RETRY_CONSOLE_OPTION) {
+            setRerunImmediately(Boolean.valueOf(argumentValue));
+            overrideRerunImmediately = true;
         }
     }
 
@@ -136,6 +149,10 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         if (!overrideRerunFailedTestCaseWithTestDataOnly) {
             setRerunFailedTestCaseAndTestDataOnly(rerunable.isRerunFailedTestCasesAndTestDataOnly());
         }
+        
+        if(!overrideRerunImmediately) {
+            setRerunImmediately(rerunable.isRerunImmediately());
+        }
         return this;
     }
     
@@ -147,5 +164,15 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     public boolean isRerunFailedTestCasesAndTestDataOnly() {
         return rerunFailedTestCaseWithTestDataOnly;
     }
+
+    @Override
+    public boolean isRerunImmediately() {
+        return rerunImmediately;
+    }
+
+    public void setRerunImmediately(boolean val) {
+        rerunImmediately = val;
+    }
+
 
 }

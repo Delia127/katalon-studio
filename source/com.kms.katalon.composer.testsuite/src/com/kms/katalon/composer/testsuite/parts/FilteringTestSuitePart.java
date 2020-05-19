@@ -459,7 +459,7 @@ public class FilteringTestSuitePart implements EventHandler {
         GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLblReRun.widthHint = 85;
         lblReRun.setLayoutData(gdLblReRun);
-        lblReRun.setText(StringConstants.PA_LBL_RETRY);
+        lblReRun.setText(StringConstants.PA_LBL_RETRY_AFTER_EXECUTE_ALL);
         lblReRun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
 
         txtRerun = new Text(compositeLastRunAndReRun, SWT.BORDER);
@@ -474,7 +474,7 @@ public class FilteringTestSuitePart implements EventHandler {
         GridData gdLblReRunTestCaseOnly = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
         gdLblReRunTestCaseOnly.widthHint = 150;
         lblReRunTestCaseOnly.setLayoutData(gdLblReRunTestCaseOnly);
-        lblReRunTestCaseOnly.setText(StringConstants.PA_LBL_TEST_CASE_ONLY);
+        lblReRunTestCaseOnly.setText(StringConstants.PA_LBL_RETRY_ALL_EXECUTIONS);
         lblReRunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
 
         rerunTestCaseOnly = new Button(compositeLastRunAndReRun, SWT.CHECK);

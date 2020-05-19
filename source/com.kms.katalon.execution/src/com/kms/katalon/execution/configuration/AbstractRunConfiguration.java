@@ -113,14 +113,23 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
             if (fileEntity instanceof TestSuiteEntity) {
                 // Get and use the prepared test case bindings for rerunFailedTestCaseTestData
                 TestSuiteExecutedEntity t = (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity();
-                String currentFailedTcBindings = additionalData
-                        .getOrDefault(RunConfiguration.TC_BINDINGS_OF_FAILED_TEST_CASES, StringUtils.EMPTY);
-                if (!StringUtils.EMPTY.equals(currentFailedTcBindings)
-                        && t.getRerunSetting().isRerunFailedTestCasesOnly()
-                        && t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
+                String retryFailedExecutionsTcBindings = additionalData
+                        .getOrDefault(RunConfiguration.TC_RETRY_FAILED_EXECUTIONS_ONLY, StringUtils.EMPTY);
+                String retryImmediatelyTcBindings  = additionalData
+                .getOrDefault(RunConfiguration.TC_RETRY_IMMEDIATELY_BINDINGS, StringUtils.EMPTY);
+                
+                if (t.getRerunSetting().isRerunImmediately() && !StringUtils.EMPTY.equals(retryImmediatelyTcBindings)) {
                     return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
                             (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
-                                    .generateScriptFile(currentFailedTcBindings);
+                                    .generateScriptFile(retryFailedExecutionsTcBindings);
+                }
+                
+                if (t.getRerunSetting().isRerunFailedTestCasesOnly()
+                        && t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()
+                        && !StringUtils.EMPTY.equals(retryFailedExecutionsTcBindings)) {
+                    return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
+                                    .generateScriptFile(retryFailedExecutionsTcBindings);
                 }
                 // Recalculate the test case bindings for rerunFailedTestCase
                 return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,

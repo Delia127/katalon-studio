@@ -27,15 +27,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -44,7 +41,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.TypedListener;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -54,8 +50,6 @@ import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.resources.constants.IImageKeys;
-import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.TestSuiteEventConstants;
@@ -68,7 +62,6 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.feature.KSEFeature;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuitePart implements EventHandler {
 
@@ -89,7 +82,7 @@ public class TestSuitePart implements EventHandler {
 
     private boolean isExecutionCompositeExpanded;
 
-    private Text txtRerun, txtUserDefinePageLoadTimeout;
+    private Text txtRetryAfterExecuteAll, txtRetryImmediately, txtUserDefinePageLoadTimeout;
 
     private MPart mpart;
 
@@ -102,14 +95,12 @@ public class TestSuitePart implements EventHandler {
     private Button btnAddMailRcp, btnDeleteMailRcp, btnClearMailRcp;
 
     private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
-    
-    private Button chkShouldStopImmediately;
 
     private Composite compositeLastRunAndReRun;
 
     private ImageButton btnExpandExecutionComposite;
 
-    private Button rerunTestCaseOnly, rerunTestCaseTestDataOnly;
+    private Button radioBtnRetryAllExecutions, radioBtnRetryFailedExecutionsOnly, radioBtnRetryImmediately;
 
     private TestSuiteCompositePart parentTestSuiteCompositePart;
 
@@ -135,6 +126,8 @@ public class TestSuitePart implements EventHandler {
     };
 
     private Map<String, ExpandableTestSuiteComposite> viewCompositeMap = new HashMap<>();
+
+    private Button radioBtnRetryAfterExecuteAll;
 
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
@@ -310,20 +303,8 @@ public class TestSuitePart implements EventHandler {
         });
         txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
         
-        chkShouldStopImmediately.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY);
-                    chkShouldStopImmediately.setSelection(false);
-                }
-                boolean value = chkShouldStopImmediately.getSelection();
-                getTestSuite().setShouldStopImmediatelyWhenTestCaseFails(value);
-                setDirty(true);
-            }
-        });
         
-        txtRerun.addModifyListener(new ModifyListener() {
+        txtRetryAfterExecuteAll.addModifyListener(new ModifyListener() {
 
             @Override
             public void modifyText(ModifyEvent e) {
@@ -339,35 +320,93 @@ public class TestSuitePart implements EventHandler {
                 } catch (NumberFormatException ex) {}
             }
         });
-        txtRerun.addVerifyListener(verifyNumberListener);
+        
+        txtRetryAfterExecuteAll.addVerifyListener(verifyNumberListener);
+        
+        txtRetryImmediately.addModifyListener(new ModifyListener() {
 
-        rerunTestCaseOnly.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String text = ((Text) e.getSource()).getText();
+                try {
+                    int rerun = Integer.parseInt(text);
+                    // limit to 100 times only
+                    if (rerun > 100) {
+                        rerun = 100;
+                        ((Text) e.getSource()).setText(String.valueOf(rerun));
+                    }
+                    getTestSuite().setNumberOfRerun(rerun);
+                } catch (NumberFormatException ex) {}
+            }
+        });
+        
+        txtRetryImmediately.addVerifyListener(verifyNumberListener);
+        
+        radioBtnRetryImmediately.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean val = rerunTestCaseOnly.getSelection();
-                getTestSuite().setRerunFailedTestCasesOnly(val);
-                if (!val) {
-                    rerunTestCaseTestDataOnly.setSelection(false);
+                if (LicenseUtil.isFreeLicense()) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_IMMEDIATELY);
+                    radioBtnRetryImmediately.setSelection(false);
                 }
-                rerunTestCaseTestDataOnly.setEnabled(val);
+                boolean value = radioBtnRetryImmediately.getSelection();
+                if (value) {
+                    radioBtnRetryAfterExecuteAll.setSelection(false);
+                    radioBtnRetryAllExecutions.setSelection(false);
+                    radioBtnRetryFailedExecutionsOnly.setSelection(false);
+                    txtRetryImmediately.setEnabled(true);
+                    getTestSuite().setRerunFailedTestCasesOnly(false);
+                    getTestSuite().setRerunFailedTestCasesTestDataOnly(false);
+                    enableRetryAfterExecuteAll(false);
+                }
+                getTestSuite().setRerunImmediately(value);
                 setDirty(true);
             }
         });
         
-        rerunTestCaseTestDataOnly.addSelectionListener(new SelectionAdapter() {
+        radioBtnRetryAfterExecuteAll.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if(LicenseUtil.isFreeLicense()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY);
-                    rerunTestCaseTestDataOnly.setSelection(false);
+                boolean value = radioBtnRetryAfterExecuteAll.getSelection();
+                if (value) {
+                    radioBtnRetryImmediately.setSelection(false);
+                    txtRetryImmediately.setEnabled(false);
+                    getTestSuite().setRerunImmediately(false);
+                    enableRetryAfterExecuteAll(true);
                 }
-                boolean value = rerunTestCaseTestDataOnly.getSelection();
-                getTestSuite().setRerunFailedTestCasesTestDataOnly(value);
+                setDirty(true);
+            }
+        });
+
+        radioBtnRetryAllExecutions.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean val = radioBtnRetryAllExecutions.getSelection();
+                if (val) {
+                    getTestSuite().setRerunFailedTestCasesOnly(false);
+                    getTestSuite().setRerunFailedTestCasesTestDataOnly(false);
+                }
+                setDirty(true);
+            }
+        });
+        
+        radioBtnRetryFailedExecutionsOnly.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean val = radioBtnRetryFailedExecutionsOnly.getSelection();
+                getTestSuite().setRerunFailedTestCasesOnly(val);
+                getTestSuite().setRerunFailedTestCasesTestDataOnly(val);
                 setDirty(true);
             }
         });
 
         childrenView.registerControlModifyListeners();
+    }
+
+    private void enableRetryAfterExecuteAll(boolean val) {
+        txtRetryAfterExecuteAll.setEnabled(val);
+        radioBtnRetryAllExecutions.setEnabled(val);
+        radioBtnRetryFailedExecutionsOnly.setEnabled(val);
     }
 
     public void loadTestSuite(final TestSuiteEntity testSuite) {
@@ -405,16 +444,27 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
-        txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
-        rerunTestCaseOnly.setSelection(testSuite.isRerunFailedTestCasesOnly());
-        boolean rerunTcOnly = rerunTestCaseOnly.getSelection();
-        chkShouldStopImmediately.setSelection(testSuite.shouldStopImmediatelyWhenTestCaseFails());
-        rerunTestCaseTestDataOnly.setEnabled(rerunTcOnly);
-        if(rerunTcOnly) {
-            rerunTestCaseTestDataOnly.setSelection(testSuite.isRerunFailedTestCasesAndTestDataOnly());
-        } else {
+        boolean shouldRetryFailedExecutions = (testSuite.isRerunFailedTestCasesOnly()
+                || testSuite.isRerunFailedTestCasesAndTestDataOnly());
+        boolean shouldRetryImmediatly = testSuite.isRerunImmediately();
+        boolean shouldRetryAllExecutions = !(testSuite.isRerunFailedTestCasesOnly()
+                || testSuite.isRerunFailedTestCasesAndTestDataOnly());
+        boolean shouldRetryAfterExecuteAll = (shouldRetryAllExecutions || shouldRetryFailedExecutions)
+                && !shouldRetryImmediatly;
 
-            rerunTestCaseTestDataOnly.setSelection(false);
+        radioBtnRetryAfterExecuteAll.setSelection(shouldRetryAfterExecuteAll);
+        radioBtnRetryImmediately.setSelection(shouldRetryImmediatly);
+        radioBtnRetryAllExecutions.setSelection(shouldRetryAllExecutions);
+        radioBtnRetryFailedExecutionsOnly.setSelection(shouldRetryFailedExecutions);
+
+        txtRetryImmediately.setEnabled(shouldRetryImmediatly);
+        enableRetryAfterExecuteAll(shouldRetryAfterExecuteAll);
+
+        if (shouldRetryAfterExecuteAll) {
+            txtRetryAfterExecuteAll.setText(String.valueOf(testSuite.getNumberOfRerun()));
+        }
+        if (shouldRetryImmediatly) {
+            txtRetryImmediately.setText(String.valueOf(testSuite.getNumberOfRerun()));
         }
  
         // binding mailRecipient
@@ -563,78 +613,61 @@ public class TestSuitePart implements EventHandler {
         glCompositeTestDataAndLastRun.verticalSpacing = 15;
         compositeLastRunAndReRun.setLayout(glCompositeTestDataAndLastRun);
         
-        Label lblStopImmediately = new Label(compositeLastRunAndReRun, SWT.NONE);
+        Composite grpRetryExecution = new Composite(compositeLastRunAndReRun, SWT.NONE);
+        grpRetryExecution.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+        GridLayout gl_grpRetryExecution = new GridLayout(4, false);
+        gl_grpRetryExecution.marginWidth = 5;
+        gl_grpRetryExecution.marginHeight = 5;
+        grpRetryExecution.setLayout(gl_grpRetryExecution);
+        
+        radioBtnRetryImmediately = new Button(grpRetryExecution, SWT.RADIO);
         GridData gdLblStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        lblStopImmediately.setLayoutData(gdLblStopImmediately);
-        lblStopImmediately.setText(StringConstants.PA_LBL_STOP_IMMEDIATELY);
+        radioBtnRetryImmediately.setLayoutData(gdLblStopImmediately);
+        radioBtnRetryImmediately.setText(StringConstants.PA_LBL_RETRY_IMMEDIATELY);
         
-        chkShouldStopImmediately = new Button(compositeLastRunAndReRun, SWT.CHECK);
-        GridData gdChkShouldStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblStopImmediately.setLayoutData(gdChkShouldStopImmediately);
-        
-        Label lblDocumentLink = new Label(compositeLastRunAndReRun, SWT.PUSH);
-        GridData gdLblDocumentLink = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        lblDocumentLink.setLayoutData(gdLblDocumentLink);
-        lblDocumentLink.setImage(ImageManager.getImage(IImageKeys.HELP_16));
-        lblDocumentLink.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseUp(MouseEvent mouseEvent) {
-                Program.launch(
-                        "https://docs.katalon.com/katalon-studio/docs/use-online-license.html#katalon-studio-enterprise");
-                Trackings.trackOpenHelp(
-                        "https://docs.katalon.com/katalon-studio/docs/use-online-license.html#katalon-studio-enterprise");
-            }
-        });
-        
-        Label lblPlaceHolder = new Label(compositeLastRunAndReRun, SWT.NONE);
-        GridData gdlblPlaceHolder = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        lblStopImmediately.setLayoutData(gdlblPlaceHolder);
-                
-        Label lblReRun = new Label(compositeLastRunAndReRun, SWT.NONE);
+        txtRetryImmediately = new Text(grpRetryExecution, SWT.BORDER);
+        GridData gdTxtStopImmediately = new GridData(SWT.RIGHT, SWT.FILL, false, false, 3, 1);
+        gdTxtStopImmediately.widthHint = 20;
+        txtRetryImmediately.setLayoutData(gdTxtStopImmediately);
+        txtRetryImmediately.setTextLimit(3);
+
+        Composite grpRetryExecutions = new Composite(compositeLastRunAndReRun, SWT.BORDER);
+        grpRetryExecutions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+        GridLayout gl_grpRetryExecutions = new GridLayout(4, false);
+        gl_grpRetryExecutions.marginWidth = 5;
+        gl_grpRetryExecutions.marginHeight = 5;
+        grpRetryExecutions.setLayout(gl_grpRetryExecutions);
+
+        radioBtnRetryAfterExecuteAll = new Button(grpRetryExecutions, SWT.RADIO);
         GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblReRun.widthHint = 85;
-        lblReRun.setLayoutData(gdLblReRun);
-        lblReRun.setText(StringConstants.PA_LBL_RETRY);
-        lblReRun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
+        gdLblReRun.widthHint = 150;
+        radioBtnRetryAfterExecuteAll.setLayoutData(gdLblReRun);
+        radioBtnRetryAfterExecuteAll.setText(StringConstants.PA_LBL_RETRY_AFTER_EXECUTE_ALL);
+        radioBtnRetryAfterExecuteAll.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
 
-        txtRerun = new Text(compositeLastRunAndReRun, SWT.BORDER);
-        GridData gdTxtRerun = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdTxtRerun.heightHint = 20;
-        gdTxtRerun.widthHint = 40;
-        txtRerun.setLayoutData(gdTxtRerun);
-        txtRerun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
-        txtRerun.setTextLimit(3);
-
-        Label lblReRunTestCaseOnly = new Label(compositeLastRunAndReRun, SWT.NONE);
-        GridData gdLblReRunTestCaseOnly = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
-        gdLblReRunTestCaseOnly.widthHint = 150;
-        lblReRunTestCaseOnly.setLayoutData(gdLblReRunTestCaseOnly);
-        lblReRunTestCaseOnly.setText(StringConstants.PA_LBL_TEST_CASE_ONLY);
-        lblReRunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
-
-        rerunTestCaseOnly = new Button(compositeLastRunAndReRun, SWT.CHECK);
-        GridData gdRerunTestCase = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        gdRerunTestCase.heightHint = 20;
-        gdRerunTestCase.minimumWidth = 20;
-        rerunTestCaseOnly.setLayoutData(gdRerunTestCase);
-        rerunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+        txtRetryAfterExecuteAll = new Text(grpRetryExecutions, SWT.BORDER);
+        GridData gdTxtRerun = new GridData(SWT.RIGHT, SWT.FILL, false, false, 3, 1);
+        gdTxtRerun.widthHint = 20;
+        txtRetryAfterExecuteAll.setLayoutData(gdTxtRerun);
+        txtRetryAfterExecuteAll.setTextLimit(3);
         
-        Label placeHolder1 = new Label(compositeLastRunAndReRun, SWT.NONE);
-        Label placeHolder2 = new Label(compositeLastRunAndReRun, SWT.NONE);
-        
-        Label lblReRunTestCaseTestDataOnly = new Label(compositeLastRunAndReRun, SWT.NONE);
-        GridData gdReRunTestCaseTestDataOnly = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
-        gdReRunTestCaseTestDataOnly.widthHint = 150;
-        lblReRunTestCaseTestDataOnly.setLayoutData(gdReRunTestCaseTestDataOnly);
-        lblReRunTestCaseTestDataOnly.setText(StringConstants.PA_LBL_TEST_CASE_TEST_DATA_ONLY);
-        lblReRunTestCaseTestDataOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+        Composite grpRetryExecutionsChildComposite = new Composite(grpRetryExecutions, SWT.NONE);
+        grpRetryExecutionsChildComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+        GridLayout gl_grpRetryExecutionsChildComposite = new GridLayout(4, false);
+        gl_grpRetryExecutionsChildComposite.marginWidth = 5;
+        gl_grpRetryExecutionsChildComposite.marginHeight = 5;
+        gl_grpRetryExecutionsChildComposite.marginLeft = 45;
+        grpRetryExecutionsChildComposite.setLayout(gl_grpRetryExecutionsChildComposite);
 
-        rerunTestCaseTestDataOnly = new Button(compositeLastRunAndReRun, SWT.CHECK);
-        GridData gdRerunTestCaseTestData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        gdRerunTestCaseTestData.heightHint = 20;
-        gdRerunTestCaseTestData.minimumWidth = 20;
-        rerunTestCaseTestDataOnly.setLayoutData(gdRerunTestCaseTestData);
-        rerunTestCaseTestDataOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+        radioBtnRetryAllExecutions = new Button(grpRetryExecutionsChildComposite, SWT.RADIO);
+        GridData gdRerunTestCase = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
+        radioBtnRetryAllExecutions.setLayoutData(gdRerunTestCase);
+        radioBtnRetryAllExecutions.setText(StringConstants.PA_LBL_RETRY_ALL_EXECUTIONS);
+
+        radioBtnRetryFailedExecutionsOnly = new Button(grpRetryExecutionsChildComposite, SWT.RADIO);
+        GridData gdRerunTestCaseTestData = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
+        radioBtnRetryFailedExecutionsOnly.setLayoutData(gdRerunTestCaseTestData);
+        radioBtnRetryFailedExecutionsOnly.setText(StringConstants.PA_LBL_RETRY_FAILED_EXECUTIONS);
 
         Composite compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
         GridData gdCompositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
