@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
@@ -37,7 +38,11 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Widget;
 
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCustomKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
+import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.util.TypeUtil;
+import com.kms.katalon.util.groovy.MethodNodeUtil;
 
 /**
  * The CCombo class represents a selectable user interface object
@@ -116,6 +121,10 @@ public class TooltipCCombo extends CCombo {
             Object node = tree.getSelection()[0].getData();
             if (node instanceof AstBuiltInKeywordTreeTableNode) {
                 classKeywordName = ((AstBuiltInKeywordTreeTableNode)node).getBuiltInKWClassSimpleName();
+            }
+            
+            if (node instanceof AstCustomKeywordTreeTableNode) {
+                classKeywordName = KeywordController.CUSTOM_KEYWORD_CLASS_NAME;
             }
         }
         
@@ -315,7 +324,7 @@ public class TooltipCCombo extends CCombo {
     private class TooltipHandler implements MouseMoveListener, SelectionListener, MouseTrackListener {
         private int previousSelectionIdx = -1;
 
-        private BuiltinKeywordNodeTooltip tooltip = null;
+        private AbstractKeywordNodeTooltip tooltip = null;
 
         private List list;
 
@@ -330,7 +339,13 @@ public class TooltipCCombo extends CCombo {
             this.list.addMouseTrackListener(this);
             
             this.textLookup = textLookup;
-            this.tooltip = new BuiltinKeywordNodeTooltip(list);
+            
+//            if (KeywordController.CUSTOM_KEYWORD_CLASS_NAME.equals(classKeywordName)
+//                    && StringUtils.isNotBlank(customKeywordName) && customKeywordParameterTypes != null) {
+//                this.tooltip = new CustomKeywordNodeTooltip(list, customKeywordName, customKeywordParameterTypes);
+//            } else {
+//                this.tooltip = new BuiltinKeywordNodeTooltip(list);
+//            }
             // show tooltip if currently an item is selected
             if (this.list.getSelectionIndex() != -1) {
                 updateTooltip(this.list.getSelectionIndex());
@@ -382,18 +397,41 @@ public class TooltipCCombo extends CCombo {
             }
             String text = this.textLookup.get(index);
             if (list.isVisible() && index >= 0 && index < this.list.getItemCount() && StringUtils.isNotEmpty(classKeywordName) && StringUtils.isNotEmpty(text)) {
-                this.tooltip.setText(text);
                 // calculate the location
                 Point size = this.list.getSize();
                 Point loc = this.list.getParent().getLocation();
+                
+                if (!isCustomKeyword()) {
+                    if (this.tooltip == null) {
+                        this.tooltip = new BuiltinKeywordNodeTooltip(list);
+                    }
+                    ((BuiltinKeywordNodeTooltip) this.tooltip).setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeywordName, list.getItem(index)));
+                    ((BuiltinKeywordNodeTooltip) this.tooltip).setText(text);
+                } else {
+                    if (this.tooltip != null) {
+                        this.tooltip.hide();
+                    }
+                    this.tooltip = getCustomKeywordTooltipByIndex(index);                
+                }
                 tooltip.setPreferedSize(600, size.y);
-                this.tooltip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeywordName, list.getItem(index)));
                 this.tooltip.show(new Point(loc.x + size.x - 2, loc.y));
                 this.previousSelectionIdx = index;
             } else {
                 this.tooltip.hide();
                 previousSelectionIdx = -1;
             }
+        }
+        
+        private AbstractKeywordNodeTooltip getCustomKeywordTooltipByIndex(int index) {
+            Object[] comboItems =  (Object[]) getData();
+            Object item = comboItems[index];
+            if (item instanceof MethodNode) {
+                MethodNode methodNode = (MethodNode) item;
+                String keywordName = methodNode.getName();
+                String[] parameterTypes = TypeUtil.toReadableTypes(MethodNodeUtil.getParameterTypes(methodNode));
+                return new CustomKeywordNodeTooltip(list, keywordName, parameterTypes);
+            }
+            return null;
         }
 
         /**
@@ -422,5 +460,9 @@ public class TooltipCCombo extends CCombo {
         public void mouseHover(MouseEvent e) {
         }
 
+    }
+    
+    private boolean isCustomKeyword() {
+        return KeywordController.CUSTOM_KEYWORD_CLASS_NAME.equals(classKeywordName);
     }
 }

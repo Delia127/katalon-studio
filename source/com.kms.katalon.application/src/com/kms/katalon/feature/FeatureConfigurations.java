@@ -46,6 +46,7 @@ public class FeatureConfigurations implements IFeatureService {
             put(KSEFeature.TEST_CASE_TOGGLE_STEP, Boolean.TRUE);
             put(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY, Boolean.TRUE);
             put(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL, Boolean.TRUE);
+            put(KSEFeature.WINDOWS_NATIVE_RECORDER, Boolean.TRUE);
         }
     };
 

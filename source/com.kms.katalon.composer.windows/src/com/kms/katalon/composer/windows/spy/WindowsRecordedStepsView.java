@@ -4,8 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -35,7 +36,6 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openqa.selenium.Keys;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
@@ -66,6 +66,7 @@ import com.kms.katalon.composer.testcase.support.InputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.ItemColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
+import com.kms.katalon.composer.windows.action.WindowsAction;
 import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.action.WindowsActionUtil;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
@@ -77,8 +78,6 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class WindowsRecordedStepsView implements ITestCasePart {
-
-    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
     private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown;
 
@@ -273,15 +272,75 @@ public class WindowsRecordedStepsView implements ITestCasePart {
 
     }
 
+    private WindowsActionMapping latestAction;
+
     public void addNode(WindowsActionMapping newAction) throws ClassNotFoundException {
         AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
         CapturedWindowsElement targetElement = newAction.getTargetElement();
         CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
         ExpressionStatementWrapper wrapper = (ExpressionStatementWrapper) WindowsActionUtil
                 .generateMobileTestStep(newAction, converter.convert(targetElement), treeTableInput.getMainClassNode());
+
+        if (preventMultiSetTextAction(newAction)) {
+            modifyStep(wrapper, latestNode);
+            latestAction = newAction;
+            return;
+        }
+        if (mergeMultiSingleClickIntoDoubleClickAction(newAction)) {
+            newAction.setAction(WindowsAction.DoubleClick);
+            wrapper = (ExpressionStatementWrapper) WindowsActionUtil.generateMobileTestStep(newAction,
+                    converter.convert(targetElement), treeTableInput.getMainClassNode());
+            modifyStep(wrapper, latestNode);
+            latestAction = newAction;
+            return;
+        }
         treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
         treeViewer.refresh();
         treeViewer.setSelection(new StructuredSelection(getLatestNode()));
+
+        latestAction = newAction;
+    }
+    
+    private boolean mergeMultiSingleClickIntoDoubleClickAction(WindowsActionMapping newAction) {
+        if (latestAction == null || newAction.getRecordedTime() == null || latestAction.getRecordedTime() == null) {
+            return false;
+        }
+
+        String lastestActionName = latestAction.getAction().getName();
+        String actionName = newAction.getAction().getName();
+
+        CapturedWindowsElement latestCaptured = latestAction.getTargetElement();
+        CapturedWindowsElement newCaptured = newAction.getTargetElement();
+        long diff = newAction.getRecordedTime().getTime() - latestAction.getRecordedTime().getTime();
+        return "Click".equals(lastestActionName) && lastestActionName.equals(actionName)
+                && isSameElement(newCaptured, latestCaptured) && diff >= 0 && diff < 50L;
+    }
+
+    private boolean preventMultiSetTextAction(WindowsActionMapping newAction) {
+        if (latestAction == null) {
+            return false;
+        }
+
+        String lastestActionName = latestAction.getAction().getName();
+        String actionName = newAction.getAction().getName();
+
+        CapturedWindowsElement latestCaptured = latestAction.getTargetElement();
+        CapturedWindowsElement newCaptured = newAction.getTargetElement();
+        return "SetText".equals(lastestActionName) && lastestActionName.equals(actionName)
+                && isSameElement(latestCaptured, newCaptured);
+    }
+
+    private boolean isSameElement(CapturedWindowsElement a, CapturedWindowsElement b) {
+        Map<String, String> propertiesA = a.getProperties();
+        Map<String, String> propertiesB = b.getProperties();
+        if (propertiesA == null || propertiesB == null) {
+            return false;
+        }
+
+        String runtimeIdA = propertiesA.getOrDefault("RuntimeId", "");
+        String runtimeIdB = propertiesB.getOrDefault("RuntimeId", "");
+
+        return StringUtils.isNotEmpty(runtimeIdA) && StringUtils.equals(runtimeIdA, runtimeIdB);
     }
 
     private void modifyStep(ExpressionStatementWrapper wrapper, AstBuiltInKeywordTreeTableNode twoStepBefore) {

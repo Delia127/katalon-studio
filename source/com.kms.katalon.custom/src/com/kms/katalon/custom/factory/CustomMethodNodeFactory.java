@@ -1,22 +1,18 @@
 package com.kms.katalon.custom.factory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.MethodNode;
-import org.eclipse.jdt.core.Signature;
 
 import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.custom.parser.MethodUtils;
-import com.kms.katalon.util.PrimitiveAwareTypeUtil;
 import com.kms.katalon.util.groovy.MethodNodeUtil;
 
 public class CustomMethodNodeFactory {
@@ -130,6 +126,7 @@ public class CustomMethodNodeFactory {
         methodNodesMap.clear();
         classPathMap.clear();
         methodParameterNamesMap.clear();
+        javadocMap.clear();
     }
     
     public boolean isCustomKeywordClass(String className) {
@@ -146,32 +143,33 @@ public class CustomMethodNodeFactory {
         }
         return false;
     }
+    
+    public MethodNode findBestMatch(String className, String methodName, String[] parameterTypes) {
+        MethodNode methodNode = find(className, methodName, parameterTypes);
+        if (methodNode == null) {
+            methodNode = find(className, methodName, parameterTypes.length);
+        }
+        return methodNode;
+    }
 
-    public MethodNode findMethodNode(
-            String keywordClassName,
-            String methodName,
-            String[] parameterTypes) throws ClassNotFoundException {
-
-        Map<String, List<MethodNode>> customKeywordMethodNodeMap = getMethodNodesMap();
-
-        List<MethodNode> methodNodes = customKeywordMethodNodeMap.get(keywordClassName);
+    private MethodNode find(String className, String methodName, String[] parameterTypes) {
+        List<MethodNode> methodNodes = getMethodNodesMap().get(className);
         for (MethodNode methodNode : methodNodes) {
-            String[] methodParameterTypes = Arrays.asList(methodNode.getParameters())
-                    .stream()
-                    .map(p -> p.getType().getName())
-                    .map(t -> {
-                        try {
-                            return Signature.toString(t);
-                        } catch (Exception e) {
-                            return t;
-                        }
-                    }).collect(Collectors.toList())
-                    .toArray(new String[methodNode.getParameters().length]);
-            if (PrimitiveAwareTypeUtil.areSameTypes(parameterTypes, methodParameterTypes)) {
+            if (MethodNodeUtil.matchMethodWithLooseParamTypesChecking(methodNode, className, methodName,
+                    parameterTypes)) {
                 return methodNode;
             }
         }
+        return null;
+    }
 
+    private MethodNode find(String className, String methodName, int numberOfParameters) {
+        List<MethodNode> methodNodes = getMethodNodesMap().get(className);
+        for (MethodNode methodNode : methodNodes) {
+            if (MethodNodeUtil.matchMethod(methodNode, className, methodName, numberOfParameters)) {
+                return methodNode;
+            }
+        }
         return null;
     }
     

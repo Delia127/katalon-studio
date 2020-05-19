@@ -1,9 +1,5 @@
 package com.kms.katalon.composer.testcase.components;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.eclipse.jdt.core.Signature;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -19,10 +15,12 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTab
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCustomKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
+import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.util.TypeUtil;
 
 public class CTreeViewerKeywordTooltip extends TreeViewerKeywordTooltip {
     
-    private static final String CUSTOM_KEYWORD_CLASS = "CustomKeywords";
+    private static final String CUSTOM_KEYWORD_CLASS = KeywordController.CUSTOM_KEYWORD_CLASS_NAME;
 
     public CTreeViewerKeywordTooltip(TreeViewer treeViewer) {
         super(treeViewer);
@@ -53,15 +51,10 @@ public class CTreeViewerKeywordTooltip extends TreeViewerKeywordTooltip {
         String keywordName = node.getKeywordName();
         String classKeyword = node instanceof AstBuiltInKeywordTreeTableNode ?
                 ((AstBuiltInKeywordTreeTableNode) node).getBuiltInKWClassSimpleName()
-                : "CustomKeywords";
-        String text = "";
+                : CUSTOM_KEYWORD_CLASS;
+        String[] parameterTypes = new String[0];
         if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
-            text = TestCaseEntityUtil.getCustomKeywordJavadocText(node.getKeywordName(), node.getParameterTypes());
-        } else {
-            text = TestCaseEntityUtil.getBuiltinKeywordJavadocText(classKeyword, keywordName);
-            if (text == null || text.length() < 1) {
-                text = keywordName;
-            }
+            parameterTypes = TypeUtil.toReadableTypes(node.getParameterTypes());
         }
         if (tip != null && tip.isVisible() && keywordName != null && keywordName.equals(getCurrentKeyword())) {
             return;
@@ -71,20 +64,8 @@ public class CTreeViewerKeywordTooltip extends TreeViewerKeywordTooltip {
         }
         setCurrentKeyword(keywordName);
         
-        createTooltip(text, classKeyword, node.getKeywordName()).show(
+        createTooltip(classKeyword, node.getKeywordName(), parameterTypes).show(
                 getTooltipLocation(new Point(x, y)));
-    }
-    
-    private String[] getTypes(String[] typeSignatures) {
-        return Stream.of(typeSignatures)
-                .map(t -> {
-                    try {
-                        return Signature.toString(t);
-                    } catch (Exception e) {
-                        return t;
-                    }
-                }).collect(Collectors.toList())
-                .toArray(new String[typeSignatures.length]);
     }
 
     private ViewerColumn getViewerColumn(CTreeViewer treeViewer, Point point) {

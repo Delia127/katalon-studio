@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
+import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 
@@ -27,8 +28,6 @@ public class TreeViewerKeywordTooltip {
     protected static final int SHIFT_X = -10;
 
     protected static final int SHIFT_Y = 2;
-    
-    private static final String CUSTOM_KEYWORD_CLASS = "CustomKeywords";
 
     private String currentKeyword;
 
@@ -117,17 +116,7 @@ public class TreeViewerKeywordTooltip {
         KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
         String classKeyword = keywordBrowserEntity.getClassName();
         String keywordName = keywordBrowserEntity.getName();
-        String text = "";
-        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
-            String customKeywordName = removeQuotes(keywordName);
-            String[] parameterTypes = getParameterTypes(keywordBrowserEntity);
-            text = TestCaseEntityUtil.getCustomKeywordJavadocText(customKeywordName, parameterTypes);
-        } else {
-            text = TestCaseEntityUtil.getBuiltinKeywordJavadocText(classKeyword, keywordName);
-            if (text == null || text.length() < 1) {
-                text = keywordName;
-            }
-        }
+      
         if (tip != null && tip.isVisible() && keywordName != null && keywordName.equals(currentKeyword)) {
             return;
         }
@@ -135,7 +124,7 @@ public class TreeViewerKeywordTooltip {
             tip.hide();
         }
         currentKeyword = keywordName;
-        createTooltip(text, classKeyword, keywordName).show(getTooltipLocation(point));
+        createTooltip(classKeyword, keywordName, getParameterTypes(keywordBrowserEntity)).show(getTooltipLocation(point));
     }
     
     private String[] getParameterTypes(KeywordBrowserTreeEntity keywordBrowserEntity) {
@@ -145,29 +134,36 @@ public class TreeViewerKeywordTooltip {
                 .map(t -> t.getName())
                 .collect(Collectors.toList())
                 .toArray(new String[parameterClasses.length]);
+    }     
+
+    protected AbstractKeywordNodeTooltip createTooltip(String classKeyword, String keyword,
+            String[] parameterTypes) {
+        if (KeywordController.CUSTOM_KEYWORD_CLASS_NAME.equals(classKeyword)) {
+            String nameWithoutQuotes = removeQuotes(keyword);
+            tip = new CustomKeywordNodeTooltip(treeViewer.getTree(), nameWithoutQuotes,
+                    parameterTypes);
+        } else {
+            tip = new BuiltinKeywordNodeTooltip(treeViewer.getTree());
+            if (keyword.toLowerCase().equals(BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME.toLowerCase())) {
+                classKeyword = BuiltinKeywords.class.getSimpleName();
+            }
+            ((BuiltinKeywordNodeTooltip) tip)
+                    .setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeyword, keyword));
+            
+            String text = TestCaseEntityUtil.getBuiltinKeywordJavadocText(classKeyword, keyword);
+            if (text == null || text.length() < 1) {
+                text = keyword;
+            }
+            ((BuiltinKeywordNodeTooltip) tip).setText(text);;
+        }
+        
+        return tip;
     }
     
     private String removeQuotes(String str) {
         String result = StringUtils.replace(str, "'", "");
         result = StringUtils.replace(result, "\"", "");
         return result;
-    }
-
-    protected AbstractKeywordNodeTooltip createTooltip(String text, String classKeyword, String keyword) {
-        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
-            tip = new CustomKeywordNodeTooltip(treeViewer.getTree());
-        } else {
-            tip = new BuiltinKeywordNodeTooltip(treeViewer.getTree());
-            if (keyword.toLowerCase().equals(BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME.toLowerCase())) {
-                classKeyword = BuiltinKeywords.class.getSimpleName();
-            }
-            ((BuiltinKeywordNodeTooltip) tip).setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeyword, keyword));
-        }
-        tip.setText(text);
-        tip.setKeywordClass(classKeyword);
-        tip.setKeywordName(keyword);
-        return tip;
-
     }
 
     protected String getCurrentKeyword() {
@@ -192,11 +188,11 @@ public class TreeViewerKeywordTooltip {
         if (item == null || !(item.getData() instanceof KeywordBrowserTreeEntity)) {
             return false;
         }   
-        KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
-        String classKeyword = keywordBrowserEntity.getClassName();
-        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
-            return false;
-        }
+//        KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
+//        String classKeyword = keywordBrowserEntity.getClassName();
+//        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
+//            return false;
+//        }
         return true;
     }
 }

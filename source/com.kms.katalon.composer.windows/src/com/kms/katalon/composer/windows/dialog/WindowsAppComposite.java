@@ -18,13 +18,18 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.UISynchronizer;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.project.handlers.SettingHandler;
@@ -62,6 +67,12 @@ public class WindowsAppComposite {
     private ScopedPreferenceStore store;
 
     private Text txtApplicationTitle;
+    
+    private boolean showConfiguration = true;
+    
+    private boolean showApplicationFile = true;
+    
+    private boolean showApplicationTitle = true;
 
     public Composite createComposite(Composite parent, int type, WindowsObjectDialog parentDialog) {
         this.parentDialog = parentDialog;
@@ -73,15 +84,21 @@ public class WindowsAppComposite {
         composite.setLayout(glComposite);
 
         Label lblConfiguration = new Label(composite, SWT.NONE);
-        lblConfiguration.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        GridData gdLabelConfiguration = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLabelConfiguration.exclude = !showConfiguration;
+        lblConfiguration.setLayoutData(gdLabelConfiguration);
         lblConfiguration.setText("Configuration");
+        lblConfiguration.setVisible(showConfiguration);
 
         Composite configurationComposite = new Composite(composite, SWT.NONE);
-        configurationComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        GridData gdConfiguration = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gdConfiguration.exclude = !showConfiguration;
+        configurationComposite.setLayoutData(gdConfiguration);
         GridLayout glConfigurationComposite = new GridLayout(2, false);
         glConfigurationComposite.marginWidth = 0;
         glConfigurationComposite.marginHeight = 0;
         configurationComposite.setLayout(glConfigurationComposite);
+        configurationComposite.setVisible(showConfiguration);
 
         lblDriverConnector = new Label(configurationComposite, SWT.NONE);
         lblDriverConnector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -106,15 +123,21 @@ public class WindowsAppComposite {
         });
 
         Label lblAppFile = new Label(composite, SWT.NONE);
-        lblAppFile.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        GridData gdAppFile = new GridData(SWT.LEFT, SWT.TOP, false, false);
+        gdAppFile.exclude = !showApplicationFile;
+        lblAppFile.setLayoutData(gdAppFile);
         lblAppFile.setText("Application File");
+        lblAppFile.setVisible(showApplicationFile);
 
         Composite appFileChooserComposite = new Composite(composite, SWT.NONE);
-        appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        GridData gdFileChooser = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gdFileChooser.exclude = !showApplicationFile;
+        appFileChooserComposite.setLayoutData(gdFileChooser);
         GridLayout glFileChooser = new GridLayout(2, false);
         glFileChooser.marginWidth = 0;
         glFileChooser.marginHeight = 0;
         appFileChooserComposite.setLayout(glFileChooser);
+        appFileChooserComposite.setVisible(showApplicationFile);
 
         txtAppFile = new Text(appFileChooserComposite, SWT.BORDER);
         txtAppFile.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -158,12 +181,18 @@ public class WindowsAppComposite {
         });
 
         Label lblWindowTitle = new Label(composite, SWT.NONE);
-        lblWindowTitle.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        GridData gdWindowTitle = new GridData(SWT.LEFT, SWT.TOP, false, false);
+        gdWindowTitle.exclude = !showApplicationTitle;
+        lblWindowTitle.setLayoutData(gdWindowTitle);
         lblWindowTitle.setText("Application Title");
         lblWindowTitle.setToolTipText("Title of the main application main window");
+        lblWindowTitle.setVisible(showApplicationTitle);
 
         txtApplicationTitle = new Text(composite, SWT.BORDER);
-        txtApplicationTitle.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        GridData ApplicationTitle = new GridData(SWT.FILL, SWT.TOP, true, false);
+        ApplicationTitle.exclude = !showApplicationTitle;
+        txtApplicationTitle.setLayoutData(ApplicationTitle);
+        txtApplicationTitle.setVisible(showApplicationTitle);
 
         return composite;
     }
@@ -183,6 +212,18 @@ public class WindowsAppComposite {
     public boolean validateSetting() {
         return true;
     }
+    
+    public void saveSettings() throws IOException {
+        StringBuilder appFile = new StringBuilder();
+        StringBuilder appTitle = new StringBuilder();
+        UISynchronizeService.syncExec(() -> {
+            appFile.append(txtAppFile.getText());
+            appTitle.append(txtApplicationTitle.getText());
+        });
+        store.setValue(PREF_LAST_STARTED_APP, appFile.toString());
+        store.setValue(PREF_LAST_STARTED_WINDOW_TITLE, appTitle.toString());
+        store.save();
+    }
 
     public WindowsActionMapping startApp(WindowsInspectorController controller, AppiumMonitorDialog progressDlg)
             throws InvocationTargetException, InterruptedException {
@@ -199,8 +240,7 @@ public class WindowsAppComposite {
 
                     public Object call() throws Exception {
                         controller.startApplication(driverConnector, appFile, appTitle);
-                        store.setValue(PREF_LAST_STARTED_APP, appFile);
-                        store.setValue(PREF_LAST_STARTED_WINDOW_TITLE, appTitle);
+                        saveSettings();
                         return null;
                     }
                 });
@@ -252,5 +292,29 @@ public class WindowsAppComposite {
 
     public WindowsObjectDialog getParentDialog() {
         return parentDialog;
+    }
+
+    public boolean isShowConfiguration() {
+        return showConfiguration;
+    }
+
+    public void setShowConfiguration(boolean showConfiguration) {
+        this.showConfiguration = showConfiguration;
+    }
+
+    public boolean isShowApplicationFile() {
+        return showApplicationFile;
+    }
+
+    public void setShowApplicationFile(boolean showApplicationFile) {
+        this.showApplicationFile = showApplicationFile;
+    }
+
+    public boolean isShowApplicationTitle() {
+        return showApplicationTitle;
+    }
+
+    public void setShowApplicationTitle(boolean showApplicationTitle) {
+        this.showApplicationTitle = showApplicationTitle;
     }
 }

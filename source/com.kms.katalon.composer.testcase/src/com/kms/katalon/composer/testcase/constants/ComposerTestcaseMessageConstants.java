@@ -424,6 +424,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String LBL_QUERY_BUILDER_USAGE;
     
+    public static String JavadocHover_openDeclaration;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);

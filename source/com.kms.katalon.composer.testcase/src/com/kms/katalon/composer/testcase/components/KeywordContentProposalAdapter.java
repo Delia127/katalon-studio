@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.components;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.bindings.keys.KeyStroke;
@@ -41,7 +42,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.testcase.editors.KeywordContentProposal;
 import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
+import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
+import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.util.groovy.MethodNodeUtil;
 
 public class KeywordContentProposalAdapter {
 
@@ -236,7 +241,7 @@ public class KeywordContentProposalAdapter {
      */
     private boolean watchModify = false;
 
-    private BuiltinKeywordNodeTooltip tooltip;
+    private AbstractKeywordNodeTooltip tooltip;
 
     public KeywordContentProposalAdapter(Control control, IControlContentAdapter controlContentAdapter,
             IContentProposalProvider proposalProvider, KeyStroke keyStroke, char[] autoActivationCharacters) {
@@ -246,7 +251,7 @@ public class KeywordContentProposalAdapter {
         Assert.isNotNull(controlContentAdapter);
         this.control = control;
         this.controlContentAdapter = controlContentAdapter;
-        tooltip = new BuiltinKeywordNodeTooltip(control);
+//        tooltip = new BuiltinKeywordNodeTooltip(control);
         
         // The rest of these may be null
         this.proposalProvider = proposalProvider;
@@ -1858,8 +1863,8 @@ public class KeywordContentProposalAdapter {
         @Override
         public boolean close() {
             Point p = Display.getCurrent().getCursorLocation();
-            if (tooltip.isVisible() && tooltip.getBounds().contains(p.x, p.y) && !tooltip.isCursorOnOpenKeywordDescButton(p)) {
-                return false;
+            if (tooltip.isVisible() && tooltip.getBounds().contains(p.x, p.y) && tooltip instanceof BuiltinKeywordNodeTooltip && !((BuiltinKeywordNodeTooltip)tooltip).isCursorOnOpenKeywordDescButton(p)) {
+                    return false;
             }
 
             popupCloser.removeListeners();
@@ -1919,19 +1924,35 @@ public class KeywordContentProposalAdapter {
             if (StringUtils.isEmpty(keywordClassName)) {
             	return;
             }
-            tooltip.setText(keywordDesc);
-            tooltip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(keywordClassName, keywordName));
-            Point loc = popup.getShell().getLocation();
-            tooltip.setPreferedSize(0, popupSize.y);
-            tooltip.show(new Point(loc.x + popupSize.x - 2, loc.y));
-            tooltip.getShell().addListener(SWT.Dispose, evt -> {
-                if (tooltip.isOpenedKeywordDesc()) {
-                    try {
-                        infoPopup.close();
-                    } catch (Exception ex) {}
-                }
-            });
             
+            if (KeywordController.CUSTOM_KEYWORD_CLASS_NAME.equals(keywordClassName)) {
+                Object item = null;
+                if (proposals[selectionIndex] instanceof KeywordContentProposal) {
+                    item = ((KeywordContentProposal) proposals[selectionIndex]).getData();
+                }
+                if (item != null && item instanceof MethodNode) {
+                    MethodNode methodNode = (MethodNode) item;
+                    String[] parameterTypes = MethodNodeUtil.getParameterTypes(methodNode);
+                    tooltip = new CustomKeywordNodeTooltip(control, methodNode.getName(), parameterTypes);
+                }          
+            } else {
+                tooltip = new BuiltinKeywordNodeTooltip(control);
+                ((BuiltinKeywordNodeTooltip) tooltip).setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(keywordClassName, keywordName));
+                tooltip.getShell().addListener(SWT.Dispose, evt -> {
+                    if (((BuiltinKeywordNodeTooltip)tooltip).isOpenedKeywordDesc()) {
+                        try {
+                            infoPopup.close();
+                        } catch (Exception ex) {}
+                    }
+                });
+                ((BuiltinKeywordNodeTooltip) tooltip).setText(keywordDesc);
+            }
+            
+            if (tooltip != null) {
+                Point loc = popup.getShell().getLocation();
+                tooltip.setPreferedSize(0, popupSize.y);
+                tooltip.show(new Point(loc.x + popupSize.x - 2, loc.y));
+            }
         }
 
         /*

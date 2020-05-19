@@ -9,7 +9,9 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.application.utils.ApplicationProxyUtil;
 import com.kms.katalon.constants.MessageConstants;
+import com.kms.katalon.constants.SystemProperties;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class SystemProxyConfigurationPreferencesPage extends AbstractProxyConfigurationPreferencesPage {
@@ -32,7 +34,7 @@ public class SystemProxyConfigurationPreferencesPage extends AbstractProxyConfig
     @Override
     protected void selectNoProxyOption() {
         super.selectNoProxyOption();
-        chkAutoApplyToDesiredCapabilities.setEnabled(false);
+        chkAutoApplyToDesiredCapabilities.setEnabled(true);
     }
 
     @Override
@@ -58,5 +60,6 @@ public class SystemProxyConfigurationPreferencesPage extends AbstractProxyConfig
     protected void saveProxyInfo(ProxyInformation proxyInfo) throws IOException {
         proxyInfo.setApplyToDesiredCapabilities(chkAutoApplyToDesiredCapabilities.getSelection());
         ProxyPreferences.saveSystemProxyInformation(proxyInfo);
+        System.setProperty(SystemProperties.SYSTEM_PROXY, JsonUtil.toJson(proxyInfo));
     }
 }

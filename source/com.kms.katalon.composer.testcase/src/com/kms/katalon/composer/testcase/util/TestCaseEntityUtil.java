@@ -39,6 +39,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.util.TypeUtil;
 import com.kms.katalon.util.groovy.MethodNodeUtil;
 import com.kms.katalon.util.jdt.JDTUtil;
 
@@ -112,8 +113,7 @@ public class TestCaseEntityUtil {
     private static Map<String, Map<String, String>> keywordMethodJavaDocMap;
     
     private static LoadingCache<CustomKeywordInfo, String> customKeywordJavadocCache = CacheBuilder.newBuilder()
-            .maximumSize(1000)
-            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .maximumSize(1000).expireAfterWrite(10, TimeUnit.MINUTES)
             .build(new CacheLoader<CustomKeywordInfo, String>() {
                 @Override
                 public String load(CustomKeywordInfo customKeywordInfo) {
@@ -137,7 +137,8 @@ public class TestCaseEntityUtil {
     
     public static String getCustomKeywordJavadocText(String keywordName, String[] parameterTypes) {
         try {
-            CustomKeywordInfo keywordInfo = new CustomKeywordInfo(keywordName, parameterTypes);
+            String[] readableTypes = TypeUtil.toReadableTypes(parameterTypes);
+            CustomKeywordInfo keywordInfo = new CustomKeywordInfo(keywordName, readableTypes);
             return customKeywordJavadocCache.get(keywordInfo);
         } catch (ExecutionException e) {
             LoggerSingleton.logError(e);
@@ -151,7 +152,7 @@ public class TestCaseEntityUtil {
         String[] parameterTypes = customKeywordInfo.getParameterTypes();
         MethodNode methodNode = findCustomMethodNode(keywordName, parameterTypes);
         IMethod jdtMethod = findJdtMethod(methodNode);
-        return JavadocContentAccess2.getHTMLContent(jdtMethod, true);
+        return StringUtils.defaultIfBlank(JavadocContentAccess2.getHTMLContent(jdtMethod, true), "");
     }
     
     private static MethodNode findCustomMethodNode(String keywordName, String[] parameterTypes)
@@ -159,7 +160,8 @@ public class TestCaseEntityUtil {
         int lastDotIdx = keywordName.lastIndexOf(".");
         String className = keywordName.substring(0, lastDotIdx);
         String methodName = keywordName.substring(lastDotIdx + 1);
-        return CustomMethodNodeFactory.getInstance().findMethodNode(className, methodName, parameterTypes);
+        MethodNode methodNode =  CustomMethodNodeFactory.getInstance().findBestMatch(className, methodName, parameterTypes);
+        return methodNode;
     }
     
     private static IMethod findJdtMethod(MethodNode methodNode) throws JavaModelException {
@@ -273,16 +275,8 @@ public class TestCaseEntityUtil {
             return keywordName;
         }
 
-        public void setKeywordName(String keywordName) {
-            this.keywordName = keywordName;
-        }
-
         public String[] getParameterTypes() {
             return parameterTypes;
-        }
-
-        public void setParameterTypes(String[] parameterTypes) {
-            this.parameterTypes = parameterTypes;
         }
 
         @Override

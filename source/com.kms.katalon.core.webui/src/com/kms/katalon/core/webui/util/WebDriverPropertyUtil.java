@@ -170,7 +170,7 @@ public class WebDriverPropertyUtil {
                             driverProperty.getValue()));
         }
         injectAddtionalArgumentsForChrome(chromeOptions);
-        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+//        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
         return desireCapabilities;
     }
 

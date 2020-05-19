@@ -1,13 +1,15 @@
 package com.kms.katalon.util.groovy;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.Parameter;
 import org.eclipse.jdt.core.Signature;
+
+import com.kms.katalon.util.TypeUtil;
 
 public class MethodNodeUtil {
 
@@ -36,8 +38,33 @@ public class MethodNodeUtil {
         return builder.toString();
     }
 
+    public static boolean matchMethod(MethodNode methodToMatch, String className, String methodName,
+            String[] parameterTypes) {
+        String[] parameterTypes1 = getParameterTypes(methodToMatch);
+        String className1 = methodToMatch.getDeclaringClass().getName();
+        String methodName1 = methodToMatch.getName();
+        return className1.equals(className) && methodName1.equals(methodName)
+                && TypeUtil.areSameTypes(parameterTypes1, parameterTypes);
+    }
+    
+    public static boolean matchMethodWithLooseParamTypesChecking(MethodNode methodToMatch, String className, String methodName,
+            String[] parameterTypes) {
+        String[] parameterTypes1 = getParameterTypes(methodToMatch);
+        String className1 = methodToMatch.getDeclaringClass().getName();
+        String methodName1 = methodToMatch.getName();
+        return className1.equals(className) && methodName1.equals(methodName)
+                && TypeUtil.areSameTypesWithLooseTypeChecking(parameterTypes1, parameterTypes);
+    }
+
+    public static boolean matchMethod(MethodNode methodToMatch, String className, String methodName, int numOfParams) {
+        String className1 = methodToMatch.getDeclaringClass().getName();
+        String methodName1 = methodToMatch.getName();
+        int numOfParams1 = methodToMatch.getParameters().length;
+        return className1.equals(className) && methodName1.equals(methodName) && numOfParams1 == numOfParams;
+    }
+
     public static String[] getParameterTypes(MethodNode method) {
-        return Arrays.asList(method.getParameters()).stream()
+        return Stream.of(method.getParameters())
                 .map(p -> p.getType().getName())
                 .map(t -> {
                     try {

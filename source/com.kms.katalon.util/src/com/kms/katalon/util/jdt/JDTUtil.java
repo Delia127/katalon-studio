@@ -17,7 +17,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 
-import com.kms.katalon.util.PrimitiveAwareTypeUtil;
+import com.kms.katalon.util.TypeUtil;
 
 public class JDTUtil {
     
@@ -29,15 +29,29 @@ public class JDTUtil {
         
         IType type = findType(project, className);
         for (IMethod method : type.getMethods()) {
-            if (isSameMethod(method, className, methodName, parameterTypes)) {
+            if (isSameMethod(method, className, methodName, parameterTypes, false)) {
                 return method;
             }
         }
-
         return null;
     }
     
-    public static IMethod findMethodWithHeuristicParamTypesMatching(
+    public static IMethod findMethod(
+            IProject project,
+            String className,
+            String methodName,
+            int numOfParams) throws JavaModelException {
+        
+        IType type = findType(project, className);
+        for (IMethod method : type.getMethods()) {
+            if (method.getElementName().equals(methodName) && numOfParams == method.getParameters().length) {
+                return method;
+            }
+        }
+        return null;
+    }
+    
+    public static IMethod findMethodWithLooseParamTypesMatching(
             IProject project,
             String className,
             String methodName,
@@ -45,7 +59,7 @@ public class JDTUtil {
         
         IType type = findType(project, className);
         for (IMethod method : type.getMethods()) {
-            if (isSameMethod(method, className, methodName, parameterTypes)) {
+            if (isSameMethod(method, className, methodName, parameterTypes, true)) {
                 return method;
             }
         }
@@ -57,16 +71,16 @@ public class JDTUtil {
             IMethod method,
             String className,
             String methodName,
-            String[] parameterTypes) throws JavaModelException {
+            String[] parameterTypes,
+            boolean useLooseParameterTypesChecking) throws JavaModelException {
         
         String className1 = method.getDeclaringType().getFullyQualifiedName();
         String methodName1 = method.getElementName();
         String[] parameterTypes1 = getParameterTypes(method);
-        
-        return className1.equals(className) &&
-                methodName1.equals(methodName) &&
-                (PrimitiveAwareTypeUtil.areSameTypes(parameterTypes, parameterTypes1) ||
-                        PrimitiveAwareTypeUtil.areSameTypesWithHeuristicMatching(parameterTypes, parameterTypes1));
+        boolean hasSameParameterTypes = useLooseParameterTypesChecking
+                ? TypeUtil.areSameTypesWithLooseTypeChecking(parameterTypes, parameterTypes1)
+                : TypeUtil.areSameTypes(parameterTypes, parameterTypes1);
+        return className1.equals(className) && methodName1.equals(methodName) && hasSameParameterTypes;
     }
     
     private static String[] getParameterTypes(IMethod method) throws JavaModelException {
