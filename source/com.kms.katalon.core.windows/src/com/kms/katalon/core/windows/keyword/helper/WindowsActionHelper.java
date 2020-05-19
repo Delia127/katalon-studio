@@ -25,6 +25,7 @@ import org.openqa.selenium.support.ui.FluentWait;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.WindowsTestObject;
+import com.kms.katalon.core.windows.constants.CoreWindowsMessageConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.core.windows.driver.WindowsSession;
 import com.kms.katalon.core.windows.keyword.exception.DriverNotStartedException;
@@ -254,10 +255,13 @@ public class WindowsActionHelper {
         WindowsDriver<WebElement> desktopDriver = windowsSession.getDesktopDriver();
         
         FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(desktopDriver)
-                .withTimeout(Duration.ofSeconds(60))
-                .pollingEvery(Duration.ofSeconds(5))
+                .withTimeout(Duration.ofMillis(WindowsActionSettings.DF_WAIT_ACTION_TIMEOUT_IN_MILLIS))
+                .pollingEvery(Duration.ofMillis(5000))
                 .ignoring(NoSuchElementException.class);
-
+        
+        logger.logInfo(MessageFormat.format(CoreWindowsMessageConstants.WindowsActionHelper_INFO_START_FINDING_WINDOW,
+                windowName, WindowsActionSettings.DF_WAIT_ACTION_TIMEOUT_IN_MILLIS));
+        
         WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
             @Override
             public WebElement apply(WindowsDriver<WebElement> driver) {
