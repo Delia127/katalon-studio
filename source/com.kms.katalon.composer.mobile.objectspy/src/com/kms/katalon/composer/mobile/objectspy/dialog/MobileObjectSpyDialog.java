@@ -18,6 +18,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -580,6 +581,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     @Override
                     public void run() {
                         dialog.setCancelable(false);
+                        TreeViewer allElementTreeViewer = allObjectsComposite.getAllElementTreeViewer();
                         if (appRootElement != null) {
                             allElementTreeViewer.setInput(new Object[] { appRootElement });
                         } else {

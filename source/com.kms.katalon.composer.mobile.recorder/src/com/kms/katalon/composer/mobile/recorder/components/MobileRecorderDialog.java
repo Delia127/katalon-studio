@@ -24,6 +24,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -923,6 +924,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 UISynchronizeService.syncExec(new Runnable() {
                     @Override
                     public void run() {
+                        TreeViewer allElementTreeViewer = allObjectsComposite.getAllElementTreeViewer();
                         if (newAppRootElement != null) {
                             allElementTreeViewer.setInput(new Object[] { newAppRootElement });
                         } else {
