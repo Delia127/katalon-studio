@@ -176,11 +176,11 @@
 								</artifact>
 								<artifact>
 									<!-- http://dev.mysql.com/downloads/connector/j/ -->
-									<id>mysql:mysql-connector-java:8.0.17</id>
+									<id>mysql:mysql-connector-java:8.0.15</id>
 								</artifact>
 								<artifact>
 									<!-- http://go.microsoft.com/fwlink/?LinkId=245496 -->
-									<id>com.microsoft.sqlserver:sqljdbc4:4.1.5605.100</id>
+									<id>com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8</id>
 								</artifact>
 								<artifact>
 									<!-- http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html -->
@@ -296,6 +296,19 @@
                                         <exclude>commons-codec</exclude>
                                         <exclude>org.apache.httpcomponents</exclude>
                                     </excludes>
+                                </artifact>
+                                <artifact>
+                                	<id>io.github.kostaskougios:cloning:1.10.3</id>
+                                	<excludes>
+                                		<exclude>junit</exclude>
+                                	</excludes>
+                               	</artifact>
+                               	<artifact>
+                                	<id>com.corundumstudio.socketio:netty-socketio:1.7.17</id>
+                                	<excludes>
+        								<exclude>org.slf4j:*</exclude>
+        								<exclude>com.fasterxml.jackson.core:*</exclude>
+    								</excludes>
                                 </artifact>
 							</artifacts>
 						</configuration>

@@ -12,8 +12,6 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class AbstractKeywordNodeTooltip {
 
-    protected String text = "";
-
     private int preferedWidth = 600;
 
     private int preferedHeight = 200;
@@ -25,10 +23,6 @@ public abstract class AbstractKeywordNodeTooltip {
     private boolean showBelow = true;
 
     protected Point location;
-    
-    protected String keywordClass;
-    
-    protected String keywordName;
 
     private static AbstractKeywordNodeTooltip currentTooltip = null;
 
@@ -46,14 +40,6 @@ public abstract class AbstractKeywordNodeTooltip {
 
     public boolean isShowBelowPoint() {
         return showBelow;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getText() {
-        return this.text;
     }
 
     public void setPreferedSize(int w, int h) {
@@ -110,21 +96,5 @@ public abstract class AbstractKeywordNodeTooltip {
 
     public Rectangle getBounds() {
         return tip.getBounds();
-    }
-
-    public String getKeywordClass() {
-        return keywordClass;
-    }
-
-    public void setKeywordClass(String keywordClass) {
-        this.keywordClass = keywordClass;
-    }
-
-    public String getKeywordName() {
-        return keywordName;
-    }
-
-    public void setKeywordName(String keywordName) {
-        this.keywordName = keywordName;
     }
 }

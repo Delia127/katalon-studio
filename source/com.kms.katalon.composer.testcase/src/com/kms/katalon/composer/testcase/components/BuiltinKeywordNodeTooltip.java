@@ -62,6 +62,8 @@ public class BuiltinKeywordNodeTooltip extends AbstractKeywordNodeTooltip {
     private boolean openedDesc;
 
     private boolean isOpeningKeywordDescription = false;
+    
+    private String text;
 
     public BuiltinKeywordNodeTooltip(Control control) {
         this.control = control;
@@ -342,4 +344,11 @@ public class BuiltinKeywordNodeTooltip extends AbstractKeywordNodeTooltip {
         return isOpeningKeywordDescription;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 }

@@ -46,7 +46,6 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.apache.xmlbeans,
  com.google.gson,
  org.jsoup,
- com.microsoft.sqlserver.sqljdbc4,
  org.apache.commons.dbutils,
  com.oracle.jdbc.ojdbc7,
  org.postgresql.jdbc41,
@@ -77,6 +76,7 @@ Require-Bundle: net.sf.supercsv.super-csv,
  xml-apis,
  org.apache.commons.commons-text,
  com.mysql.cj,
- com.kms.katalon.proxyvole
+ com.kms.katalon.proxyvole,
+ com.microsoft.sqlserver.mssql-jdbc
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
