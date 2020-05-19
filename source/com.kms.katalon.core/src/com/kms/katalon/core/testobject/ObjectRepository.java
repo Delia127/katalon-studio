@@ -416,6 +416,8 @@ public class ObjectRepository {
             requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
             requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
             requestObject.setSoapBody(substitutor.replace(reqElement.elementText("soapBody")));
+            requestObject.setUseServiceInfoFromWsdl(Boolean.valueOf(StringEscapeUtils.unescapeXml(reqElement.elementText("useServiceInfoFromWsdl"))));
+            requestObject.setSoapServiceEndpoint(reqElement.elementText("soapServiceEndpoint"));
         } else if ("RESTful".equals(serviceType)) {
             String rawUrl = reqElement.elementText("restUrl");
             String url = buildUrlFromRaw(rawUrl, substitutor);
@@ -439,14 +441,6 @@ public class ObjectRepository {
                 HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
                         projectDir, substitutor);
                 requestObject.setBodyContent(bodyContent);
-                
-                //Backward compatible with 5.3.1
-//                ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-//                try {
-//                    bodyContent.writeTo(outstream);
-//                    requestObject.setHttpBody(outstream.toString());
-//                } catch (IOException ignored) {
-//                }
             }
         }
         

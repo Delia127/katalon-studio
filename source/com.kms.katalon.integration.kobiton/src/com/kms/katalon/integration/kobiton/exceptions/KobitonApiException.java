@@ -6,7 +6,7 @@ public class KobitonApiException extends Exception {
     private boolean error = false;
 
     private String message;
-
+    
     public boolean isError() {
         return error;
     }

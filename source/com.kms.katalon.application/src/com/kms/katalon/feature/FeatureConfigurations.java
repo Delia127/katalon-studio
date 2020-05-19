@@ -1,11 +1,10 @@
 package com.kms.katalon.feature;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import com.kms.katalon.application.utils.LicenseUtil;
-import com.kms.katalon.logging.LogUtil;
 
 public class FeatureConfigurations implements IFeatureService {
 
@@ -13,15 +12,48 @@ public class FeatureConfigurations implements IFeatureService {
 
     private Properties customFeatures;
 
-    public static final String FEATURES_RESOURCE_FILE = "resources/features/features.properties";
+    @SuppressWarnings("serial")
+    private static final Map<KSEFeature, Boolean> coreFeaturesMap = new HashMap<KSEFeature, Boolean>() {
+        {
+            put(KSEFeature.SMART_XPATH, Boolean.TRUE);
+            put(KSEFeature.WEB_LOCATOR_SETTINGS, Boolean.TRUE);
+            put(KSEFeature.IMAGE_BASED_OBJECT_DETECTION, Boolean.TRUE);
+            put(KSEFeature.CUSTOM_WEB_SERVICE_METHOD, Boolean.TRUE);
+            put(KSEFeature.ORACLE_EXTERNAL_DATA, Boolean.TRUE);
+            put(KSEFeature.SQL_SERVER_EXTERNAL_DATA, Boolean.TRUE);
+            put(KSEFeature.ADDTIONAL_TEST_DATA_SOURCE, Boolean.TRUE);
+            put(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION, Boolean.TRUE);
+            put(KSEFeature.CHECKPOINT, Boolean.TRUE);
+            put(KSEFeature.REPORT_HISTORY, Boolean.TRUE);
+            put(KSEFeature.EXPORT_JUNIT_REPORT, Boolean.TRUE);
+            put(KSEFeature.TEST_OBJECT_REFACTORING, Boolean.TRUE);
+            put(KSEFeature.EXPORT_TEST_ARTIFACTS, Boolean.TRUE);
+            put(KSEFeature.IMPORT_TEST_ARTIFACTS, Boolean.TRUE);
+            put(KSEFeature.DYNAMIC_TEST_SUITE, Boolean.TRUE);
+            put(KSEFeature.CONSOLE_LOG_CUSTOMIZATION, Boolean.TRUE);
+            put(KSEFeature.DEBUG_MODE, Boolean.TRUE);
+            put(KSEFeature.SOURCE_CODE_FOR_DEBUGGING, Boolean.TRUE);
+            put(KSEFeature.CONFIGURE_USAGE_TRACKING, Boolean.TRUE);
+            put(KSEFeature.SSL_CLIENT_CERTIFICATE, Boolean.TRUE);
+            put(KSEFeature.GIT_SSH, Boolean.TRUE);
+            put(KSEFeature.PRIVATE_PLUGINS, Boolean.TRUE);
+            put(KSEFeature.CREATE_GENERIC_PROJECT_TYPE, Boolean.TRUE);
+            put(KSEFeature.OVERRIDE_TESTOPS_AUTHENTICATION, Boolean.TRUE);
+            put(KSEFeature.RECORDER_RUN_FROM_SELECTED_STEP, Boolean.TRUE);
+            put(KSEFeature.RECORDER_RUN_SELECTED_STEPS, Boolean.TRUE);
+            put(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS, Boolean.TRUE);
+            put(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP, Boolean.TRUE);
+            put(KSEFeature.TEST_CASE_DEBUG_FROM_SELECTED_STEP, Boolean.TRUE);
+            put(KSEFeature.TEST_CASE_TOGGLE_STEP, Boolean.TRUE);
+            put(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY, Boolean.TRUE);
+            put(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL, Boolean.TRUE);
+            put(KSEFeature.WINDOWS_NATIVE_RECORDER, Boolean.TRUE);
+        }
+    };
 
-    public InputStream getFeaturesResource() {
-        return getClass().getClassLoader().getResourceAsStream(FEATURES_RESOURCE_FILE);
+    public Map<KSEFeature, Boolean> getCoreFeaturesMap() {
+        return coreFeaturesMap;
     }
-
-    private static final String TRUE_VALUE = "true";
-
-    private static final String FALSE_VALUE = "false";
 
     public FeatureConfigurations() {
         loadFeatures();
@@ -36,11 +68,9 @@ public class FeatureConfigurations implements IFeatureService {
         if (coreFeatures == null) {
             coreFeatures = new Properties();
         }
-        try {
-            coreFeatures.load(getFeaturesResource());
-        } catch (IOException error) {
-            LogUtil.logError(error);
-        }
+        getCoreFeaturesMap().entrySet().stream().forEach(action -> {
+            coreFeatures.put(action.getKey().name(), action.getValue().toString());
+        });
     }
 
     protected void loadCustomFeatures() {
@@ -73,12 +103,20 @@ public class FeatureConfigurations implements IFeatureService {
 
     @Override
     public void enable(String customFeature) {
-        customFeatures.setProperty(customFeature, TRUE_VALUE);
+        boolean isValidCustomFeature = !coreFeatures.containsKey(customFeature);
+        if (!isValidCustomFeature) {
+            return;
+        }
+        customFeatures.setProperty(customFeature, Boolean.TRUE.toString());
     }
 
     @Override
     public void disable(String customFeature) {
-        customFeatures.setProperty(customFeature, FALSE_VALUE);
+        boolean isValidCustomFeature = !coreFeatures.containsKey(customFeature);
+        if (!isValidCustomFeature) {
+            return;
+        }
+        customFeatures.setProperty(customFeature, Boolean.FALSE.toString());
     }
 
     @Override
@@ -87,6 +125,6 @@ public class FeatureConfigurations implements IFeatureService {
     }
 
     private boolean getBoolean(Properties features, String featureKey) {
-        return TRUE_VALUE.equalsIgnoreCase(features.getProperty(featureKey));
+        return Boolean.valueOf(features.getProperty(featureKey));
     }
 }

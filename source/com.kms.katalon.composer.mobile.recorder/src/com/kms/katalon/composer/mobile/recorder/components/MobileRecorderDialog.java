@@ -923,7 +923,13 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 UISynchronizeService.syncExec(new Runnable() {
                     @Override
                     public void run() {
-                        allObjectsComposite.setInput(newAppRootElement);
+                        if (newAppRootElement != null) {
+                            allElementTreeViewer.setInput(new Object[] { newAppRootElement });
+                        } else {
+                            allElementTreeViewer.setInput(new Object[] { });
+                        }
+                        allElementTreeViewer.refresh();
+                        allElementTreeViewer.expandAll();
                     }
                 });
             }

@@ -580,7 +580,13 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     @Override
                     public void run() {
                         dialog.setCancelable(false);
-                        allObjectsComposite.setInput(appRootElement);
+                        if (appRootElement != null) {
+                            allElementTreeViewer.setInput(new Object[] { appRootElement });
+                        } else {
+                            allElementTreeViewer.setInput(new Object[] { });
+                        }
+                        allElementTreeViewer.refresh();
+                        allElementTreeViewer.expandAll();
                         verifyCapturedElementsStates(
                                 capturedObjectsComposite.getCapturedElements().toArray(new CapturedMobileElement[0]));
                         dialog.setCancelable(true);

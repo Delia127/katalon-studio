@@ -47,13 +47,13 @@ public class MessageConstants extends NLS {
 
     public static String PA_LBL_OPEN_PROJECT_DESCRIPTION;
 
-    public static String PA_LBL_FAQ;
+    public static String PA_LBL_HELP_CENTER;
 
     public static String PA_TOOLTIP_FAQ;
 
     public static String PA_LBL_FAQ_DESCRIPTION;
 
-    public static String PA_URL_FAQ;
+    public static String PA_LBL_HELP_CENTER_URL;
 
     public static String PA_LBL_GETTING_STARTED_DESCRIPTION;
 
@@ -180,8 +180,6 @@ public class MessageConstants extends NLS {
     public static String DLG_TITLE_DLG_REPORT_ISSUE;
 
     public static String CONFIG_PROXY;
-
-    public static String TITLE_DLG_PROXY_SETTING;
 
     public static String TITLE_DLG_REPORT_ISSUE;
 

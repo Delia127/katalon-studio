@@ -1,9 +1,10 @@
 package com.kms.katalon.feature.test;
 
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.hamcrest.Matchers;
@@ -18,6 +19,7 @@ import org.mockito.Spy;
 import com.kms.katalon.application.helper.LicenseHelper;
 import com.kms.katalon.application.helper.LicenseHelperFactory;
 import com.kms.katalon.feature.FeatureConfigurations;
+import com.kms.katalon.feature.KSEFeature;
 
 public class FeatureConfigurationsTest {
 
@@ -27,9 +29,9 @@ public class FeatureConfigurationsTest {
     @Mock
     private LicenseHelper licenseHelperEnterprise;
 
-    private static final String FREE_FEATURE_KEY = "FREE_FEATURE";
+    private static final KSEFeature FREE_FEATURE = KSEFeature.DEBUG_MODE;
 
-    private static final String ENTERPRISE_FEATURE_KEY = "ENTERPRISE_FEATURE";
+    private static final KSEFeature ENTERPRISE_FEATURE = KSEFeature.SMART_XPATH;
 
     @Spy
     private FeatureConfigurations featureService = new FeatureConfigurations();
@@ -40,7 +42,13 @@ public class FeatureConfigurationsTest {
 
     private static final String LOAD_FEATURES_METHOD = "loadFeatures";
 
-    private static final String FEATURES_RESOURCE_FILE = "resources/features.properties";
+    @SuppressWarnings("serial")
+    private static final Map<KSEFeature, Boolean> featuresMap = new HashMap<KSEFeature, Boolean>() {
+        {
+            put(ENTERPRISE_FEATURE, Boolean.TRUE);
+            put(FREE_FEATURE, Boolean.FALSE);
+        }
+    };
 
     @Before
     public void setUp() throws NoSuchFieldException, SecurityException, IllegalArgumentException,
@@ -62,8 +70,7 @@ public class FeatureConfigurationsTest {
 
     private void setUpFeatureService() throws NoSuchFieldException, SecurityException, IllegalArgumentException,
             IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        InputStream featuresResourceStream = getClass().getClassLoader().getResourceAsStream(FEATURES_RESOURCE_FILE);
-        Mockito.doReturn(featuresResourceStream).when(featureService).getFeaturesResource();
+        Mockito.doReturn(featuresMap).when(featureService).getCoreFeaturesMap();
 
         Class<?> featureServiceClass = FeatureConfigurations.class;
 
@@ -84,8 +91,7 @@ public class FeatureConfigurationsTest {
     public void loadFeaturesTest() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
             SecurityException, NoSuchMethodException, InvocationTargetException {
         // Given
-        InputStream featuresResourceStream = getClass().getClassLoader().getResourceAsStream(FEATURES_RESOURCE_FILE);
-        Mockito.doReturn(featuresResourceStream).when(featureService).getFeaturesResource();
+        Mockito.doReturn(featuresMap).when(featureService).getCoreFeaturesMap();
 
         Class<?> featureServiceClass = FeatureConfigurations.class;
 
@@ -111,10 +117,10 @@ public class FeatureConfigurationsTest {
         Assert.assertNotNull("The coreFeatures field must be not null", coreFeatures);
         Assert.assertNotNull("The customFeatures field must be not null", customFeatures);
 
-        Assert.assertTrue(String.format("The coreFeatures must contains key \"%s\"", FREE_FEATURE_KEY),
-                coreFeatures.containsKey(FREE_FEATURE_KEY));
-        Assert.assertTrue(String.format("The coreFeatures must contains key \"%s\"", ENTERPRISE_FEATURE_KEY),
-                coreFeatures.containsKey(ENTERPRISE_FEATURE_KEY));
+        Assert.assertTrue(String.format("The coreFeatures must contains key \"%s\"", FREE_FEATURE),
+                coreFeatures.containsKey(FREE_FEATURE.name()));
+        Assert.assertTrue(String.format("The coreFeatures must contains key \"%s\"", ENTERPRISE_FEATURE),
+                coreFeatures.containsKey(ENTERPRISE_FEATURE.name()));
     }
 
     @Test
@@ -172,9 +178,9 @@ public class FeatureConfigurationsTest {
         setUpFeatureService();
 
         // Then
-        Assert.assertTrue("Free users must be able to use free features", featureService.canUse(FREE_FEATURE_KEY));
+        Assert.assertTrue("Free users must be able to use free features", featureService.canUse(FREE_FEATURE));
         Assert.assertFalse("Free users must not be able to use enterprise features",
-                featureService.canUse(ENTERPRISE_FEATURE_KEY));
+                featureService.canUse(ENTERPRISE_FEATURE));
     }
 
     @Test
@@ -187,9 +193,9 @@ public class FeatureConfigurationsTest {
 
         // Then
         Assert.assertTrue("Enterprise users must be able to use free features",
-                featureService.canUse(FREE_FEATURE_KEY));
+                featureService.canUse(FREE_FEATURE));
         Assert.assertTrue("Enterprise users must be able to use enterprise features",
-                featureService.canUse(ENTERPRISE_FEATURE_KEY));
+                featureService.canUse(ENTERPRISE_FEATURE));
     }
 
     @Test

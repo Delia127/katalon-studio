@@ -62,6 +62,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -81,6 +82,7 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
@@ -385,9 +387,9 @@ public class NotificationToolControl {
     }
 
     private List<PopupNotification> getPopupNotificationsForTrialUser() {
-//        if (ActivationInfoCollector.getLicenseType() == LicenseType.ENTERPRISE) {
-//            return Collections.emptyList();
-//        }
+        if (ActivationInfoCollector.getLicenseType() == LicenseType.ENTERPRISE) {
+            return Collections.emptyList();
+        }
         try {
             Date expiredDate = getExpiredDate();
             if (getExpiredDate() == null) {
@@ -427,7 +429,12 @@ public class NotificationToolControl {
     
     private List<KatalonNotificationContent> getKatalonNotificationContent() {
         try {
-            URI uri = new URIBuilder().setPath("https://backend.katalon.com" + "/katalon-notifications").build();
+            String noti_server_url = ApplicationInfo.getAppProperty("notification_server");
+            if (noti_server_url == null) {
+                noti_server_url = "https://backend.katalon.com";
+                ApplicationInfo.setAppProperty("notification_server", "https://backend.katalon.com", true);
+            }
+            URI uri = new URIBuilder().setPath(noti_server_url + "/katalon-notifications").build();
             HttpGet httpPost = new HttpGet(uri);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
