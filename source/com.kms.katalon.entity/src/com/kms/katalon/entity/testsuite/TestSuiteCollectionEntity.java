@@ -28,6 +28,10 @@ public class TestSuiteCollectionEntity extends FileEntity {
     private ExecutionMode executionMode;
     
     private int maxConcurrentInstances = DF_CONCURRENT_INSTANCES;
+    
+    private String browserType;
+    
+    private String profileName;
 
     public List<TestSuiteRunConfiguration> getTestSuiteRunConfigurations() {
         if (testSuiteRunConfigurations == null) {
@@ -148,5 +152,21 @@ public class TestSuiteCollectionEntity extends FileEntity {
 
     public void setMaxConcurrentInstances(int maxConcurrentInstances) {
         this.maxConcurrentInstances = maxConcurrentInstances;
+    }
+    
+    public String getBrowserType() {
+    	return browserType;
+    }
+    
+    public void setBrowserType(String browserType) {
+    	this.browserType = browserType;
+    }
+    
+    public String getProfileName() {
+    	return profileName;
+    }
+    
+    public void setProfileName(String profileName) {
+    	this.profileName = profileName;
     }
 }

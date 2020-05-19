@@ -302,6 +302,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_TITLE_TEAM;
     
     public static String DIA_TITLE_PROJECT;
+    
+    public static String DIA_CHK_OVERRIDE;
 
     // LogViewerPart
     public static String DIA_WARN_TEST_CASE_NOT_FOUND;

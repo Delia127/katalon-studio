@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.execution.console.ConsoleMain;
@@ -30,18 +31,47 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
             return true;
         };
     };
+    
+    private StringConsoleOption browserTypeOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.BROWSER_TYPE_OPTION;
+        }
+
+        public boolean isRequired() {
+            return false;
+        }
+    };
+    
+    private StringConsoleOption executionProfileOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return TestSuiteLauncherOptionParser.EXECUTION_PROFILE_OPTION;
+        }
+
+        public boolean isRequired() {
+            return false;
+        }
+
+        @Override
+        public String getDefaultArgumentValue() {
+            return ExecutionProfileEntity.DF_PROFILE_NAME;
+        }
+    };
 
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> allOptions = super.getConsoleOptionList();
         allOptions.add(testSuiteCollectionOption);
+        allOptions.add(browserTypeOption);
+        allOptions.add(executionProfileOption);
         return allOptions;
     }
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
         super.setArgumentValue(consoleOption, argumentValue);
-        if (consoleOption == testSuiteCollectionOption) {
+        if (consoleOption == testSuiteCollectionOption || consoleOption == browserTypeOption || consoleOption == executionProfileOption) {
             consoleOption.setValue(argumentValue);
         }
     }
@@ -51,6 +81,10 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
             throws ExecutionException, InvalidConsoleArgumentException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
                 testSuiteCollectionOption.getValue());
+        if (browserTypeOption.getValue() != null && executionProfileOption.getValue() != null) {
+        	testSuiteCollection.setBrowserType(browserTypeOption.getValue());
+        	testSuiteCollection.setProfileName(executionProfileOption.getValue());
+        }
         Map<String, Object> globalVariables = super.getOverridingGlobalVariables();
         Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,

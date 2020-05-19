@@ -12,10 +12,12 @@ import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
@@ -24,8 +26,10 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
+import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.Reportable;
@@ -33,6 +37,7 @@ import com.kms.katalon.execution.entity.Rerunable;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
@@ -111,8 +116,14 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             if (!tsRunConfig.isRunEnabled()) {
                 continue;
             }
-            ReportableLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,
-                    globalVariables, executionUUID, isConsole, executionSessionId, additionalInfo);
+            ReportableLauncher subLauncher;
+            if (testSuiteCollection.getBrowserType() != null && testSuiteCollection.getProfileName() != null) {
+            	subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,
+                    globalVariables, executionUUID, isConsole, executionSessionId, additionalInfo, testSuiteCollection.getBrowserType(), testSuiteCollection.getProfileName());
+            } else {
+            	subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,
+                        globalVariables, executionUUID, isConsole, executionSessionId, additionalInfo);
+            }
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
@@ -129,6 +140,58 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         return tsLaunchers;
     }
 
+    private static ReportableLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
+            LauncherManager launcherManager, ReportCollectionEntity reportCollection,
+            Map<String, Object> globalVariables, String executionUUID, boolean isConsole,
+            String executionSessionId, Map<String, String> additionalInfo, String browserType, String profileName) throws ExecutionException {
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        try {
+            RunConfigurationDescription configDescription = tsRunConfig.getConfiguration();
+            AbstractRunConfiguration runConfig = (AbstractRunConfiguration) RunConfigurationCollector.getInstance().getRunConfiguration(browserType, projectDir);
+            if (runConfig == null) {
+                throw new InvalidConsoleArgumentException(
+                        MessageFormat.format(StringConstants.MNG_PRT_INVALID_BROWSER_X, browserType));
+            }
+            
+            if (StringUtils.isBlank(profileName)) {
+                profileName = ExecutionProfileEntity.DF_PROFILE_NAME;
+            }
+            ExecutionProfileEntity executionProfile = GlobalVariableController.getInstance()
+                    .getExecutionProfile(profileName, ProjectController.getInstance().getCurrentProject());
+            if (executionProfile == null) {
+                throw new ExecutionException(
+                        MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
+            }
+            runConfig.setExecutionProfile(executionProfile);
+            
+            TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
+            TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
+            executedEntity.prepareTestCases();
+            runConfig.setOverridingGlobalVariables(globalVariables);
+            runConfig.setExecutionUUID(executionUUID);
+            runConfig.setExecutionSessionId(executionSessionId);
+            runConfig.setAdditionalInfo(additionalInfo);
+            runConfig.build(testSuiteEntity, executedEntity);
+           
+            ReportableLauncher launcher = null;
+            if (isConsole) {
+                launcher = new SubConsoleLauncher(launcherManager, runConfig, configDescription);
+            } else {
+                launcher = LauncherProviderFactory.getInstance()
+                        .getIdeLauncherProvider()
+                        .getSubIDELauncher(launcherManager, runConfig, configDescription);
+            }
+            reportCollection.getReportItemDescriptions()
+                    .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configDescription));
+            return launcher;
+        } catch (final Exception e) {
+            LogUtil.logError(e);
+            throw new ExecutionException(
+                    MessageFormat.format(ExecutionMessageConstants.LAU_MESSAGE_UNABLE_TO_EXECUTE_TEST_SUITE,
+                            tsRunConfig.getTestSuiteEntity().getIdForDisplay()));
+        }
+    }
+    
     private static ReportableLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
             LauncherManager launcherManager, ReportCollectionEntity reportCollection,
             Map<String, Object> globalVariables, String executionUUID, boolean isConsole,

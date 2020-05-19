@@ -140,6 +140,8 @@ public class DocumentationMessageConstants extends NLS {
 	public static String RUNTIME_ENGINE_INTRODUCTION;
 	
 	public static String ADVANCED_SEARCH;
+	
+	public static String GENERATE_COMMAND_OVERRIDE;
 
     static {
         // initialize resource bundle
