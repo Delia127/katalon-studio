@@ -107,14 +107,20 @@ public class RecordedElementLocatorHelper {
     
     private String buildPartialXPath(WindowsRecordedElement e, boolean isMainWindow) {
         String type = getTitleCaseName(e.getType());
+        
         if (isMainWindow) {
             return type;
         }
-        String automationId = e.getAttributes().get("AutomationId");
-        String className = e.getAttributes().get("ClassName");
-        String name = e.getAttributes().get("Name");
+        Map<String, String> attributes = e.getAttributes();
+        String automationId = attributes.get("AutomationId");
+        String className = attributes.get("ClassName");
+        String name = attributes.get("Name");
         
         if (StringUtils.isEmpty(automationId) && StringUtils.isEmpty(className) && StringUtils.isEmpty(name)) {
+            String elementIndex = attributes.get("ElementIndex");
+            if (attributes.containsKey("ElementIndex") && Integer.parseInt(attributes.get("ElementIndex")) > 0) {
+                return type + "[" + elementIndex + "]";
+            }
             return type;
         }
         

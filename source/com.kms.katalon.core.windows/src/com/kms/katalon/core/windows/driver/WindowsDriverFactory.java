@@ -7,6 +7,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,7 +77,11 @@ public class WindowsDriverFactory {
         logger.logRunData(DESIRED_CAPABILITIES_PROPERTY, JsonUtil.toJson(desiredCapabilities.toJson(), false));
 
         Proxy proxy = ProxyUtil.getProxy(RunConfiguration.getProxyInformation(), remoteAddressURL);
-        return startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
+        WindowsDriver<WebElement> windowsDriver = startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
+        
+        windowsDriver.manage().timeouts().implicitlyWait(RunConfiguration.getTimeOut(), TimeUnit.SECONDS);
+        
+        return windowsDriver;
 
     }
 
