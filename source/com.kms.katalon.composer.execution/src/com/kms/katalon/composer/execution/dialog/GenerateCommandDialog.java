@@ -193,15 +193,15 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Composite configurationDataComposite;
 
     private Composite configurationComposite;
-    
+
     private Composite overrideComposite;
 
     private CLabel lblProfileName;
 
     private Button btnChangeProfile;
-    
-    private Button chkOverride;
-    
+
+    private Button chkOverridePlatform;
+
     private AnalyticsSettingStore analyticsSettingStore;
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
@@ -271,7 +271,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         createExecutionProfileComposite();
         
         createOverrideComposite();
-        
+
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject.getType() == ProjectType.WEBSERVICE) {
             ((GridData) configurationComposite.getLayoutData()).exclude = true;
@@ -338,32 +338,32 @@ public class GenerateCommandDialog extends AbstractDialog {
         btnChangeConfiguration.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
         btnChangeConfiguration.setText(StringConstants.EDIT);
     }
-    
+
     private void createOverrideComposite() {
-    	overrideComposite = new Composite(grpPlatform, SWT.NONE);
+        overrideComposite = new Composite(grpPlatform, SWT.NONE);
         overrideComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         GridLayout gdOverrideComposite = new GridLayout(2, false);
         gdOverrideComposite.marginWidth = 0;
         gdOverrideComposite.marginHeight = 0;
         overrideComposite.setLayout(gdOverrideComposite);
-        
-    	chkOverride = new Button(overrideComposite, SWT.CHECK);
-    	chkOverride.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
-    	chkOverride.setText(StringConstants.DIA_CHK_OVERRIDE);
-    	
-    	Label help = new Label(overrideComposite, SWT.NONE);
-    	help.setImage(ImageManager.getImage(IImageKeys.HELP_16));
-    	help.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
-    	help.addMouseListener(new MouseAdapter() {
-    		public void mouseUp(MouseEvent event) {
-    			try {
-                    Program.launch(DocumentationMessageConstants.GENERATE_COMMAND_OVERRIDE);
-                    Trackings.trackOpenHelp(DocumentationMessageConstants.GENERATE_COMMAND_OVERRIDE);
+
+        chkOverridePlatform = new Button(overrideComposite, SWT.CHECK);
+        chkOverridePlatform.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+        chkOverridePlatform.setText(StringConstants.DIA_CHK_OVERRIDE_PLATFORM);
+
+        Label help = new Label(overrideComposite, SWT.NONE);
+        help.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        help.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+        help.addMouseListener(new MouseAdapter() {
+            public void mouseUp(MouseEvent event) {
+                try {
+                    Program.launch(DocumentationMessageConstants.CHK_OVERRIDE_PLATFORM_HELP_URL);
+                    Trackings.trackOpenHelp(DocumentationMessageConstants.CHK_OVERRIDE_PLATFORM_HELP_URL);
                 } catch (Exception ex) {
-                    LogUtil.logError(ex);
+                    LoggerSingleton.logError(ex);
                 }
-    		}
-    	});
+            }
+        });
     }
 
     private void createConfigurationDataComposite() {
@@ -593,10 +593,10 @@ public class GenerateCommandDialog extends AbstractDialog {
                 chkApplyProxy.setSelection(
                         prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_APPLY_PROXY));
             }
-            
-            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE)) {
-                chkOverride.setSelection(
-                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE));
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE_PLATFORM)) {
+                chkOverridePlatform.setSelection(
+                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE_PLATFORM));
             }
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID)) {
@@ -840,7 +840,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private void updatePlatformLayout() {
-    	updateControlLayout(overrideComposite, !isTestSuite(txtTestSuite.getText()));
+        updateControlLayout(overrideComposite, !isTestSuite(txtTestSuite.getText()));
         updateConfigurationDataCompositeLayout();
     }
 
@@ -1043,10 +1043,10 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         } else {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
-            if (chkOverride.getSelection()) {
-            	for (Entry<String, String> entry : ConsoleOptionBuilder.argsMap(runConfigDescription).entrySet()) {
-            		args.put(entry.getKey(), getArgumentValueToSave(entry.getValue(), generateCommandMode));
-            	}
+            if (chkOverridePlatform.getSelection()) {
+                for (Entry<String, String> entry : ConsoleOptionBuilder.argsMap(runConfigDescription).entrySet()) {
+                    args.put(entry.getKey(), getArgumentValueToSave(entry.getValue(), generateCommandMode));
+                }
             }
         }
         
@@ -1303,8 +1303,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 chkRetryFailedTestCaseTestData.getSelection());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_APPLY_PROXY,
                 chkApplyProxy.getSelection());
-        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE,
-                chkOverride.getSelection());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE_PLATFORM, chkOverridePlatform.getSelection());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL,
                 txtStatusDelay.getText());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION,

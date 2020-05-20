@@ -15,6 +15,8 @@ public class DocumentationMessageConstants extends NLS {
 
     public static String DIALOG_GENERATE_COMMAND;
 
+    public static String CHK_OVERRIDE_PLATFORM_HELP_URL;
+
     public static String DIALOG_OBJECT_SPY_WEB_UI;
     
     public static String DIALOG_OBJECT_SPY_WEB_UI_SELECTION_METHOD;
@@ -140,8 +142,6 @@ public class DocumentationMessageConstants extends NLS {
 	public static String RUNTIME_ENGINE_INTRODUCTION;
 	
 	public static String ADVANCED_SEARCH;
-	
-	public static String GENERATE_COMMAND_OVERRIDE;
 
     static {
         // initialize resource bundle

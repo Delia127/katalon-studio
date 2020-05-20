@@ -31,7 +31,7 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
             return true;
         };
     };
-    
+
     private StringConsoleOption browserTypeOption = new StringConsoleOption() {
         @Override
         public String getOption() {
@@ -42,7 +42,7 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
             return false;
         }
     };
-    
+
     private StringConsoleOption executionProfileOption = new StringConsoleOption() {
         @Override
         public String getOption() {
@@ -71,7 +71,8 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
         super.setArgumentValue(consoleOption, argumentValue);
-        if (consoleOption == testSuiteCollectionOption || consoleOption == browserTypeOption || consoleOption == executionProfileOption) {
+        if (consoleOption == testSuiteCollectionOption || consoleOption == browserTypeOption
+                || consoleOption == executionProfileOption) {
             consoleOption.setValue(argumentValue);
         }
     }
@@ -82,8 +83,8 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
                 testSuiteCollectionOption.getValue());
         if (browserTypeOption.getValue() != null && executionProfileOption.getValue() != null) {
-        	testSuiteCollection.setBrowserType(browserTypeOption.getValue());
-        	testSuiteCollection.setProfileName(executionProfileOption.getValue());
+            testSuiteCollection.setBrowserType(browserTypeOption.getValue());
+            testSuiteCollection.setProfileName(executionProfileOption.getValue());
         }
         Map<String, Object> globalVariables = super.getOverridingGlobalVariables();
         Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
