@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
+import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -87,6 +88,8 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 	private Composite tableExcludeObjectsWithKeywordsComposite;
 	
 	private ExecutionExcludeWithKeywordsPart excludeWithKeywordsPart;
+	
+	private final String documentationUrl = null;
 
 	private List<Pair<String, Boolean>> methodsPritorityOrder = new ArrayList<Pair<String, Boolean>>();
 	
@@ -124,7 +127,7 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 	private void createExecutionSettings(Composite parent) {
 		Composite selectionMethodComposite = new Composite(parent, SWT.NONE);
 		selectionMethodComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		GridLayout glSelectionMethodComp = new GridLayout(1, false);
+		GridLayout glSelectionMethodComp = new GridLayout(2, false);
 		glSelectionMethodComp.marginHeight = 0;
 		glSelectionMethodComp.marginWidth = 0;
 		selectionMethodComposite.setLayout(glSelectionMethodComp);
@@ -133,9 +136,11 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 		checkboxEnableSelfHealing.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		checkboxEnableSelfHealing.setText(LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD);
 
+		new HelpComposite(selectionMethodComposite, documentationUrl);
+		
 		prioritizeGroup = new Group(selectionMethodComposite, SWT.NONE);
 		prioritizeGroup.setLayout(new GridLayout());
-		prioritizeGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		prioritizeGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		prioritizeGroup.setText(GRP_LBL_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION);
 
 		setDefaultMethodsPriorityOrder();
@@ -201,7 +206,7 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 	@SuppressWarnings("unchecked")
 	private void createPrioritizeTable(Composite parent) {
 		tableSelectionPriorityOrderComposite = new Composite(parent, SWT.NONE);
-		GridData ldTableComposite = new GridData(SWT.FILL, SWT.WRAP, true, true);
+		GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
 		ldTableComposite.minimumHeight = 70;
 		tableSelectionPriorityOrderComposite.setLayoutData(ldTableComposite);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();

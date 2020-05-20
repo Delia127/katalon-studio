@@ -61,7 +61,7 @@ public class ExecutionExcludeWithKeywordsPart implements ITestCasePart {
 		ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
 		toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 		ToolItem tltmAddVariable = new ToolItem(toolBar, SWT.DROP_DOWN);
-		
+
 		tltmAddVariable.setText("Add");
 		tltmAddVariable.setImage(ImageManager.getImage(IImageKeys.ADD_16));
         Menu addMenu = new Menu(tltmAddVariable.getParent().getShell());
@@ -70,39 +70,39 @@ public class ExecutionExcludeWithKeywordsPart implements ITestCasePart {
 		ToolItem tltmRemoveVariable = new ToolItem(toolBar, SWT.NONE);
 		tltmRemoveVariable.setText("Remove");
 		tltmRemoveVariable.setImage(ImageManager.getImage(IImageKeys.DELETE_16));
-		
+
 		tableExcludeObjectsWithKeywordsComposite = new Composite(excludeKeywordsGroup, SWT.NONE);
 
 		tableExcludeObjectsWithKeywordsComposite.setLayoutData(new GridData(SWT.FILL, SWT.WRAP, true, true, 1, 1));
-		
+
 		TreeViewer treeTable = new CTreeViewer(tableExcludeObjectsWithKeywordsComposite,  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 		Tree childTableTree = treeTable.getTree();
 	    childTableTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 	    childTableTree.setHeaderVisible(true);
 	    childTableTree.setLinesVisible(ControlUtils.shouldLineVisble(childTableTree.getDisplay()));
-	    
+
         TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
 	    tableExcludeObjectsWithKeywordsComposite.setLayout(treeColumnLayout);
-	    
+
         addTreeTableColumn(treeTable, treeColumnLayout, "Keyword", 200, 100,
                 new AstTreeItemLabelProvider(), new ItemColumnEditingSupport(treeTable, this));
-        
+
         treeTable.setContentProvider(new AstTreeTableContentProvider());
-        
+
         KeywordTreeViewerToolTipSupport.enableFor(treeTable);
 
-        ScriptNodeWrapper wrapper;
-        wrapper = new ScriptNodeWrapper();
-        wrapper.addDefaultImports();
-        
-        TestCaseTreeTableInput treeTableInput = new TestCaseTreeTableInput(wrapper, treeTable, this);
-        treeTable.setInput(treeTableInput.getMainClassNode().getAstChildren());
-		List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
+//        ScriptNodeWrapper wrapper;
+//        wrapper = new ScriptNodeWrapper();
+//        wrapper.addDefaultImports();
+
+//        TestCaseTreeTableInput treeTableInput = new TestCaseTreeTableInput(wrapper, treeTable, this);
+//        treeTable.setInput(treeTableInput.getMainClassNode().getAstChildren());
+//		List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
 //		astTreeTableNodes.add(new AstTreeTableNode());
         treeTable.setInput(excludeKeywords);
 	    return excludeKeywordsComposite;
 	}
-	
+
     private TreeViewerColumn addTreeTableColumn(TreeViewer parent, TreeColumnLayout treeColumnLayout, String headerText,
             int width, int weight, CellLabelProvider labelProvider, EditingSupport editingSupport) {
         TreeViewerColumn treeTableColumn = new TreeViewerColumn(parent, SWT.NONE);
