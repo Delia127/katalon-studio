@@ -173,7 +173,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
             } else if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
                 String resultTestSuite = getExecutionResult();
                 Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(), resultTestSuite,
-                        getEndTime().getTime() - getStartTime().getTime());
+                        getEndTime().getTime() - getStartTime().getTime(), getRetryStrategy());
             }
         }
     }

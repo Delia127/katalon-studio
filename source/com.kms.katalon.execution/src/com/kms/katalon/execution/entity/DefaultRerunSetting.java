@@ -5,21 +5,22 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.execution.console.entity.BooleanConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.console.entity.IntegerConsoleOption;
+import com.kms.katalon.execution.console.entity.StringConsoleOption;
 
 public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor {
     public static final int DEFAULT_RERUN_TIME = 0;
     private static final int DEFAULT_PREVIOUS_RUN_TIME = 0;
     public static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_ONLY = false;
     public static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_TEST_DATA_ONLY = false;
+    public static final boolean DEFAULT_RERUN_IMMEDIATELY = false;
     public final static String RETRY_OPTION = "retry";
     public final static String RETRY_FAIL_TEST_CASE_ONLY_OPTION = "retryFailedTestCases";
     public final static String RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION = "retryFailedTestCasesTestData";
-    public final static String RETRY_IMMEDIATELY = "retryImmediately";
+    public final static String RETRY_STRATEGY = "retryStrategy";
     
     private int previousRerunTimes;
     private int remainingRerunTimes;
@@ -30,6 +31,10 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     private boolean overrideRerunFailedTestCaseWithTestDataOnly;
     private boolean overrideRerunImmediately;
     private boolean overrideRemainingRerunTimes;
+    
+    public enum RetryStrategyValue {
+        immediately, allExecutions, failedExecutions
+    };
 
     public static final IntegerConsoleOption RETRY_CONSOLE_OPTION = new IntegerConsoleOption() {
         @Override
@@ -43,24 +48,24 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         }
     };
 
-    public static final BooleanConsoleOption RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION = new BooleanConsoleOption() {
+    public static final BooleanConsoleOption LEGACY_RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION = new BooleanConsoleOption() {
         @Override
         public String getOption() {
             return RETRY_FAIL_TEST_CASE_ONLY_OPTION;
         }
     };
     
-    public static final BooleanConsoleOption RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION = new BooleanConsoleOption() {
+    public static final BooleanConsoleOption LEGACY_RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION = new BooleanConsoleOption() {
         @Override
         public String getOption() {
             return RETRY_FAIL_TEST_CASE_TEST_DATA_ONLY_OPTION;
         }
     };
     
-    public static final BooleanConsoleOption RERUN_IMMEDIATELY_CONSOLE_OPTION = new BooleanConsoleOption() {
+    public static final StringConsoleOption RERUN_STRATEGY_CONSOLE_OPTION = new StringConsoleOption() {
         @Override
         public String getOption() {
-            return RETRY_IMMEDIATELY;
+            return RETRY_STRATEGY;
         }
     };
 
@@ -73,9 +78,15 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     }
 
     public DefaultRerunSetting(int previousRerunTimes, int remainingRerunTime, boolean rerunFailedTestCaseOnly) {
+        this(previousRerunTimes, remainingRerunTime, rerunFailedTestCaseOnly, DEFAULT_RERUN_IMMEDIATELY);
+    }
+
+    public DefaultRerunSetting(int previousRerunTimes, int remainingRerunTime, boolean rerunFailedTestCasesOnly,
+            boolean rerunImmediately) {
         setPreviousRerunTimes(previousRerunTimes);
         setRemainingRerunTimes(remainingRerunTime);
-        setRerunFailedTestCaseOnly(rerunFailedTestCaseOnly);
+        setRerunFailedTestCaseOnly(rerunFailedTestCasesOnly);
+        setRerunImmediately(rerunImmediately);
     }
 
     @Override
@@ -109,8 +120,9 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
         consoleOptionList.add(RETRY_CONSOLE_OPTION);
-        consoleOptionList.add(RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION);
-        consoleOptionList.add(RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION);
+        consoleOptionList.add(LEGACY_RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION);
+        consoleOptionList.add(LEGACY_RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION);
+        consoleOptionList.add(RERUN_STRATEGY_CONSOLE_OPTION);
         return consoleOptionList;
     }
 
@@ -122,16 +134,40 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         if (consoleOption == RETRY_CONSOLE_OPTION) {
             setRemainingRerunTimes(Integer.valueOf(argumentValue));
             overrideRemainingRerunTimes = true;
-        } else if (consoleOption == RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION) {
+        } else if (consoleOption == LEGACY_RERUN_FAIL_TEST_CASE_ONLY_CONSOLE_OPTION) {
             setRerunFailedTestCaseOnly(Boolean.valueOf(argumentValue));
             overrideRerunFailedTestCaseOnly = true;
-        } else if (consoleOption == RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION) {
+        } else if (consoleOption == LEGACY_RERUN_FAIL_TEST_CASE__TEST_DATA_ONLY_CONSOLE_OPTION) {
             setRerunFailedTestCaseAndTestDataOnly(Boolean.valueOf(argumentValue));
             overrideRerunFailedTestCaseWithTestDataOnly = true;
-        } else if(consoleOption == RETRY_CONSOLE_OPTION) {
-            setRerunImmediately(Boolean.valueOf(argumentValue));
-            overrideRerunImmediately = true;
+        } else if (consoleOption == RERUN_STRATEGY_CONSOLE_OPTION) {
+            RetryStrategyValue strategyValue = RetryStrategyValue.valueOf(argumentValue);
+            resetAllLegacyRetrySettings();
+            switch (strategyValue) {
+                case immediately:
+                    setRerunImmediately(true);
+                    overrideRerunImmediately = true;
+                    break;
+                case failedExecutions:
+                    setRerunFailedTestCaseOnly(true);
+                    overrideRerunFailedTestCaseOnly = true;
+                    setRerunFailedTestCaseAndTestDataOnly(true);
+                    overrideRerunFailedTestCaseWithTestDataOnly = true;
+                    break;
+                case allExecutions:
+                default:
+                    break;
+            }
         }
+    }
+    
+    private void resetAllLegacyRetrySettings() {
+        setRerunImmediately(false);
+        overrideRerunImmediately = false;
+        setRerunFailedTestCaseOnly(false);
+        overrideRerunFailedTestCaseOnly = false;
+        setRerunFailedTestCaseAndTestDataOnly(false);
+        overrideRerunFailedTestCaseWithTestDataOnly = false;
     }
 
     @Override

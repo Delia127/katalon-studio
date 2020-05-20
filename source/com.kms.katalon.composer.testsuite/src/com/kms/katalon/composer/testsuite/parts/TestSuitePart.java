@@ -317,6 +317,8 @@ public class TestSuitePart implements EventHandler {
                         ((Text) e.getSource()).setText(String.valueOf(rerun));
                     }
                     getTestSuite().setNumberOfRerun(rerun);
+                    radioBtnRetryAllExecutions.setEnabled(!(rerun == 0));
+                    radioBtnRetryFailedExecutionsOnly.setEnabled(!(rerun == 0));
                 } catch (NumberFormatException ex) {}
             }
         });

@@ -6,9 +6,11 @@ public interface GenerateCommandPreferenceConstants {
 
     public static final String GEN_COMMAND_RETRY = "generateCommand.retry";
 
-    public static final String GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES = "generateCommand.retry.forFailedTestCases";
+    public static final String GEN_COMMAND_RETRY_FOR_FAILED_EXECUTIONS = "generateCommand.retry.forFailedExecutions";
 
-    public static final String GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES_TEST_DATA = "generateCommand.retry.forFailedTestCasesTestData";
+    public static final String GEN_COMMAND_RETRY_FOR_ALL_EXECUTIONS = "generateCommand.retry.forAllExecutions";
+    
+    public static final String GEN_COMMAND_RETRY_IMMEDIATELY = "generateCommand.retry.immediately";
     
     public static final String GEN_COMMAND_APPLY_PROXY = "generateCommand.applyProxy";
 
