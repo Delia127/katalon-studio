@@ -118,11 +118,12 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             }
             ReportableLauncher subLauncher;
             if (testSuiteCollection.getBrowserType() != null && testSuiteCollection.getProfileName() != null) {
-            	subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,
-                    globalVariables, executionUUID, isConsole, executionSessionId, additionalInfo, testSuiteCollection.getBrowserType(), testSuiteCollection.getProfileName());
+                subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection, globalVariables,
+                        executionUUID, isConsole, executionSessionId, additionalInfo,
+                        testSuiteCollection.getBrowserType(), testSuiteCollection.getProfileName());
             } else {
-            	subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,
-                        globalVariables, executionUUID, isConsole, executionSessionId, additionalInfo);
+                subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection, globalVariables,
+                        executionUUID, isConsole, executionSessionId, additionalInfo);
             }
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
@@ -142,17 +143,18 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
     private static ReportableLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
             LauncherManager launcherManager, ReportCollectionEntity reportCollection,
-            Map<String, Object> globalVariables, String executionUUID, boolean isConsole,
-            String executionSessionId, Map<String, String> additionalInfo, String browserType, String profileName) throws ExecutionException {
+            Map<String, Object> globalVariables, String executionUUID, boolean isConsole, String executionSessionId,
+            Map<String, String> additionalInfo, String browserType, String profileName) throws ExecutionException {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             RunConfigurationDescription configDescription = tsRunConfig.getConfiguration();
-            AbstractRunConfiguration runConfig = (AbstractRunConfiguration) RunConfigurationCollector.getInstance().getRunConfiguration(browserType, projectDir);
+            AbstractRunConfiguration runConfig = (AbstractRunConfiguration) RunConfigurationCollector.getInstance()
+                    .getRunConfiguration(browserType, projectDir);
             if (runConfig == null) {
                 throw new InvalidConsoleArgumentException(
                         MessageFormat.format(StringConstants.MNG_PRT_INVALID_BROWSER_X, browserType));
             }
-            
+
             if (StringUtils.isBlank(profileName)) {
                 profileName = ExecutionProfileEntity.DF_PROFILE_NAME;
             }
@@ -163,7 +165,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
                         MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
             }
             runConfig.setExecutionProfile(executionProfile);
-            
+
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
             executedEntity.prepareTestCases();
@@ -172,13 +174,12 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             runConfig.setExecutionSessionId(executionSessionId);
             runConfig.setAdditionalInfo(additionalInfo);
             runConfig.build(testSuiteEntity, executedEntity);
-           
+
             ReportableLauncher launcher = null;
             if (isConsole) {
                 launcher = new SubConsoleLauncher(launcherManager, runConfig, configDescription);
             } else {
-                launcher = LauncherProviderFactory.getInstance()
-                        .getIdeLauncherProvider()
+                launcher = LauncherProviderFactory.getInstance().getIdeLauncherProvider()
                         .getSubIDELauncher(launcherManager, runConfig, configDescription);
             }
             reportCollection.getReportItemDescriptions()
@@ -191,7 +192,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
                             tsRunConfig.getTestSuiteEntity().getIdForDisplay()));
         }
     }
-    
+
     private static ReportableLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
             LauncherManager launcherManager, ReportCollectionEntity reportCollection,
             Map<String, Object> globalVariables, String executionUUID, boolean isConsole,

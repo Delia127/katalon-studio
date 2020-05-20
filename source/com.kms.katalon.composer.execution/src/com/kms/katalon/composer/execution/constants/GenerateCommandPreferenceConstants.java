@@ -11,8 +11,8 @@ public interface GenerateCommandPreferenceConstants {
     public static final String GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES_TEST_DATA = "generateCommand.retry.forFailedTestCasesTestData";
     
     public static final String GEN_COMMAND_APPLY_PROXY = "generateCommand.applyProxy";
-    
-    public static final String GEN_COMMAND_OVERRIDE = "generateCommand.override";
+
+    public static final String GEN_COMMAND_OVERRIDE_PLATFORM = "generateCommand.overridePlatform";
 
     public static final String GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL = "generateCommand.updateStatusTimeInterval";
     

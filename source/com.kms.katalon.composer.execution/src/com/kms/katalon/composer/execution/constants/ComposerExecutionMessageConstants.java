@@ -245,6 +245,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_CHK_APPLY_PROXY;
 
+    public static String DIA_CHK_OVERRIDE_PLATFORM;
+
     public static String DIA_TITLE_TEST_SUITE_BROWSER;
     
     public static String DIA_PROCEED;
@@ -302,8 +304,6 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_TITLE_TEAM;
     
     public static String DIA_TITLE_PROJECT;
-    
-    public static String DIA_CHK_OVERRIDE;
 
     // LogViewerPart
     public static String DIA_WARN_TEST_CASE_NOT_FOUND;
