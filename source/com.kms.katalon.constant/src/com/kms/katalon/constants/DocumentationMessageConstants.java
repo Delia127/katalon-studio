@@ -14,8 +14,6 @@ public class DocumentationMessageConstants extends NLS {
     public static String CHECKPOINT_EXISTING_DATA;
 
     public static String DIALOG_GENERATE_COMMAND;
-	
-	public static String CHK_OVERRIDE_PLATFORM_HELP_URL;
 
     public static String CHK_OVERRIDE_PLATFORM_HELP_URL;
 
