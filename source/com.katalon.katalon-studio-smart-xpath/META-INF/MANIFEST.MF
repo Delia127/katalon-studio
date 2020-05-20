@@ -24,5 +24,9 @@ Require-Bundle: com.katalon.platform,
  com.kms.katalon.execution.webui,
  com.kms.katalon.controller,
  com.kms.katalon.entity,
- org.eclipse.e4.ui.model.workbench;bundle-version="1.2.0.v20160229-1459"
+ org.eclipse.e4.ui.model.workbench;bundle-version="1.2.0.v20160229-1459",
+ com.kms.katalon.composer.resources,
+ com.kms.katalon.composer.testcase,
+ com.kms.katalon.selenium-standalone
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: org.apache.commons.lang3

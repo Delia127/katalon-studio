@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_EmnusJWGEeqmYNycUfvAuA"/>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_EmnusJWGEeqmYNycUfvAuA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Wt-EgJo6EeqgZ7dnC9SlJg" featurename="children" parentElementId="com.kms.katalon.partstack.console">
+    <elements xsi:type="basic:Part" xmi:id="_dDjtkJo6EeqgZ7dnC9SlJg" elementId="com.kms.katalon.partstack.console.log.1" contributionURI="bundleclass://com.katalon.katalon-studio-smart-xpath/com.katalon.plugin.smart_xpath.part.SelfHealingInsightsPart" label="Self-Healing Insights" iconURI="platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self_healing_16.png"/>
+  </fragments>
+</fragment:ModelFragments>
