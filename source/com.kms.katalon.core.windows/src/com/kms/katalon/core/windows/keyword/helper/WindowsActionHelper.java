@@ -51,7 +51,7 @@ public class WindowsActionHelper {
             throw new IllegalArgumentException(
                     String.format("Timeout '%s' is invalid. Cannot be a negative number", timeout));
         } else if (timeout == 0) {
-            int defaultPageLoadTimeout = RunConfiguration.getTimeOut();
+            int defaultPageLoadTimeout = getDefaultTimeout();
             logger.logWarning(MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_TIMEOUT, timeout,
                     defaultPageLoadTimeout));
             return defaultPageLoadTimeout;
@@ -65,7 +65,7 @@ public class WindowsActionHelper {
 
     public WebElement findElement(WindowsTestObject testObject) {
         try {
-            return this.findElement(testObject, getTimeout());
+            return this.findElement(testObject, getDefaultTimeout());
         } catch (NoSuchElementException exception) {
             throw new StepFailedException("Element: " + testObject.getObjectId() + " not found");
         }
@@ -135,13 +135,13 @@ public class WindowsActionHelper {
             });
             return webElement;
         } finally {
-            windowsDriver.manage().timeouts().implicitlyWait(getTimeout(), TimeUnit.SECONDS);
+            windowsDriver.manage().timeouts().implicitlyWait(getDefaultTimeout(), TimeUnit.SECONDS);
         }
     }
 
     public List<WebElement> findElements(WindowsTestObject testObject) {
         try {
-            return this.findElements(testObject, getTimeout());
+            return this.findElements(testObject, getDefaultTimeout());
         } catch (NoSuchElementException exception) {
             throw new StepFailedException("Element: " + testObject.getObjectId() + " not found");
         }
@@ -205,11 +205,11 @@ public class WindowsActionHelper {
             });
             return webElementList;
         } finally {
-            windowsDriver.manage().timeouts().implicitlyWait(getTimeout(), TimeUnit.SECONDS);
+            windowsDriver.manage().timeouts().implicitlyWait(getDefaultTimeout(), TimeUnit.SECONDS);
         }
     }
     
-    private int getTimeout() {
+    private static int getDefaultTimeout() {
         try {
             return RunConfiguration.getTimeOut();
         } catch (Exception exception1) {
