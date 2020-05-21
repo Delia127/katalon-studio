@@ -19,6 +19,7 @@ import com.kms.katalon.composer.windows.constant.ComposerWindowsMessage;
 import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialogV2;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.record.model.RecordedElementLocatorHelper;
+import com.kms.katalon.composer.windows.record.model.WindowsAppClosedPayload;
 import com.kms.katalon.composer.windows.record.model.WindowsRecordedPayload;
 import com.kms.katalon.composer.windows.record.model.WindowsStartAppPayload;
 import com.kms.katalon.composer.windows.socket.WindowsServerSocketMessage.ServerMessageType;
@@ -67,17 +68,21 @@ public class WindowsSocketServer {
                             isClientConnected = false;
                         }
                     }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
+                } catch (Exception exception) {
+                    MultiStatusErrorDialog.showErrorDialog(exception,
+                            ComposerWindowsMessage.MSG_KATALON_NATIVE_RECORDER_SERVER_EXCEPTION,
+                            exception.getMessage(),
+                            recorderDialog.getShell());
+                    LoggerSingleton.logError(exception);
                 } finally {
-                    if (socket != null & !socket.isClosed()) {
+                    if (socket != null && !socket.isClosed()) {
                         try {
                             socket.close();
                         } catch (IOException ignored) {
 
                         }
                     }
-                    if (server != null & !server.isClosed()) {
+                    if (server != null && !server.isClosed()) {
                         try {
                             server.close();
                         } catch (IOException ignored) {
@@ -109,10 +114,23 @@ public class WindowsSocketServer {
                         recorderDialog.refreshButtonsState();
                         LoggerSingleton.logError(payload.getMessage());
                         MultiStatusErrorDialog.showErrorDialog(ComposerWindowsMessage.MSG_FAILED_START_APPLICATION,
-                                payload.getMessage(), payload.getAppPath());
+                                payload.getMessage(), payload.getAppPath(), recorderDialog.getShell());
                     });
                 }
                 return;
+            }
+            case APP_CLOSED_UNEXPECTEDLY: {
+                WindowsAppClosedPayload payload = JsonUtil.fromJson(clientMessage.getData(), WindowsAppClosedPayload.class);
+                UISynchronizeService.asyncExec(() -> {
+                    recorderDialog.setStarting(false);
+                    recorderDialog.refreshButtonsState();
+                    if (payload.isUnexpectedly()) {
+                        LoggerSingleton.logError(payload.getMessage());
+                        MultiStatusErrorDialog.showErrorDialog(ComposerWindowsMessage.MSG_APP_CLOSED_UNEXPECTEDLY,
+                                payload.getMessage(), payload.getAppPath(), recorderDialog.getShell());
+                    }
+                });
+                break;
             }
             case RECORDING_ACTION: {
                 try {
@@ -150,13 +168,15 @@ public class WindowsSocketServer {
     }
 
     public void close() {
-        if (socket != null) {
+        if (socket != null && !socket.isClosed()) {
             try {
                 sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.EXIT, ""));
             } catch (IOException ignored) {}
         }
         try {
-            server.close();
+            if (server != null && !server.isClosed()) {
+                server.close();
+            }
         } catch (IOException e) {
         }
         shouldReturn = true;

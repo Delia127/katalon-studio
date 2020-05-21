@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -33,6 +34,7 @@ public class WindowsRecorderDialogV2Test {
     }
 
     @Test
+    @Ignore
     public void createTest() {
         UISynchronizeService.syncExec(() -> {
             Display display = Display.getCurrent();
