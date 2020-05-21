@@ -651,4 +651,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
         return "";
     }
+    
+    protected int getNumberOfRetry() {
+        if (runConfig.getExecutionSetting().getExecutedEntity() instanceof TestSuiteExecutedEntity) {
+            TestSuiteExecutedEntity testSuiteExecutedEntity = (TestSuiteExecutedEntity) runConfig.getExecutionSetting()
+                    .getExecutedEntity();
+            return testSuiteExecutedEntity.getPreviousRerunTimes() + testSuiteExecutedEntity.getRemainingRerunTimes();
+        }
+        return 0;
+    }
 }
