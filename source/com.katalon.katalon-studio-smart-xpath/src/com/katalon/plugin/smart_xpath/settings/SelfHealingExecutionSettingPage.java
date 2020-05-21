@@ -85,16 +85,12 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 
 	private TableColumn cMethodsSelected;
 
-	private Composite tableExcludeObjectsWithKeywordsComposite;
-	
 	private ExecutionExcludeWithKeywordsPart excludeWithKeywordsPart;
 	
 	private final String documentationUrl = null;
 
 	private List<Pair<String, Boolean>> methodsPritorityOrder = new ArrayList<Pair<String, Boolean>>();
 	
-	private List<Pair<String, Boolean>> excludeKeywords = new ArrayList<Pair<String,Boolean>>();
-
 	private List<Pair<String, Boolean>> setDefaultMethodsPriorityOrder() {
 		methodsPritorityOrder.add(new Pair<String, Boolean>(SmartXPathMessageConstants.XPATH_METHOD, true));
 		methodsPritorityOrder.add(new Pair<String, Boolean>(SmartXPathMessageConstants.ATTRIBUTE_METHOD, true));

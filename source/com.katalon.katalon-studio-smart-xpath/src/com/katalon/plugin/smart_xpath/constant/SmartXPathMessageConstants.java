@@ -26,6 +26,18 @@ public class SmartXPathMessageConstants extends NLS {
 	public static String CSS_METHOD;
 	
 	public static String IMAGE_METHOD;
+	
+	public static String TEST_OBJECT_ID_COLUMN;
+	
+	public static String BROKEN_LOCATOR_COLUMN;
+	
+	public static String PROPOSED_LOCATOR_COLUMN;
+	
+	public static String RECOVER_BY_COLUMN;
+	
+	public static String IMAGE_COLUMN;
+	
+	public static String APPROVE_COLUMN;
 
 	static {
 		// initialize resource bundle
