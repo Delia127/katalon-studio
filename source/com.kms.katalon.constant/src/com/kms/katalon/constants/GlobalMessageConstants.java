@@ -31,6 +31,10 @@ public class GlobalMessageConstants extends NLS {
 
     public static String REFRESH;
 
+    public static String DEFAULT;
+
+    public static String RESET_DEFAULT;
+
     public static String SEARCH;
 
     public static String FORMAT;
