@@ -102,6 +102,7 @@ import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultVa
 import com.kms.katalon.composer.testcase.providers.AstTreeItemLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeTableContentProvider;
+import com.kms.katalon.composer.testcase.providers.PerformActionComposite;
 import com.kms.katalon.composer.testcase.providers.TestCaseSelectionListener;
 import com.kms.katalon.composer.testcase.providers.TestStepTableDropListener;
 import com.kms.katalon.composer.testcase.support.DescriptionColumnEditingSupport;
@@ -133,7 +134,7 @@ import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class TestStepManualComposite {
+public class TestStepManualComposite implements PerformActionComposite {
     private ITestCasePart parentPart;
 
     private Composite compositeManual;

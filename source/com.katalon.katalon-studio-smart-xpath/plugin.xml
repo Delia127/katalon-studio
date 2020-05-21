@@ -12,6 +12,7 @@
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
+      		name="Self Healing"
             class="com.katalon.plugin.smart_xpath.settings.SelfHealingSettingPage"
             id="com.katalon.katalon-studio-smart-xpath.self_healing">
       </page>
