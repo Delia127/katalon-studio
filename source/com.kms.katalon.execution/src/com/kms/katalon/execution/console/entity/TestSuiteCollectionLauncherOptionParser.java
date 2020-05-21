@@ -82,8 +82,10 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
             throws ExecutionException, InvalidConsoleArgumentException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
                 testSuiteCollectionOption.getValue());
-        if (browserTypeOption.getValue() != null && executionProfileOption.getValue() != null) {
+        if (browserTypeOption.getValue() != null) {
             testSuiteCollection.setBrowserType(browserTypeOption.getValue());
+        }
+        if (executionProfileOption.getValue() != null) {
             testSuiteCollection.setProfileName(executionProfileOption.getValue());
         }
         Map<String, Object> globalVariables = super.getOverridingGlobalVariables();
