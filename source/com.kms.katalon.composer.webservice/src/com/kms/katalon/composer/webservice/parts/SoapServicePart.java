@@ -623,11 +623,4 @@ public class SoapServicePart extends WebServicePart {
     public boolean isDirty() {
         return mPart.isDirty();
     }
-    
-    private static String buildUrlFromRaw(String rawUrl) {
-        Map<String, Object> evaluatedVariables = evaluateRequestVariables();
-        StrSubstitutor substitutor = new StrSubstitutor(evaluatedVariables);
-        return substitutor.replace(rawUrl);
-    }
-
 }
