@@ -14,7 +14,13 @@
       <page
             name="Self Healing"
             class="com.katalon.plugin.smart_xpath.settings.SelfHealingSettingPage"
-            id="com.katalon.composer.self_healing">
+            id="com.katalon.katalon-studio-smart-xpath.self_healing">
+      </page>
+      <page
+            category="com.katalon.katalon-studio-smart-xpath.self_healing"
+            class="com.katalon.plugin.smart_xpath.settings.SelfHealingTestDesignSettingPage"
+            id="com.katalon.katalon-studio-smart-xpath.self_healing.testDesign"
+            name="Test Design">
       </page>
    </extension>
    <extension
@@ -39,6 +45,12 @@
       <fragment
             uri="fragment.e4xmi">
       </fragment>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.katalon.plugin.smart_xpath.preferences.PreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>
