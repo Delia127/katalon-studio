@@ -305,7 +305,7 @@ public class SoapServicePart extends WebServicePart {
         Shell shell = Display.getCurrent().getActiveShell();
         
         if (!MessageDialog.openConfirm(shell, StringConstants.WARN,
-                "Service endpoint, Header, and Request message of this SOAP request will be overridden. Are you ok to proceed?")) {
+                ComposerWebserviceMessageConstants.SoapServicePart_MSG_WARN_OVERRIDE_CONTENT)) {
             return;
         }
 
