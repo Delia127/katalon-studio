@@ -12,7 +12,6 @@
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
-            name="Self Healing"
             class="com.katalon.plugin.smart_xpath.settings.SelfHealingSettingPage"
             id="com.katalon.katalon-studio-smart-xpath.self_healing">
       </page>
@@ -21,6 +20,12 @@
             class="com.katalon.plugin.smart_xpath.settings.SelfHealingTestDesignSettingPage"
             id="com.katalon.katalon-studio-smart-xpath.self_healing.testDesign"
             name="Test Design">
+      </page>
+      <page
+            category="com.katalon.katalon-studio-smart-xpath.self_healing"
+            class="com.katalon.plugin.smart_xpath.settings.SelfHealingExecutionSettingPage"
+            id="com.katalon.katalon-studio-smart-xpath.self_healing.execution"
+            name="Execution">
       </page>
    </extension>
    <extension
