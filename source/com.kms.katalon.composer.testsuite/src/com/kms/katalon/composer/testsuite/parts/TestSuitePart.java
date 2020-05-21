@@ -454,6 +454,9 @@ public class TestSuitePart implements EventHandler {
         boolean shouldRetryAfterExecuteAll = (shouldRetryAllExecutions || shouldRetryFailedExecutions)
                 && !shouldRetryImmediatly;
 
+        // Shouldn't retry immediately for free users
+        shouldRetryImmediatly = (LicenseUtil.isNotFreeLicense() && shouldRetryImmediatly);
+
         radioBtnRetryAfterExecuteAll.setSelection(shouldRetryAfterExecuteAll);
         radioBtnRetryImmediately.setSelection(shouldRetryImmediatly);
         radioBtnRetryAllExecutions.setSelection(shouldRetryAllExecutions);
