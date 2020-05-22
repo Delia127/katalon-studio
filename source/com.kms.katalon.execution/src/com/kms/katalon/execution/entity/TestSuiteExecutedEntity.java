@@ -491,6 +491,19 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         }
         return collectedInfo;
     }
+    
+
+    /**
+     * These attributes are used to created TestSuiteScriptTemplate, which
+     * are read by Test Suite Executor to decide to stop the suite execution
+     * after a failed execution
+     */    
+    @Override
+    public Map<String, Object> getAttributes() {
+        Map<String, Object> attributes = super.getAttributes();
+        attributes.put(SHOULD_STOP_IMMEDIATELY_KEY, isRerunImmediately());
+        return attributes;
+    }
 
     @Override
     public Rerunable mergeWith(Rerunable rerunable) {

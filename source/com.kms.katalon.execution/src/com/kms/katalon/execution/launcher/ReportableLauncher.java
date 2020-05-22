@@ -228,33 +228,34 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
         try {
             List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);
-            List<String> retryImmediatelyTcBindinngs = new ArrayList<>();
+            List<String> retryImmediatelyTcBindings = new ArrayList<>();
             List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity())
                     .getExecutedItems();
             TestStatusValue[] prevResultValues = getResult().getResultValues();
             int rsIdx = 0;
             int indexOfFirstFailedTc = 0;
-            boolean failedRecorded = false;
             for (IExecutedEntity prevExecutedItem : prevTestCaseExecutedEntities) {
                 TestCaseExecutedEntity prevExecutedTC = (TestCaseExecutedEntity) prevExecutedItem;
                 for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
-                    if (!failedRecorded && (prevResultValues[i] == TestStatusValue.FAILED
+                    if ((prevResultValues[i] == TestStatusValue.FAILED
                             || prevResultValues[i] == TestStatusValue.ERROR)) {
-                        retryImmediatelyTcBindinngs.add(currentTcBindings.get(i));
-                        failedRecorded = true;
+                        retryImmediatelyTcBindings.add(currentTcBindings.get(i));
                         indexOfFirstFailedTc = i;
+                        break;
                     }
                 }
                 rsIdx += prevExecutedTC.getLoopTimes();
             }
+            // Increment to avoid adding another row of the first failed execution
+            indexOfFirstFailedTc = indexOfFirstFailedTc + 1;
             if (indexOfFirstFailedTc < prevResultValues.length) {
                 for (int i = indexOfFirstFailedTc; i < prevResultValues.length; i++) {
                     if (i < currentTcBindings.size()) {
-                        retryImmediatelyTcBindinngs.add(currentTcBindings.get(i));
+                        retryImmediatelyTcBindings.add(currentTcBindings.get(i));
                     }
                 }
             }
-            return String.join("\n", retryImmediatelyTcBindinngs);
+            return String.join("\n", retryImmediatelyTcBindings);
         } catch (IOException e) {}
 
         return "";

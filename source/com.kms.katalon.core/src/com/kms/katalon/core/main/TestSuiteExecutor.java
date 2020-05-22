@@ -150,6 +150,15 @@ public class TestSuiteExecutor {
         invokeTestSuiteMethod(TearDown.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true);
     }
 
+    /**
+     * See TestSuiteExecutedEntity#getAttributes
+     * 
+     * Check if this execution fails, and Retry Immediately is enabled
+     * 
+     * @param suiteProperties
+     * @param tcExecutedResult
+     * @return A boolean indicating if suite execution should stop
+     */
     private boolean shouldStopImmediately(Map<String, String> suiteProperties, TestResult tcExecutedResult) {
         if (TestStatusValue.ERROR.equals(tcExecutedResult.getTestStatus().getStatusValue())
                 || TestStatusValue.FAILED.equals(tcExecutedResult.getTestStatus().getStatusValue())) {
