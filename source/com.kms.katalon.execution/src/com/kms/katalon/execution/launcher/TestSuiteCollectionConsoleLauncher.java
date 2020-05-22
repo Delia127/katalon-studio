@@ -142,9 +142,11 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             RunConfigurationDescription configDescription = tsRunConfig.getConfiguration();
-            String browserType = browserTypeOption != null ? browserTypeOption
-                    : configDescription.getRunConfigurationId();
-            String profileName = profileNameOption != null ? profileNameOption : configDescription.getProfileName();
+            String browserType = StringUtils.isBlank(browserTypeOption) ? configDescription.getRunConfigurationId()
+                    : browserTypeOption;
+            String profileName = StringUtils.isBlank(profileNameOption) ? configDescription.getProfileName()
+                    : profileNameOption;
+
             AbstractRunConfiguration runConfig = (AbstractRunConfiguration) RunConfigurationCollector.getInstance()
                     .getRunConfiguration(browserType, projectDir);
             if (runConfig == null) {
@@ -152,9 +154,6 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
                         MessageFormat.format(StringConstants.MNG_PRT_INVALID_BROWSER_X, browserType));
             }
 
-            if (StringUtils.isBlank(profileName)) {
-                profileName = ExecutionProfileEntity.DF_PROFILE_NAME;
-            }
             ExecutionProfileEntity executionProfile = GlobalVariableController.getInstance()
                     .getExecutionProfile(profileName, ProjectController.getInstance().getCurrentProject());
             if (executionProfile == null) {

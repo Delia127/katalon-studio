@@ -351,16 +351,17 @@ public class GenerateCommandDialog extends AbstractDialog {
         chkOverridePlatform.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
         chkOverridePlatform.setText(StringConstants.DIA_CHK_OVERRIDE_PLATFORM);
 
-        Label help = new Label(overrideComposite, SWT.NONE);
-        help.setImage(ImageManager.getImage(IImageKeys.HELP_16));
-        help.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
-        help.addMouseListener(new MouseAdapter() {
+        Label lblHelp = new Label(overrideComposite, SWT.NONE);
+        lblHelp.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        lblHelp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+        lblHelp.addMouseListener(new MouseAdapter() {
             public void mouseUp(MouseEvent event) {
                 try {
                     Program.launch(DocumentationMessageConstants.CHK_OVERRIDE_PLATFORM_HELP_URL);
                     Trackings.trackOpenHelp(DocumentationMessageConstants.CHK_OVERRIDE_PLATFORM_HELP_URL);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
+                    MessageDialog.openWarning(getShell(), StringConstants.WARN_TITLE, ex.getMessage());
                 }
             }
         });
