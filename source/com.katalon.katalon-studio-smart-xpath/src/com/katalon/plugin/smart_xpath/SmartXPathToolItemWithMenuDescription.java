@@ -21,9 +21,10 @@ import com.katalon.plugin.smart_xpath.dialog.AutoHealingDialog;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 
 public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDescription {
@@ -32,6 +33,8 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 	private MenuItem smartXPathDisable;
 	private MenuItem autoHealing;
 	private Control parent;
+	
+	private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
 	@Override
 	public Menu getMenu(Control arg0) {
@@ -87,7 +90,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		smartXPathEnable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-			    if (LicenseUtil.isNotFreeLicense()) {
+			    if (featureService.canUse(KSEFeature.SMART_XPATH)) {
     				try {
     					// Retrieve PreferenceStore on click in case user installed
     					// this plug-in when no project was opened
@@ -115,7 +118,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		smartXPathDisable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-			    if (LicenseUtil.isNotFreeLicense()) {
+                if (featureService.canUse(KSEFeature.SMART_XPATH)) {
 			        try {
 	                    // Retrieve PreferenceStore again in case the user installed
 	                    // the plugin when no project was opened
@@ -144,7 +147,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		autoHealing.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-			    if (LicenseUtil.isNotFreeLicense()) {
+			    if (featureService.canUse(KSEFeature.SMART_XPATH)) {
 			        AutoHealingDialog autoHealingDialog = new AutoHealingDialog(parent.getShell());
 
 	                if (autoHealingDialog.open() == Window.OK) {

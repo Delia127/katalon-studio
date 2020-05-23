@@ -35,6 +35,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
@@ -60,6 +61,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
             monitor.beginTask(StringConstants.JOB_TASK_BUILDING_TEST_SUITE_COLLECTION, totalSize);
             TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(
                     testSuiteCollectionEntity);
+            executedEntity.setReportable(new DefaultReportSetting());
 
             ProjectEntity project = testSuiteCollectionEntity.getProject();
             ReportController reportController = ReportController.getInstance();
@@ -70,7 +72,6 @@ public class TestSuiteCollectionBuilderJob extends Job {
 
             List<ReportableLauncher> tsLaunchers = new ArrayList<>();
             boolean cancelInstallWebDriver = false;
-            
             
             for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollectionEntity.getTestSuiteRunConfigurations()) {
                 if (!cancelInstallWebDriver) {
