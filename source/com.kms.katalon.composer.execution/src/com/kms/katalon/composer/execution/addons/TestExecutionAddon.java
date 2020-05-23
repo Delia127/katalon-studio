@@ -109,11 +109,19 @@ public class TestExecutionAddon implements EventHandler {
                     return;
                 }
                 if (partService.saveAll(true) && partService.getDirtyParts().isEmpty()) {
-                    if (!featureService.canUse(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP)) {
-                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP);
-                        return;
+                    ExecuteFromTestStepEntity executeFromTestStepEntity = (ExecuteFromTestStepEntity) object;
+                    if (executeFromTestStepEntity.getLaunchMode() == LaunchMode.DEBUG) {
+                        if (!featureService.canUse(KSEFeature.TEST_CASE_DEBUG_FROM_SELECTED_STEP)) {
+                            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_DEBUG_FROM_SELECTED_STEP);
+                            return;
+                        }
+                    } else {
+                        if (!featureService.canUse(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP)) {
+                            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP);
+                            return;
+                        }
                     }
-                    executeTestCaseFromTestStep((ExecuteFromTestStepEntity) object);
+                    executeTestCaseFromTestStep(executeFromTestStepEntity);
                 }
             }
         });
@@ -281,8 +289,11 @@ public class TestExecutionAddon implements EventHandler {
                     .setRawScript(executeFromTestStepEntity.getRawScript());
             ExistingExecutionHandler handler = new ExistingExecutionHandler();
             handler.setExistingRunConfig(existingRunConfiguration);
+            if (executeFromTestStepEntity.getLaunchMode() == null) {
+                executeFromTestStepEntity.setLaunchMode(LaunchMode.RUN);
+            }
             Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE,
-                    executeFromTestStepEntity.getTestCase(), LaunchMode.RUN, sync, handler);
+                    executeFromTestStepEntity.getTestCase(), executeFromTestStepEntity.getLaunchMode(), sync, handler);
             job.setUser(true);
             job.schedule();
         } catch (Exception e) {
