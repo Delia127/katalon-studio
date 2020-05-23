@@ -31,37 +31,12 @@ public class RecordedElementLocatorHelper {
         element.setProperties(recordedElement.getAttributes());
         element.getProperties().put("XPath", buildXPath());
         
-        buildLocator();
+        buildXPathLocator();
         
         element.setLocator(locator);
         element.setLocatorStrategy(locatorStrategy);
         
         return element;
-    }
-
-    private String getTitleCaseName(String name) {
-        return toTitleCase(name).replace(" ", "");
-    }
-    
-
-    private static String toTitleCase(String inputString) {
-        if (StringUtils.isBlank(inputString)) {
-            return "";
-        }
- 
-        if (StringUtils.length(inputString) == 1) {
-            return inputString.toUpperCase();
-        }
- 
-        StringBuffer resultPlaceHolder = new StringBuffer(inputString.length());
- 
-        Stream.of(inputString.split(" ")).forEach(stringPart -> {
-            char[] charArray = stringPart.toLowerCase().toCharArray();
-            charArray[0] = Character.toUpperCase(charArray[0]);
-            resultPlaceHolder.append(new String(charArray)).append(" ");
-        });
- 
-        return StringUtils.trim(resultPlaceHolder.toString());
     }
 
     private void buildLocator() {
@@ -89,6 +64,18 @@ public class RecordedElementLocatorHelper {
         locatorStrategy = LocatorStrategy.XPATH;
         locator = buildXPath();
     }
+    
+    private void buildXPathLocator() {
+        Map<String, String> attributes = recordedElement.getAttributes();
+        if (attributes == null || attributes.isEmpty()) {
+            locatorStrategy = LocatorStrategy.XPATH;
+            locator = "";
+            return;
+        }
+        
+        locatorStrategy = LocatorStrategy.XPATH;
+        locator = buildXPath();
+    }
 
     private String buildXPath() {
         StringBuilder sb = new StringBuilder("/");
@@ -98,23 +85,29 @@ public class RecordedElementLocatorHelper {
             if (p.getAttributes() == null || p.getAttributes().isEmpty()) {
                 continue;
             }
-            sb.append(buildPartialXPath(p, i == 1));
+            sb.append(buildPartialIndexBasedXPath(p, i == 1));
             sb.append("/");
         }
-        sb.append(buildPartialXPath(recordedElement, false));
+        sb.append(buildPartialIndexBasedXPath(recordedElement, false));
         return sb.toString();
     }
     
     private String buildPartialXPath(WindowsRecordedElement e, boolean isMainWindow) {
         String type = getTitleCaseName(e.getType());
+        
         if (isMainWindow) {
             return type;
         }
-        String automationId = e.getAttributes().get("AutomationId");
-        String className = e.getAttributes().get("ClassName");
-        String name = e.getAttributes().get("Name");
+        Map<String, String> attributes = e.getAttributes();
+        String automationId = attributes.get("AutomationId");
+        String className = attributes.get("ClassName");
+        String name = attributes.get("Name");
         
         if (StringUtils.isEmpty(automationId) && StringUtils.isEmpty(className) && StringUtils.isEmpty(name)) {
+            String elementIndex = attributes.get("ElementIndex");
+            if (attributes.containsKey("ElementIndex") && Integer.parseInt(attributes.get("ElementIndex")) > 0) {
+                return type + "[" + elementIndex + "]";
+            }
             return type;
         }
         
@@ -140,5 +133,45 @@ public class RecordedElementLocatorHelper {
 
         sb.append("]");
         return sb.toString();
+    }
+
+    private String buildPartialIndexBasedXPath(WindowsRecordedElement element, boolean isMainWindow) {
+        String type = getTitleCaseName(element.getType());
+
+        if (isMainWindow) {
+            return type;
+        }
+
+        Map<String, String> attributes = element.getAttributes();
+
+        String elementIndex = attributes.get("ElementIndex");
+        if (attributes.containsKey("ElementIndex") && Integer.parseInt(attributes.get("ElementIndex")) > 0) {
+            return type + "[" + elementIndex + "]";
+        }
+        return type;
+    }
+
+    private String getTitleCaseName(String name) {
+        return toTitleCase(name).replace(" ", "");
+    }
+
+    private static String toTitleCase(String inputString) {
+        if (StringUtils.isBlank(inputString)) {
+            return "";
+        }
+ 
+        if (StringUtils.length(inputString) == 1) {
+            return inputString.toUpperCase();
+        }
+ 
+        StringBuffer resultPlaceHolder = new StringBuffer(inputString.length());
+ 
+        Stream.of(inputString.split(" ")).forEach(stringPart -> {
+            char[] charArray = stringPart.toCharArray();
+            charArray[0] = Character.toUpperCase(charArray[0]);
+            resultPlaceHolder.append(new String(charArray)).append(" ");
+        });
+ 
+        return StringUtils.trim(resultPlaceHolder.toString());
     }
 }

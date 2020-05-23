@@ -72,6 +72,10 @@ public class SoapClient extends BasicRequestor {
         } else {
             endpoint = requestObject.getSoapServiceEndpoint();
         }
+        
+        if (StringUtils.isBlank(endpoint)) {
+            throw new WebServiceException("Service endpoint is undefined.");
+        }
     }
 
     private void populateDataFromWsdl(RequestObject requestObject) throws WebServiceException {
