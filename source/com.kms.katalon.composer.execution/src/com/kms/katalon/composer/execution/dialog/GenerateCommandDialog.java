@@ -615,7 +615,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (isTestSuite(prefSuiteId)) {
             return TestSuiteController.getInstance().getTestSuiteByDisplayId(prefSuiteId, project);
         }
-        return TestSuiteCollectionController.getInstance().getTestSuiteCollection(prefSuiteId);
+        return TestSuiteCollectionController.getInstance().getTestRunByDisplayId(prefSuiteId);
     }
 
     private void enableRetryFailedTestCaseControls() {
@@ -841,7 +841,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private void updatePlatformLayout() {
-        updateControlLayout(overrideComposite, !isTestSuite(txtTestSuite.getText()));
+        updateControlLayout(grpPlatform,
+                isTestSuite(txtTestSuite.getText()) || isTestSuiteCollection(txtTestSuite.getText()));
+        updateControlLayout(overrideComposite, isTestSuiteCollection(txtTestSuite.getText()));
         updateConfigurationDataCompositeLayout();
     }
 
@@ -1164,6 +1166,15 @@ public class GenerateCommandDialog extends AbstractDialog {
         try {
             return TestSuiteController.getInstance().getTestSuiteByDisplayId(id,
                     ProjectController.getInstance().getCurrentProject()) != null;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return false;
+        }
+    }
+
+    private boolean isTestSuiteCollection(String id) {
+        try {
+            return TestSuiteCollectionController.getInstance().getTestRunByDisplayId(id) != null;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             return false;
