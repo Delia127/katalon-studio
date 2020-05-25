@@ -102,6 +102,10 @@ public class TestCaseExecutor {
         keywordStack = new Stack<KeywordLogger.KeywordStackElement>();
         parentErrors = errorCollector.getCoppiedErrors();
         errorCollector.clearErrors();
+
+        if (RunConfiguration.shouldApplySmartXPath()) {
+            logger.logInfoHighlight(StringConstants.SELF_HEALING_OPENING);
+        }
     }
 
     private void onExecutionComplete() {

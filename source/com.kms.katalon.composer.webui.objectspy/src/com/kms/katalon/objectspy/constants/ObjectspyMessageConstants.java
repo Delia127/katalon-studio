@@ -167,6 +167,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_RADIO_LABEL_ATTRIBUTES;
 
+    public static String DIA_RADIO_LABEL_IMAGE;
+
     public static String DIA_COL_LABEL_CONDITION;
 
     public static String WARN_MSG_OBJECT_PROPERTY_NAME_IS_EXISTED;

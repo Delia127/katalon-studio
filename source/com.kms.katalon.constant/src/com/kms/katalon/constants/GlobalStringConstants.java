@@ -198,6 +198,8 @@ public class GlobalStringConstants {
 
     public static final String IMAGE = GlobalMessageConstants.IMAGE;
 
+    public static final String PATH = GlobalMessageConstants.PATH;
+
     public static final String DESCRIPTION = GlobalMessageConstants.DESCRIPTION;
 
     public static final String SUMMARY = GlobalMessageConstants.SUMMARY;

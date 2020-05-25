@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Text;
 import com.katalon.plugin.smart_xpath.settings.composites.AttributesSelectionComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.DefaultWebLocatorSelectionComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.XPathsSelectionComposite;
+import com.kms.katalon.composer.components.impl.control.DragableCTabFolder;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;

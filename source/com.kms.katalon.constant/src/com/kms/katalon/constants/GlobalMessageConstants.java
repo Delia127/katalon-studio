@@ -131,6 +131,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String IMAGE;
 
+    public static String PATH;
+
     public static String DESCRIPTION;
 
     public static String SUMMARY;

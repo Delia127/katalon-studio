@@ -508,8 +508,10 @@ public class StringConstants {
     
     // TestCaseExecutor
 	public static final String TEST_CASE_SKIPPED = CoreMessageConstants.TEST_CASE_SKIPPED;
+	
+    public static final String SELF_HEALING_OPENING = "Your test is executed with Self-Healing Execution Mode";
 
-	public static final String SMART_XPATH_REPORT_AVAILABLE_OPENING = "=================== Smart XPath Report =======================";
+	public static final String SMART_XPATH_REPORT_AVAILABLE_OPENING = "=================== Smart XPath Report ========================";
 	
 	public static final String SMART_XPATH_REPORT_AVAILABLE_ENDING = "===============================================================";
 

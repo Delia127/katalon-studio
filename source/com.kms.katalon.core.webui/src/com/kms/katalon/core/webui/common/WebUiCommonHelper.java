@@ -36,6 +36,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -733,6 +734,10 @@ public class WebUiCommonHelper extends KeywordHelper {
     // Return an empty list if no elements found,
     // Let the caller decides what to do (throw exception, not throw, etc)
     public static List<WebElement> findWebElements(TestObject testObject, int timeOut) {
+        if (timeOut <= 99999999) {
+            return findElementsWithSelfHealing(testObject, timeOut);
+        }
+        
         timeOut = WebUiCommonHelper.checkTimeout(timeOut);
         boolean isSwitchToParentFrame = false;
         try {
@@ -807,7 +812,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
             if(testObject.getSelectorMethod().equals(SelectorMethod.XPATH) && smartXPathsEnabled){
-                List<WebElement> elementsByOtherMethods = findWebElementsWithSmartXPath(webDriver, objectInsideShadowDom, testObject);
+                List<WebElement> elementsByOtherMethods = findWebElementsWithSmartXPath(testObject);
                 return elementsByOtherMethods;
             }
             final int timeOut2 = timeOut;
@@ -838,12 +843,178 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
-	private static List<WebElement> findWebElementsWithSmartXPath(WebDriver webDriver, boolean objectInsideShadowDom,
-			TestObject testObject) {
+    private static List<WebElement> findElementsWithSelfHealing(TestObject testObject, int timeout) {
+        @SuppressWarnings("serial")
+        List<SelectorMethod> searchOrder = new ArrayList<SelectorMethod>() {
+            {
+                add(SelectorMethod.IMAGE);
+                add(SelectorMethod.CSS);
+                add(SelectorMethod.BASIC);
+                add(SelectorMethod.XPATH);
+            }
+        };
 
-		if (objectInsideShadowDom) {
+        List<WebElement> webElements = Collections.emptyList();
+        long startTime = System.currentTimeMillis();
+        do {
+            try {
+                webElements = findElementsBySelectedMethod(testObject, timeout, testObject.getSelectorMethod());
+                if (webElements != null && webElements.size() > 0) {
+                    return webElements;
+                }
+            } catch (NoSuchElementException e) {
+                // not found element yet, moving on
+            }
+        } while ((System.currentTimeMillis() - startTime) / 1000 < timeout);
+        
+        for (SelectorMethod method : searchOrder) {
+            if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
+                try {
+                    webElements = findElementsBySelectedMethod(testObject, timeout, testObject.getSelectorMethod(),
+                            true);
+                    if (webElements != null && webElements.size() > 0) {
+                        return webElements;
+                    }
+                } catch (NoSuchElementException e) {
+                    // not found element yet, moving on
+                }
+            }
+        }
+        return webElements;
+    }
+
+    private static List<WebElement> findElementsBySelectedMethod(TestObject testObject, int timeout,
+            SelectorMethod method) {
+        return findElementsBySelectedMethod(testObject, timeout, method, false);
+    }
+
+    private static List<WebElement> findElementsBySelectedMethod(TestObject testObject, int timeout,
+            SelectorMethod method, boolean useSmartXPath) {
+        if (isElementInsideShadowDOM(testObject)) {
+            return findElementsInsideShadowDOM(testObject, timeout);
+        }
+
+        switch (method) {
+            case BASIC:
+                return findElementByNormalMethods(testObject, timeout);
+            case CSS:
+                return findElementByNormalMethods(testObject, timeout);
+            case XPATH:
+                return useSmartXPath
+                        ? findWebElementsWithSmartXPath(testObject)
+                        : findElementByNormalMethods(testObject, timeout);
+            case IMAGE:
+                return findElementsByImage(testObject, timeout);
+            default:
+                return Collections.emptyList();
+        }
+    }
+
+    private static List<WebElement> findElementsInsideShadowDOM(TestObject testObject, int timeout) {
+        List<WebElement> foundElements = Collections.emptyList();
+        
+        if (!isElementInsideShadowDOM(testObject)) {
+            return Collections.emptyList();
+        }
+
+        WebDriver webDriver = DriverFactory.getWebDriver();
+        boolean isSwitchToParentFrame = false;
+
+        final TestObject parentObject = testObject.getParentObject();
+        WebElement shadowRootElement = null;
+
+        String cssLocator = CssLocatorBuilder.buildCssSelectorLocator(testObject);
+        if (cssLocator == null) {
+            throw new StepFailedException(MessageFormat.format(
+                    StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP, testObject.getObjectId()));
+        }
+
+        logger.logDebug(MessageFormat.format(CoreWebuiMessageConstants.MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT,
+                testObject.getObjectId(), testObject.getParentObject().getObjectId()));
+        try {
+            isSwitchToParentFrame = switchToParentFrame(parentObject);
+            shadowRootElement = findWebElement(parentObject, timeout);
+        } catch (WebElementNotFoundException e) {
+            return Collections.emptyList();
+        }
+
+        if (shadowRootElement == null) {
+            return Collections.emptyList();
+        }
+
+        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
+                testObject.getObjectId(), cssLocator, timeout));
+
+        try {
+            foundElements = doFindElementsInsideShadowDom(testObject, timeout, webDriver, cssLocator, parentObject,
+                    shadowRootElement);
+            if (foundElements == null || foundElements.size() <= 0) {
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR,
+                        cssLocator));
+            }
+        } catch (WebElementNotFoundException exception) {
+            // Element not found, do nothing
+        } finally {
+            if (isSwitchToParentFrame) {
+                switchToDefaultContent();
+            }
+        }
+
+        return foundElements;
+    }
+
+    private static List<WebElement> findElementByNormalMethods(TestObject testObject, int timeout) {
+        WebDriver webDriver = DriverFactory.getWebDriver();
+
+        By defaultLocator = WebUiCommonHelper.buildLocator(testObject);
+        if (defaultLocator == null) {
+            throw new StepFailedException(MessageFormat.format(
+                    StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP, testObject.getObjectId()));
+        }
+
+        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
+                testObject.getObjectId(), defaultLocator.toString(), timeout));
+
+        List<WebElement> foundElements = Collections.emptyList();
+        try {
+            foundElements = webDriver.findElements(defaultLocator);
+            if (foundElements != null && foundElements.size() > 0) {
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
+                        foundElements.size(), testObject.getObjectId(), defaultLocator.toString(), timeout));
+                return foundElements;
+            } else {
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR,
+                        defaultLocator.toString()));
+            }
+        } catch (NoSuchElementException e) {
+            // not found element yet, moving on
+        }
+
+        return foundElements;
+    }
+
+    private static List<WebElement> findElementsByImage(TestObject testObject, int timeout) {
+        WebDriver webDriver = DriverFactory.getWebDriver();
+        List<WebElement> foundElements = Collections.emptyList();
+
+        foundElements = testObject.getProperties()
+                .stream()
+                .filter(prop -> prop.getName().equals("screenshot"))
+                .findAny()
+                .map(present -> {
+                    return ImageLocatorController.findElementByScreenShot(webDriver, present.getValue(), timeout);
+                })
+                .orElse(Collections.emptyList());
+
+        return foundElements;
+    }
+
+	private static List<WebElement> findWebElementsWithSmartXPath(TestObject testObject) {
+		if (isElementInsideShadowDOM(testObject)) {
 			return Collections.emptyList();
 		}
+		
+        WebDriver webDriver = DriverFactory.getWebDriver();
 		
 		SmartXPathController.setLogger(logger);
 
@@ -1229,5 +1400,9 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     public static boolean switchToParentFrame(TestObject testObject) throws WebElementNotFoundException {
         return switchToParentFrame(testObject, RunConfiguration.getTimeOut());
+    }
+    
+    private static boolean isElementInsideShadowDOM(TestObject testObject) {
+        return testObject.getParentObject() != null && testObject.isParentObjectShadowRoot();
     }
 }

@@ -1,4 +1,4 @@
-package com.katalon.plugin.smart_xpath.settings;
+package com.kms.katalon.composer.components.impl.control;
 
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class DragableCTabFolder extends CTabFolder {
 
-    private static final String DRAGED_ITEM_INDEX = "dragedItemIndex";
+    private static final String DRAGED_ITEM_INDEX = "draggedItemIndex";
 
     private static final String SOURCE_FOLDER = "sourceFolder";
 
@@ -94,7 +94,6 @@ public class DragableCTabFolder extends CTabFolder {
 
             @Override
             public void dragOver(DropTargetEvent event) {
-                System.out.println("Drag over");
                 if (tabFolder.getDisplay().getCursorControl() instanceof CTabFolder) {
                     event.detail = DND.DROP_MOVE;
                     CTabItem itemUnderCursor = tabFolder
