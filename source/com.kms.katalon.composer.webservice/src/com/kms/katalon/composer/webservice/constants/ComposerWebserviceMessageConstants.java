@@ -263,6 +263,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String SoapServicePart_MSG_UNABLE_TO_LOAD_SERVICE_FUNCTION;
 
+    public static String SoapServicePart_MSG_WARN_OVERRIDE_CONTENT;
+
     public static String SoapServicePart_MSG_WSDL_LOCATION_UNDEFINED;
 
     public static String HOW_TO_ADD_JSON_AND_XML_PATH_TO_VERIFICATION_SCRIPT;

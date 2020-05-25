@@ -307,6 +307,11 @@ public class SoapServicePart extends WebServicePart {
         String method = cbbRequestMethod.getText().trim();
         String operation = cbbServiceFunction.getText();
         Shell shell = Display.getCurrent().getActiveShell();
+        
+        if (!MessageDialog.openConfirm(shell, StringConstants.WARN,
+                ComposerWebserviceMessageConstants.SoapServicePart_MSG_WARN_OVERRIDE_CONTENT)) {
+            return;
+        }
 
         if (StringUtils.isBlank(wsdlLocation)) {
             MessageDialog.openError(shell, StringConstants.ERROR,
@@ -326,13 +331,15 @@ public class SoapServicePart extends WebServicePart {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
-                        WebServiceRequestEntity newContentEntity = loadNewContent(wsdlLocation, method, operation);
-                        originalWsObject = newContentEntity;
+                        WebServiceRequestEntity newContentEntity = getNewContentEntity(wsdlLocation, method, operation);
                         
                         UISynchronizeService.syncExec(() -> {
-                            populateDataToUI();
-
-                            setDirty(true);
+	                        txtServiceEndpoint.setText(newContentEntity.getSoapServiceEndpoint());
+	                        httpHeaders.clear();
+	                        httpHeaders.addAll(newContentEntity.getHttpHeaderProperties());
+	                        tblHeaders.refresh();
+	                        requestBodyEditor.setInput(newContentEntity.getSoapBody());
+	                        setDirty(true);
                         });
                     } catch (Exception e) {
                       throw new InvocationTargetException(e);
@@ -353,7 +360,7 @@ public class SoapServicePart extends WebServicePart {
         }
     }
 
-    private WebServiceRequestEntity loadNewContent(String wsdlLocation, String method, String operation) {
+    private WebServiceRequestEntity getNewContentEntity(String wsdlLocation, String method, String operation) {
         try {
             Map<String, Object> evaluatedVariables = evaluateRequestVariables();
             StrSubstitutor substitutor = new StrSubstitutor(evaluatedVariables);
@@ -362,13 +369,7 @@ public class SoapServicePart extends WebServicePart {
             WsdlImporter importer = new WsdlImporter(wsdlLocator);
             WebServiceRequestEntity entity = importer.getImportedEntity(method, operation,
                     originalWsObject instanceof DraftWebServiceRequestEntity);
-            entity.setKatalonVersion(originalWsObject.getKatalonVersion());
-            entity.setName(originalWsObject.getName());
-            entity.setElementGuidId(originalWsObject.getElementGuidId());
-            entity.setParentFolder(originalWsObject.getParentFolder());
-            entity.setProject(originalWsObject.getProject());
-            entity.setUseServiceInfoFromWsdl(useOldMechanism);
-            entity.setServiceType(WebServiceRequestEntity.SOAP);
+
             entity.setWsdlAddress(wsdlLocation);
             return entity;
         } catch (Exception e) {
@@ -571,7 +572,7 @@ public class SoapServicePart extends WebServicePart {
         renderAuthenticationUI(ccbAuthType.getText());
 
         // requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
-        requestBodyEditor.setInput((WebServiceRequestEntity) originalWsObject.clone());
+        requestBodyEditor.setInput(originalWsObject.getSoapBody());
 
         cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
 
