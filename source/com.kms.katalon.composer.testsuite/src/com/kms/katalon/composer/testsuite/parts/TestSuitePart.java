@@ -44,10 +44,8 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
-import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
@@ -61,7 +59,6 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.feature.KSEFeature;
 
 public class TestSuitePart implements EventHandler {
 
@@ -82,7 +79,7 @@ public class TestSuitePart implements EventHandler {
 
     private boolean isExecutionCompositeExpanded;
 
-    private Text txtRetryAfterExecuteAll, txtRetryImmediately, txtUserDefinePageLoadTimeout;
+    private Text txtUserDefinePageLoadTimeout;
 
     private MPart mpart;
 
@@ -96,11 +93,8 @@ public class TestSuitePart implements EventHandler {
 
     private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
 
-    private Composite compositeLastRunAndReRun;
 
     private ImageButton btnExpandExecutionComposite;
-
-    private Button radioBtnRetryAllExecutions, radioBtnRetryFailedExecutionsOnly, radioBtnRetryImmediately;
 
     private TestSuiteCompositePart parentTestSuiteCompositePart;
 
@@ -126,8 +120,8 @@ public class TestSuitePart implements EventHandler {
     };
 
     private Map<String, ExpandableTestSuiteComposite> viewCompositeMap = new HashMap<>();
-
-    private Button radioBtnRetryAfterExecuteAll;
+    
+    private TestSuiteRetryUiPart retryUiProvider;
 
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
@@ -141,7 +135,22 @@ public class TestSuitePart implements EventHandler {
                 parentTestSuiteCompositePart = ((TestSuiteCompositePart) compositePart.getObject());
             }
         }
+        
+        TestSuitePart tmp = this;
+        retryUiProvider = new TestSuiteRetryUiPart(new TestSuiteRetryUiAdapter() {
+            private TestSuitePart part = tmp;
 
+            @Override
+            public void setDirty(boolean value) {
+                part.setDirty(value);
+            }
+
+            @Override
+            public TestSuiteEntity getTestSuite() {
+                return part.getTestSuite();
+            }
+        });
+        
         childrenView = new TestSuitePartTestCaseView(this);
         uiThreads = new LinkedList<Thread>();
         isLoading = false;
@@ -304,111 +313,9 @@ public class TestSuitePart implements EventHandler {
         txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
         
         
-        txtRetryAfterExecuteAll.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.getSource()).getText();
-                try {
-                    int rerun = Integer.parseInt(text);
-                    // limit to 100 times only
-                    if (rerun > 100) {
-                        rerun = 100;
-                        ((Text) e.getSource()).setText(String.valueOf(rerun));
-                    }
-                    getTestSuite().setNumberOfRerun(rerun);
-                    radioBtnRetryAllExecutions.setEnabled(!(rerun == 0));
-                    radioBtnRetryFailedExecutionsOnly.setEnabled(!(rerun == 0));
-                } catch (NumberFormatException ex) {}
-            }
-        });
-        
-        txtRetryAfterExecuteAll.addVerifyListener(verifyNumberListener);
-        
-        txtRetryImmediately.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.getSource()).getText();
-                try {
-                    int rerun = Integer.parseInt(text);
-                    // limit to 100 times only
-                    if (rerun > 100) {
-                        rerun = 100;
-                        ((Text) e.getSource()).setText(String.valueOf(rerun));
-                    }
-                    getTestSuite().setNumberOfRerun(rerun);
-                } catch (NumberFormatException ex) {}
-            }
-        });
-        
-        txtRetryImmediately.addVerifyListener(verifyNumberListener);
-        
-        radioBtnRetryImmediately.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_IMMEDIATELY);
-                    radioBtnRetryImmediately.setSelection(false);
-                }
-                boolean value = radioBtnRetryImmediately.getSelection();
-                if (value) {
-                    radioBtnRetryAfterExecuteAll.setSelection(false);
-                    radioBtnRetryAllExecutions.setSelection(false);
-                    radioBtnRetryFailedExecutionsOnly.setSelection(false);
-                    txtRetryImmediately.setEnabled(true);
-                    getTestSuite().setRerunFailedTestCasesOnly(false);
-                    getTestSuite().setRerunFailedTestCasesTestDataOnly(false);
-                    enableRetryAfterExecuteAll(false);
-                }
-                getTestSuite().setRerunImmediately(value);
-                setDirty(true);
-            }
-        });
-        
-        radioBtnRetryAfterExecuteAll.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                boolean value = radioBtnRetryAfterExecuteAll.getSelection();
-                if (value) {
-                    radioBtnRetryImmediately.setSelection(false);
-                    txtRetryImmediately.setEnabled(false);
-                    getTestSuite().setRerunImmediately(false);
-                    enableRetryAfterExecuteAll(true);
-                }
-                setDirty(true);
-            }
-        });
-
-        radioBtnRetryAllExecutions.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                boolean val = radioBtnRetryAllExecutions.getSelection();
-                if (val) {
-                    getTestSuite().setRerunFailedTestCasesOnly(false);
-                    getTestSuite().setRerunFailedTestCasesTestDataOnly(false);
-                }
-                setDirty(true);
-            }
-        });
-        
-        radioBtnRetryFailedExecutionsOnly.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                boolean val = radioBtnRetryFailedExecutionsOnly.getSelection();
-                getTestSuite().setRerunFailedTestCasesOnly(val);
-                getTestSuite().setRerunFailedTestCasesTestDataOnly(val);
-                setDirty(true);
-            }
-        });
+        retryUiProvider.registerRetryControlListeners(verifyNumberListener);
 
         childrenView.registerControlModifyListeners();
-    }
-
-    private void enableRetryAfterExecuteAll(boolean val) {
-        txtRetryAfterExecuteAll.setEnabled(val);
-        radioBtnRetryAllExecutions.setEnabled(val);
-        radioBtnRetryFailedExecutionsOnly.setEnabled(val);
     }
 
     public void loadTestSuite(final TestSuiteEntity testSuite) {
@@ -446,31 +353,7 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
-        boolean shouldRetryFailedExecutions = (testSuite.isRerunFailedTestCasesOnly()
-                || testSuite.isRerunFailedTestCasesAndTestDataOnly());
-        boolean shouldRetryImmediatly = testSuite.isRerunImmediately();
-        boolean shouldRetryAllExecutions = !(testSuite.isRerunFailedTestCasesOnly()
-                || testSuite.isRerunFailedTestCasesAndTestDataOnly());
-        boolean shouldRetryAfterExecuteAll = (shouldRetryAllExecutions || shouldRetryFailedExecutions)
-                && !shouldRetryImmediatly;
-
-        // Shouldn't retry immediately for free users
-        shouldRetryImmediatly = (LicenseUtil.isNotFreeLicense() && shouldRetryImmediatly);
-
-        radioBtnRetryAfterExecuteAll.setSelection(shouldRetryAfterExecuteAll);
-        radioBtnRetryImmediately.setSelection(shouldRetryImmediatly);
-        radioBtnRetryAllExecutions.setSelection(shouldRetryAllExecutions);
-        radioBtnRetryFailedExecutionsOnly.setSelection(shouldRetryFailedExecutions);
-
-        txtRetryImmediately.setEnabled(shouldRetryImmediatly);
-        enableRetryAfterExecuteAll(shouldRetryAfterExecuteAll);
-
-        if (shouldRetryAfterExecuteAll) {
-            txtRetryAfterExecuteAll.setText(String.valueOf(testSuite.getNumberOfRerun()));
-        }
-        if (shouldRetryImmediatly) {
-            txtRetryImmediately.setText(String.valueOf(testSuite.getNumberOfRerun()));
-        }
+        retryUiProvider.syncRetryControlStatesWithTestSuiteInfo(testSuite);
  
         // binding mailRecipient
         listMailRcpViewer
@@ -490,6 +373,7 @@ public class TestSuitePart implements EventHandler {
         }
 
     }
+    
 
     private void createComponents(Composite parent) {
         parent.setLayout(new GridLayout(1, false));
@@ -610,69 +494,7 @@ public class TestSuitePart implements EventHandler {
         txtUserDefinePageLoadTimeout.setLayoutData(gdTxtUserDefinePageLoadTimeout);
         txtUserDefinePageLoadTimeout.setTextLimit(4);
 
-        compositeLastRunAndReRun = new Composite(compositePageLoadTimeout, SWT.NONE);
-        GridData gdCompositeTestDataAndLastRun = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gdCompositeTestDataAndLastRun.minimumWidth = MINIMUM_COMPOSITE_SIZE;
-        compositeLastRunAndReRun.setLayoutData(gdCompositeTestDataAndLastRun);
-        GridLayout glCompositeTestDataAndLastRun = new GridLayout(4, false);
-        glCompositeTestDataAndLastRun.verticalSpacing = 15;
-        compositeLastRunAndReRun.setLayout(glCompositeTestDataAndLastRun);
-        
-        Composite grpRetryExecution = new Composite(compositeLastRunAndReRun, SWT.NONE);
-        grpRetryExecution.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
-        GridLayout gl_grpRetryExecution = new GridLayout(4, false);
-        gl_grpRetryExecution.marginWidth = 5;
-        gl_grpRetryExecution.marginHeight = 5;
-        grpRetryExecution.setLayout(gl_grpRetryExecution);
-        
-        radioBtnRetryImmediately = new Button(grpRetryExecution, SWT.RADIO);
-        GridData gdLblStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        radioBtnRetryImmediately.setLayoutData(gdLblStopImmediately);
-        radioBtnRetryImmediately.setText(StringConstants.PA_LBL_RETRY_IMMEDIATELY);
-        
-        txtRetryImmediately = new Text(grpRetryExecution, SWT.BORDER);
-        GridData gdTxtStopImmediately = new GridData(SWT.RIGHT, SWT.FILL, false, false, 3, 1);
-        gdTxtStopImmediately.widthHint = 20;
-        txtRetryImmediately.setLayoutData(gdTxtStopImmediately);
-        txtRetryImmediately.setTextLimit(3);
-
-        Composite grpRetryExecutions = new Composite(compositeLastRunAndReRun, SWT.BORDER);
-        grpRetryExecutions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
-        GridLayout gl_grpRetryExecutions = new GridLayout(4, false);
-        gl_grpRetryExecutions.marginWidth = 5;
-        gl_grpRetryExecutions.marginHeight = 5;
-        grpRetryExecutions.setLayout(gl_grpRetryExecutions);
-
-        radioBtnRetryAfterExecuteAll = new Button(grpRetryExecutions, SWT.RADIO);
-        GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblReRun.widthHint = 150;
-        radioBtnRetryAfterExecuteAll.setLayoutData(gdLblReRun);
-        radioBtnRetryAfterExecuteAll.setText(StringConstants.PA_LBL_RETRY_AFTER_EXECUTE_ALL);
-        radioBtnRetryAfterExecuteAll.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
-
-        txtRetryAfterExecuteAll = new Text(grpRetryExecutions, SWT.BORDER);
-        GridData gdTxtRerun = new GridData(SWT.RIGHT, SWT.FILL, false, false, 3, 1);
-        gdTxtRerun.widthHint = 20;
-        txtRetryAfterExecuteAll.setLayoutData(gdTxtRerun);
-        txtRetryAfterExecuteAll.setTextLimit(3);
-        
-        Composite grpRetryExecutionsChildComposite = new Composite(grpRetryExecutions, SWT.NONE);
-        grpRetryExecutionsChildComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
-        GridLayout gl_grpRetryExecutionsChildComposite = new GridLayout(4, false);
-        gl_grpRetryExecutionsChildComposite.marginWidth = 5;
-        gl_grpRetryExecutionsChildComposite.marginHeight = 5;
-        gl_grpRetryExecutionsChildComposite.marginLeft = 45;
-        grpRetryExecutionsChildComposite.setLayout(gl_grpRetryExecutionsChildComposite);
-
-        radioBtnRetryAllExecutions = new Button(grpRetryExecutionsChildComposite, SWT.RADIO);
-        GridData gdRerunTestCase = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
-        radioBtnRetryAllExecutions.setLayoutData(gdRerunTestCase);
-        radioBtnRetryAllExecutions.setText(StringConstants.PA_LBL_RETRY_ALL_EXECUTIONS);
-
-        radioBtnRetryFailedExecutionsOnly = new Button(grpRetryExecutionsChildComposite, SWT.RADIO);
-        GridData gdRerunTestCaseTestData = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
-        radioBtnRetryFailedExecutionsOnly.setLayoutData(gdRerunTestCaseTestData);
-        radioBtnRetryFailedExecutionsOnly.setText(StringConstants.PA_LBL_RETRY_FAILED_EXECUTIONS);
+        retryUiProvider.createRetryComposite(compositePageLoadTimeout);
 
         Composite compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
         GridData gdCompositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
