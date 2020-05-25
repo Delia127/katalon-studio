@@ -194,17 +194,18 @@ public class CustomKeywordNodeTooltip extends AbstractKeywordNodeTooltip impleme
                     JavadocView view= (JavadocView) JavaPlugin.getActivePage().showView(JavaUI.ID_JAVADOC_VIEW);
                     view.setInput(linkTarget);
                 } catch (PartInitException e) {
-                    JavaPlugin.log(e);
+                    LoggerSingleton.logError(e);
                 }
             }
 
             @Override
             public void handleInlineJavadocLink(IJavaElement linkTarget) {
                 JavadocBrowserInformationControlInput hoverInfo= JavadocHover.getHoverInfo(new IJavaElement[] { linkTarget }, null, null, (JavadocBrowserInformationControlInput) (browserInfoControl.getInput()));
-                if (browserInfoControl.hasDelayedInputChangeListener())
+                if (browserInfoControl.hasDelayedInputChangeListener()) {
                     browserInfoControl.notifyDelayedInputChange(hoverInfo);
-                else
+                } else {
                     browserInfoControl.setInput(hoverInfo);
+                }
             }
 
             @Override
@@ -215,9 +216,9 @@ public class CustomKeywordNodeTooltip extends AbstractKeywordNodeTooltip impleme
                     //FIXME: add hover location to editor navigation history?
                     openDeclaration(linkTarget);
                 } catch (PartInitException e) {
-                    JavaPlugin.log(e);
+                    LoggerSingleton.logError(e);
                 } catch (JavaModelException e) {
-                    JavaPlugin.log(e);
+                    LoggerSingleton.logError(e);
                 }
             }
 
