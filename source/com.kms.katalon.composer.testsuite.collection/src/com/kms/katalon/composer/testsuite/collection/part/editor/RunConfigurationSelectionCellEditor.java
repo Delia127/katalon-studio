@@ -14,9 +14,11 @@ public class RunConfigurationSelectionCellEditor extends AbstractDialogCellEdito
 
     private String defaultContent;
 
-    public RunConfigurationSelectionCellEditor(Composite parent, String defaultContent) {
+    public RunConfigurationSelectionCellEditor(Composite parent, String defaultContent,
+            RunConfigurationDescription configuration) {
         super(parent, defaultContent);
         this.defaultContent = defaultContent;
+        this.configuration = configuration;
     }
 
     @Override
