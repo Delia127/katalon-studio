@@ -77,7 +77,11 @@ public class WindowsDriverFactory {
         logger.logRunData(DESIRED_CAPABILITIES_PROPERTY, JsonUtil.toJson(desiredCapabilities.toJson(), false));
 
         Proxy proxy = ProxyUtil.getProxy(RunConfiguration.getProxyInformation(), remoteAddressURL);
-        return startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
+        WindowsDriver<WebElement> windowsDriver = startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
+        
+        windowsDriver.manage().timeouts().implicitlyWait(RunConfiguration.getTimeOut(), TimeUnit.SECONDS);
+        
+        return windowsDriver;
 
     }
 
@@ -167,15 +171,12 @@ public class WindowsDriverFactory {
 
     public static WindowsDriver<WebElement> newWindowsDriver(URL remoteAddressURL,
             DesiredCapabilities desiredCapabilities, Proxy proxy) throws IOException, URISyntaxException {
-    	WindowsDriver<WebElement> windowsDriver = null;
-    	if (remoteAddressURL != null) {
-    		windowsDriver = new WindowsDriver<WebElement>(getAppiumExecutorForRemoteDriver(remoteAddressURL, proxy),
+        if (remoteAddressURL != null) {
+            return new WindowsDriver<WebElement>(getAppiumExecutorForRemoteDriver(remoteAddressURL, proxy),
                     desiredCapabilities);
         } else {
-        	windowsDriver = new WindowsDriver<WebElement>(desiredCapabilities);
+            return new WindowsDriver<WebElement>(desiredCapabilities);
         }
-    	windowsDriver.manage().timeouts().implicitlyWait(RunConfiguration.getTimeOut(), TimeUnit.SECONDS);
-    	return windowsDriver;
     }
 
     public static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl, Proxy proxy)

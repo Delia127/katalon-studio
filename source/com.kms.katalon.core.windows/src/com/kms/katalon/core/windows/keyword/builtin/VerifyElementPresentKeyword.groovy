@@ -46,9 +46,9 @@ import com.kms.katalon.core.helper.KeywordHelper
 
 @Action(value = "verifyElementPresent")
 public class VerifyElementPresentKeyword extends AbstractKeyword {
-    
+
     private KeywordLogger logger = KeywordLogger.getInstance(VerifyElementPresentKeyword.class)
-    
+
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT

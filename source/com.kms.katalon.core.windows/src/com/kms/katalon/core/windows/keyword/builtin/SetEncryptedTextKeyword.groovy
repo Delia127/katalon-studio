@@ -2,6 +2,7 @@ package com.kms.katalon.core.windows.keyword.builtin;
 
 import io.appium.java_client.windows.WindowsDriver
 import java.text.MessageFormat
+import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebElement
 
 import com.kms.katalon.core.annotation.internal.Action;
@@ -37,30 +38,33 @@ public class SetEncryptedTextKeyword extends AbstractKeyword {
         setEncryptedText(testObject, encryptedText, flowControl)
     }
     
-    public String setEncryptedText(WindowsTestObject testObject, String encryptedText, FailureHandling flowControl) throws StepFailedException {
+    public String setEncryptedText(WindowsTestObject testObject, String encryptedText, FailureHandling flowControl) throws StepFailedException , TimeoutException {
         return (String) KeywordMain.runKeyword({
-            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
-            if (windowsDriver == null) {
-                KeywordMain.stepFailed(StringConstants.COMM_WINDOWS_HAS_NOT_STARTED, flowControl)
-            }
-            
-            if(encryptedText == null){
-                throw new IllegalArgumentException(StringConstants.KW_ENCRYPTED_TEXT_IS_NULL)
-            }
-            
-            CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(encryptedText)
-            String rawText = CryptoUtil.decode(cryptoInfo)
-
-            WindowsActionHelper windowsActionHelper = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession())
-            
-            logger.logDebug(String.format("Clearing text of object '%s'", testObject.getObjectId()))
-            windowsActionHelper.clearText(testObject);
-            logger.logDebug(String.format("Setting text of object '%s' to value ******", testObject.getObjectId()))
-            windowsActionHelper.setText(testObject, rawText)
-
-            logger.logPassed(String.format("Text ****** has been set on object '%s'", testObject.getObjectId()))
-
-        }, flowControl, (testObject != null) ? String.format("Unable to set encrypted text for object '%s'", testObject.getObjectId())
+			try {
+	            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
+	            if (windowsDriver == null) {
+	                KeywordMain.stepFailed(StringConstants.COMM_WINDOWS_HAS_NOT_STARTED, flowControl)
+	            }
+	            
+	            if(encryptedText == null){
+	                throw new IllegalArgumentException(StringConstants.KW_ENCRYPTED_TEXT_IS_NULL)
+	            }
+	            
+	            CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(encryptedText)
+	            String rawText = CryptoUtil.decode(cryptoInfo)
+	
+	            WindowsActionHelper windowsActionHelper = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession())
+	            
+	            logger.logDebug(String.format("Clearing text of object '%s'", testObject.getObjectId()))
+	            windowsActionHelper.clearText(testObject);
+	            logger.logDebug(String.format("Setting text of object '%s' to value ******", testObject.getObjectId()))
+	            windowsActionHelper.setText(testObject, rawText)
+	
+	            logger.logPassed(String.format("Text ****** has been set on object '%s'", testObject.getObjectId()))
+			} catch (TimeoutException exception) {
+				KeywordMain.stepFailed(String.format("Object '%s' does not exist", testObject.getObjectId()), flowControl)
+			}
+				}, flowControl, (testObject != null) ? String.format("Unable to set encrypted text for object '%s'", testObject.getObjectId())
         : "Unable to set text")
     }
 }

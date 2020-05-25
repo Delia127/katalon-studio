@@ -1,5 +1,6 @@
 package com.kms.katalon.core.windows.keyword.builtin
 
+import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebElement
 
 import com.kms.katalon.core.annotation.internal.Action
@@ -18,9 +19,9 @@ import io.appium.java_client.windows.WindowsDriver
 
 @Action(value = "getAttribute")
 public class GetAttributeKeyword extends AbstractKeyword {
-    
+
     private KeywordLogger logger = KeywordLogger.getInstance(GetAttributeKeyword.class)
-    
+
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT
@@ -34,26 +35,33 @@ public class GetAttributeKeyword extends AbstractKeyword {
         return getAttribute(testObject,attribute,flowControl)
     }
 
-    public String getAttribute(WindowsTestObject testObject, String attribute, FailureHandling flowControl) throws StepFailedException {
+    public String getAttribute(WindowsTestObject testObject, String attribute, FailureHandling flowControl) throws StepFailedException, TimeoutException {
         return KeywordMain.runKeyword({
-            String attrValue = null
-            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
-            if (windowsDriver == null) {
-                KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
-            }
-            
-            logger.logDebug("Checking attribute")
-            if (attribute == null) {
-                throw new IllegalArgumentException("Attribute is null")
-            }
-            
-            WebElement element = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject)
-            logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attribute, testObject.getObjectId()))
-           
-             attrValue = element.getAttribute(attribute)
-             
-             logger.logPassed(String.format("Attribute '%s' of object '%s' is: '%s'" , attribute, testObject.getObjectId(), attrValue))
-             return attrValue
+			try {
+	            String attrValue = null
+	            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
+	            if (windowsDriver == null) {
+	                KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
+	            }
+	
+	            logger.logDebug("Checking attribute")
+	            if (attribute == null) {
+	                throw new IllegalArgumentException("Attribute cannot be null")
+	            }
+	
+	            WebElement element = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject)
+	            logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attribute, testObject.getObjectId()))
+	
+	             attrValue = element.getAttribute(attribute)
+				 if (attrValue == null) {
+					 logger.logError(String.format("No such attribute's name '%s' found", attribute))
+					 return null;
+				 }
+	             logger.logPassed(String.format("Attribute '%s' of object '%s' is: '%s'" , attribute, testObject.getObjectId(), attrValue))
+	             return attrValue
+			} catch (TimeoutException exception) {
+				KeywordMain.stepFailed(String.format("Object '%s' does not exist", testObject.getObjectId()), flowControl);
+			}
         }, flowControl, (testObject != null && attribute != null) ? String.format("Unable to get attribute '%s' of object '%s'" , attribute, testObject.getObjectId())
         : "Unable to get attribute")
     }

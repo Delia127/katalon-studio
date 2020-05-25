@@ -50,9 +50,9 @@ import com.kms.katalon.core.windows.constants.WindowsDriverConstants
 
 @Action(value = "waitForElementAttributeValue")
 public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
-    
+
     private KeywordLogger logger = KeywordLogger.getInstance(WaitForElementAttributeValueKeyword.class)
-    
+
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT
@@ -68,7 +68,7 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
         return waitForElementAttributeValue(testObject, attributeName,attributeValue,timeOut,flowControl)
     }
 
-    public boolean waitForElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+    public boolean waitForElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) throws IllegalArgumentException {
         KeywordMain.runKeyword({
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
@@ -77,36 +77,38 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
 
             logger.logDebug("Checking attribute name")
             if (attributeName == null) {
-                throw new IllegalArgumentException("Attribute name is null")
+                throw new IllegalArgumentException("Attribute name cannot be null")
             }
-            
+
             logger.logDebug("Checking attribute value")
             if (attributeValue == null) {
-                throw new IllegalArgumentException("Attribute value is null")
+                throw new IllegalArgumentException("Attribute value cannot be null")
             }
-            
+
             timeOut = WindowsActionHelper.checkTimeout(timeOut)
-            
+
+			WebElement foundElement = null;
             try {
-                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true)
-                logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()))
+                foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true)
+            } catch (TimeoutException exception) {
+				KeywordMain.stepFailed(String.format("Object '%s' is not present", testObject.getObjectId()), flowControl)
+				return false
+            }
+			
+            logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()))
+            FluentWait<WebElement> wait = new FluentWait<WebElement>(foundElement)
+                    .withTimeout(Duration.ofSeconds(timeOut))
+                    .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT))
 
-                FluentWait<WebElement> wait = new FluentWait<WebElement>(foundElement)
-                        .withTimeout(Duration.ofSeconds(timeOut))
-                        .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT))
-
-                Boolean hasAttribute = wait.until(new Function<WebElement, Boolean>(){
-                            @Override
-                            public Boolean apply(WebElement element){
-                                return element.getAttribute(attributeName) == attributeValue
-                            }
-                        })
-                if (hasAttribute){
-                    logger.logPassed(String.format("Object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue))
-                    return true
-                }
-            } catch (TimeoutException e) {
-                KeywordMain.stepFailed(String.format("Object '%s' is not present", testObject.getObjectId()), flowControl)
+            Boolean hasAttribute = wait.until(new Function<WebElement, Boolean>(){
+                        @Override
+                        public Boolean apply(WebElement element){
+                            return element.getAttribute(attributeName) == attributeValue
+                        }
+                    })
+            if (hasAttribute){
+                logger.logPassed(String.format("Object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue))
+                return true
             }
             return false
         }, flowControl, (testObject != null) ? String.format("Unable to wait for object '%s' to have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)

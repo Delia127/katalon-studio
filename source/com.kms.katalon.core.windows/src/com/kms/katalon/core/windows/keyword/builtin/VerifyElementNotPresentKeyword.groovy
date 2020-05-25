@@ -50,9 +50,9 @@ import com.kms.katalon.core.windows.constants.WindowsDriverConstants
 
 @Action(value = "verifyElementNotPresent")
 public class VerifyElementNotPresentKeyword extends AbstractKeyword {
-    
+
     private KeywordLogger logger = KeywordLogger.getInstance(VerifyElementNotPresentKeyword.class)
-    
+
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT

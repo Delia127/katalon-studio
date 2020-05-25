@@ -74,14 +74,14 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
 
                 logger.logDebug("Checking attribute name")
                 if (attributeName == null) {
-                    throw new IllegalArgumentException("Attribute name is null")
+                    throw new IllegalArgumentException("Attribute name cannot be null")
                 }
-                
+
                 logger.logDebug("Checking attribute value")
                 if (attributeValue == null) {
-                    throw new IllegalArgumentException("Attribute value is null")
+                    throw new IllegalArgumentException("Attribute value cannot be null")
                 }
-                
+
                 timeout = WindowsActionHelper.checkTimeout(timeout)
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeout, true);
                 logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
@@ -96,6 +96,7 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
                     }
             } catch (TimeoutException e) {
                 KeywordMain.stepFailed(String.format("Object '%s' is not present", testObject.getObjectId()), flowControl)
+				return false
             }
             return false
         }, flowControl, (testObject != null && attributeName !=null && attributeValue != null) ? String.format("Unable to verify if object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)

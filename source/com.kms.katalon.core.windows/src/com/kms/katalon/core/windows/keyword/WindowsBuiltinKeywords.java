@@ -238,7 +238,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      *      If encryptedText is null.
      * @throws ArrayIndexOutOfBoundsException
-     *      If something went wrong while decoding encryptedText. 
+     *      If something went wrong while decoding encryptedText.
      *      Encrypted test was an invalid format. Please check your encrypted
      *      text with Help > Encrypt Text on the Main Menu.
      * @since 7.6.0
@@ -342,7 +342,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      *          <li>OPTIONAL: continues the test and ignore the test result.</li>
      *      </ul>
      * @throws StepFailedException
-     *      If the Windows element doesn't exist, or KS could not get text of the element.
+     *      If the Windows element doesn't exist, or KS could not get value of the element's attribute.
      * @throws IllegalArgumentException
      *      If attribute is null.
      * @since 7.6.0
@@ -362,7 +362,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @param attribute
      *      Name of the attribute, not null.
      * @throws StepFailedException
-     *      If the Windows element doesn't exist, or KS could not get text of the element.
+     *      If the Windows element doesn't exist, or KS could not get value of the element's attribute.
      * @throws IllegalArgumentException
      *      If attribute is null.
      * @since 7.6.0
