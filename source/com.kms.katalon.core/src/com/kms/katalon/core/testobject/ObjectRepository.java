@@ -395,7 +395,12 @@ public class ObjectRepository {
             requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
             requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
             requestObject.setSoapBody(substitutor.replace(reqElement.elementText("soapBody")));
-            requestObject.setUseServiceInfoFromWsdl(Boolean.valueOf(StringEscapeUtils.unescapeXml(reqElement.elementText("useServiceInfoFromWsdl"))));
+            String useServiceInfoFromWsdlValue = StringEscapeUtils.unescapeXml(reqElement.elementText("useServiceInfoFromWsdl"));
+            if (StringUtils.isNotBlank(useServiceInfoFromWsdlValue)) {
+                requestObject.setUseServiceInfoFromWsdl(Boolean.valueOf(useServiceInfoFromWsdlValue));
+            } else {
+                requestObject.setUseServiceInfoFromWsdl(true);
+            }            
             requestObject.setSoapServiceEndpoint(reqElement.elementText("soapServiceEndpoint"));
         } else if ("RESTful".equals(serviceType)) {
             String rawUrl = reqElement.elementText("restUrl");
