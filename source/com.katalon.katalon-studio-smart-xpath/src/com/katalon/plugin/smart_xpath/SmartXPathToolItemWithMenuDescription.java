@@ -21,6 +21,7 @@ import com.katalon.plugin.smart_xpath.dialog.AutoHealingDialog;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
+import com.katalon.plugin.smart_xpath.settings.SelfHealingSetting;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.constants.IdConstants;
@@ -66,9 +67,8 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 			Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
 			if (currentProject != null) {
 				AutoHealingController.createXPathFilesIfNecessary(currentProject);
-				PluginPreference preferenceStore = ApplicationManager.getInstance().getPreferenceManager()
-						.getPluginPreference(currentProject.getId(), IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
-				if (preferenceStore.getBoolean("SmartXPathEnabled", true)) {
+				SelfHealingSetting preferenceStore = SelfHealingSetting.getStore(currentProject);
+				if (preferenceStore.isEnableSelfHHealing()) {
 					addDisableSmartXPathMenuItem(newMenu, true);
 				} else {
 					addEnableSmartXPathMenuItem(newMenu, true);
@@ -92,11 +92,8 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
     					// Retrieve PreferenceStore on click in case user installed
     					// this plug-in when no project was opened
     					Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-    					PluginPreference preferenceStore = ApplicationManager.getInstance().getPreferenceManager()
-    							.getPluginPreference(currentProject.getId(), IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
-    
-    					preferenceStore.setBoolean("SmartXPathEnabled", true);
-    					preferenceStore.save();
+    					SelfHealingSetting preferenceStore = SelfHealingSetting.getStore(currentProject);
+    					preferenceStore.setEnableSelfHealing(true);
     				} catch (ResourceException e1) {
     					LoggerSingleton.logError(e1);
     				}
@@ -191,7 +188,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 
 	@Override
 	public String iconUrl() {
-		return "platform:/plugin/com.katalon.katalon-studio-smart-xpath/icons/xpath_32x24.png";
+		return "platform:/plugin/com.katalon.katalon-studio-smart-xpath/icons/self-healing_32px@2x.png";
 	}
 
 	@Override

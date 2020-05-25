@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.SelectorMethod;
@@ -26,13 +27,13 @@ public class SelfHealingSettingPage extends PreferencePageWithHelp {
 	
     private ExecutionDefaultSettingStore defaultSettingStore;
     
-    private SelfHealingSettingStore selfHealingSettingStore;
+    private SelfHealingSetting selfHealingSettingStore;
 
     private Composite container;
 
 	public SelfHealingSettingPage() {
         defaultSettingStore = ExecutionDefaultSettingStore.getStore();
-        selfHealingSettingStore = new SelfHealingSettingStore(ProjectController.getInstance().getCurrentProject());
+        selfHealingSettingStore = SelfHealingSetting.getStore(ApplicationManager.getInstance().getProjectManager().getCurrentProject());
 	}
 
 	@Override

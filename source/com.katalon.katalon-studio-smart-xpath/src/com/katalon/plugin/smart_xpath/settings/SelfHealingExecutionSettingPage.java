@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
@@ -46,7 +47,6 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
-import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.util.collections.Pair;
 
 public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
@@ -60,10 +60,10 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 	private static final String BUTTON_MOVE_DOWN_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER = SmartXPathMessageConstants.BUTTON_MOVE_DOWN_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER;
 
 	private static final String COLUMN_SELECTION_METHOD = SmartXPathMessageConstants.COLUMN_SELECTION_METHOD;
-	
+
 	private static final String COLUMN_DETECT_OBJECT_BY = SmartXPathMessageConstants.COLUMN_DETECT_OBJECT_BY;
 
-	private ExecutionDefaultSettingStore defaultSettingStore;
+	// private ExecutionDefaultSettingStore defaultSettingStore;
 
 	private Composite container;
 
@@ -86,11 +86,13 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 	private TableColumn cMethodsSelected;
 
 	private ExecutionExcludeWithKeywordsPart excludeWithKeywordsPart;
-	
+
 	private final String documentationUrl = null;
 
 	private List<Pair<String, Boolean>> methodsPritorityOrder = new ArrayList<Pair<String, Boolean>>();
-	
+
+	private List<String> excludeKeywordNames;
+
 	private List<Pair<String, Boolean>> setDefaultMethodsPriorityOrder() {
 		methodsPritorityOrder.add(new Pair<String, Boolean>(SmartXPathMessageConstants.XPATH_METHOD, true));
 		methodsPritorityOrder.add(new Pair<String, Boolean>(SmartXPathMessageConstants.ATTRIBUTE_METHOD, true));
@@ -104,7 +106,8 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 	}
 
 	public SelfHealingExecutionSettingPage() {
-		defaultSettingStore = ExecutionDefaultSettingStore.getStore();
+		// defaultSettingStore = ExecutionDefaultSettingStore.getStore();
+
 	}
 
 	@Override
@@ -133,7 +136,7 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 		checkboxEnableSelfHealing.setText(LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD);
 
 		new HelpComposite(selectionMethodComposite, documentationUrl);
-		
+
 		prioritizeGroup = new Group(selectionMethodComposite, SWT.NONE);
 		prioritizeGroup.setLayout(new GridLayout());
 		prioritizeGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -144,8 +147,8 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 		createPrioritizeTable(prioritizeGroup);
 
 		setInputForMethodsPriorityOrder(methodsPritorityOrder);
-		
-		excludeWithKeywordsPart = new ExecutionExcludeWithKeywordsPart();
+
+		excludeWithKeywordsPart = new ExecutionExcludeWithKeywordsPart(excludeKeywordNames);
 		excludeWithKeywordsPart.createContent(selectionMethodComposite);
 	}
 
@@ -160,7 +163,7 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 		ToolItem tltmUp = new ToolItem(toolBar, SWT.NONE);
 		tltmUp.setText(BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER);
 		tltmUp.setImage(ImageManager.getImage(IImageKeys.MOVE_UP_16));
-		tltmUp.addListener(SWT.Selection , new Listener() {
+		tltmUp.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				int selectedIndex = tPrioritizeSelectionMethods.getSelectionIndex();
@@ -177,7 +180,7 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 		ToolItem tltmDown = new ToolItem(toolBar, SWT.NONE);
 		tltmDown.setText(BUTTON_MOVE_DOWN_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER);
 		tltmDown.setImage(ImageManager.getImage(IImageKeys.MOVE_DOWN_16));
-		tltmDown.addListener(SWT.Selection , new Listener() {
+		tltmDown.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				int selectedIndex = tPrioritizeSelectionMethods.getSelectionIndex();
@@ -271,11 +274,11 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 				FontDescriptor fontDescriptor = FontDescriptor.createFrom(cell.getFont());
 				Font font = fontDescriptor.setStyle(SWT.NORMAL).setHeight(12)
 						.createFont(tPrioritizeSelectionMethods.getDisplay());
-				cell.setFont(font);
-				cell.setText(getCheckboxSymbol(isSelected));
+				// cell.setFont(font);
+				// cell.setText(getCheckboxSymbol(isSelected));
 			}
 		});
-		
+
 		cvMethodsSelected.setEditingSupport(new EditingSupport(cvMethodsSelected.getViewer()) {
 
 			@Override
@@ -302,5 +305,23 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 
 		tableColumnLayout.setColumnData(cPrioritizeSelectionMethodColumn, new ColumnWeightData(80, 100));
 		tableColumnLayout.setColumnData(cMethodsSelected, new ColumnWeightData(20, 100));
+	}
+
+	@Override
+	protected void performApply() {
+		excludeWithKeywordsPart.setUpdatedExcludeKeywordsIntoPluginPreference();
+	}
+
+	@Override
+	public boolean performOk() {
+		if (super.performOk() && isValid()) {
+			performApply();
+		}
+		return true;
+	}
+
+	@Override
+	public boolean hasDocumentation() {
+		return false;
 	}
 }
