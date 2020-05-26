@@ -115,7 +115,7 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
         treeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
         treeViewer.getTree().setFocus();
 
-        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        treeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {

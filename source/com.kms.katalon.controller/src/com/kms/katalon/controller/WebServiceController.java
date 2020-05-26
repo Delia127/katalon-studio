@@ -70,7 +70,7 @@ public class WebServiceController extends EntityController {
             requestObject.setHttpHeaderProperties(parseProperties(entity.getHttpHeaderProperties(), substitutor));
             requestObject.setSoapBody(substitutor.replace(entity.getSoapBody()));
             requestObject.setUseServiceInfoFromWsdl(entity.isUseServiceInfoFromWsdl());
-            requestObject.setSoapServiceEndpoint(entity.getSoapServiceEndpoint());
+            requestObject.setSoapServiceEndpoint(substitutor.replace(entity.getSoapServiceEndpoint()));
         } else if ("RESTful".equals(serviceType)) {
             String rawUrl = entity.getRestUrl();
             String url = buildUrlFromRaw(rawUrl, substitutor);

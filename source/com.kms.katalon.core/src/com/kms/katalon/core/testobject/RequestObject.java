@@ -39,7 +39,7 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     private String soapServiceEndpoint = "";
 
-    private boolean useServiceInfoFromWsdl;
+    private boolean useServiceInfoFromWsdl = false;
 
     private List<TestObjectProperty> restParameters;
 
