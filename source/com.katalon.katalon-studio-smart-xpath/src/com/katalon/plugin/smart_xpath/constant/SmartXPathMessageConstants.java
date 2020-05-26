@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class SmartXPathMessageConstants extends NLS {
 	private static final String BUNDLE_NAME = "com.katalon.plugin.smart_xpath.constant.SmartXpathMessages";
 
+	public static String METHODS_PRIORITY_ORDER_VARIABLE;
+
 	public static String EXCLUDE_KEYWORDS_VARIABLE;
 
 	public static String SELF_HEALING_ENABLED_VARIABLE;

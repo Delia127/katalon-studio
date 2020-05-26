@@ -1,4 +1,4 @@
-package com.katalon.plugin.smart_xpath.settings;
+package com.katalon.plugin.smart_xpath.settings.composites;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,10 +34,9 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.katalon.platform.api.exception.ResourceException;
-import com.katalon.platform.api.model.Entity;
-import com.katalon.platform.api.service.ApplicationManager;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
+import com.katalon.plugin.smart_xpath.settings.SelfHealingSetting;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -46,7 +45,7 @@ import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 
-public class ExecutionExcludeWithKeywordsPart {
+public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 
 	private Composite tableExcludeObjectsWithKeywordsComposite;
 
@@ -56,12 +55,15 @@ public class ExecutionExcludeWithKeywordsPart {
 
 	private TableViewer tableViewer;
 
-//	private List<KeywordMethod> excludeKeywords;
-	
+	private SelfHealingSetting preferenceStore;
+
 	private List<String> excludeKeywordNames;
-	
-	public ExecutionExcludeWithKeywordsPart(List<String> excludeKeywordNames) {
-		this.excludeKeywordNames = excludeKeywordNames;
+
+	public ExcludeObjectsUsedWithKeywordsComposite(Composite parent, int style, SelfHealingSetting preferenceStore) {
+		super(parent, style);
+//		this.excludeKeywordNames = excludeKeywordNames;
+		this.preferenceStore = preferenceStore;
+		createContent(parent);
 	}
 	
 	public TreeViewer getTreeTable() {
@@ -69,39 +71,28 @@ public class ExecutionExcludeWithKeywordsPart {
 	}
 	
 	private void getExcludeKeywordsFromPluginPreference() {
-		try {
-			Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-			SelfHealingSetting preferenceStore = SelfHealingSetting.getStore(currentProject);
-			excludeKeywordNames = preferenceStore.getExcludeKeywordList();
-			if (excludeKeywordNames == null) {
-				excludeKeywordNames = new ArrayList<String>();
+			try {
+				excludeKeywordNames = preferenceStore.getExcludeKeywordList();
+			} catch (ResourceException e) {
+				e.printStackTrace();
 			}
-		} catch (ResourceException e1) {
-			LoggerSingleton.logError(e1);
-		}
 	}
 
-	public List<String> setUpdatedExcludeKeywordsIntoPluginPreference() {
+	public void setUpdatedExcludeKeywordsIntoPluginPreference() {
 		try {
-			// Retrieve PreferenceStore on click in case user installed
-			// this plug-in when no project was opened
-			Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-			SelfHealingSetting preferenceStore = SelfHealingSetting.getStore(currentProject);
 			preferenceStore.setExcludeKeywordList(excludeKeywordNames);
-			return excludeKeywordNames;
-		} catch (ResourceException e1) {
-			LoggerSingleton.logError(e1);
-			return null;
+		} catch (ResourceException exception) {
+			LoggerSingleton.logError(exception);
 		}
 	}
 
-	public Composite createContent(Composite parent) {
+	public void createContent(Composite parent) {
 		this.getExcludeKeywordsFromPluginPreference();
-		Composite excludeKeywordsComposite = new Composite(parent, SWT.NONE);
-		excludeKeywordsComposite.setLayout(new GridLayout(1, false));
-		excludeKeywordsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//		Composite excludeKeywordsComposite = new Composite(parent, SWT.NONE);
+		this.setLayout(new GridLayout(1, false));
+		this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-		Group excludeKeywordsGroup = new Group(excludeKeywordsComposite, SWT.NONE);
+		Group excludeKeywordsGroup = new Group(this, SWT.NONE);
 		excludeKeywordsGroup.setLayout(new GridLayout());
 		excludeKeywordsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		excludeKeywordsGroup.setText(SmartXPathMessageConstants.LABEL_EXCLUDE_OBJECTS_USED_WITH_KEYWORDS);
@@ -238,8 +229,6 @@ public class ExecutionExcludeWithKeywordsPart {
 			}
 		});
 		tableColumnLayout.setColumnData(tName, new ColumnWeightData(80, 100));
-
-		return excludeKeywordsComposite;
 	}
 
 	private String[] getWebUIKeywordsStringList() {
@@ -247,7 +236,7 @@ public class ExecutionExcludeWithKeywordsPart {
 				.getBuiltInKeywords(SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_SIMPLE_CLASS_NAME, true);
 		List<String> webUIKeywordStringList = new ArrayList<>();
 		for (KeywordMethod keyword : webUIKeywordList) {
-			if (excludeKeywordNames.contains(keyword)) {
+			if (excludeKeywordNames.contains(keyword.getName())) {
 				continue;
 			}
 			webUIKeywordStringList.add(keyword.getName());
