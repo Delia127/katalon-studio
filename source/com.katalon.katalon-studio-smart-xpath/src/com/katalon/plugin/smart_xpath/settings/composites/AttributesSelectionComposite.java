@@ -26,6 +26,8 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -36,6 +38,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.TypedListener;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
@@ -230,6 +233,7 @@ public class AttributesSelectionComposite extends Composite {
             protected void setValue(Object element, Object value) {
                 ((Pair<String, Boolean>) element).setRight((boolean) value);
                 tvProperty.update(element, null);
+                handleSelectionChange(null);
             }
 
             @Override
@@ -284,13 +288,28 @@ public class AttributesSelectionComposite extends Composite {
 
         return selectedAttributes;
     }
-    
-    public boolean compareInputWith(List<Pair<String, Boolean>> targetInput) {
-        List<Pair<String, Boolean>> currentInput = this.getInput();
-        if (targetInput == null || currentInput.size() != currentInput.size()) {
-            return false;
+
+    public boolean compareInput(List<Pair<String, Boolean>> selectedAttributes) {
+        List<Pair<String, Boolean>> _selectedAttributes = getInput();
+        return _selectedAttributes != null && _selectedAttributes.equals(selectedAttributes);
+    }
+
+    private void handleSelectionChange(TypedEvent selectionEvent) {
+        dispatchSelectionEvent(selectionEvent);
+    }
+
+    private void dispatchSelectionEvent(TypedEvent selectionEvent) {
+        notifyListeners(SWT.Selection, null);
+        notifyListeners(SWT.DefaultSelection, null);
+    }
+
+    public void addSelectionListener(SelectionListener listener) {
+        checkWidget();
+        if (listener == null) {
+            return;
         }
-        
-        return targetInput.equals(targetInput);
+        TypedListener typedListener = new TypedListener(listener);
+        addListener(SWT.Selection, typedListener);
+        addListener(SWT.DefaultSelection, typedListener);
     }
 }

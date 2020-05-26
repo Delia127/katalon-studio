@@ -1,5 +1,6 @@
 package com.katalon.plugin.smart_xpath.settings.composites;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,10 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -27,9 +32,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.TypedListener;
 
+import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
 
 public class XPathsSelectionComposite extends Composite {
@@ -59,6 +67,19 @@ public class XPathsSelectionComposite extends Composite {
         Button resetDefault = new Button(compositeXpathTableToolBar, SWT.WRAP);
         resetDefault.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
         resetDefault.setText(StringConstants.RESET_DEFAULT);
+        
+        resetDefault.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+                    setInput(store.getDefaultCapturedObjectXpathLocators());
+                    handleSelectionChange(null);
+                } catch (IOException exception) {
+                    LoggerSingleton.logError(exception);
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -98,6 +119,8 @@ public class XPathsSelectionComposite extends Composite {
                     selectedXPaths.add(newIndex, xpath);
                     tvXpath.setSelection(new StructuredSelection(xpath));
                     tvXpath.refresh();
+
+                    handleSelectionChange(event);
                 }
             }
         });
@@ -134,5 +157,29 @@ public class XPathsSelectionComposite extends Composite {
         selectedXPaths.removeAll(emptyXpathItems);
 
         return selectedXPaths;
+    }
+
+    public boolean compareInput(List<Pair<String, Boolean>> selectedXPaths) {
+        List<Pair<String, Boolean>> _selectedXPaths = getInput();
+        return _selectedXPaths != null && _selectedXPaths.equals(selectedXPaths);
+    }
+
+    private void handleSelectionChange(TypedEvent selectionEvent) {
+        dispatchSelectionEvent(selectionEvent);
+    }
+
+    private void dispatchSelectionEvent(TypedEvent selectionEvent) {
+        notifyListeners(SWT.Selection, null);
+        notifyListeners(SWT.DefaultSelection, null);
+    }
+
+    public void addSelectionListener(SelectionListener listener) {
+        checkWidget();
+        if (listener == null) {
+            return;
+        }
+        TypedListener typedListener = new TypedListener(listener);
+        addListener(SWT.Selection, typedListener);
+        addListener(SWT.DefaultSelection, typedListener);
     }
 }
