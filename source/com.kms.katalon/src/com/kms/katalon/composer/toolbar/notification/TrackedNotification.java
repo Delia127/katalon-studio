@@ -7,6 +7,8 @@ public class TrackedNotification {
     private String id;
 
     private Date trackedDate;
+    
+    private String type;
 
     public String getId() {
         return id;
@@ -22,5 +24,13 @@ public class TrackedNotification {
 
     public void setTrackedDate(Date trackedDate) {
         this.trackedDate = trackedDate;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
+    }
+    
+    public String getType() {
+        return type;
     }
 }

@@ -20,8 +20,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.constants.ApplicationMessageConstants;
-import com.kms.katalon.application.utils.ApplicationProxyUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
@@ -31,9 +29,8 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.network.ProxyServerType;
 import com.kms.katalon.execution.preferences.ProxyPreferenceDefaultValueInitializer;
-import com.kms.katalon.execution.preferences.ProxyPreferences;
 
-public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
+public abstract class AbstractProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
     private Text txtAddress;
 
     private Text txtPort;
@@ -41,7 +38,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
     private Text txtUsername;
 
     private Text txtPass;
-    
+
     private Text txtExceptionList;
 
     private Combo cboProxyOption;
@@ -52,7 +49,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
 
     private static final int MAX_PORT_VALUE = 65535;
 
-    public ProxyConfigurationPreferencesPage() {
+    public AbstractProxyConfigurationPreferencesPage() {
         super();
         noDefaultButton();
     }
@@ -72,6 +69,8 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         glContainer.marginBottom = 30;
         innerComposite.setLayout(glContainer);
 
+        createHeaderComposite(innerComposite);
+
         Label lblProxyOption = new Label(innerComposite, SWT.NONE);
         lblProxyOption.setText(MessageConstants.LBL_PROXY_OPTION);
 
@@ -87,8 +86,8 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
                 if (e.getSource() != cboProxyOption) {
                     return;
                 }
-                String selectText = cboProxyOption.getText();
-                ProxyOption proxyOption = ProxyOption.valueOfDisplayName(selectText);
+                ProxyOption proxyOption = ProxyOption.valueOfDisplayName(cboProxyOption.getText());
+                cboProxyOption.setData(proxyOption.name());
                 switch (proxyOption) {
                     case MANUAL_CONFIG:
                         selectManualConfigProxyOption();
@@ -101,7 +100,6 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
                         return;
                     default:
                         break;
-
                 }
             }
         });
@@ -165,10 +163,10 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
                 }
             }
         });
-        
+
         Label separatorEx = new Label(area, SWT.HORIZONTAL | SWT.SEPARATOR);
         separatorEx.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        
+
         Label lblExceptionList = new Label(innerComposite, SWT.NONE);
         GridData gdLblException = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         lblExceptionList.setLayoutData(gdLblException);
@@ -179,7 +177,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         gdExceptionList.widthHint = 320;
         gdExceptionList.heightHint = 28;
         txtExceptionList.setLayoutData(gdExceptionList);
-        
+
         chkRequireAuthentication = new Button(innerComposite, SWT.CHECK);
         chkRequireAuthentication.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         chkRequireAuthentication.setText(MessageConstants.CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION);
@@ -214,81 +212,100 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         txtPass = new Text(authenticateGroup, SWT.BORDER | SWT.PASSWORD);
         GridData gdPass = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtPass.setLayoutData(gdPass);
-        
+
+        createFooterComposite(innerComposite);
+
         initialize();
 
         return area;
     }
 
-    private void selectNoProxyOption() {
-        cboProxyServerType.deselectAll();
-        cboProxyServerType.setEnabled(false);
-        chkRequireAuthentication.setEnabled(false);
-        chkRequireAuthentication.setSelection(false);
-        txtPort.setText("");
-        txtPort.setEnabled(false);
-        txtAddress.setText("");
-        txtAddress.setEnabled(false);
-        chkRequireAuthentication.setEnabled(false);
-        chkRequireAuthentication.setSelection(false);
-        txtUsername.setEnabled(false);
-        txtUsername.setText("");
-        txtPass.setEnabled(false);
-        txtPass.setText("");
-        txtExceptionList.setEnabled(false);
-        txtExceptionList.setText("");
+    protected void createHeaderComposite(Composite parent) {
+        Composite headerComposite = new Composite(parent, SWT.NONE);
+        GridLayout glHeader = new GridLayout(1, true);
+        glHeader.marginTop = 0;
+        glHeader.marginWidth = 0;
+        glHeader.marginBottom = 20;
+        headerComposite.setLayout(glHeader);
+        GridData gdHeader = new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1);
+        gdHeader.widthHint = 500;
+        headerComposite.setLayoutData(gdHeader);
+
+        if (StringUtils.isNotBlank(getGuideMessage())) {
+            Label lblGuideMessage = new Label(headerComposite, SWT.WRAP);
+            GridData gdGuideMessage = new GridData(SWT.LEFT, SWT.TOP, true, false);
+            lblGuideMessage.setLayoutData(gdGuideMessage);
+            lblGuideMessage.setText(getGuideMessage());
+        }
     }
 
-    private void selectSystemProxyOption() {
+    protected String getGuideMessage() {
+        return "";
+    }
+
+    protected void createFooterComposite(Composite parent) {
+        //
+    }
+
+    protected void selectNoProxyOption() {
+        cboProxyServerType.setEnabled(false);
+        txtPort.setEnabled(false);
+        txtAddress.setEnabled(false);
+        chkRequireAuthentication.setEnabled(false);
+        txtUsername.setEnabled(false);
+        txtPass.setEnabled(false);
+        txtExceptionList.setEnabled(false);
+    }
+
+    protected void selectSystemProxyOption() {
         selectNoProxyOption();
     }
 
-    private void selectManualConfigProxyOption() {
+    protected void selectManualConfigProxyOption() {
+        ProxyInformation proxyInfo = getProxyInfo();
+        inputProxyInfo(proxyInfo);
+
         cboProxyServerType.setEnabled(true);
         txtPort.setEnabled(true);
         txtAddress.setEnabled(true);
         chkRequireAuthentication.setEnabled(true);
-        cboProxyServerType.setText(ProxyServerType.HTTP.toString());
-        if (!chkRequireAuthentication.getSelection()) {
-            txtUsername.setEnabled(false);
-            txtUsername.setText("");
-            txtPass.setEnabled(false);
-            txtPass.setText("");
-        }
+        boolean isEnableAuthentication = chkRequireAuthentication.getSelection();
+        txtUsername.setEnabled(isEnableAuthentication);
+        txtPass.setEnabled(isEnableAuthentication);
         txtExceptionList.setEnabled(true);
-        txtExceptionList.setText("");
     }
 
     private void initialize() {
-        ProxyInformation proxyInfo = null;
-        if (ProxyPreferences.isProxyPreferencesSet()) {
-            proxyInfo = ProxyPreferences.getProxyInformation();
-            cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
-        } else {
-            proxyInfo = ApplicationProxyUtil.getProxyInformation();
-            cboProxyOption.setText(proxyInfo.getProxyOption());
+        ProxyInformation proxyInfo = getProxyInfo();
+        inputProxyInfo(proxyInfo);
+
+        chkRequireAuthentication.setEnabled(true);
+        if (StringUtils.isNotEmpty(txtUsername.getText()) && StringUtils.isNotEmpty(txtPass.getText())) {
+            chkRequireAuthentication.setSelection(true);
         }
+
+        cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
+        cboProxyOption.setData(proxyInfo.getProxyOption());
+
+        String proxyOption = proxyInfo.getProxyOption();
+        if (ProxyOption.NO_PROXY.name().equals(proxyOption)) {
+            selectNoProxyOption();
+        } else if (ProxyOption.USE_SYSTEM.name().equals(proxyOption)) {
+            selectSystemProxyOption();
+        } else {
+            boolean requiredAuthentication = chkRequireAuthentication.getSelection();
+            txtUsername.setEnabled(requiredAuthentication);
+            txtPass.setEnabled(requiredAuthentication);
+        }
+    }
+
+    private void inputProxyInfo(ProxyInformation proxyInfo) {
         cboProxyServerType.setText(proxyInfo.getProxyServerType());
         txtAddress.setText(proxyInfo.getProxyServerAddress());
         txtPort.setText(proxyInfo.getProxyServerPort() > 0 ? proxyInfo.getProxyServerPort() + "" : "");
         txtUsername.setText(proxyInfo.getUsername());
         txtPass.setText(proxyInfo.getPassword());
         txtExceptionList.setText(proxyInfo.getExceptionList());
-
-        String proxyOption = cboProxyOption.getText();
-        if (ApplicationMessageConstants.NO_PROXY.equals(proxyOption)) {
-            selectNoProxyOption();
-        } else if (ApplicationMessageConstants.USE_SYSTEM_PROXY.equals(proxyOption)) {
-            selectSystemProxyOption();
-        } else {
-            chkRequireAuthentication.setEnabled(true);
-            if (StringUtils.isNotEmpty(txtUsername.getText()) && StringUtils.isNotEmpty(txtPass.getText())) {
-                chkRequireAuthentication.setSelection(true);
-            }
-            boolean requiredAuthentication = chkRequireAuthentication.getSelection();
-            txtUsername.setEnabled(requiredAuthentication);
-            txtPass.setEnabled(requiredAuthentication);
-        }
     }
 
     @Override
@@ -297,7 +314,8 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
             return true;
         }
         ProxyInformation proxyInfo = new ProxyInformation();
-        proxyInfo.setProxyOption(ProxyOption.valueOfDisplayName(cboProxyOption.getText()).name());
+        String proxyOption = (String) cboProxyOption.getData();
+        proxyInfo.setProxyOption(proxyOption);
         proxyInfo.setProxyServerType(cboProxyServerType.getText());
         proxyInfo.setProxyServerAddress(txtAddress.getText());
         final String portValue = txtPort.getText();
@@ -306,8 +324,9 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         proxyInfo.setUsername(txtUsername.getText());
         proxyInfo.setPassword(txtPass.getText());
         proxyInfo.setExceptionList(txtExceptionList.getText());
+
         try {
-            ProxyPreferences.saveProxyInformation(proxyInfo);
+            saveProxyInfo(proxyInfo);
             return true;
         } catch (IOException e) {
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
@@ -315,12 +334,16 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
             return false;
         }
     }
-    
+
+    abstract protected ProxyInformation getProxyInfo();
+
+    abstract protected void saveProxyInfo(ProxyInformation proxyInfo) throws IOException;
+
     @Override
     public boolean hasDocumentation() {
         return true;
     }
-    
+
     @Override
     public String getDocumentationUrl() {
         return DocumentationMessageConstants.PREFERENCE_PROXY;

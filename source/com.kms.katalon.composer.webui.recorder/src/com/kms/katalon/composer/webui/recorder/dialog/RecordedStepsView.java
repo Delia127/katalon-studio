@@ -686,8 +686,4 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         });
 
     }
-
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
-    }
 }
