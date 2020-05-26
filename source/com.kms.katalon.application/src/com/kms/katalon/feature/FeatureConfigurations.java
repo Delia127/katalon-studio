@@ -43,6 +43,7 @@ public class FeatureConfigurations implements IFeatureService {
             put(KSEFeature.RECORDER_RUN_SELECTED_STEPS, Boolean.TRUE);
             put(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS, Boolean.TRUE);
             put(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP, Boolean.TRUE);
+            put(KSEFeature.TEST_CASE_DEBUG_FROM_SELECTED_STEP, Boolean.TRUE);
             put(KSEFeature.TEST_CASE_TOGGLE_STEP, Boolean.TRUE);
             put(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY, Boolean.TRUE);
             put(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL, Boolean.TRUE);

@@ -245,6 +245,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_CHK_APPLY_PROXY;
 
+    public static String DIA_CHK_OVERRIDE_PLATFORM;
+
     public static String DIA_TITLE_TEST_SUITE_BROWSER;
     
     public static String DIA_PROCEED;
