@@ -566,7 +566,7 @@ public class RunConfiguration {
 	    boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SMART_XPATH);
 		try {
 			return allowUsingSmartXPath && (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
-					.getBoolean("SmartXPathEnabled", true);
+					.getBoolean("SelfHealingEnabled", true);
 		} catch (IOException e) {
 			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage(), null, e);
 		}

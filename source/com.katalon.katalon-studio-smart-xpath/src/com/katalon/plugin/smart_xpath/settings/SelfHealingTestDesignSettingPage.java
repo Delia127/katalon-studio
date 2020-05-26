@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -15,11 +14,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
+import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.settings.composites.AttributesSelectionComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.DefaultWebLocatorSelectionComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.XPathsSelectionComposite;
 import com.kms.katalon.composer.components.impl.control.DragableCTabFolder;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
@@ -92,6 +92,12 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
     private Composite createXPathComposite(Composite parent) {
         if (XPathComposite == null) {
             XPathComposite = new XPathsSelectionComposite(parent, SWT.NONE);
+            XPathComposite.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    handleInputChanged(XPathComposite, null);
+                }
+            });
         }
         return XPathComposite;
     }
@@ -99,24 +105,33 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
     private Control createAttributesComposite(Composite parent) {
         if (attributesComposite == null) {
             attributesComposite = new AttributesSelectionComposite(parent, SWT.NONE);
+            attributesComposite.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    handleInputChanged(attributesComposite, null);
+                }
+            });
         }
         return attributesComposite;
     }
 
     @Override
     protected void initialize() throws IOException {
-        defaultWebLocatorComposite.setInput(SelectorMethod.XPATH);
-        XPathComposite.setInput(WebUiExecutionSettingStore.getStore().getCapturedTestObjectXpathLocators());
-        attributesComposite.setInput(WebUiExecutionSettingStore.getStore().getCapturedTestObjectAttributeLocators());
+        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+
+        defaultWebLocatorComposite.setInput(store.getCapturedTestObjectSelectorMethod());
+        XPathComposite.setInput(store.getCapturedTestObjectXpathLocators());
+        attributesComposite.setInput(store.getCapturedTestObjectAttributeLocators());
     }
 
     @Override
     protected void performDefaults() {
         try {
             WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-            store.setDefaultCapturedTestObjectAttributeLocators();
-            store.setDefaultCapturedTestObjectXpathLocators();
+
             store.setDefaultCapturedTestObjectSelectorMethods();
+            store.setDefaultCapturedTestObjectXpathLocators();
+            store.setDefaultCapturedTestObjectAttributeLocators();
 
             initialize();
         } catch (IOException e) {
@@ -127,17 +142,16 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
 
     @Override
     protected boolean saveSettings() {
-
         try {
             WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
 
-            store.setCapturedTestObjectAttributeLocators(attributesComposite.getInput());
+            store.setCapturedTestObjectSelectorMethod(defaultWebLocatorComposite.getInput());
             store.setCapturedTestObjectXpathLocators(XPathComposite.getInput());
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
+            store.setCapturedTestObjectAttributeLocators(attributesComposite.getInput());
+        } catch (IOException exception) {
+            LoggerSingleton.logError(exception);
             return false;
         }
-
         return true;
     }
 
@@ -148,7 +162,30 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
         }
 
         WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+        try {
+            SelectorMethod originalSelectorMethod = store.getCapturedTestObjectSelectorMethod();
+            boolean isSelectorMethodChanged = !defaultWebLocatorComposite.compareInput(originalSelectorMethod);
 
+            List<Pair<String, Boolean>> originalXPathLocatorsPriority = store.getCapturedTestObjectXpathLocators();
+            boolean isXPathLocatorsChanged = !XPathComposite.compareInput(originalXPathLocatorsPriority);
+
+            List<Pair<String, Boolean>> originalSelectedAttributes = store.getCapturedTestObjectAttributeLocators();
+            boolean isSelectedAttributesChanged = !attributesComposite.compareInput(originalSelectedAttributes);
+
+            return isSelectorMethodChanged || isXPathLocatorsChanged || isSelectedAttributesChanged;
+        } catch (IOException exception) {
+            LoggerSingleton.logError(exception);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean hasDocumentation() {
         return true;
+    }
+
+    @Override
+    public String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_WEBLOCATORS;
     }
 }

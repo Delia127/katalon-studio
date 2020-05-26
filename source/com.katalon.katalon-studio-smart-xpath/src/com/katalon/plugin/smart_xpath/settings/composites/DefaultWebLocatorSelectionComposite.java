@@ -1,6 +1,8 @@
 package com.katalon.plugin.smart_xpath.settings.composites;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -10,7 +12,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TypedListener;
 
@@ -19,6 +20,8 @@ import com.kms.katalon.core.testobject.SelectorMethod;
 public class DefaultWebLocatorSelectionComposite extends Group {
 
     private SelectorMethod selectedSelectorMethod = SelectorMethod.XPATH;
+    
+    private List<Button> radioSelectorMethods = new ArrayList<Button>();
 
     @SuppressWarnings("serial")
     private final Map<String, SelectorMethod> defaultLocatorOptions = new LinkedHashMap<String, SelectorMethod>() {
@@ -55,9 +58,7 @@ public class DefaultWebLocatorSelectionComposite extends Group {
             // Image image = new Image(null, input);
             // radioButton.setImage(image);
 
-            if (selectorMethod == selectedSelectorMethod) {
-                radioDefaultLocator.setSelection(true);
-            }
+            radioDefaultLocator.setSelection(selectorMethod == selectedSelectorMethod);
 
             radioDefaultLocator.addSelectionListener(new SelectionAdapter() {
                 @Override
@@ -67,15 +68,24 @@ public class DefaultWebLocatorSelectionComposite extends Group {
                     }
                 }
             });
+            
+            radioSelectorMethods.add(radioDefaultLocator);
         });
     }
 
     public void setInput(SelectorMethod selectorMethod) {
         selectedSelectorMethod = selectorMethod;
+        radioSelectorMethods.forEach(radioSelectorMethod -> {
+            radioSelectorMethod.setSelection(radioSelectorMethod.getData() == selectedSelectorMethod);
+        });
     }
 
     public SelectorMethod getInput() {
         return selectedSelectorMethod;
+    }
+    
+    public boolean compareInput(SelectorMethod selectorMethod) {
+        return selectedSelectorMethod == selectorMethod;
     }
 
     private void handleSelectionChange(SelectionEvent selectionEvent) {

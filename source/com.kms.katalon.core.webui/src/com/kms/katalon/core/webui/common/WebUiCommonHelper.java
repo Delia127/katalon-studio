@@ -870,8 +870,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         for (SelectorMethod method : searchOrder) {
             if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
                 try {
-                    webElements = findElementsBySelectedMethod(testObject, timeout, testObject.getSelectorMethod(),
-                            true);
+                    webElements = findElementsBySelectedMethod(testObject, timeout, method, true);
                     if (webElements != null && webElements.size() > 0) {
                         return webElements;
                     }

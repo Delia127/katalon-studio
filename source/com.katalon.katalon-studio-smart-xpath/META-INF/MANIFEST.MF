@@ -30,7 +30,7 @@ Require-Bundle: com.katalon.platform,
  com.kms.katalon.composer.resources,
  com.kms.katalon.composer.testcase,
  com.kms.katalon.selenium-standalone,
- com.kms.katalon.custom
+ com.kms.katalon.custom,
+ com.kms.katalon.composer.webservice
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.kms.katalon.composer.webservice.support,
- org.apache.commons.lang3
+Import-Package: org.apache.commons.lang3
