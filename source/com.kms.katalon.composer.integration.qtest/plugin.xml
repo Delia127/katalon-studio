@@ -11,7 +11,7 @@
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
-            category="com.kms.katalon.composer.preferences.integration"
+            category="com.kms.katalon.composer.project.preference.pluginPreferencePage"
             class="com.kms.katalon.composer.integration.qtest.preference.QTestPreferenceMainPage"
             id="com.kms.katalon.composer.intergration.qtest.setting"
             name="qTest">
