@@ -139,27 +139,31 @@ public class TreeViewerKeywordTooltip {
     protected AbstractKeywordNodeTooltip createTooltip(String classKeyword, String keyword,
             String[] parameterTypes) {
         if (KeywordController.CUSTOM_KEYWORD_CLASS_NAME.equals(classKeyword)) {
-            String nameWithoutQuotes = removeQuotes(keyword);
-            tip = new CustomKeywordNodeTooltip(treeViewer.getTree(), nameWithoutQuotes,
+            tip = new CustomKeywordNodeTooltip(treeViewer.getTree(), removeQuotes(keyword),
                     parameterTypes);
         } else {
-            tip = new BuiltinKeywordNodeTooltip(treeViewer.getTree());
-            if (keyword.toLowerCase().equals(BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME.toLowerCase())) {
-                classKeyword = BuiltinKeywords.class.getSimpleName();
-            }
-            ((BuiltinKeywordNodeTooltip) tip)
-                    .setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeyword, keyword));
-            
-            String text = TestCaseEntityUtil.getBuiltinKeywordJavadocText(classKeyword, keyword);
-            if (text == null || text.length() < 1) {
-                text = keyword;
-            }
-            ((BuiltinKeywordNodeTooltip) tip).setText(text);;
+            tip = getBuiltinKeywordTooltip(classKeyword, keyword);
         }
         
         return tip;
     }
     
+    private BuiltinKeywordNodeTooltip getBuiltinKeywordTooltip(String classKeyword, String keyword) {
+        BuiltinKeywordNodeTooltip tip = new BuiltinKeywordNodeTooltip(treeViewer.getTree());
+        if (keyword.toLowerCase().equals(BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME.toLowerCase())) {
+            classKeyword = BuiltinKeywords.class.getSimpleName();
+        }
+        ((BuiltinKeywordNodeTooltip) tip).setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeyword, keyword));
+
+        String text = TestCaseEntityUtil.getBuiltinKeywordJavadocText(classKeyword, keyword);
+        if (text == null || text.length() < 1) {
+            text = keyword;
+        }
+        ((BuiltinKeywordNodeTooltip) tip).setText(text);
+        ;
+        return tip;
+    }
+
     private String removeQuotes(String str) {
         String result = StringUtils.replace(str, "'", "");
         result = StringUtils.replace(result, "\"", "");
@@ -188,11 +192,6 @@ public class TreeViewerKeywordTooltip {
         if (item == null || !(item.getData() instanceof KeywordBrowserTreeEntity)) {
             return false;
         }   
-//        KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
-//        String classKeyword = keywordBrowserEntity.getClassName();
-//        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
-//            return false;
-//        }
         return true;
     }
 }

@@ -14,7 +14,6 @@ import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCustomKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.util.TypeUtil;
 

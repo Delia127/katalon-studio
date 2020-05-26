@@ -105,7 +105,6 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
             if (keywordDescURI == null) {
                 return bi;
             }
-            
             addOpenDescKeywordButton(bi);
 
             return bi;

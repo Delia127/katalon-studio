@@ -282,6 +282,9 @@ public class CustomKeywordNodeTooltip extends AbstractKeywordNodeTooltip impleme
                     keywordClass,
                     keywordName,
                     TypeUtil.toReadableTypes(parameterTypes));
+            if (method == null) {
+                method = JDTUtil.findMethod(project, keywordClass, keywordName, parameterTypes.length);
+            }
             return method;
         } catch (JavaModelException e) {
             LoggerSingleton.logError(e);

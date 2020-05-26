@@ -41,7 +41,7 @@ public class TypeUtil {
 
     }
 
-    public static boolean areSameTypes(String[] first, String[] second) {
+    public static boolean primitiveAwareSameTypesCheck(String[] first, String[] second) {
         if (first.length != second.length) {
             return false;
         }
@@ -54,20 +54,16 @@ public class TypeUtil {
         return true;
     }
 
-    public static boolean areSameTypesWithLooseTypeChecking(String[] first, String[] second) {
+    public static boolean primitiveAwareSameTypesCheckWithLooseTypeMatching(String[] first, String[] second) {
         if (first.length != second.length) {
             return false;
         }
 
         for (int i = 0; i < first.length; i++) {
-            boolean typeMatching = false;
-
-            if (primitiveAwareSameTypeCheck(first[i], second[i]) || first[i].endsWith(second[i])
-                    || second[i].endsWith(first[i])) {
-                typeMatching = true;
-            }
-
-            if (!typeMatching) {
+            boolean matchType = primitiveAwareSameTypeCheck(first[i], second[i]) || first[i].endsWith(second[i])
+                    || second[i].endsWith(first[i]);
+            
+            if (!matchType) {
                 return false;
             }
         }

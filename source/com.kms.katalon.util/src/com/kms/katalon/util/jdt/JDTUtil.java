@@ -78,8 +78,8 @@ public class JDTUtil {
         String methodName1 = method.getElementName();
         String[] parameterTypes1 = getParameterTypes(method);
         boolean hasSameParameterTypes = useLooseParameterTypesChecking
-                ? TypeUtil.areSameTypesWithLooseTypeChecking(parameterTypes, parameterTypes1)
-                : TypeUtil.areSameTypes(parameterTypes, parameterTypes1);
+                ? TypeUtil.primitiveAwareSameTypesCheckWithLooseTypeMatching(parameterTypes, parameterTypes1)
+                : TypeUtil.primitiveAwareSameTypesCheck(parameterTypes, parameterTypes1);
         return className1.equals(className) && methodName1.equals(methodName) && hasSameParameterTypes;
     }
     

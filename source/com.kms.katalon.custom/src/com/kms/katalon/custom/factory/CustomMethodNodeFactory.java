@@ -70,7 +70,8 @@ public class CustomMethodNodeFactory {
     }
     
     public String getJavadoc(MethodNode methodNode) {
-        return StringUtils.defaultIfBlank(javadocMap.get(MethodNodeUtil.getDescriptor(methodNode)), "");
+        String descriptor = MethodNodeUtil.getDescriptor(methodNode);
+        return StringUtils.defaultIfBlank(javadocMap.get(descriptor), "");
     }
     
     public void addPluginMethodNodes(String className, List<MethodNode> methodNodes, String filePath, Map<String, List<String>> parameterMaps) {

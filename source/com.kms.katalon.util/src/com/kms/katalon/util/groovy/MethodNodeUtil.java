@@ -44,7 +44,7 @@ public class MethodNodeUtil {
         String className1 = methodToMatch.getDeclaringClass().getName();
         String methodName1 = methodToMatch.getName();
         return className1.equals(className) && methodName1.equals(methodName)
-                && TypeUtil.areSameTypes(parameterTypes1, parameterTypes);
+                && TypeUtil.primitiveAwareSameTypesCheck(parameterTypes1, parameterTypes);
     }
     
     public static boolean matchMethodWithLooseParamTypesChecking(MethodNode methodToMatch, String className, String methodName,
@@ -53,7 +53,7 @@ public class MethodNodeUtil {
         String className1 = methodToMatch.getDeclaringClass().getName();
         String methodName1 = methodToMatch.getName();
         return className1.equals(className) && methodName1.equals(methodName)
-                && TypeUtil.areSameTypesWithLooseTypeChecking(parameterTypes1, parameterTypes);
+                && TypeUtil.primitiveAwareSameTypesCheckWithLooseTypeMatching(parameterTypes1, parameterTypes);
     }
 
     public static boolean matchMethod(MethodNode methodToMatch, String className, String methodName, int numOfParams) {

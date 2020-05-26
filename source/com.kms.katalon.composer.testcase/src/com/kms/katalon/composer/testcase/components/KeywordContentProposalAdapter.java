@@ -14,6 +14,7 @@ import org.eclipse.jface.fieldassist.IContentProposalListener2;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.jface.fieldassist.IControlContentAdapter2;
+import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
 import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.Util;
@@ -44,7 +45,6 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.testcase.editors.KeywordContentProposal;
 import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
-import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.util.groovy.MethodNodeUtil;
 
@@ -1926,33 +1926,41 @@ public class KeywordContentProposalAdapter {
             }
             
             if (KeywordController.CUSTOM_KEYWORD_CLASS_NAME.equals(keywordClassName)) {
-                Object item = null;
-                if (proposals[selectionIndex] instanceof KeywordContentProposal) {
-                    item = ((KeywordContentProposal) proposals[selectionIndex]).getData();
-                }
-                if (item != null && item instanceof MethodNode) {
-                    MethodNode methodNode = (MethodNode) item;
-                    String[] parameterTypes = MethodNodeUtil.getParameterTypes(methodNode);
-                    tooltip = new CustomKeywordNodeTooltip(control, methodNode.getName(), parameterTypes);
-                }          
+                showCustomKeywordTooltip(selectionIndex);
             } else {
-                tooltip = new BuiltinKeywordNodeTooltip(control);
-                ((BuiltinKeywordNodeTooltip) tooltip).setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(keywordClassName, keywordName));
-                tooltip.getShell().addListener(SWT.Dispose, evt -> {
+                showBuiltinKeywordTooltip(keywordClassName, keywordName, keywordDesc);
+            }
+        }
+        
+        private void showCustomKeywordTooltip(int selectionIndex) {
+            Object item = null;
+            if (proposals[selectionIndex] instanceof KeywordContentProposal) {
+                item = ((KeywordContentProposal) proposals[selectionIndex]).getData();
+            }
+            if (item != null && item instanceof MethodNode) {
+                MethodNode methodNode = (MethodNode) item;
+                String[] parameterTypes = MethodNodeUtil.getParameterTypes(methodNode);
+                tooltip = new CustomKeywordNodeTooltip(control, methodNode.getName(), parameterTypes);
+                Point loc = popup.getShell().getLocation();
+                tooltip.setPreferedSize(0, popupSize.y);
+                tooltip.show(new Point(loc.x + popupSize.x - 2, loc.y));
+            }       
+        }
+        
+        private void showBuiltinKeywordTooltip(String keywordClassName, String keywordName, String keywordDesc) {
+            tooltip = new BuiltinKeywordNodeTooltip(control);
+            ((BuiltinKeywordNodeTooltip) tooltip).setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(keywordClassName, keywordName));
+            ((BuiltinKeywordNodeTooltip) tooltip).setText(keywordDesc);
+            Point loc = popup.getShell().getLocation();
+            tooltip.setPreferedSize(0, popupSize.y);
+            tooltip.show(new Point(loc.x + popupSize.x - 2, loc.y));
+            tooltip.getShell().addListener(SWT.Dispose, evt -> {
                     if (((BuiltinKeywordNodeTooltip)tooltip).isOpenedKeywordDesc()) {
                         try {
                             infoPopup.close();
                         } catch (Exception ex) {}
                     }
-                });
-                ((BuiltinKeywordNodeTooltip) tooltip).setText(keywordDesc);
-            }
-            
-            if (tooltip != null) {
-                Point loc = popup.getShell().getLocation();
-                tooltip.setPreferedSize(0, popupSize.y);
-                tooltip.show(new Point(loc.x + popupSize.x - 2, loc.y));
-            }
+            });
         }
 
         /*
