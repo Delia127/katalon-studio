@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Table;
 
 import com.katalon.platform.ui.viewer.HyperLinkColumnLabelProvider;
 import com.katalon.plugin.smart_xpath.controller.AutoHealingController;
-import com.katalon.plugin.smart_xpath.dialog.provider.CheckBoxColumnEditingSupport;
+import com.katalon.plugin.smart_xpath.dialog.provider.ApproveCheckBoxColumnEditingSupport;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 
 public class AutoHealingDialog extends Dialog {
@@ -173,7 +173,7 @@ public class AutoHealingDialog extends Dialog {
 			}
 		});
 
-		colApproveNewXPath.setEditingSupport(new CheckBoxColumnEditingSupport(tbViewer));
+		colApproveNewXPath.setEditingSupport(new ApproveCheckBoxColumnEditingSupport(tbViewer));
 
 		tableColumnLayout.setColumnData(colObjectId.getColumn(), new ColumnWeightData(35, 100));
 		tableColumnLayout.setColumnData(colOldXPath.getColumn(), new ColumnWeightData(30, 100));

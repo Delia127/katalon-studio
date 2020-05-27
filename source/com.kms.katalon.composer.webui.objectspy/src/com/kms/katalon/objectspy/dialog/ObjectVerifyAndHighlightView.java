@@ -294,10 +294,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                         setConnectingCompositeVisibleSync(true);
                         WebDriver driver = seleniumSession.getWebDriver();
                         String pathToImage = WebElementUtils.takeScreenShotForImageBasedObjectRecognition(driver, webElement);
-                        webElement.getProperties()
-                                .removeIf(screenshot -> screenshot.getName().equals(WEB_ELEMENT_SCREENSHOT_PROPERTY));
-                        webElement.addProperty(
-                                new WebElementPropertyEntity(WEB_ELEMENT_SCREENSHOT_PROPERTY, pathToImage, false));
+                        webElement.getSelectorCollection().put(SelectorMethod.IMAGE, pathToImage);
                         displaySuccessfulMessageSync(ObjectspyMessageConstants.SCREENSHOT_TAKEN);
                         invoke(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED, webElement);
                     } catch (Exception ex) {

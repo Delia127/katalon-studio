@@ -33,6 +33,7 @@ Require-Bundle: com.katalon.platform,
  com.kms.katalon.custom,
  com.kms.katalon.composer.webservice
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.apache.commons.lang3,
+Import-Package: org.apache.commons.io,
+ org.apache.commons.lang3,
  org.eclipse.e4.core.services.events,
  org.eclipse.e4.ui.di

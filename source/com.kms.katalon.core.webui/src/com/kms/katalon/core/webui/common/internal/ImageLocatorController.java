@@ -61,7 +61,7 @@ public class ImageLocatorController {
                 int viewHeight = ((Number) ((JavascriptExecutor) webDriver).executeScript("return window.innerHeight"))
                         .intValue();
                 int imageHeight = ImageIO.read(new File(pathToScreenshot)).getHeight();
-                logger.logInfo(viewHeight + " , " + imageHeight);
+//                logger.logInfo(viewHeight + " , " + imageHeight);
                 scrolledAmount = iterationCount * Math.abs(viewHeight - imageHeight);
                 if (!scroll(webDriver, scrolledAmount)) {
                     break;
@@ -270,7 +270,9 @@ public class ImageLocatorController {
         } else {
             screenshotPath += "/" + name;
         }
-        screenshotPath += ".png";
+        if (!screenshotPath.endsWith(".png")) {
+            screenshotPath += ".png";
+        }
         File fileScreenshot = new File(screenshotPath);
         FileUtils.copyFile(screenshot, fileScreenshot);
         // Delete temporary image

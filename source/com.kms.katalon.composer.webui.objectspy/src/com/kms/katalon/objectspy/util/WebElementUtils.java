@@ -273,8 +273,10 @@ public class WebElementUtils {
         File imageFolder = new File(currentProjectLocation + SCREENSHOT_PATH);
         imageFolder.mkdirs();
         TestObject testObject = WebElementUtils.buildTestObject(el);
-        By selectorMethod = WebUiCommonHelper.buildLocator(testObject);
-        return Optional.ofNullable(driver.findElement(selectorMethod)).map(element -> {
+        boolean isValidLocator = testObject.getSelectorMethod() != SelectorMethod.IMAGE;
+        SelectorMethod selectorMethod = isValidLocator ? testObject.getSelectorMethod() : SelectorMethod.XPATH;
+        By findElementBy = WebUiCommonHelper.buildLocator(testObject, selectorMethod);
+        return Optional.ofNullable(driver.findElement(findElementBy)).map(element -> {
             try {
                 return WebUiCommonHelper.saveWebElementScreenshotAndResize(driver, element, el.getName(),
                         imageFolder.getAbsolutePath());

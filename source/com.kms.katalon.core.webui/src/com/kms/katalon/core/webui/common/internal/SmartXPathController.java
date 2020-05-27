@@ -28,7 +28,7 @@ public class SmartXPathController {
 
 	private static String SMART_XPATH_PREFIX = "[SMART_XPATH]";
 
-	private static KeywordLogger logger;
+	private static KeywordLogger logger = KeywordLogger.getInstance(SmartXPathController.class);
 
 	/**
 	 * This method initializes Smart XPath Logger with a logger of the calling
@@ -78,15 +78,17 @@ public class SmartXPathController {
 
 	/**
 	 * Register a Test Object as broken, register this information along with a
-	 * proposed XPath to an internal file provided by Smart Path Plug-in.
+	 * proposed locator to an internal file provided by Self-Healing Plug-in.
 	 * 
 	 * @param testObject
 	 *            The broken Test Object to be registered
-	 * @param thisXPath
-	 *            The proposed XPath for the broken Test Object
+	 * @param proposedLocator
+	 *            The proposed locator for the broken Test Object
+	 * @param proposedLocatorMethod
+	 *            The proposed locator method for the broken Test Object 
 	 * @param pathToScreenshot
 	 *            Path to the screenshot of the web element retrieved by the
-	 *            proposed XPath
+	 *            proposed locator
 	 */
     public static void registerBrokenTestObject(TestObject testObject, String proposedLocator,
             SelectorMethod proposedLocatorMethod, String pathToScreenshot) {
@@ -98,7 +100,7 @@ public class SmartXPathController {
 			existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
 			writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
 		} else {
-			logError(jsAutoHealingPath + " does not exist or is provided by Smart XPath Plugin!");
+			logError(jsAutoHealingPath + " does not exist or is provided by Self-Healing Plugin!");
 		}
 	}
 
@@ -150,21 +152,21 @@ public class SmartXPathController {
 
 	/**
 	 * Take screenshot of a web element and saved to an internal folder provided
-	 * by Smart XPath Plug-in
+	 * by Self-Healing Plug-in
 	 * 
 	 * @param webDriver
 	 *            A WebDriver instance that's being used at the time calling
 	 *            this function
-	 * @param ele
+	 * @param element
 	 *            The web element to be taken screenshot of
 	 * @param name
 	 *            Name of the screenshot
 	 * @return A path to the newly taken screenshot, an empty string otherwise
 	 */
-	public static String takeScreenShot(WebDriver webDriver, WebElement ele, String name) {
+	public static String takeScreenShot(WebDriver webDriver, WebElement element, String name) {
 		String smartXPathFolder = getSmartXPathFolderPath();
 		try {
-			String fullPath = WebUiCommonHelper.saveWebElementScreenshot(webDriver, ele, name, smartXPathFolder);
+			String fullPath = WebUiCommonHelper.saveWebElementScreenshot(webDriver, element, name, smartXPathFolder);
 			logInfo("Screenshot: " + fullPath);
 			return fullPath;
 		} catch (Exception ex) {
