@@ -10,6 +10,8 @@ public class CoreWindowsMessageConstants extends NLS {
 
     public static String KW_ENCRYPTED_TEXT_IS_NULL;
     
+    public static String WindowsActionHelper_INFO_START_FINDING_WINDOW;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWindowsMessageConstants.class);

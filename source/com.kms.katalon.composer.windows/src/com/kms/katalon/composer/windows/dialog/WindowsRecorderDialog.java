@@ -780,9 +780,19 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         btnStop.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                addStopAction();
                 stopObjectInspectorAction();
             }
         });
+    }
+
+    private void addStopAction() {
+        WindowsActionMapping stopAction = new WindowsActionMapping(WindowsAction.CloseApplication, null);
+        try {
+            stepView.addNode(stopAction);
+        } catch (ClassNotFoundException exception) {
+            LoggerSingleton.logError(exception);
+        }
     }
 
     private boolean validateAppSetting() {

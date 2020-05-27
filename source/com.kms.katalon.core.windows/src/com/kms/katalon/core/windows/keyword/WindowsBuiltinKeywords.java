@@ -14,6 +14,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.WindowsTestObject;
 import com.kms.katalon.core.windows.constants.StringConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionSettings;
 
 import io.appium.java_client.windows.WindowsDriver;
 
@@ -821,13 +822,16 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title. 
+     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title in the preset timeout (120 seconds by default). 
      * This keyword should use when:
      * <ul>
      *  <li>The main application window has been closed and replaced by another window.</li>
      *  <li>The application has multiple working windows. We can switch among these windows.</li>
      *  <li>We already have an opened application and need to switch to without reopening requires</li>
      * </ul>
+     * 
+     * <p>
+     * Since 7.5.5, you can change the application title waiting timeout by changing: {@link WindowsActionSettings#DF_WAIT_ACTION_TIMEOUT_IN_MILLIS}
      * 
      * @param windowName
      * Title or name of the opening application windows. Full text or partial text is acceptable.
@@ -854,13 +858,16 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title. 
+     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title in the preset timeout (120 seconds by default). 
      * This keyword should use when:
      * <ul>
      *  <li>The main application window has been closed and replaced by another window.</li>
      *  <li>The application has multiple working windows. We can switch among these windows.</li>
      *  <li>We already have an opened application and need to switch to without reopening requires</li>
      * </ul>
+     * 
+     * <p>
+     * Since 7.5.5, you can change the application title waiting timeout by changing: {@link WindowsActionSettings#DF_WAIT_ACTION_TIMEOUT_IN_MILLIS} 
      * 
      * @param windowTitle
      * Title of the opening application windows. Full text or partial text is acceptable.
@@ -880,7 +887,9 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Starts Windows driver and starts the Windows application at the given absolute path.
      * After the application starts, if WinAppDriver cannot not detect the main application window correctly, Katalon Studio will use
-     * the given windowTitle to find the opened application to continue working.
+     * the given windowTitle in the preset timeout (120 seconds by default) to find the opened application to continue working.
+     * <p>
+     * Since 7.5.5, you can change the application title waiting timeout by changing: {@link WindowsActionSettings#DF_WAIT_ACTION_TIMEOUT_IN_MILLIS} 
      * 
      * @param appFile
      * Absolute path to the Windows application.
@@ -900,7 +909,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Starts Windows driver and starts the Windows application at the given absolute path.
      * After the application starts, if WinAppDriver cannot not detect the main application window correctly, Katalon Studio will use
-     * the given windowTitle to find the opened application to continue working.
+     * the given windowTitle in the preset timeout (120 seconds by default) to find the opened application to continue working.
+     * 
+     * <p>
+     * Since 7.5.5, you can change the application title waiting timeout by changing: {@link WindowsActionSettings#DF_WAIT_ACTION_TIMEOUT_IN_MILLIS}
      * 
      * @param appFile
      * Absolute path to the Windows application.

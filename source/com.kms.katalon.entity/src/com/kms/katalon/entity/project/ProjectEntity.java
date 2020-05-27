@@ -26,6 +26,8 @@ public class ProjectEntity extends IntegratedFileEntity {
     private ProjectType type = ProjectType.GENERIC;
     
     private String projectFileLocation;
+    
+    private String katalonVersion;
 
     public String getUUID() {
         return UUID;
@@ -127,4 +129,12 @@ public class ProjectEntity extends IntegratedFileEntity {
     	setFolderLocation(projectFile.getParent());
     	setProjectFileLocation(projectFile.getAbsolutePath());
     }
+
+	public String getKatalonVersion() {
+		return katalonVersion;
+	}
+
+	public void setKatalonVersion(String katalonVersion) {
+		this.katalonVersion = katalonVersion;
+	}
 }

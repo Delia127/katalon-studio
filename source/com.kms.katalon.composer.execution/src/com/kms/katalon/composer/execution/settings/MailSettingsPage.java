@@ -35,9 +35,11 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
@@ -50,13 +52,14 @@ import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
+import com.kms.katalon.feature.KSEFeature;
 
 public class MailSettingsPage extends PreferencePageWithHelp {
-    public static final String MAIL_CONFIG_USERNAME_HINT = "E.g: testemailkms@gmail.com";
+    public static final String MAIL_CONFIG_USERNAME_HINT = "E.g: testemailkms@gmail.com"; //$NON-NLS-1$
 
-    public static final String MAIL_CONFIG_PORT_HINT = "E.g: 465";
+    public static final String MAIL_CONFIG_PORT_HINT = "E.g: 465"; //$NON-NLS-1$
 
-    public static final String MAIL_CONFIG_HOST_HINT = "E.g: smtp.gmail.com";
+    public static final String MAIL_CONFIG_HOST_HINT = "E.g: smtp.gmail.com"; //$NON-NLS-1$
 
     private static final char PASSWORD_CHAR_MASK = '\u2022';
 
@@ -70,7 +73,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     private Text txtSender, txtRecipients, txtSubject, txtCc, txtBcc;
 
-    private Link lnkEditTemplate;
+    private Link lnkEditTemplateForTestSuite, lnkEditTemplateForTestSuiteCollection;
 
     private Button btnSendTestEmail;
 
@@ -84,11 +87,21 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     private Button chckEncrypt;
     
-    private Button sendEmailFailedTestRadio;
+    private Button cbSendTestSuiteReport;
+
+    private Button rbSendReportFailedTestSuites;
+
+    private Button rbSendReportAllTestSuites;
     
-    private Button sendEmailAllcasesRadio;
+    private Button cbSendTestSuiteCollectionReport;
     
+    private Button cbSkipIndividualTestSuiteReport;
+
     private Button chckUseUsernameAsSender;
+
+    private Group testSuiteReportGroup;
+
+    private Group testSuiteCollectionReportGroup;
 
     public MailSettingsPage() {
         super();
@@ -112,8 +125,10 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
         createReportFormatGroup(container);
 
-        addSendTestFailedOnlyCheckbox(container);
+        addTestSuiteReportGroup(container);
         
+        addTestSuiteCollectionReportGroup(container);
+
         createSendTestEmailButton(container);
 
         registerControlListers();
@@ -137,15 +152,16 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             updateReportFormatOptionsStatus();
 
             chckUseUsernameAsSender.setSelection(settingStore.useUsernameAsSender());
-            
+
             String sender = settingStore.getSender();
             if (settingStore.useUsernameAsSender()) {
                 sender = txtUsername.getText();
             }
             txtSender.setText(sender);
-            
+
             if (chckUseUsernameAsSender.getSelection()) {
-                txtSender.setEnabled(false);;
+                txtSender.setEnabled(false);
+                ;
             } else {
                 txtSender.setEnabled(true);
             }
@@ -157,19 +173,38 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             settingStore.getReportFormatOptions().forEach(format -> {
                 formatOptionCheckboxes.get(format).setSelection(true);
             });
-            sendEmailFailedTestRadio.setSelection(settingStore.isSendEmailTestFailedOnly());
-            sendEmailAllcasesRadio.setSelection(!settingStore.isSendEmailTestFailedOnly());
+            
+            cbSendTestSuiteReport.setSelection(settingStore.isSendTestSuiteReportEnabled());
+            rbSendReportFailedTestSuites.setSelection(settingStore.isSendEmailTestFailedOnly());
+            rbSendReportAllTestSuites.setSelection(!settingStore.isSendEmailTestFailedOnly());
+            
+            setTestSuiteReportGroupEnabled(settingStore.isSendTestSuiteReportEnabled());
+
+            boolean isSendCollectionReportEnabled = LicenseUtil.isNotFreeLicense()
+                    ? settingStore.isSendTestSuiteCollectionReportEnabled() : false;
+            cbSendTestSuiteCollectionReport.setSelection(isSendCollectionReportEnabled);
+            cbSkipIndividualTestSuiteReport.setSelection(settingStore.isSkipInvidualTestSuiteReport());
+
+            setTestSuiteCollectionReportGroupEnabled(isSendCollectionReportEnabled);
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
     }
 
     private void registerControlListers() {
-        lnkEditTemplate.addSelectionListener(new SelectionAdapter() {
+        lnkEditTemplateForTestSuite.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.SETTINGS_PAGE_CHANGE,
-                        StringConstants.EMAIL_TEMPLATE_PAGE_ID);
+                        StringConstants.TEST_SUITE_EMAIL_TEMPLATE_PAGE_ID);
+            }
+        });
+
+        lnkEditTemplateForTestSuiteCollection.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.SETTINGS_PAGE_CHANGE,
+                        StringConstants.TEST_SUITE_COLLECTION_EMAIL_TEMPLATE_PAGE_ID);
             }
         });
 
@@ -189,7 +224,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 emailConfig.setBcc(txtBcc.getText());
                 emailConfig.setAttachmentOptions(getSelectedAttachmentOptions());
                 try {
-                    emailConfig.setHtmlMessage(getSettingStore().getEmailHTMLTemplate());
+                    emailConfig.setHtmTemplateForTestSuite(getSettingStore().getEmailHTMLTemplateForTestSuite());
                 } catch (IOException | URISyntaxException ex) {
                     LoggerSingleton.logError(ex);
                 }
@@ -203,7 +238,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             public void verifyText(VerifyEvent e) {
                 e.doit = StringUtils.isNumeric(e.text);
                 if (e.doit) {
-                    setValidationAndEnableSendEmail("port", StringUtils.isNotEmpty(e.text));
+                    setValidationAndEnableSendEmail("port", StringUtils.isNotEmpty(e.text)); //$NON-NLS-1$
                 }
             }
         });
@@ -211,27 +246,27 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         txtHost.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                setValidationAndEnableSendEmail("host", StringUtils.isNotEmpty(txtHost.getText()));
+                setValidationAndEnableSendEmail("host", StringUtils.isNotEmpty(txtHost.getText())); //$NON-NLS-1$
             }
         });
 
         txtPassword.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                setValidationAndEnableSendEmail("password", StringUtils.isNotEmpty(txtPassword.getText()));
+                setValidationAndEnableSendEmail("password", StringUtils.isNotEmpty(txtPassword.getText())); //$NON-NLS-1$
             }
         });
 
         txtUsername.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                setValidationAndEnableSendEmail("username", validator.isValidEmail(txtUsername.getText()));
+                setValidationAndEnableSendEmail("username", validator.isValidEmail(txtUsername.getText())); //$NON-NLS-1$
                 if (chckUseUsernameAsSender.getSelection()) {
                     txtSender.setText(txtUsername.getText());
                 }
             }
         });
-        
+
         chckUseUsernameAsSender.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -243,18 +278,18 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 }
             }
         });
-        
+
         txtSender.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent arg0) {
-                setValidationAndEnableSendEmail("sender", validator.isValidEmail(txtSender.getText()));
+                setValidationAndEnableSendEmail("sender", validator.isValidEmail(txtSender.getText())); //$NON-NLS-1$
             }
         });
 
         txtRecipients.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                setValidationAndEnableSendEmail("recipients", validator.isValidListEmail(txtRecipients.getText()));
+                setValidationAndEnableSendEmail("recipients", validator.isValidListEmail(txtRecipients.getText())); //$NON-NLS-1$
             }
         });
 
@@ -262,7 +297,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             @Override
             public void modifyText(ModifyEvent e) {
                 String text = txtCc.getText();
-                setValidationAndEnableSendEmail("cc", StringUtils.isBlank(text) || validator.isValidEmail(text));
+                setValidationAndEnableSendEmail("cc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
             }
         });
 
@@ -270,7 +305,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             @Override
             public void modifyText(ModifyEvent e) {
                 String text = txtBcc.getText();
-                setValidationAndEnableSendEmail("bcc", StringUtils.isBlank(text) || validator.isValidEmail(text));
+                setValidationAndEnableSendEmail("bcc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
             }
         });
 
@@ -280,13 +315,29 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 updateReportFormatOptionsStatus();
             }
         });
+        
+        cbSendTestSuiteReport.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setTestSuiteReportGroupEnabled(cbSendTestSuiteReport.getSelection());
+            }
+        });
+        
+        cbSendTestSuiteCollectionReport.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (LicenseUtil.isNotFreeLicense()) {
+                    setTestSuiteCollectionReportGroupEnabled(cbSendTestSuiteCollectionReport.getSelection());
+                } else {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL);
+                    cbSendTestSuiteCollectionReport.setSelection(false);
+                }
+            }
+        });
     }
 
     private List<ReportFormatType> getSelectedAttachmentOptions() {
-        return formatOptionCheckboxes.entrySet()
-                .stream()
-                .filter(e -> e.getValue().getSelection())
-                .map(e -> e.getKey())
+        return formatOptionCheckboxes.entrySet().stream().filter(e -> e.getValue().getSelection()).map(e -> e.getKey())
                 .collect(Collectors.toList());
     }
 
@@ -327,7 +378,10 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             settingStore.setSender(txtSender.getText());
             settingStore.setRecipients(txtRecipients.getText(), encrytionEnabled);
             settingStore.setReportFormatOptions(getSelectedAttachmentOptions());
-            settingStore.setSendEmailTestFailedOnly(sendEmailFailedTestRadio.getSelection());
+            settingStore.setSendTestSuiteReportEnabled(cbSendTestSuiteReport.getSelection());
+            settingStore.setSendEmailTestFailedOnly(rbSendReportFailedTestSuites.getSelection());
+            settingStore.setSendTestSuiteCollectionReportEnabled(cbSendTestSuiteCollectionReport.getSelection());
+            settingStore.setSkipIndividualTestSuiteReport(cbSkipIndividualTestSuiteReport.getSelection());
             return super.performOk();
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
@@ -338,11 +392,11 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private void createPostExecuteGroup(Composite container) {
         Group postExecuteGroup = createGroup(container, ComposerExecutionMessageConstants.PREF_GROUP_LBL_EXECUTION_MAIL,
                 2, 1, GridData.FILL_HORIZONTAL);
-        
+
         chckUseUsernameAsSender = new Button(postExecuteGroup, SWT.CHECK);
         chckUseUsernameAsSender.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         chckUseUsernameAsSender.setText(ComposerExecutionMessageConstants.PREF_CHECK_USE_USERNAME_AS_SENDER);
-        
+
         txtSender = createTextFieldWithLabel(postExecuteGroup, ComposerExecutionMessageConstants.PREF_LBL_REPORT_SENDER,
                 StringUtils.EMPTY, 1);
 
@@ -360,12 +414,23 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 StringUtils.EMPTY, 1);
 
         Label lblBody = new Label(postExecuteGroup, SWT.NONE);
-        lblBody.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblBody.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblBody.setText(ComposerExecutionMessageConstants.PREF_LBL_BODY);
 
-        lnkEditTemplate = new Link(postExecuteGroup, SWT.NONE);
-        lnkEditTemplate.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-        lnkEditTemplate.setText(String.format("<a>%s</a>", ComposerExecutionMessageConstants.PREF_LNK_EDIT_TEMPLATE));
+        Composite linkComposite = new Composite(postExecuteGroup, SWT.NONE);
+        GridLayout glLinkComposite = new GridLayout();
+        glLinkComposite.marginWidth = 0;
+        glLinkComposite.marginHeight = 0;
+        linkComposite.setLayout(glLinkComposite);
+        linkComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+        lnkEditTemplateForTestSuite = new Link(linkComposite, SWT.NONE);
+        lnkEditTemplateForTestSuite.setText(
+                String.format("<a>%s</a>", ComposerExecutionMessageConstants.PREF_LNK_EDIT_TEMPLATE_TEST_SUITE)); //$NON-NLS-1$
+
+        lnkEditTemplateForTestSuiteCollection = new Link(linkComposite, SWT.NONE);
+        lnkEditTemplateForTestSuiteCollection.setText(String.format("<a>%s</a>", //$NON-NLS-1$
+                ComposerExecutionMessageConstants.PREF_LNK_EDIT_TEMPLATE_TEST_SUITE_COLLECTION));
     }
 
     private void createReportFormatGroup(Composite container) {
@@ -400,24 +465,49 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             formatOptionCheckboxes.put(formatType, btnFormmatingType);
         }
     }
+
+    private void addTestSuiteReportGroup(Composite container) {
+        testSuiteReportGroup = new Group(container, SWT.NONE);
+        testSuiteReportGroup.setLayout(new GridLayout());
+        testSuiteReportGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        
+        cbSendTestSuiteReport = new Button(testSuiteReportGroup, SWT.CHECK);
+        cbSendTestSuiteReport.setText(ComposerExecutionMessageConstants.MailSettingsPage_MSG_ENABLE_TEST_SUITE_REPORT);
+
+        GridData gdRadio = new GridData(GridData.FILL, GridData.CENTER, true, false, 1, 1);
+        gdRadio.horizontalIndent = 15;
+        
+        rbSendReportAllTestSuites = new Button(testSuiteReportGroup, SWT.RADIO);
+        rbSendReportAllTestSuites.setLayoutData(gdRadio);
+        rbSendReportAllTestSuites.setText(StringConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES);
+
+        rbSendReportFailedTestSuites = new Button(testSuiteReportGroup, SWT.RADIO);
+        rbSendReportFailedTestSuites.setLayoutData(gdRadio);
+        rbSendReportFailedTestSuites.setText(StringConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_FAILED_TEST_ONLY);
+    }
     
-    private void addSendTestFailedOnlyCheckbox(Composite container) {
-        Composite radioSelectionComposite = new Composite(container, SWT.NONE);
-        radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+    private void setTestSuiteReportGroupEnabled(boolean enabled) {
+        rbSendReportAllTestSuites.setEnabled(enabled);
+        rbSendReportFailedTestSuites.setEnabled(enabled);
+    }
+    
+    private void addTestSuiteCollectionReportGroup(Composite container) {
+        testSuiteCollectionReportGroup = new Group(container, SWT.NONE);
+        testSuiteCollectionReportGroup.setLayout(new GridLayout());
+        testSuiteCollectionReportGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+
+        cbSendTestSuiteCollectionReport = new Button(testSuiteCollectionReportGroup, SWT.CHECK);
+        cbSendTestSuiteCollectionReport.setText(ComposerExecutionMessageConstants.MailSettingsPage_MSG_ENABLE_COLLECTION_REPORT);
         
-        GridLayout glRadioSelection = new GridLayout(1, false);
-        glRadioSelection.marginHeight = 0;
-        glRadioSelection.marginWidth = 0;
-        glRadioSelection.marginLeft = 10;
-        radioSelectionComposite.setLayout(glRadioSelection);
-        
-        sendEmailAllcasesRadio = new Button(radioSelectionComposite, SWT.RADIO);
-        sendEmailAllcasesRadio.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 1, 1));
-        sendEmailAllcasesRadio.setText(StringConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES);
-        
-        sendEmailFailedTestRadio = new Button(radioSelectionComposite, SWT.RADIO);
-        sendEmailFailedTestRadio.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 1, 1));
-        sendEmailFailedTestRadio.setText(StringConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_FAILED_TEST_ONLY);
+        cbSkipIndividualTestSuiteReport = new Button(testSuiteCollectionReportGroup, SWT.CHECK);
+        GridData gdRadio = new GridData(GridData.FILL, GridData.CENTER, true, false, 1, 1);
+        gdRadio.horizontalIndent = 15;
+        cbSkipIndividualTestSuiteReport.setLayoutData(gdRadio);
+        cbSkipIndividualTestSuiteReport.setText(ComposerExecutionMessageConstants.MailSettingsPage_MSG_SKIP_SENDING_INDIVIDUAL_REPORT);
+    }
+    
+    private void setTestSuiteCollectionReportGroupEnabled(boolean enabled) {
+        cbSkipIndividualTestSuiteReport.setEnabled(enabled);
     }
 
     private void createSendTestEmailButton(Composite parent) {
@@ -435,7 +525,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
         txtUsername = createTextFieldWithLabel(serverGroup, StringConstants.PREF_LBL_USERNAME,
                 MAIL_CONFIG_USERNAME_HINT, 1);
-        txtPassword = createTextFieldWithLabel(serverGroup, StringConstants.PREF_LBL_PASSWORD, "", 1);
+        txtPassword = createTextFieldWithLabel(serverGroup, StringConstants.PREF_LBL_PASSWORD, "", 1); //$NON-NLS-1$
         txtPassword.setEchoChar(PASSWORD_CHAR_MASK);
 
         createLabel(serverGroup, StringConstants.PREF_LBL_SECURITY_PROTOCOL);
@@ -538,19 +628,19 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private class EmailConfigValidator {
         private Map<String, Boolean> validation;
 
-        private static final String EMAIL_TEXT_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        private static final String EMAIL_TEXT_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" //$NON-NLS-1$
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"; //$NON-NLS-1$
 
         public EmailConfigValidator() {
             validation = new HashMap<>();
-            validation.put("host", false);
-            validation.put("port", false);
-            validation.put("username", false);
-            validation.put("password", false);
-            validation.put("sender", false);
-            validation.put("recipients", false);
-            validation.put("cc", true);
-            validation.put("bcc", true);
+            validation.put("host", false); //$NON-NLS-1$
+            validation.put("port", false); //$NON-NLS-1$
+            validation.put("username", false); //$NON-NLS-1$
+            validation.put("password", false); //$NON-NLS-1$
+            validation.put("sender", false); //$NON-NLS-1$
+            validation.put("recipients", false); //$NON-NLS-1$
+            validation.put("cc", true); //$NON-NLS-1$
+            validation.put("bcc", true); //$NON-NLS-1$
         }
 
         private boolean isValidated() {

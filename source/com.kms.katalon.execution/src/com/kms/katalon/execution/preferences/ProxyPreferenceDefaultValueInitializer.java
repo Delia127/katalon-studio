@@ -23,6 +23,25 @@ public class ProxyPreferenceDefaultValueInitializer extends AbstractPreferenceIn
         store.setDefault(ProxyPreferenceConstants.PROXY_SERVER_PORT, PROXY_SERVER_PORT_DEFAULT_VALUE);
         store.setDefault(ProxyPreferenceConstants.PROXY_USERNAME, "");
         store.setDefault(ProxyPreferenceConstants.PROXY_PASSWORD, "");
+        store.setDefault(ProxyPreferenceConstants.PROXY_EXCEPTION_LIST, "");
         store.setDefault(ProxyPreferenceConstants.PROXY_PREFERENCE_SET, false);
+
+        store.setDefault(ProxyPreferenceConstants.AUTH_PROXY_OPTION, ProxyOption.NO_PROXY.name());
+        store.setDefault(ProxyPreferenceConstants.AUTH_PROXY_SERVER_TYPE, ProxyServerType.HTTP.name());
+        store.setDefault(ProxyPreferenceConstants.AUTH_PROXY_SERVER_ADDRESS, "");
+        store.setDefault(ProxyPreferenceConstants.AUTH_PROXY_SERVER_PORT, PROXY_SERVER_PORT_DEFAULT_VALUE);
+        store.setDefault(ProxyPreferenceConstants.AUTH_PROXY_USERNAME, "");
+        store.setDefault(ProxyPreferenceConstants.AUTH_PROXY_PASSWORD, "");
+        store.setDefault(ProxyPreferenceConstants.AUTH_PROXY_EXCEPTION_LIST, "");
+        store.setDefault(ProxyPreferenceConstants.AUTH_PROXY_PREFERENCE_SET, false);
+
+        store.setDefault(ProxyPreferenceConstants.SYSTEM_PROXY_OPTION, ProxyOption.NO_PROXY.name());
+        store.setDefault(ProxyPreferenceConstants.SYSTEM_PROXY_SERVER_TYPE, ProxyServerType.HTTP.name());
+        store.setDefault(ProxyPreferenceConstants.SYSTEM_PROXY_SERVER_ADDRESS, "");
+        store.setDefault(ProxyPreferenceConstants.SYSTEM_PROXY_SERVER_PORT, PROXY_SERVER_PORT_DEFAULT_VALUE);
+        store.setDefault(ProxyPreferenceConstants.SYSTEM_PROXY_USERNAME, "");
+        store.setDefault(ProxyPreferenceConstants.SYSTEM_PROXY_PASSWORD, "");
+        store.setDefault(ProxyPreferenceConstants.SYSTEM_PROXY_EXCEPTION_LIST, "");
+        store.setDefault(ProxyPreferenceConstants.SYSTEM_PROXY_PREFERENCE_SET, false);
     }
 }

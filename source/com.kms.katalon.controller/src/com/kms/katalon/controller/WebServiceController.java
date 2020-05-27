@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 
@@ -68,6 +69,8 @@ public class WebServiceController extends EntityController {
             requestObject.setSoapServiceFunction(entity.getSoapServiceFunction());
             requestObject.setHttpHeaderProperties(parseProperties(entity.getHttpHeaderProperties(), substitutor));
             requestObject.setSoapBody(substitutor.replace(entity.getSoapBody()));
+            requestObject.setUseServiceInfoFromWsdl(entity.isUseServiceInfoFromWsdl());
+            requestObject.setSoapServiceEndpoint(substitutor.replace(entity.getSoapServiceEndpoint()));
         } else if ("RESTful".equals(serviceType)) {
             String rawUrl = entity.getRestUrl();
             String url = buildUrlFromRaw(rawUrl, substitutor);

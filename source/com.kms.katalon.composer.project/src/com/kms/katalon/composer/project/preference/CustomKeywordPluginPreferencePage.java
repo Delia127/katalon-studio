@@ -17,10 +17,12 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -41,7 +43,7 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     private final KeywordsManifest keywordsManifest;
 
-    private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "label", "checkbox", "button" });
+    private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "label", "checkbox", "button", "link" });
 
     private Map<String, Pair<SettingPageComponent, Control>> componentCollection = new HashMap<>();
 
@@ -70,6 +72,7 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
             String key = entry.getKey();
             String type = entry.getType();
             String label = entry.getLabel();
+            String defaultValue = entry.getDefaultValue();
 
             if (acceptedTypes.indexOf(type) == -1) {
                 continue;
@@ -111,6 +114,19 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                     lblComponentLabelEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
                     lblComponentLabelEntry.setText(label);
                     componentCollection.put(key, Pair.of(entry, lblComponentLabelEntry));
+                    break;
+                }
+                case "link": {
+                    Link linkComponentLinkEntry = new Link(container, SWT.NONE);
+                    linkComponentLinkEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+                    linkComponentLinkEntry.setText(label);
+                    linkComponentLinkEntry.addSelectionListener(new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            Program.launch(defaultValue);
+                        }
+                    });
+                    componentCollection.put(key, Pair.of(entry, linkComponentLinkEntry));
                     break;
                 }
             }
