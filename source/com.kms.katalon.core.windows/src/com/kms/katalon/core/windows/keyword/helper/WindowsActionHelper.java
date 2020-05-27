@@ -428,6 +428,8 @@ public class WindowsActionHelper {
                     Integer.toHexString(Integer.parseInt(appTopLevelWindow)));
             WindowsDriver<WebElement> windowsDriver = WindowsDriverFactory.newWindowsDriver(
                     windowsSession.getRemoteAddressURL(), retryDesiredCapabilities, windowsSession.getProxy());
+            
+            windowsDriver.manage().timeouts().implicitlyWait(getDefaultTimeout(), TimeUnit.SECONDS);
 
             windowsSession.setApplicationDriver(windowsDriver);
             windowsSession.setDesktopDriver(desktopDriver);
