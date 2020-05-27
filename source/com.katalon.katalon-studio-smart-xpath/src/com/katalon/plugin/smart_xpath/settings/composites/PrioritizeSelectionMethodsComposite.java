@@ -22,6 +22,8 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -35,9 +37,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.TypedListener;
 
-import com.katalon.platform.api.exception.InvalidDataTypeFormatException;
-import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.settings.SelfHealingSetting;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -58,8 +59,6 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
 	private static final String COLUMN_DETECT_OBJECT_BY = SmartXPathMessageConstants.COLUMN_DETECT_OBJECT_BY;
 
-	private SelfHealingSetting preferenceStore;
-
 	private TableViewer tvPrioritizeSelectionMethods;
 
 	private Table tPrioritizeSelectionMethods;
@@ -76,8 +75,12 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
 	public PrioritizeSelectionMethodsComposite(Composite parent, int style, SelfHealingSetting preferenceStore) {
 		super(parent, style);
-		this.preferenceStore = preferenceStore;
 		createContents(parent);
+	}
+	
+	public void setInput(List<Pair<String, Boolean>> methodsPriorityOrder) {
+		this.methodsPriorityOrder = methodsPriorityOrder;
+		tvPrioritizeSelectionMethods.setInput(this.methodsPriorityOrder);
 	}
 
 	private void createContents(Composite parent) {
@@ -96,27 +99,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 		prioritizeGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		prioritizeGroup.setText(GRP_LBL_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION);
 
-		getMethodsPriorityOrderFromPluginPreference();
 		createPrioritizeOrderToolbar(prioritizeGroup);
 		createPrioritizeTable(prioritizeGroup);
-
-		tvPrioritizeSelectionMethods.setInput(methodsPriorityOrder);
-	}
-
-	public void setUpdatedMethodsPriorityOrderIntoPluginPreference() {
-		try {
-			preferenceStore.setMethodsPritorityOrder(methodsPriorityOrder);
-		} catch (ResourceException exception) {
-			exception.printStackTrace();
-		}
-	}
-
-	private void getMethodsPriorityOrderFromPluginPreference() {
-		try {
-			methodsPriorityOrder = preferenceStore.getMethodsPriorityOrder();
-		} catch (InvalidDataTypeFormatException | ResourceException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void createPrioritizeOrderToolbar(Composite parent) {
@@ -140,6 +124,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 					methodsPriorityOrder.add(selectedIndex - 1, method);
 					tvPrioritizeSelectionMethods.setSelection(new StructuredSelection(method));
 					tvPrioritizeSelectionMethods.refresh();
+
+					handleSelectionChange(null);
 				}
 			}
 		});
@@ -157,6 +143,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 					methodsPriorityOrder.add(selectedIndex + 1, method);
 					tvPrioritizeSelectionMethods.setSelection(new StructuredSelection(method));
 					tvPrioritizeSelectionMethods.refresh();
+
+					handleSelectionChange(null);
 				}
 			}
 		});
@@ -201,6 +189,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 							tvPrioritizeSelectionMethods.setSelection(new StructuredSelection(method));
 							tvPrioritizeSelectionMethods.refresh();
 						}
+						handleSelectionChange(event);
 					}
 				});
 		tPrioritizeSelectionMethods = tvPrioritizeSelectionMethods.getTable();
@@ -232,6 +221,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 				Boolean isSelected = ((Pair<String, Boolean>) property).getRight();
 				((TableItem) cell.getViewerRow().getItem()).setChecked(isSelected);
 				tPrioritizeSelectionMethods.redraw();
+				
+				handleSelectionChange(null);
 			}
 		});
 
@@ -256,6 +247,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 			protected void setValue(Object element, Object value) {
 				((Pair<String, Boolean>) element).setRight((boolean) value);
 				tvPrioritizeSelectionMethods.update(element, null);
+				
+				handleSelectionChange(null);
 			}
 		});
 
@@ -295,4 +288,31 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 		return isChecked ? ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16)
 				: ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
 	}
+	
+	public List<Pair<String, Boolean>> getInput() {
+		return methodsPriorityOrder;
+	}
+
+	public boolean compareInput(List<Pair<String, Boolean>> methodsPriorityOrderBeforeSetting) {
+		return methodsPriorityOrder != null && methodsPriorityOrder.equals(methodsPriorityOrderBeforeSetting);
+	}
+
+    private void handleSelectionChange(TypedEvent selectionEvent) {
+        dispatchSelectionEvent(selectionEvent);
+    }
+
+    private void dispatchSelectionEvent(TypedEvent selectionEvent) {
+        notifyListeners(SWT.Selection, null);
+        notifyListeners(SWT.DefaultSelection, null);
+    }
+
+    public void addSelectionListener(SelectionListener listener) {
+        checkWidget();
+        if (listener == null) {
+            return;
+        }
+        TypedListener typedListener = new TypedListener(listener);
+        addListener(SWT.Selection, typedListener);
+        addListener(SWT.DefaultSelection, typedListener);
+    }
 }

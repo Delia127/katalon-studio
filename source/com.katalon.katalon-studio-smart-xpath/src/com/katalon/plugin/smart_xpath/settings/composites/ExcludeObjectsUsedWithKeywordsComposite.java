@@ -13,13 +13,14 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -32,10 +33,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.TypedListener;
 
-import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
-import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.settings.SelfHealingSetting;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -51,44 +51,21 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 
 	private ToolItem tltmAddVariable, tltmRemoveVariable;
 
-	private TreeViewer treeViewer;
-
 	private TableViewer tableViewer;
-
-	private SelfHealingSetting preferenceStore;
 
 	private List<String> excludeKeywordNames;
 
 	public ExcludeObjectsUsedWithKeywordsComposite(Composite parent, int style, SelfHealingSetting preferenceStore) {
 		super(parent, style);
-//		this.excludeKeywordNames = excludeKeywordNames;
-		this.preferenceStore = preferenceStore;
 		createContent(parent);
 	}
 	
-	public TreeViewer getTreeTable() {
-		return treeViewer;
-	}
-	
-	private void getExcludeKeywordsFromPluginPreference() {
-			try {
-				excludeKeywordNames = preferenceStore.getExcludeKeywordList();
-			} catch (ResourceException e) {
-				e.printStackTrace();
-			}
-	}
-
-	public void setUpdatedExcludeKeywordsIntoPluginPreference() {
-		try {
-			preferenceStore.setExcludeKeywordList(excludeKeywordNames);
-		} catch (ResourceException exception) {
-			LoggerSingleton.logError(exception);
-		}
+	public void setInput(List<String> excludeKeywordNames) {
+		this.excludeKeywordNames = excludeKeywordNames;
+		tableViewer.setInput(this.excludeKeywordNames);
 	}
 
 	public void createContent(Composite parent) {
-		this.getExcludeKeywordsFromPluginPreference();
-//		Composite excludeKeywordsComposite = new Composite(parent, SWT.NONE);
 		this.setLayout(new GridLayout(1, false));
 		this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
@@ -118,13 +95,15 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 				KeywordMethod newDefaultKeyword = webUIKeywordList.get(newDefaultKeywordIndex);
 				/// Avoid double Keyword
 				for (int i = 0; i < excludeKeywordNames.size(); i++) {
-					if (newDefaultKeyword.getName() == excludeKeywordNames.get(i)) {
+					if (newDefaultKeyword.getName().equals(excludeKeywordNames.get(i))) {
 						newDefaultKeyword = webUIKeywordList.get(++newDefaultKeywordIndex);
 						i = 0;
 					}
 				}
 				excludeKeywordNames.add(newDefaultKeyword.getName());
 				tableViewer.refresh();
+
+                handleSelectionChange(null);
 			}
 		});
 
@@ -143,6 +122,8 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 					excludeKeywordNames.remove(selectedObject);
 				}
 				tableViewer.getTable().setRedraw(true);
+
+                handleSelectionChange(null);
 			}
 		});
 
@@ -156,7 +137,6 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 		tableViewer = new TableViewer(tableExcludeObjectsWithKeywordsComposite,
 				SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.NO_SCROLL | SWT.V_SCROLL);
 		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-		tableViewer.setInput(excludeKeywordNames);
 
 		Table table = tableViewer.getTable();
 		table.setHeaderVisible(true);
@@ -185,6 +165,8 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 							excludeKeywordNames.set(changedKeywordIndex, newProperty.getName());
 						}
 						tableViewer.refresh();
+
+	                    handleSelectionChange(null);
 					}
 				}
 			}
@@ -243,4 +225,39 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 		}
 		return webUIKeywordStringList.toArray(new String[0]);
 	}
+	
+	public List<String> getInput() {
+		return excludeKeywordNames;
+	}
+	
+	public boolean compareInput(List<String> excludeKeywordNamesBeforeSetting) {
+		return excludeKeywordNames != null && excludeKeywordNames.equals(excludeKeywordNamesBeforeSetting);
+	}
+
+    private void handleSelectionChange(TypedEvent selectionEvent) {
+        dispatchSelectionEvent(selectionEvent);
+    }
+
+    private void dispatchSelectionEvent(TypedEvent selectionEvent) {
+        notifyListeners(SWT.Selection, null);
+        notifyListeners(SWT.DefaultSelection, null);
+    }
+
+    public void addSelectionListener(SelectionListener listener) {
+        checkWidget();
+        if (listener == null) {
+            return;
+        }
+        TypedListener typedListener = new TypedListener(listener);
+        addListener(SWT.Selection, typedListener);
+        addListener(SWT.DefaultSelection, typedListener);
+    }
+//	public boolean hasChanged() {
+//		String currentExcludeKeywordNames = excludeKeywordNames.toString();
+//		String beforeUpdateExcludeKeywordNames = this.getExcludeKeywordsFromPluginPreference().toString();
+//		if (!currentExcludeKeywordNames.equals(beforeUpdateExcludeKeywordNames)) {
+//			return true;
+//		}
+//		return false;
+//	}
 }

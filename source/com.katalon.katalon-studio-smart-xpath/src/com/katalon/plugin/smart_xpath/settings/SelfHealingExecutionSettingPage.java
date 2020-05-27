@@ -1,5 +1,7 @@
 package com.katalon.plugin.smart_xpath.settings;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -7,7 +9,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 import com.katalon.platform.api.exception.InvalidDataTypeFormatException;
 import com.katalon.platform.api.exception.ResourceException;
@@ -17,15 +18,13 @@ import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.settings.composites.ExcludeObjectsUsedWithKeywordsComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.PrioritizeSelectionMethodsComposite;
 import com.kms.katalon.composer.components.controls.HelpComposite;
-import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
+import com.kms.katalon.util.collections.Pair;
 
-public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
+public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	private static final String LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD = SmartXPathMessageConstants.LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD;
 
 	private Button checkboxEnableSelfHealing;
-
-	private Composite container;
 
 	private SelfHealingSetting preferenceStore;
 
@@ -34,12 +33,30 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 	private PrioritizeSelectionMethodsComposite prioritizeSelectionMethodsComposite;
 
 	private final String documentationUrl = null;
-	
+
 	private boolean isEnableSelfHealing;
+
+	private List<Pair<String, Boolean>> methodsPriorityOrder;
+
+	private List<String> excludeKeywordNames;
 
 	public SelfHealingExecutionSettingPage() {
 		generatePreferenceStore();
-		getEnableSelfHealingFromPluginPreference();
+	}
+
+	private void setInput() {
+		try {
+			excludeKeywordNames = preferenceStore.getExcludeKeywordList();
+			methodsPriorityOrder = preferenceStore.getMethodsPriorityOrder();
+		} catch (InvalidDataTypeFormatException | ResourceException e) {
+			e.printStackTrace();
+		}
+		
+		excludeObjectsUsedWithKeywordsComposite.setInput(excludeKeywordNames);
+		prioritizeSelectionMethodsComposite.setInput(methodsPriorityOrder);
+
+		isEnableSelfHealing = getEnableSelfHealingFromPluginPreference();
+		checkboxEnableSelfHealing.setSelection(isEnableSelfHealing);
 	}
 
 	private void generatePreferenceStore() {
@@ -48,7 +65,7 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 	}
 
 	@Override
-	protected Control createContents(Composite parent) {
+	protected void createSettingsArea(Composite parent) {
 		Composite mainContainer = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(2, false);
 		mainContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -60,61 +77,147 @@ public class SelfHealingExecutionSettingPage extends PreferencePageWithHelp {
 		createCheckboxEnableSelfHealing(mainContainer);
 		createMethodsPriorityOrderComposite(mainContainer);
 		createExcludeWithKeywordsComposite(mainContainer);
-		return container;
+
+		setInput();
 	}
 
 	private void createCheckboxEnableSelfHealing(Composite parent) {
 		checkboxEnableSelfHealing = new Button(parent, SWT.CHECK | SWT.NONE);
 		checkboxEnableSelfHealing.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		checkboxEnableSelfHealing.setText(LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD);
-		checkboxEnableSelfHealing.setSelection(isEnableSelfHealing);
 		checkboxEnableSelfHealing.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				isEnableSelfHealing = !isEnableSelfHealing;
 
-	        @Override
-	        public void widgetSelected(SelectionEvent event) {
-	        	isEnableSelfHealing = !isEnableSelfHealing;
-	        }
-	    });
+				handleInputChanged(checkboxEnableSelfHealing, null);
+			}
+		});
 		new HelpComposite(parent, documentationUrl);
 	}
 
-	private void createMethodsPriorityOrderComposite(Composite parent) {
-		prioritizeSelectionMethodsComposite = new PrioritizeSelectionMethodsComposite(parent, SWT.NONE, preferenceStore);
+	private List<Pair<String, Boolean>> createMethodsPriorityOrderComposite(Composite parent) {
+		if (prioritizeSelectionMethodsComposite == null) {
+			prioritizeSelectionMethodsComposite = new PrioritizeSelectionMethodsComposite(parent, SWT.NONE,
+					preferenceStore);
+			prioritizeSelectionMethodsComposite.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent event) {
+					handleInputChanged(prioritizeSelectionMethodsComposite, null);
+				}
+			});
+		}
+		return methodsPriorityOrder;
 	}
 
-	private void createExcludeWithKeywordsComposite(Composite parent) {
-		excludeObjectsUsedWithKeywordsComposite = new ExcludeObjectsUsedWithKeywordsComposite(parent, SWT.NONE, preferenceStore);
+	private Composite createExcludeWithKeywordsComposite(Composite parent) {
+		if (excludeObjectsUsedWithKeywordsComposite == null) {
+			excludeObjectsUsedWithKeywordsComposite = new ExcludeObjectsUsedWithKeywordsComposite(parent, SWT.NONE,
+					preferenceStore);
+			excludeObjectsUsedWithKeywordsComposite.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent event) {
+					handleInputChanged(excludeObjectsUsedWithKeywordsComposite, null);
+				}
+			});
+		}
+		return excludeObjectsUsedWithKeywordsComposite;
 	}
 
-	private void getEnableSelfHealingFromPluginPreference() {
+	private Boolean getEnableSelfHealingFromPluginPreference() {
+		Boolean value;
 		try {
-			isEnableSelfHealing = preferenceStore.isEnableSelfHHealing();
+			value = preferenceStore.isEnableSelfHHealing();
 		} catch (InvalidDataTypeFormatException | ResourceException e) {
 			e.printStackTrace();
+			return null;
 		}
+		return value;
 	}
 
-	private void setEnableSelfHealingIntoPluginPreference() {
+	private void setEnableSelfHealingIntoPluginPreference() throws ResourceException {
+		preferenceStore.setEnableSelfHealing(isEnableSelfHealing);
+	}
+
+	public void setUpdatedMethodsPriorityOrderIntoPluginPreference() throws ResourceException {
+		preferenceStore.setMethodsPritorityOrder(prioritizeSelectionMethodsComposite.getInput());
+	}
+
+	private List<Pair<String, Boolean>> getMethodsPriorityOrderFromPluginPreference() {
+		List<Pair<String, Boolean>> value = null;
 		try {
-			preferenceStore.setEnableSelfHealing(isEnableSelfHealing);
+			value = preferenceStore.getMethodsPriorityOrder();
+		} catch (InvalidDataTypeFormatException | ResourceException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return value;
+	}
+
+	private List<String> getExcludeKeywordsFromPluginPreference() {
+		List<String> value = null;
+		try {
+			value = preferenceStore.getExcludeKeywordList();
 		} catch (ResourceException e) {
 			e.printStackTrace();
 		}
+		return value;
 	}
 
-	@Override
-	protected void performApply() {
-		excludeObjectsUsedWithKeywordsComposite.setUpdatedExcludeKeywordsIntoPluginPreference();
-		prioritizeSelectionMethodsComposite.setUpdatedMethodsPriorityOrderIntoPluginPreference();
-		this.setEnableSelfHealingIntoPluginPreference();
+	public void setUpdatedExcludeKeywordsIntoPluginPreference() throws ResourceException {
+		preferenceStore.setExcludeKeywordList(excludeObjectsUsedWithKeywordsComposite.getInput());
 	}
 
+	// @Override
+	// protected void performDefaults() {
+	// try {
+	// WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+	//
+	// store.setDefaultCapturedTestObjectSelectorMethods();
+	// store.setDefaultCapturedTestObjectXpathLocators();
+	// store.setDefaultCapturedTestObjectAttributeLocators();
+	//
+	// initialize();
+	// } catch (IOException e) {
+	// LoggerSingleton.logError(e);
+	// }
+	// super.performDefaults();
+	// }
+
 	@Override
-	public boolean performOk() {
-		if (super.performOk() && isValid()) {
-			performApply();
+	protected boolean saveSettings() {
+		try {
+			this.setUpdatedExcludeKeywordsIntoPluginPreference();
+			this.setUpdatedMethodsPriorityOrderIntoPluginPreference();
+			this.setEnableSelfHealingIntoPluginPreference();
+		} catch (ResourceException e) {
+			e.printStackTrace();
+			return false;
 		}
 		return true;
+	}
+
+	@Override
+	protected boolean hasChanged() {
+		if (!isValid()) {
+			return false;
+		}
+
+		if (isEnableSelfHealing != this.getEnableSelfHealingFromPluginPreference()) {
+			return true;
+		}
+
+		List<String> excludeKeywordNamesBeforeSetting = getExcludeKeywordsFromPluginPreference();
+		if (!excludeObjectsUsedWithKeywordsComposite.compareInput(excludeKeywordNamesBeforeSetting)) {
+			return true;
+		};
+
+		List<Pair<String, Boolean>> methodsPriorityOrderSetting = getMethodsPriorityOrderFromPluginPreference();
+		if (!prioritizeSelectionMethodsComposite.compareInput(methodsPriorityOrderSetting)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
