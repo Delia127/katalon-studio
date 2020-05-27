@@ -847,10 +847,10 @@ public class WebUiCommonHelper extends KeywordHelper {
         @SuppressWarnings("serial")
         List<SelectorMethod> searchOrder = new ArrayList<SelectorMethod>() {
             {
-                add(SelectorMethod.IMAGE);
                 add(SelectorMethod.CSS);
-                add(SelectorMethod.BASIC);
                 add(SelectorMethod.XPATH);
+                add(SelectorMethod.BASIC);
+                add(SelectorMethod.IMAGE);
             }
         };
 
@@ -1077,9 +1077,10 @@ public class WebUiCommonHelper extends KeywordHelper {
 
 		if (selectedSmartXPath != null) {
 			List<WebElement> elementsFoundWithSelectedSmartXPath = smartXPathsMap.get(selectedSmartXPath);
-			SmartXPathController.registerBrokenTestObject(testObject, selectedSmartXPath, pathToSelectedSmartXPathScreenshot);
-			SmartXPathController.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECT_SMART_XPATH,
-					selectedSmartXPath.getValue()));
+            SmartXPathController.registerBrokenTestObject(testObject, selectedSmartXPath.getValue(),
+                    SelectorMethod.XPATH, pathToSelectedSmartXPathScreenshot);
+            SmartXPathController.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECT_SMART_XPATH,
+                    selectedSmartXPath.getValue()));
 			SmartXPathController.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION);
 			return elementsFoundWithSelectedSmartXPath;
 		} else {

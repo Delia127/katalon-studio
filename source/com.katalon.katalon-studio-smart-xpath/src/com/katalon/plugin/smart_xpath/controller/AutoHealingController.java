@@ -77,7 +77,7 @@ public class AutoHealingController {
 					Node nodeBrokenXPath = (Node) xPathToBrokenXPath
 							.compile("//selectorCollection//key[text()='XPATH'][1]/following::value[1]")
 							.evaluate(doc, XPathConstants.NODE);
-					nodeBrokenXPath.setTextContent(brokenTestObject.getProposedXPath());
+					nodeBrokenXPath.setTextContent(brokenTestObject.getProposedLocator());
 
 					Transformer tf = TransformerFactory.newInstance().newTransformer();
 					tf.setOutputProperty(OutputKeys.INDENT, "yes");

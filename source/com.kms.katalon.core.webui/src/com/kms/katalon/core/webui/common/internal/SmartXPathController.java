@@ -14,6 +14,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
@@ -87,12 +88,13 @@ public class SmartXPathController {
 	 *            Path to the screenshot of the web element retrieved by the
 	 *            proposed XPath
 	 */
-	public static void registerBrokenTestObject(TestObject testObject, TestObjectXpath thisXPath,
-			String pathToScreenshot) {
-		String jsAutoHealingPath = getSmartXPathInternalFilePath();
-		BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, thisXPath.getValue(), pathToScreenshot);
-		BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
-		if (existingBrokenTestObjects != null) {
+    public static void registerBrokenTestObject(TestObject testObject, String proposedLocator,
+            SelectorMethod proposedLocatorMethod, String pathToScreenshot) {
+        String jsAutoHealingPath = getSmartXPathInternalFilePath();
+        BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, proposedLocator, proposedLocatorMethod,
+                pathToScreenshot);
+        BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
+        if (existingBrokenTestObjects != null) {
 			existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
 			writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
 		} else {
@@ -123,14 +125,17 @@ public class SmartXPathController {
 		return null;
 	}
 
-	private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String newXPath,
-			String pathToScreenshot) {
-		String oldXPath = testObject.getSelectorCollection().get(testObject.getSelectorMethod());
-		BrokenTestObject brokenTestObject = new BrokenTestObject();
+    private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String proposedLocator,
+            SelectorMethod proposedLocatorMethod, String pathToScreenshot) {
+        SelectorMethod brokenLocatorMethod = testObject.getSelectorMethod();
+        String brokenLocator = testObject.getSelectorCollection().get(brokenLocatorMethod);
+        BrokenTestObject brokenTestObject = new BrokenTestObject();
 		brokenTestObject.setTestObjectId(testObject.getObjectId());
 		brokenTestObject.setApproved(false);
-		brokenTestObject.setBrokenXPath(oldXPath);
-		brokenTestObject.setProposedXPath(newXPath);
+		brokenTestObject.setBrokenLocator(brokenLocator);
+		brokenTestObject.setBrokenLocatorMethod(brokenLocatorMethod);
+		brokenTestObject.setProposedLocator(proposedLocator);
+        brokenTestObject.setProposedLocatorMethod(proposedLocatorMethod);
 		brokenTestObject.setPathToScreenshot(pathToScreenshot);
 		return brokenTestObject;
 	}

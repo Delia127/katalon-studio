@@ -105,7 +105,7 @@ public class AutoHealingDialog extends Dialog {
 		colOldXPath.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				String oldXPath = ((BrokenTestObject) element).getBrokenXPath();
+				String oldXPath = ((BrokenTestObject) element).getBrokenLocator();
 				return oldXPath;
 			}
 		});
@@ -115,7 +115,7 @@ public class AutoHealingDialog extends Dialog {
 		colNewXPath.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				String newXPath = ((BrokenTestObject) element).getProposedXPath();
+				String newXPath = ((BrokenTestObject) element).getProposedLocator();
 				return newXPath;
 			}
 		});
