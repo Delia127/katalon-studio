@@ -39,7 +39,7 @@ public class LicenseHelper {
     }
     
     public Map<String, Claim> parseJws(String jws, String publicKeyString) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        if (jws == null || jws.isEmpty()) {
+        if (jws.isEmpty()) {
             return null;
         }
         
