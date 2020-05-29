@@ -59,7 +59,7 @@ public class KeywordExecutor {
         if (actions.length != 1) {
             throw new StepFailedException(MessageFormat.format(StringConstants.KEYWORD_X_DOES_NOT_EXIST_ON_PLATFORM_Y, [keyword, platform] as Object[]))
         }
-
+		KeywordExecutionContext.saveRunningKeywordAndPlatform(platform, keyword);
         if(platform.equals(PLATFORM_WEB)) {
             IKeyword[] internalSmartWaitGroovyWrappers = getActions(PLATFORM_WEB,
                     INTERNAL_SMART_WAIT_GROOVY_WRAPPER, getSuitablePackage(PLATFORM_WEB));

@@ -29,6 +29,7 @@ import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.util.CryptoUtil;
+import com.kms.katalon.util.collections.Pair;
 
 /**
  * Provides access to execution properties and settings
@@ -40,6 +41,12 @@ public class RunConfiguration {
 	public static final String SMART_XPATH_BUNDLE_ID = "com.katalon.katalon-studio-smart-xpath";
 	
 	public static final String ALLOW_USING_SMART_XPATH = "allowUsingSmartXPath";
+
+    public static final String EXCLUDE_KEYWORDS = "excludeKeywords";
+
+    public static final String SELF_HEALING_ENABLE ="selfHealingEnabled";
+
+    public static final String METHODS_PRIORITY_ORDER = "methodsPriorityOrder";
 
 	public static final String OVERRIDING_GLOBAL_VARIABLES = "overridingGlobalVariables";
 
@@ -564,15 +571,32 @@ public class RunConfiguration {
     
 	public static Boolean shouldApplySmartXPath() {
 	    boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SMART_XPATH);
-		try {
-			return allowUsingSmartXPath && (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
-					.getBoolean("SelfHealingEnabled", true);
-		} catch (IOException e) {
-			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage(), null, e);
-		}
-		return false;
+	    
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+	    allowUsingSmartXPath = allowUsingSmartXPath && ((boolean) generalProperties.get(ALLOW_USING_SMART_XPATH));
+//		try {
+////		    return allowUsingSmartXPath;
+//		    WebUiExecutionSettingStore preferenceStore = new WebUiExecutionSettingStore(getProjectDir(), true);
+//	        allowUsingSmartXPath = (Boolean) preferenceStore.isEnableSelfHHealing();
+//			return allowUsingSmartXPath;
+//		} catch (IOException e) {
+//			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage(), null, e);
+//		}
+		return allowUsingSmartXPath;
 	}
-    
+
+	public static List<Pair<String, Boolean>> getMethodsPriorityOrderWhenApplySelfHealing() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+	    List<Pair<String, Boolean>> methodsPriorityOrder = (List<Pair<String, Boolean>>) generalProperties.get(METHODS_PRIORITY_ORDER);
+        return methodsPriorityOrder;
+	}
+
+    public static List<String> getExcludedKeywordsFromSelfHealing() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        List<String> excludeKeywords = (List<String>) generalProperties.get(EXCLUDE_KEYWORDS);
+        return excludeKeywords;
+    }
+
     public static RunningMode getRunningMode() {
         return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
     }

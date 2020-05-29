@@ -1,39 +1,25 @@
 package com.katalon.plugin.smart_xpath.settings;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.ToolItem;
 
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
-import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
-import com.kms.katalon.util.collections.Pair;
 
 public class SelfHealingSettingPage extends PreferencePageWithHelp {
 	
     private ExecutionDefaultSettingStore defaultSettingStore;
     
-    private SelfHealingSetting selfHealingSettingStore;
+//    private SelfHealingSetting selfHealingSettingStore;
 
     private Composite container;
 
 	public SelfHealingSettingPage() {
         defaultSettingStore = ExecutionDefaultSettingStore.getStore();
-        selfHealingSettingStore = SelfHealingSetting.getStore(ApplicationManager.getInstance().getProjectManager().getCurrentProject());
+//        selfHealingSettingStore = SelfHealingSetting.getStore(ApplicationManager.getInstance().getProjectManager().getCurrentProject());
 	}
 
 	@Override

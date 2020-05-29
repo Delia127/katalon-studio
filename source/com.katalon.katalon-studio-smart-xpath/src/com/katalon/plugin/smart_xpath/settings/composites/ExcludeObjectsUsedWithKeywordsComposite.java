@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
 
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
-import com.katalon.plugin.smart_xpath.settings.SelfHealingSetting;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -44,6 +43,7 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.custom.keyword.KeywordMethod;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 
 public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 
@@ -55,7 +55,7 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 
 	private List<String> excludeKeywordNames;
 
-	public ExcludeObjectsUsedWithKeywordsComposite(Composite parent, int style, SelfHealingSetting preferenceStore) {
+	public ExcludeObjectsUsedWithKeywordsComposite(Composite parent, int style, WebUiExecutionSettingStore preferenceStore) {
 		super(parent, style);
 		createContent(parent);
 	}
@@ -97,7 +97,7 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 				for (int i = 0; i < excludeKeywordNames.size(); i++) {
 					if (newDefaultKeyword.getName().equals(excludeKeywordNames.get(i))) {
 						newDefaultKeyword = webUIKeywordList.get(++newDefaultKeywordIndex);
-						i = 0;
+						i = -1;
 					}
 				}
 				excludeKeywordNames.add(newDefaultKeyword.getName());
@@ -252,12 +252,4 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
         addListener(SWT.Selection, typedListener);
         addListener(SWT.DefaultSelection, typedListener);
     }
-//	public boolean hasChanged() {
-//		String currentExcludeKeywordNames = excludeKeywordNames.toString();
-//		String beforeUpdateExcludeKeywordNames = this.getExcludeKeywordsFromPluginPreference().toString();
-//		if (!currentExcludeKeywordNames.equals(beforeUpdateExcludeKeywordNames)) {
-//			return true;
-//		}
-//		return false;
-//	}
 }

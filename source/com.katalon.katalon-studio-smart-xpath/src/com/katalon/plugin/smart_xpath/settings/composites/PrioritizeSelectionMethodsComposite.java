@@ -40,11 +40,11 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
 
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
-import com.katalon.plugin.smart_xpath.settings.SelfHealingSetting;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
 
 public class PrioritizeSelectionMethodsComposite extends Composite {
@@ -73,7 +73,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
 	private List<Pair<String, Boolean>> methodsPriorityOrder;
 
-	public PrioritizeSelectionMethodsComposite(Composite parent, int style, SelfHealingSetting preferenceStore) {
+	public PrioritizeSelectionMethodsComposite(Composite parent, int style, WebUiExecutionSettingStore preferenceStore) {
 		super(parent, style);
 		createContents(parent);
 	}

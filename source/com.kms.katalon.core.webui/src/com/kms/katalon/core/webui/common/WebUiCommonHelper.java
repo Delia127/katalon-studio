@@ -36,13 +36,12 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 
-import com.googlecode.javacv.FrameGrabber.Array;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
+import com.kms.katalon.core.keyword.internal.KeywordExecutionContext;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
@@ -57,6 +56,7 @@ import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
+import com.kms.katalon.util.collections.Pair;
 
 public class WebUiCommonHelper extends KeywordHelper {
     
@@ -848,15 +848,31 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
     
     private static List<WebElement> findElementsWithSelfHealing(TestObject testObject, int timeout) {
-        @SuppressWarnings("serial")
-        List<SelectorMethod> searchOrder = new ArrayList<SelectorMethod>() {
-            {
-                add(SelectorMethod.IMAGE);
-                add(SelectorMethod.CSS);
-                add(SelectorMethod.BASIC);
-                add(SelectorMethod.XPATH);
+        String runningKeyword = KeywordExecutionContext.getRunningKeyword();
+        boolean isWebPlatform = KeywordExecutionContext.isRunningWebUI();
+
+        List<Pair<String, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrderWhenApplySelfHealing();
+        List<String> excludeObjectWithKeywords = RunConfiguration.getExcludedKeywordsFromSelfHealing();
+        boolean isEnableSelfHealing = RunConfiguration.shouldApplySmartXPath();
+//        
+//        WebUiExecutionSettingStore preferenceStore =  new WebUiExecutionSettingStore();
+//        try {
+//            WebUiExecutionSettingStore preferenceStore =  new WebUiExecutionSettingStore();
+//                methodsPriorityOrder = preferenceStore.getMethodsPriorityOrder();
+//                excludeObjectWithKeywords = preferenceStore.getExcludeKeywordList();
+//                isEnableSelfHealing = preferenceStore.isEnableSelfHHealing();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        List<SelectorMethod> searchOrder = new ArrayList<>();
+
+        if (methodsPriorityOrder != null) {
+            for (Pair<String, Boolean> method : methodsPriorityOrder) {
+                if (method.getRight()) {
+                    searchOrder.add(SelectorMethod.valueOf(method.getLeft()));
+                }
             }
-        };
+        }
 
         List<WebElement> webElements = Collections.emptyList();
         long startTime = System.currentTimeMillis();
@@ -870,7 +886,11 @@ public class WebUiCommonHelper extends KeywordHelper {
                 // not found element yet, moving on
             }
         } while ((System.currentTimeMillis() - startTime) / 1000 < timeout);
-        
+
+        if (!isWebPlatform || !isEnableSelfHealing || excludeObjectWithKeywords.contains(runningKeyword)) {
+            return webElements;
+        }
+
         for (SelectorMethod method : searchOrder) {
             if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
                 try {
@@ -1021,6 +1041,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 		}
 		
         WebDriver webDriver = DriverFactory.getWebDriver();
+        List<WebElement> foundElements = Collections.emptyList();
 		
 		SmartXPathController.setLogger(logger);
 
