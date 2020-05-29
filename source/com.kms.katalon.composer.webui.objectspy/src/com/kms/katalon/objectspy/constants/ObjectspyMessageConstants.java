@@ -191,6 +191,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String FAIL_TO_TAKE_SCREENSHOT;
 
+    public static String DIA_MSG_DRIVER_OUTDATED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ObjectspyMessageConstants.class);

@@ -377,6 +377,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA;
 
+    public static String PA_MSG_DRIVER_OUTDATED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);

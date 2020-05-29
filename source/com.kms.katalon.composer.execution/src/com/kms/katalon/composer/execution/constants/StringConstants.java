@@ -123,6 +123,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LOG_RESUME = ComposerExecutionMessageConstants.PA_LOG_RESUME;
 
     public static final String PA_LOG_PAUSE = ComposerExecutionMessageConstants.PA_LOG_PAUSE;
+    
+    public static final String PA_MSG_DRIVER_OUTDATED = ComposerExecutionMessageConstants.PA_MSG_DRIVER_OUTDATED;
 
     // LogExceptionNavigator
     public static final String WARN_TITLE = WARN;

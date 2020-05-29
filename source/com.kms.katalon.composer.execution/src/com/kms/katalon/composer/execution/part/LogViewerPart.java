@@ -664,7 +664,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private String getCausedBySentence(String msg) {
         if (failedDueToOutdatedChromeDriver(msg)) {
-            return "It seems like your Chrome Webdriver is not up to date with your Chrome browser. Please go to Tools > Update webdrivers to upgrade and try again";
+            return StringConstants.PA_MSG_DRIVER_OUTDATED;
         }
         String causedBy = "";
         try {

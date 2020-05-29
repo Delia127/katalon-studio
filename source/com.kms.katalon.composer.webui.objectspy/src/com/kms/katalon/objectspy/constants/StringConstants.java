@@ -148,4 +148,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_RADIO_MERGE = ObjectspyMessageConstants.DIA_MSG_RADIO_MERGE;
 
     public static final String DIA_MSG_RADIO_REPLACE = ObjectspyMessageConstants.DIA_MSG_RADIO_REPLACE;
+    
+    public static final String DIA_MSG_DRIVER_OUTDATED = ObjectspyMessageConstants.DIA_MSG_DRIVER_OUTDATED;
 }
