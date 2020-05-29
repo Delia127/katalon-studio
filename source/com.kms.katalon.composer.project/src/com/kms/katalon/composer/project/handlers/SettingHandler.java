@@ -326,7 +326,7 @@ public class SettingHandler {
         try {
             IPreferenceNode integrationSettings = null;
             for (IPreferenceNode node : pm.getRootSubNodes()) {
-                if (StringConstants.PROJECT_INTEGRATION_SETTINGS_PAGE_ID.equals(node.getId())) {
+                if (PARENT_PLUGIN_PREFERENCE_PAGE_ID.equals(node.getId())) {
                     integrationSettings = node;
                     break;
                 }

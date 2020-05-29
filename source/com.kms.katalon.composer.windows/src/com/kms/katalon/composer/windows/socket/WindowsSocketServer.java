@@ -55,7 +55,7 @@ public class WindowsSocketServer {
                         try {
                             socket = server.accept();
                             try (BufferedReader reader = new BufferedReader(
-                                    new InputStreamReader(socket.getInputStream()))) {
+                                    new InputStreamReader(socket.getInputStream(), "UTF8"))) {
 
                                 String line = null;
 

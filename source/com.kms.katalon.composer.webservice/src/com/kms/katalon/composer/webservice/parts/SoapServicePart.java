@@ -56,6 +56,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
 import com.kms.katalon.core.webservice.common.HarLogger;
@@ -270,7 +271,10 @@ public class SoapServicePart extends WebServicePart {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(StringConstants.MSG_FETCHING_FROM_WSDL, IProgressMonitor.UNKNOWN);
                     try {
-                        WsdlParser parser = getWsdlParser(wsdlLocation);
+                        Map<String, Object> evaluatedVariables = evaluateRequestVariables();
+                        StrSubstitutor substitutor = new StrSubstitutor(evaluatedVariables);
+                        String url = substitutor.replace(wsdlLocation);
+                        WsdlParser parser = getWsdlParser(url);
                         List<String> servFuncs = parser.getOperationNamesByRequestMethod(method);
                         UISynchronizeService.asyncExec(() -> {
                             cbbServiceFunction.setItems(servFuncs.toArray(new String[0]));
@@ -279,7 +283,7 @@ public class SoapServicePart extends WebServicePart {
                             }
                             setDirty(true);
                         });
-                    } catch (WSDLException | IOException e) {
+                    } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     } finally {
                         monitor.done();
@@ -303,6 +307,11 @@ public class SoapServicePart extends WebServicePart {
         String method = cbbRequestMethod.getText().trim();
         String operation = cbbServiceFunction.getText();
         Shell shell = Display.getCurrent().getActiveShell();
+        
+        if (!MessageDialog.openConfirm(shell, StringConstants.WARN,
+                ComposerWebserviceMessageConstants.SoapServicePart_MSG_WARN_OVERRIDE_CONTENT)) {
+            return;
+        }
 
         if (StringUtils.isBlank(wsdlLocation)) {
             MessageDialog.openError(shell, StringConstants.ERROR,
@@ -321,14 +330,21 @@ public class SoapServicePart extends WebServicePart {
 
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    WebServiceRequestEntity newContentEntity = loadNewContent(wsdlLocation, method, operation);
-                    originalWsObject = newContentEntity;
-                    
-                    UISynchronizeService.syncExec(() -> {
-                        populateDataToUI();
-
-                        setDirty(true);
-                    });
+                    try {
+                        WebServiceRequestEntity newContentEntity = getNewContentEntity(wsdlLocation, method, operation);
+                        
+                        UISynchronizeService.syncExec(() -> {
+	                        txtServiceEndpoint.setText(newContentEntity.getSoapServiceEndpoint());
+	                        httpHeaders.clear();
+	                        httpHeaders.addAll(newContentEntity.getHttpHeaderProperties());
+	                        tblHeaders.refresh();
+	                        requestBodyEditor.setInput(newContentEntity.getSoapBody());
+	                        setDirty(true);
+                        });
+                    } catch (Exception e) {
+                      throw new InvocationTargetException(e);
+                    }
+                  
                 }
 
             });
@@ -344,19 +360,17 @@ public class SoapServicePart extends WebServicePart {
         }
     }
 
-    private WebServiceRequestEntity loadNewContent(String wsdlLocation, String method, String operation) {
+    private WebServiceRequestEntity getNewContentEntity(String wsdlLocation, String method, String operation) {
         try {
-            WsdlDefinitionLocator wsdlLocator = getWsdlLocator(wsdlLocation);
+            Map<String, Object> evaluatedVariables = evaluateRequestVariables();
+            StrSubstitutor substitutor = new StrSubstitutor(evaluatedVariables);
+            String url = substitutor.replace(wsdlLocation);
+            WsdlDefinitionLocator wsdlLocator = getWsdlLocator(url);
             WsdlImporter importer = new WsdlImporter(wsdlLocator);
             WebServiceRequestEntity entity = importer.getImportedEntity(method, operation,
                     originalWsObject instanceof DraftWebServiceRequestEntity);
-            entity.setKatalonVersion(originalWsObject.getKatalonVersion());
-            entity.setName(originalWsObject.getName());
-            entity.setElementGuidId(originalWsObject.getElementGuidId());
-            entity.setParentFolder(originalWsObject.getParentFolder());
-            entity.setProject(originalWsObject.getProject());
-            entity.setUseServiceInfoFromWsdl(useOldMechanism);
-            entity.setServiceType(WebServiceRequestEntity.SOAP);
+
+            entity.setWsdlAddress(wsdlLocation);
             return entity;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -558,7 +572,7 @@ public class SoapServicePart extends WebServicePart {
         renderAuthenticationUI(ccbAuthType.getText());
 
         // requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
-        requestBodyEditor.setInput((WebServiceRequestEntity) originalWsObject.clone());
+        requestBodyEditor.setInput(originalWsObject.getSoapBody());
 
         cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
 
@@ -610,5 +624,4 @@ public class SoapServicePart extends WebServicePart {
     public boolean isDirty() {
         return mPart.isDirty();
     }
-
 }

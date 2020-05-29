@@ -815,4 +815,6 @@ public interface IImageKeys {
     public static final String IMG_ABOUT_BG_LIGHT = "about/background_light.png";
     
     public static final String IMG_ABOUT_BG_DRANK = "about/background_dark.png";
+
+    public static final String KATALON_NOTIFICATION_DOT_24 = "toolbar/noti_blue_dot_32x24.png";
 }
