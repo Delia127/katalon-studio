@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
+import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.settings.composites.ExcludeObjectsUsedWithKeywordsComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.PrioritizeSelectionMethodsComposite;
 import com.kms.katalon.composer.components.controls.HelpComposite;
@@ -62,7 +63,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	private void generatePreferenceStore() {
 
-	    preferenceStore = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
+        preferenceStore = WebUiExecutionSettingStore.getStore();
+//	    preferenceStore = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
 //		Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
 //		preferenceStore = SelfHealingSetting.getStore(currentProject);
 	}
@@ -81,7 +83,6 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		createMethodsPriorityOrderComposite(mainContainer);
 		createExcludeWithKeywordsComposite(mainContainer);
 
-		setInput();
 	}
 
 	private void createCheckboxEnableSelfHealing(Composite parent) {
@@ -171,21 +172,24 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		preferenceStore.setExcludeKeywordList(excludeObjectsUsedWithKeywordsComposite.getInput());
 	}
 
-	// @Override
-	// protected void performDefaults() {
-	// try {
-	// WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-	//
-	// store.setDefaultCapturedTestObjectSelectorMethods();
-	// store.setDefaultCapturedTestObjectXpathLocators();
-	// store.setDefaultCapturedTestObjectAttributeLocators();
-	//
-	// initialize();
-	// } catch (IOException e) {
-	// LoggerSingleton.logError(e);
-	// }
-	// super.performDefaults();
-	// }
+    @Override
+    protected void initialize() throws IOException {
+        setInput();
+    }
+
+    @Override
+    protected void performDefaults() {
+        try {
+            preferenceStore.setDefaultEnableSelfHealing();
+            preferenceStore.setDefaultMethodsPriorityOrder();
+            preferenceStore.setDefaultExcludeKeywordList();
+
+            initialize();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+        super.performDefaults();
+    }
 
 	@Override
 	protected boolean saveSettings() {
