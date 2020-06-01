@@ -24,11 +24,11 @@ import com.kms.katalon.core.webui.constants.StringConstants;
  * A controller used by Smart XPath Plug-in.
  *
  */
-public class SmartXPathController {
+public class SelfHealingController {
 
 	private static String SMART_XPATH_PREFIX = "[SMART_XPATH]";
 
-	private static KeywordLogger logger = KeywordLogger.getInstance(SmartXPathController.class);
+	private static KeywordLogger logger = KeywordLogger.getInstance(SelfHealingController.class);
 
 	/**
 	 * This method initializes Smart XPath Logger with a logger of the calling
@@ -38,7 +38,7 @@ public class SmartXPathController {
 	 *            An KeywordLogger instance
 	 */
 	public static void setLogger(KeywordLogger logger) {
-		SmartXPathController.logger = logger;
+		SelfHealingController.logger = logger;
 	}
 
 	/**

@@ -103,7 +103,7 @@ public class TestCaseExecutor {
         parentErrors = errorCollector.getCoppiedErrors();
         errorCollector.clearErrors();
 
-        if (RunConfiguration.shouldApplySmartXPath()) {
+        if (RunConfiguration.shouldApplySelfHealing()) {
             logger.logInfoHighlight(StringConstants.SELF_HEALING_OPENING);
         }
     }
@@ -182,7 +182,7 @@ public class TestCaseExecutor {
 
     private void postExecution() {
     	
-		if (RunConfiguration.shouldApplySmartXPath()) {
+		if (RunConfiguration.shouldApplySelfHealing()) {
 
 			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_OPENING);
 			logger.logInfo(StringConstants.SMART_XPATH_VISIT_BELOW_LINK);

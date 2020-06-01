@@ -28,6 +28,6 @@ public class KeywordExecutionContext {
     }
 
     public static boolean isRunningWebUI() {
-        return runningPlatform.equals("web");
+        return runningPlatform.equals(KeywordExecutor.PLATFORM_WEB);
     }
 }

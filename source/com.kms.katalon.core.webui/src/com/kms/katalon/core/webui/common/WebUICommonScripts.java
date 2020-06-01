@@ -14,8 +14,19 @@ public class WebUICommonScripts {
     @SuppressWarnings("unchecked")
     public static Map<String, List<String>> generateXPaths(WebDriver webDriver, WebElement element) {
         JavascriptExecutor js = (JavascriptExecutor) webDriver;
+
         Map<String, List<String>> generatedXPaths = (Map<String, List<String>>) js
                 .executeScript(WebUICommonScriptConstants.GENERATE_XPATHS_SCRIPT, element);
+
         return generatedXPaths;
+    }
+
+    public static String generateXPath(WebDriver webDriver, WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor) webDriver;
+
+        String generatedXPath = (String) js
+                .executeScript(WebUICommonScriptConstants.GENERATE_XPATH_SCRIPT, element);
+
+        return generatedXPath;
     }
 }

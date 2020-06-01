@@ -26,11 +26,8 @@ import com.katalon.plugin.smart_xpath.part.composites.SelfHealingToolbarComposit
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.execution.launcher.listener.LauncherEvent;
-import com.kms.katalon.execution.launcher.listener.LauncherListener;
-import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 
-public class SelfHealingInsightsPart implements EventHandler, LauncherListener {
+public class SelfHealingInsightsPart implements EventHandler {
 
     @Inject
     private IEventBroker eventBroker;
@@ -73,8 +70,10 @@ public class SelfHealingInsightsPart implements EventHandler, LauncherListener {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 AutoHealingController.setEventBroker(eventBroker);
+                Set<BrokenTestObject> approvedBrokenTestObjects = brokenTestObjectsTableComposite.getApprovedTestObjects();
+                int numApprovedTestObjects = approvedBrokenTestObjects.size();
                 AutoHealingController.autoHealBrokenTestObjects(Display.getCurrent().getActiveShell(),
-                        brokenTestObjectsTableComposite.getApprovedTestObjects());
+                        approvedBrokenTestObjects);
 
                 ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
                 String pathToApprovedJson = currentProject.getFolderLocation()
@@ -86,6 +85,7 @@ public class SelfHealingInsightsPart implements EventHandler, LauncherListener {
                 AutoHealingController.writeBrokenTestObjects(brokenTestObjects, pathToApprovedJson);
 
                 refresh();
+                toolbarComposite.notifyRecoverSucceeded(numApprovedTestObjects);
             }
         });
 
@@ -127,17 +127,12 @@ public class SelfHealingInsightsPart implements EventHandler, LauncherListener {
     }
 
     @Override
-    public void handleLauncherEvent(LauncherEvent event, LauncherNotifiedObject notifiedObject) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public void handleEvent(Event event) {
         refresh();
     }
 
     private void refresh() {
         loadBrokenTestObjects();
+        toolbarComposite.clearStatusMessage();
     }
 }

@@ -1,5 +1,8 @@
 package com.katalon.plugin.smart_xpath.part.composites;
 
+import java.text.MessageFormat;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
@@ -16,6 +19,8 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 public class SelfHealingToolbarComposite extends Composite {
 
     private Button btnApprove, btnDiscard;
+
+    private Label lblHealingStatus;
 
     public SelfHealingToolbarComposite(Composite parent, int style) {
         super(parent, style);
@@ -46,9 +51,7 @@ public class SelfHealingToolbarComposite extends Composite {
         GridLayout statusLayout = new GridLayout(2, false);
         statusComposite.setLayout(statusLayout);
 
-        Label lblHealingStatus = new Label(statusComposite, SWT.NONE);
-        lblHealingStatus.setText("3 Broken Test Objects has been healed!");
-        lblHealingStatus.setForeground(ColorUtil.getTextSuccessfulColor());
+        lblHealingStatus = new Label(statusComposite, SWT.WRAP);
         lblHealingStatus.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 
         return statusComposite;
@@ -87,6 +90,31 @@ public class SelfHealingToolbarComposite extends Composite {
         btnDiscard.setFont(JFaceResources.getDialogFont());
         btnDiscard.setData(Integer.valueOf(SWT.OK));
         return btnDiscard;
+    }
+
+    public void setSuccessMessage(String message) {
+        lblHealingStatus.setText(message);
+        lblHealingStatus.setForeground(ColorUtil.getTextSuccessfulColor());
+        lblHealingStatus.requestLayout();
+    }
+
+    public void setErrorMessage(String message) {
+        lblHealingStatus.setText(message);
+        lblHealingStatus.setForeground(ColorUtil.getTextSuccessfulColor());
+        lblHealingStatus.requestLayout();
+    }
+
+    public void notifyRecoverSucceeded(int numberRecovered) {
+        setSuccessMessage(MessageFormat.format("{0} broken test objects has been recovered!", numberRecovered));
+    }
+
+    public void notifyRecoverFailed() {
+        setSuccessMessage("Failed to recover broken test objects.");
+    }
+
+    public void clearStatusMessage() {
+        lblHealingStatus.setText(StringUtils.EMPTY);
+        lblHealingStatus.requestLayout();
     }
 
     public void addApproveListener(SelectionListener listener) {

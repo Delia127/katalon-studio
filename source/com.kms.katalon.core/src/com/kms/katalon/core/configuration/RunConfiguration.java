@@ -572,7 +572,7 @@ public class RunConfiguration {
         return getStringProperty(RECORD_CAPTURED_OBJECTS_FILE);
     }
 
-	public static Boolean shouldApplySmartXPath() {
+	public static Boolean shouldApplySelfHealing() {
 	    boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SMART_XPATH);
 	    
         Map<String, Object> generalProperties = getExecutionGeneralProperties();
