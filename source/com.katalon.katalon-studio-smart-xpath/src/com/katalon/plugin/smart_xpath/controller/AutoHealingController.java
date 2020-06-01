@@ -25,6 +25,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
@@ -39,18 +40,36 @@ import com.katalon.platform.api.service.ApplicationManager;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
+import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.util.StringUtils;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 
 public class AutoHealingController {
-	public static Set<BrokenTestObject> autoHealBrokenTestObjects(Shell shell, Set<BrokenTestObject> approvedAutoHealingEntities) {
+
+    private static IEventBroker eventBroker;
+    
+    public static void setEventBroker(IEventBroker eventBroker) {
+        AutoHealingController.eventBroker = eventBroker;
+    }
+    
+	public static Set<BrokenTestObject> autoHealBrokenTestObjects(Shell shell, Set<BrokenTestObject> brokenTestObjects) {
 		final Set<BrokenTestObject> approvedButCannotBeHealedEntities = new HashSet<>();
 		approvedButCannotBeHealedEntities.clear();
 		try {
 			new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Auto healing broken test objects ... ", 1);
-					approvedButCannotBeHealedEntities.addAll(autoHealBrokenTestObjects(approvedAutoHealingEntities));
+					monitor.beginTask("Healing broken Test Objects ... ", brokenTestObjects.size());
+
+			        for (BrokenTestObject brokenTestObject : brokenTestObjects) {
+			            healBrokenTestObject(brokenTestObject);
+			            monitor.worked(1);
+			        }
 				}
 			});
 		} catch (Exception ex) {
@@ -59,50 +78,26 @@ public class AutoHealingController {
 		return approvedButCannotBeHealedEntities;
 	}
 
-	private static Set<BrokenTestObject> autoHealBrokenTestObjects(Set<BrokenTestObject> approvedAutoHealingEntities) {
-		Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-		Set<BrokenTestObject> approvedButCannotBeHealedEntities = new HashSet<>();
-		if (currentProject != null) {
-			String currentProjectDir = currentProject.getFolderLocation();
-			for (BrokenTestObject brokenTestObject : approvedAutoHealingEntities) {
-				try {
-					String pathToThisTestObject = StringUtils
-							.getStandardPath(currentProjectDir + "/" + brokenTestObject.getTestObjectId() + ".rs");
-					DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-					Document doc = docBuilder.parse(pathToThisTestObject);
-					// Update the first XPATH value in selectorCollection (i.e
-					// default XPath value)
-					XPath xPathToBrokenXPath = XPathFactory.newInstance().newXPath();
-					Node nodeBrokenXPath = (Node) xPathToBrokenXPath
-							.compile("//selectorCollection//key[text()='XPATH'][1]/following::value[1]")
-							.evaluate(doc, XPathConstants.NODE);
-					nodeBrokenXPath.setTextContent(brokenTestObject.getProposedLocator());
+    public static void healBrokenTestObject(BrokenTestObject brokenTestObject) {
+        try {
+            String testObjectId = brokenTestObject.getTestObjectId();
+            WebElementEntity testObject = ObjectRepositoryController.getInstance()
+                    .getWebElementByDisplayPk(testObjectId);
 
-					Transformer tf = TransformerFactory.newInstance().newTransformer();
-					tf.setOutputProperty(OutputKeys.INDENT, "yes");
-					tf.setOutputProperty(OutputKeys.METHOD, "xml");
-					tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            WebElementSelectorMethod newSelectorMethod = WebElementSelectorMethod.valueOf(
+                    brokenTestObject.getProposedLocatorMethod().name());
+            testObject.setSelectorMethod(newSelectorMethod);
+            testObject.setSelectorValue(
+                    newSelectorMethod,
+                    brokenTestObject.getProposedLocator());
 
-					DOMSource domSource = new DOMSource(doc);
-					StreamResult sr = new StreamResult(pathToThisTestObject);
-					tf.transform(domSource, sr);
-					System.out.println("Updated " + brokenTestObject.getTestObjectId());
-				} catch (IOException e1) {
-					System.out.println(brokenTestObject.getTestObjectId() + " cannot be found in your project ! Skipping this object ...");
-					approvedButCannotBeHealedEntities.add(brokenTestObject);
-				} catch(XPathExpressionException e2){
-					System.out.println(brokenTestObject.getTestObjectId() + ".rs has been changed in a way that we can't find and update XPath field ! Skipping this object ...");
-					approvedButCannotBeHealedEntities.add(brokenTestObject);
-				} catch(Exception e3){
-					e3.printStackTrace(System.out);
-					System.out.println("Unexpected error occurs ! Skipping this object ... ");
-					approvedButCannotBeHealedEntities.add(brokenTestObject);
-				}
-			}
-		}
-		return approvedButCannotBeHealedEntities;
-	}
+            ObjectRepositoryController.getInstance().updateTestObject(testObject);
+
+            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { testObjectId, testObject });
+        } catch (ControllerException exception) {
+            LoggerSingleton.logError(exception);
+        }
+    }
 
 	public static Set<BrokenTestObject> readUnapprovedBrokenTestObjects() {
 		try {

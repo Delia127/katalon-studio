@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -36,10 +37,8 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 
-import com.googlecode.javacv.FrameGrabber.Array;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -533,13 +532,16 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static By buildUnionXpath(TestObject to) {
         return buildXpath(to, XPathBuilder.AggregationType.UNION, to.getProperties());
     }
+
+    public static String getSelectorValue(TestObject testObject) {
+        return getSelectorValue(testObject, testObject.getSelectorMethod());
+    }
     
     /*
      * Get a TestObject's selector value based on its SelectorCollection and SelectorMethod
      * Update SelectorCollection if previously empty
      */
-    public static String getSelectorValue(TestObject to) {
-        SelectorMethod selectorMethod = to.getSelectorMethod();
+    public static String getSelectorValue(TestObject to, SelectorMethod selectorMethod) {
         switch (selectorMethod) {
             case BASIC:
                 String cssLocatorValue = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
@@ -851,10 +853,10 @@ public class WebUiCommonHelper extends KeywordHelper {
         @SuppressWarnings("serial")
         List<SelectorMethod> searchOrder = new ArrayList<SelectorMethod>() {
             {
-                add(SelectorMethod.IMAGE);
                 add(SelectorMethod.CSS);
                 add(SelectorMethod.BASIC);
                 add(SelectorMethod.XPATH);
+                add(SelectorMethod.IMAGE);
             }
         };
 
@@ -871,18 +873,31 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
         } while ((System.currentTimeMillis() - startTime) / 1000 < timeout);
         
+        SmartXPathController.logWarning(MessageFormat.format("Failed to find element with ID '{0}'. Try using Self-Healing.",
+                testObject.getObjectId()));
+        
         for (SelectorMethod method : searchOrder) {
             if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
                 try {
                     FindElementsResult findResult = findElementsBySelectedMethod(testObject, timeout, method, true);
                     webElements = findResult.getElements();
                     if (!findResult.isEmpty()) {
-                        SmartXPathController.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECT_SMART_XPATH,
-                                ""));
-                        SmartXPathController.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION);
-                        
-                        SmartXPathController.registerBrokenTestObject(testObject, findResult.getLocator(),
-                                findResult.getLocatorMethod(), findResult.getScreenshot());
+                        SmartXPathController.logWarning(MessageFormat.format("Failed to find element with ID '{0}'. Try using Self-Healing.",
+                                testObject.getObjectId()));
+
+                        SmartXPathController.logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECT_SMART_XPATH,
+                                findResult.getLocatorMethod() + ": " + findResult.getLocator()));
+
+                        SelectorMethod recoveryMethod = findResult.getLocatorMethod();
+                        SelectorMethod proposedMethod = recoveryMethod == SelectorMethod.IMAGE
+                                ? SelectorMethod.XPATH
+                                : recoveryMethod;
+                        String proposedLocator = recoveryMethod == SelectorMethod.IMAGE
+                                ? generateXPath(webElements.get(0))
+                                : findResult.getLocator();
+
+                        SmartXPathController.registerBrokenTestObject(testObject, proposedLocator, proposedMethod,
+                                recoveryMethod, findResult.getScreenshot());
                         return webElements;
                     }
                 } catch (NoSuchElementException e) {
@@ -891,6 +906,21 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
         }
         return webElements;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static String generateXPath(WebElement element) {
+        WebDriver webDriver = DriverFactory.getWebDriver();
+
+        Map<String, List<String>> generatedXPaths = WebUICommonScripts.generateXPaths(webDriver, element);
+
+        List<Pair<String, Boolean>> xpathsPriority = RunConfiguration.getXPathsPriority();
+        for (Pair<String, Boolean> xpath : xpathsPriority) {
+            if (generatedXPaths.containsKey(xpath.getLeft()) && !generatedXPaths.get(xpath.getLeft()).isEmpty()) {
+                return generatedXPaths.get(xpath.getLeft()).get(0);
+            }
+        }
+        return null;
     }
 
     private static FindElementsResult findElementsBySelectedMethod(TestObject testObject, int timeout,
@@ -969,8 +999,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
         }
 
-        String screenshotName = MessageFormat.format("{0}_{1}_{2,number,#}", testObject.getObjectId(), SelectorMethod.CSS,
-                System.currentTimeMillis()/1000);
+        String screenshotName = MessageFormat.format("{0}_{1}", testObject.getObjectId(), SelectorMethod.CSS);
         String screenshot = foundElements != null && !foundElements.isEmpty()
                 ? SmartXPathController.takeScreenShot(webDriver, foundElements.get(0), screenshotName)
                 : StringUtils.EMPTY;
@@ -1007,12 +1036,12 @@ public class WebUiCommonHelper extends KeywordHelper {
             // not found element yet, moving on
         }
 
-        String screenshotName = MessageFormat.format("{0}_{1}_{2,number,#}", testObject.getObjectId(), locatorMethod,
-                System.currentTimeMillis()/1000);
+        String screenshotName = MessageFormat.format("{0}_{1}", testObject.getObjectId(), locatorMethod);
         String screenshot = foundElements != null && !foundElements.isEmpty()
                 ? SmartXPathController.takeScreenShot(webDriver, foundElements.get(0), screenshotName)
                 : StringUtils.EMPTY;
-        return FindElementsResult.from(foundElements, defaultLocator.toString(), locatorMethod, screenshot) ;
+        return FindElementsResult.from(foundElements, getSelectorValue(testObject, locatorMethod), locatorMethod,
+                screenshot);
     }
 
     private static FindElementsResult findWebElementsWithSmartXPath(TestObject testObject, int timeout) {
@@ -1096,6 +1125,16 @@ public class WebUiCommonHelper extends KeywordHelper {
     private static FindElementsResult findElementsByImage(TestObject testObject, int timeout) {
         WebDriver webDriver = DriverFactory.getWebDriver();
         String screenshot = testObject.getSelectorCollection().get(SelectorMethod.IMAGE);
+        
+        // For backward compatible
+        if (StringUtils.isBlank(screenshot)) {
+            screenshot = testObject.getProperties()
+                    .stream()
+                    .filter(prop -> prop.getName().equals("screenshot"))
+                    .findAny()
+                    .map(screenshotProp -> screenshotProp.getValue())
+                    .orElse(StringUtils.EMPTY);
+        }
 
         if (StringUtils.isBlank(screenshot)) {
             return FindElementsResult.from(SelectorMethod.IMAGE);

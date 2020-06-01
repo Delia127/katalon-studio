@@ -15,9 +15,11 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
@@ -121,6 +123,8 @@ public class RunConfiguration {
     public static final String ALLOW_IMAGE_RECOGNITION = "allowImageRecognition";
 
     public static final String IMAGE_RECOGNITION_ENABLED = "imageRecognitionEnabled";
+
+    public static final String XPATHS_PRIORITY = "xpathsPriority";
     
     public static final String VM_ARGUMENTS = "vmArguments";
     
@@ -604,5 +608,18 @@ public class RunConfiguration {
     public static boolean shouldApplyImageRecognition() {
         return Boolean.TRUE.equals(getProperty(ALLOW_IMAGE_RECOGNITION))
                 && Boolean.TRUE.equals(getExecutionGeneralProperties().getOrDefault(IMAGE_RECOGNITION_ENABLED, true));
+    }
+
+    public static List<Pair<String, Boolean>> getXPathsPriority() {
+        List<LinkedTreeMap<String, Object>> rawXPathsPriority = (List<LinkedTreeMap<String, Object>>) getExecutionGeneralProperties()
+                .getOrDefault(XPATHS_PRIORITY, Collections.emptyList());
+        List<Pair<String, Boolean>> xpathPriority = new ArrayList<Pair<String, Boolean>>();
+
+        rawXPathsPriority.stream().forEachOrdered(rawXPath -> {
+            Pair<String, Boolean> xpath = Pair.of((String) rawXPath.get("left"), (Boolean) rawXPath.get("right"));
+            xpathPriority.add(xpath);
+        });
+
+        return xpathPriority;
     }
 }

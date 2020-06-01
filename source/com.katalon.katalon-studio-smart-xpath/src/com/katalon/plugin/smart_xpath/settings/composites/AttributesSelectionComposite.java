@@ -96,8 +96,8 @@ public class AttributesSelectionComposite extends Composite {
         tiPropertyAdd.addSelectionListener(new SelectionAdapter() {
 
             @Override
-            public void widgetSelected(SelectionEvent e) {
-                Pair<String, Boolean> element = Pair.of(StringConstants.EMPTY, false);
+            public void widgetSelected(SelectionEvent event) {
+                Pair<String, Boolean> element = Pair.of(StringConstants.EMPTY, true);
                 selectedAttributes.add(element);
                 tvProperty.refresh();
                 tvProperty.editElement(element, 0);
@@ -108,7 +108,7 @@ public class AttributesSelectionComposite extends Composite {
         tiPropertyDelete.addSelectionListener(new SelectionAdapter() {
 
             @Override
-            public void widgetSelected(SelectionEvent e) {
+            public void widgetSelected(SelectionEvent event) {
                 int[] selectedPropertyIndices = tvProperty.getTable().getSelectionIndices();
                 if (selectedPropertyIndices.length == 0) {
                     return;
@@ -120,6 +120,8 @@ public class AttributesSelectionComposite extends Composite {
                         .collect(Collectors.toList());
                 selectedAttributes.removeAll(selectedProperties);
                 tvProperty.refresh();
+                
+                handleSelectionChange(event);
             }
 
         });
@@ -127,9 +129,11 @@ public class AttributesSelectionComposite extends Composite {
         tiPropertyClear.addSelectionListener(new SelectionAdapter() {
 
             @Override
-            public void widgetSelected(SelectionEvent e) {
+            public void widgetSelected(SelectionEvent event) {
                 selectedAttributes.clear();
                 tvProperty.refresh();
+                
+                handleSelectionChange(event);
             }
 
         });
@@ -190,6 +194,8 @@ public class AttributesSelectionComposite extends Composite {
                 }
                 ((Pair<String, Boolean>) element).setLeft(newName);
                 tvProperty.update(element, null);
+                
+                handleSelectionChange(null);
             }
 
             @Override

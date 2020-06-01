@@ -30,6 +30,10 @@ public class BrokenTestObject {
     @Expose
     private SelectorMethod proposedLocatorMethod;
 
+    @SerializedName("recoveryMethod")
+    @Expose
+    private SelectorMethod recoveryMethod;
+
     @SerializedName("pathToScreenshot")
     @Expose
     private String pathToScreenshot;
@@ -74,6 +78,14 @@ public class BrokenTestObject {
         this.proposedLocatorMethod = proposedLocatorMethod;
     }
 
+    public SelectorMethod getRecoveryMethod() {
+        return recoveryMethod;
+    }
+
+    public void setRecoveryMethod(SelectorMethod recoveryMethod) {
+        this.recoveryMethod = recoveryMethod;
+    }
+
     public String getPathToScreenshot() {
         return pathToScreenshot;
     }
@@ -100,6 +112,7 @@ public class BrokenTestObject {
         result = prime * result + ((pathToScreenshot == null) ? 0 : pathToScreenshot.hashCode());
         result = prime * result + ((proposedLocator == null) ? 0 : proposedLocator.hashCode());
         result = prime * result + ((proposedLocatorMethod == null) ? 0 : proposedLocatorMethod.hashCode());
+        result = prime * result + ((recoveryMethod == null) ? 0 : recoveryMethod.hashCode());
         result = prime * result + ((testObjectId == null) ? 0 : testObjectId.hashCode());
         return result;
     }
@@ -137,6 +150,8 @@ public class BrokenTestObject {
             return false;
         if (proposedLocatorMethod != other.proposedLocatorMethod)
             return false;
+        if (recoveryMethod != other.recoveryMethod)
+            return false;
         if (testObjectId == null) {
             if (other.testObjectId != null)
                 return false;
@@ -144,5 +159,4 @@ public class BrokenTestObject {
             return false;
         return true;
     }
-
 }

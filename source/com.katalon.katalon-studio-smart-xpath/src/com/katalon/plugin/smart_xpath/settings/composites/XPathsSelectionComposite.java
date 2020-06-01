@@ -140,7 +140,7 @@ public class XPathsSelectionComposite extends Composite {
             }
         });
 
-        tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
+        tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, false));
 
         return tableXPathComposite;
     }

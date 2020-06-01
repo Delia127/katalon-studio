@@ -34,6 +34,7 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
             reportProps.put(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                     webUiSettingStore.getIgnorePageLoadTimeout());
             reportProps.put(RunConfiguration.IMAGE_RECOGNITION_ENABLED, webUiSettingStore.getImageRecognitionEnabled());
+            reportProps.put(RunConfiguration.XPATHS_PRIORITY, webUiSettingStore.getCapturedTestObjectXpathLocators());
         } catch (IOException e) {
             LogUtil.logError(e);
         }

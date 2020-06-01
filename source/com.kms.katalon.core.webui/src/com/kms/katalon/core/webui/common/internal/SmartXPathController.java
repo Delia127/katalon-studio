@@ -72,9 +72,50 @@ public class SmartXPathController {
         logger.logError(smartXPathPrefixify(message), null, throwable);
     }
 
+    /**
+     * Log an warning with Smart XPath plug-in's internal prefix. Note that a
+     * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
+     * 
+     * @param message
+     */
+    public static void logWarning(String message) {
+        logger.logWarning(smartXPathPrefixify(message));
+    }
+    
+    /**
+     * Log an warning with Smart XPath plug-in's internal prefix. Note that a
+     * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
+     * 
+     * @param message
+     * @param throwable
+     */
+    public static void logWarning(String message, Throwable throwable) {
+        logger.logWarning(smartXPathPrefixify(message), null, throwable);
+    }
+
 	private static String smartXPathPrefixify(String message) {
 		return SMART_XPATH_PREFIX + " " + message;
 	}
+
+    /**
+     * Register a Test Object as broken, register this information along with a
+     * proposed locator to an internal file provided by Self-Healing Plug-in.
+     * 
+     * @param testObject
+     *            The broken Test Object to be registered
+     * @param proposedLocator
+     *            The proposed locator for the broken Test Object
+     * @param proposedLocatorMethod
+     *            The proposed locator method for the broken Test Object 
+     * @param pathToScreenshot
+     *            Path to the screenshot of the web element retrieved by the
+     *            proposed locator
+     */
+    public static void registerBrokenTestObject(TestObject testObject, String proposedLocator,
+            SelectorMethod proposedLocatorMethod, String pathToScreenshot) {
+        registerBrokenTestObject(testObject, proposedLocator, proposedLocatorMethod, proposedLocatorMethod,
+                pathToScreenshot);
+    }
 
 	/**
 	 * Register a Test Object as broken, register this information along with a
@@ -85,16 +126,18 @@ public class SmartXPathController {
 	 * @param proposedLocator
 	 *            The proposed locator for the broken Test Object
 	 * @param proposedLocatorMethod
-	 *            The proposed locator method for the broken Test Object 
+	 *            The proposed locator method for the broken Test Object
+     * @param recoveryMethod
+     *            The recovery method that healed the broken Test Object
 	 * @param pathToScreenshot
 	 *            Path to the screenshot of the web element retrieved by the
 	 *            proposed locator
 	 */
     public static void registerBrokenTestObject(TestObject testObject, String proposedLocator,
-            SelectorMethod proposedLocatorMethod, String pathToScreenshot) {
+            SelectorMethod proposedLocatorMethod, SelectorMethod recoveryMethod, String pathToScreenshot) {
         String jsAutoHealingPath = getSmartXPathInternalFilePath();
         BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, proposedLocator, proposedLocatorMethod,
-                pathToScreenshot);
+                recoveryMethod, pathToScreenshot);
         BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
         if (existingBrokenTestObjects != null) {
 			existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
@@ -128,16 +171,17 @@ public class SmartXPathController {
 	}
 
     private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String proposedLocator,
-            SelectorMethod proposedLocatorMethod, String pathToScreenshot) {
+            SelectorMethod proposedLocatorMethod, SelectorMethod recoveryMethod, String pathToScreenshot) {
         SelectorMethod brokenLocatorMethod = testObject.getSelectorMethod();
         String brokenLocator = testObject.getSelectorCollection().get(brokenLocatorMethod);
         BrokenTestObject brokenTestObject = new BrokenTestObject();
 		brokenTestObject.setTestObjectId(testObject.getObjectId());
-		brokenTestObject.setApproved(false);
+		brokenTestObject.setApproved(true);
 		brokenTestObject.setBrokenLocator(brokenLocator);
 		brokenTestObject.setBrokenLocatorMethod(brokenLocatorMethod);
 		brokenTestObject.setProposedLocator(proposedLocator);
         brokenTestObject.setProposedLocatorMethod(proposedLocatorMethod);
+        brokenTestObject.setRecoveryMethod(recoveryMethod);
 		brokenTestObject.setPathToScreenshot(pathToScreenshot);
 		return brokenTestObject;
 	}

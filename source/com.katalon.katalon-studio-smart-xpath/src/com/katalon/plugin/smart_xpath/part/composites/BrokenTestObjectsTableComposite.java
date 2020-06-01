@@ -4,12 +4,10 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.io.FilenameUtils;
 
-import org.eclipse.core.runtime.Path;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -32,7 +30,6 @@ import org.eclipse.swt.widgets.TypedListener;
 import com.katalon.platform.ui.viewer.HyperLinkColumnLabelProvider;
 import com.katalon.plugin.smart_xpath.dialog.provider.ApproveCheckBoxColumnEditingSupport;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class BrokenTestObjectsTableComposite extends Composite {
@@ -41,13 +38,19 @@ public class BrokenTestObjectsTableComposite extends Composite {
     
     private ProjectEntity project;
 
+    public ProjectEntity getProject() {
+        return project;
+    }
+
+    public void setProject(ProjectEntity project) {
+        this.project = project;
+    }
+
     private TableViewer tbViewer;
 
     private TableColumnLayout tableColumnLayout;
 
     private Table table;
-
-    private Set<BrokenTestObject> brokenTestObjects = new HashSet<>();
 
     public BrokenTestObjectsTableComposite(Composite parent, int style) {
         super(parent, style);
@@ -74,7 +77,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
     }
 
     private void createColumns() {
-        TableViewerColumn colObjectId = new TableViewerColumn(tbViewer, SWT.NONE);
+        TableViewerColumn colObjectId = new TableViewerColumn(tbViewer, SWT.RIGHT);
         colObjectId.getColumn().setText("Test Object ID");
         colObjectId.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -101,7 +104,9 @@ public class BrokenTestObjectsTableComposite extends Composite {
         colProposedLocator.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                String proposedLocator = ((BrokenTestObject) element).getProposedLocator();
+                BrokenTestObject brokenTestObject = (BrokenTestObject) element;
+                String proposedLocator = MessageFormat.format("{0}: {1}", brokenTestObject.getProposedLocatorMethod().getName(),
+                        brokenTestObject.getProposedLocator());
                 return proposedLocator;
             }
         });
@@ -111,8 +116,8 @@ public class BrokenTestObjectsTableComposite extends Composite {
         colRecoverBy.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                String newXPath = ((BrokenTestObject) element).getProposedLocatorMethod().toString();
-                return newXPath;
+                String recoveryMethod = ((BrokenTestObject) element).getRecoveryMethod().toString();
+                return recoveryMethod;
             }
         });
 
@@ -122,10 +127,10 @@ public class BrokenTestObjectsTableComposite extends Composite {
 
             @Override
             protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
-                BrokenTestObject brokenTestObj = (BrokenTestObject) cell.getElement();
+                BrokenTestObject brokenTestObject = (BrokenTestObject) cell.getElement();
                 if (Desktop.isDesktopSupported()) {
                     try {
-                        String filePath = FilenameUtils.separatorsToSystem(brokenTestObj.getPathToScreenshot());
+                        String filePath = FilenameUtils.separatorsToSystem(brokenTestObject.getPathToScreenshot());
                         File myFile = new File(filePath);
                         if (!myFile.isAbsolute()) {
                             String absoluteFilePath = FilenameUtils.concat(project.getFolderLocation(), filePath);
@@ -161,18 +166,24 @@ public class BrokenTestObjectsTableComposite extends Composite {
             protected String getText(BrokenTestObject element) {
                 return "Preview";
             }
+            
+            @Override
+            public String getToolTipText(Object element) {
+                BrokenTestObject brokenTestObject = (BrokenTestObject) element;
+                return brokenTestObject.getPathToScreenshot();
+            }
         });
 
-        TableViewerColumn colApproveNewXPath = new TableViewerColumn(tbViewer, SWT.NONE);
-        colApproveNewXPath.getColumn().setText("Approve");
-        colApproveNewXPath.setLabelProvider(new CellLabelProvider() {
+        TableViewerColumn colApproveNewLocator = new TableViewerColumn(tbViewer, SWT.NONE);
+        colApproveNewLocator.getColumn().setText("Approve");
+        colApproveNewLocator.setLabelProvider(new CellLabelProvider() {
             @Override
             public void update(ViewerCell cell) {
                 cell.setText(getCheckboxSymbol(((BrokenTestObject) cell.getElement()).getApproved()));
             }
         });
 
-        colApproveNewXPath.setEditingSupport(new ApproveCheckBoxColumnEditingSupport(tbViewer) {
+        colApproveNewLocator.setEditingSupport(new ApproveCheckBoxColumnEditingSupport(tbViewer) {
             @Override
             protected void setValue(Object element, Object value) {
                 super.setValue(element, value);
@@ -183,9 +194,9 @@ public class BrokenTestObjectsTableComposite extends Composite {
         tableColumnLayout.setColumnData(colObjectId.getColumn(), new ColumnWeightData(40, 100));
         tableColumnLayout.setColumnData(colBrokenLocator.getColumn(), new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(colProposedLocator.getColumn(), new ColumnWeightData(30, 100));
-        tableColumnLayout.setColumnData(colRecoverBy.getColumn(), new ColumnWeightData(5, 100));
-        tableColumnLayout.setColumnData(colScreenshot.getColumn(), new ColumnWeightData(5, 100));
-        tableColumnLayout.setColumnData(colApproveNewXPath.getColumn(), new ColumnWeightData(5, 70));
+        tableColumnLayout.setColumnData(colRecoverBy.getColumn(), new ColumnWeightData(5, 70));
+        tableColumnLayout.setColumnData(colScreenshot.getColumn(), new ColumnWeightData(5, 70));
+        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(5, 70));
     }
 
     private String getCheckboxSymbol(boolean isChecked) {
@@ -197,20 +208,29 @@ public class BrokenTestObjectsTableComposite extends Composite {
     }
     
     public void setInput(Set<BrokenTestObject> brokenTestObjects) {
-        brokenTestObjects = brokenTestObjects.stream()
-                .filter(brokenTestObject -> !brokenTestObject.getApproved())
-                .collect(Collectors.toSet());
         tbViewer.setInput(brokenTestObjects);
-        refresh();
+//        refresh();
     }
-    
+
+    @SuppressWarnings("unchecked")
     public Set<BrokenTestObject> getInput() {
+        Set<BrokenTestObject> brokenTestObjects = (Set<BrokenTestObject>) tbViewer.getInput();
         return brokenTestObjects;
     }
-    
+
+    @SuppressWarnings("unchecked")
     public Set<BrokenTestObject> getApprovedTestObjects() {
+        Set<BrokenTestObject> brokenTestObjects = (Set<BrokenTestObject>) tbViewer.getInput();
         return brokenTestObjects.stream()
                 .filter(brokenTestObject -> brokenTestObject.getApproved())
+                .collect(Collectors.toSet());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<BrokenTestObject> getUnapprovedTestObjects() {
+        Set<BrokenTestObject> brokenTestObjects = (Set<BrokenTestObject>) tbViewer.getInput();
+        return brokenTestObjects.stream()
+                .filter(brokenTestObject -> !brokenTestObject.getApproved())
                 .collect(Collectors.toSet());
     }
 
@@ -231,13 +251,5 @@ public class BrokenTestObjectsTableComposite extends Composite {
         TypedListener typedListener = new TypedListener(listener);
         addListener(SWT.Selection, typedListener);
         addListener(SWT.DefaultSelection, typedListener);
-    }
-
-    public ProjectEntity getProject() {
-        return project;
-    }
-
-    public void setProject(ProjectEntity project) {
-        this.project = project;
     }
 }

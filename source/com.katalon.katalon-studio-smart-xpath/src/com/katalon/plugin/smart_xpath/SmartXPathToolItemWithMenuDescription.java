@@ -73,7 +73,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 				} else {
 					addEnableSmartXPathMenuItem(newMenu, true);
 				}
-				addLoadAutoHealingEntitiesMenuItem(newMenu, true);
+				addGoToSelfHealingSettingsMenuItem(newMenu, true);
 			}
 		} catch (ResourceException e) {
 			LoggerSingleton.logError(e);
@@ -82,8 +82,8 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 
 	private MenuItem addEnableSmartXPathMenuItem(Menu parentMenu, boolean enable) {
 		smartXPathEnable = new MenuItem(parentMenu, SWT.PUSH);
-		smartXPathEnable.setText("Enable Auto Healing");
-		smartXPathEnable.setToolTipText("Enable Auto Healing");
+		smartXPathEnable.setText("Enable Self-Healing");
+		smartXPathEnable.setToolTipText("Enable Self-Healing");
 		smartXPathEnable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -107,8 +107,8 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 
 	private MenuItem addDisableSmartXPathMenuItem(Menu parentMenu, boolean enable) {
 		smartXPathDisable = new MenuItem(parentMenu, SWT.PUSH);
-		smartXPathDisable.setText("Disable Auto Healing");
-		smartXPathDisable.setToolTipText("Disable Auto Healing");
+		smartXPathDisable.setText("Disable Self-Healing");
+		smartXPathDisable.setToolTipText("Disable Self-Healing");
 		smartXPathDisable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -120,7 +120,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 	                    PluginPreference preferenceStore = ApplicationManager.getInstance().getPreferenceManager()
 	                            .getPluginPreference(currentProject.getId(), IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
 
-	                    preferenceStore.setBoolean("SmartXPathEnabled", false);
+	                    preferenceStore.setBoolean("SelfHealingEnabled", false);
 	                    preferenceStore.save();
 	                } catch (ResourceException e1) {
 	                    LoggerSingleton.logError(e1);
@@ -132,6 +132,20 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		});
 		return smartXPathDisable;
 	}
+
+    private MenuItem addGoToSelfHealingSettingsMenuItem(Menu parentMenu, boolean enable) {
+        MenuItem selfHealingMenuItem = new MenuItem(parentMenu, SWT.PUSH);
+        selfHealingMenuItem.setText("XPath Auto-healing Logs");
+        selfHealingMenuItem.setEnabled(enable);
+        selfHealingMenuItem.setToolTipText("Approve or reject Smart XPath auto-healing effect on failed locators");
+        selfHealingMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                
+            }
+        });
+        return selfHealingMenuItem;
+    }
 
 	private MenuItem addLoadAutoHealingEntitiesMenuItem(Menu parentMenu, boolean enable) {
 		autoHealing = new MenuItem(parentMenu, SWT.PUSH);
