@@ -488,16 +488,14 @@ public class RestServicePart extends WebServicePart {
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
-        if (isBodySupported(requestMethod) && requestBodyEditor.getHttpBodyType() != null) {
-            originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
-            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
+        if (requestBodyEditor.getHttpBodyType() != null) {
+            String bodyType = requestBodyEditor.getHttpBodyType();
+            String bodyContent = requestBodyEditor.getHttpBodyContent();
+            originalWsObject.setHttpBodyContent(bodyContent);
+            originalWsObject.setHttpBodyType(bodyType);
         }
 
         updatePartImage();
-    }
-
-    private boolean isBodySupported(String requestMethod) {
-        return RestRequestMethodHelper.isBodySupported(requestMethod);
     }
 
     @Override
@@ -523,7 +521,7 @@ public class RestServicePart extends WebServicePart {
 
         requestBodyEditor.setInput(clone);
 
-        setTabBodyContentBasedOnRequestMethod();
+//        setTabBodyContentBasedOnRequestMethod();
 
         cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
 
