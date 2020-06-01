@@ -36,6 +36,7 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
             reportProps.put(RunConfiguration.IMAGE_RECOGNITION_ENABLED, webUiSettingStore.getImageRecognitionEnabled());
             reportProps.put(RunConfiguration.EXCLUDE_KEYWORDS, webUiSettingStore.getExcludeKeywordList());
             reportProps.put(RunConfiguration.METHODS_PRIORITY_ORDER, webUiSettingStore.getMethodsPriorityOrder());
+            reportProps.put(RunConfiguration.SELF_HEALING_ENABLE, webUiSettingStore.isEnableSelfHHealing());
         } catch (IOException e) {
             LogUtil.logError(e);
         }

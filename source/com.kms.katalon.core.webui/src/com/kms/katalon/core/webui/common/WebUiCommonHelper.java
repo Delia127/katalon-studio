@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -56,7 +57,6 @@ import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
-import com.kms.katalon.util.collections.Pair;
 
 public class WebUiCommonHelper extends KeywordHelper {
     
@@ -854,25 +854,6 @@ public class WebUiCommonHelper extends KeywordHelper {
         List<Pair<String, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrderWhenApplySelfHealing();
         List<String> excludeObjectWithKeywords = RunConfiguration.getExcludedKeywordsFromSelfHealing();
         boolean isEnableSelfHealing = RunConfiguration.shouldApplySmartXPath();
-//        
-//        WebUiExecutionSettingStore preferenceStore =  new WebUiExecutionSettingStore();
-//        try {
-//            WebUiExecutionSettingStore preferenceStore =  new WebUiExecutionSettingStore();
-//                methodsPriorityOrder = preferenceStore.getMethodsPriorityOrder();
-//                excludeObjectWithKeywords = preferenceStore.getExcludeKeywordList();
-//                isEnableSelfHealing = preferenceStore.isEnableSelfHHealing();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        List<SelectorMethod> searchOrder = new ArrayList<>();
-
-        if (methodsPriorityOrder != null) {
-            for (Pair<String, Boolean> method : methodsPriorityOrder) {
-                if (method.getRight()) {
-                    searchOrder.add(SelectorMethod.valueOf(method.getLeft()));
-                }
-            }
-        }
 
         List<WebElement> webElements = Collections.emptyList();
         long startTime = System.currentTimeMillis();
@@ -891,7 +872,8 @@ public class WebUiCommonHelper extends KeywordHelper {
             return webElements;
         }
 
-        for (SelectorMethod method : searchOrder) {
+        for (Pair<String, Boolean> element : methodsPriorityOrder) {
+            SelectorMethod method = SelectorMethod.valueOf(element.getLeft());
             if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
                 try {
                     FindElementsResult findResult = findElementsBySelectedMethod(testObject, timeout, method, true);
