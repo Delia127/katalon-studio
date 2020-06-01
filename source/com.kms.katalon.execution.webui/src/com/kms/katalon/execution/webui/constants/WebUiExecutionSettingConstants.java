@@ -21,4 +21,10 @@ public class WebUiExecutionSettingConstants {
 
     public static final String WEBUI_DEFAULT_USE_DELAY_ACTION_TIME_UNIT = "execution.default.useDelayActionInSecond";
 
+    public static final String WEBUI_SELF_HEALING_ENABLE = "execution.default.webUi.selfHealingEnabled";
+
+    public static final String WEBUI_METHODS_PRIORITY_ORDER = "execution.default.webUi.methodsPriorityOrder";
+
+    public static final String WEBUI_EXCLUDE_KEYWORDS = "execution.default.webUi.excludeKeywords";
+
 }
