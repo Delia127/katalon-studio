@@ -1,5 +1,6 @@
 package com.katalon.plugin.smart_xpath.settings;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -10,14 +11,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-import com.katalon.platform.api.exception.InvalidDataTypeFormatException;
-import com.katalon.platform.api.exception.ResourceException;
-import com.katalon.platform.api.model.Entity;
-import com.katalon.platform.api.service.ApplicationManager;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.settings.composites.ExcludeObjectsUsedWithKeywordsComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.PrioritizeSelectionMethodsComposite;
 import com.kms.katalon.composer.components.controls.HelpComposite;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
 
 public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
@@ -26,7 +25,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	private Button checkboxEnableSelfHealing;
 
-	private SelfHealingSetting preferenceStore;
+//	private SelfHealingSetting preferenceStore;
 
 	private ExcludeObjectsUsedWithKeywordsComposite excludeObjectsUsedWithKeywordsComposite;
 
@@ -40,18 +39,20 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	private List<String> excludeKeywordNames;
 
+    private WebUiExecutionSettingStore preferenceStore;
+
 	public SelfHealingExecutionSettingPage() {
 		generatePreferenceStore();
 	}
 
 	private void setInput() {
-		try {
-			excludeKeywordNames = preferenceStore.getExcludeKeywordList();
-			methodsPriorityOrder = preferenceStore.getMethodsPriorityOrder();
-		} catch (InvalidDataTypeFormatException | ResourceException e) {
-			e.printStackTrace();
-		}
-		
+        try {
+            excludeKeywordNames = preferenceStore.getExcludeKeywordList();
+            methodsPriorityOrder = preferenceStore.getMethodsPriorityOrder();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 		excludeObjectsUsedWithKeywordsComposite.setInput(excludeKeywordNames);
 		prioritizeSelectionMethodsComposite.setInput(methodsPriorityOrder);
 
@@ -60,8 +61,10 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 	}
 
 	private void generatePreferenceStore() {
-		Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-		preferenceStore = SelfHealingSetting.getStore(currentProject);
+
+	    preferenceStore = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
+//		Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
+//		preferenceStore = SelfHealingSetting.getStore(currentProject);
 	}
 
 	@Override
@@ -126,20 +129,20 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	private Boolean getEnableSelfHealingFromPluginPreference() {
 		Boolean value;
-		try {
-			value = preferenceStore.isEnableSelfHHealing();
-		} catch (InvalidDataTypeFormatException | ResourceException e) {
-			e.printStackTrace();
-			return null;
-		}
+        try {
+            value = preferenceStore.isEnableSelfHHealing();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
 		return value;
 	}
 
-	private void setEnableSelfHealingIntoPluginPreference() throws ResourceException {
+	private void setEnableSelfHealingIntoPluginPreference() throws IOException {
 		preferenceStore.setEnableSelfHealing(isEnableSelfHealing);
 	}
 
-	public void setUpdatedMethodsPriorityOrderIntoPluginPreference() throws ResourceException {
+	public void setUpdatedMethodsPriorityOrderIntoPluginPreference() throws IOException {
 		preferenceStore.setMethodsPritorityOrder(prioritizeSelectionMethodsComposite.getInput());
 	}
 
@@ -147,7 +150,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		List<Pair<String, Boolean>> value = null;
 		try {
 			value = preferenceStore.getMethodsPriorityOrder();
-		} catch (InvalidDataTypeFormatException | ResourceException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -158,13 +161,13 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		List<String> value = null;
 		try {
 			value = preferenceStore.getExcludeKeywordList();
-		} catch (ResourceException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return value;
 	}
 
-	public void setUpdatedExcludeKeywordsIntoPluginPreference() throws ResourceException {
+	public void setUpdatedExcludeKeywordsIntoPluginPreference() throws IOException {
 		preferenceStore.setExcludeKeywordList(excludeObjectsUsedWithKeywordsComposite.getInput());
 	}
 
@@ -190,7 +193,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 			this.setUpdatedExcludeKeywordsIntoPluginPreference();
 			this.setUpdatedMethodsPriorityOrderIntoPluginPreference();
 			this.setEnableSelfHealingIntoPluginPreference();
-		} catch (ResourceException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}

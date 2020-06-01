@@ -42,6 +42,7 @@ import org.openqa.selenium.support.ui.Select;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
+import com.kms.katalon.core.keyword.internal.KeywordExecutionContext;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
@@ -850,15 +851,12 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
     
     private static List<WebElement> findElementsWithSelfHealing(TestObject testObject, int timeout) {
-        @SuppressWarnings("serial")
-        List<SelectorMethod> searchOrder = new ArrayList<SelectorMethod>() {
-            {
-                add(SelectorMethod.CSS);
-                add(SelectorMethod.BASIC);
-                add(SelectorMethod.XPATH);
-                add(SelectorMethod.IMAGE);
-            }
-        };
+        String runningKeyword = KeywordExecutionContext.getRunningKeyword();
+        boolean isWebPlatform = KeywordExecutionContext.isRunningWebUI();
+
+        List<Pair<String, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrderWhenApplySelfHealing();
+        List<String> excludeObjectWithKeywords = RunConfiguration.getExcludedKeywordsFromSelfHealing();
+        boolean isEnableSelfHealing = RunConfiguration.shouldApplySmartXPath();
 
         List<WebElement> webElements = Collections.emptyList();
         long startTime = System.currentTimeMillis();
@@ -872,11 +870,16 @@ public class WebUiCommonHelper extends KeywordHelper {
                 // not found element yet, moving on
             }
         } while ((System.currentTimeMillis() - startTime) / 1000 < timeout);
+
+        if (!isWebPlatform || !isEnableSelfHealing || excludeObjectWithKeywords.contains(runningKeyword)) {
+            return webElements;
+        }
         
         SmartXPathController.logWarning(MessageFormat.format("Failed to find element with ID '{0}'. Try using Self-Healing.",
                 testObject.getObjectId()));
-        
-        for (SelectorMethod method : searchOrder) {
+
+        for (Pair<String, Boolean> element : methodsPriorityOrder) {
+            SelectorMethod method = SelectorMethod.valueOf(element.getLeft());
             if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
                 try {
                     FindElementsResult findResult = findElementsBySelectedMethod(testObject, timeout, method, true);
@@ -1050,6 +1053,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 		}
 		
         WebDriver webDriver = DriverFactory.getWebDriver();
+        List<WebElement> foundElements = Collections.emptyList();
 		
 		SmartXPathController.setLogger(logger);
 

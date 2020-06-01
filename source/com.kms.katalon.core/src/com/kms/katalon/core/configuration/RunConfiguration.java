@@ -43,6 +43,12 @@ public class RunConfiguration {
 	
 	public static final String ALLOW_USING_SMART_XPATH = "allowUsingSmartXPath";
 
+    public static final String EXCLUDE_KEYWORDS = "excludeKeywords";
+
+    public static final String SELF_HEALING_ENABLE ="selfHealingEnabled";
+
+    public static final String METHODS_PRIORITY_ORDER = "methodsPriorityOrder";
+
 	public static final String OVERRIDING_GLOBAL_VARIABLES = "overridingGlobalVariables";
 
     public static final String REPORT_FOLDER_PATH_PROPERTY = "reportFolder";
@@ -565,18 +571,35 @@ public class RunConfiguration {
     public static String getCapturedObjectsCacheFile() {
         return getStringProperty(RECORD_CAPTURED_OBJECTS_FILE);
     }
-    
+
 	public static Boolean shouldApplySmartXPath() {
 	    boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SMART_XPATH);
-		try {
-			return allowUsingSmartXPath && (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
-					.getBoolean("SelfHealingEnabled", true);
-		} catch (IOException e) {
-			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage(), null, e);
-		}
-		return false;
+	    
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+	    allowUsingSmartXPath = allowUsingSmartXPath && ((boolean) generalProperties.get(SELF_HEALING_ENABLE));
+		return allowUsingSmartXPath;
 	}
-    
+
+    public static List<Pair<String, Boolean>> getMethodsPriorityOrderWhenApplySelfHealing() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        List<LinkedTreeMap<String, Object>> rawMethodsPriorityOrder = (List<LinkedTreeMap<String, Object>>) generalProperties
+                .get(METHODS_PRIORITY_ORDER);
+
+        List<Pair<String, Boolean>> methodsPriorityOrder = new ArrayList<Pair<String, Boolean>>();
+        rawMethodsPriorityOrder.stream().forEachOrdered(rawMethod -> {
+            Pair<String, Boolean> method = Pair.of((String) rawMethod.get("left"), (Boolean) rawMethod.get("right"));
+            methodsPriorityOrder.add(method);
+        });
+
+        return methodsPriorityOrder;
+    }
+
+    public static List<String> getExcludedKeywordsFromSelfHealing() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        List<String> excludeKeywords = (List<String>) generalProperties.get(EXCLUDE_KEYWORDS);
+        return excludeKeywords;
+    }
+
     public static RunningMode getRunningMode() {
         return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
     }

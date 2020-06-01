@@ -1,17 +1,24 @@
 package com.kms.katalon.execution.webui.setting;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.gson.reflect.TypeToken;
+import com.katalon.platform.api.exception.InvalidDataTypeFormatException;
+import com.katalon.platform.api.exception.ResourceException;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.webui.constants.StringConstants;
 import com.kms.katalon.execution.webui.constants.WebUiExecutionSettingConstants;
@@ -35,7 +42,6 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES = "id,true;name,true;alt,true;checked,true;form,true;href,true;placeholder,true;selected,true;src,true;title,true;type,true;text,true;linked_text,true";
     
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true";
-    
 
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
 
@@ -43,7 +49,12 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     
     public static final String EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT = TimeUnit.SECONDS.toString();
 
+    public static final String SELF_HEALING_ENABLE ="selfHealingEnabled";
+
+    public static final String EXCLUDE_KEYWORDS = "excludeKeywords";
     
+    public static final String METHODS_PRIORITY_ORDER = "methodsPriorityOrder";
+
     public static WebUiExecutionSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         if (projectEntity == null) {
@@ -55,6 +66,11 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public WebUiExecutionSettingStore(ProjectEntity projectEntity) {
         super(projectEntity.getFolderLocation(),
                 FrameworkUtil.getBundle(WebUiExecutionSettingStore.class).getSymbolicName(), false);
+    }
+
+    public WebUiExecutionSettingStore(String projectEntityDirection, boolean isExternal) {
+        super(projectEntityDirection,
+                FrameworkUtil.getBundle(WebUiExecutionSettingStore.class).getSymbolicName(), isExternal);
     }
 
     public boolean getEnablePageLoadTimeout() throws IOException {
@@ -225,5 +241,50 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         } catch (IOException e) {
             return TimeUnit.valueOf(EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT);
         }
+    }
+
+    public void setExcludeKeywordList(List<String> excludeKeywords) throws IOException {
+        String jsonExcludeKeywords = JsonUtil.toJson(excludeKeywords, false);
+        setProperty(EXCLUDE_KEYWORDS, jsonExcludeKeywords);
+    }
+
+    public List<String> getExcludeKeywordList() throws IOException {
+        String jsonExcludeKeywords = getString(EXCLUDE_KEYWORDS, null);
+
+        if (jsonExcludeKeywords == null || StringUtils.isBlank(jsonExcludeKeywords)) {
+            return new ArrayList<String>();
+        }
+
+        Type excludeKeywordsMapType = new TypeToken<List<String>>() {}.getType();
+        return JsonUtil.fromJson(jsonExcludeKeywords, excludeKeywordsMapType);
+    }
+
+    public void setMethodsPritorityOrder(List<Pair<String, Boolean>> methodsPritorityOrder) throws IOException{
+        String jsonMethodsPriorityOrder = JsonUtil.toJson(methodsPritorityOrder, false);
+        setProperty(METHODS_PRIORITY_ORDER, jsonMethodsPriorityOrder);
+    }
+
+    public List<Pair<String, Boolean>> getMethodsPriorityOrder() throws IOException {
+        String jsonMethodsPriorityOrder = getString(METHODS_PRIORITY_ORDER, null);
+
+        if (jsonMethodsPriorityOrder == null || StringUtils.isBlank(jsonMethodsPriorityOrder)) {
+            List<Pair<String, Boolean>> methodsPriorityOrder = new ArrayList<Pair<String, Boolean>>();
+            methodsPriorityOrder.add(new Pair<String, Boolean>(SelectorMethod.XPATH.toString(), true));
+            methodsPriorityOrder.add(new Pair<String, Boolean>(SelectorMethod.BASIC.toString(), true));
+            methodsPriorityOrder.add(new Pair<String, Boolean>(SelectorMethod.CSS.toString(), true));
+            methodsPriorityOrder.add(new Pair<String, Boolean>(SelectorMethod.IMAGE.toString(), true));
+            return methodsPriorityOrder;
+        }
+
+        Type methodsPriorityOrderMapType = new TypeToken<List<Pair<String, Boolean>>>() {}.getType();
+        return JsonUtil.fromJson(jsonMethodsPriorityOrder, methodsPriorityOrderMapType);
+    }
+
+    public boolean isEnableSelfHHealing() throws IOException {
+        return getBoolean(SELF_HEALING_ENABLE, false);
+    }
+
+    public void setEnableSelfHealing(boolean isEnable) throws IOException{
+        setProperty(SELF_HEALING_ENABLE, isEnable);
     }
 }
