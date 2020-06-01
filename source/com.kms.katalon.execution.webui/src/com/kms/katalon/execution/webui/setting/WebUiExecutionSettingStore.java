@@ -2,6 +2,7 @@ package com.kms.katalon.execution.webui.setting;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     
     public static final String EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT = TimeUnit.SECONDS.toString();
     
-    public static final String DEFAULT_METHODS_PRIORITY_ORDER = "XPath,true;Basic,true;CSS,true;Image,true";
+    public static final String DEFAULT_METHODS_PRIORITY_ORDER = MessageFormat.format("{0},true;{1},true;{2},true;{3},true", SelectorMethod.XPATH, SelectorMethod.BASIC, SelectorMethod.CSS, SelectorMethod.IMAGE);
 
     public static final String DEFAULT_EXCLUDE_KEYWORDS = "";
     
@@ -261,12 +262,25 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         setProperty(WebUiExecutionSettingConstants.WEBUI_EXCLUDE_KEYWORDS, DEFAULT_EXCLUDE_KEYWORDS);
     }
 
-    public void setMethodsPritorityOrder(List<Pair<String, Boolean>> methodsPritorityOrder) throws IOException{
-        setProperty(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, flattenStringBooleanList(methodsPritorityOrder));
+    public void setMethodsPritorityOrder(List<Pair<SelectorMethod, Boolean>> methodsPritorityOrder) throws IOException{
+        List<Pair<String, Boolean>> convertedList = new ArrayList<>();
+        for (Pair<SelectorMethod, Boolean> element : methodsPritorityOrder) {
+            Pair<String, Boolean> convertedElement = new Pair<String, Boolean>(element.getLeft().toString(), (boolean) element.getRight());
+            convertedList.add(convertedElement);
+        }
+        setProperty(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, flattenStringBooleanList(convertedList));
     }
 
-    public List<Pair<String, Boolean>> getMethodsPriorityOrder() throws IOException {
-        return parseStringBooleanString(getString(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, DEFAULT_METHODS_PRIORITY_ORDER));
+    public List<Pair<SelectorMethod, Boolean>> getMethodsPriorityOrder() throws IOException {
+        List<Pair<String, Boolean>> rawMethodsPriorityOrder = parseStringBooleanString(getString(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, DEFAULT_METHODS_PRIORITY_ORDER));
+        List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = new ArrayList<Pair<SelectorMethod, Boolean>>();
+        rawMethodsPriorityOrder.forEach(rawMethod -> {
+            Pair<SelectorMethod, Boolean> method = Pair.of(SelectorMethod.valueOf(rawMethod.getLeft()), (Boolean) rawMethod.getRight());
+            methodsPriorityOrder.add(method);
+        });
+        String a = "Attributes";
+        SelectorMethod aasdf = SelectorMethod.BASIC;
+        return methodsPriorityOrder;
     }
 
     public void setDefaultMethodsPriorityOrder() throws IOException {

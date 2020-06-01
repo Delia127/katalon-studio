@@ -42,6 +42,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 
@@ -149,7 +150,8 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
 		tvcName.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				return (String) element;
+			    SelectorMethod label = (SelectorMethod) element;
+				return label.getName();
 			}
 		});
 		tvcName.setEditingSupport(new EditingSupport(tableViewer) {

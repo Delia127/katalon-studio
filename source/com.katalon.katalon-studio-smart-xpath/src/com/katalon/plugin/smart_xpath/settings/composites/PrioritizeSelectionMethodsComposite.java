@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
 
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -71,14 +72,14 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
 	private TableColumn cMethodsSelected;
 
-	private List<Pair<String, Boolean>> methodsPriorityOrder;
+	private List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder;
 
 	public PrioritizeSelectionMethodsComposite(Composite parent, int style, WebUiExecutionSettingStore preferenceStore) {
 		super(parent, style);
 		createContents(parent);
 	}
 	
-	public void setInput(List<Pair<String, Boolean>> methodsPriorityOrder) {
+	public void setInput(List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder) {
 		this.methodsPriorityOrder = methodsPriorityOrder;
 		tvPrioritizeSelectionMethods.setInput(this.methodsPriorityOrder);
 	}
@@ -119,7 +120,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 			public void handleEvent(Event event) {
 				int selectedIndex = tPrioritizeSelectionMethods.getSelectionIndex();
 				if (selectedIndex > 0 && selectedIndex < methodsPriorityOrder.size()) {
-					Pair<String, Boolean> method = methodsPriorityOrder.get(selectedIndex);
+					Pair<SelectorMethod, Boolean> method = methodsPriorityOrder.get(selectedIndex);
 					methodsPriorityOrder.remove(selectedIndex);
 					methodsPriorityOrder.add(selectedIndex - 1, method);
 					tvPrioritizeSelectionMethods.setSelection(new StructuredSelection(method));
@@ -138,7 +139,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 			public void handleEvent(Event event) {
 				int selectedIndex = tPrioritizeSelectionMethods.getSelectionIndex();
 				if (selectedIndex >= 0 && selectedIndex < (methodsPriorityOrder.size() - 1)) {
-					Pair<String, Boolean> method = methodsPriorityOrder.get(selectedIndex);
+					Pair<SelectorMethod, Boolean> method = methodsPriorityOrder.get(selectedIndex);
 					methodsPriorityOrder.remove(selectedIndex);
 					methodsPriorityOrder.add(selectedIndex + 1, method);
 					tvPrioritizeSelectionMethods.setSelection(new StructuredSelection(method));
@@ -169,7 +170,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 					public void dragSetData(DragSourceEvent event) {
 						StructuredSelection selection = (StructuredSelection) tvPrioritizeSelectionMethods
 								.getSelection();
-						Pair<String, Boolean> method = ((Pair<String, Boolean>) selection.getFirstElement());
+						Pair<SelectorMethod, Boolean> method = ((Pair<SelectorMethod, Boolean>) selection.getFirstElement());
 						event.data = String.valueOf(methodsPriorityOrder.indexOf(method));
 					}
 				});
@@ -178,12 +179,12 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
 					@Override
 					public void drop(DropTargetEvent event) {
-						Pair<String, Boolean> item = (Pair<String, Boolean>) ((TableItem) event.item).getData();
+						Pair<SelectorMethod, Boolean> item = (Pair<SelectorMethod, Boolean>) ((TableItem) event.item).getData();
 						int newIndex = methodsPriorityOrder.indexOf(item);
 						String index = (String) event.data;
 						if (index != null && newIndex >= 0) {
 							int indexVal = Integer.parseInt(index);
-							Pair<String, Boolean> method = methodsPriorityOrder.get(indexVal);
+							Pair<SelectorMethod, Boolean> method = methodsPriorityOrder.get(indexVal);
 							methodsPriorityOrder.remove(indexVal);
 							methodsPriorityOrder.add(newIndex, method);
 							tvPrioritizeSelectionMethods.setSelection(new StructuredSelection(method));
@@ -203,7 +204,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 		cvPrioritizeSelectionMethodColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				return ((Pair<String, Boolean>) element).getLeft();
+				return ((Pair<SelectorMethod, Boolean>) element).getLeft().getName();
 			}
 		});
 
@@ -289,11 +290,11 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 				: ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
 	}
 	
-	public List<Pair<String, Boolean>> getInput() {
+	public List<Pair<SelectorMethod, Boolean>> getInput() {
 		return methodsPriorityOrder;
 	}
 
-	public boolean compareInput(List<Pair<String, Boolean>> methodsPriorityOrderBeforeSetting) {
+	public boolean compareInput(List<Pair<SelectorMethod, Boolean>> methodsPriorityOrderBeforeSetting) {
 		return methodsPriorityOrder != null && methodsPriorityOrder.equals(methodsPriorityOrderBeforeSetting);
 	}
 

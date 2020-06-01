@@ -19,6 +19,7 @@ import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
+import com.kms.katalon.core.testobject.SelectorMethod;
 
 public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
@@ -36,7 +37,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	private boolean isEnableSelfHealing;
 
-	private List<Pair<String, Boolean>> methodsPriorityOrder;
+	private List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder;
 
 	private List<String> excludeKeywordNames;
 
@@ -100,7 +101,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		new HelpComposite(parent, documentationUrl);
 	}
 
-	private List<Pair<String, Boolean>> createMethodsPriorityOrderComposite(Composite parent) {
+	private List<Pair<SelectorMethod, Boolean>> createMethodsPriorityOrderComposite(Composite parent) {
 		if (prioritizeSelectionMethodsComposite == null) {
 			prioritizeSelectionMethodsComposite = new PrioritizeSelectionMethodsComposite(parent, SWT.NONE,
 					preferenceStore);
@@ -147,8 +148,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		preferenceStore.setMethodsPritorityOrder(prioritizeSelectionMethodsComposite.getInput());
 	}
 
-	private List<Pair<String, Boolean>> getMethodsPriorityOrderFromPluginPreference() {
-		List<Pair<String, Boolean>> value = null;
+	private List<Pair<SelectorMethod, Boolean>> getMethodsPriorityOrderFromPluginPreference() {
+		List<Pair<SelectorMethod, Boolean>> value = null;
 		try {
 			value = preferenceStore.getMethodsPriorityOrder();
 		} catch (IOException e) {
@@ -219,7 +220,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 			return true;
 		};
 
-		List<Pair<String, Boolean>> methodsPriorityOrderSetting = getMethodsPriorityOrderFromPluginPreference();
+		List<Pair<SelectorMethod, Boolean>> methodsPriorityOrderSetting = getMethodsPriorityOrderFromPluginPreference();
 		if (!prioritizeSelectionMethodsComposite.compareInput(methodsPriorityOrderSetting)) {
 			return true;
 		}
