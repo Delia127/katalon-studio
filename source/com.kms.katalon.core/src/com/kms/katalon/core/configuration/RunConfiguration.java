@@ -574,7 +574,7 @@ public class RunConfiguration {
     }
 
 	public static Boolean shouldApplySelfHealing() {
-	    boolean isSelfHealingEnabled = (boolean) getProperty(SELF_HEALING_ENABLE);
+	    boolean isSelfHealingEnabled = (boolean) getExecutionGeneralProperties().get(SELF_HEALING_ENABLE);
         boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SELF_HEALING);
 		return isSelfHealingEnabled && allowUsingSmartXPath;
 	}

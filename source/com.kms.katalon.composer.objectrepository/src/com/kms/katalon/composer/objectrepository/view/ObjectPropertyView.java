@@ -613,7 +613,7 @@ public class ObjectPropertyView implements EventHandler {
         GridData gdImage = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gdImage.widthHint = 335;
         txtImage.setLayoutData(gdImage);
-        txtImage.setEditable(false);
+        txtImage.setEditable(true);
 
         btnBrowseImage = new Button(imageEditorComposite, SWT.FLAT);
         btnBrowseImage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
