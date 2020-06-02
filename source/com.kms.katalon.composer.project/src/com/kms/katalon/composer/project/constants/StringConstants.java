@@ -63,8 +63,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PROJECT_INFORMATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.project.information";
 
     public static final String TEST_DESIGN_SETTINGS_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign";
-
-    public static final String WEB_LOCATORS_SETTING_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign.1";
     
     public static final String WS_METHOD_SETTING_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign.webservicemethod";
     

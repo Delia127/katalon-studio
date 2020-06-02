@@ -84,8 +84,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
 
     private GridData gdCbLogTestSteps;
 
-    private Button chckEnableImageRecognition;
-
     public ExecutionSettingPage() {
         defaultSettingStore = ExecutionDefaultSettingStore.getStore();
         webSettingStore = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
@@ -175,19 +173,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
 	        GridData gdChckApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 	        chckApplyNeighborXpaths.setLayoutData(gdChckApplyNeighborXpaths);
          */
-        
-    
-        Group grpImageRecognition = new Group(parent, SWT.NONE);
-        grpImageRecognition.setText("Image Recognition");
-        GridLayout glGrpImageRecognition = new GridLayout(3, false);
-        glGrpImageRecognition.marginLeft = 15;
-        grpImageRecognition.setLayout(glGrpImageRecognition);
-        grpImageRecognition.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        
-        chckEnableImageRecognition = new Button(grpImageRecognition, SWT.CHECK);
-        GridData gdChckEnableImageRecognition = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        chckEnableImageRecognition.setText("Enable Image Recognition");
-        chckEnableImageRecognition.setLayoutData(gdChckEnableImageRecognition);
         
         Group grpAfterExecuting = new Group(parent, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
@@ -308,16 +293,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             }
         });
         
-        chckEnableImageRecognition.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.IMAGE_BASED_OBJECT_DETECTION);
-                    chckEnableImageRecognition.setSelection(false);
-                }
-            }
-        });
-        
         cbLogTestSteps.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -421,13 +396,13 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         Boolean selectedSmartWaitMode = defaultSettingStore.getDefaultSmartWaitMode();
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
         cbDefaultSmartWait.select(selectedSmartWaitMode.booleanValue() ? 0 : 1);
-        if (chckEnableImageRecognition != null) {
-            if (LicenseUtil.isNotFreeLicense()) {
-                chckEnableImageRecognition.setSelection(webSettingStore.getImageRecognitionEnabled());
-            } else {
-                chckEnableImageRecognition.setSelection(false);
-            }
-        }
+//        if (chckEnableImageRecognition != null) {
+//            if (LicenseUtil.isNotFreeLicense()) {
+//                chckEnableImageRecognition.setSelection(webSettingStore.getImageRecognitionEnabled());
+//            } else {
+//                chckEnableImageRecognition.setSelection(false);
+//            }
+//        }
         
         Boolean selectedLogTestSteps = defaultSettingStore.getLogTestSteps();
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
@@ -495,10 +470,10 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
         cbDefaultSmartWait.select(0);
         
-        if (chckEnableImageRecognition != null) {
-            chckEnableImageRecognition
-                    .setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED);
-        }
+//        if (chckEnableImageRecognition != null) {
+//            chckEnableImageRecognition
+//                    .setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED);
+//        }
         
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(0);
@@ -564,15 +539,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
                 defaultSettingStore.setLogTestSteps(
                         cbLogTestSteps.getSelectionIndex() == 0 ? Boolean.valueOf(true) : Boolean.valueOf(false));
             }
-            
-            if (chckEnableImageRecognition != null) {
-                webSettingStore.setDefaultImageRecognitionEnabled(chckEnableImageRecognition.getSelection());
-            }
-            
-            /* 
-            if (chckApplyNeighborXpaths != null) {
-                defaultSettingStore.setApplyNeighborXpathsEnabled(chckApplyNeighborXpaths.getSelection());
-            }*/
             
             if (txtDefaultElementTimeout != null) {
                 defaultSettingStore.setElementTimeout(Integer.parseInt(txtDefaultElementTimeout.getText()));
