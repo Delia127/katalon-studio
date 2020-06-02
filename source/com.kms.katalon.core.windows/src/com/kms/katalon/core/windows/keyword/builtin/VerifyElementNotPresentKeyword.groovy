@@ -29,7 +29,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.configuration.RunConfiguration
-import com.kms.katalon.core.constants.StringConstants
+import com.kms.katalon.core.windows.constants.StringConstants
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.BuiltinKeywords
 import com.kms.katalon.core.keyword.internal.KeywordExecutor
@@ -77,12 +77,12 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
 
-			logger.logDebug(String.format("Getting timeout"))
+			logger.logDebug(String.format(StringConstants.KW_LOG_INFO_CHECKING_TIMEOUT))
             timeOut = WindowsActionHelper.checkTimeout(timeOut)
 
-			logger.logDebug(String.format("Getting Test Object"))
+			logger.logDebug(String.format(StringConstants.KW_LOG_INFO_CHECKING_TEST_OBJECT))
 			if (testObject == null) {
-				throw new IllegalArgumentException("Test object cannot be null")
+				throw new IllegalArgumentException(StringConstants.KW_EXEC_TEST_OBJECT_IS_NULL)
 			}
 
             try {

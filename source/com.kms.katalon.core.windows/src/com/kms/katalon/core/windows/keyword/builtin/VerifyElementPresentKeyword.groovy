@@ -40,6 +40,7 @@ import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.keyword.internal.AbstractKeyword
 import com.kms.katalon.core.util.internal.ExceptionsUtil
 import com.kms.katalon.core.util.internal.PathUtil
+import com.kms.katalon.core.windows.constants.StringConstants
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.helper.KeywordHelper
@@ -71,7 +72,7 @@ public class VerifyElementPresentKeyword extends AbstractKeyword {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }
 
-				logger.logDebug("Checking timeout")
+				logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_TIMEOUT)
                 timeOut = WindowsActionHelper.checkTimeout(timeOut)
 
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true)

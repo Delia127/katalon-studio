@@ -46,6 +46,7 @@ import com.kms.katalon.core.util.internal.PathUtil
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.helper.KeywordHelper
+import com.kms.katalon.core.windows.constants.StringConstants
 import com.kms.katalon.core.windows.constants.WindowsDriverConstants
 
 @Action(value = "waitForElementNotPresent")
@@ -79,9 +80,9 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
 			logger.logDebug("Checking timeout")
 			timeOut = WindowsActionHelper.checkTimeout(timeOut)
 
-			logger.logDebug(String.format("Checking Test object"))
+			logger.logDebug(String.format(StringConstants.KW_LOG_INFO_CHECKING_TEST_OBJECT))
 			if (testObject == null) {
-				throw new IllegalArgumentException("Test object cannot be null");
+				throw new IllegalArgumentException(StringConstants.KW_EXEC_TEST_OBJECT_IS_NULL)
 			}
 
             try {

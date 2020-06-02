@@ -40,6 +40,7 @@ import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.util.internal.ExceptionsUtil
 import com.kms.katalon.core.util.internal.PathUtil
 import com.kms.katalon.core.keyword.internal.KeywordMain
+import com.kms.katalon.core.windows.constants.StringConstants
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
@@ -83,7 +84,7 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
                     throw new IllegalArgumentException("Attribute value cannot be null")
                 }
 
-				logger.logDebug("Checking timeout")
+				logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_TIMEOUT)
                 timeout = WindowsActionHelper.checkTimeout(timeout)
 
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeout, true);

@@ -81,7 +81,7 @@ public class WindowsActionHelper {
     }
 
     public void checkWebElement(WindowsTestObject testObject) throws IllegalArgumentException{
-		logger.logDebug(String.format("Checking Test object"));
+		logger.logDebug(String.format("Checking test object"));
         if (testObject == null) {
             throw new IllegalArgumentException("Test object cannot be null");
         }
