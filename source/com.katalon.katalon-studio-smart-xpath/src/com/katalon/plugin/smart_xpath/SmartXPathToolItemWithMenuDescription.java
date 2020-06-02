@@ -1,9 +1,8 @@
 package com.katalon.plugin.smart_xpath;
 
 import java.io.IOException;
-import java.util.Set;
 
-import org.eclipse.jface.window.Window;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -11,30 +10,31 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
-import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.extension.ToolItemWithMenuDescription;
 import com.katalon.platform.api.model.Entity;
-import com.katalon.platform.api.preference.PluginPreference;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
+import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.controller.AutoHealingController;
-import com.katalon.plugin.smart_xpath.dialog.AutoHealingDialog;
-import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
-import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
-import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.feature.KSEFeature;
 
 public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDescription {
 	private Menu newMenu;
-	private MenuItem smartXPathEnable;
-	private MenuItem smartXPathDisable;
+	private MenuItem selfHealingEnable;
+	private MenuItem selfHealingDisable;
 	private MenuItem autoHealing;
 	private Control parent;
+	
+	private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
 	@Override
 	public Menu getMenu(Control arg0) {
@@ -61,20 +61,20 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		for (MenuItem item : newMenu.getItems()) {
 			item.dispose();
 		}
-		smartXPathEnable = null;
-		smartXPathDisable = null;
+		selfHealingEnable = null;
+		selfHealingDisable = null;
 
 		// Re-evaluate the PreferenceStore and add the appropriate menu item
 		try {
 			Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
 			if (currentProject != null) {
 				AutoHealingController.createXPathFilesIfNecessary(currentProject);
-				WebUiExecutionSettingStore preferenceStore = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
+				WebUiExecutionSettingStore webUIExecutionSettingStore = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
 
-				if (preferenceStore.isEnableSelfHHealing()) {
-					addDisableSmartXPathMenuItem(newMenu, true);
+				if (webUIExecutionSettingStore.isEnableSelfHHealing()) {
+					addDisableSelfHealingMenuItem(newMenu, true);
 				} else {
-					addEnableSmartXPathMenuItem(newMenu, true);
+					addEnableSelfHealingMenuItem(newMenu, true);
 				}
 				addGoToSelfHealingSettingsMenuItem(newMenu, true);
 			}
@@ -83,11 +83,12 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
 		}
 	}
 
-	private MenuItem addEnableSmartXPathMenuItem(Menu parentMenu, boolean enable) {
-		smartXPathEnable = new MenuItem(parentMenu, SWT.PUSH);
-		smartXPathEnable.setText("Enable Self-Healing");
-		smartXPathEnable.setToolTipText("Enable Self-Healing");
-		smartXPathEnable.addSelectionListener(new SelectionAdapter() {
+	private MenuItem addEnableSelfHealingMenuItem(Menu parentMenu, boolean enable) {
+		selfHealingEnable = new MenuItem(parentMenu, SWT.PUSH);
+		selfHealingEnable.setEnabled(enable);
+		selfHealingEnable.setText(SmartXPathMessageConstants.LBL_ENABLE_SELF_HEALING);
+		selfHealingEnable.setToolTipText(SmartXPathMessageConstants.LBL_ENABLE_SELF_HEALING);
+		selfHealingEnable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 			    if (LicenseUtil.isNotFreeLicense()) {
@@ -100,120 +101,66 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
     					LoggerSingleton.logError(e1);
     				}
 			    } else {
-			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SMART_XPATH);
+			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
 			    }
 			}
 		});
-		return smartXPathEnable;
+		return selfHealingEnable;
 	}
 
-	private MenuItem addDisableSmartXPathMenuItem(Menu parentMenu, boolean enable) {
-		smartXPathDisable = new MenuItem(parentMenu, SWT.PUSH);
-		smartXPathDisable.setText("Disable Self-Healing");
-		smartXPathDisable.setToolTipText("Disable Self-Healing");
-		smartXPathDisable.addSelectionListener(new SelectionAdapter() {
+	private MenuItem addDisableSelfHealingMenuItem(Menu parentMenu, boolean enable) {
+		selfHealingDisable = new MenuItem(parentMenu, SWT.PUSH);
+        selfHealingDisable.setEnabled(enable);
+        selfHealingDisable.setText(SmartXPathMessageConstants.LBL_DISABLE_SELF_HEALING);
+        selfHealingDisable.setToolTipText(SmartXPathMessageConstants.LBL_DISABLE_SELF_HEALING);
+        selfHealingDisable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 			    if (LicenseUtil.isNotFreeLicense()) {
-			        try {
-	                    // Retrieve PreferenceStore again in case the user installed
-	                    // the plugin when no project was opened
-	                    Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-//	                    PluginPreference preferenceStore = ApplicationManager.getInstance().getPreferenceManager()
-//	                            .getPluginPreference(currentProject.getId(), IdConstants.KATALON_SMART_XPATH_BUNDLE_ID);
-	                    WebUiExecutionSettingStore preferenceStore = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
-	                    preferenceStore.setEnableSelfHealing(false);
-	                } catch (IOException e1) {
+                    try {
+                        WebUiExecutionSettingStore preferenceStore = new WebUiExecutionSettingStore(
+                                ProjectController.getInstance().getCurrentProject());
+                        preferenceStore.setEnableSelfHealing(false);
+                    } catch (IOException e1) {
 	                    LoggerSingleton.logError(e1);
 	                }
 			    } else {
-			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SMART_XPATH);
+			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
 			    }
 			}
 		});
-		return smartXPathDisable;
+		return selfHealingDisable;
 	}
 
     private MenuItem addGoToSelfHealingSettingsMenuItem(Menu parentMenu, boolean enable) {
-        MenuItem selfHealingMenuItem = new MenuItem(parentMenu, SWT.PUSH);
-        selfHealingMenuItem.setText("XPath Auto-healing Logs");
-        selfHealingMenuItem.setEnabled(enable);
-        selfHealingMenuItem.setToolTipText("Approve or reject Smart XPath auto-healing effect on failed locators");
-        selfHealingMenuItem.addSelectionListener(new SelectionAdapter() {
+        MenuItem selfHealingSettingsMenuItem = new MenuItem(parentMenu, SWT.PUSH);
+        selfHealingSettingsMenuItem.setEnabled(enable);
+        selfHealingSettingsMenuItem.setImage(ImageManager.getImage(IImageKeys.CONFIG_16));
+        selfHealingSettingsMenuItem.setText(SmartXPathMessageConstants.LBL_SELF_HEALING_SETTINGS);
+        selfHealingSettingsMenuItem.setToolTipText(SmartXPathMessageConstants.LBL_SELF_HEALING_SETTINGS);
+        selfHealingSettingsMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                
+                eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,
+                        SmartXPathConstants.SELF_HEALING_EXECUTION_SETTINGS_PAGE_ID);
             }
         });
-        return selfHealingMenuItem;
+        return selfHealingSettingsMenuItem;
     }
-
-	private MenuItem addLoadAutoHealingEntitiesMenuItem(Menu parentMenu, boolean enable) {
-		autoHealing = new MenuItem(parentMenu, SWT.PUSH);
-		autoHealing.setText("XPath Auto-healing Logs");
-		autoHealing.setEnabled(enable);
-		autoHealing.setToolTipText("Approve or reject Smart XPath auto-healing effect on failed locators");
-		autoHealing.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			    if (LicenseUtil.isNotFreeLicense()) {
-			        AutoHealingDialog autoHealingDialog = new AutoHealingDialog(parent.getShell());
-
-	                if (autoHealingDialog.open() == Window.OK) {
-	                    Set<BrokenTestObject> approvedAutoHealingEntities = autoHealingDialog
-	                            .getApprovedAutoHealingEntities();
-	                    Set<BrokenTestObject> unapprovedAutoHealingEntities = autoHealingDialog
-	                            .getUnapprovedAutoHealingEntities();
-
-	                    Set<BrokenTestObject> approvedButUnableToHealEntities = AutoHealingController
-	                            .autoHealBrokenTestObjects(parent.getShell(), approvedAutoHealingEntities);
-
-	                    Entity projectEntity = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-	                    if (projectEntity != null) {
-	                        // Append approved broken test objects to approved.json
-	                        String pathToApprovedJson = projectEntity.getFolderLocation()
-	                                + SmartXPathConstants.APPROVED_FILE_SUFFIX;
-	                        BrokenTestObjects brokenTestObjectsInApprovedJson = AutoHealingController
-	                                .readExistingBrokenTestObjects(pathToApprovedJson);
-	                        brokenTestObjectsInApprovedJson.getBrokenTestObjects().addAll(approvedAutoHealingEntities);
-	                        AutoHealingController.writeBrokenTestObjects(brokenTestObjectsInApprovedJson,
-	                                pathToApprovedJson);
-
-	                        // Replace the content of waiting-for-approval.json with
-	                        // unapproved entities
-	                        String pathToWaitingForApprovalJson = projectEntity.getFolderLocation()
-	                                + SmartXPathConstants.WAITING_FOR_APPROVAL_FILE_SUFFIX;
-	                        BrokenTestObjects brokenTestObjectsInWaitingForApprovalJson = AutoHealingController
-	                                .readExistingBrokenTestObjects(pathToWaitingForApprovalJson);
-	                        // Unapprove objects that could not be healed
-	                        approvedButUnableToHealEntities.forEach(a -> a.setApproved(false));
-	                        unapprovedAutoHealingEntities.addAll(approvedButUnableToHealEntities);
-	                        brokenTestObjectsInWaitingForApprovalJson.setBrokenTestObjects(unapprovedAutoHealingEntities);
-	                        AutoHealingController.writeBrokenTestObjects(brokenTestObjectsInWaitingForApprovalJson,
-	                                pathToWaitingForApprovalJson);
-	                    }
-	                }
-			    } else {
-			        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SMART_XPATH);
-			    }
-			}
-		});
-		return autoHealing;
-	}
 
 	@Override
 	public String iconUrl() {
-		return "platform:/plugin/com.katalon.katalon-studio-smart-xpath/icons/self-healing_32px@2x.png";
+		return SmartXPathConstants.SELF_HEALING_TOOLBAR_MENU_ICON;
 	}
 
 	@Override
 	public String name() {
-		return "Smart XPath";
+		return SmartXPathMessageConstants.LBL_SELF_HEALING;
 	}
 
 	@Override
 	public String toolItemId() {
-		return "com.katalon.plugin.smart_xpath.smartXpathToolItemWithDescription";
+		return SmartXPathConstants.SELF_HEALING_TOOLBAR_MENU_ID;
 	}
 
 }

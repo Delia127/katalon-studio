@@ -53,6 +53,16 @@ public class SmartXPathMessageConstants extends NLS {
 	
 	public static String ERROR_MESSAGE_WHEN_DUPLICATE_KEYWORD_METHOD;
 
+    public static String LBL_SELF_HEALING;
+
+    public static String LBL_ENABLE_SELF_HEALING;
+
+    public static String LBL_DISABLE_SELF_HEALING;
+
+    public static String LBL_SELF_HEALING_SETTINGS;
+
+    public static String LBL_SELF_HEALING_INSIGHTS;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, SmartXPathMessageConstants.class);
