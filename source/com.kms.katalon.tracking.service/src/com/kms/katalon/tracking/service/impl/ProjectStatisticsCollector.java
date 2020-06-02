@@ -203,6 +203,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         statistics.setApiTestStepCount(apiTestStepCount);
         statistics.setCustomKeywordTestStepCount(customKeywordTestStepCount);
         statistics.setTestNGTestSuiteStepCount(testNGTestSuiteStepCount);
+        statistics.setTestNGTestCaseStepCount(testNGTestCaseStepCount);
         statistics.setJUnitClassStepCount(jUnitClassStepCount);
         statistics.setTotalTestStepCount(totalTestStepCount);
     }
