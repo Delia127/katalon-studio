@@ -16,7 +16,6 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
-import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 
@@ -219,4 +218,8 @@ public class SelfHealingController {
 		}
 		return StringUtils.EMPTY;
 	}
+
+    public static String takeScreenShot(WebDriver webDriver, WebElement element, TestObject testObject, String name) {
+        return takeScreenShot(webDriver, element, testObject.getObjectId() + "_" + name);
+    }
 }

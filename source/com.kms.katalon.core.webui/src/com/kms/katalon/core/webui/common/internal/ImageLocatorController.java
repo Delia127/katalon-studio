@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
@@ -25,7 +27,6 @@ import org.sikuli.api.ScreenRegion;
 
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.common.ScreenUtil;
-import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 
 /**
  * A controller contains logic relating to Image-based Object Recognition
@@ -55,46 +56,46 @@ public class ImageLocatorController {
         int scrolledAmount = 0;
         int pageScrollHeight = getPageScrollHeight(webDriver);
         logger.logDebug("Page Scroll Height: " + pageScrollHeight);
-        float timeCount = 0;
-        long miliseconds = System.currentTimeMillis();
+        
+        long timeStart = System.currentTimeMillis();
         do {
             try {
                 int viewHeight = ((Number) ((JavascriptExecutor) webDriver).executeScript("return window.innerHeight"))
                         .intValue();
                 int imageHeight = ImageIO.read(new File(pathToScreenshot)).getHeight();
                 logger.logDebug(viewHeight + " , " + imageHeight);
+
                 scrolledAmount = iterationCount * Math.abs(viewHeight - imageHeight);
-                if (!scroll(webDriver, scrolledAmount)) {
+                if (!smoothScroll(webDriver, scrolledAmount)) { // Smooth scroll
                     break;
                 }
-                Thread.sleep(500);
+
                 List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
                 if (matchedRegions.size() == 0) {
                     break;
                 }
                 ScreenRegion matchedRegion = matchedRegions.get(0);
+
                 Point coordinatesRelativeToDriver = getCoordinatesRelativeToWebDriver(webDriver, matchedRegion);
                 double xRelativeToDriver = coordinatesRelativeToDriver.getX();
                 double yRelativeToDriver = coordinatesRelativeToDriver.getY();
                 logger.logDebug("Coordinates of matched region relative to driver: (" + xRelativeToDriver + " , "
                         + yRelativeToDriver + ")");
+
                 List<WebElement> elementsAtPointXandY = elementsFromPoint(webDriver, xRelativeToDriver,
                         yRelativeToDriver);
                 sortMinimizingDifferencesInSize(elementsAtPointXandY, matchedRegion);
                 mapOfCandidates.put(matchedRegion, elementsAtPointXandY);
-                timeCount += ((System.currentTimeMillis() - miliseconds) / 1000);
                 Thread.sleep(500);
-                timeCount += 0.5;
-                miliseconds = System.currentTimeMillis();
             } catch (Exception e) {
                 logger.logInfo("Unable to find element within the current viewport !");
             }
             iterationCount++;
-        } while (scrolledAmount <= pageScrollHeight || timeCount < timeout);
+        } while (scrolledAmount <= pageScrollHeight || (System.currentTimeMillis() - timeStart) / 1000 < timeout);
         logger.logDebug("Highest matched region's score: " + getHighestMatchedRegionScore(mapOfCandidates));
         debug_printChosenWebElement(pathToScreenshot, webDriver, mapOfCandidates);
         try {
-            scroll(webDriver, 0);
+            smoothScroll(webDriver, 0);
         } catch (InterruptedException e) {
             logger.logError(e.getMessage());
         }
@@ -153,6 +154,20 @@ public class ImageLocatorController {
         });
     }
 
+    private static boolean smoothScroll(WebDriver webDriver, int heightPos) throws InterruptedException {
+        // Smooth scroll
+        scroll(webDriver, heightPos, true);
+        Thread.sleep(700);
+
+        // IE doesn't support smooth scroll, so we need to scroll again
+        if (!scroll(webDriver, heightPos)) {
+            return false;
+        }
+        Thread.sleep(100);
+
+        return true;
+    }
+
     /**
      * Scroll the current page by the provided distance
      * 
@@ -162,9 +177,18 @@ public class ImageLocatorController {
      * @throws InterruptedException
      */
     private static boolean scroll(WebDriver webDriver, int heightPos) throws InterruptedException {
+        return scroll(webDriver, heightPos, false);
+    }
+
+    private static boolean scroll(WebDriver webDriver, int heightPos, boolean smooth) throws InterruptedException {
         try {
-            ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0," + heightPos + ")");
-            logger.logDebug("Scrolled to (0 , " + heightPos + ")");
+            String SCROLL_SCRIPT = MessageFormat.format("window.scrollTo(0, {0})", heightPos);
+            String SMOOTH_SCROLL_SCRIPT = MessageFormat.format("window.scrollTo('{'\"top\": {0}, behavior: \"smooth\" '}')",
+                    heightPos);
+            ((JavascriptExecutor) webDriver).executeScript(smooth
+                    ? SMOOTH_SCROLL_SCRIPT
+                    : SCROLL_SCRIPT);
+            logger.logDebug(MessageFormat.format("Scrolled to (0, {0})", heightPos));
             return true;
         } catch (Exception e) {
             logger.logInfo("Cannot scroll viewport anymore !");
@@ -256,12 +280,16 @@ public class ImageLocatorController {
         return elementsAtPointXandY;
     }
 
-    public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
+    public static String saveWebElementScreenshot(WebDriver driver, WebElement element, String name, String path)
             throws IOException {
-        File screenshot = ele.getScreenshotAs(OutputType.FILE);
+        if (element == null) {
+            return StringUtils.EMPTY;
+        }
+
+        File screenshot = element.getScreenshotAs(OutputType.FILE);
         BufferedImage screenshotBeforeResized = ImageIO.read(screenshot);
-        int eleWidth = ele.getRect().getWidth();
-        int eleHeight = ele.getRect().getHeight();
+        int eleWidth = element.getRect().getWidth();
+        int eleHeight = element.getRect().getHeight();
         BufferedImage screenshotAfterResized = resize(screenshotBeforeResized, eleHeight, eleWidth);
         ImageIO.write(screenshotAfterResized, "png", screenshot);
         String screenshotPath = path;

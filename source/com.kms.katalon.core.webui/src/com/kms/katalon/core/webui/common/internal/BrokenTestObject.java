@@ -106,7 +106,6 @@ public class BrokenTestObject {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((approved == null) ? 0 : approved.hashCode());
         result = prime * result + ((brokenLocator == null) ? 0 : brokenLocator.hashCode());
         result = prime * result + ((brokenLocatorMethod == null) ? 0 : brokenLocatorMethod.hashCode());
         result = prime * result + ((pathToScreenshot == null) ? 0 : pathToScreenshot.hashCode());
@@ -126,11 +125,6 @@ public class BrokenTestObject {
         if (getClass() != obj.getClass())
             return false;
         BrokenTestObject other = (BrokenTestObject) obj;
-        if (approved == null) {
-            if (other.approved != null)
-                return false;
-        } else if (!approved.equals(other.approved))
-            return false;
         if (brokenLocator == null) {
             if (other.brokenLocator != null)
                 return false;

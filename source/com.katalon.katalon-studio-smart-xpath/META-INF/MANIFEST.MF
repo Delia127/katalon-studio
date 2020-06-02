@@ -35,5 +35,6 @@ Require-Bundle: com.katalon.platform,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.apache.commons.io,
  org.apache.commons.lang3,
+ org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.core.services.events,
  org.eclipse.e4.ui.di

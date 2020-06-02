@@ -42,6 +42,10 @@ public class FindElementsResult {
         return new FindElementsResult(elements, locator, locatorMethod, screenshot);
     }
 
+    public static FindElementsResult from(List<WebElement> elements, String locator, SelectorMethod locatorMethod) {
+        return new FindElementsResult(elements, locator, locatorMethod, StringUtils.EMPTY);
+    }
+
     public static FindElementsResult from(WebElement element, String locator, SelectorMethod locatorMethod,
             String screenshot) {
         return new FindElementsResult(element, locator, locatorMethod, screenshot);

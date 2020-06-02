@@ -28,14 +28,16 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TypedListener;
 
 import com.katalon.platform.ui.viewer.HyperLinkColumnLabelProvider;
+import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.dialog.provider.ApproveCheckBoxColumnEditingSupport;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
+import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class BrokenTestObjectsTableComposite extends Composite {
 
     private final int SCREENSHOT_COLUMN_INDEX = 4;
-    
+
     private ProjectEntity project;
 
     public ProjectEntity getProject() {
@@ -56,7 +58,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
         super(parent, style);
         createContents(this);
     }
-    
+
     private void createContents(Composite container) {
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.widthHint = 1200;
@@ -78,7 +80,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
 
     private void createColumns() {
         TableViewerColumn colObjectId = new TableViewerColumn(tbViewer, SWT.RIGHT);
-        colObjectId.getColumn().setText("Test Object ID");
+        colObjectId.getColumn().setText(SmartXPathMessageConstants.LBL_COL_TEST_OBJECT_ID);
         colObjectId.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -88,41 +90,41 @@ public class BrokenTestObjectsTableComposite extends Composite {
         });
 
         TableViewerColumn colBrokenLocator = new TableViewerColumn(tbViewer, SWT.NONE);
-        colBrokenLocator.getColumn().setText("Broken Locator");
+        colBrokenLocator.getColumn().setText(SmartXPathMessageConstants.LBL_COL_BROKEN_LOCATOR);
         colBrokenLocator.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 BrokenTestObject brokenTestObject = (BrokenTestObject) element;
-                String brokenLocator = MessageFormat.format("{0}: {1}", brokenTestObject.getBrokenLocatorMethod().getName(),
-                        brokenTestObject.getBrokenLocator());
+                String brokenLocator = MessageFormat.format("{0}: {1}",
+                        brokenTestObject.getBrokenLocatorMethod().getName(), brokenTestObject.getBrokenLocator());
                 return brokenLocator;
             }
         });
 
         TableViewerColumn colProposedLocator = new TableViewerColumn(tbViewer, SWT.NONE);
-        colProposedLocator.getColumn().setText("Proposed Locator");
+        colProposedLocator.getColumn().setText(SmartXPathMessageConstants.LBL_COL_PROPOSED_LOCATOR);
         colProposedLocator.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 BrokenTestObject brokenTestObject = (BrokenTestObject) element;
-                String proposedLocator = MessageFormat.format("{0}: {1}", brokenTestObject.getProposedLocatorMethod().getName(),
-                        brokenTestObject.getProposedLocator());
+                String proposedLocator = MessageFormat.format("{0}: {1}",
+                        brokenTestObject.getProposedLocatorMethod().getName(), brokenTestObject.getProposedLocator());
                 return proposedLocator;
             }
         });
 
         TableViewerColumn colRecoverBy = new TableViewerColumn(tbViewer, SWT.NONE);
-        colRecoverBy.getColumn().setText("Recover By");
+        colRecoverBy.getColumn().setText(SmartXPathMessageConstants.LBL_COL_RECOVER_BY);
         colRecoverBy.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                String recoveryMethod = ((BrokenTestObject) element).getRecoveryMethod().toString();
+                String recoveryMethod = ((BrokenTestObject) element).getRecoveryMethod().getName();
                 return recoveryMethod;
             }
         });
 
         TableViewerColumn colScreenshot = new TableViewerColumn(tbViewer, SWT.NONE);
-        colScreenshot.getColumn().setText("Screenshot");
+        colScreenshot.getColumn().setText(SmartXPathMessageConstants.LBL_COL_SCREENSHOT);
         colScreenshot.setLabelProvider(new HyperLinkColumnLabelProvider<BrokenTestObject>(SCREENSHOT_COLUMN_INDEX) {
 
             @Override
@@ -139,15 +141,15 @@ public class BrokenTestObjectsTableComposite extends Composite {
                         // Open the folder containing this image
                         Desktop.getDesktop().open(myFile);
                     } catch (NullPointerException nullPointerEx) {
-                        MessageDialog.openError(null, "Error", "This broken object does not have a screenshot.");
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, SmartXPathMessageConstants.MSG_DOES_NOT_HAVE_SCREENSHOT);
                     } catch (IOException ioEx) {
-                        MessageDialog.openError(null, "Error", ioEx.getMessage());
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, ioEx.getMessage());
                     } catch (IllegalArgumentException illegalArgEx) {
-                        MessageDialog.openError(null, "Error", "Screenshot no longer exists at this path.");
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, SmartXPathMessageConstants.MSG_SCREENSHOT_DOES_NOT_EXIST);
                     } catch (UnsupportedOperationException unsupportedOpEx) {
-                        MessageDialog.openError(null, "Error", "This platform does not support open action.");
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, SmartXPathMessageConstants.MSG_PLATFORM_DOES_NOT_SUPPORT_OPEN);
                     } catch (SecurityException secEx) {
-                        MessageDialog.openError(null, "Error", "Read access is denied.");
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, SmartXPathMessageConstants.MSG_READ_ACCESS_DENIED);
                     }
                 }
             }
@@ -164,9 +166,9 @@ public class BrokenTestObjectsTableComposite extends Composite {
 
             @Override
             protected String getText(BrokenTestObject element) {
-                return "Preview";
+                return SmartXPathMessageConstants.LBL_PREVIEW_SCREENSHOT;
             }
-            
+
             @Override
             public String getToolTipText(Object element) {
                 BrokenTestObject brokenTestObject = (BrokenTestObject) element;
@@ -175,7 +177,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
         });
 
         TableViewerColumn colApproveNewLocator = new TableViewerColumn(tbViewer, SWT.NONE);
-        colApproveNewLocator.getColumn().setText("Approve");
+        colApproveNewLocator.getColumn().setText(SmartXPathMessageConstants.LBL_COL_APPROVE);
         colApproveNewLocator.setLabelProvider(new CellLabelProvider() {
             @Override
             public void update(ViewerCell cell) {
@@ -200,16 +202,31 @@ public class BrokenTestObjectsTableComposite extends Composite {
     }
 
     private String getCheckboxSymbol(boolean isChecked) {
-        return isChecked ? "\u2611" : "\u2610";
+        return isChecked
+                ? "\u2611"
+                : "\u2610";
     }
-    
+
     public void refresh() {
         tbViewer.refresh();
     }
-    
+
     public void setInput(Set<BrokenTestObject> brokenTestObjects) {
+        // Restore approval state
+        Set<BrokenTestObject> currentBrokenTestObjects = getInput();
+        if (currentBrokenTestObjects != null) {
+            brokenTestObjects.stream().forEach(brokenTestObject -> {
+                BrokenTestObject existedBrokenTestObject = currentBrokenTestObjects.stream()
+                        .filter(currentBrokenTestObject -> currentBrokenTestObject.equals(brokenTestObject))
+                        .findAny()
+                        .orElse(null);
+                if (existedBrokenTestObject != null) {
+                    brokenTestObject.setApproved(existedBrokenTestObject.getApproved());
+                }
+            });
+        }
+
         tbViewer.setInput(brokenTestObjects);
-//        refresh();
     }
 
     @SuppressWarnings("unchecked")

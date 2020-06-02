@@ -35,18 +35,6 @@ public class SmartXPathMessageConstants extends NLS {
 	
 	public static String IMAGE_METHOD;
 	
-	public static String TEST_OBJECT_ID_COLUMN;
-	
-	public static String BROKEN_LOCATOR_COLUMN;
-	
-	public static String PROPOSED_LOCATOR_COLUMN;
-	
-	public static String RECOVER_BY_COLUMN;
-	
-	public static String IMAGE_COLUMN;
-	
-	public static String APPROVE_COLUMN;
-	
 	public static String WEB_UI_BUILT_IN_KEYWORDS_CLASS_NAME;
 	
 	public static String WEB_UI_BUILT_IN_KEYWORDS_SIMPLE_CLASS_NAME;
@@ -62,6 +50,28 @@ public class SmartXPathMessageConstants extends NLS {
     public static String LBL_SELF_HEALING_SETTINGS;
 
     public static String LBL_SELF_HEALING_INSIGHTS;
+
+    public static String LBL_COL_TEST_OBJECT_ID;
+
+    public static String LBL_COL_BROKEN_LOCATOR;
+
+    public static String LBL_COL_PROPOSED_LOCATOR;
+
+    public static String LBL_COL_RECOVER_BY;
+
+    public static String LBL_COL_SCREENSHOT;
+
+    public static String LBL_COL_APPROVE;
+
+    public static String LBL_PREVIEW_SCREENSHOT;
+
+    public static String MSG_DOES_NOT_HAVE_SCREENSHOT;
+
+    public static String MSG_SCREENSHOT_DOES_NOT_EXIST;
+
+    public static String MSG_PLATFORM_DOES_NOT_SUPPORT_OPEN;
+
+    public static String MSG_READ_ACCESS_DENIED;
 
 	static {
 		// initialize resource bundle

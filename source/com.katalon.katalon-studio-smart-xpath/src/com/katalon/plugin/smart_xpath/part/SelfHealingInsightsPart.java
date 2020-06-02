@@ -105,6 +105,12 @@ public class SelfHealingInsightsPart implements EventHandler {
         return toolbarComposite;
     }
 
+    private void registerEventListeners() {
+        eventBroker.subscribe(EventConstants.SEFL_HEALING_INSIGHTS_REFRESH, this);
+        eventBroker.subscribe(EventConstants.JOB_UPDATE_PROGRESS, this);
+        eventBroker.subscribe(EventConstants.JOB_COMPLETED, this);
+    }
+
     protected void initialize() {
         loadBrokenTestObjects();
     }
@@ -113,12 +119,6 @@ public class SelfHealingInsightsPart implements EventHandler {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         brokenTestObjectsTableComposite.setProject(currentProject);
         brokenTestObjectsTableComposite.setInput(AutoHealingController.readUnapprovedBrokenTestObjects());
-    }
-
-    private void registerEventListeners() {
-        eventBroker.subscribe(EventConstants.JOB_UPDATE_PROGRESS, this);
-        eventBroker.subscribe(EventConstants.JOB_COMPLETED, this);
-        eventBroker.subscribe(EventConstants.EXPLORER_REFRESH, this);
     }
 
     @Focus

@@ -1,5 +1,7 @@
 package com.kms.katalon.core.webui.common;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -31,8 +33,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -752,18 +752,21 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
 
         List<WebElement> foundElements = findElementsByDefault(testObject, timeout);
+        if (foundElements != null && !foundElements.isEmpty()) {
+            return foundElements;
+        }
 
-        String runningKeyword = KeywordExecutionContext.getRunningKeyword();
         boolean isWebPlatform = KeywordExecutionContext.isRunningWebUI();
+        String runningKeyword = KeywordExecutionContext.getRunningKeyword();
 
-        List<String> excludeObjectWithKeywords = RunConfiguration.getExcludedKeywordsFromSelfHealing();
-        if (!isWebPlatform || excludeObjectWithKeywords.contains(runningKeyword)) {
+        List<String> excludeKeywords = RunConfiguration.getExcludedKeywordsFromSelfHealing();
+        if (!isWebPlatform || excludeKeywords.contains(runningKeyword)) {
             return foundElements;
         }
 
         SelfHealingController.setLogger(logger);
         SelfHealingController.logWarning(MessageFormat
-                .format("Failed to find element with ID '{0}'. Try using Self-Healing.", testObject.getObjectId()));
+                .format(StringConstants.KW_LOG_INFO_DEFAULT_LOCATOR_FAILED_TRY_SELF_HEALING, testObject.getObjectId()));
 
         List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
 
@@ -773,20 +776,30 @@ public class WebUiCommonHelper extends KeywordHelper {
                 try {
                     FindElementsResult findResult = findElementsBySelectedMethod(testObject, timeout, method, true);
                     if (!findResult.isEmpty()) {
+                        foundElements = findResult.getElements();
+                        WebElement foundElement = foundElements.get(0);
+
                         SelectorMethod recoveryMethod = findResult.getLocatorMethod();
                         SelectorMethod proposedMethod = recoveryMethod == SelectorMethod.IMAGE
                                 ? SelectorMethod.XPATH
                                 : recoveryMethod;
                         String proposedLocator = recoveryMethod == SelectorMethod.IMAGE
-                                ? generateNewXPath(foundElements.get(0))
+                                ? generateNewXPath(foundElement)
                                 : findResult.getLocator();
 
+                        String elementScreenshot = findResult.getScreenshot();
+                        if (StringUtils.isBlank(elementScreenshot)) {
+                            WebDriver webDriver = DriverFactory.getWebDriver();
+                            elementScreenshot = SelfHealingController.takeScreenShot(webDriver,
+                                    foundElement, testObject, recoveryMethod.name());
+                        }
+
                         SelfHealingController
-                                .logWarning(MessageFormat.format("Test object '{0}' is broken. Propose new locator {1}",
+                                .logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR,
                                         testObject.getObjectId(), proposedLocator));
 
                         SelfHealingController.registerBrokenTestObject(testObject, proposedLocator, proposedMethod,
-                                recoveryMethod, findResult.getScreenshot());
+                                recoveryMethod, elementScreenshot);
                         return findResult.getElements();
                     }
                 } catch (NoSuchElementException e) {
@@ -927,12 +940,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             return FindElementsResult.from(getSelectorValue(testObject, locatorMethod), locatorMethod);
         }
 
-        String screenshotName = MessageFormat.format("{0}_{1}", testObject.getObjectId(), locatorMethod);
-        String screenshot = foundElements != null && !foundElements.isEmpty()
-                ? SelfHealingController.takeScreenShot(webDriver, foundElements.get(0), screenshotName)
-                : StringUtils.EMPTY;
-        return FindElementsResult.from(foundElements, getSelectorValue(testObject, locatorMethod), locatorMethod,
-                screenshot);
+        return FindElementsResult.from(foundElements, getSelectorValue(testObject, locatorMethod), locatorMethod);
     }
 
     private static FindElementsResult findWebElementsWithSmartXPath(TestObject testObject, int timeout) {
@@ -979,7 +987,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 // 'xpath:finder_name'
                 String xpathFinder = thisXPath.getName().split(":")[1];
 
-                String screenShotName = testObject.getObjectId() + "_" + xpathFinder;
+                String screenShotName = xpathFinder;
 
                 // Increase local index for neighbor
                 if (xpathFinder.equals("neighbor")) {
@@ -989,9 +997,10 @@ public class WebUiCommonHelper extends KeywordHelper {
                 // Save the first working XPath's screenshot
                 if (pathToSelectedSmartXPathScreenshot.equals(StringUtils.EMPTY)) {
                     pathToSelectedSmartXPathScreenshot = SelfHealingController.takeScreenShot(webDriver,
-                            elementsFoundByThisXPath.get(0), screenShotName);
+                            elementsFoundByThisXPath.get(0), testObject, screenShotName);
                 } else {
-                    SelfHealingController.takeScreenShot(webDriver, elementsFoundByThisXPath.get(0), screenShotName);
+                    SelfHealingController.takeScreenShot(webDriver, elementsFoundByThisXPath.get(0), testObject,
+                            screenShotName);
                 }
 
             } else {
@@ -1001,15 +1010,14 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
         }
 
-        if (selectedSmartXPath != null) {
-            List<WebElement> elementsFoundWithSelectedSmartXPath = smartXPathsMap.get(selectedSmartXPath);
-            return FindElementsResult.from(elementsFoundWithSelectedSmartXPath, selectedSmartXPath.getValue(),
-                    SelectorMethod.XPATH, pathToSelectedSmartXPathScreenshot);
-        } else {
+        if (selectedSmartXPath == null) {
             SelfHealingController.logInfo(StringConstants.KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS);
+            return FindElementsResult.from(SelectorMethod.XPATH);
         }
 
-        return FindElementsResult.from(SelectorMethod.XPATH);
+        List<WebElement> elementsFoundWithSelectedSmartXPath = smartXPathsMap.get(selectedSmartXPath);
+        return FindElementsResult.from(elementsFoundWithSelectedSmartXPath, selectedSmartXPath.getValue(),
+                SelectorMethod.XPATH, pathToSelectedSmartXPathScreenshot);
     }
 
     private static FindElementsResult findElementsByImage(TestObject testObject, int timeout) {
@@ -1032,7 +1040,13 @@ public class WebUiCommonHelper extends KeywordHelper {
 
         List<WebElement> foundElements = ImageLocatorController.findElementByScreenShot(webDriver, screenshot, timeout);
 
-        return FindElementsResult.from(foundElements, screenshot, SelectorMethod.IMAGE, screenshot);
+        String newScreenshot = StringUtils.EMPTY;
+        if (foundElements != null && !foundElements.isEmpty()) {
+            newScreenshot = SelfHealingController.takeScreenShot(webDriver, foundElements.get(0),
+                    testObject, SelectorMethod.IMAGE.name());
+        }
+
+        return FindElementsResult.from(foundElements, screenshot, SelectorMethod.IMAGE, newScreenshot);
     }
 
     private static String generateNewXPath(WebElement element) {
@@ -1052,10 +1066,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     /**
      * Take and save screenshot of a web element on the web page WebDriver is
-     * currently on. The web page's screenshot is first taken and converted into
-     * a BufferedImage, then the web element's location is retrieved and used to
-     * sub-image from the BufferedImage. The image (if saved successfully) will
-     * be under PNG extension.
+     * currently on. The image (if saved successfully) will be under PNG extension.
      * 
      * @param driver
      *            A WebDriver instance that's being used at the time calling
@@ -1072,38 +1083,46 @@ public class WebUiCommonHelper extends KeywordHelper {
      *             If an exception during I/O occurs
      * @throws InterruptedException 
      */
-    public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
+    public static String saveWebElementScreenshot(WebDriver driver, WebElement element, String name, String path)
             throws IOException {
-        // Get entire page screenshot
-        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        BufferedImage fullImg = ImageIO.read(screenshot);
-
-        // Get the location of element on the page
-        Point point = ele.getLocation();
-
-        // Crop the entire page screenshot to get only element screenshot
-        double devicePixelRatio = getDevicePixelRatio(driver);
-        int eleX = (int) Math.round(point.getX() * devicePixelRatio);
-        int eleY = (int) Math.round(point.getY() * devicePixelRatio);
-        int eleWidth = (int) Math.round(ele.getSize().getWidth() * devicePixelRatio);
-        int eleHeight = (int) Math.round(ele.getSize().getHeight() * devicePixelRatio);
-        BufferedImage eleScreenshot = fullImg.getSubimage(eleX, eleY, eleWidth, eleHeight);
-        ImageIO.write(eleScreenshot, "png", screenshot);
-        // Copy the element screenshot to internal folder
+        File screenshot = element.getScreenshotAs(OutputType.FILE);
+        BufferedImage screenshotBeforeResized = ImageIO.read(screenshot);
+        int eleWidth = element.getRect().getWidth();
+        int eleHeight = element.getRect().getHeight();
+        BufferedImage screenshotAfterResized = resize(screenshotBeforeResized, eleHeight, eleWidth);
+        ImageIO.write(screenshotAfterResized, "png", screenshot);
         String screenshotPath = path;
-
         screenshotPath = screenshotPath.replaceAll("\\\\", "/");
         if (screenshotPath.endsWith("/")) {
             screenshotPath += name;
         } else {
             screenshotPath += "/" + name;
         }
-        screenshotPath += ".png";
+        if (!screenshotPath.endsWith(".png")) {
+            screenshotPath += ".png";
+        }
         File fileScreenshot = new File(screenshotPath);
         FileUtils.copyFile(screenshot, fileScreenshot);
         // Delete temporary image
         screenshot.deleteOnExit();
         return screenshotPath;
+    }
+
+    /**
+     * Resize the given image to the specified height and width
+     * 
+     * @param img An {@link BufferedImage} instance representing the image to be resized
+     * @param height Height to resize to
+     * @param width Width to resize to
+     * @return A {@link BufferedImage}
+     */
+    private static BufferedImage resize(BufferedImage img, int height, int width) {
+        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+        return resized;
     }
 	
     @SuppressWarnings("unused")
