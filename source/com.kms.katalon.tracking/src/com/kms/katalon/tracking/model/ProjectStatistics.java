@@ -42,9 +42,11 @@ public class ProjectStatistics {
 
     private int customKeywordCount = 0;
 
-    int testNGTestSuiteStepCount = 0;
+    private int testNGTestCaseStepCount = 0;
 
-    int jUnitClassStepCount = 0;
+    private int testNGTestSuiteStepCount = 0;
+
+    private int jUnitClassStepCount = 0;
 
     private int testListenerCount = 0;
     
@@ -242,6 +244,14 @@ public class ProjectStatistics {
 
     public void setCustomKeywordCount(int customKeywordCount) {
         this.customKeywordCount = customKeywordCount;
+    }
+
+    public int getTestNGTestCaseStepCount() {
+        return testNGTestCaseStepCount;
+    }
+
+    public void setTestNGTestCaseStepCount(int testNGTestCaseStepCount) {
+        this.testNGTestCaseStepCount = testNGTestCaseStepCount;
     }
 
     public int getTestNGTestSuiteStepCount() {
