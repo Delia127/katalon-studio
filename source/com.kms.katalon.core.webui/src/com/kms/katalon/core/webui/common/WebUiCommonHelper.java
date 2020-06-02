@@ -33,7 +33,6 @@ import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -766,10 +765,10 @@ public class WebUiCommonHelper extends KeywordHelper {
         SelfHealingController.logWarning(MessageFormat
                 .format("Failed to find element with ID '{0}'. Try using Self-Healing.", testObject.getObjectId()));
 
-        List<Pair<String, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
+        List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
 
-        for (Pair<String, Boolean> element : methodsPriorityOrder) {
-            SelectorMethod method = SelectorMethod.valueOf(element.getLeft());
+        for (Pair<SelectorMethod, Boolean> element : methodsPriorityOrder) {
+            SelectorMethod method = element.getLeft();
             if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
                 try {
                     FindElementsResult findResult = findElementsBySelectedMethod(testObject, timeout, method, true);

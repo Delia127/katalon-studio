@@ -31,6 +31,7 @@ import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.util.CryptoUtil;
+import com.kms.katalon.core.testobject.SelectorMethod;
 
 /**
  * Provides access to execution properties and settings
@@ -578,17 +579,17 @@ public class RunConfiguration {
 		return isSelfHealingEnabled && allowUsingSmartXPath;
 	}
 
-    public static List<Pair<String, Boolean>> getMethodsPriorityOrder() {
+    public static List<Pair<SelectorMethod, Boolean>> getMethodsPriorityOrder() {
         Map<String, Object> generalProperties = getExecutionGeneralProperties();
         List<LinkedTreeMap<String, Object>> rawMethodsPriorityOrder = (List<LinkedTreeMap<String, Object>>) generalProperties
                 .get(METHODS_PRIORITY_ORDER);
 
-        List<Pair<String, Boolean>> methodsPriorityOrder = new ArrayList<Pair<String, Boolean>>();
+        List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = new ArrayList<Pair<SelectorMethod, Boolean>>();
         rawMethodsPriorityOrder.stream().forEachOrdered(rawMethod -> {
-            Pair<String, Boolean> method = Pair.of((String) rawMethod.get("left"), (Boolean) rawMethod.get("right"));
+            String key = (String) rawMethod.get("left");
+            Pair<SelectorMethod, Boolean> method = Pair.of(SelectorMethod.valueOf(key), (Boolean) rawMethod.get("right"));
             methodsPriorityOrder.add(method);
         });
-
         return methodsPriorityOrder;
     }
 
