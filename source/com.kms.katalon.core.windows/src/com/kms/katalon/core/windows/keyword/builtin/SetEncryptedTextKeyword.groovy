@@ -41,7 +41,7 @@ public class SetEncryptedTextKeyword extends AbstractKeyword {
     public String setEncryptedText(WindowsTestObject testObject, String encryptedText, FailureHandling flowControl) throws StepFailedException , TimeoutException {
         return (String) KeywordMain.runKeyword({
 			try {
-				logger.logDebug("Checking Windows driver")
+				logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
 	            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
 	            if (windowsDriver == null) {
 	                KeywordMain.stepFailed(StringConstants.COMM_WINDOWS_HAS_NOT_STARTED, flowControl)

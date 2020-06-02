@@ -71,7 +71,7 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
         KeywordMain.runKeyword({
             boolean elementNotFound = false;
 
-			logger.logDebug("Checking Windows driver")
+			logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)

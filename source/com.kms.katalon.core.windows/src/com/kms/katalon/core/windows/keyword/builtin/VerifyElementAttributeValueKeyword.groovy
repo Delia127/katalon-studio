@@ -68,7 +68,7 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
     public boolean verifyElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
         KeywordMain.runKeyword({
             try {
-				logger.logDebug("Checking Windows driver")
+				logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
                 WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
                 if (windowsDriver == null) {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)

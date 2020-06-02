@@ -65,9 +65,10 @@ public class WaitForElementPresentKeyword extends AbstractKeyword {
     }
 
     public boolean waitForElementPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
-            try {
-                WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
+		KeywordMain.runKeyword({
+			try {
+				logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
+				WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
                 if (windowsDriver == null) {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }

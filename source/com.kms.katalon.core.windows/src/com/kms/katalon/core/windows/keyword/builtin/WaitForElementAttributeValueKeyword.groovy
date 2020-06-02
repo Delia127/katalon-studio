@@ -69,10 +69,10 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
         return waitForElementAttributeValue(testObject, attributeName,attributeValue,timeOut,flowControl)
     }
 
-    public boolean waitForElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) throws IllegalArgumentException {
-        KeywordMain.runKeyword({
-			logger.logDebug("Checking Windows driver")
-            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
+	public boolean waitForElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) throws IllegalArgumentException {
+		KeywordMain.runKeyword({
+			logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
+			WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
