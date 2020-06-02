@@ -70,11 +70,11 @@ public class WaitForElementPresentKeyword extends AbstractKeyword {
                 if (windowsDriver == null) {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }
-
+				logger.logDebug(String.format("Getting timeout"))
                 timeOut = WindowsActionHelper.checkTimeout(timeOut)
 
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true);
-                
+
                 if (foundElement != null){
                     logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()));
                 }

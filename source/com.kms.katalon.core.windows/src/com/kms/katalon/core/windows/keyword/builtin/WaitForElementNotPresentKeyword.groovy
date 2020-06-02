@@ -69,11 +69,21 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
     public boolean waitForElementNotPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             boolean elementNotFound = false;
+
+			logger.logDebug("Checking Windows driver")
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
-            timeOut = WindowsActionHelper.checkTimeout(timeOut)
+
+			logger.logDebug("Checking timeout")
+			timeOut = WindowsActionHelper.checkTimeout(timeOut)
+
+			logger.logDebug(String.format("Checking Test object"))
+			if (testObject == null) {
+				throw new IllegalArgumentException("Test object cannot be null");
+			}
+
             try {
                 elementNotFound = new FluentWait<WindowsTestObject>(testObject)
                 .withTimeout(Duration.ofSeconds(timeOut))

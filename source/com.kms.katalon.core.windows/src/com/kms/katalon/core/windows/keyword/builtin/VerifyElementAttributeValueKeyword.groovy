@@ -67,6 +67,7 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
     public boolean verifyElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
         KeywordMain.runKeyword({
             try {
+				logger.logDebug("Checking Windows driver")
                 WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
                 if (windowsDriver == null) {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
@@ -82,10 +83,12 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
                     throw new IllegalArgumentException("Attribute value cannot be null")
                 }
 
+				logger.logDebug("Checking timeout")
                 timeout = WindowsActionHelper.checkTimeout(timeout)
-                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeout, true);
-                logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
 
+                WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeout, true);
+
+				logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
                 String actualAttributeValue = foundElement.getAttribute(attributeName)
                     if (actualAttributeValue.equals(attributeValue)) {
                         logger.logPassed(String.format("Object '%s' has attribute '%s' with name '%s'", testObject.getObjectId(), attributeName, attributeValue));

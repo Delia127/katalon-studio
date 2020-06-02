@@ -80,11 +80,16 @@ public class WindowsActionHelper {
         }
     }
 
-    public WebElement findElement(WindowsTestObject testObject, int timeout, boolean continueWhenNotFound)
-            throws IllegalArgumentException, DriverNotStartedException, NoSuchElementException {
+    public void checkWebElement(WindowsTestObject testObject) throws IllegalArgumentException{
+		logger.logDebug(String.format("Checking Test object"));
         if (testObject == null) {
             throw new IllegalArgumentException("Test object cannot be null");
         }
+    }
+
+    public WebElement findElement(WindowsTestObject testObject, int timeout, boolean continueWhenNotFound)
+            throws IllegalArgumentException, DriverNotStartedException, NoSuchElementException {
+    	this.checkWebElement(testObject);
 
         WindowsTestObject.LocatorStrategy selectedLocator = testObject.getLocatorStrategy();
         String locator = testObject.getLocator();

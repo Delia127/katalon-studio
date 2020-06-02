@@ -41,20 +41,27 @@ public class SetEncryptedTextKeyword extends AbstractKeyword {
     public String setEncryptedText(WindowsTestObject testObject, String encryptedText, FailureHandling flowControl) throws StepFailedException , TimeoutException {
         return (String) KeywordMain.runKeyword({
 			try {
+				logger.logDebug("Checking Windows driver")
 	            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
 	            if (windowsDriver == null) {
-	                KeywordMain.stepFailed(StringConstants.COMM_WINDOWS_HAS_NOT_STARTED, flowControl)
+	                KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.")
 	            }
-	            
+
+				logger.logDebug("Checking encrypted text")
 	            if(encryptedText == null){
-	                throw new IllegalArgumentException(StringConstants.KW_ENCRYPTED_TEXT_IS_NULL)
+	                throw new IllegalArgumentException("Encrypted Text cannot be null")
 	            }
-	            
+
 	            CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(encryptedText)
 	            String rawText = CryptoUtil.decode(cryptoInfo)
-	
+
+				logger.logDebug(String.format("Checking Test object"));
+				if (testObject == null) {
+					throw new IllegalArgumentException("Test object cannot be null");
+				}
+
 	            WindowsActionHelper windowsActionHelper = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession())
-	            
+
 	            logger.logDebug(String.format("Clearing text of object '%s'", testObject.getObjectId()))
 	            windowsActionHelper.clearText(testObject);
 	            logger.logDebug(String.format("Setting text of object '%s' to value ******", testObject.getObjectId()))

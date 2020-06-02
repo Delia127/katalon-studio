@@ -70,6 +70,7 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
 
     public boolean waitForElementAttributeValue(WindowsTestObject testObject, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) throws IllegalArgumentException {
         KeywordMain.runKeyword({
+			logger.logDebug("Checking Windows driver")
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
@@ -84,7 +85,8 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
             if (attributeValue == null) {
                 throw new IllegalArgumentException("Attribute value cannot be null")
             }
-
+			
+			logger.logDebug("Checking timeout")
             timeOut = WindowsActionHelper.checkTimeout(timeOut)
 
 			WebElement foundElement = null;

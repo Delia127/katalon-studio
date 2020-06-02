@@ -65,13 +65,15 @@ public class VerifyElementPresentKeyword extends AbstractKeyword {
     public boolean verifyElementPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             try{
+				logger.logDebug("Checking Windows driver")
                 WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
                 if (windowsDriver == null) {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }
-                
+
+				logger.logDebug("Checking timeout")
                 timeOut = WindowsActionHelper.checkTimeout(timeOut)
-                
+
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true)
                 if (foundElement != null){
                     logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()))
