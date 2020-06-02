@@ -252,11 +252,11 @@ public class ProjectStatistics {
         this.testNGTestSuiteStepCount = testNGTestSuiteStepCount;
     }
 
-    public int getjUnitClassStepCount() {
+    public int getJUnitClassStepCount() {
         return jUnitClassStepCount;
     }
 
-    public void setjUnitClassStepCount(int jUnitClassStepCount) {
+    public void setJUnitClassStepCount(int jUnitClassStepCount) {
         this.jUnitClassStepCount = jUnitClassStepCount;
     }
 
