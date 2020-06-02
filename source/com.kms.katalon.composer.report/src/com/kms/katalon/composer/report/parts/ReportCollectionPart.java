@@ -124,6 +124,13 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
     @PostConstruct
     public void initialize(Composite parent, ReportCollectionEntity reportCollectionEntity, MPart mpart) {
+        ReportCollectionEntity reportCollection = reportCollectionEntity != null
+                ? reportCollectionEntity
+                : (ReportCollectionEntity) mpart.getObject();
+        openReportCollection(parent, reportCollection, mpart);
+    }
+
+    public void openReportCollection(Composite parent, ReportCollectionEntity reportCollectionEntity, MPart mpart) {
         this.reportCollectionEntity = reportCollectionEntity;
         this.mainComposite = parent;
         this.mpart = mpart;
@@ -177,7 +184,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     
     public void updateReport(ReportCollectionEntity report) {
         if (!isInitialized) {
-            initialize(mainComposite, report, mpart);
+            openReportCollection(mainComposite, report, mpart);
         }
         tableViewer.setInput(report.getReportItemDescriptions());
     }
