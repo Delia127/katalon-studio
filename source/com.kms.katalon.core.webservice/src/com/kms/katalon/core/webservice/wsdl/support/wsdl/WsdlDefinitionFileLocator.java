@@ -5,9 +5,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Map;
 
-import com.kms.katalon.constants.SystemProperties;
-import com.kms.katalon.core.util.internal.PathUtil;
-
 public class WsdlDefinitionFileLocator extends BaseWsdlDefinitionLocator {
 
     public WsdlDefinitionFileLocator(String wsdlLocation, Map<String, Object> params) {
@@ -23,23 +20,17 @@ public class WsdlDefinitionFileLocator extends BaseWsdlDefinitionLocator {
     @Override
     public String getBaseURI() {
         try {
-            File file = new File(getAbsolutePath(wsdlLocation));
+            File file = new File(wsdlLocation);
             return file.toURI().toURL().toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-    private String getAbsolutePath(String filePath) {
-        String projectLocation = System.getProperty(SystemProperties.PROJECT_LOCATION);
-        String absolutePath = PathUtil.relativeToAbsolutePath(wsdlLocation, projectLocation);
-        return absolutePath;
-    }
-
+    
     @Override
     protected InputStream load(String url) {
         try {
-            FileInputStream inputStream = new FileInputStream(getAbsolutePath(url));
+            FileInputStream inputStream = new FileInputStream(url);
             return inputStream;
         } catch (Exception e) {
             throw new RuntimeException(e);
