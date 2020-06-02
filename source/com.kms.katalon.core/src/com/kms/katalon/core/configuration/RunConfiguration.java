@@ -41,7 +41,7 @@ public class RunConfiguration {
 	
 	public static final String SMART_XPATH_BUNDLE_ID = "com.katalon.katalon-studio-smart-xpath";
 	
-	public static final String ALLOW_USING_SMART_XPATH = "allowUsingSmartXPath";
+	public static final String ALLOW_USING_SELF_HEALING = "allowUsingSelfHealing";
 
     public static final String EXCLUDE_KEYWORDS = "excludeKeywords";
 
@@ -573,14 +573,12 @@ public class RunConfiguration {
     }
 
 	public static Boolean shouldApplySelfHealing() {
-	    boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SMART_XPATH);
-	    
-        Map<String, Object> generalProperties = getExecutionGeneralProperties();
-	    allowUsingSmartXPath = allowUsingSmartXPath && ((boolean) generalProperties.get(SELF_HEALING_ENABLE));
-		return allowUsingSmartXPath;
+	    boolean isSelfHealingEnabled = (boolean) getProperty(SELF_HEALING_ENABLE);
+        boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SELF_HEALING);
+		return isSelfHealingEnabled && allowUsingSmartXPath;
 	}
 
-    public static List<Pair<String, Boolean>> getMethodsPriorityOrderWhenApplySelfHealing() {
+    public static List<Pair<String, Boolean>> getMethodsPriorityOrder() {
         Map<String, Object> generalProperties = getExecutionGeneralProperties();
         List<LinkedTreeMap<String, Object>> rawMethodsPriorityOrder = (List<LinkedTreeMap<String, Object>>) generalProperties
                 .get(METHODS_PRIORITY_ORDER);

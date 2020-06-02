@@ -51,7 +51,6 @@ public class WebUiExecutionSettingStoreTest {
         store.setActionDelay(250);
         store.setIEHangTimeout(22);
         store.setEnablePageLoadTimeout(false);
-        store.setDefaultImageRecognitionEnabled(true);
         store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
         store.setIgnorePageLoadTimeout(true);
 
@@ -61,7 +60,6 @@ public class WebUiExecutionSettingStoreTest {
         assertThat("User can specify the amount of action delay", anotherStore.getActionDelay() == 250);
         assertThat("User can specify the IE hang timeout", anotherStore.getIEHangTimeout() == 22);
         assertThat("User can change page load timeout", anotherStore.getEnablePageLoadTimeout() == false);
-        assertThat("User can change Image Recognition", anotherStore.getImageRecognitionEnabled() == true);
         assertThat("User can change selector method",
                 anotherStore.getCapturedTestObjectSelectorMethod().toString().equals("XPATH"));
         assertThat("User can change option to ignore page load timeout",

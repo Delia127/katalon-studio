@@ -30,7 +30,6 @@ public class WebUiExecutionSettingTest {
         Mockito.when(store.getActionDelay()).thenReturn(12);
         Mockito.when(store.getUseDelayActionTimeUnit()).thenReturn(TimeUnit.MILLISECONDS);
         Mockito.when(store.getIgnorePageLoadTimeout()).thenReturn(true);
-        Mockito.when(store.getImageRecognitionEnabled()).thenReturn(true);
 
         WebUIExecutionSetting spiedSetting = Mockito.spy(new MyWebUiExecutionSetting(store));
         Mockito.doReturn(new HashMap<>()).when((DefaultExecutionSetting) spiedSetting).getDefaultGeneralProperties();

@@ -26,7 +26,7 @@ import com.kms.katalon.core.webui.constants.StringConstants;
  */
 public class SelfHealingController {
 
-	private static String SMART_XPATH_PREFIX = "[SMART_XPATH]";
+	private static String SELF_HEALING_PREFIX = "[SELF-HEALING]";
 
 	private static KeywordLogger logger = KeywordLogger.getInstance(SelfHealingController.class);
 
@@ -48,7 +48,7 @@ public class SelfHealingController {
 	 * @param message
 	 */
 	public static void logInfo(String message) {
-		logger.logInfo(smartXPathPrefixify(message));
+		logger.logInfo(selfHealingPrefixify(message));
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class SelfHealingController {
 	 * @param message
 	 */
 	public static void logError(String message) {
-		logger.logError(smartXPathPrefixify(message));
+		logger.logError(selfHealingPrefixify(message));
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class SelfHealingController {
      * @param throwable
      */
     public static void logError(String message, Throwable throwable) {
-        logger.logError(smartXPathPrefixify(message), null, throwable);
+        logger.logError(selfHealingPrefixify(message), null, throwable);
     }
 
     /**
@@ -79,22 +79,22 @@ public class SelfHealingController {
      * @param message
      */
     public static void logWarning(String message) {
-        logger.logWarning(smartXPathPrefixify(message));
+        logger.logWarning(selfHealingPrefixify(message));
     }
     
     /**
-     * Log an warning with Smart XPath plug-in's internal prefix. Note that a
+     * Log an warning with Self-Healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
      * @param throwable
      */
     public static void logWarning(String message, Throwable throwable) {
-        logger.logWarning(smartXPathPrefixify(message), null, throwable);
+        logger.logWarning(selfHealingPrefixify(message), null, throwable);
     }
 
-	private static String smartXPathPrefixify(String message) {
-		return SMART_XPATH_PREFIX + " " + message;
+	private static String selfHealingPrefixify(String message) {
+		return SELF_HEALING_PREFIX + " " + message;
 	}
 
     /**

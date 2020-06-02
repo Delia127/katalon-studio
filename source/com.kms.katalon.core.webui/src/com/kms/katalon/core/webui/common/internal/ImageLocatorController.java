@@ -25,6 +25,7 @@ import org.sikuli.api.ScreenRegion;
 
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.common.ScreenUtil;
+import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 
 /**
  * A controller contains logic relating to Image-based Object Recognition
@@ -61,7 +62,7 @@ public class ImageLocatorController {
                 int viewHeight = ((Number) ((JavascriptExecutor) webDriver).executeScript("return window.innerHeight"))
                         .intValue();
                 int imageHeight = ImageIO.read(new File(pathToScreenshot)).getHeight();
-//                logger.logInfo(viewHeight + " , " + imageHeight);
+                logger.logDebug(viewHeight + " , " + imageHeight);
                 scrolledAmount = iterationCount * Math.abs(viewHeight - imageHeight);
                 if (!scroll(webDriver, scrolledAmount)) {
                     break;
