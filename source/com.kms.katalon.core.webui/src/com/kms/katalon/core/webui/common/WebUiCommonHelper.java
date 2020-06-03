@@ -710,32 +710,6 @@ public class WebUiCommonHelper extends KeywordHelper {
                 documentRect.getHeight()));
         return documentRect.intersects(elementRect);
     }
-    
-    /**
-     * Take and save screenshot of a web element on the web page WebDriver is
-     * currently on. The web page's screenshot is first taken and converted into
-     * a BufferedImage, then the web element's location is retrieved and used to
-     * sub-image from the BufferedImage. The image (if saved successfully) will
-     * be under PNG extension.
-     * 
-     * @param driver
-     * A WebDriver instance that's being used at the time calling
-     * this function
-     * @param ele
-     * The web element to be taken screenshot of
-     * @param name
-     * Name of the screenshot
-     * @param path
-     * An absolute path to a folder to which the image will be saved
-     * @return Path to the newly taken screenshot if exists, an empty string
-     * otherwise
-     * @throws IOException
-     * If an exception during I/O occurs
-     * @throws InterruptedException
-     */
-    public static String saveWebElementScreenshotAndResize(WebDriver driver, WebElement ele, String name, String path) throws IOException {
-        return ImageLocatorController.saveWebElementScreenshot(driver, ele, name, path);
-    }    
 
     public static List<WebElement> findWebElements(TestObject testObject, int timeout) {
         boolean shouldApplySelfHealing = RunConfiguration.shouldApplySelfHealing();
@@ -894,11 +868,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
         }
 
-        String screenshotName = MessageFormat.format("{0}_{1}", testObject.getObjectId(), SelectorMethod.CSS);
-        String screenshot = foundElements != null && !foundElements.isEmpty()
-                ? SelfHealingController.takeScreenShot(webDriver, foundElements.get(0), screenshotName)
-                : StringUtils.EMPTY;
-        return FindElementsResult.from(foundElements, cssLocator, SelectorMethod.CSS, screenshot);
+        return FindElementsResult.from(foundElements, cssLocator, SelectorMethod.CSS, StringUtils.EMPTY);
     }
 
     /**
@@ -995,12 +965,10 @@ public class WebUiCommonHelper extends KeywordHelper {
                 }
 
                 // Save the first working XPath's screenshot
-                if (pathToSelectedSmartXPathScreenshot.equals(StringUtils.EMPTY)) {
-                    pathToSelectedSmartXPathScreenshot = SelfHealingController.takeScreenShot(webDriver,
-                            elementsFoundByThisXPath.get(0), testObject, screenShotName);
-                } else {
-                    SelfHealingController.takeScreenShot(webDriver, elementsFoundByThisXPath.get(0), testObject,
-                            screenShotName);
+                String screenshotByCurrentXPath = SelfHealingController.takeScreenShot(webDriver,
+                        elementsFoundByThisXPath.get(0), testObject, screenShotName);
+                if (StringUtils.isBlank(pathToSelectedSmartXPathScreenshot)) {
+                    pathToSelectedSmartXPathScreenshot = screenshotByCurrentXPath;
                 }
 
             } else {
@@ -1040,13 +1008,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 
         List<WebElement> foundElements = ImageLocatorController.findElementByScreenShot(webDriver, screenshot, timeout);
 
-        String newScreenshot = StringUtils.EMPTY;
-        if (foundElements != null && !foundElements.isEmpty()) {
-            newScreenshot = SelfHealingController.takeScreenShot(webDriver, foundElements.get(0),
-                    testObject, SelectorMethod.IMAGE.name());
-        }
-
-        return FindElementsResult.from(foundElements, screenshot, SelectorMethod.IMAGE, newScreenshot);
+        return FindElementsResult.from(foundElements, screenshot, SelectorMethod.IMAGE);
     }
 
     private static String generateNewXPath(WebElement element) {
@@ -1062,6 +1024,29 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
 
         return WebUICommonScripts.generateXPath(webDriver, element);
+    }
+    
+    /**
+     * Take and save screenshot of a web element on the web page WebDriver is
+     * currently on. The image (if saved successfully) will be under PNG extension.
+     * 
+     * @param driver
+     * A WebDriver instance that's being used at the time calling
+     * this function
+     * @param ele
+     * The web element to be taken screenshot of
+     * @param name
+     * Name of the screenshot
+     * @param path
+     * An absolute path to a folder to which the image will be saved
+     * @return Path to the newly taken screenshot if exists, an empty string
+     * otherwise
+     * @throws IOException
+     * If an exception during I/O occurs
+     * @throws InterruptedException
+     */
+    public static String saveWebElementScreenshotAndResize(WebDriver driver, WebElement ele, String name, String path) throws IOException {
+        return ImageLocatorController.saveWebElementScreenshot(driver, ele, name, path);
     }
 
     /**
@@ -1272,8 +1257,10 @@ public class WebUiCommonHelper extends KeywordHelper {
             throw new StepFailedException(MessageFormat
                     .format(CoreWebuiMessageConstants.MSG_FAILED_WEB_ELEMENT_X_IS_NOT_SHADOW_ROOT, parentObject));
         }
-        List<WebElement> webElements = (List<WebElement>) ((JavascriptExecutor) webDriver)
-                .executeScript("return arguments[0].querySelectorAll('" + cssLocator + "');", shadowRootElementSandbox);
+        
+        String filteredCssSelector = StringUtils.defaultString(cssLocator).replace("'", "\\\'");
+        List<WebElement> webElements = (List<WebElement>) ((JavascriptExecutor) webDriver).executeScript(
+                "return arguments[0].querySelectorAll('" + filteredCssSelector + "');", shadowRootElementSandbox);
         if (webElements != null && webElements.size() > 0) {
             logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), cssLocator, timeOut));
