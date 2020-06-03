@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.kms.katalon.composer.components.util.ColorUtil;
 
 public class SelfHealingToolbarComposite extends Composite {
@@ -72,9 +73,7 @@ public class SelfHealingToolbarComposite extends Composite {
 
     protected Button createApproveButton(Composite buttonsComposite) {
         Button btnApprove = new Button(buttonsComposite, SWT.PUSH);
-        btnApprove.setText("Approve");
-        btnApprove.setFont(JFaceResources.getDialogFont());
-        btnApprove.setData(Integer.valueOf(SWT.OK));
+        btnApprove.setText(SmartXPathMessageConstants.BTN_APPROVE_PROPOSED_LOCATORS);
 
         Shell shell = btnApprove.getShell();
         if (shell != null) {
@@ -86,9 +85,7 @@ public class SelfHealingToolbarComposite extends Composite {
 
     protected Button createDiscardButton(Composite buttonsComposite) {
         Button btnDiscard = new Button(buttonsComposite, SWT.PUSH);
-        btnDiscard.setText("Discard All");
-        btnDiscard.setFont(JFaceResources.getDialogFont());
-        btnDiscard.setData(Integer.valueOf(SWT.OK));
+        btnDiscard.setText(SmartXPathMessageConstants.BTN_DISCARD_ALL_PROPOSED_LOCATORS);
         return btnDiscard;
     }
 
@@ -105,11 +102,13 @@ public class SelfHealingToolbarComposite extends Composite {
     }
 
     public void notifyRecoverSucceeded(int numberRecovered) {
-        setSuccessMessage(MessageFormat.format("{0} broken test objects has been recovered!", numberRecovered));
+        setSuccessMessage(MessageFormat.format(numberRecovered == 1
+                ? SmartXPathMessageConstants.MSG_RECOVER_BROKEN_TEST_OBJECTS_SUCCEEDED_SINGULAR
+                : SmartXPathMessageConstants.MSG_RECOVER_BROKEN_TEST_OBJECTS_SUCCEEDED_PLURAL, numberRecovered));
     }
 
     public void notifyRecoverFailed() {
-        setSuccessMessage("Failed to recover broken test objects.");
+        setSuccessMessage(SmartXPathMessageConstants.MSG_RECOVER_BROKEN_TEST_OBJECTS_FAILED);
     }
 
     public void clearStatusMessage() {

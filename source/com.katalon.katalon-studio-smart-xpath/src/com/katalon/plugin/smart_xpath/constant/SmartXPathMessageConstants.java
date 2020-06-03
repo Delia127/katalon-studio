@@ -73,6 +73,18 @@ public class SmartXPathMessageConstants extends NLS {
 
     public static String MSG_READ_ACCESS_DENIED;
 
+    public static String BTN_APPROVE_PROPOSED_LOCATORS;
+
+    public static String BTN_DISCARD_ALL_PROPOSED_LOCATORS;
+
+    public static String MSG_RECOVER_BROKEN_TEST_OBJECTS_SUCCEEDED_SINGULAR;
+
+    public static String MSG_RECOVER_BROKEN_TEST_OBJECTS_SUCCEEDED_PLURAL;
+
+    public static String MSG_RECOVER_BROKEN_TEST_OBJECTS_FAILED;
+
+    public static String MSG_CANNOT_CREATE_SELF_HEALING_FOLDER;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, SmartXPathMessageConstants.class);

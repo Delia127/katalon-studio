@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.Writer;
 import java.text.MessageFormat;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -25,7 +26,18 @@ import com.kms.katalon.core.webui.constants.StringConstants;
  */
 public class SelfHealingController {
 
-	private static String SELF_HEALING_PREFIX = "[SELF-HEALING]";
+	private static final String SELF_HEALING_PREFIX = "[SELF-HEALING]";
+
+    public static final String REPORT_FOLDER_NAME = "Reports";
+
+    public static final String SELF_HEALING_FOLDER_NAME = "Self-Healing";
+
+    public static final String SELF_HEALING_DATA_FILE_NAME = "broken-test-objects.json";
+
+    public static final String SELF_HEALING_DATA_FILE_PATH = REPORT_FOLDER_NAME + "/" + SELF_HEALING_FOLDER_NAME + "/"
+            + SELF_HEALING_DATA_FILE_NAME;
+
+    public static final String SELF_HEALING_FOLDER_PATH = REPORT_FOLDER_NAME + "/" + SELF_HEALING_FOLDER_NAME;
 
 	private static KeywordLogger logger = KeywordLogger.getInstance(SelfHealingController.class);
 
@@ -186,11 +198,11 @@ public class SelfHealingController {
 	}
 
 	public static String getSmartXPathFolderPath() {
-		return RunConfiguration.getProjectDir() + "/Reports/smart_xpath";
+		return FilenameUtils.concat(RunConfiguration.getProjectDir(), SELF_HEALING_FOLDER_PATH);
 	}
 
 	public static String getSmartXPathInternalFilePath() {
-		return RunConfiguration.getProjectDir() + "/Reports/smart_xpath/waiting-for-approval.json";
+		return FilenameUtils.concat(RunConfiguration.getProjectDir(), SELF_HEALING_DATA_FILE_PATH);
 	}
 
 	/**

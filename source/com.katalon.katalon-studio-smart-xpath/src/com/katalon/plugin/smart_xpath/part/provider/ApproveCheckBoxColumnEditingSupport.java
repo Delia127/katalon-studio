@@ -1,4 +1,4 @@
-package com.katalon.plugin.smart_xpath.dialog.provider;
+package com.katalon.plugin.smart_xpath.part.provider;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;

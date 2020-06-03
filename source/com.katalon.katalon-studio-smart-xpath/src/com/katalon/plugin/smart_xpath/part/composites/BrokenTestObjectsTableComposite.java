@@ -29,8 +29,8 @@ import org.eclipse.swt.widgets.TypedListener;
 
 import com.katalon.platform.ui.viewer.HyperLinkColumnLabelProvider;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
-import com.katalon.plugin.smart_xpath.dialog.provider.ApproveCheckBoxColumnEditingSupport;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
+import com.katalon.plugin.smart_xpath.part.provider.ApproveCheckBoxColumnEditingSupport;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -141,15 +141,19 @@ public class BrokenTestObjectsTableComposite extends Composite {
                         // Open the folder containing this image
                         Desktop.getDesktop().open(myFile);
                     } catch (NullPointerException nullPointerEx) {
-                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, SmartXPathMessageConstants.MSG_DOES_NOT_HAVE_SCREENSHOT);
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR,
+                                SmartXPathMessageConstants.MSG_DOES_NOT_HAVE_SCREENSHOT);
                     } catch (IOException ioEx) {
                         MessageDialog.openError(null, GlobalMessageConstants.ERROR, ioEx.getMessage());
                     } catch (IllegalArgumentException illegalArgEx) {
-                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, SmartXPathMessageConstants.MSG_SCREENSHOT_DOES_NOT_EXIST);
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR,
+                                SmartXPathMessageConstants.MSG_SCREENSHOT_DOES_NOT_EXIST);
                     } catch (UnsupportedOperationException unsupportedOpEx) {
-                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, SmartXPathMessageConstants.MSG_PLATFORM_DOES_NOT_SUPPORT_OPEN);
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR,
+                                SmartXPathMessageConstants.MSG_PLATFORM_DOES_NOT_SUPPORT_OPEN);
                     } catch (SecurityException secEx) {
-                        MessageDialog.openError(null, GlobalMessageConstants.ERROR, SmartXPathMessageConstants.MSG_READ_ACCESS_DENIED);
+                        MessageDialog.openError(null, GlobalMessageConstants.ERROR,
+                                SmartXPathMessageConstants.MSG_READ_ACCESS_DENIED);
                     }
                 }
             }
@@ -212,6 +216,11 @@ public class BrokenTestObjectsTableComposite extends Composite {
     }
 
     public void setInput(Set<BrokenTestObject> brokenTestObjects) {
+        if (brokenTestObjects == null) {
+            tbViewer.setInput(null);
+            return;
+        }
+
         // Restore approval state
         Set<BrokenTestObject> currentBrokenTestObjects = getInput();
         if (currentBrokenTestObjects != null) {
