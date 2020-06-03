@@ -74,7 +74,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
                 WebUiExecutionSettingStore webUIExecutionSettingStore = new WebUiExecutionSettingStore(
                         ProjectController.getInstance().getCurrentProject());
 
-                if (webUIExecutionSettingStore.isEnableSelfHHealing()) {
+                if (webUIExecutionSettingStore.isEnableSelfHealing()) {
                     addDisableSelfHealingMenuItem(newMenu, true);
                 } else {
                     addEnableSelfHealingMenuItem(newMenu, true);

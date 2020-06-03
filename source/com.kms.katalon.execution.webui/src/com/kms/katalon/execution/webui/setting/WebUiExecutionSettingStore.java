@@ -50,7 +50,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     
     public static final String DEFAULT_METHODS_PRIORITY_ORDER = MessageFormat.format("{0},true;{1},true;{2},true;{3},true", SelectorMethod.XPATH, SelectorMethod.BASIC, SelectorMethod.CSS, SelectorMethod.IMAGE);
 
-    public static final String DEFAULT_EXCLUDE_KEYWORDS = "";
+    public static final String DEFAULT_EXCLUDE_KEYWORDS = "[\"verifyElementPresent\",\"verifyElementNotPresent\"]";
     
     public static final boolean DEFAULT_IS_ENABLE_SELF_HEALING = false;
     
@@ -262,9 +262,9 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         setProperty(WebUiExecutionSettingConstants.WEBUI_EXCLUDE_KEYWORDS, DEFAULT_EXCLUDE_KEYWORDS);
     }
 
-    public void setMethodsPritorityOrder(List<Pair<SelectorMethod, Boolean>> methodsPritorityOrder) throws IOException{
+    public void setMethodsPritorityOrder(List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder) throws IOException{
         List<Pair<String, Boolean>> convertedList = new ArrayList<>();
-        for (Pair<SelectorMethod, Boolean> element : methodsPritorityOrder) {
+        for (Pair<SelectorMethod, Boolean> element : methodsPriorityOrder) {
             Pair<String, Boolean> convertedElement = new Pair<String, Boolean>(element.getLeft().toString(), (boolean) element.getRight());
             convertedList.add(convertedElement);
         }
@@ -278,8 +278,6 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
             Pair<SelectorMethod, Boolean> method = Pair.of(SelectorMethod.valueOf(rawMethod.getLeft()), (Boolean) rawMethod.getRight());
             methodsPriorityOrder.add(method);
         });
-        String a = "Attributes";
-        SelectorMethod aasdf = SelectorMethod.BASIC;
         return methodsPriorityOrder;
     }
 
@@ -287,7 +285,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         setProperty(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, DEFAULT_METHODS_PRIORITY_ORDER);
     }
 
-    public boolean isEnableSelfHHealing() throws IOException {
+    public boolean isEnableSelfHealing() throws IOException {
         return getBoolean(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLE, DEFAULT_IS_ENABLE_SELF_HEALING);
     }
 

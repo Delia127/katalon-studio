@@ -24,15 +24,21 @@ import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TypedListener;
 
 import com.katalon.platform.ui.viewer.HyperLinkColumnLabelProvider;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.part.provider.ApproveCheckBoxColumnEditingSupport;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.util.collections.Pair;
 
 public class BrokenTestObjectsTableComposite extends Composite {
 
@@ -76,6 +82,35 @@ public class BrokenTestObjectsTableComposite extends Composite {
         table = tbViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
+        table.addListener(SWT.PaintItem, new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (event.index == 5) {
+                    BrokenTestObject data = (BrokenTestObject) ((TableItem) event.item).getData();
+                    Image tmpImage = getCheckboxSymbol(data.getApproved());
+                    int tmpWidth = 0;
+                    int tmpHeight = 0;
+                    int tmpX = 0;
+                    int tmpY = 0;
+
+                    tmpWidth = table.getColumn(event.index).getWidth();
+                    tmpHeight = ((TableItem) event.item).getBounds().height;
+
+                    tmpX = tmpImage.getBounds().width;
+                    tmpX = (tmpWidth / 2 - tmpX / 2);
+                    tmpY = tmpImage.getBounds().height;
+                    tmpY = (tmpHeight / 2 - tmpY / 2);
+                    if (tmpX <= 0)
+                        tmpX = event.x;
+                    else tmpX += event.x;
+                    if (tmpY <= 0)
+                        tmpY = event.y;
+                    else tmpY += event.y;
+                    event.gc.drawImage(tmpImage, tmpX, tmpY);
+                }
+            }
+        });
     }
 
     private void createColumns() {
@@ -185,7 +220,12 @@ public class BrokenTestObjectsTableComposite extends Composite {
         colApproveNewLocator.setLabelProvider(new CellLabelProvider() {
             @Override
             public void update(ViewerCell cell) {
-                cell.setText(getCheckboxSymbol(((BrokenTestObject) cell.getElement()).getApproved()));
+                Object property = cell.getElement();
+                if (!(property instanceof BrokenTestObject)) {
+                    return;
+                }
+                Boolean isSelected = ((BrokenTestObject) property).getApproved();
+                ((TableItem) cell.getViewerRow().getItem()).setChecked(isSelected);
             }
         });
 
@@ -193,6 +233,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
             @Override
             protected void setValue(Object element, Object value) {
                 super.setValue(element, value);
+                tbViewer.update(element, null);
                 handleSelectionChange(null);
             }
         });
@@ -205,10 +246,9 @@ public class BrokenTestObjectsTableComposite extends Composite {
         tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(5, 70));
     }
 
-    private String getCheckboxSymbol(boolean isChecked) {
-        return isChecked
-                ? "\u2611"
-                : "\u2610";
+    protected Image getCheckboxSymbol(boolean isChecked) {
+        return isChecked ? ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16)
+                : ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
     }
 
     public void refresh() {

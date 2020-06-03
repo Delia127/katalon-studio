@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -34,6 +36,12 @@ public class WebUiExecutionSettingStoreTest {
         assertThat("Page load timeout default is 30", store.getPageLoadTimeout() == 30);
         assertThat("Disable page load timeout by default", store.getEnablePageLoadTimeout() == false);
         assertThat("Disable ignore page load timeout by default", store.getIgnorePageLoadTimeout() == false);
+        assertThat("Disable Self Healing by default", store.isEnableSelfHealing() == false);
+        assertThat("Default exclude keywords must be verifyElementPresent and verifyElementNotPresent",
+                store.getExcludeKeywordList() == Arrays.asList("verifyElementPresent", "verifyElementNotPresent"));
+        String actualMethodsPriorityOrder = convertMethodsPriorityOrderToString(store);
+        assertThat("Default methods priority must be all true, and along with this order: XPATH, BASIC, CSS, IMAGE",
+                actualMethodsPriorityOrder.equals(WebUiExecutionSettingStore.DEFAULT_METHODS_PRIORITY_ORDER));
         assertThat("List of captured object properties is initialized correctly",
                 flattenStringBooleanList(store.getCapturedTestObjectAttributeLocators())
                         .equals(WebUiExecutionSettingStore.DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
@@ -53,6 +61,9 @@ public class WebUiExecutionSettingStoreTest {
         store.setEnablePageLoadTimeout(false);
         store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
         store.setIgnorePageLoadTimeout(true);
+        store.setEnableSelfHealing(true);
+        store.setExcludeKeywordList(new ArrayList<>());
+        store.setMethodsPritorityOrder(new ArrayList<>());
 
         WebUiExecutionSettingStore anotherStore = new WebUiExecutionSettingStore(projectEntity);
         assertThat("User can specify use delay action in second",
@@ -64,6 +75,10 @@ public class WebUiExecutionSettingStoreTest {
                 anotherStore.getCapturedTestObjectSelectorMethod().toString().equals("XPATH"));
         assertThat("User can change option to ignore page load timeout",
                 anotherStore.getIgnorePageLoadTimeout() == true);
+        assertThat("User can toggle Self Healing status", anotherStore.isEnableSelfHealing() == true);
+        assertThat("User can change excluded Keyword List", anotherStore.getExcludeKeywordList().size() == 0);
+        assertThat("User can change methods priority order", anotherStore.getMethodsPriorityOrder().size() == 0);
+        
     }
 
     private File getExtensionsDirectory(String path) throws IOException {
@@ -73,6 +88,17 @@ public class WebUiExecutionSettingStoreTest {
         } else {
             return new File(ClassPathResolver.getConfigurationFolder(), path);
         }
+    }
+
+    private String convertMethodsPriorityOrderToString(WebUiExecutionSettingStore store) throws IOException {
+        List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = store.getMethodsPriorityOrder();
+        List<Pair<String, Boolean>> convertedList = new ArrayList<>();
+        for (Pair<SelectorMethod, Boolean> element : methodsPriorityOrder) {
+            Pair<String, Boolean> convertedElement = new Pair<String, Boolean>(element.getLeft().toString(),
+                    (boolean) element.getRight());
+            convertedList.add(convertedElement);
+        }
+        return flattenStringBooleanList(convertedList);
     }
 
     private String flattenStringBooleanList(List<Pair<String, Boolean>> list) {
