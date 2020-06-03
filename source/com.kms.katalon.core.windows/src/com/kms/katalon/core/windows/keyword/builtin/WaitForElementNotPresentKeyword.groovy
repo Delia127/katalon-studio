@@ -46,6 +46,7 @@ import com.kms.katalon.core.util.internal.PathUtil
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.helper.KeywordHelper
+import com.kms.katalon.core.windows.constants.StringConstants
 import com.kms.katalon.core.windows.constants.WindowsDriverConstants
 
 @Action(value = "waitForElementNotPresent")
@@ -69,11 +70,21 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
     public boolean waitForElementNotPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             boolean elementNotFound = false;
-            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
+
+			logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
+			WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
-            timeOut = WindowsActionHelper.checkTimeout(timeOut)
+
+			logger.logDebug("Checking timeout")
+			timeOut = WindowsActionHelper.checkTimeout(timeOut)
+
+			logger.logDebug(String.format(StringConstants.KW_LOG_INFO_CHECKING_TEST_OBJECT))
+			if (testObject == null) {
+				throw new IllegalArgumentException(StringConstants.KW_EXEC_TEST_OBJECT_IS_NULL)
+			}
+
             try {
                 elementNotFound = new FluentWait<WindowsTestObject>(testObject)
                 .withTimeout(Duration.ofSeconds(timeOut))

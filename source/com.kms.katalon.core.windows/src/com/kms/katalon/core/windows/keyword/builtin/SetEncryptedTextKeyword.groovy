@@ -22,7 +22,7 @@ import com.kms.katalon.util.CryptoUtil
 
 @Action(value = "setEncryptedText")
 public class SetEncryptedTextKeyword extends AbstractKeyword {
-    
+
     private KeywordLogger logger = KeywordLogger.getInstance(SetEncryptedTextKeyword.class)
 
     @Override
@@ -37,24 +37,31 @@ public class SetEncryptedTextKeyword extends AbstractKeyword {
         FailureHandling flowControl = (FailureHandling)(params.length > 2 && params[2] instanceof FailureHandling ? params[2] : RunConfiguration.getDefaultFailureHandling())
         setEncryptedText(testObject, encryptedText, flowControl)
     }
-    
+
     public String setEncryptedText(WindowsTestObject testObject, String encryptedText, FailureHandling flowControl) throws StepFailedException , TimeoutException {
         return (String) KeywordMain.runKeyword({
 			try {
+				logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
 	            WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
 	            if (windowsDriver == null) {
 	                KeywordMain.stepFailed(StringConstants.COMM_WINDOWS_HAS_NOT_STARTED, flowControl)
 	            }
-	            
+
+				logger.logDebug("Checking encrypted text")
 	            if(encryptedText == null){
 	                throw new IllegalArgumentException(StringConstants.KW_ENCRYPTED_TEXT_IS_NULL)
 	            }
-	            
+
 	            CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(encryptedText)
 	            String rawText = CryptoUtil.decode(cryptoInfo)
-	
+
+				logger.logDebug(String.format(StringConstants.KW_LOG_INFO_CHECKING_TEST_OBJECT));
+				if (testObject == null) {
+					throw new IllegalArgumentException(StringConstants.KW_EXEC_TEST_OBJECT_IS_NULL);
+				}
+
 	            WindowsActionHelper windowsActionHelper = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession())
-	            
+
 	            logger.logDebug(String.format("Clearing text of object '%s'", testObject.getObjectId()))
 	            windowsActionHelper.clearText(testObject);
 	            logger.logDebug(String.format("Setting text of object '%s' to value ******", testObject.getObjectId()))

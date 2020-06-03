@@ -40,6 +40,7 @@ import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.keyword.internal.AbstractKeyword
 import com.kms.katalon.core.util.internal.ExceptionsUtil
 import com.kms.katalon.core.util.internal.PathUtil
+import com.kms.katalon.core.windows.constants.StringConstants
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 import com.kms.katalon.core.helper.KeywordHelper
@@ -65,13 +66,15 @@ public class VerifyElementPresentKeyword extends AbstractKeyword {
     public boolean verifyElementPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             try{
+				logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
                 WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
                 if (windowsDriver == null) {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }
-                
+
+				logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_TIMEOUT)
                 timeOut = WindowsActionHelper.checkTimeout(timeOut)
-                
+
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeOut, true)
                 if (foundElement != null){
                     logger.logPassed(String.format("Object '%s' is present", testObject.getObjectId()))
