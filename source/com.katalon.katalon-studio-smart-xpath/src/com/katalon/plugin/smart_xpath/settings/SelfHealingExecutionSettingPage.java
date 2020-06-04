@@ -43,9 +43,9 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
     private WebUiExecutionSettingStore preferenceStore;
 
-	public SelfHealingExecutionSettingPage() {
-		generatePreferenceStore();
-	}
+    public SelfHealingExecutionSettingPage() {
+        preferenceStore = WebUiExecutionSettingStore.getStore();
+    }
 
 	private void setInput() {
         try {
@@ -60,14 +60,6 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 		isEnableSelfHealing = getEnableSelfHealingFromPluginPreference();
 		checkboxEnableSelfHealing.setSelection(isEnableSelfHealing);
-	}
-
-	private void generatePreferenceStore() {
-
-        preferenceStore = WebUiExecutionSettingStore.getStore();
-//	    preferenceStore = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
-//		Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-//		preferenceStore = SelfHealingSetting.getStore(currentProject);
 	}
 
 	@Override
@@ -132,7 +124,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 	private Boolean getEnableSelfHealingFromPluginPreference() {
 		Boolean value;
         try {
-            value = preferenceStore.isEnableSelfHHealing();
+            value = preferenceStore.isEnableSelfHealing();
         } catch (IOException e) {
             e.printStackTrace();
             return null;

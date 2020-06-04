@@ -29,13 +29,17 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
@@ -44,6 +48,8 @@ import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.util.collections.Pair;
 
 public class AttributesSelectionComposite extends Composite {
@@ -227,10 +233,8 @@ public class AttributesSelectionComposite extends Composite {
                     return;
                 }
                 Boolean isSelected = ((Pair<String, Boolean>) property).getRight();
-                FontDescriptor fontDescriptor = FontDescriptor.createFrom(cell.getFont());
-                Font font = fontDescriptor.setStyle(SWT.NORMAL).setHeight(13).createFont(tProperty.getDisplay());
-                cell.setFont(font);
-                cell.setText(getCheckboxSymbol(isSelected));
+                ((TableItem) cell.getViewerRow().getItem()).setChecked(isSelected);
+                tProperty.redraw();
             }
         });
         cvPropertySelected.setEditingSupport(new EditingSupport(cvPropertySelected.getViewer()) {
@@ -261,6 +265,34 @@ public class AttributesSelectionComposite extends Composite {
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
         tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(20, 100));
 
+        tProperty.addListener(SWT.PaintItem, new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (event.index == 1) {
+                    Pair<String, Boolean> data = (Pair<String, Boolean>) ((TableItem) event.item).getData();
+                    Image tmpImage = getCheckboxSymbol(data.getRight());
+                    int tmpWidth = 0;
+                    int tmpHeight = 0;
+                    int tmpX = 0;
+                    int tmpY = 0;
+
+                    tmpWidth = tProperty.getColumn(event.index).getWidth();
+                    tmpHeight = ((TableItem) event.item).getBounds().height;
+
+                    tmpX = tmpImage.getBounds().width;
+                    tmpX = (tmpWidth / 2 - tmpX / 2);
+                    tmpY = tmpImage.getBounds().height;
+                    tmpY = (tmpHeight / 2 - tmpY / 2);
+                    if (tmpX <= 0) tmpX = event.x;
+                    else tmpX += event.x;
+                    if (tmpY <= 0) tmpY = event.y;
+                    else tmpY += event.y;
+                    event.gc.drawImage(tmpImage, tmpX, tmpY);
+                }
+            }
+            
+        });
         // Register Listeners
 
         tvProperty.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -274,11 +306,9 @@ public class AttributesSelectionComposite extends Composite {
         return tablePropertyComposite;
     }
 
-    private String getCheckboxSymbol(boolean isChecked) {
-        // Unicode symbols
-        // Checked mark: \u2713
-        // Unchecked box: \u2610
-        return isChecked ? "\u2713" : "\u2610";
+    protected Image getCheckboxSymbol(boolean isChecked) {
+        return isChecked ? ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16)
+                : ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
     }
 
     public void setInput(List<Pair<String, Boolean>> input) {

@@ -222,8 +222,6 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 				Boolean isSelected = ((Pair<String, Boolean>) property).getRight();
 				((TableItem) cell.getViewerRow().getItem()).setChecked(isSelected);
 				tPrioritizeSelectionMethods.redraw();
-				
-				handleSelectionChange(null);
 			}
 		});
 
