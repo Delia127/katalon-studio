@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -39,6 +40,23 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 
 public class AutoHealingController {
+
+    public static String getDataFilePath(ProjectEntity project) {
+        return getDataFilePath(project.getFolderLocation());
+    }
+
+    public static String getDataFilePath(Entity project) {
+        return getDataFilePath(project.getFolderLocation());
+    }
+
+    public static String getDataFilePath(String projectDir) {
+        if (StringUtils.isBlank(projectDir)) {
+            return null;
+        }
+        String rawBrokenTestObjectsPath = FilenameUtils.concat(projectDir,
+                SmartXPathConstants.SELF_HEALING_DATA_FILE_PATH);
+        return FilenameUtils.separatorsToSystem(rawBrokenTestObjectsPath);
+    }
 
     public static Set<BrokenTestObject> autoHealBrokenTestObjects(Shell shell,
             Set<BrokenTestObject> brokenTestObjects) {
@@ -97,6 +115,9 @@ public class AutoHealingController {
                     new InputStreamReader(new FileInputStream(brokenTestObjectsPath), StandardCharsets.UTF_8));
 
             BrokenTestObjects brokenTestObjects = new Gson().fromJson(reader, BrokenTestObjects.class);
+            if (brokenTestObjects == null) {
+                return Collections.emptySet();
+            }
 
             Set<BrokenTestObject> unapprovedBrokenTestObjects = brokenTestObjects.getBrokenTestObjects();
             unapprovedBrokenTestObjects.removeAll(Collections.singleton(null));
@@ -145,10 +166,7 @@ public class AutoHealingController {
             return null;
         }
 
-        String rawBrokenTestObjectsPath = FilenameUtils.concat(projectDir,
-                SmartXPathConstants.SELF_HEALING_DATA_FILE_PATH);
-        String brokenTestObjectsPath = FilenameUtils.separatorsToSystem(rawBrokenTestObjectsPath);
-        File autoHealingFile = new File(brokenTestObjectsPath);
+        File autoHealingFile = new File(getDataFilePath(projectEntity));
 
         if (!autoHealingFile.exists()) {
             try {
@@ -167,10 +185,13 @@ public class AutoHealingController {
         return autoHealingFile;
     }
 
-    public static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath) {
+    public static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, ProjectEntity project) {
+        if (project == null) {
+            return;
+        }
         try {
             ObjectMapper mapper = new ObjectMapper();
-            File file = new File(filePath);
+            File file = new File(getDataFilePath(project));
             if (file.exists()) {
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(file, brokenTestObjects);

@@ -1,22 +1,13 @@
 package com.katalon.plugin.smart_xpath.part;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -27,11 +18,10 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
 import com.katalon.plugin.smart_xpath.controller.AutoHealingController;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
-import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
+import com.katalon.plugin.smart_xpath.helpers.FileWatcher;
 import com.katalon.plugin.smart_xpath.part.composites.BrokenTestObjectsTableComposite;
 import com.katalon.plugin.smart_xpath.part.composites.SelfHealingToolbarComposite;
 import com.kms.katalon.constants.EventConstants;
@@ -41,11 +31,16 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public class SelfHealingInsightsPart implements EventHandler {
 
     @Inject
+    private UISynchronize sync;
+
+    @Inject
     private IEventBroker eventBroker;
 
     protected BrokenTestObjectsTableComposite brokenTestObjectsTableComposite;
 
     protected SelfHealingToolbarComposite toolbarComposite;
+
+    private FileWatcher dataWatcher;
 
     @PostConstruct
     public void init(Composite parent) {
@@ -87,13 +82,11 @@ public class SelfHealingInsightsPart implements EventHandler {
                         approvedBrokenTestObjects);
 
                 ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                String pathToApprovedJson = currentProject.getFolderLocation()
-                        + SmartXPathConstants.SELF_HEALING_DATA_FILE_PATH;
                 Set<BrokenTestObject> unapprovedBrokenTestObjects = brokenTestObjectsTableComposite
                         .getUnapprovedTestObjects();
                 BrokenTestObjects brokenTestObjects = new BrokenTestObjects();
                 brokenTestObjects.setBrokenTestObjects(unapprovedBrokenTestObjects);
-                AutoHealingController.writeBrokenTestObjects(brokenTestObjects, pathToApprovedJson);
+                AutoHealingController.writeBrokenTestObjects(brokenTestObjects, currentProject);
 
                 refresh();
                 toolbarComposite.notifyRecoverSucceeded(numApprovedTestObjects);
@@ -104,10 +97,8 @@ public class SelfHealingInsightsPart implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                String pathToApprovedJson = currentProject.getFolderLocation()
-                        + SmartXPathConstants.SELF_HEALING_DATA_FILE_PATH;
                 BrokenTestObjects brokenTestObjects = new BrokenTestObjects();
-                AutoHealingController.writeBrokenTestObjects(brokenTestObjects, pathToApprovedJson);
+                AutoHealingController.writeBrokenTestObjects(brokenTestObjects, currentProject);
 
                 refresh();
             }
@@ -121,36 +112,25 @@ public class SelfHealingInsightsPart implements EventHandler {
         eventBroker.subscribe(EventConstants.JOB_COMPLETED, this);
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
         eventBroker.subscribe(EventConstants.PROJECT_CLOSED, this);
+        trackBrokenTestObjectsFile();
     }
 
     private void trackBrokenTestObjectsFile() {
-        try {
-            String BROKEN_TEST_OBJECTS_FILE = "hello";
-            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            if (currentProject == null) {
-                return;
-            }
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject == null) {
+            return;
+        }
+        String dataFilePath = AutoHealingController.getDataFilePath(currentProject);
 
-            WatchService watcher = FileSystems.getDefault().newWatchService();
-            Path dir = FileSystems.getDefault().getPath(BROKEN_TEST_OBJECTS_FILE);
-            WatchKey key = dir.register(watcher, ENTRY_DELETE, ENTRY_MODIFY);
-            try {
-                key = watcher.take();
-
-                for (WatchEvent<?> watchEvent : key.pollEvents()) {
-                    WatchEvent.Kind<?> kind = watchEvent.kind();
-
-                    WatchEvent<Path> event = (WatchEvent<Path>) watchEvent;
-                    Path filename = event.context();
-                    if (StringUtils.equals(filename.getFileName().toString(), BROKEN_TEST_OBJECTS_FILE)) {
-                        refresh();
-                    }
-                }
-            } catch (InterruptedException x) {
-                return;
-            }
-        } catch (IOException exception) {
-            LoggerSingleton.logError(exception);
+        if (dataWatcher == null) {
+            dataWatcher = FileWatcher.watch(dataFilePath);
+            dataWatcher.addEventListener((kind, file) -> {
+                sync.syncExec(() -> {
+                    refresh();
+                });
+            });
+        } else {
+            dataWatcher.updateTrackedFile(dataFilePath);
         }
     }
 
