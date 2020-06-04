@@ -22,7 +22,7 @@ public abstract class BaseWsdlDefinitionLocator implements WsdlDefinitionLocator
         }
     }
 
-    protected abstract InputStream load(String url);
+    protected abstract InputStream load(String location);
 
     @Override
     public String getBaseURI() {

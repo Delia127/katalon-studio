@@ -51,6 +51,7 @@ public class DeletePackageHandler extends DeleteKeywordHandler {
                 packageFragment.delete(true, null);
 
                 eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, parentPath + packageName);
+                eventBroker.post(EventConstants.CUSTOMKEYWORD_REFRESH, null);
                 monitor.worked(1);
                 return true;
             } else {
