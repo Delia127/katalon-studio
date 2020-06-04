@@ -16,18 +16,15 @@ import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.settings.composites.ExcludeObjectsUsedWithKeywordsComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.PrioritizeSelectionMethodsComposite;
 import com.kms.katalon.composer.components.controls.HelpComposite;
-import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
-import com.kms.katalon.core.testobject.SelectorMethod;
 
 public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	private static final String LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD = SmartXPathMessageConstants.LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD;
 
 	private Button checkboxEnableSelfHealing;
-
-//	private SelfHealingSetting preferenceStore;
 
 	private ExcludeObjectsUsedWithKeywordsComposite excludeObjectsUsedWithKeywordsComposite;
 

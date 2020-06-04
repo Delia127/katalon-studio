@@ -20,4 +20,7 @@ public class SmartXPathConstants {
     public static final String SELF_HEALING_TOOLBAR_MENU_ID = "com.katalon.plugin.smart_xpath.smartXpathToolItemWithDescription";
 
     public static final String SELF_HEALING_INSIGHTS_PART_ID = "com.kms.katalon.composer.execution.part.selfHealing";
+
+    public static final String SELF_HEALING_INSIGHTS_PART_LABEL = "Self-Healing Insights";
+   
 }

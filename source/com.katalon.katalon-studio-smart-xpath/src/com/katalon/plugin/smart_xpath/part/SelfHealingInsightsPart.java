@@ -1,13 +1,21 @@
 package com.katalon.plugin.smart_xpath.part;
 
+import java.text.MessageFormat;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -18,13 +26,17 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
 import com.katalon.plugin.smart_xpath.controller.AutoHealingController;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
 import com.katalon.plugin.smart_xpath.helpers.FileWatcher;
 import com.katalon.plugin.smart_xpath.part.composites.BrokenTestObjectsTableComposite;
 import com.katalon.plugin.smart_xpath.part.composites.SelfHealingToolbarComposite;
+import com.kms.katalon.composer.components.application.ApplicationSingleton;
+import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -118,6 +130,8 @@ public class SelfHealingInsightsPart implements EventHandler {
     private void trackBrokenTestObjectsFile() {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject == null) {
+            dataWatcher.stop();
+            dataWatcher = null;
             return;
         }
         String dataFilePath = AutoHealingController.getDataFilePath(currentProject);
@@ -153,10 +167,39 @@ public class SelfHealingInsightsPart implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         refresh();
+
+        if (StringUtils.equals(EventConstants.PROJECT_OPENED, event.getTopic())
+                || StringUtils.equals(EventConstants.PROJECT_CLOSED, event.getTopic())) {
+            trackBrokenTestObjectsFile();
+        }
+    }
+
+    private void addNotificationNumber() {
+        EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
+        MApplication application = ApplicationSingleton.getInstance().getApplication();
+
+        List<MPerspectiveStack> psList = modelService.findElements(application, null, MPerspectiveStack.class, null);
+        MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID,
+                psList.get(0).getSelectedElement());
+        MPart selfHealingInsightsPart = (MPart) modelService.find(SmartXPathConstants.SELF_HEALING_INSIGHTS_PART_ID,
+                consolePartStack);
+
+        int numBrokenTestObjects = 0;
+        Set<BrokenTestObject> brokenTestObjects = brokenTestObjectsTableComposite.getInput();
+        if (brokenTestObjects != null && !brokenTestObjects.isEmpty()) {
+            numBrokenTestObjects = brokenTestObjects.size();
+        }
+
+        String selfHealingInsightsLabel = SmartXPathConstants.SELF_HEALING_INSIGHTS_PART_LABEL;
+
+        selfHealingInsightsPart.setLabel(numBrokenTestObjects > 0
+                ? MessageFormat.format("{0} ({1})", selfHealingInsightsLabel, numBrokenTestObjects)
+                : selfHealingInsightsLabel);
     }
 
     private void refresh() {
         loadBrokenTestObjects();
         toolbarComposite.clearStatusMessage();
+        addNotificationNumber();
     }
 }
