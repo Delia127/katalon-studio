@@ -1,5 +1,7 @@
 package com.kms.katalon.core.keyword.internal;
 
+import com.kms.katalon.core.constants.CoreConstants;
+
 public class KeywordExecutionContext {
 
     private static String runningKeyword;
@@ -28,6 +30,6 @@ public class KeywordExecutionContext {
     }
 
     public static boolean isRunningWebUI() {
-        return runningPlatform.equals(KeywordExecutor.PLATFORM_WEB);
+        return runningPlatform.equals(CoreConstants.PLATFORM_WEB);
     }
 }
