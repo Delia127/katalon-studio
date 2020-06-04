@@ -116,4 +116,5 @@ public class ImageConstants {
     
     public static final Image API_QUICKSTART_BACKGROUND_MOBILE_LEFT = ImageManager.getImage(IImageKeys.API_QUICKSTART_BACKGROUND_MOBILE_LEFT);
 
+    public static final Image IMG_16_HELP = ImageManager.getImage(IImageKeys.HELP_16);
 }

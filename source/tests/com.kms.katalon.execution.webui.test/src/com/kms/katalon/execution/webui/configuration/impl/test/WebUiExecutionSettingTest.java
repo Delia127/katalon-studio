@@ -40,7 +40,6 @@ public class WebUiExecutionSettingTest {
         assert (TimeUnit) spiedSetting.getGeneralProperties().get(DriverFactory.USE_ACTION_DELAY_IN_SECOND) == TimeUnit.MILLISECONDS;
         assert (boolean) spiedSetting.getGeneralProperties()
                 .get(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION) == true;
-        assert (boolean) spiedSetting.getGeneralProperties().get(RunConfiguration.IMAGE_RECOGNITION_ENABLED) == true;
     }
 
     public static class MyWebUiExecutionSetting extends WebUIExecutionSetting {

@@ -36,6 +36,10 @@ public class CustomKeywordPluginFactory {
     public void addPluginFile(File file, CustomKeywordPlugin plugin) {
         customKeywordPluginCollection.put(file.getAbsolutePath(), plugin);
     }
+    
+    public void removePluginFile(File file, CustomKeywordPlugin plugin) {
+        customKeywordPluginCollection.remove(file.getAbsolutePath());
+    }
 
     public CustomKeywordPlugin getByPath(String path) {
         return customKeywordPluginCollection.get(path);

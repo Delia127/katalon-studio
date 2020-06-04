@@ -114,38 +114,16 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
         treeViewer.addFilter(entityViewerFilter);
         treeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
         treeViewer.getTree().setFocus();
-
-        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                updateOKButtonStatus();
-            }
-        });
-
         return treeViewer;
     }
 
     @Override
     protected Control createContents(Composite parent) {
-        try {
             return super.createContents(parent);
-        } finally {
-            updateOKButtonStatus();
-        }
     }
-
-    private void updateOKButtonStatus() {
-        Button btnOk = getButton(OK);
-        if (btnOk != null && !btnOk.isDisposed()) {
-            btnOk.setEnabled(treeViewer.getStructuredSelection().size() > 0);
-        }
-    }
-
     @Override
     public void create() {
         super.create();
-        updateOKButtonStatus();
     }
 
     protected TreeViewer getTreeViewer() {

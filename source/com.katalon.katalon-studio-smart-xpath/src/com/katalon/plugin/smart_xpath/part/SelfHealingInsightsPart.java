@@ -113,6 +113,7 @@ public class SelfHealingInsightsPart implements EventHandler {
                 AutoHealingController.writeBrokenTestObjects(brokenTestObjects, currentProject);
 
                 refresh();
+                toolbarComposite.clearStatusMessage();
             }
         });
 
@@ -167,6 +168,7 @@ public class SelfHealingInsightsPart implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         refresh();
+        toolbarComposite.clearStatusMessage();
 
         if (StringUtils.equals(EventConstants.PROJECT_OPENED, event.getTopic())
                 || StringUtils.equals(EventConstants.PROJECT_CLOSED, event.getTopic())) {
@@ -199,7 +201,6 @@ public class SelfHealingInsightsPart implements EventHandler {
 
     private void refresh() {
         loadBrokenTestObjects();
-        toolbarComposite.clearStatusMessage();
         addNotificationNumber();
     }
 }

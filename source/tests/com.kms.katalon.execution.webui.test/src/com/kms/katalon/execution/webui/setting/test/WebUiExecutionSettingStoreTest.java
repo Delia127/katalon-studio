@@ -38,7 +38,7 @@ public class WebUiExecutionSettingStoreTest {
         assertThat("Disable ignore page load timeout by default", store.getIgnorePageLoadTimeout() == false);
         assertThat("Disable Self Healing by default", store.isEnableSelfHealing() == false);
         assertThat("Default exclude keywords must be verifyElementPresent and verifyElementNotPresent",
-                store.getExcludeKeywordList() == Arrays.asList("verifyElementPresent", "verifyElementNotPresent"));
+                store.getExcludeKeywordList().equals(Arrays.asList("verifyElementPresent", "verifyElementNotPresent")));
         String actualMethodsPriorityOrder = convertMethodsPriorityOrderToString(store);
         assertThat("Default methods priority must be all true, and along with this order: XPATH, BASIC, CSS, IMAGE",
                 actualMethodsPriorityOrder.equals(WebUiExecutionSettingStore.DEFAULT_METHODS_PRIORITY_ORDER));

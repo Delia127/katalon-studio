@@ -23,15 +23,13 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
-import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.ProxyInformation;
-import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.util.CryptoUtil;
-import com.kms.katalon.core.testobject.SelectorMethod;
 
 /**
  * Provides access to execution properties and settings
@@ -126,10 +124,6 @@ public class RunConfiguration {
     public static final String GLOBAL_SMART_WAIT_MODE = "globalSmartWaitEnabled";
     
     public static final String LOG_TEST_STEPS = "logTestSteps";
-
-    public static final String ALLOW_IMAGE_RECOGNITION = "allowImageRecognition";
-
-    public static final String IMAGE_RECOGNITION_ENABLED = "imageRecognitionEnabled";
 
     public static final String XPATHS_PRIORITY = "xpathsPriority";
     
@@ -625,11 +619,6 @@ public class RunConfiguration {
     		return String.valueOf(object);
     	}
     	return null;
-    }
-    
-    public static boolean shouldApplyImageRecognition() {
-        return Boolean.TRUE.equals(getProperty(ALLOW_IMAGE_RECOGNITION))
-                && Boolean.TRUE.equals(getExecutionGeneralProperties().getOrDefault(IMAGE_RECOGNITION_ENABLED, true));
     }
 
     public static List<Pair<String, Boolean>> getXPathsPriority() {

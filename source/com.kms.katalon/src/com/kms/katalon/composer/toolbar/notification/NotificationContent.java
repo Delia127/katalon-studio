@@ -1,6 +1,6 @@
 package com.kms.katalon.composer.toolbar.notification;
 
-public class NotificationContent {
+public class NotificationContent implements INotificationContent {
 
     private String id;
     

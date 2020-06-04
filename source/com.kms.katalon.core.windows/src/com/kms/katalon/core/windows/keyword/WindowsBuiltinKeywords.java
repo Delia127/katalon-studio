@@ -14,6 +14,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.WindowsTestObject;
 import com.kms.katalon.core.windows.constants.StringConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionSettings;
 
 import io.appium.java_client.windows.WindowsDriver;
 
@@ -222,6 +223,71 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
+     * windowsObject.<br>
+     * This action will append the given text on the element and doesn't clear the current text of the element.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find Windows element.
+     * @param encryptedText
+     *      The encrypted text content to set on the element, not null.
+     *      <ul>
+     *          <li>Throws {@link ArrayIndexOutOfBoundsException} if something went wrong while decoding encryptedText.</li>
+     *      </ul>
+     * @throws StepFailedException
+     *      If the Windows element doesn't exist, or KS could not perform set text action on the element.
+     * @throws IllegalArgumentException
+     *      If encryptedText is null.
+     * @throws ArrayIndexOutOfBoundsException
+     *      If something went wrong while decoding encryptedText.
+     *      Encrypted test was an invalid format. Please check your encrypted
+     *      text with Help > Encrypt Text on the Main Menu.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText)
+            throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setEncryptedText", windowsObject,
+                encryptedText);
+    }
+    
+    /**
+     * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
+     * windowsObject.<br>
+     * This action will append the given text on the element and doesn't clear the current text of the element.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find Windows element.
+     * @param encryptedText
+     *      The encrypted text content to set on the element, not null.
+     *      <ul>
+     *          <li>Throws {@link ArrayIndexOutOfBoundsException} if something went wrong while decoding encryptedText.</li>
+     *      </ul>
+     * @param flowControl
+     *      Optional parameter: Controls the execution flow if the step failed.
+     *      <ul>
+     *          <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *          <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *      </ul>
+     * @throws StepFailedException
+     *      If the Windows element doesn't exist, or KS could not perform set text action on the element.
+     * @throws IllegalArgumentException
+     *      If encryptedText is null.
+     * @throws ArrayIndexOutOfBoundsException
+     *      If something went wrong while decoding encryptedText. 
+     *      Encrypted test was an invalid format. Please check your encrypted
+     *      text with Help > Encrypt Text on the Main Menu.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static void setEncryptedText(WindowsTestObject windowsObject, String encryptedText,
+            FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "setEncryptedText", windowsObject,
+                encryptedText, flowControl);
+    }
+
+    /**
      * Gets text content of the {@link WebElement} that is found by using locator value of the given windowsObject.<br>
      * This action will append the given text on the element and doesn't clear the current text of the element.
      * 
@@ -261,6 +327,53 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
         return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getText",
                 windowsObject, flowControl);
     }
+
+    /**
+     * Gets attribute value of a Windows element.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find Windows element.
+     * @param attribute
+     *      Name of the attribute, not null.
+     * @param flowControl
+     *      Optional parameter: Controls the execution flow if the step failed.
+     *      <ul>
+     *          <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *          <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *      </ul>
+     * @throws StepFailedException
+     *      If the Windows element doesn't exist, or KS could not get value of the element's attribute.
+     * @throws IllegalArgumentException
+     *      If attribute is null.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static String getAttribute(WindowsTestObject windowsObject, String attribute, FailureHandling flowControl)
+            throws StepFailedException {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getAttribute",
+                windowsObject, attribute, flowControl);
+    }
+
+    /**
+     * Gets attribute value of a Windows element.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy to find Windows element.
+     * @param attribute
+     *      Name of the attribute, not null.
+     * @throws StepFailedException
+     *      If the Windows element doesn't exist, or KS could not get value of the element's attribute.
+     * @throws IllegalArgumentException
+     *      If attribute is null.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static String getAttribute(WindowsTestObject windowsObject, String attribute) throws StepFailedException {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "getAttribute",
+                windowsObject, attribute);
+    }
+    
 
     /**
      * Clears text content of the {@link WebElement} that is found by using locator value of the given windowsObject.
@@ -446,7 +559,6 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     public static void sendKeys(WindowsTestObject windowsObject, String strKeys) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "sendKeys", windowsObject, strKeys);
     }
-
 
     /**
      * Get the position of the {@link WebElement} that is found by using locator value of the given
@@ -710,13 +822,16 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title. 
+     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title in the preset timeout (120 seconds by default). 
      * This keyword should use when:
      * <ul>
      *  <li>The main application window has been closed and replaced by another window.</li>
      *  <li>The application has multiple working windows. We can switch among these windows.</li>
      *  <li>We already have an opened application and need to switch to without reopening requires</li>
      * </ul>
+     * 
+     * <p>
+     * Since 7.5.5, you can change the application title waiting timeout by changing: {@link WindowsActionSettings#DF_WAIT_ACTION_TIMEOUT_IN_MILLIS}
      * 
      * @param windowName
      * Title or name of the opening application windows. Full text or partial text is acceptable.
@@ -743,13 +858,16 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title. 
+     * Finds and switches the opening application window to the working WindowsDriver session on the current desktop by the given title in the preset timeout (120 seconds by default). 
      * This keyword should use when:
      * <ul>
      *  <li>The main application window has been closed and replaced by another window.</li>
      *  <li>The application has multiple working windows. We can switch among these windows.</li>
      *  <li>We already have an opened application and need to switch to without reopening requires</li>
      * </ul>
+     * 
+     * <p>
+     * Since 7.5.5, you can change the application title waiting timeout by changing: {@link WindowsActionSettings#DF_WAIT_ACTION_TIMEOUT_IN_MILLIS} 
      * 
      * @param windowTitle
      * Title of the opening application windows. Full text or partial text is acceptable.
@@ -769,7 +887,9 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Starts Windows driver and starts the Windows application at the given absolute path.
      * After the application starts, if WinAppDriver cannot not detect the main application window correctly, Katalon Studio will use
-     * the given windowTitle to find the opened application to continue working.
+     * the given windowTitle in the preset timeout (120 seconds by default) to find the opened application to continue working.
+     * <p>
+     * Since 7.5.5, you can change the application title waiting timeout by changing: {@link WindowsActionSettings#DF_WAIT_ACTION_TIMEOUT_IN_MILLIS} 
      * 
      * @param appFile
      * Absolute path to the Windows application.
@@ -789,7 +909,10 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Starts Windows driver and starts the Windows application at the given absolute path.
      * After the application starts, if WinAppDriver cannot not detect the main application window correctly, Katalon Studio will use
-     * the given windowTitle to find the opened application to continue working.
+     * the given windowTitle in the preset timeout (120 seconds by default) to find the opened application to continue working.
+     * 
+     * <p>
+     * Since 7.5.5, you can change the application title waiting timeout by changing: {@link WindowsActionSettings#DF_WAIT_ACTION_TIMEOUT_IN_MILLIS}
      * 
      * @param appFile
      * Absolute path to the Windows application.
@@ -804,5 +927,404 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void startApplicationWithTitle(String appFile, String windowTitle) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS, "startApplicationWithTitle", appFile, windowTitle);
+    }
+
+    /**
+     * Waits until the given element has an attribute with the specific 
+     * name and value within the given time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param attributeName
+     *      The name of the attribute name to verify, not null.
+     * @param attributeValue
+     *      The value of the expected attribute value to verify, not null.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @param flowControl
+     *      Optional parameter: Controls the execution flow if the step failed.
+     *      <ul>
+     *          <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *          <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *      </ul>
+     * @throws StepFailedException
+     *      If The Windows element doesn't exist.
+     * @throws IllegalArgumentException
+     *      If:
+     *      <ul>
+     *      	<li>attributeName or attributeValue is null.</li>
+     *      	<li>Timeout < 0.</li>
+     *      </ul>
+     * @return true if element has the attribute with the specific name and value; Otherwise, false.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+            String attributeValue, int timeout, FailureHandling flowControl) {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementAttributeValue", windowsObject, attributeName, attributeValue, timeout, flowControl);
+    }
+    
+    /**
+     * Waits until the given element has an attribute with the specific 
+     * name and value within the given time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param attributeName
+     *      The name of the attribute name to verify, not null.
+     * @param attributeValue
+     *      The value of the expected attribute value to verify, not null.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @throws StepFailedException
+     *      If The Windows element doesn't exist.
+     * @throws IllegalArgumentException
+     *      If:
+     *      <ul>
+     *      	<li>attributeName or attributeValue is null.</li>
+     *      	<li>Timeout < 0.</li>
+     *      </ul>
+     * @return true if element has the attribute with the specific name and value; Otherwise, false.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+            String attributeValue, int timeout) {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementAttributeValue", windowsObject, attributeName, attributeValue, timeout);
+    }
+    
+    /**
+     * Waits until the given element to present (appear) within the
+     * given time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @param flowControl
+     *      Optional parameter: Controls the execution flow if the step failed.
+     *      <ul>
+     *          <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *          <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *      </ul>
+     * @return true if element does not present; Otherwise, false.
+     * @throws StepFailedException
+     *      If the Windows element exists.
+     * @throws IllegalArgumentException
+     *      If timeout < 0.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeout,
+            FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementPresent", windowsObject, timeout, flowControl);
+    }
+    
+    
+    /**
+     * Waits until the given element to present (appear) within the
+     * given time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @return true if element does not present; Otherwise, false.
+     * @throws StepFailedException
+     *      If the Windows element exists.
+     * @throws IllegalArgumentException
+     *      If timeout < 0.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementPresent(WindowsTestObject windowsObject, int timeout)
+            throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementPresent", windowsObject, timeout);
+    } 
+    
+    /**
+     * Waits until the given element not to present (disappear) within the
+     * given time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @param flowControl
+     *      Optional parameter: Controls the execution flow if the step failed.
+     *      <ul>
+     *          <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *          <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *      </ul>
+     * @return true if element does not present; Otherwise, false.
+     * @throws StepFailedException
+     *      If the Windows element exists.
+     * @throws IllegalArgumentException
+     *      If timeout < 0.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeout,
+            FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementNotPresent", windowsObject, timeout, flowControl);
+    }
+    
+    /**
+     * Waits until the given element not to present (disappear) within the
+     * given time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to return result.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @return true if element does not present; Otherwise, false.
+     * @throws StepFailedException
+     *      If the Windows element exists.
+     * @throws IllegalArgumentException
+     *      If timeout < 0.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean verifyElementNotPresent(WindowsTestObject windowsObject, int timeout)
+            throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "verifyElementNotPresent", windowsObject, timeout);
+    }
+
+    /**
+     * Waits until the given element has an attribute with the specific 
+     * name and value within the given time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param attributeName
+     *      The name of the attribute to verify, not null.
+     * @param attributeValue
+     *      The value of the expected attribute value to verify, not null.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to check the given element.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @param flowControl
+     *      Optional parameter: Controls the execution flow if the step failed.
+     *      <ul>
+     *          <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *          <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *      </ul>
+     * @throws StepFailedException
+     *      If The Windows element doesn't exist.
+     * @throws IllegalArgumentException
+     *      If:
+     *      <ul>
+     *      	<li>attributeName or attributeValue is null.</li>
+     *      	<li>Timeout < 0.</li>
+     *      </ul>     
+     * @return true if element has the attribute with the specific name and value; Otherwise, false.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+            String attributeValue, int timeout, FailureHandling flowControl) {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeout, flowControl);
+    }
+
+    /**
+     * Waits until the given element has an attribute with the specific 
+     * name and value within the given time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param attributeName
+     *      The name of the attribute to verify, not null.
+     * @param attributeValue
+     *      The value of the expected attribute value to verify, not null.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to check the given element.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @throws StepFailedException
+     *      If The Windows element doesn't exist.
+     * @throws IllegalArgumentException
+     *      If:
+     *      <ul>
+     *      	<li>attributeName or attributeValue is null.</li>
+     *      	<li>Timeout < 0.</li>
+     *      </ul>
+     * @return true if element has the attribute with the specific name and value; Otherwise, false.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementAttributeValue(WindowsTestObject windowsObject, String attributeName,
+            String attributeValue, int timeout) {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementAttributeValue", windowsObject, attributeName, attributeValue, timeout);
+    }
+    
+    /**
+     * Waits for the given element not to present (disappear) within the given
+     * time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to check the given element.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @param flowControl
+     *      Optional parameter: Controls the execution flow if the step failed.
+     *      <ul>
+     *          <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *          <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *      </ul>
+     * @return true if element does not present; Otherwise, false.
+     * @throws StepFailedException
+     *      If the Windows element exists.
+     * @throws IllegalArgumentException
+     *      If timeout < 0.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeout,
+            FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementNotPresent", windowsObject, timeout, flowControl);
+    }
+    
+    /**
+     * Waits for the given element not to present (disappear) within the given
+     * time in second unit.
+     * 
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to check the given element.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @return true if element does not present; Otherwise, false.
+     * @throws StepFailedException
+     *      If the Windows element exists.
+     * @throws IllegalArgumentException
+     *      If timeout < 0.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementNotPresent(WindowsTestObject windowsObject, int timeout)
+            throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementNotPresent", windowsObject, timeout);
+    }
+    
+    /**
+     * Waits for the given element to present (appear) within the given
+     * time in second unit.
+     *
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to check the given element.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @param flowControl
+     *      Optional parameter: Controls the execution flow if the step failed.
+     *      <ul>
+     *          <li>STOP_ON_FAILURE: throws {@link StepFailedException} if the step failed (default).</li>
+     *          <li>CONTINUE_ON_FAILURE: continues the test if the test failed but the test result is still failed.</li>
+     *          <li>OPTIONAL: continues the test and ignore the test result.</li>
+     *      </ul>
+     * @return true if element presents; Otherwise, false
+     * @throws StepFailedException
+     *      If The Windows element doesn't exist.
+     * @throws IllegalArgumentException
+     *      If timeout < 0.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeout,
+            FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementPresent", windowsObject, timeout, flowControl);
+    }
+    
+    /**
+     * Waits for the given element to present (appear) within the given
+     * time in second unit.
+     *
+     * @param windowsObject
+     *      An object that describes locator and locator strategy of
+     *      the target element that needs to wait for.
+     * @param timeout
+     *      System will wait at most timeout (seconds) to check the given element.
+     *      <ul>
+     *          <li>If timeout = 0, Katalon Studio will use default page load timeout.
+     *          <li>If timeout < 0, throws {@link IllegalArgumentException}.
+     *      </ul>
+     * @return true if element presents; Otherwise, false.
+     * @throws StepFailedException
+     *      If The Windows element doesn't exist.
+     * @throws IllegalArgumentException
+     *      If timeout < 0.
+     * @since 7.6.0
+     */
+    @Keyword(keywordObject = "Element")
+    public static boolean waitForElementPresent(WindowsTestObject windowsObject, int timeout)
+            throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WINDOWS,
+                "waitForElementPresent", windowsObject, timeout);
     }
 }

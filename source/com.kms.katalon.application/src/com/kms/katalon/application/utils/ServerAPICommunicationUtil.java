@@ -60,7 +60,7 @@ public class ServerAPICommunicationUtil {
             throws IOException, GeneralSecurityException, RequestException {
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, endpoint, ApplicationProxyUtil.getProxy());
+            connection = createConnection(method, endpoint, ApplicationProxyUtil.getAuthProxy());
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             String result = sendAndReceiveData(connection, data);
             int statusCode = connection.getResponseCode();
@@ -83,7 +83,7 @@ public class ServerAPICommunicationUtil {
         LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED_AND_RETRY);
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, endpoint, ApplicationProxyUtil.getRetryProxy());
+            connection = createConnection(method, endpoint, ApplicationProxyUtil.getAuthRetryProxy());
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             String result = sendAndReceiveData(connection, data);
             int statusCode = connection.getResponseCode();
@@ -119,7 +119,7 @@ public class ServerAPICommunicationUtil {
             throws IOException, GeneralSecurityException {
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getProxy());
+            connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getAuthProxy());
             String result = sendAndReceiveData(connection, jsonData);
             return result;
         } catch (Exception ex) {
@@ -142,7 +142,7 @@ public class ServerAPICommunicationUtil {
         LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED_AND_RETRY);
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getRetryProxy());
+            connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getAuthRetryProxy());
             String result = sendAndReceiveData(connection, jsonData);
             LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
             return result;

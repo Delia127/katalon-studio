@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import java.text.MessageFormat
 
 import com.kms.katalon.core.annotation.internal.Action
+import com.kms.katalon.core.constants.CoreConstants
 import com.kms.katalon.core.constants.StringConstants
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.logging.KeywordLogger
@@ -12,15 +13,15 @@ import com.kms.katalon.core.util.internal.KeywordLoader
 
 public class KeywordExecutor {
 
-    public static final String PLATFORM_WEB = "web"
+    public static final String PLATFORM_WEB = CoreConstants.PLATFORM_WEB;
 
-    public static final String PLATFORM_MOBILE = "mobile"
+    public static final String PLATFORM_MOBILE = CoreConstants.PLATFORM_MOBILE;
 
-    public static final String PLATFORM_WEB_SERVICE = "webservice"
+    public static final String PLATFORM_WEB_SERVICE = CoreConstants.PLATFORM_WEB_SERVICE;
     
-    public static final String PLATFORM_WINDOWS = "windows"
+    public static final String PLATFORM_WINDOWS = CoreConstants.PLATFORM_WINDOWS;
 
-    public static final String PLATFORM_BUILT_IN = "builtin"
+    public static final String PLATFORM_BUILT_IN = CoreConstants.PLATFORM_BUILT_IN;
 
     public static final String WEB_BUILT_IN_KEYWORD_PACKAGE = "com.kms.katalon.core.webui.keyword.builtin"
 

@@ -32,7 +32,6 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
             reportProps.put(DriverFactory.USE_ACTION_DELAY_IN_SECOND, webUiSettingStore.getUseDelayActionTimeUnit());
             reportProps.put(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                     webUiSettingStore.getIgnorePageLoadTimeout());
-            reportProps.put(RunConfiguration.IMAGE_RECOGNITION_ENABLED, webUiSettingStore.getImageRecognitionEnabled());
             reportProps.put(RunConfiguration.EXCLUDE_KEYWORDS, webUiSettingStore.getExcludeKeywordList());
             reportProps.put(RunConfiguration.METHODS_PRIORITY_ORDER, webUiSettingStore.getMethodsPriorityOrder());
             reportProps.put(RunConfiguration.SELF_HEALING_ENABLE, webUiSettingStore.isEnableSelfHealing());

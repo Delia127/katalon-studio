@@ -2,35 +2,26 @@ package com.kms.katalon.execution.setting;
 
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.ReportFormatType;
-import com.kms.katalon.core.util.internal.JarUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.execution.util.EmailTemplateUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class EmailSettingStore extends BundleSettingStore {
-    private static final String KATALON_STUDIO_EMAIL_SIGNATURE = "Katalon Studio";
-
-    private static final String RESOURCES_TEMPLATE_EMAIL_FOLDER = "resources/template/email";
-
-    private static final String EMAIL_TEMPLATE_HTML = "default_template.html";
-
     private ScopedPreferenceStore mailPreferenceStore;
 
     public EmailSettingStore(ProjectEntity projectEntity) {
@@ -139,28 +130,30 @@ public class EmailSettingStore extends BundleSettingStore {
     public void setSignature(String signature) throws IOException {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SIGNATURE, signature);
     }
+    
 
-    public String getEmailHTMLTemplate() throws IOException, URISyntaxException {
-        return getString(ExecutionPreferenceConstants.MAIL_CONFIG_HTML_TEMPLATE, getDefaultEmailHTMLTemplate());
+    public String getEmailHTMLTemplateForTestSuite() throws IOException, URISyntaxException {
+        return getString(ExecutionPreferenceConstants.MAIL_CONFIG_HTML_TEMPLATE, getDefaultEmailHTMLTemplateForTestSuite());
     }
 
-    public String getDefaultEmailHTMLTemplate() throws IOException, URISyntaxException {
-        String emailHtmlTemplate = FileUtils.readFileToString(new File(getTemplateFolder(), EMAIL_TEMPLATE_HTML));
-        return emailHtmlTemplate.replace(KATALON_STUDIO_EMAIL_SIGNATURE,
-                StringUtils.defaultIfEmpty(getSignature(), KATALON_STUDIO_EMAIL_SIGNATURE));
+    private String getDefaultEmailHTMLTemplateForTestSuite() throws IOException, URISyntaxException {
+        return EmailTemplateUtil.getHTMLTemplateForTestSuite(getSignature());
+    }
+    
+    public String getEmailHTMLTemplateForTestSuiteCollection() throws IOException, URISyntaxException {
+        return getString(ExecutionPreferenceConstants.MAIL_CONFIG_COLLECTION_HTML_TEMPLATE, getDefaultEmailHTMLTemplateForTestSuiteCollection());
     }
 
-    public File getTemplateFolder() throws IOException, URISyntaxException {
-        File emailTempFolderRoot = ClassPathResolver.getConfigurationFolder();
-        File emailTemplateFolder = new File(emailTempFolderRoot, RESOURCES_TEMPLATE_EMAIL_FOLDER);
-        if (!emailTemplateFolder.exists()) {
-            JarUtil.getFiles(this.getClass(), RESOURCES_TEMPLATE_EMAIL_FOLDER, emailTemplateFolder);
-        }
-        return emailTemplateFolder;
+    private String getDefaultEmailHTMLTemplateForTestSuiteCollection() throws IOException, URISyntaxException {
+        return EmailTemplateUtil.getEmailHTMLTemplateForTestSuiteCollection();
     }
 
-    public void setHTMLTemplate(String htmlTemplate) throws IOException {
+    public void setHTMLTemplateForTestSuite(String htmlTemplate) throws IOException {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_HTML_TEMPLATE, htmlTemplate);
+    }
+    
+    public void setHTMLTemplateForTestSuiteCollection(String htmlTemplate) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_COLLECTION_HTML_TEMPLATE, htmlTemplate);
     }
 
     public String getEmailSubject() throws IOException {
@@ -208,5 +201,29 @@ public class EmailSettingStore extends BundleSettingStore {
 
     public void setSendEmailTestFailedOnly(boolean enabled) throws IOException {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SEND_REPORT_TEST_FAILED_ONLY, enabled);
+    }
+    
+    public boolean isSendTestSuiteReportEnabled() throws IOException {
+        return getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_SEND_TEST_SUITE_REPORT, true);
+    }
+    
+    public void setSendTestSuiteReportEnabled(boolean enabled) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SEND_TEST_SUITE_REPORT, enabled);
+    }
+    
+    public boolean isSendTestSuiteCollectionReportEnabled() throws IOException {
+        return getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_SEND_TEST_SUITE_COLLECTION_REPORT, false);
+    }
+    
+    public void setSendTestSuiteCollectionReportEnabled(boolean enabled) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SEND_TEST_SUITE_COLLECTION_REPORT, enabled);
+    }
+    
+    public boolean isSkipInvidualTestSuiteReport() throws IOException {
+        return getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_SKIP_INDIVIDUAL_TEST_SUITE_REPORT, false);
+    }
+    
+    public void setSkipIndividualTestSuiteReport(boolean enabled) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SKIP_INDIVIDUAL_TEST_SUITE_REPORT, enabled);
     }
 }

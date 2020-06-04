@@ -104,7 +104,7 @@ public class FileDownloader {
     private HttpURLConnection createConnection(String url)
             throws IOException, GeneralSecurityException, URISyntaxException {
         try {
-            return NetworkUtils.createURLConnection(url, ProxyUtil.getProxy(ProxyPreferences.getProxyInformation()));
+            return NetworkUtils.createURLConnection(url, ProxyUtil.getProxy(ProxyPreferences.getAuthProxyInformation()));
         } catch (ConnectException e) {
             return NetworkUtils.createURLConnection(url, ProxyUtil.getSystemProxy());
         }

@@ -19,9 +19,13 @@ import com.katalon.plugin.smart_xpath.settings.composites.AttributesSelectionCom
 import com.katalon.plugin.smart_xpath.settings.composites.DefaultWebLocatorSelectionComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.XPathsSelectionComposite;
 import com.kms.katalon.composer.components.impl.control.DragableCTabFolder;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.util.collections.Pair;
 
 public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
@@ -126,6 +130,12 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
 
     @Override
     protected void performDefaults() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        if (!featureService.canUse(KSEFeature.SELF_HEALING)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
+            return;
+        }
+
         try {
             WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
 
@@ -142,6 +152,12 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
 
     @Override
     protected boolean saveSettings() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        if (!featureService.canUse(KSEFeature.SELF_HEALING)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
+            return false;
+        }
+
         try {
             WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
 
