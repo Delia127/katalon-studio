@@ -131,8 +131,10 @@ public class SelfHealingInsightsPart implements EventHandler {
     private void trackBrokenTestObjectsFile() {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject == null) {
-            dataWatcher.stop();
-            dataWatcher = null;
+            if (dataWatcher != null) {
+                dataWatcher.stop();
+                dataWatcher = null;
+            }
             return;
         }
         String dataFilePath = AutoHealingController.getDataFilePath(currentProject);
