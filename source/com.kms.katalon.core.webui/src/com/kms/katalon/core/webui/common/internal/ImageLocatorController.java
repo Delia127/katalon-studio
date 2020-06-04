@@ -51,6 +51,11 @@ public class ImageLocatorController {
     public static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot, int timeout) {
         ScreenUtil screen = new ScreenUtil(0.2);
         logger.logInfo("Attempting to find element by its screenshot !");
+
+        if (!new File(pathToScreenshot).exists()) {
+            return Collections.emptyList();
+        }
+
         Map<ScreenRegion, List<WebElement>> mapOfCandidates = new HashMap<ScreenRegion, List<WebElement>>();
         int iterationCount = 0;
         int scrolledAmount = 0;
@@ -86,11 +91,15 @@ public class ImageLocatorController {
                         yRelativeToDriver);
                 sortMinimizingDifferencesInSize(elementsAtPointXandY, matchedRegion);
                 mapOfCandidates.put(matchedRegion, elementsAtPointXandY);
-                Thread.sleep(500);
             } catch (Exception e) {
                 logger.logInfo("Unable to find element within the current viewport !");
             }
             iterationCount++;
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                //
+            }
         } while (scrolledAmount <= pageScrollHeight || (System.currentTimeMillis() - timeStart) / 1000 < timeout);
         logger.logDebug("Highest matched region's score: " + getHighestMatchedRegionScore(mapOfCandidates));
         debug_printChosenWebElement(pathToScreenshot, webDriver, mapOfCandidates);
