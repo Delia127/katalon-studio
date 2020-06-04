@@ -398,7 +398,7 @@ public class WebElementUtils {
                 for (JsonElement jsonElement : xpath.getAsJsonArray()) {
                     cssSelector = jsonElement.getAsString();
                     if (!StringUtils.isBlank(cssSelector) && cssSelector.startsWith("css=")) {
-                        return cssSelector.split("=")[1];
+                        return cssSelector.substring("css=".length());
                     }
                 }
             }
