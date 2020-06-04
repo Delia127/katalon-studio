@@ -3,6 +3,7 @@ package com.kms.katalon.activation.dialog;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -23,15 +24,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.katalon.platform.api.network.ApplicationProxyPreference.ProxyOption;
-import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationProxyUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.execution.preferences.ProxyPreferenceDefaultValueInitializer;
 
-public class ProxyConfigurationDialog extends TitleAreaDialog {
+public class ProxyConfigurationDialog extends MessageDialog {
     private Text txtAddress;
 
     private Text txtPort;
@@ -49,7 +50,8 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
     private static final int MAX_PORT_VALUE = 65535;
 
     public ProxyConfigurationDialog(Shell shell) {
-        super(shell);
+        super(shell, MessageConstants.TITLE_WINDOW_DLG_PROXY_SETTING, null, MessageConstants.MSG_DLG_PROXY_SETTING,
+                MessageDialog.INFORMATION, 0, StringConstants.OK, StringConstants.BTN_CANCEL);
     }
 
     @Override
@@ -61,10 +63,10 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
 
         GridLayout glContainer = new GridLayout(2, false);
         glContainer.verticalSpacing = 10;
-        glContainer.marginTop = 20;
+        glContainer.marginTop = 0;
         glContainer.marginLeft = 10;
         glContainer.marginRight = 10;
-        glContainer.marginBottom = 30;
+        glContainer.marginBottom = 10;
         innerComposite.setLayout(glContainer);
 
         Label lblProxyOption = new Label(innerComposite, SWT.NONE);
@@ -76,20 +78,27 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         gdComboProxyOption.widthHint = 320;
         gdComboProxyOption.heightHint = 18;
         cboProxyOption.setLayoutData(gdComboProxyOption);
-        cboProxyOption.setItems(new String[] { ApplicationMessageConstants.NO_PROXY,
-                ApplicationMessageConstants.USE_SYSTEM_PROXY, ApplicationMessageConstants.MANUAL_CONFIG_PROXY });
+        cboProxyOption.setItems(ProxyOption.displayStringValues());
         cboProxyOption.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (e.getSource() == cboProxyOption) {
-                    String selectText = cboProxyOption.getText();
-                    if (ApplicationMessageConstants.NO_PROXY.equals(selectText)) {
-                        selectNoProxyOption();
-                    } else if (ApplicationMessageConstants.USE_SYSTEM_PROXY.equals(selectText)) {
-                        selectSystemProxyOption();
-                    } else {
+                if (e.getSource() != cboProxyOption) {
+                    return;
+                }
+                ProxyOption proxyOption = ProxyOption.valueOfDisplayName(cboProxyOption.getText());
+                cboProxyOption.setData(proxyOption.name());
+                switch (proxyOption) {
+                    case MANUAL_CONFIG:
                         selectManualConfigProxyOption();
-                    }
+                        return;
+                    case NO_PROXY:
+                        selectNoProxyOption();
+                        return;
+                    case USE_SYSTEM:
+                        selectSystemProxyOption();
+                        return;
+                    default:
+                        break;
                 }
             }
         });
@@ -154,6 +163,7 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
                 }
             }
         });
+
         chkRequireAuthentication = new Button(innerComposite, SWT.CHECK);
         chkRequireAuthentication.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         chkRequireAuthentication.setText(MessageConstants.CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION);
@@ -185,27 +195,19 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         GridData gdPass = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
         gdPass.widthHint = 207;
         txtPass.setLayoutData(gdPass);
-        
-        setTitle(MessageConstants.TITLE_DLG_PROXY_SETTING);
-        setMessage(MessageConstants.MSG_DLG_PROXY_SETTING, IMessageProvider.INFORMATION);
+
         initialize();
 
         return area;
     }
 
     private void selectNoProxyOption() {
-        cboProxyServerType.deselectAll();
         cboProxyServerType.setEnabled(false);
-        txtPort.setText("");
         txtPort.setEnabled(false);
-        txtAddress.setText("");
         txtAddress.setEnabled(false);
         chkRequireAuthentication.setEnabled(false);
-        chkRequireAuthentication.setSelection(false);
         txtUsername.setEnabled(false);
-        txtUsername.setText("");
         txtPass.setEnabled(false);
-        txtPass.setText("");
     }
 
     private void selectSystemProxyOption() {
@@ -213,67 +215,80 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
     }
 
     private void selectManualConfigProxyOption() {
+        ProxyInformation proxyInfo = ApplicationProxyUtil.getAuthProxyInformation();
+        inputProxyInfo(proxyInfo);
+
         cboProxyServerType.setEnabled(true);
         txtPort.setEnabled(true);
         txtAddress.setEnabled(true);
         chkRequireAuthentication.setEnabled(true);
-        cboProxyServerType.setText(ApplicationStringConstants.HTTP_PROXY_TYPE);
-        if (!chkRequireAuthentication.getSelection()) {
-            txtUsername.setEnabled(false);
-            txtUsername.setText("");
-            txtPass.setEnabled(false);
-            txtPass.setText("");
-        }
+        boolean isEnableAuthentication = chkRequireAuthentication.getSelection();
+        txtUsername.setEnabled(isEnableAuthentication);
+        txtPass.setEnabled(isEnableAuthentication);
     }
 
     private void initialize() {
-        ProxyInformation proxyInfo = ApplicationProxyUtil.getProxyInformation();
+        ProxyInformation proxyInfo = ApplicationProxyUtil.getAuthProxyInformation();
+        inputProxyInfo(proxyInfo);
+
+        chkRequireAuthentication.setEnabled(true);
+        if (StringUtils.isNotEmpty(txtUsername.getText()) && StringUtils.isNotEmpty(txtPass.getText())) {
+            chkRequireAuthentication.setSelection(true);
+        }
 
         cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
-        cboProxyServerType.setText(proxyInfo.getProxyServerType());
-        txtAddress.setText(proxyInfo.getProxyServerAddress());
-        txtPort.setText(proxyInfo.getProxyServerPort() >= 0 ? proxyInfo.getProxyServerPort() + "" : "");
-        txtUsername.setText(proxyInfo.getUsername());
-        txtPass.setText(proxyInfo.getPassword());
+        cboProxyOption.setData(proxyInfo.getProxyOption());
 
-        String proxyOption = cboProxyOption.getText();
-        if (ApplicationMessageConstants.NO_PROXY.equals(proxyOption)) {
+        String proxyOption = proxyInfo.getProxyOption();
+        if (ProxyOption.NO_PROXY.name().equals(proxyOption)) {
             selectNoProxyOption();
-        } else if (ApplicationMessageConstants.USE_SYSTEM_PROXY.equals(proxyOption)) {
+        } else if (ProxyOption.USE_SYSTEM.name().equals(proxyOption)) {
             selectSystemProxyOption();
         } else {
-            chkRequireAuthentication.setEnabled(true);
-            if (StringUtils.isNotEmpty(txtUsername.getText()) && StringUtils.isNotEmpty(txtPass.getText())) {
-                chkRequireAuthentication.setSelection(true);
-            }
             boolean requiredAuthentication = chkRequireAuthentication.getSelection();
             txtUsername.setEnabled(requiredAuthentication);
             txtPass.setEnabled(requiredAuthentication);
         }
     }
 
+    private void inputProxyInfo(ProxyInformation proxyInfo) {
+        cboProxyServerType.setText(proxyInfo.getProxyServerType());
+        txtAddress.setText(proxyInfo.getProxyServerAddress());
+        txtPort.setText(proxyInfo.getProxyServerPort() > 0 ? proxyInfo.getProxyServerPort() + "" : "");
+        txtUsername.setText(proxyInfo.getUsername());
+        txtPass.setText(proxyInfo.getPassword());
+    }
+    
     @Override
-    protected void configureShell(Shell newShell) {
-        super.configureShell(newShell);
-        newShell.setText(MessageConstants.TITLE_WINDOW_DLG_PROXY_SETTING);
+    protected void buttonPressed(int buttonId) {
+        if (buttonId == IDialogConstants.OK_ID) {
+            okPressed();
+        } else {
+            close();
+        }
     }
 
     @Override
     protected void okPressed() {
         ProxyInformation proxyInfo = new ProxyInformation();
 
-        proxyInfo.setProxyOption(ProxyOption.valueOfDisplayName(cboProxyOption.getText()).name());
+        proxyInfo.setProxyOption((String) cboProxyOption.getData());
         proxyInfo.setProxyServerType(cboProxyServerType.getText());
         proxyInfo.setProxyServerAddress(txtAddress.getText());
-        proxyInfo.setProxyServerPort(txtPort.getText());
+        final String portValue = txtPort.getText();
+        proxyInfo.setProxyServerPort(StringUtils.isEmpty(portValue)
+                ? String.valueOf(ProxyPreferenceDefaultValueInitializer.PROXY_SERVER_PORT_DEFAULT_VALUE) : portValue);
         proxyInfo.setUsername(txtUsername.getText());
         proxyInfo.setPassword(txtPass.getText());
+        proxyInfo.setExceptionList("");
+
         try {
-            ApplicationProxyUtil.saveProxyInformation(proxyInfo);
+            ApplicationProxyUtil.saveAuthProxyInformation(proxyInfo);
             super.okPressed();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE, StringConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG);
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG);
         }
     }
 }

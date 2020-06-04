@@ -15,6 +15,13 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
     
     public DefinedOrderedPageComparator() {
         predefinedOrder = new ArrayList<>();
+        
+        predefinedOrder.add(StringConstants.PLUGINS_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.KATALON_ANALYTICS_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.QTEST_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.TEST_CASE_REPOSITORIES_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.TEST_SUITE_REPOSITORIES_SETTING_PAGE_ID);
+    
         predefinedOrder.add(StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID);
         
         predefinedOrder.add(StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID);
@@ -27,12 +34,7 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
         
         predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID);
         predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            
-        predefinedOrder.add(StringConstants.INTEGRATION_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.KATALON_ANALYTICS_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.QTEST_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.TEST_CASE_REPOSITORIES_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.TEST_SUITE_REPOSITORIES_SETTING_PAGE_ID);
+
                 
         predefinedOrder.add(StringConstants.REPORT_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.DATABASE_SETTING_PAGE_ID);

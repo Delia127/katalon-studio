@@ -2,15 +2,15 @@ package com.kms.katalon.composer.toolbar.notification;
 
 public class PopupNotification {
 
-    private NotificationContent content;
+    private INotificationContent content;
 
     private TrackedNotification tracked;
 
-    public NotificationContent getContent() {
+    public INotificationContent getContent() {
         return content;
     }
 
-    public void setContent(NotificationContent content) {
+    public void setContent(INotificationContent content) {
         this.content = content;
     }
 

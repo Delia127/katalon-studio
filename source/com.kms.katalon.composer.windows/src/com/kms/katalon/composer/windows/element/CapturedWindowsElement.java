@@ -12,6 +12,8 @@ public class CapturedWindowsElement implements BasicWindowsElement {
     private boolean checked;
     
     private String name;
+    
+    private String tagName;
 
     private Map<String, String> properties;
     
@@ -53,6 +55,14 @@ public class CapturedWindowsElement implements BasicWindowsElement {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTagName() {
+        return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
 
     public Map<String, String> getProperties() {

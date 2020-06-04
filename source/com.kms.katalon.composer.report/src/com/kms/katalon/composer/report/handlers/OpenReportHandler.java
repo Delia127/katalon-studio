@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
@@ -31,10 +30,15 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenReportHandler {
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+
     private static final String REPORT_PART_URI = "bundleclass://com.kms.katalon.composer.report/"
             + ReportPart.class.getName();
 
@@ -58,7 +62,7 @@ public class OpenReportHandler {
             public void handleEvent(Event event) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof ReportEntity) {
-                    if (LicenseUtil.isFreeLicense()) {
+                    if (!featureService.canUse(KSEFeature.REPORT_HISTORY)) {
                         KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.REPORT_HISTORY);
                         return;
                     }

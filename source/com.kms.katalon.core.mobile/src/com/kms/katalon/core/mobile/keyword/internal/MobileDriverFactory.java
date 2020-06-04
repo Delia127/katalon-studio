@@ -47,6 +47,8 @@ public class MobileDriverFactory {
 
     public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
 
+    public static final String REMOTE_DRIVER_PROPERTY = RunConfiguration.REMOTE_DRIVER_PROPERTY;
+
     public static final String EXISTING_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_EXISTING_DRIVER;
 
     /**
@@ -118,12 +120,30 @@ public class MobileDriverFactory {
     }
 
     /**
+     * Get the id of the remote mobile device
+     * 
+     * @return the id of the remote mobile device
+     */
+    public static String getRemoteDeviceId() {
+        return AppiumDriverManager.getDeviceId(REMOTE_DRIVER_PROPERTY);
+    }
+
+    /**
      * Get the name of the current mobile device
      * 
      * @return the name of the current mobile device
      */
     public static String getDeviceName() {
         return AppiumDriverManager.getDeviceName(MOBILE_DRIVER_PROPERTY);
+    }
+
+    /**
+     * Get the name of the remote mobile device
+     * 
+     * @return the name of the remote mobile device
+     */
+    public static String getRemoteDeviceName() {
+        return AppiumDriverManager.getDeviceName(REMOTE_DRIVER_PROPERTY);
     }
 
     /**
@@ -136,12 +156,30 @@ public class MobileDriverFactory {
     }
 
     /**
+     * Get the model of the remote mobile device
+     * 
+     * @return the model of the remote mobile device
+     */
+    public static String getRemoteDeviceModel() {
+        return AppiumDriverManager.getDeviceModel(REMOTE_DRIVER_PROPERTY);
+    }
+
+    /**
      * Get the manufacturer of the current mobile device
      * 
      * @return the manufacturer of the current mobile device
      */
     public static String getDeviceManufacturer() {
         return AppiumDriverManager.getDeviceManufacturer(MOBILE_DRIVER_PROPERTY);
+    }
+
+    /**
+     * Get the manufacturer of the remote mobile device
+     * 
+     * @return the manufacturer of the remote mobile device
+     */
+    public static String getRemoteDeviceManufacturer() {
+        return AppiumDriverManager.getDeviceManufacturer(REMOTE_DRIVER_PROPERTY);
     }
 
     /**
@@ -154,12 +192,30 @@ public class MobileDriverFactory {
     }
 
     /**
+     * Get the os version of the remote mobile device
+     * 
+     * @return the os version of the remote mobile device
+     */
+    public static String getRemoteDeviceOSVersion() {
+        return AppiumDriverManager.getDeviceOSVersion(REMOTE_DRIVER_PROPERTY);
+    }
+
+    /**
      * Get the os of the current mobile device
      * 
      * @return the os of the current mobile device
      */
     public static String getDeviceOS() {
         return AppiumDriverManager.getDeviceOS(MOBILE_DRIVER_PROPERTY);
+    }
+
+    /**
+     * Get the os of the remote mobile device
+     * 
+     * @return the os of the remote mobile device
+     */
+    public static String getRemoteDeviceOS() {
+        return AppiumDriverManager.getDeviceOS(REMOTE_DRIVER_PROPERTY);
     }
 
     /**
@@ -202,9 +258,9 @@ public class MobileDriverFactory {
         return desireCapabilities;
     }
 
-    private static DesiredCapabilities createCapabilities(MobileDeviceInfo mobileDeviceInfo, String appId) {
+    private static DesiredCapabilities createCapabilities(MobileDeviceInfo mobileDeviceInfo, String appId, String driverConnectorId) {
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
+        Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(driverConnectorId);
         // Running app so no browser name
         if (driverPreferences.containsKey(MobileCapabilityType.BROWSER_NAME)) {
             driverPreferences.remove(MobileCapabilityType.BROWSER_NAME);
@@ -328,16 +384,19 @@ public class MobileDriverFactory {
         if (isUsingExistingDriver()) {
             return startExistingBrowser();
         }
-        MobileDeviceInfo mobileDeviceInfo = MobileDeviceInfo.create(getMobileDriverType(), getDeviceId(),
-                getDeviceName(), getDeviceOS(), getDeviceOSVersion());
         AppiumDriver<?> driver;
         String remoteWebUrl = getRemoteWebDriverServerUrl();
         if (StringUtils.isNotEmpty(remoteWebUrl)) {
-            driver = AppiumDriverManager.createMobileDriver(mobileDeviceInfo.getDriverType(),
-                    createCapabilities(mobileDeviceInfo, appId), new URL(remoteWebUrl));
+            MobileDeviceInfo remoteMobileDeviceInfo = MobileDeviceInfo.create(getRemoteMobileDriver(),
+                    getRemoteDeviceId(), getRemoteDeviceName(), getRemoteDeviceOS(), getRemoteDeviceOSVersion());
+            driver = AppiumDriverManager.createMobileDriver(remoteMobileDeviceInfo.getDriverType(),
+                    createCapabilities(remoteMobileDeviceInfo, appId, REMOTE_DRIVER_PROPERTY), new URL(remoteWebUrl));
         } else {
+            MobileDeviceInfo mobileDeviceInfo = MobileDeviceInfo.create(getMobileDriverType(), getDeviceId(),
+                    getDeviceName(), getDeviceOS(), getDeviceOSVersion());
             driver = AppiumDriverManager.createMobileDriver(mobileDeviceInfo.getDriverType(),
-                    mobileDeviceInfo.getDeviceId(), createCapabilities(mobileDeviceInfo, appId));
+                    mobileDeviceInfo.getDeviceId(),
+                    createCapabilities(mobileDeviceInfo, appId, MOBILE_DRIVER_PROPERTY));
         }
         if (driver != null) {
             saveWebDriverSessionData(driver);

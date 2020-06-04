@@ -58,7 +58,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
@@ -124,7 +123,10 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSession;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -165,6 +167,8 @@ public class TestStepManualComposite {
     private Menu recentMenu;
 
     private TestCaseCompositePart parentTestCaseCompositePart;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public TestStepManualComposite(ITestCasePart parentPart, Composite parent) {
         this(parentPart, parent, null);
@@ -447,7 +451,7 @@ public class TestStepManualComposite {
                 menu = new Menu(childTableTree);
 
                 if (childTableTree.getSelectionCount() == 1) {
-                    TestCaseMenuUtil.generateExecuteFromTestStepMenuItem(menu, selectionListener);
+                    TestCaseMenuUtil.generateExecuteFromTestStepMenuItems(menu, selectionListener);
 
                     new MenuItem(menu, SWT.SEPARATOR);
 
@@ -922,7 +926,7 @@ public class TestStepManualComposite {
             }
             break;
         case TreeTableMenuItemConstants.EXECUTE_FROM_TEST_STEP_MENU_ITEM_ID:
-            executeFromTestStep((ExecutionSession) menuItem.getData());
+            executeFromTestStep((ExecutionSession) menuItem.getData(), (LaunchMode) menuItem.getParent().getData());
             break;
         case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
             copyTestStep();
@@ -937,15 +941,15 @@ public class TestStepManualComposite {
             removeTestStep();
             break;
         case TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID:
-            if (!isEnterpriseAccount()) {
-                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_ENABLE_STEP);
+            if (!featureService.canUse(KSEFeature.TEST_CASE_TOGGLE_STEP)) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_TOGGLE_STEP);
             } else {
                 getTreeTableInput().enable();
             }
             break;
         case TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID:
-            if (!isEnterpriseAccount()) {
-                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_DISABLE_STEP);
+            if (!featureService.canUse(KSEFeature.TEST_CASE_TOGGLE_STEP)) {
+                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.TEST_CASE_TOGGLE_STEP);
             } else {
                 getTreeTableInput().disable();
             }
@@ -962,10 +966,6 @@ public class TestStepManualComposite {
         }
     }
 
-    private boolean isEnterpriseAccount() {
-        return LicenseUtil.isNotFreeLicense();
-    }
-
     public void addStepByActionID(int id) {
         getTreeTableInput().addNewAstObject(id, treeTableInput.getSelectedNode(), NodeAddType.Add);
     }
@@ -978,7 +978,7 @@ public class TestStepManualComposite {
                 new TestCaseEntity[] { testCase });
     }
 
-    private void executeFromTestStep(ExecutionSession executionSession) {
+    private void executeFromTestStep(ExecutionSession executionSession, LaunchMode launchMode) {
         String rawScript = getTreeTableInput().generateRawScriptFromSelectedStep();
         if (rawScript == null) {
             return;
@@ -989,6 +989,7 @@ public class TestStepManualComposite {
         executeFromTestStepEntity.setRemoteServerUrl(executionSession.getRemoteUrl());
         executeFromTestStepEntity.setTestCase(parentPart.getTestCase());
         executeFromTestStepEntity.setSessionId(executionSession.getSessionId());
+        executeFromTestStepEntity.setLaunchMode(launchMode);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXECUTE_FROM_TEST_STEP,
                 executeFromTestStepEntity);
     }

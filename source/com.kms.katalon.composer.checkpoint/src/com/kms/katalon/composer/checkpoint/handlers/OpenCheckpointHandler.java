@@ -15,7 +15,6 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.checkpoint.parts.CheckpointCsvPart;
 import com.kms.katalon.composer.checkpoint.parts.CheckpointDatabasePart;
 import com.kms.katalon.composer.checkpoint.parts.CheckpointExcelPart;
@@ -28,6 +27,8 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 
 public class OpenCheckpointHandler {
@@ -52,6 +53,8 @@ public class OpenCheckpointHandler {
 
     @Inject
     EModelService modelService;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     @PostConstruct
     public void openCheckpointTreeEntity(IEventBroker eventBroker) {
@@ -75,7 +78,7 @@ public class OpenCheckpointHandler {
                 return;
             }
             
-            if (LicenseUtil.isFreeLicense()) {
+            if (!featureService.canUse(KSEFeature.CHECKPOINT)) {
                 KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CHECKPOINT);
                 return;
             }
