@@ -511,9 +511,9 @@ public class StringConstants {
 	
     public static final String SELF_HEALING_OPENING = "Your test is executed with Self-Healing Execution Mode";
 
-	public static final String SMART_XPATH_REPORT_AVAILABLE_OPENING = "=================== Smart XPath Report ========================";
+	public static final String SMART_XPATH_REPORT_AVAILABLE_OPENING = "===================== Self-Healing Report ====================";
 	
-	public static final String SMART_XPATH_REPORT_AVAILABLE_ENDING = "===============================================================";
+	public static final String SMART_XPATH_REPORT_AVAILABLE_ENDING = "==============================================================";
 
 	public static final String SMART_XPATH_VISIT_BELOW_LINK = CoreMessageConstants.SMART_XPATH_VISIT_BELOW_LINK;
 	

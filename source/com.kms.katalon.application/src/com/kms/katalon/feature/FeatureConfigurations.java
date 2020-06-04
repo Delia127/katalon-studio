@@ -17,7 +17,6 @@ public class FeatureConfigurations implements IFeatureService {
         {
             put(KSEFeature.SELF_HEALING, Boolean.TRUE);
             put(KSEFeature.WEB_LOCATOR_SETTINGS, Boolean.TRUE);
-            put(KSEFeature.IMAGE_BASED_OBJECT_DETECTION, Boolean.TRUE);
             put(KSEFeature.CUSTOM_WEB_SERVICE_METHOD, Boolean.TRUE);
             put(KSEFeature.ORACLE_EXTERNAL_DATA, Boolean.TRUE);
             put(KSEFeature.SQL_SERVER_EXTERNAL_DATA, Boolean.TRUE);
