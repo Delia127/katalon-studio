@@ -22,5 +22,5 @@ public class WebUICommonScriptConstants {
 
     public static final String BUILD_LOCATOR_SCRIPT = "var ku_locatorBuilders = new KULocatorBuilders(window); return ku_locatorBuilders.buildAll(arguments[0]);";
 
-    public static final String GENERATE_XPATHS_SCRIPT = RECORDER_DEPENDENCIES_WITH_CHECK + BUILD_LOCATOR_SCRIPT;
+    public static final String GENERATE_XPATHS_SCRIPT = RECORDER_DEPENDENCIES + BUILD_LOCATOR_SCRIPT;
 }
