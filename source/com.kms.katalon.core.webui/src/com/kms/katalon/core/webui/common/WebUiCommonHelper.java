@@ -725,7 +725,13 @@ public class WebUiCommonHelper extends KeywordHelper {
             return findElementsByDefault(testObject, timeout);
         }
 
-        List<WebElement> foundElements = findElementsByDefault(testObject, timeout);
+        List<WebElement> foundElements = null;
+        try {
+            foundElements = findElementsByDefault(testObject, timeout);
+        } catch (NoSuchElementException exception) {
+            // Just skip
+        }
+        
         if (foundElements != null && !foundElements.isEmpty()) {
             return foundElements;
         }
@@ -735,7 +741,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 
         List<String> excludeKeywords = RunConfiguration.getExcludedKeywordsFromSelfHealing();
         if (!isWebPlatform || excludeKeywords.contains(runningKeyword)) {
-            return foundElements;
+            return Collections.emptyList();
         }
 
         SelfHealingController.setLogger(logger);
