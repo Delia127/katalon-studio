@@ -48,8 +48,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
         try {
             excludeKeywordNames = preferenceStore.getExcludeKeywordList();
             methodsPriorityOrder = preferenceStore.getMethodsPriorityOrder();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            LoggerSingleton.logError(exception);
         }
 
 		excludeObjectsUsedWithKeywordsComposite.setInput(excludeKeywordNames);
@@ -122,8 +122,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		Boolean value;
         try {
             value = preferenceStore.isEnableSelfHealing();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            LoggerSingleton.logError(exception);
             return null;
         }
 		return value;
@@ -141,8 +141,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		List<Pair<SelectorMethod, Boolean>> value = null;
 		try {
 			value = preferenceStore.getMethodsPriorityOrder();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException exception) {
+            LoggerSingleton.logError(exception);
 			return null;
 		}
 		return value;
@@ -152,8 +152,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		List<String> value = null;
 		try {
 			value = preferenceStore.getExcludeKeywordList();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException exception) {
+            LoggerSingleton.logError(exception);
 		}
 		return value;
 	}
@@ -187,8 +187,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 			this.setUpdatedExcludeKeywordsIntoPluginPreference();
 			this.setUpdatedMethodsPriorityOrderIntoPluginPreference();
 			this.setEnableSelfHealingIntoPluginPreference();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException exception) {
+            LoggerSingleton.logError(exception);
 			return false;
 		}
 		return true;

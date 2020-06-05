@@ -13,13 +13,10 @@ public class SelfHealingSettingPage extends PreferencePageWithHelp {
 	
     private ExecutionDefaultSettingStore defaultSettingStore;
     
-//    private SelfHealingSetting selfHealingSettingStore;
-
     private Composite container;
 
 	public SelfHealingSettingPage() {
         defaultSettingStore = ExecutionDefaultSettingStore.getStore();
-//        selfHealingSettingStore = SelfHealingSetting.getStore(ApplicationManager.getInstance().getProjectManager().getCurrentProject());
 	}
 
 	@Override
