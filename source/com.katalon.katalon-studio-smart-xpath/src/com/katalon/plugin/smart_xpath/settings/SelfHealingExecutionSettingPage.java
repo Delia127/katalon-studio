@@ -118,15 +118,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		return excludeObjectsUsedWithKeywordsComposite;
 	}
 
-	private Boolean getEnableSelfHealingFromPluginPreference() {
-		Boolean value;
-        try {
-            value = preferenceStore.isEnableSelfHealing();
-        } catch (IOException exception) {
-            LoggerSingleton.logError(exception);
-            return null;
-        }
-		return value;
+	private boolean getEnableSelfHealingFromPluginPreference() {
+		return preferenceStore.getSelfHealingEnabled();
 	}
 
 	private void setEnableSelfHealingIntoPluginPreference() throws IOException {

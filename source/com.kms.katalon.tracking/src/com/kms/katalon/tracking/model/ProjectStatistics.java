@@ -74,7 +74,7 @@ public class ProjectStatistics {
     
     private boolean logTestStepsEnabled = false;
     
-    private boolean imageRecognitionEnabled = false;
+    private boolean selfHealingEnabled = false;
     
     private String additionalTestDatasourceForEnterpriseUser;
     
@@ -368,12 +368,12 @@ public class ProjectStatistics {
         this.logTestStepsEnabled = logTestStepsEnabled;
     }
 
-    public boolean getImageRecognitionEnabled() {
-        return imageRecognitionEnabled;
+    public boolean getSelfHealingEnabled() {
+        return selfHealingEnabled;
     }
 
-    public void setImageRecognitionEnabled(boolean imageRecognitionEnabled) {
-        this.imageRecognitionEnabled = imageRecognitionEnabled;
+    public void setSelfHealingEnabled(boolean selfHealingEnabled) {
+        this.selfHealingEnabled = selfHealingEnabled;
     }
 
     public String getAdditionalTestDataSourceForEnterpriseUser() {

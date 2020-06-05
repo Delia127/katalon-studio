@@ -67,23 +67,19 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
         }
 
         // Re-evaluate the PreferenceStore and add the appropriate menu item
-        try {
-            Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-            if (currentProject != null) {
-                AutoHealingController.createXPathFilesIfNecessary(currentProject);
-                WebUiExecutionSettingStore webUIExecutionSettingStore = new WebUiExecutionSettingStore(
-                        ProjectController.getInstance().getCurrentProject());
+        Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
+        if (currentProject != null) {
+            AutoHealingController.createXPathFilesIfNecessary(currentProject);
+            WebUiExecutionSettingStore webUIExecutionSettingStore = new WebUiExecutionSettingStore(
+                    ProjectController.getInstance().getCurrentProject());
 
-                if (webUIExecutionSettingStore.isEnableSelfHealing()) {
-                    addDisableSelfHealingMenuItem(newMenu, true);
-                } else {
-                    addEnableSelfHealingMenuItem(newMenu, true);
-                }
-                addGoToSelfHealingSettingsMenuItem(newMenu, true);
-                addOpenSelfHealingInsightsMenuItem(newMenu, true);
+            if (webUIExecutionSettingStore.getSelfHealingEnabled()) {
+                addDisableSelfHealingMenuItem(newMenu, true);
+            } else {
+                addEnableSelfHealingMenuItem(newMenu, true);
             }
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
+            addGoToSelfHealingSettingsMenuItem(newMenu, true);
+            addOpenSelfHealingInsightsMenuItem(newMenu, true);
         }
     }
 

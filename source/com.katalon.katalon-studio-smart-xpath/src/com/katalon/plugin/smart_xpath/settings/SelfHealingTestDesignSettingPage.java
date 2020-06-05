@@ -181,18 +181,19 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
         try {
             SelectorMethod originalSelectorMethod = store.getCapturedTestObjectSelectorMethod();
             boolean isSelectorMethodChanged = !defaultWebLocatorComposite.compareInput(originalSelectorMethod);
+            if (isSelectorMethodChanged) return true;
 
             List<Pair<String, Boolean>> originalXPathLocatorsPriority = store.getCapturedTestObjectXpathLocators();
             boolean isXPathLocatorsChanged = !XPathComposite.compareInput(originalXPathLocatorsPriority);
+            if (isXPathLocatorsChanged) return true;
 
             List<Pair<String, Boolean>> originalSelectedAttributes = store.getCapturedTestObjectAttributeLocators();
             boolean isSelectedAttributesChanged = !attributesComposite.compareInput(originalSelectedAttributes);
-
-            return isSelectorMethodChanged || isXPathLocatorsChanged || isSelectedAttributesChanged;
+            if (isSelectedAttributesChanged) return true;
         } catch (IOException exception) {
             LoggerSingleton.logError(exception);
-            return false;
         }
+        return false;
     }
 
     @Override
