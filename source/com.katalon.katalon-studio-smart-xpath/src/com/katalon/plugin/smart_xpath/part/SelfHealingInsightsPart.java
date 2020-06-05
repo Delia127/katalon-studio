@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -53,12 +54,36 @@ public class SelfHealingInsightsPart implements EventHandler {
     protected SelfHealingToolbarComposite toolbarComposite;
 
     private FileWatcher dataWatcher;
+    
+    private static SelfHealingInsightsPart prevInstance;
 
     @PostConstruct
     public void init(Composite parent) {
         createContents(parent);
         registerEventListeners();
         initialize();
+
+        if (prevInstance != null) {
+            prevInstance.preDestroy();
+        }
+        prevInstance = this;
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        eventBroker.unsubscribe(this);
+        if (dataWatcher != null) {
+            dataWatcher.stop();
+            dataWatcher = null;
+        }
+        if (!brokenTestObjectsTableComposite.isDisposed()) {
+            brokenTestObjectsTableComposite.dispose();
+            brokenTestObjectsTableComposite = null;
+        }
+        if (!toolbarComposite.isDisposed()) {
+            toolbarComposite.dispose();
+            toolbarComposite = null;
+        }
     }
 
     protected Control createContents(Composite parent) {
@@ -152,14 +177,7 @@ public class SelfHealingInsightsPart implements EventHandler {
     }
 
     protected void initialize() {
-        loadBrokenTestObjects();
-    }
-
-    public void loadBrokenTestObjects() {
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        brokenTestObjectsTableComposite.setProject(currentProject);
-        Set<BrokenTestObject> brokenTestObjects = AutoHealingController.readUnapprovedBrokenTestObjects(currentProject);
-        brokenTestObjectsTableComposite.setInput(brokenTestObjects);
+        refresh();
     }
 
     @Focus
@@ -176,6 +194,18 @@ public class SelfHealingInsightsPart implements EventHandler {
                 || StringUtils.equals(EventConstants.PROJECT_CLOSED, event.getTopic())) {
             trackBrokenTestObjectsFile();
         }
+    }
+
+    private void refresh() {
+        loadBrokenTestObjects();
+        addNotificationNumber();
+    }
+
+    public void loadBrokenTestObjects() {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        brokenTestObjectsTableComposite.setProject(currentProject);
+        Set<BrokenTestObject> brokenTestObjects = AutoHealingController.readUnapprovedBrokenTestObjects(currentProject);
+        brokenTestObjectsTableComposite.setInput(brokenTestObjects);
     }
 
     private void addNotificationNumber() {
@@ -199,10 +229,5 @@ public class SelfHealingInsightsPart implements EventHandler {
         selfHealingInsightsPart.setLabel(numBrokenTestObjects > 0
                 ? MessageFormat.format("{0} ({1})", selfHealingInsightsLabel, numBrokenTestObjects)
                 : selfHealingInsightsLabel);
-    }
-
-    private void refresh() {
-        loadBrokenTestObjects();
-        addNotificationNumber();
     }
 }

@@ -43,6 +43,8 @@ public class BrokenTestObjectsTableComposite extends Composite {
 
     private final int SCREENSHOT_COLUMN_INDEX = 4;
 
+    private final int APRROVE_COLUMN_INDEX = 5;
+
     private ProjectEntity project;
 
     public ProjectEntity getProject() {
@@ -85,7 +87,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
 
             @Override
             public void handleEvent(Event event) {
-                if (event.index == 5) {
+                if (event.index == APRROVE_COLUMN_INDEX) {
                     BrokenTestObject data = (BrokenTestObject) ((TableItem) event.item).getData();
                     Image tmpImage = getCheckboxSymbol(data.getApproved());
                     int tmpWidth = 0;
