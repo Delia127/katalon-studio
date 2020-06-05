@@ -107,25 +107,21 @@ public class AutoHealingController {
             }
 
             String projectDir = project.getFolderLocation();
-            String rawBrokenTestObjectsPath = FilenameUtils.concat(projectDir,
-                    SmartXPathConstants.SELF_HEALING_DATA_FILE_PATH);
-
-            String brokenTestObjectsPath = FilenameUtils.separatorsToSystem(rawBrokenTestObjectsPath);
+            File selfHealingFile = createBrokenTestObjectsFile(projectDir);
             JsonReader reader = new JsonReader(
-                    new InputStreamReader(new FileInputStream(brokenTestObjectsPath), StandardCharsets.UTF_8));
+                    new InputStreamReader(new FileInputStream(selfHealingFile), StandardCharsets.UTF_8));
 
             BrokenTestObjects brokenTestObjects = new Gson().fromJson(reader, BrokenTestObjects.class);
             if (brokenTestObjects == null) {
                 return Collections.emptySet();
             }
-
             Set<BrokenTestObject> unapprovedBrokenTestObjects = brokenTestObjects.getBrokenTestObjects();
             unapprovedBrokenTestObjects.removeAll(Collections.singleton(null));
 
             return unapprovedBrokenTestObjects;
         } catch (FileNotFoundException e) {
             System.out.println(SmartXPathConstants.SELF_HEALING_DATA_FILE_PATH
-                    + "is not detected, no broken test objects are loaded");
+                    + " is not detected, no broken test objects are loaded");
             e.printStackTrace(System.out);
         }
         return null;
@@ -152,21 +148,23 @@ public class AutoHealingController {
         }
     }
 
-    private static File createBrokenTestObjectsFile(Entity projectEntity) {
-        if (projectEntity == null) {
-            return null;
+    private static File createBrokenTestObjectsFile(String projectDir) {
+        String rawSelfHealingDir = FilenameUtils.concat(projectDir,
+                SmartXPathConstants.SELF_HEALING_FOLDER_PATH);
+
+        String selfHealingDir = FilenameUtils.separatorsToSystem(rawSelfHealingDir);
+        ///huyen: chi tao khi khong co
+        File selfHealingDirectory = new File(selfHealingDir);
+        if (!selfHealingDirectory.exists()) {
+            boolean isCreateSelfHealingFolderSucceeded = selfHealingDirectory.mkdirs();
+            if (!isCreateSelfHealingFolderSucceeded) {
+                LoggerSingleton.logError(MessageFormat
+                        .format(SmartXPathMessageConstants.MSG_CANNOT_CREATE_SELF_HEALING_FOLDER, selfHealingDir));
+                return null;
+            }
         }
 
-        String projectDir = projectEntity.getFolderLocation();
-        String selfHealingDir = FilenameUtils.concat(projectDir, SmartXPathConstants.SELF_HEALING_FOLDER_PATH);
-        boolean isCreateSelfHealingFolderSucceeded = new File(selfHealingDir).mkdirs();
-        if (!isCreateSelfHealingFolderSucceeded) {
-            LoggerSingleton.logError(MessageFormat
-                    .format(SmartXPathMessageConstants.MSG_CANNOT_CREATE_SELF_HEALING_FOLDER, selfHealingDir));
-            return null;
-        }
-
-        File autoHealingFile = new File(getDataFilePath(projectEntity));
+        File autoHealingFile = new File(getDataFilePath(projectDir));
 
         if (!autoHealingFile.exists()) {
             try {
@@ -225,6 +223,10 @@ public class AutoHealingController {
     }
 
     public static void createXPathFilesIfNecessary(Entity projectEntity) {
-        createBrokenTestObjectsFile(projectEntity);
+        if (projectEntity == null) {
+            return;
+        }
+        String location = projectEntity.getFileLocation();
+        createBrokenTestObjectsFile(location);
     }
 }

@@ -8,6 +8,6 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_qMYS4KZMEeq0PuWF7qXMGQ" featurename="addons" parentElementId="com.kms.katalon.composer.application">
-    <elements xsi:type="application:Addon" xmi:id="_g83MIKZIEeq0PuWF7qXMGQ" elementId="com.katalon.katalon-studio-smart-xpath.addon.AutoActivateAddon" contributionURI="bundleclass://com.katalon.katalon-studio-smart-xpath/com.katalon.plugin.smart_xpath.addons.AutoActivateSelfHealingHandler"/>
+    <elements xsi:type="application:Addon" xmi:id="_g83MIKZIEeq0PuWF7qXMGQ" elementId="com.katalon.katalon-studio-smart-xpath.addon.AutoActivateAddon" contributionURI="bundleclass://com.katalon.katalon-studio-smart-xpath/com.katalon.plugin.smart_xpath.addons.AutoActivateSelfHealingInsightsHandler"/>
   </fragments>
 </fragment:ModelFragments>

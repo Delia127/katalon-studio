@@ -21,7 +21,7 @@ import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
-public class AutoActivateSelfHealingHandler implements EventHandler {
+public class AutoActivateSelfHealingInsightsHandler implements EventHandler {
     @Inject
     private IEventBroker eventBroker;
 
