@@ -62,7 +62,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -109,7 +108,6 @@ import com.kms.katalon.composer.execution.trace.TestObjectStyleRangeMatcher;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.composer.execution.util.TestCaseEditorUtil;
-import com.kms.katalon.composer.handlers.UpdateChromeWebdriverHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.TestCaseController;
@@ -126,7 +124,6 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
 
@@ -657,53 +654,20 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         messageBuilder.append(result.getMessage());
         return causedByStrBuilder;
     }
-
-    private String getCausedBySentence(String msg) {
-        String causedBy = "";
-        try {
-            causedBy = msg.substring(msg.indexOf("Caused by:"));
-            causedBy = causedBy.substring(0, causedBy.indexOf("\n"));
-        } catch (Exception e) {
-            return "";
-        }
-        return causedBy;
-    }
-
-    private String getTestObject(String msg) {
-        String testObject = "";
-        try {
-            testObject = msg.substring(msg.indexOf("'Object Repository"));
-            testObject = testObject.substring(0, testObject.indexOf("'", 1) + 1);
-        } catch (Exception e) {
-            return "";
-        }
-        return testObject;
-    }
     
     private boolean failedDueToOutdatedChromeDriver(String message) {
         return message.contains("This version of ChromeDriver only supports Chrome version");
     }
 
-    private StringBuilder insertRootCauseToTop(StringBuilder messageBuilder, XmlLogRecord result) {
-        StringBuilder causedByStrBuilder = new StringBuilder();
-        String causedBy = getCausedBySentence(result.getMessage());
-        causedByStrBuilder.append("=============== ROOT CAUSE =====================" + "\n");
-        causedByStrBuilder.append(causedBy + "\n");
-        if (Arrays.asList(commonSeleniumExceptions)
-                .stream()
-                .filter(commonException -> causedBy.contains(commonException))
-                .findAny()
-                .isPresent()) {
-            String testObject = getTestObject(result.getMessage());
-            causedByStrBuilder.append("At object: " + testObject + "\n");
-        }
-        causedByStrBuilder.append("================================================" + "\n\n");
-        messageBuilder.append(result.getMessage());
-        return causedByStrBuilder;
+    private boolean failureDueToOutdatedEdgeChromium(String message) {
+        return message.contains("This version of MSEdgeDriver only supports MSEdge version");
     }
 
     private String getCausedBySentence(String msg) {
         if (failedDueToOutdatedChromeDriver(msg)) {
+            return StringConstants.PA_MSG_DRIVER_OUTDATED;
+        }
+        if(failureDueToOutdatedEdgeChromium(msg)) {
             return StringConstants.PA_MSG_DRIVER_OUTDATED;
         }
         String causedBy = "";
