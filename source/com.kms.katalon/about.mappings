@@ -1,12 +1,4 @@
 0=${buildNumber}
-<<<<<<< HEAD
-<<<<<<< HEAD
 1=7.6.0
-=======
-1=7.5.5
->>>>>>> cd19d2b13ab70617dbf41bf8632c3a49c6d1540f
-=======
-1=7.6.0
->>>>>>> release-7.6.0
 2=${build.profile}
 3=internal
