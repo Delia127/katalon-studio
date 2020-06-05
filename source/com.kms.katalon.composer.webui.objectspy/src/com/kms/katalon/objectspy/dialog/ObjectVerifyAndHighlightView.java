@@ -37,6 +37,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
@@ -49,6 +50,7 @@ import com.kms.katalon.objectspy.element.WebElement.WebElementType;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.highlight.HighlightRequest;
+import com.kms.katalon.objectspy.util.FileUtil;
 import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
@@ -294,7 +296,9 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                         setConnectingCompositeVisibleSync(true);
                         WebDriver driver = seleniumSession.getWebDriver();
                         String pathToImage = WebElementUtils.takeScreenShotForImageBasedObjectRecognition(driver, webElement);
-                        webElement.getSelectorCollection().put(SelectorMethod.IMAGE, pathToImage);
+                        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+                        String relativePathToImage = FileUtil.getRelativePath(pathToImage, projectDir);
+                        webElement.getSelectorCollection().put(SelectorMethod.IMAGE, relativePathToImage);
                         displaySuccessfulMessageSync(ObjectspyMessageConstants.SCREENSHOT_TAKEN);
                         invoke(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED, webElement);
                     } catch (Exception ex) {

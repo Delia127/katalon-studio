@@ -33,4 +33,8 @@ public class FileUtil {
 	public static File getExtensionBuildFolder() throws IOException {
 	    return new File(ClassPathResolver.getConfigurationFolder(), EXTENSIONS_FOLDER_NAME);
 	}
+	
+	public static String getRelativePath(String path, String baseDir) {
+	    return new File(baseDir).toURI().relativize(new File(path).toURI()).getPath();
+	}
 }
