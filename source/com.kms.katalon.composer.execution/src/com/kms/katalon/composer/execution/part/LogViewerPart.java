@@ -639,6 +639,46 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             writeMessage(false, messageBuilder.toString());
         }
     }
+
+    private StringBuilder insertRootCauseToTop(StringBuilder messageBuilder, XmlLogRecord result) {
+        StringBuilder causedByStrBuilder = new StringBuilder();
+        String causedBy = getCausedBySentence(result.getMessage());
+        causedByStrBuilder.append("=============== ROOT CAUSE =====================" + "\n");
+        causedByStrBuilder.append(causedBy + "\n");
+        if (Arrays.asList(commonSeleniumExceptions)
+                .stream()
+                .filter(commonException -> causedBy.contains(commonException))
+                .findAny()
+                .isPresent()) {
+            String testObject = getTestObject(result.getMessage());
+            causedByStrBuilder.append("At object: " + testObject + "\n");
+        }
+        causedByStrBuilder.append("================================================" + "\n\n");
+        messageBuilder.append(result.getMessage());
+        return causedByStrBuilder;
+    }
+
+    private String getCausedBySentence(String msg) {
+        String causedBy = "";
+        try {
+            causedBy = msg.substring(msg.indexOf("Caused by:"));
+            causedBy = causedBy.substring(0, causedBy.indexOf("\n"));
+        } catch (Exception e) {
+            return "";
+        }
+        return causedBy;
+    }
+
+    private String getTestObject(String msg) {
+        String testObject = "";
+        try {
+            testObject = msg.substring(msg.indexOf("'Object Repository"));
+            testObject = testObject.substring(0, testObject.indexOf("'", 1) + 1);
+        } catch (Exception e) {
+            return "";
+        }
+        return testObject;
+    }
     
     private boolean failedDueToOutdatedChromeDriver(String message) {
         return message.contains("This version of ChromeDriver only supports Chrome version");
