@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +26,9 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.ProxyUtil;
+import com.kms.katalon.core.windows.constants.CoreWindowsMessageConstants;
 import com.kms.katalon.core.windows.constants.WindowsDriverConstants;
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionSettings;
 import com.thoughtworks.selenium.SeleniumException;
 
 import io.appium.java_client.MobileCommand;
@@ -76,7 +80,11 @@ public class WindowsDriverFactory {
         logger.logRunData(DESIRED_CAPABILITIES_PROPERTY, JsonUtil.toJson(desiredCapabilities.toJson(), false));
 
         Proxy proxy = ProxyUtil.getProxy(RunConfiguration.getProxyInformation(), remoteAddressURL);
-        return startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
+        WindowsDriver<WebElement> windowsDriver = startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
+        
+        windowsDriver.manage().timeouts().implicitlyWait(RunConfiguration.getTimeOut(), TimeUnit.SECONDS);
+        
+        return windowsDriver;
 
     }
 
@@ -112,9 +120,12 @@ public class WindowsDriverFactory {
             WindowsDriver<WebElement> desktopDriver = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxy);
 
             FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(desktopDriver)
-                    .withTimeout(Duration.ofSeconds(60))
-                    .pollingEvery(Duration.ofSeconds(5))
+                    .withTimeout(Duration.ofMillis(WindowsActionSettings.DF_WAIT_ACTION_TIMEOUT_IN_MILLIS))
+                    .pollingEvery(Duration.ofMillis(5000))
                     .ignoring(NoSuchElementException.class);
+
+            logger.logInfo(MessageFormat.format(CoreWindowsMessageConstants.WindowsActionHelper_INFO_START_FINDING_WINDOW, appFile,
+                    WindowsActionSettings.DF_WAIT_ACTION_TIMEOUT_IN_MILLIS));
 
             WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
                 @Override

@@ -22,28 +22,58 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.preference.ProxyPreferences;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.logging.LogUtil;
 
 public class ApplicationProxyUtil {
     private static final String USE_SYSTEM_PROXY_PROP = "java.net.useSystemProxies";
 
+    @Deprecated
     public static void saveProxyInformation(ProxyInformation proxyInfo) throws IOException {
         ProxyPreferences.saveProxyInformation(proxyInfo);
     }
 
-    public static ProxyInformation getProxyInformation() {
-        ProxyInformation proxyInfo = ProxyPreferences.getProxyInformation();
-
-        return proxyInfo;
+    public static void saveAuthProxyInformation(ProxyInformation proxyInfo) throws IOException {
+        ProxyPreferences.saveAuthProxyInformation(proxyInfo);
     }
 
+    public static void saveSystemProxyInformation(ProxyInformation proxyInfo) throws IOException {
+        ProxyPreferences.saveSystemProxyInformation(proxyInfo);
+    }
+
+    @Deprecated
+    public static ProxyInformation getProxyInformation() {
+        return ProxyPreferences.getProxyInformation();
+    }
+
+    public static ProxyInformation getAuthProxyInformation() {
+        return ProxyPreferences.getAuthProxyInformation();
+    }
+
+    public static ProxyInformation getSystemProxyInformation() {
+        return ProxyPreferences.getSystemProxyInformation();
+    }
+
+    public static Proxy getAuthProxy() throws IOException {
+        return getProxy(getAuthProxyInformation());
+    }
+
+    public static Proxy getSystemProxy() throws IOException {
+        return getProxy(getSystemProxyInformation());
+    }
+
+    @Deprecated
     public static Proxy getProxy() throws IOException {
-        ProxyInformation proxyInfo = ApplicationProxyUtil.getProxyInformation();
+        return getProxy(getProxyInformation());
+    }
+
+    public static Proxy getProxy(ProxyInformation proxyInfo) throws IOException {
         Proxy proxy = Proxy.NO_PROXY;
 
-        if (ApplicationMessageConstants.USE_SYSTEM_PROXY.equals(proxyInfo.getProxyOption())) {
+        ProxyOption proxyOption = ProxyOption.valueOf(proxyInfo.getProxyOption());
+        if (proxyOption == ProxyOption.USE_SYSTEM) {
             proxy = getSystemProxyFor(ServerAPICommunicationUtil.getAPIUrl());
-        } else if (ApplicationMessageConstants.MANUAL_CONFIG_PROXY.equals(proxyInfo.getProxyOption())) {
+        } else if (proxyOption == ProxyOption.MANUAL_CONFIG) {
             System.setProperty(USE_SYSTEM_PROXY_PROP, "false");
             try {
                 switch (proxyInfo.getProxyServerType()) {
@@ -75,8 +105,20 @@ public class ApplicationProxyUtil {
         return proxy;
     }
 
+    @Deprecated
     public static Proxy getRetryProxy() throws URISyntaxException {
-        ProxyInformation proxyInfo = ApplicationProxyUtil.getProxyInformation();
+        return getRetryProxy(ApplicationProxyUtil.getProxyInformation());
+    }
+
+    public static Proxy getAuthRetryProxy() throws URISyntaxException {
+        return getRetryProxy(ApplicationProxyUtil.getAuthProxyInformation());
+    }
+
+    public static Proxy getSystemRetryProxy() throws URISyntaxException {
+        return getRetryProxy(ApplicationProxyUtil.getSystemProxyInformation());
+    }
+
+    public static Proxy getRetryProxy(ProxyInformation proxyInfo) throws URISyntaxException {
         if (StringUtils.isNotEmpty(proxyInfo.getUsername()) && StringUtils.isNotEmpty(proxyInfo.getPassword())) {
             Authenticator.setDefault(new Authenticator() {
                 protected java.net.PasswordAuthentication getPasswordAuthentication() {

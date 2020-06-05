@@ -3,76 +3,76 @@ package com.kms.katalon.composer.webservice.constants;
 import org.eclipse.osgi.util.NLS;
 
 public class ComposerWebserviceMessageConstants extends NLS {
-	private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
+    private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
 
-	public static String PA_AUTHORIZATION_CODE;
+    public static String PA_AUTHORIZATION_CODE;
 
-	public static String AUTHORIZATION_HEADER;
+    public static String AUTHORIZATION_HEADER;
 
-	public static String PA_ACCESS_TOKEN;
+    public static String PA_ACCESS_TOKEN;
 
-	public static String PA_REFRESH_TOKEN;
+    public static String PA_REFRESH_TOKEN;
 
-	public static String PA_TOKEN_TYPE;
+    public static String PA_TOKEN_TYPE;
 
-	public static String PA_REQUEST_TOKEN;
+    public static String PA_REQUEST_TOKEN;
 
-	public static String PA_LBL_GRANT_TYPE;
-	
-	public static String PA_LBL_CALLBACK_URL;
-	
-	public static String PA_LBL_AUTH_URL;
-	
-	public static String PA_LBL_ACCESS_TOKEN_URL;
-	
-	public static String PA_LBL_SCOPE;
-	
-	public static String PA_LBL_STATE;
+    public static String PA_LBL_GRANT_TYPE;
 
-	public static String PA_TOOLTIP_CALLBACK_URL;
+    public static String PA_LBL_CALLBACK_URL;
 
-	public static String PA_TOOLTIP_AUTH_URL;
-	
-	public static String PA_TOOLTIP_ACCESS_TOKEN_URL;
-	
-	public static String PA_TOOLTIP_SCOPE;
-	
-	public static String PA_TOOLTIP_STATE;
+    public static String PA_LBL_AUTH_URL;
+
+    public static String PA_LBL_ACCESS_TOKEN_URL;
+
+    public static String PA_LBL_SCOPE;
+
+    public static String PA_LBL_STATE;
+
+    public static String PA_TOOLTIP_CALLBACK_URL;
+
+    public static String PA_TOOLTIP_AUTH_URL;
+
+    public static String PA_TOOLTIP_ACCESS_TOKEN_URL;
+
+    public static String PA_TOOLTIP_SCOPE;
+
+    public static String PA_TOOLTIP_STATE;
 
     public static String PA_ERROR_MSG_UNABLE_TO_SAVE_PART;
-    
+
     public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
-    
-	public static String EXC_INVALID_SWAGGER_FILE;
-	
-	public static String EXC_INVALID_POSTMAN_FILE;
 
-	public static String EXC_INVALID_WSDL_FILE;
+    public static String EXC_INVALID_SWAGGER_FILE;
 
-	public static String MSG_IMPORT;
+    public static String EXC_INVALID_POSTMAN_FILE;
+
+    public static String EXC_INVALID_WSDL_FILE;
+
+    public static String MSG_IMPORT;
 
     public static String HAND_NEW_REQUEST;
 
     public static String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ;
-    
+
     public static String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
-    
+
     public static String PA_TITLE_HTTP;
 
     public static String PA_LBL_HTTP_HEADER;
 
     public static String PA_LBL_HTTP_BODY;
-    
+
     public static String PA_LBL_VERIFICATION;
-    
+
     public static String PA_LBL_VARIABLE;
-    
+
     public static String PA_LBL_VARIABLE_EDITOR;
-    
+
     public static String PA_LBL_CONFIGURATION;
 
     public static String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
@@ -94,25 +94,25 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PA_LBL_SOAP_HEADER_OPT;
 
     public static String PA_LBL_SOAP_BODY;
-    
+
     public static String VIEW_LBL_REQ_TYPE;
 
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ;
-    
+
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;
-    
+
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN;
 
     public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
-    
+
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
-    
+
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
-    
-    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER; 
-    
-    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN; 
-    
+
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
+
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN;
+
     public static String VIEW_MENU_CONTEXT_INSERT_PROP;
 
     public static String VIEW_MENU_CONTEXT_DEL_PROPS;
@@ -123,14 +123,14 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String MSG_CANNOT_PARSE_WSDL;
 
-    public static String LBL_LOAD_FROM_WSDL;
+    public static String LBL_LOAD_SERVICE_FUNCTION;
 
     public static String MSG_FETCHING_FROM_WSDL;
 
     public static String BTN_SEND_TEST_REQUEST;
 
     public static String BTN_SAVE_DRAFT_REQUEST;
-    
+
     public static String BTN_LOAD_FROM_OPERATION;
 
     public static String PART_MSG_CANNOT_FORMAT_THE_XML_CONTENT;
@@ -162,15 +162,15 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String TAB_AUTHORIZATION;
 
     public static String TAB_RESPONSE;
-    
+
     public static String TAB_VERIFICATION_LOG;
 
     public static String LBL_RESPONSE_HEADER;
 
     public static String LBL_RESPONSE_BODY;
-    
+
     public static String LBL_RESPONSE_VERIFICATION_LOG;
-    
+
     public static String LBL_RESPONSE_VERIFICATION_RESULT;
 
     public static String BASIC_AUTH;
@@ -182,17 +182,17 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String DIA_MSG_UNABLE_TO_UPDATE_NETWORK_PAGE;
 
     public static String DIA_GRP_LBL_CERTITICATES;
-    
+
     public static String DIA_GRP_LBL_CLIENT_CERTIFICATES;
 
     public static String DIA_LBL_SSL_CERT_NONE_OPT;
 
     public static String DIA_LBL_SSL_CERT_BYPASS_OPT;
-    
+
     public static String DIA_LBL_KEYSTORE;
-            
+
     public static String DIA_BTN_BROWSE_FILE;
-            
+
     public static String DIA_LBL_KEYSTORE_PASSWORD;
 
     public static String PA_LBL_CONSUMER_KEY;
@@ -226,53 +226,73 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MSG_SPECIFIED_FILE_NOT_EXIST_WARN;
 
     // TextBodyEditor
-    
+
     public static String PARAM_TABLE_MENU_ITEM_ADD;
-    
+
     public static String PARAM_TABLE_MENU_ITEM_REMOVE;
 
     public static String PA_LBL_WRAP_LINE;
-    
+
     public static String PA_LBL_AUTO_UPDATE_CONTENT_TYPE;
 
     public static String MSG_CANNOT_OPEN_REQUEST;
-    
+
     public static String LBL_SENDING_REQUEST;
-    
+
     public static String LBL_BODY_NOT_SUPPORTED;
-    
+
     public static String LBL_VERIFICATION_INSTRUCTION;
-            
+
     public static String LBL_SNIPPET_HEADING;
-    
+
     public static String HIDE_SNIPPETS;
-            
+
     public static String SHOW_SNIPPETS;
-    
+
+    public static String SoapServicePart_BTN_LOAD_NEW_CONTENT;
+
+    public static String SoapServicePart_CB_USE_SERVICE_INFO_FROM_WSDL;
+
+    public static String SoapServicePart_LBL_SERVICE_ENDPOINT;
+
+    public static String SoapServicePart_MSG_SERVICE_ENDPOINT_UNDEFINED;
+
+    public static String SoapServicePart_MSG_SERVICE_FUNCTION_EMPTY;
+
+    public static String SoapServicePart_MSG_UNABLE_TO_LOAD_CONTENT_FROM_URL;
+
+    public static String SoapServicePart_MSG_UNABLE_TO_LOAD_SERVICE_FUNCTION;
+
+    public static String SoapServicePart_MSG_WARN_OVERRIDE_CONTENT;
+
+    public static String SoapServicePart_MSG_WSDL_LOCATION_UNDEFINED;
+
     public static String HOW_TO_ADD_JSON_AND_XML_PATH_TO_VERIFICATION_SCRIPT;
-    
+
     public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
-    
+
     public static String RequestHistoryHandler_PA_TITLE_REQUEST_HISTORY;
 
     public static String MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE;
-    
+
     public static String MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE;
-    
+
     public static String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
-    
+
+    public static String MSG_REQUEST_BODY_NO_CONTENT;
+
     public static String DIA_TITLE_TEST_CASE_BROWSER;
-    
+
     public static String TITLE_QUICKSTART;
-    
+
     public static String QUICKSTART_NEW_DRAFT_REST_REQUEST;
 
     public static String QUICKSTART_NEW_DRAFT_SOAP_REQUEST;
-    
+
     public static String QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL;
-    
+
     public static String QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL;
-    
+
     public static String LINK_CUSTOMIZE_API_METHODS;
 
     public static String METHOD_TABLE_COL_METHOD;
@@ -280,21 +300,21 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String METHOD_TABLE_COL_TYPE;
 
     public static String METHOD_TABLE_COL_DESCRIPTION;
-    
+
     public static String DiaEditWSMethod_LBL_METHOD;
-    
+
     public static String DiaEditWSMethod_LBL_DESCRIPTION;
-    
+
     public static String DiaEditWSMethod_MSG_EMPTY_METHOD_NAME;
-    
+
     public static String DiaEditWSMethod_MSG_DUPLICATED_METHOD_NAME;
-    
+
     public static String DiaEditWSMethod_TITLE_ADD_NEW;
-    
+
     public static String DiaEditWSMethod_TITLE_EDIT;
-    
-    public static String CB_FOLLOW_REDIRECTS; 
-    
+
+    public static String CB_FOLLOW_REDIRECTS;
+
     public static String FormDataBodyEditor_COL_CONTENT_TYPE;
 
     public static String FormDataBodyEditor_COL_NAME;
@@ -306,7 +326,7 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String FormDataBodyEditor_CONTENT_TYPE_AUTO;
 
     public static String PREF_WARN_CLIENT_CERT;
-    
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

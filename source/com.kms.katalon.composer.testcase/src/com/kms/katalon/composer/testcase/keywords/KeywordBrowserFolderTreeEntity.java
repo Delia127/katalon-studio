@@ -53,4 +53,8 @@ public class KeywordBrowserFolderTreeEntity implements IKeywordBrowserTreeEntity
     public void setChildren(List<IKeywordBrowserTreeEntity> children) {
         this.children = children;
     }
+    
+    public void appendNewChild(IKeywordBrowserTreeEntity newChild) {
+        this.children.add(newChild);
+    }
 }

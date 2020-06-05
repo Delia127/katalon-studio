@@ -20,25 +20,17 @@ import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.execution.setting.EmailSettingStore;
+import com.kms.katalon.execution.util.EmailTemplateUtil;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 
-public class EmailTemplatePage extends PreferencePageWithHelp {
+public abstract class EmailTemplatePage extends PreferencePageWithHelp {
 
     private File templateFile;
 
     private Browser browser;
 
-    private EmailSettingStore settingStore;
-
-    public EmailTemplatePage() {
-        settingStore = new EmailSettingStore(ProjectController.getInstance().getCurrentProject());
-    }
-
     @Override
     protected Control createContents(Composite parent) {
-
         Composite browserComposite = new Composite(parent, SWT.BORDER);
         browserComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         browserComposite.setLayout(new FillLayout());
@@ -47,22 +39,17 @@ public class EmailTemplatePage extends PreferencePageWithHelp {
         browser.setJavascriptEnabled(true);
 
         updateInput();
+
         return browserComposite;
     }
 
     private void updateInput() {
         try {
-            templateFile = new File(settingStore.getTemplateFolder(),
-                    String.format("template_%d.html", System.currentTimeMillis()));
+            File templateFolder = EmailTemplateUtil.getTemplateFolder();
+            templateFile = new File(templateFolder, String.format("template_%d.html", System.currentTimeMillis()));
 
-            String tinyMCE = FileUtils
-                    .readFileToString(new File(settingStore.getTemplateFolder(), "tinymce_template.html"), DF_CHARSET);
-            Map<String, Object> variables = new HashMap<>();
-            variables.put("htmlTemplate", settingStore.getEmailHTMLTemplate());
-            String newContent = GroovyStringUtil.evaluate(tinyMCE, variables);
-            FileUtils.write(templateFile, newContent, DF_CHARSET);
-            browser.setUrl(templateFile.toURI().toURL().toString());
-        } catch (IOException | URISyntaxException e) {
+            setEditorContent(getHTMLTemplate());
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
     }
@@ -83,7 +70,7 @@ public class EmailTemplatePage extends PreferencePageWithHelp {
         }
     }
 
-    private String getHtmlMessage() {
+    protected String getHtmlMessage() {
         String body = (String) browser.evaluate("return tinyMCE.get('myTextArea').getContent();");
         return String.format("<html><body>%s</body></html>", body);
     }
@@ -91,18 +78,21 @@ public class EmailTemplatePage extends PreferencePageWithHelp {
     @Override
     protected void performDefaults() {
         try {
-            String tinyMCE = FileUtils
-                    .readFileToString(new File(settingStore.getTemplateFolder(), "tinymce_template.html"), DF_CHARSET);
-
-            Map<String, Object> variables = new HashMap<>();
-            variables.put("htmlTemplate", settingStore.getDefaultEmailHTMLTemplate());
-
-            FileUtils.write(templateFile, GroovyStringUtil.evaluate(tinyMCE, variables), DF_CHARSET);
-            browser.setUrl(templateFile.toURI().toURL().toString());
-        } catch (IOException | URISyntaxException e) {
+            setEditorContent(getDefaultHTMLTemplate());
+        } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR_TITLE, e.getMessage());
             LoggerSingleton.logError(e);
         }
+    }
+
+    private void setEditorContent(String htmlContent) throws IOException, URISyntaxException {
+        String tinyMCE = EmailTemplateUtil.getTinyMCETemplate();
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("htmlTemplate", htmlContent);
+
+        FileUtils.write(templateFile, GroovyStringUtil.evaluate(tinyMCE, variables), DF_CHARSET);
+        browser.setUrl(templateFile.toURI().toURL().toString());
     }
 
     @Override
@@ -110,13 +100,20 @@ public class EmailTemplatePage extends PreferencePageWithHelp {
         if (!isControlCreated()) {
             return true;
         }
+
         try {
-            settingStore.setHTMLTemplate(getHtmlMessage());
+            save();
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR_TITLE, e.getMessage());
             LoggerSingleton.logError(e);
             return false;
         }
     }
+
+    protected abstract String getHTMLTemplate() throws Exception;
+
+    protected abstract String getDefaultHTMLTemplate() throws Exception;
+
+    protected abstract void save() throws Exception;
 }

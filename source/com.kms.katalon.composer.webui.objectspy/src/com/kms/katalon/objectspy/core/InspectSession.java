@@ -317,7 +317,11 @@ public class InspectSession implements Runnable {
             case IE_DRIVER:
                 return createIEDesiredCapabilities(capabilities);
             case FIREFOX_DRIVER:
-                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+                ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
+                if (proxyInfo.isApplyToDesiredCapabilities()) {
+                    capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+                }
+                return capabilities;
             default:
                 return capabilities;
         }
@@ -326,7 +330,9 @@ public class InspectSession implements Runnable {
     private DesiredCapabilities createIEDesiredCapabilities(DesiredCapabilities capabilities) {
         capabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, ABOUT_BLANK);
         capabilities.setCapability(CAP_IE_USE_PER_PROCESS_PROXY, "true");
-        if (!WebDriverProxyUtil.isNoProxy(RunConfiguration.getProxyInformation())) {
+        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
+        if (proxyInformation.isApplyToDesiredCapabilities()
+                && !WebDriverProxyUtil.isNoProxy(proxyInformation)) {
             capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy(startUrl, capabilities.getBrowserName()));
         }
         return capabilities;
@@ -345,7 +351,8 @@ public class InspectSession implements Runnable {
             throws IOException, ExtensionNotFoundException {
         
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
-        if (ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
+        if (proxyInformation.isApplyToDesiredCapabilities()
+                && ProxyOption.valueOf(proxyInformation.getProxyOption()) == ProxyOption.MANUAL_CONFIG) {
             if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
                 WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
                         "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));

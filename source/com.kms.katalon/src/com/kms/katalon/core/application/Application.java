@@ -17,12 +17,16 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
 import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.preference.ProxyPreferences;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.SystemProperties;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.support.testing.katserver.KatServer;
 import com.kms.katalon.util.ApplicationSession;
@@ -95,7 +99,8 @@ public class Application implements IApplication {
         try {
             // hide splash screen
             context.applicationRunning();
-            ApplicationRunningMode.setRunningMode(RunningMode.CONSOLE);
+            ApplicationRunningMode.set(RunningMode.CONSOLE);
+            System.setProperty(SystemProperties.KATALON_VERSION, VersionUtil.getCurrentVersion().getVersion());
             return com.kms.katalon.console.application.Application.runConsole(appArgs);
         } catch (Error e) {
             LogUtil.logError(e);
@@ -159,7 +164,9 @@ public class Application implements IApplication {
     }
 
     private int runGUI() {
-        ApplicationRunningMode.setRunningMode(RunningMode.GUI);
+        ApplicationRunningMode.set(RunningMode.GUI);
+        System.setProperty(SystemProperties.KATALON_VERSION, VersionUtil.getCurrentVersion().getVersion());
+        System.setProperty(SystemProperties.SYSTEM_PROXY, JsonUtil.toJson(ProxyPreferences.getSystemProxyInformation()));
         int returnCode = internalRunGUI();
         if (returnCode == PlatformUI.RETURN_RESTART) {
             return IApplication.EXIT_RESTART;

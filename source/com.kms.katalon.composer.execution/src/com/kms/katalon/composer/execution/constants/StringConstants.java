@@ -5,7 +5,9 @@ import com.kms.katalon.constants.GlobalStringConstants;
 public class StringConstants extends GlobalStringConstants {
     
     //MailSettingsPage
-    public static final String EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.emailTemplate";
+    public static final String TEST_SUITE_EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.testSuiteEmailTemplate";
+
+    public static final String TEST_SUITE_COLLECTION_EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.testSuiteCollectionEmailTemplate";
 
     // TestExecutionAddon
     public static final String KATALON_COMPOSER_EXECUTION_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.execution/";
@@ -302,6 +304,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_RETRY_TIMES = ComposerExecutionMessageConstants.DIA_LBL_RETRY_TIMES;
 
     public static final String DIA_CHK_FOR_FAILED_TEST_CASES = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES;
+
+    public static final String DIA_CHK_APPLY_PROXY = ComposerExecutionMessageConstants.DIA_CHK_APPLY_PROXY;
     
     public static final String DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA;
     
