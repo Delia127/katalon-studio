@@ -438,6 +438,10 @@ public class Trackings {
     public static void trackUseAutoUpdateChromeDriver() {
         trackUserAction("autoUpdateChromeDriver");
     }
+
+    public static void trackUseAutoUpdateEdgeChromiumDriver() {
+        trackUserAction("autoUpdateEdgeChromiumDriver");
+    }
     
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);

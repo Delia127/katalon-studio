@@ -39,13 +39,13 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_OPEN_PROJECT_DESCRIPTION = MessageConstants.PA_LBL_OPEN_PROJECT_DESCRIPTION;
 
-    public static final String PA_LBL_FAQ = MessageConstants.PA_LBL_FAQ;
+    public static final String PA_LBL_HELP_CENTER = MessageConstants.PA_LBL_HELP_CENTER;
 
     public static final String PA_TOOLTIP_FAQ = MessageConstants.PA_TOOLTIP_FAQ;
 
     public static final String PA_LBL_FAQ_DESCRIPTION = MessageConstants.PA_LBL_FAQ_DESCRIPTION;
 
-    public static final String PA_LBL_FAQ_URL = MessageConstants.PA_URL_FAQ;
+    public static final String PA_LBL_HELP_CENTER_URL = MessageConstants.PA_LBL_HELP_CENTER_URL;
 
     public static final String PA_LBL_GETTING_STARTED = MessageConstants.PA_LBL_GETTING_STARTED;
 

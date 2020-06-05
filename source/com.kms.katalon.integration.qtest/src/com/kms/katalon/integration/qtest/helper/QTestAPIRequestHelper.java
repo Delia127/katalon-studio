@@ -162,7 +162,7 @@ public class QTestAPIRequestHelper {
 
     public static Proxy getProxy() throws QTestIOException {
         try {
-            return ProxyUtil.getProxy(ProxyPreferences.getProxyInformation());
+            return ProxyUtil.getProxy(ProxyPreferences.getSystemProxyInformation());
         } catch (IOException e) {
             throw new QTestIOException(e);
         } catch (URISyntaxException e) {

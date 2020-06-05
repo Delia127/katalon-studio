@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
@@ -22,9 +23,13 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.FluentWait;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.WindowsTestObject;
+import com.kms.katalon.core.windows.constants.WindowsDriverConstants;
+import com.kms.katalon.core.windows.constants.CoreWindowsMessageConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.core.windows.driver.WindowsSession;
 import com.kms.katalon.core.windows.keyword.exception.DriverNotStartedException;
@@ -34,7 +39,7 @@ import io.appium.java_client.windows.WindowsDriver;
 
 public class WindowsActionHelper {
 
-    private KeywordLogger logger = KeywordLogger.getInstance(WindowsActionHelper.class);
+    private static KeywordLogger logger = KeywordLogger.getInstance(WindowsActionHelper.class);
 
     private WindowsSession windowsSession;
 
@@ -42,12 +47,41 @@ public class WindowsActionHelper {
         this.windowsSession = windowsSession;
     }
 
+    public static int checkTimeout(int timeout) throws IllegalArgumentException {
+        if (timeout < 0) {
+            throw new IllegalArgumentException(
+                    String.format("Timeout '%s' is invalid. Cannot be a negative number", timeout));
+        } else if (timeout == 0) {
+            int defaultPageLoadTimeout = getDefaultTimeout();
+            logger.logWarning(MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_TIMEOUT, timeout,
+                    defaultPageLoadTimeout));
+            return defaultPageLoadTimeout;
+        }
+        return timeout;
+    }
+
     public static WindowsActionHelper create(WindowsSession windowsSession) {
         return new WindowsActionHelper(windowsSession);
     }
 
-    public WebElement findElement(WindowsTestObject testObject)
-            throws IllegalArgumentException, DriverNotStartedException {
+    public WebElement findElement(WindowsTestObject testObject) {
+        try {
+            return this.findElement(testObject, getDefaultTimeout());
+        } catch (NoSuchElementException exception) {
+            throw new StepFailedException("Element: " + testObject.getObjectId() + " not found");
+        }
+    }
+
+    public WebElement findElement(WindowsTestObject testObject, int timeout) {
+        try {
+            return this.findElement(testObject, timeout, true);
+        } catch (NoSuchElementException exception) {
+            throw new StepFailedException("Element: " + testObject.getObjectId() + " not found");
+        }
+    }
+
+    public WebElement findElement(WindowsTestObject testObject, int timeout, boolean continueWhenNotFound)
+            throws IllegalArgumentException, DriverNotStartedException, NoSuchElementException {
         if (testObject == null) {
             throw new IllegalArgumentException("Test object cannot be null");
         }
@@ -58,37 +92,72 @@ public class WindowsActionHelper {
             throw new IllegalArgumentException(String.format("Test object %s does not have locator for strategy: %s. ",
                     testObject.getObjectId(), selectedLocator));
         }
-        
+
         if (windowsSession == null) {
             throw new SessionNotStartedException("Windows Session has not started yet!");
         }
 
+        timeout = WindowsActionHelper.checkTimeout(timeout);
         WindowsDriver<WebElement> windowsDriver = windowsSession.getRunningDriver();
         if (windowsDriver == null) {
             throw new DriverNotStartedException("WindowsDriver has not started yet!");
         }
 
-        switch (selectedLocator) {
-            case ACCESSIBILITY_ID:
-                return windowsDriver.findElementByAccessibilityId(locator);
-            case CLASS_NAME:
-                return windowsDriver.findElementByClassName(locator);
-            case ID:
-                return windowsDriver.findElementById(locator);
-            case NAME:
-                return windowsDriver.findElementByName(locator);
-            case TAG_NAME:
-                return windowsDriver.findElementByTagName(locator);
-            case XPATH:
-                return windowsDriver.findElementByXPath(locator);
-            default:
-                break;
+        try {
+            windowsDriver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+
+            FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(windowsDriver)
+                    .withTimeout(Duration.ofSeconds(timeout))
+                    .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT));
+            if (continueWhenNotFound) {
+                wait.ignoring(NoSuchElementException.class);
+            }
+            WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
+                @Override
+                public WebElement apply(WindowsDriver<WebElement> driver) {
+
+                    switch (selectedLocator) {
+                    case ACCESSIBILITY_ID:
+                        return windowsDriver.findElementByAccessibilityId(locator);
+                    case CLASS_NAME:
+                        return windowsDriver.findElementByClassName(locator);
+                    case ID:
+                        return windowsDriver.findElementById(locator);
+                    case NAME:
+                        return windowsDriver.findElementByName(locator);
+                    case TAG_NAME:
+                        return windowsDriver.findElementByTagName(locator);
+                    case XPATH:
+                        return windowsDriver.findElementByXPath(locator);
+                    default:
+                        return null;
+                    }
+                }
+            });
+            return webElement;
+        } finally {
+            windowsDriver.manage().timeouts().implicitlyWait(getDefaultTimeout(), TimeUnit.SECONDS);
         }
-        return null;
     }
 
-    public List<WebElement> findElements(WindowsTestObject testObject)
-            throws IllegalArgumentException, DriverNotStartedException {
+    public List<WebElement> findElements(WindowsTestObject testObject) {
+        try {
+            return this.findElements(testObject, getDefaultTimeout());
+        } catch (NoSuchElementException exception) {
+            throw new StepFailedException("Element: " + testObject.getObjectId() + " not found");
+        }
+    }
+
+    public List<WebElement> findElements(WindowsTestObject testObject, int timeout) {
+        try {
+            return this.findElements(testObject, timeout, true);
+        } catch (NoSuchElementException exception) {
+            throw new StepFailedException("Element: " + testObject.getObjectId() + " not found");
+        }
+    }
+
+    public List<WebElement> findElements(WindowsTestObject testObject, int timeout, boolean continueWhenNotFound)
+            throws IllegalArgumentException, DriverNotStartedException, NoSuchElementException {
         if (testObject == null) {
             throw new IllegalArgumentException("Test object cannot be null");
         }
@@ -104,24 +173,49 @@ public class WindowsActionHelper {
         if (windowsDriver == null) {
             throw new DriverNotStartedException("WindowsDriver has not started yet!");
         }
+        try {
+            windowsDriver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
 
-        switch (selectedLocator) {
-            case ACCESSIBILITY_ID:
-                return windowsDriver.findElementsByAccessibilityId(locator);
-            case CLASS_NAME:
-                return windowsDriver.findElementsByClassName(locator);
-            case ID:
-                return windowsDriver.findElementsById(locator);
-            case NAME:
-                return windowsDriver.findElementsByName(locator);
-            case TAG_NAME:
-                return windowsDriver.findElementsByTagName(locator);
-            case XPATH:
-                return windowsDriver.findElementsByXPath(locator);
-            default:
-                break;
+            FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(windowsDriver)
+                    .withTimeout(Duration.ofSeconds(timeout))
+                    .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT));
+            if (continueWhenNotFound) {
+                wait.ignoring(NoSuchElementException.class);
+            }
+            List<WebElement> webElementList = wait.until(new Function<WindowsDriver<WebElement>, List<WebElement>>() {
+
+                @Override
+                public List<WebElement> apply(WindowsDriver<WebElement> arg0) {
+                    switch (selectedLocator) {
+                    case ACCESSIBILITY_ID:
+                        return windowsDriver.findElementsByAccessibilityId(locator);
+                    case CLASS_NAME:
+                        return windowsDriver.findElementsByClassName(locator);
+                    case ID:
+                        return windowsDriver.findElementsById(locator);
+                    case NAME:
+                        return windowsDriver.findElementsByName(locator);
+                    case TAG_NAME:
+                        return windowsDriver.findElementsByTagName(locator);
+                    case XPATH:
+                        return windowsDriver.findElementsByXPath(locator);
+                    default:
+                        return null;
+                    }
+                }
+            });
+            return webElementList;
+        } finally {
+            windowsDriver.manage().timeouts().implicitlyWait(getDefaultTimeout(), TimeUnit.SECONDS);
         }
-        return null;
+    }
+    
+    private static int getDefaultTimeout() {
+        try {
+            return RunConfiguration.getTimeOut();
+        } catch (Exception exception1) {
+            return 0;
+        }
     }
 
     public String getText(WindowsTestObject testObject) {
@@ -240,9 +334,8 @@ public class WindowsActionHelper {
     public void switchToApplication() {
         windowsSession.setApplicationSession(true);
     }
-    
-    public WindowsDriver<WebElement> switchToWindowTitle(String windowName)
-            throws IOException, URISyntaxException {
+
+    public WindowsDriver<WebElement> switchToWindowTitle(String windowName) throws IOException, URISyntaxException {
         if (windowsSession.getDesktopDriver() == null) {
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
@@ -252,12 +345,14 @@ public class WindowsActionHelper {
             windowsSession.setDesktopDriver(desktopDriver);
         }
         WindowsDriver<WebElement> desktopDriver = windowsSession.getDesktopDriver();
-        
-        FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(desktopDriver)
-                .withTimeout(Duration.ofSeconds(60))
-                .pollingEvery(Duration.ofSeconds(5))
-                .ignoring(NoSuchElementException.class);
 
+        FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(desktopDriver)
+                .withTimeout(Duration.ofMillis(WindowsActionSettings.DF_WAIT_ACTION_TIMEOUT_IN_MILLIS))
+                .pollingEvery(Duration.ofMillis(5000));
+        
+        logger.logInfo(MessageFormat.format(CoreWindowsMessageConstants.WindowsActionHelper_INFO_START_FINDING_WINDOW,
+                windowName, WindowsActionSettings.DF_WAIT_ACTION_TIMEOUT_IN_MILLIS));
+        
         WebElement webElement = wait.until(new Function<WindowsDriver<WebElement>, WebElement>() {
             @Override
             public WebElement apply(WindowsDriver<WebElement> driver) {
@@ -268,7 +363,8 @@ public class WindowsActionHelper {
                             webElement = element;
                             break;
                         }
-                    } catch (WebDriverException ignored) {}
+                    } catch (WebDriverException ignored) {
+                    }
                 }
 
                 if (webElement == null) {
@@ -278,7 +374,8 @@ public class WindowsActionHelper {
                                 webElement = element;
                                 break;
                             }
-                        } catch (WebDriverException ignored) {}
+                        } catch (WebDriverException ignored) {
+                        }
                     }
                 }
                 return webElement;
@@ -331,10 +428,12 @@ public class WindowsActionHelper {
                     Integer.toHexString(Integer.parseInt(appTopLevelWindow)));
             WindowsDriver<WebElement> windowsDriver = WindowsDriverFactory.newWindowsDriver(
                     windowsSession.getRemoteAddressURL(), retryDesiredCapabilities, windowsSession.getProxy());
+            
+            windowsDriver.manage().timeouts().implicitlyWait(getDefaultTimeout(), TimeUnit.SECONDS);
 
             windowsSession.setApplicationDriver(windowsDriver);
             windowsSession.setDesktopDriver(desktopDriver);
-            
+
             windowsSession.setApplicationSession(true);
             return windowsDriver;
         }

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.constants.SystemProperties;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.dal.exception.InvalidNameException;
 import com.kms.katalon.dal.fileservice.EntityService;
@@ -95,6 +96,11 @@ public class WebElementFileServiceManager {
             return null;
         }
 
+        if (newTestObject instanceof WebServiceRequestEntity) {
+        	WebServiceRequestEntity requestEntity = (WebServiceRequestEntity) newTestObject;
+        	requestEntity.setKatalonVersion(System.getProperty(SystemProperties.KATALON_VERSION));
+        }
+        
         EntityService.getInstance().saveEntity(newTestObject);
         FolderFileServiceManager.refreshFolder(newTestObject.getParentFolder());
 

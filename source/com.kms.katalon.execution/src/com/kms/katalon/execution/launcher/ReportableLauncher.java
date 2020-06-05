@@ -74,10 +74,17 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     private Date endTime;
     
     private TestSuiteLogRecord suiteLogRecord;
+    
+    private boolean runInTestSuiteCollection = false;
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
+        this(manager, runConfig, false);
+    }
+    
+    public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig, boolean runInTestSuiteCollection) {
         super(manager, runConfig);
         this.setExecutionUUID(runConfig.getExecutionUUID());
+        this.runInTestSuiteCollection = runInTestSuiteCollection;
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
@@ -266,18 +273,32 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (emailConfig == null || !emailConfig.canSend()) {
             return;
         }
+        
+        if (runInTestSuiteCollection) {
+            if (!emailConfig.isSendTestSuiteCollectionReportEnabled()) {
+                return;
+            }
 
-        if (emailConfig.isSendEmailTestFailedOnly() && testSuiteLogRecord.getStatus() != null
-                && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
-            return;
+            if (emailConfig.isSkipInvidiualTestSuiteReport()) {
+                return;
+            }
+        } else {
+            if (!emailConfig.isSendTestSuiteReportEnabled()) {
+                return;
+            }
+
+            if (emailConfig.isSendReportTestFailedOnly() && testSuiteLogRecord.getStatus() != null
+                    && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
+                return;
+            }
         }
-
+        
         setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
         writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
                 Arrays.toString(emailConfig.getTos())));
 
         // Send report email
-        MailUtil.sendSummaryMail(emailConfig, testSuiteLogRecord, new EmailVariableBinding(testSuiteLogRecord));
+        MailUtil.sendSummaryMailForTestSuite(emailConfig, testSuiteLogRecord, EmailVariableBinding.getVariablesForTestSuiteEmail(testSuiteLogRecord));
 
         writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
     }
@@ -571,5 +592,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     public TestSuiteLogRecord getTestSuiteLogRecord() {
         return suiteLogRecord;
+    }
+
+    public boolean isRunInTestSuiteCollection() {
+        return runInTestSuiteCollection;
+    }
+
+    public void setRunInTestSuiteCollection(boolean runInTestSuiteCollection) {
+        this.runInTestSuiteCollection = runInTestSuiteCollection;
     }
 }

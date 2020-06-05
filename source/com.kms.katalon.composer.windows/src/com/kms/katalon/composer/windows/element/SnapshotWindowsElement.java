@@ -117,6 +117,7 @@ public class SnapshotWindowsElement implements TreeWindowsElement {
         capturedWindowsElement.setLink(this);
         capturedWindowsElement.setChecked(true);
         capturedWindowsElement.setName(name);
+        capturedWindowsElement.setTagName(tagName);
         capturedWindowsElement.setProperties(new HashMap<>(properties));
         capturedWindowsElement.setSnapshotWindowsElement(this);
 
