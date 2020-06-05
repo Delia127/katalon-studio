@@ -1,5 +1,6 @@
 package com.katalon.plugin.smart_xpath.helpers;
 
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
@@ -69,20 +70,12 @@ public class FileWatcher {
                         Path filePath = FileSystems.getDefault().getPath(trackedFile);
                         WatchService watcher = FileSystems.getDefault().newWatchService();
                         Path dir = filePath.getParent();
-                        WatchKey key = dir.register(watcher, ENTRY_DELETE, ENTRY_MODIFY);
+                        WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                         // key = watcher.take();
 
                         while (canRun && !isTrackedFileUpdated) {
                             for (WatchEvent<?> watchEvent : key.pollEvents()) {
                                 WatchEvent.Kind<?> kind = watchEvent.kind();
-                                if (kind == ENTRY_DELETE) {
-                                    canRun = false;
-                                    break;
-                                }
-                                if (kind != ENTRY_MODIFY) {
-                                    continue;
-                                }
-
                                 WatchEvent<Path> event = (WatchEvent<Path>) watchEvent;
                                 Path filename = event.context();
                                 if (filename.compareTo(filePath.getFileName()) == 0) {
