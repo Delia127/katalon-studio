@@ -50,6 +50,7 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.common.XPathBuilder.PropertyType;
+import com.kms.katalon.core.webui.common.internal.BrokenTestObject;
 import com.kms.katalon.core.webui.common.internal.ImageLocatorController;
 import com.kms.katalon.core.webui.common.internal.SelfHealingController;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
@@ -725,15 +726,13 @@ public class WebUiCommonHelper extends KeywordHelper {
             return findElementsByDefault(testObject, timeout);
         }
 
-        List<WebElement> foundElements = null;
         try {
-            foundElements = findElementsByDefault(testObject, timeout);
+            List<WebElement> foundElements = findElementsByDefault(testObject, timeout);
+            if (foundElements != null && !foundElements.isEmpty()) {
+                return foundElements;
+            }
         } catch (NoSuchElementException exception) {
             // Just skip
-        }
-        
-        if (foundElements != null && !foundElements.isEmpty()) {
-            return foundElements;
         }
 
         boolean isWebPlatform = KeywordExecutionContext.isRunningWebUI();
@@ -748,6 +747,16 @@ public class WebUiCommonHelper extends KeywordHelper {
         SelfHealingController.logWarning(MessageFormat
                 .format(StringConstants.KW_LOG_INFO_DEFAULT_LOCATOR_FAILED_TRY_SELF_HEALING, testObject.getObjectId()));
 
+        List<TestObject> healedTestObjects = SelfHealingController.findHealedTestObjects(testObject);
+        if (healedTestObjects != null && !healedTestObjects.isEmpty()) {
+            for (TestObject healedTestObject : healedTestObjects) {
+                List<WebElement> foundElements = findElementsByDefault(healedTestObject, timeout);
+                if (foundElements != null && !foundElements.isEmpty()) {
+                    return foundElements;
+                }
+            }
+        }
+
         List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
 
         for (Pair<SelectorMethod, Boolean> element : methodsPriorityOrder) {
@@ -756,30 +765,11 @@ public class WebUiCommonHelper extends KeywordHelper {
                 try {
                     FindElementsResult findResult = findElementsBySelectedMethod(testObject, timeout, method, true);
                     if (!findResult.isEmpty()) {
-                        foundElements = findResult.getElements();
-                        WebElement foundElement = foundElements.get(0);
-
-                        SelectorMethod recoveryMethod = findResult.getLocatorMethod();
-                        SelectorMethod proposedMethod = recoveryMethod == SelectorMethod.IMAGE
-                                ? SelectorMethod.XPATH
-                                : recoveryMethod;
-                        String proposedLocator = recoveryMethod == SelectorMethod.IMAGE
-                                ? generateNewXPath(foundElement)
-                                : findResult.getLocator();
-
-                        String elementScreenshot = findResult.getScreenshot();
-                        if (StringUtils.isBlank(elementScreenshot)) {
-                            WebDriver webDriver = DriverFactory.getWebDriver();
-                            elementScreenshot = SelfHealingController.takeScreenShot(webDriver,
-                                    foundElement, testObject, recoveryMethod.name());
-                        }
+                        BrokenTestObject brokenTestObject = registerBrokenTestObject(findResult, testObject);
 
                         SelfHealingController
                                 .logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR,
-                                        testObject.getObjectId(), proposedLocator));
-
-                        SelfHealingController.registerBrokenTestObject(testObject, proposedLocator, proposedMethod,
-                                recoveryMethod, elementScreenshot);
+                                        testObject.getObjectId(), brokenTestObject.getProposedLocator()));
                         return findResult.getElements();
                     }
                 } catch (NoSuchElementException e) {
@@ -787,7 +777,31 @@ public class WebUiCommonHelper extends KeywordHelper {
                 }
             }
         }
-        return foundElements;
+
+        return Collections.emptyList();
+    }
+    
+    private static BrokenTestObject registerBrokenTestObject(FindElementsResult findResult, TestObject testObject) {
+        List<WebElement> foundElements = findResult.getElements();
+        WebElement foundElement = foundElements.get(0);
+
+        SelectorMethod recoveryMethod = findResult.getLocatorMethod();
+        SelectorMethod proposedMethod = recoveryMethod == SelectorMethod.IMAGE
+                ? SelectorMethod.XPATH
+                : recoveryMethod;
+        String proposedLocator = recoveryMethod == SelectorMethod.IMAGE
+                ? generateNewXPath(foundElement)
+                : findResult.getLocator();
+
+        String elementScreenshot = findResult.getScreenshot();
+        if (StringUtils.isBlank(elementScreenshot)) {
+            WebDriver webDriver = DriverFactory.getWebDriver();
+            elementScreenshot = SelfHealingController.takeScreenShot(webDriver,
+                    foundElement, testObject, recoveryMethod.name());
+        }
+
+        return SelfHealingController.registerBrokenTestObject(testObject, proposedLocator, proposedMethod,
+                recoveryMethod, elementScreenshot);
     }
 
     private static List<WebElement> findElementsByDefault(TestObject testObject, int timeout) {

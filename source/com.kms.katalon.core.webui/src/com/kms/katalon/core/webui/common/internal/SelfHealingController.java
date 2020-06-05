@@ -4,6 +4,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -17,11 +20,12 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.testobject.TestObjectBuilder;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 
 /**
- * A controller used by Smart XPath Plug-in.
+ * A controller used by Self-Healing Plug-in.
  *
  */
 public class SelfHealingController {
@@ -42,7 +46,7 @@ public class SelfHealingController {
 	private static KeywordLogger logger = KeywordLogger.getInstance(SelfHealingController.class);
 
 	/**
-	 * This method initializes Smart XPath Logger with a logger of the calling
+	 * This method initializes Self-Healing Logger with a logger of the calling
 	 * object, should be called first before doing anything
 	 * 
 	 * @param logger
@@ -53,7 +57,7 @@ public class SelfHealingController {
 	}
 
 	/**
-	 * Log an information with Smart XPath plug-in's internal prefix. Note that
+	 * Log an information with Self-Healing plug-in's internal prefix. Note that
 	 * a KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
 	 * 
 	 * @param message
@@ -63,7 +67,7 @@ public class SelfHealingController {
 	}
 
 	/**
-	 * Log an error with Smart XPath plug-in's internal prefix. Note that a
+	 * Log an error with Self-Healing plug-in's internal prefix. Note that a
 	 * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
 	 * 
 	 * @param message
@@ -73,7 +77,7 @@ public class SelfHealingController {
 	}
 	
 	/**
-     * Log an error with Smart XPath plug-in's internal prefix. Note that a
+     * Log an error with Self-Healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
@@ -84,7 +88,7 @@ public class SelfHealingController {
     }
 
     /**
-     * Log an warning with Smart XPath plug-in's internal prefix. Note that a
+     * Log an warning with Self-Healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
@@ -144,9 +148,9 @@ public class SelfHealingController {
 	 *            Path to the screenshot of the web element retrieved by the
 	 *            proposed locator
 	 */
-    public static void registerBrokenTestObject(TestObject testObject, String proposedLocator,
+    public static BrokenTestObject registerBrokenTestObject(TestObject testObject, String proposedLocator,
             SelectorMethod proposedLocatorMethod, SelectorMethod recoveryMethod, String pathToScreenshot) {
-        String jsAutoHealingPath = getSmartXPathInternalFilePath();
+        String jsAutoHealingPath = getSelfHealingDataFilePath();
         BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, proposedLocator, proposedLocatorMethod,
                 recoveryMethod, pathToScreenshot);
         BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
@@ -156,6 +160,7 @@ public class SelfHealingController {
 		} else {
 			logError(jsAutoHealingPath + " does not exist or is provided by Self-Healing Plugin!");
 		}
+        return brokenTestObject;
 	}
 
 	private static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath) {
@@ -196,12 +201,45 @@ public class SelfHealingController {
 		brokenTestObject.setPathToScreenshot(pathToScreenshot);
 		return brokenTestObject;
 	}
+    
+    public static List<TestObject> findHealedTestObjects(TestObject testObject) {
+        String testObjectId = testObject.getObjectId();
+        String jsAutoHealingPath = getSelfHealingDataFilePath();
+        BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
+        if (existingBrokenTestObjects != null) {
+            Set<BrokenTestObject> brokenTestObjects = existingBrokenTestObjects.getBrokenTestObjects();
+            if (brokenTestObjects != null && !brokenTestObjects.isEmpty()) {
+                return brokenTestObjects.stream()
+                        .filter(brokenTestObject -> {
+                            return StringUtils.equals(brokenTestObject.getTestObjectId(), testObjectId);
+                        })
+                        .map(brokenTestObject -> healTestObject(testObject, brokenTestObject))
+                        .collect(Collectors.toList());
+            }
+        }
+        return null;
+    }
+    
+    private static TestObject healTestObject(TestObject testObject, BrokenTestObject brokenTestObject) {
+        TestObject clone = new TestObjectBuilder(testObject.getObjectId())
+                .withImagePath(testObject.getImagePath())
+                .withParentObject(testObject.getParentObject())
+                .withProperties(testObject.getProperties())
+                .withSelectorMethod(testObject.getSelectorMethod())
+                .withXPaths(testObject.getXpaths())
+                .withUseRelativeImagePathEqual(testObject.getUseRelativeImagePath())
+                .withSelectorCollection(testObject.getSelectorCollection())
+                .build();
+        clone.setSelectorMethod(brokenTestObject.getProposedLocatorMethod());
+        clone.setSelectorValue(brokenTestObject.getProposedLocatorMethod(), brokenTestObject.getProposedLocator());
+        return clone;
+    }
 
-	public static String getSmartXPathFolderPath() {
+	public static String getSelfHealingFolderPath() {
 		return FilenameUtils.concat(RunConfiguration.getProjectDir(), SELF_HEALING_FOLDER_PATH);
 	}
 
-	public static String getSmartXPathInternalFilePath() {
+	public static String getSelfHealingDataFilePath() {
 		return FilenameUtils.concat(RunConfiguration.getProjectDir(), SELF_HEALING_DATA_FILE_PATH);
 	}
 
@@ -219,13 +257,13 @@ public class SelfHealingController {
 	 * @return A path to the newly taken screenshot, an empty string otherwise
 	 */
 	public static String takeScreenShot(WebDriver webDriver, WebElement element, String name) {
-		String smartXPathFolder = getSmartXPathFolderPath();
+		String selfHealingFolder = getSelfHealingFolderPath();
 		try {
-			String fullPath = WebUiCommonHelper.saveWebElementScreenshot(webDriver, element, name, smartXPathFolder);
+			String fullPath = WebUiCommonHelper.saveWebElementScreenshot(webDriver, element, name, selfHealingFolder);
 			logInfo("Screenshot: " + fullPath);
 			return fullPath;
 		} catch (Exception ex) {
-			logError(MessageFormat.format(StringConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT, smartXPathFolder,
+			logError(MessageFormat.format(StringConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT, selfHealingFolder,
 					ex.getMessage()), ex);
 		}
 		return StringUtils.EMPTY;
