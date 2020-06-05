@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -35,6 +36,7 @@ public class FileUtil {
 	}
 	
 	public static String getRelativePath(String path, String baseDir) {
-	    return new File(baseDir).toURI().relativize(new File(path).toURI()).getPath();
+	    String relativePath = new File(baseDir).toPath().relativize(new File(path).toPath()).toString();
+	    return FilenameUtils.separatorsToUnix(relativePath);
 	}
 }
