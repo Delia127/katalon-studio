@@ -568,9 +568,13 @@ public class RunConfiguration {
     }
 
 	public static Boolean shouldApplySelfHealing() {
-	    boolean isSelfHealingEnabled = (boolean) getExecutionGeneralProperties().get(SELF_HEALING_ENABLE);
-        boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SELF_HEALING);
-		return isSelfHealingEnabled && allowUsingSmartXPath;
+	    try {
+	        boolean isSelfHealingEnabled = (boolean) getExecutionGeneralProperties().get(SELF_HEALING_ENABLE);
+	        boolean allowUsingSmartXPath = (boolean) getProperty(ALLOW_USING_SELF_HEALING);
+	        return isSelfHealingEnabled && allowUsingSmartXPath;
+	    } catch (Exception exception) {
+	        return false;
+	    }
 	}
 
     public static List<Pair<SelectorMethod, Boolean>> getMethodsPriorityOrder() {

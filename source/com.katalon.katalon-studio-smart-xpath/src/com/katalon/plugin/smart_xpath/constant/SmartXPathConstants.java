@@ -13,7 +13,7 @@ public class SmartXPathConstants {
 
     public static final String SELF_HEALING_FOLDER_PATH = REPORT_FOLDER_NAME + "/" + SELF_HEALING_FOLDER_NAME;
 
-    public static final String SELF_HEALING_TOOLBAR_MENU_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/icons/self-healing_32px@2x.png";
+    public static final String SELF_HEALING_TOOLBAR_MENU_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/icons/self-healing_32x24.png";
 
     public static final String SELF_HEALING_EXECUTION_SETTINGS_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing.execution";
 

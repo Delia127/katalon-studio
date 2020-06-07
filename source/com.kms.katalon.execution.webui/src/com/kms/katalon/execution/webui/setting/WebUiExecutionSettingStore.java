@@ -43,8 +43,6 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true";
 
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
-
-    public static final boolean EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED = false;
     
     public static final String EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT = TimeUnit.SECONDS.toString();
     
@@ -216,18 +214,6 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         }
         return SelectorMethod.valueOf(str);
     }
-
-    public boolean getImageRecognitionEnabled() {
-        try {
-            return getBoolean(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED);
-        } catch (IOException e) {
-            return EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED;
-        }
-    }
-
-    public void setDefaultImageRecognitionEnabled(boolean selection) throws IOException {
-        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, selection);
-    }
     
     public void setUseDelayActionTimeUnit(TimeUnit timeUnit) throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_TIME_UNIT, timeUnit.toString());
@@ -285,15 +271,19 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         setProperty(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, DEFAULT_METHODS_PRIORITY_ORDER);
     }
 
-    public boolean isEnableSelfHealing() throws IOException {
-        return getBoolean(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLE, DEFAULT_IS_ENABLE_SELF_HEALING);
+    public boolean getSelfHealingEnabled() {
+        try {
+            return getBoolean(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, DEFAULT_IS_ENABLE_SELF_HEALING);
+        } catch (IOException e) {
+            return DEFAULT_IS_ENABLE_SELF_HEALING;
+        }
     }
 
     public void setEnableSelfHealing(boolean isEnable) throws IOException{
-        setProperty(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLE, isEnable);
+        setProperty(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, isEnable);
     }
 
     public void setDefaultEnableSelfHealing() throws IOException{
-        setProperty(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLE, DEFAULT_IS_ENABLE_SELF_HEALING);
+        setProperty(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, DEFAULT_IS_ENABLE_SELF_HEALING);
     }
 }

@@ -34,7 +34,7 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
                     webUiSettingStore.getIgnorePageLoadTimeout());
             reportProps.put(RunConfiguration.EXCLUDE_KEYWORDS, webUiSettingStore.getExcludeKeywordList());
             reportProps.put(RunConfiguration.METHODS_PRIORITY_ORDER, webUiSettingStore.getMethodsPriorityOrder());
-            reportProps.put(RunConfiguration.SELF_HEALING_ENABLE, webUiSettingStore.isEnableSelfHealing());
+            reportProps.put(RunConfiguration.SELF_HEALING_ENABLE, webUiSettingStore.getSelfHealingEnabled());
             reportProps.put(RunConfiguration.XPATHS_PRIORITY, webUiSettingStore.getCapturedTestObjectXpathLocators());
         } catch (IOException e) {
             LogUtil.logError(e);

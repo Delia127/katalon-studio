@@ -467,6 +467,7 @@ public class WebElementUtils {
     public static WebElementEntity convertWebElementToTestObject(WebElement element, WebElementEntity refElement,
             FolderEntity parentFolder) throws Exception {
         WebElementEntity newWebElement = new WebElementEntity();
+        newWebElement.setUseRalativeImagePath(true);
         newWebElement.setName(ObjectRepositoryController.getInstance().getAvailableWebElementName(parentFolder,
                 toValidFileName(StringUtils.trim(element.getName()))));
         newWebElement.setParentFolder(parentFolder);

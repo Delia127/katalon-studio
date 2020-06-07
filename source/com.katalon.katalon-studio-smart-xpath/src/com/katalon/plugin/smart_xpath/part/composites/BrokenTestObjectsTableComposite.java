@@ -38,11 +38,12 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.util.collections.Pair;
 
 public class BrokenTestObjectsTableComposite extends Composite {
 
     private final int SCREENSHOT_COLUMN_INDEX = 4;
+
+    private final int APRROVE_COLUMN_INDEX = 5;
 
     private ProjectEntity project;
 
@@ -86,7 +87,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
 
             @Override
             public void handleEvent(Event event) {
-                if (event.index == 5) {
+                if (event.index == APRROVE_COLUMN_INDEX) {
                     BrokenTestObject data = (BrokenTestObject) ((TableItem) event.item).getData();
                     Image tmpImage = getCheckboxSymbol(data.getApproved());
                     int tmpWidth = 0;
@@ -243,7 +244,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
         tableColumnLayout.setColumnData(colProposedLocator.getColumn(), new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(colRecoverBy.getColumn(), new ColumnWeightData(5, 70));
         tableColumnLayout.setColumnData(colScreenshot.getColumn(), new ColumnWeightData(5, 70));
-        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(5, 70));
+        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(4, 60));
     }
 
     protected Image getCheckboxSymbol(boolean isChecked) {
