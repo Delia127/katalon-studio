@@ -25,8 +25,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -358,7 +356,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         chkOverridePlatform = new Button(overrideComposite, SWT.CHECK);
         chkOverridePlatform.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
-        chkOverridePlatform.setText(StringConstants.DIA_CHK_OVERRIDE_PLATFORM);
+        chkOverridePlatform.setText(ComposerExecutionMessageConstants.DIA_CHK_OVERRIDE_PLATFORM);
 
         Label lblHelp = new Label(overrideComposite, SWT.NONE);
         lblHelp.setImage(ImageManager.getImage(IImageKeys.HELP_16));
@@ -1256,10 +1254,12 @@ public class GenerateCommandDialog extends AbstractDialog {
             return;
         }
         txtTestSuite.setText(testSuite.getIdForDisplay());
+        boolean isTestSuite = false;
         if (testSuite instanceof TestSuiteEntity) {
             isTestSuite = true;
             this.testSuite = (TestSuiteEntity) testSuite;
         }
+        ControlUtils.recursiveSetEnabled(grpPlatform, isTestSuite);
         updatePlatformLayout();
     }
 
