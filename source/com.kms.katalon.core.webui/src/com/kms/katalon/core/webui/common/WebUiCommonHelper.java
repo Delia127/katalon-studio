@@ -760,6 +760,9 @@ public class WebUiCommonHelper extends KeywordHelper {
         List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
 
         for (Pair<SelectorMethod, Boolean> element : methodsPriorityOrder) {
+            if (!element.getRight()) {
+                continue;
+            }
             SelectorMethod method = element.getLeft();
             if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
                 try {
