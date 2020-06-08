@@ -6,6 +6,7 @@ public class Command {
 	private String command;
 	private String target;
 	private String value;
+    private String comment;
 	private List<String> options;
 	
 	public Command(){}
@@ -14,6 +15,7 @@ public class Command {
 		this.command = command;
 		this.target = target;
 		this.value = value;
+        this.comment = "";
 	}
 	
 	public String getCommand() {
@@ -40,6 +42,14 @@ public class Command {
 		this.value = value;
 	}
 	
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
 	public List<String> getOptions() {
 		return options;
 	}

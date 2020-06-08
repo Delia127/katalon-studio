@@ -8,6 +8,8 @@ import com.kms.katalon.selenium.ide.model.TestCase;
 import com.kms.katalon.selenium.ide.model.TestSuite;
 import com.kms.katalon.selenium.ide.util.FileUtils;
 import com.kms.katalon.selenium.ide.util.HtmlParser;
+import com.kms.katalon.selenium.ide.util.JsonParser;
+import com.kms.katalon.selenium.ide.util.ParsedResult;
 import com.kms.katalon.selenium.ide.util.TestObjectParser;
 
 public final class SeleniumIdeParser {
@@ -28,6 +30,11 @@ public final class SeleniumIdeParser {
 		return "html".equalsIgnoreCase(extension) && HtmlParser.hasBaseUrl(file);
 	}
 	
+    public boolean isSeleniumIdeV3File(File file) {
+        String extension = com.google.common.io.Files.getFileExtension(file.getName());
+        return "side".equalsIgnoreCase(extension);
+    }
+
 	public TestSuite parseTestSuite(File file) {
 		if (!isTestSuiteFile(file)) {
 			return null;
@@ -49,5 +56,8 @@ public final class SeleniumIdeParser {
 	public String parseLocator(String target) {
 		return TestObjectParser.parse(target);
 	}
-	
+
+    public ParsedResult parseSeleniumIdeV3File(File file) {
+        return JsonParser.parse(file);
+    }
 }

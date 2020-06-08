@@ -62,7 +62,6 @@ public final class SeleniumIdeFormatter {
 		List<String> commands = formatCommands(testCase.getCommands());
 		commands.forEach(c -> builder.append(c));
 		
-		builder.append(getFooter(testCase));
 		return builder.toString();
 	}
 	
@@ -78,15 +77,16 @@ public final class SeleniumIdeFormatter {
 	public String formatCommand(Command command) {
 		Formatter formatter = getFormatter(command.getCommand());
 		if (formatter == null) {
-			return String.format("Method %s is not found", command.getCommand());
+			return String.format("// Method %s is not supported", command.getCommand());
 		}
-		String comment = String.format("\n\"%s | %s | %s\"\n", 
+		String comment = String.format("\n\"%s | %s | %s | %s\"\n", 
 				encodeString(command.getCommand()), 
 				encodeString(replaceBraces(command.getTarget())), 
-				encodeString(replaceBraces(command.getValue())));
+				encodeString(replaceBraces(command.getValue())),
+                encodeString(replaceBraces(command.getComment())));
 		String formatted = formatter.format(command);
 		if (StringUtils.isBlank(formatted)) {
-			return String.format("Method %s is not found\n", command.getCommand());
+			return String.format("// Method %s is not supported\n", command.getCommand());
 		}
 		return comment + formatted;
 	}

@@ -58,6 +58,7 @@ import com.kms.katalon.selenium.ide.SeleniumIdeParser;
 import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 import com.kms.katalon.selenium.ide.model.TestSuite;
+import com.kms.katalon.selenium.ide.util.ParsedResult;
 
 public class ImportSeleniumIdeHandler {
 	
@@ -90,7 +91,10 @@ public class ImportSeleniumIdeHandler {
 			if (selectedFilePath != null && selectedFilePath.length() > 0) {
 				File selectedFile = new File(selectedFilePath);
 				if (selectedFile.exists()) {
-					if (SeleniumIdeParser.getInstance().isTestSuiteFile(selectedFile)) {
+                    if (SeleniumIdeParser.getInstance().isSeleniumIdeV3File(selectedFile)) {
+                        ParsedResult result = SeleniumIdeParser.getInstance().parseSeleniumIdeV3File(selectedFile);
+                        createTests(result);
+                    } else if (SeleniumIdeParser.getInstance().isTestSuiteFile(selectedFile)) {
 						TestSuite testSuite = SeleniumIdeParser.getInstance().parseTestSuite(selectedFile);
 						createTestSuite(testSuite);
 					} else if (SeleniumIdeParser.getInstance().isTestCaseFile(selectedFile)) {
@@ -109,6 +113,35 @@ public class ImportSeleniumIdeHandler {
 		}
 	}
 	
+    private void createTests(ParsedResult result) throws Exception {
+        FolderEntity testSuiteParentFolderEntity = newGetOrCreateFolder(IMPORTED_FOLDER_NAME,
+                testSuiteTreeRoot.getObject());
+        FolderEntity testCaseParentFolderEntity = newGetOrCreateFolder(IMPORTED_FOLDER_NAME,
+                testCaseTreeRoot.getObject());
+        for (TestSuite ts : result.getTestSuites())
+            createTestSuite(ts, testSuiteParentFolderEntity, testCaseParentFolderEntity);
+        createTestCases(null, result.getTestCases(), testCaseParentFolderEntity);
+    }
+
+    private void createTestSuite(TestSuite testSuite, FolderEntity testSuiteParentFolderEntity,
+            FolderEntity testCaseParentFolderEntity) throws Exception {
+        if (testSuite == null) {
+            return;
+        }
+        TestSuiteController tsController = TestSuiteController.getInstance();
+
+        TestSuiteEntity testSuiteEntity = tsController.newTestSuiteWithoutSave(testSuiteParentFolderEntity,
+                testSuite.getName());
+        testSuiteEntity = tsController.saveNewTestSuite(testSuiteEntity);
+
+        createTestCases(testSuiteEntity, testSuite.getTestCases(), testCaseParentFolderEntity);
+
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteTreeRoot);
+        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
+                new TestSuiteTreeEntity(testSuiteEntity, testSuiteTreeRoot));
+        eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
+    }
+
 	private void createTestSuite(TestSuite testSuite) throws Exception {
 		if (testSuite == null) {
 			return;
@@ -149,6 +182,34 @@ public class ImportSeleniumIdeHandler {
         }
 	}
 	
+    private void createTestCases(TestSuiteEntity testSuiteEntity, List<TestCase> testCases,
+            FolderEntity importTestCaseFolder) throws Exception {
+        if (testSuiteEntity != null) {
+            importTestCaseFolder = createImportTestCaseFolderEntity(testSuiteEntity.getName(), importTestCaseFolder);
+        }
+        if (!testCases.isEmpty()) {
+
+            List<TestSuiteTestCaseLink> testSuiteTestCaseLinks = new ArrayList<>();
+            for (TestCase testCase : testCases) {
+
+                TestCaseEntity testCaseEntity = createTestCaseEntity(testCase, importTestCaseFolder);
+
+                if (testSuiteEntity != null) {
+                    TestSuiteTestCaseLink testSuiteTestCaseLink = new TestSuiteTestCaseLink();
+                    testSuiteTestCaseLink.setTestCaseId(testCaseEntity.getIdForDisplay());
+                    testSuiteTestCaseLinks.add(testSuiteTestCaseLink);
+                }
+            }
+
+            TestSuiteController tsController = TestSuiteController.getInstance();
+            if (testSuiteEntity != null) {
+                testSuiteEntity.setTestSuiteTestCaseLinks(testSuiteTestCaseLinks);
+                tsController.updateTestSuite(testSuiteEntity);
+                eventBroker.send(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
+            }
+        }
+    }
+
 	private void createTestObjects(String parentFolderName, List<TestCase> testCases) throws Exception {
 		Map<String, Set<String>> testObjectNameMap = parseTestObjectNameMap(testCases);
 		Set<String> retains = retainAllTestObjects(testObjectNameMap);
@@ -225,6 +286,11 @@ public class ImportSeleniumIdeHandler {
         return FolderController.getInstance().addNewFolder(parentFolderEntity, testCaseFolderName);        
 	}
 	
+    private FolderEntity createImportTestCaseFolderEntity(String testCaseFolderName, FolderEntity parentFolderEntity)
+            throws Exception {
+        return FolderController.getInstance().addNewFolder(parentFolderEntity, testCaseFolderName);
+    }
+
 	private FolderEntity createImportTestObjectFolderEntity(String testSuiteFolderName, String testObjectFolderName) throws Exception {
         FolderEntity parentFolderEntity = getOrCreateFolder(IMPORTED_FOLDER_NAME, objectRepositoryTreeRoot.getObject());
         FolderEntity testSuiteFolderEntity = null;
@@ -248,7 +314,6 @@ public class ImportSeleniumIdeHandler {
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testCaseTreeRoot);
         eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, testCaseTreeRoot);
         eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestCaseTreeEntity(testCaseEntity, testCaseTreeRoot));
-		eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
 		
 		return testCaseEntity;
 	}
@@ -360,4 +425,17 @@ public class ImportSeleniumIdeHandler {
 		}
 		return FolderController.getInstance().addNewFolder(parentFolder, folderName);
 	}
+
+    private FolderEntity newGetOrCreateFolder(String folderName, FolderEntity parentFolder) throws Exception {
+        String newName = folderName;
+        List<FolderEntity> folders = FolderController.getInstance().getChildFolders(parentFolder);
+        List<String> folderNames = new ArrayList<String>();
+        folders.forEach(f -> folderNames.add(f.getName()));
+        if (folderNames.contains(newName.toLowerCase())) {
+            for (int i = 1; folderNames.contains(newName.toLowerCase()); i++) {
+                newName = folderName + " (" + i + ")";
+            }
+        }
+        return FolderController.getInstance().addNewFolder(parentFolder, newName);
+    }
 }
