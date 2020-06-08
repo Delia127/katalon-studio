@@ -127,7 +127,7 @@ public class NotificationToolControl {
                         }).count();
                         
                         if (unreadMessageCount > 0) {                            
-                            communityToolItem.setImage(ImageConstants.IMG_KATALON_NOTIFICATION_1_24);
+                            communityToolItem.setImage(ImageConstants.IMG_KATALON_DOT_NOTIFICATION_24);
                         }
                     });
                 });

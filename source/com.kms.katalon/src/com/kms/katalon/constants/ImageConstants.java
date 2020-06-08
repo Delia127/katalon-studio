@@ -21,6 +21,8 @@ public class ImageConstants {
 
     public static final Image IMG_KATALON_NOTIFICATION_24 = ImageManager.getImage(IImageKeys.KATALON_NOTIFICATION_24);
     
+    public static final Image IMG_KATALON_DOT_NOTIFICATION_24 = ImageManager.getImage(IImageKeys.KATALON_NOTIFICATION_DOT_24);
+    
     public static final Image IMG_KATALON_NOTIFICATION_1_24 = ImageManager.getImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_1_24);
     
     public static final Image IMG_KATALON_NOTIFICATION_2_24 = ImageManager.getImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_2_24);

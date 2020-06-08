@@ -14,6 +14,8 @@ public interface GenerateCommandPreferenceConstants {
     
     public static final String GEN_COMMAND_APPLY_PROXY = "generateCommand.applyProxy";
 
+    public static final String GEN_COMMAND_OVERRIDE_PLATFORM = "generateCommand.overridePlatform";
+
     public static final String GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL = "generateCommand.updateStatusTimeInterval";
     
     public static final String GEN_COMMAND_CONFIGURATION_DESCRIPTION = "generateCommand.runConfigurationDescription";

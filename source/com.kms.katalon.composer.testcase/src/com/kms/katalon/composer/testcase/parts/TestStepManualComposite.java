@@ -123,6 +123,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
@@ -450,7 +451,7 @@ public class TestStepManualComposite {
                 menu = new Menu(childTableTree);
 
                 if (childTableTree.getSelectionCount() == 1) {
-                    TestCaseMenuUtil.generateExecuteFromTestStepMenuItem(menu, selectionListener);
+                    TestCaseMenuUtil.generateExecuteFromTestStepMenuItems(menu, selectionListener);
 
                     new MenuItem(menu, SWT.SEPARATOR);
 
@@ -925,7 +926,7 @@ public class TestStepManualComposite {
             }
             break;
         case TreeTableMenuItemConstants.EXECUTE_FROM_TEST_STEP_MENU_ITEM_ID:
-            executeFromTestStep((ExecutionSession) menuItem.getData());
+            executeFromTestStep((ExecutionSession) menuItem.getData(), (LaunchMode) menuItem.getParent().getData());
             break;
         case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
             copyTestStep();
@@ -977,7 +978,7 @@ public class TestStepManualComposite {
                 new TestCaseEntity[] { testCase });
     }
 
-    private void executeFromTestStep(ExecutionSession executionSession) {
+    private void executeFromTestStep(ExecutionSession executionSession, LaunchMode launchMode) {
         String rawScript = getTreeTableInput().generateRawScriptFromSelectedStep();
         if (rawScript == null) {
             return;
@@ -988,6 +989,7 @@ public class TestStepManualComposite {
         executeFromTestStepEntity.setRemoteServerUrl(executionSession.getRemoteUrl());
         executeFromTestStepEntity.setTestCase(parentPart.getTestCase());
         executeFromTestStepEntity.setSessionId(executionSession.getSessionId());
+        executeFromTestStepEntity.setLaunchMode(launchMode);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXECUTE_FROM_TEST_STEP,
                 executeFromTestStepEntity);
     }

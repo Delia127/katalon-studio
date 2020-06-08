@@ -25,6 +25,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
@@ -68,6 +72,8 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.resources.util.ImageUtil;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteRetryUiAdapter;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteRetryUiPart;
@@ -181,10 +187,14 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Composite configurationComposite;
 
+    private Composite overrideComposite;
+
     private CLabel lblProfileName;
 
     private Button btnChangeProfile;
-    
+
+    private Button chkOverridePlatform;
+
     private AnalyticsSettingStore analyticsSettingStore;
     
     private TestSuiteRetryUiPart retryUiProvider;
@@ -269,6 +279,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         createExecutionProfileComposite();
         
+        createOverrideComposite();
+
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject.getType() == ProjectType.WEBSERVICE) {
             ((GridData) configurationComposite.getLayoutData()).exclude = true;
@@ -334,6 +346,34 @@ public class GenerateCommandDialog extends AbstractDialog {
         btnChangeConfiguration.setImage(ImageConstants.IMG_16_EDIT);
         btnChangeConfiguration.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
         btnChangeConfiguration.setText(StringConstants.EDIT);
+    }
+
+    private void createOverrideComposite() {
+        overrideComposite = new Composite(grpPlatform, SWT.NONE);
+        overrideComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout gdOverrideComposite = new GridLayout(2, false);
+        gdOverrideComposite.marginWidth = 0;
+        gdOverrideComposite.marginHeight = 0;
+        overrideComposite.setLayout(gdOverrideComposite);
+
+        chkOverridePlatform = new Button(overrideComposite, SWT.CHECK);
+        chkOverridePlatform.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+        chkOverridePlatform.setText(StringConstants.DIA_CHK_OVERRIDE_PLATFORM);
+
+        Label lblHelp = new Label(overrideComposite, SWT.NONE);
+        lblHelp.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        lblHelp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+        lblHelp.addMouseListener(new MouseAdapter() {
+            public void mouseUp(MouseEvent event) {
+                try {
+                    Program.launch(DocumentationMessageConstants.CHK_OVERRIDE_PLATFORM_HELP_URL);
+                    Trackings.trackOpenHelp(DocumentationMessageConstants.CHK_OVERRIDE_PLATFORM_HELP_URL);
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
+                    MessageDialog.openWarning(getShell(), StringConstants.WARN_TITLE, ex.getMessage());
+                }
+            }
+        });
     }
 
     private void createConfigurationDataComposite() {
@@ -528,6 +568,11 @@ public class GenerateCommandDialog extends AbstractDialog {
                         prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_APPLY_PROXY));
             }
 
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE_PLATFORM)) {
+                chkOverridePlatform.setSelection(
+                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE_PLATFORM));
+            }
+
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID)) {
                 String prefSuiteId = prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID);
                 changeSuiteArtifact(getSelectedTestSuite(prefSuiteId));
@@ -579,7 +624,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (isTestSuite(prefSuiteId)) {
             return TestSuiteController.getInstance().getTestSuiteByDisplayId(prefSuiteId, project);
         }
-        return TestSuiteCollectionController.getInstance().getTestSuiteCollection(prefSuiteId);
+        return TestSuiteCollectionController.getInstance().getTestRunByDisplayId(prefSuiteId);
     }
 
     @Override
@@ -760,7 +805,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private void updatePlatformLayout() {
-        updateControlLayout(grpPlatform, isTestSuite(txtTestSuite.getText()));
+        updateControlLayout(grpPlatform,
+                isTestSuite(txtTestSuite.getText()) || isTestSuiteCollection(txtTestSuite.getText()));
+        updateControlLayout(overrideComposite, isTestSuiteCollection(txtTestSuite.getText()));
         updateConfigurationDataCompositeLayout();
     }
 
@@ -959,6 +1006,11 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         } else {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
+            if (chkOverridePlatform.getSelection()) {
+                for (Entry<String, String> entry : ConsoleOptionBuilder.argsMap(runConfigDescription).entrySet()) {
+                    args.put(entry.getKey(), getArgumentValueToSave(entry.getValue(), generateCommandMode));
+                }
+            }
         }
         
 
@@ -1084,6 +1136,15 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
     }
 
+    private boolean isTestSuiteCollection(String id) {
+        try {
+            return TestSuiteCollectionController.getInstance().getTestRunByDisplayId(id) != null;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return false;
+        }
+    }
+
     private String wrapArgName(String name) {
         return ConsoleMain.ARGUMENT_PREFIX + name;
     }
@@ -1195,12 +1256,10 @@ public class GenerateCommandDialog extends AbstractDialog {
             return;
         }
         txtTestSuite.setText(testSuite.getIdForDisplay());
-        boolean isTestSuite = false;
         if (testSuite instanceof TestSuiteEntity) {
             isTestSuite = true;
             this.testSuite = (TestSuiteEntity) testSuite;
         }
-        ControlUtils.recursiveSetEnabled(grpPlatform, isTestSuite);
         updatePlatformLayout();
     }
 
@@ -1220,6 +1279,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 retryUiProvider.getRetryStrategy().equals(RetryStrategyValue.immediately));
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_APPLY_PROXY,
                 chkApplyProxy.getSelection());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE_PLATFORM, chkOverridePlatform.getSelection());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL,
                 txtStatusDelay.getText());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION,
