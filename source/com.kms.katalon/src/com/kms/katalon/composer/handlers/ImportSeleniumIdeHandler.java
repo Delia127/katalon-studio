@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
@@ -53,6 +54,9 @@ import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.selenium.ide.SeleniumIdeFormatter;
 import com.kms.katalon.selenium.ide.SeleniumIdeParser;
 import com.kms.katalon.selenium.ide.model.Command;
@@ -61,6 +65,8 @@ import com.kms.katalon.selenium.ide.model.TestSuite;
 import com.kms.katalon.selenium.ide.util.ParsedResult;
 
 public class ImportSeleniumIdeHandler {
+
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     private static final String COMMON_FOLDER_NAME = "Common";
 
@@ -83,35 +89,39 @@ public class ImportSeleniumIdeHandler {
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
-        try {
-            FileDialog fileDialog = new FileDialog(shell, SWT.SYSTEM_MODAL);
-            fileDialog.setText(StringConstants.HAND_IMPORT_SELENIUM_IDE);
-            fileDialog.setFilterPath(Platform.getLocation().toString());
-            String selectedFilePath = fileDialog.open();
-            if (selectedFilePath != null && selectedFilePath.length() > 0) {
-                File selectedFile = new File(selectedFilePath);
-                if (selectedFile.exists()) {
-                    if (SeleniumIdeParser.getInstance().isSeleniumIdeV3File(selectedFile)) {
-                        ParsedResult result = SeleniumIdeParser.getInstance().parseSeleniumIdeV3File(selectedFile);
-                        createTests(result);
-                    } else if (SeleniumIdeParser.getInstance().isTestSuiteFile(selectedFile)) {
-                        TestSuite testSuite = SeleniumIdeParser.getInstance().parseTestSuite(selectedFile);
-                        createTestSuite(testSuite);
-                    } else if (SeleniumIdeParser.getInstance().isTestCaseFile(selectedFile)) {
-                        TestCase testCase = SeleniumIdeParser.getInstance().parseTestCase(selectedFile);
-                        if (testCase != null) {
-                            createTestObjects(null, Arrays.asList(testCase));
-                            FolderEntity importTestCaseFolder = getOrCreateFolder(IMPORTED_FOLDER_NAME,
-                                    testCaseTreeRoot.getObject());
-                            createTestCaseEntity(testCase, importTestCaseFolder);
+        if (featureService.canUse(KSEFeature.IMPORT_SELENIUM_IDE_V3)) {
+            try {
+                FileDialog fileDialog = new FileDialog(shell, SWT.SYSTEM_MODAL);
+                fileDialog.setText(StringConstants.HAND_IMPORT_SELENIUM_IDE);
+                fileDialog.setFilterPath(Platform.getLocation().toString());
+                String selectedFilePath = fileDialog.open();
+                if (selectedFilePath != null && selectedFilePath.length() > 0) {
+                    File selectedFile = new File(selectedFilePath);
+                    if (selectedFile.exists()) {
+                        if (SeleniumIdeParser.getInstance().isSeleniumIdeV3File(selectedFile)) {
+                            ParsedResult result = SeleniumIdeParser.getInstance().parseSeleniumIdeV3File(selectedFile);
+                            createTests(result);
+                        } else if (SeleniumIdeParser.getInstance().isTestSuiteFile(selectedFile)) {
+                            TestSuite testSuite = SeleniumIdeParser.getInstance().parseTestSuite(selectedFile);
+                            createTestSuite(testSuite);
+                        } else if (SeleniumIdeParser.getInstance().isTestCaseFile(selectedFile)) {
+                            TestCase testCase = SeleniumIdeParser.getInstance().parseTestCase(selectedFile);
+                            if (testCase != null) {
+                                createTestObjects(null, Arrays.asList(testCase));
+                                FolderEntity importTestCaseFolder = getOrCreateFolder(IMPORTED_FOLDER_NAME,
+                                        testCaseTreeRoot.getObject());
+                                createTestCaseEntity(testCase, importTestCaseFolder);
+                            }
                         }
                     }
                 }
+            } catch (Exception e) {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
+                        MessageConstants.HAND_IMPORT_SELENIUM_IDE_MSG_ERROR);
+                LoggerSingleton.logError(e);
             }
-        } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
-                    MessageConstants.HAND_IMPORT_SELENIUM_IDE_MSG_ERROR);
-            LoggerSingleton.logError(e);
+        } else {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.IMPORT_SELENIUM_IDE_V3);
         }
     }
 
