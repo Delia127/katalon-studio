@@ -8,7 +8,7 @@ import com.kms.katalon.constants.IdConstants;
 
 public class ExecutionProfileTreeRootCatcher {
 
-    private Object getFirstSelection(ESelectionService selectionService) {
+    protected Object getFirstSelection(ESelectionService selectionService) {
         Object selectedObject = selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
 
         if (selectedObject == null || !selectedObject.getClass().isArray()) {

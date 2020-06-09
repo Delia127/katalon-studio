@@ -18,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.text.StrMatcher;
 import org.json.JSONObject;
@@ -365,6 +366,9 @@ public class MobileInspectorController {
                 return getIosObjectRoot();
             } else {
                 String pageSource = driver.getPageSource();
+                if (StringUtils.isBlank(pageSource)) {
+                    return null;
+                }
                 DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 Document doc = null;
                 try {

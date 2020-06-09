@@ -75,7 +75,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PARAM_TABLE_MENU_ITEM_REMOVE = ComposerWebserviceMessageConstants.PARAM_TABLE_MENU_ITEM_REMOVE;
     
     public static final String MSG_CANNOT_LOAD_WS = ComposerWebserviceMessageConstants.MSG_CANNOT_LOAD_WS;
-    public static final String LBL_LOAD_FROM_WSDL = ComposerWebserviceMessageConstants.LBL_LOAD_FROM_WSDL;
+    public static final String LBL_LOAD_SERVICE_FUNCTION = ComposerWebserviceMessageConstants.LBL_LOAD_SERVICE_FUNCTION;
     public static final String MSG_CANNOT_PARSE_WSDL = ComposerWebserviceMessageConstants.MSG_CANNOT_PARSE_WSDL;
     public static final String MSG_FETCHING_FROM_WSDL = ComposerWebserviceMessageConstants.MSG_FETCHING_FROM_WSDL;     
 

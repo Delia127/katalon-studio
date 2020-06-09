@@ -5,7 +5,10 @@ Bundle-SymbolicName: com.kms.katalon.core.webservice;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ resources/lib/soap-builder-1.0.0.jar,
+ resources/lib/soap-common-1.0.0.jar,
+ resources/lib/soap-legacy-1.0.0.jar
 Require-Bundle: org.codehaus.groovy,
  com.kms.katalon.constant,
  com.kms.katalon.core,
@@ -30,11 +33,16 @@ Require-Bundle: org.codehaus.groovy,
  com.kms.katalon.selenium-standalone,
  org.apache.httpcomponents.httpcore,
  org.apache.commons.io,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ com.kms.katalon.logging,
+ org.apache.log4j,
+ org.apache.xmlbeans,
+ com.kms.katalon.entity
 Export-Package: com.kms.katalon.core.webservice.common,
  com.kms.katalon.core.webservice.constants,
  com.kms.katalon.core.webservice.contribution,
  com.kms.katalon.core.webservice.helper,
  com.kms.katalon.core.webservice.keyword,
  com.kms.katalon.core.webservice.setting,
- com.kms.katalon.core.webservice.support
+ com.kms.katalon.core.webservice.support,
+ com.kms.katalon.core.webservice.wsdl.support.wsdl

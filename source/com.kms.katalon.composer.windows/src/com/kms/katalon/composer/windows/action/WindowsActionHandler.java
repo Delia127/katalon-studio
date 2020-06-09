@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.windows.action;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -14,9 +16,12 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -26,7 +31,9 @@ import org.openqa.selenium.Keys;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.dialogs.KeysInputBuilderDialog;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.AnnonatedNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
@@ -41,6 +48,7 @@ import com.kms.katalon.core.testobject.WindowsTestObject;
 import com.kms.katalon.core.testobject.WindowsTestObject.LocatorStrategy;
 import com.kms.katalon.core.windows.driver.WindowsSession;
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper;
+import com.kms.katalon.util.CryptoUtil;
 
 public class WindowsActionHandler {
 
@@ -96,10 +104,17 @@ public class WindowsActionHandler {
                 SetTextActionHandler handler = new SetTextActionHandler();
                 return handler.perform(element, activeShell);
             }
+            case GetAttribute: {
+                GetAttributeActionHandler handler = new GetAttributeActionHandler();
+                return handler.perform(element, activeShell);
+            }
             case SendKeys: {
                 SendKeysActionHandler handler = new SendKeysActionHandler();
                 return handler.perform(element, activeShell);
             }
+            case SetEncryptedText:
+                SetEncryptedTextHandler hanlder = new SetEncryptedTextHandler();
+                return hanlder.perform(element, activeShell);
             case SwitchToApplication: {
                 SwitchToApplicationHandler handler = new SwitchToApplicationHandler();
                 return handler.perform(element, activeShell);
@@ -384,6 +399,41 @@ public class WindowsActionHandler {
         }
     }
 
+    public class GetAttributeActionHandler extends BaseActionObjectHandler {
+        private String textInput;
+
+        private String textResult;
+
+        @Override
+        protected void performActionBeforeProgress() throws InterruptedException {
+            GetAttributeInputDialog inputDialog = new GetAttributeInputDialog(activeShell);
+            if (inputDialog.open() != InputDialog.OK) {
+                throw new InterruptedException();
+            }
+            textInput = StringUtils.defaultString(inputDialog.text);
+        }
+
+        @Override
+        protected void performAction(WindowsTestObject testObject) {
+            textResult = WindowsActionHelper.create(windowsSession).findElement(testObject).getAttribute(textInput);
+        }
+
+        @Override
+        public WindowsActionMapping getActionMapping() {
+            WindowsActionMapping actionMapping = super.getActionMapping();
+            actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(textInput));
+            return actionMapping;
+        }
+
+        @Override
+        protected void performActionAfterProgress() throws InterruptedException {
+            GetAttributeResultDialog resultDialog = new GetAttributeResultDialog(activeShell, textResult);
+            if (resultDialog.open() != GetTextDialog.OK) {
+                throw new InterruptedException();
+            }
+        }
+    }
+
     public class SendKeysActionHandler extends BaseActionObjectHandler {
         private MethodCallExpressionWrapper keysExpression = (MethodCallExpressionWrapper) GroovyWrapperParser
                 .parseGroovyScriptAndGetFirstExpression("Keys.chord()");
@@ -446,6 +496,34 @@ public class WindowsActionHandler {
             return actionMapping;
         }
 
+    }
+
+    public class SetEncryptedTextHandler extends BaseActionObjectHandler {
+        private String encryptedTextInput;
+
+        private String rawTextInput;
+
+        @Override
+        protected void performActionBeforeProgress() throws InterruptedException {
+                SetEncryptedTextDialog dialog = new SetEncryptedTextDialog(activeShell);
+                if (dialog.open() != InputDialog.OK) {
+                    throw new InterruptedException();
+                }
+                rawTextInput = StringUtils.defaultString(dialog.rawText);
+                encryptedTextInput = StringUtils.defaultString(dialog.encryptedText);
+        }
+
+        @Override
+        protected void performAction(WindowsTestObject testObject) {
+            WindowsActionHelper.create(windowsSession).setText(testObject, rawTextInput);
+        }
+
+        @Override
+        public WindowsActionMapping getActionMapping() {
+            WindowsActionMapping actionMapping = super.getActionMapping();
+            actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(encryptedTextInput));
+            return actionMapping;
+        }
     }
 
     public class ClearTextActionHandler extends BaseActionObjectHandler {
@@ -675,6 +753,204 @@ public class WindowsActionHandler {
         protected void okPressed() {
             this.text = txtText.getText();
             super.okPressed();
+        }
+    }
+
+    private class SetEncryptedTextDialog extends AbstractDialog {
+
+        private Text txtRawText;
+
+        private Text txtEncryptedText;
+
+        private String rawText;
+        
+        private String encryptedText;
+
+        private Button btnApplyAction;
+
+        protected SetEncryptedTextDialog(Shell parentShell) {
+            super(parentShell, false);
+        }
+
+        @Override
+        protected void setInput() {
+            txtRawText.forceFocus();
+        }
+
+        @Override
+        protected Control createDialogContainer(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout(2, false));
+
+            Label lblRawText = new Label(composite, SWT.NONE);
+            lblRawText.setText(StringConstants.LBL_RAW_TEXT);
+            txtRawText = new Text(composite, SWT.BORDER);
+            txtRawText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+            Label lblEncryptedText = new Label(composite, SWT.NONE);
+            lblEncryptedText.setText(StringConstants.LBL_ENCRYPTED_TEXT);
+            txtEncryptedText = new Text(composite, SWT.BORDER);
+            txtEncryptedText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+            txtEncryptedText.setEditable(false);
+            
+            addControlListeners();
+            return composite;
+        }
+
+        private void addControlListeners() {
+            txtRawText.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent event) {
+                    rawText = txtRawText.getText();
+                    if (!StringUtils.isEmpty(rawText)) {
+                        try {
+                            CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(rawText);
+                            encryptedText = CryptoUtil.encode(cryptoInfo);
+                            txtEncryptedText.setText(encryptedText);
+                            btnApplyAction.setEnabled(true);
+                        } catch (UnsupportedEncodingException | GeneralSecurityException error) {
+                            LoggerSingleton.logError(error);
+                        }
+                    } else {
+                        txtEncryptedText.setText(StringUtils.EMPTY);
+                        encryptedText = txtEncryptedText.getText();
+                        btnApplyAction.setEnabled(false);
+                    }
+                }
+            });
+        }
+
+        @Override
+        protected void createButtonsForButtonBar(Composite parent) {
+            this.btnApplyAction = createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
+            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+            this.btnApplyAction.setEnabled(false);
+        }
+
+        @Override
+        protected Point getInitialSize() {
+            return new Point(400, 155);
+        }
+
+        @Override
+        public String getDialogTitle() {
+            return "Set Encrypted Text action";
+        }
+
+        @Override
+        protected void okPressed() {
+            super.okPressed();
+        }
+
+        @Override
+        protected void registerControlModifyListeners() {
+        }
+    }
+
+    private class GetAttributeInputDialog extends AbstractDialog {
+
+        private Text txtText;
+
+        private String text;
+
+        protected GetAttributeInputDialog(Shell parentShell) {
+            super(parentShell, false);
+        }
+
+        @Override
+        protected void registerControlModifyListeners() {
+        }
+
+        @Override
+        protected void setInput() {
+            txtText.forceFocus();
+        }
+
+        @Override
+        protected Control createDialogContainer(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout(1, false));
+
+            Label lblText = new Label(composite, SWT.NONE);
+            lblText.setText("Please input attribute name to set to element:");
+
+            txtText = new Text(composite, SWT.BORDER);
+            txtText.setLayoutData(new GridData(SWT.FILL, SWT.WRAP, true, true));
+
+            return composite;
+        }
+
+        @Override
+        protected void createButtonsForButtonBar(Composite parent) {
+            createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
+            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+        }
+
+        @Override
+        protected Point getInitialSize() {
+            return new Point(400, 155);
+        }
+
+        @Override
+        public String getDialogTitle() {
+            return "Get Attribute action";
+        }
+
+        @Override
+        protected void okPressed() {
+            this.text = txtText.getText();
+            super.okPressed();
+        }
+    }
+
+    private class GetAttributeResultDialog extends AbstractDialog {
+
+        private Text txtText;
+
+        private String text;
+        
+        protected GetAttributeResultDialog(Shell parentShell, String text) {
+            super(parentShell, false);
+            this.text = text;
+        }
+
+        @Override
+        protected void registerControlModifyListeners() {
+        }
+
+        @Override
+        protected void setInput() {
+            txtText.setText(StringUtils.defaultIfEmpty(text, "<empty>"));
+        }
+
+        @Override
+        protected Control createDialogContainer(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout());
+
+            Label lblText = new Label(composite, SWT.NONE);
+            lblText.setText("The attribute value would be:");
+
+            txtText = new Text(composite, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER | SWT.WRAP);
+            txtText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            return composite;
+        }
+
+        @Override
+        protected void createButtonsForButtonBar(Composite parent) {
+            createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
+            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+        }
+
+        @Override
+        protected Point getInitialSize() {
+            return new Point(400, 250);
+        }
+
+        @Override
+        public String getDialogTitle() {
+            return "Get Attribute action";
         }
     }
 }

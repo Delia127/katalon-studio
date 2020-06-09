@@ -25,9 +25,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
@@ -41,7 +38,6 @@ import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
 import com.kms.katalon.composer.testsuite.dialogs.TestDataSelectionDialog;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
@@ -56,14 +52,17 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
-import com.kms.katalon.license.models.LicenseType;
 
 public class TestDataToolItemListener extends SelectionAdapter {
 
     private TableViewer tableViewer;
 
     private TestSuitePartDataBindingView view;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public TestDataToolItemListener(TableViewer treeViewer, TestSuitePartDataBindingView view) {
         super();
@@ -167,9 +166,9 @@ public class TestDataToolItemListener extends SelectionAdapter {
                 return;
             }
 
-            boolean isEnterpriseAccount = LicenseUtil.isNotFreeLicense();
+            boolean isEnableMultipleDataSource = featureService.canUse(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION);
             int items = getTableItems().size();
-            if (!isEnterpriseAccount && items >= 1) {
+            if (!isEnableMultipleDataSource && items >= 1) {
                 // MessageDialog.openWarning(tableViewer.getTable().getShell(),
                 // GlobalStringConstants.INFO,
                 // ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
@@ -198,7 +197,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
                     }
                 }
 
-                if (!isEnterpriseAccount && (items + dataFileEntities.size()) > 1) {
+                if (!isEnableMultipleDataSource && (items + dataFileEntities.size()) > 1) {
 //                    MessageDialog.openWarning(tableViewer.getTable().getShell(), GlobalStringConstants.INFO,
 //                            ComposerTestsuiteMessageConstants.DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE);
                     KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.MULTIPLE_DATA_SOURCE_COMBINATION,

@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -39,6 +38,8 @@ import com.kms.katalon.execution.configuration.contributor.IRunConfigurationCont
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 
 public class ExecutionSettingPage extends PreferencePageWithHelp {
@@ -85,6 +86,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
     private GridData gdCbLogTestSteps;
 
     private Button chckEnableImageRecognition;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public ExecutionSettingPage() {
         defaultSettingStore = ExecutionDefaultSettingStore.getStore();
@@ -311,7 +314,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         chckEnableImageRecognition.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
+                if (!featureService.canUse(KSEFeature.IMAGE_BASED_OBJECT_DETECTION)) {
                     KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.IMAGE_BASED_OBJECT_DETECTION);
                     chckEnableImageRecognition.setSelection(false);
                 }
@@ -321,7 +324,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         cbLogTestSteps.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
+                if (!featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION)) {
                     KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CONSOLE_LOG_CUSTOMIZATION);
                     cbLogTestSteps.select(0); // Free users cannot disable this setting
                 }
@@ -422,7 +425,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
         cbDefaultSmartWait.select(selectedSmartWaitMode.booleanValue() ? 0 : 1);
         if (chckEnableImageRecognition != null) {
-            if (LicenseUtil.isNotFreeLicense()) {
+            if (featureService.canUse(KSEFeature.IMAGE_BASED_OBJECT_DETECTION)) {
                 chckEnableImageRecognition.setSelection(webSettingStore.getImageRecognitionEnabled());
             } else {
                 chckEnableImageRecognition.setSelection(false);
@@ -432,7 +435,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         Boolean selectedLogTestSteps = defaultSettingStore.getLogTestSteps();
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(selectedLogTestSteps.booleanValue() ? 0 : 1);
-        if (LicenseUtil.isFreeLicense()) {
+        if (!featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION)) {
             cbLogTestSteps.select(0); // Enable by default for free user
         }
         

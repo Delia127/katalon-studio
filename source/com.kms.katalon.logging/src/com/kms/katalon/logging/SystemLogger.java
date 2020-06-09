@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -64,6 +63,10 @@ public class SystemLogger extends PrintStream {
     public void println(String message) {
         if (shouldIgnoreErrorMessage) {
             if (message.contains("Groovy:unable to resolve")) {
+                return;
+            }
+            //Fix STUDIO-136
+            if (message.contains("Groovy:class") && message.contains("is not an annotation in")) {
                 return;
             }
         }

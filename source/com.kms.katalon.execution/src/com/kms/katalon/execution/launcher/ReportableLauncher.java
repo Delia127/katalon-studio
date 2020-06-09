@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,6 +29,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
@@ -71,10 +74,17 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     private Date endTime;
     
     private TestSuiteLogRecord suiteLogRecord;
+    
+    private boolean runInTestSuiteCollection = false;
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
+        this(manager, runConfig, false);
+    }
+    
+    public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig, boolean runInTestSuiteCollection) {
         super(manager, runConfig);
         this.setExecutionUUID(runConfig.getExecutionUUID());
+        this.runInTestSuiteCollection = runInTestSuiteCollection;
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
@@ -151,6 +161,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteEntity testSuite = getTestSuite();
 
+            String strRetryFailedExecutionsTcBindings = getRetryFailedExecutionsOnlyTcBindings();
+            String strRetryImmediatelyTcBindings = getRetryImmediatelyTcBindings();
+            Map<String, String> customTcBindings = new HashMap<String, String>();
+            customTcBindings.put(RunConfiguration.TC_RETRY_FAILED_EXECUTIONS_ONLY, strRetryFailedExecutionsTcBindings);
+            customTcBindings.put(RunConfiguration.TC_RETRY_IMMEDIATELY_BINDINGS, strRetryImmediatelyTcBindings);
+
             try {
                 IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil
                         .getRerunExecutedEntity((TestSuiteExecutedEntity) getExecutedEntity(), getResult());
@@ -164,6 +180,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
                     ((AbstractRunConfiguration) newConfig)
                             .setOverridingGlobalVariables(getRunConfig().getOverridingGlobalVariables());
+                    ((AbstractRunConfiguration) newConfig).setTestSuiteAdditionalData(customTcBindings);
                 }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
@@ -174,6 +191,74 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 LogUtil.logError(e);
             }
         }
+    }
+    
+    /**
+     * @return The lines in testCaseBiding file where the associated test cases failed
+     */
+    private String getRetryFailedExecutionsOnlyTcBindings() {
+        File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
+        try {
+            List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);
+            List<String> currentFailedTcBindings = new ArrayList<>();
+            List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity())
+                    .getExecutedItems();
+            TestStatusValue[] prevResultValues = getResult().getResultValues();
+            int rsIdx = 0;
+
+            for (IExecutedEntity prevExecutedItem : prevTestCaseExecutedEntities) {
+                TestCaseExecutedEntity prevExecutedTC = (TestCaseExecutedEntity) prevExecutedItem;
+                for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
+                    if (prevResultValues[i] == TestStatusValue.FAILED || prevResultValues[i] == TestStatusValue.ERROR) {
+                        currentFailedTcBindings.add(currentTcBindings.get(i));
+                    }
+                }
+                rsIdx += prevExecutedTC.getLoopTimes();
+            }
+            return String.join("\n", currentFailedTcBindings);
+        } catch (IOException e) {}
+
+        return "";
+    }
+    
+    /**
+     * @return The lines in testCaseBiding file where the associated test cases failed
+     */
+    private String getRetryImmediatelyTcBindings() {
+        File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
+        try {
+            List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);
+            List<String> retryImmediatelyTcBindings = new ArrayList<>();
+            List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity())
+                    .getExecutedItems();
+            TestStatusValue[] prevResultValues = getResult().getResultValues();
+            int rsIdx = 0;
+            int indexOfFirstFailedTc = 0;
+            for (IExecutedEntity prevExecutedItem : prevTestCaseExecutedEntities) {
+                TestCaseExecutedEntity prevExecutedTC = (TestCaseExecutedEntity) prevExecutedItem;
+                for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
+                    if ((prevResultValues[i] == TestStatusValue.FAILED
+                            || prevResultValues[i] == TestStatusValue.ERROR)) {
+                        retryImmediatelyTcBindings.add(currentTcBindings.get(i));
+                        indexOfFirstFailedTc = i;
+                        break;
+                    }
+                }
+                rsIdx += prevExecutedTC.getLoopTimes();
+            }
+            // Increment to avoid adding another row of the first failed execution
+            indexOfFirstFailedTc = indexOfFirstFailedTc + 1;
+            if (indexOfFirstFailedTc < prevResultValues.length) {
+                for (int i = indexOfFirstFailedTc; i < prevResultValues.length; i++) {
+                    if (i < currentTcBindings.size()) {
+                        retryImmediatelyTcBindings.add(currentTcBindings.get(i));
+                    }
+                }
+            }
+            return String.join("\n", retryImmediatelyTcBindings);
+        } catch (IOException e) {}
+
+        return "";
     }
 
     protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {
@@ -230,18 +315,32 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (emailConfig == null || !emailConfig.canSend()) {
             return;
         }
+        
+        if (runInTestSuiteCollection) {
+            if (!emailConfig.isSendTestSuiteCollectionReportEnabled()) {
+                return;
+            }
 
-        if (emailConfig.isSendEmailTestFailedOnly() && testSuiteLogRecord.getStatus() != null
-                && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
-            return;
+            if (emailConfig.isSkipInvidiualTestSuiteReport()) {
+                return;
+            }
+        } else {
+            if (!emailConfig.isSendTestSuiteReportEnabled()) {
+                return;
+            }
+
+            if (emailConfig.isSendReportTestFailedOnly() && testSuiteLogRecord.getStatus() != null
+                    && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
+                return;
+            }
         }
-
+        
         setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
         writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
                 Arrays.toString(emailConfig.getTos())));
 
         // Send report email
-        MailUtil.sendSummaryMail(emailConfig, testSuiteLogRecord, new EmailVariableBinding(testSuiteLogRecord));
+        MailUtil.sendSummaryMailForTestSuite(emailConfig, testSuiteLogRecord, EmailVariableBinding.getVariablesForTestSuiteEmail(testSuiteLogRecord));
 
         writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
     }
@@ -535,5 +634,31 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     public TestSuiteLogRecord getTestSuiteLogRecord() {
         return suiteLogRecord;
+    }
+
+    public boolean isRunInTestSuiteCollection() {
+        return runInTestSuiteCollection;
+    }
+
+    public void setRunInTestSuiteCollection(boolean runInTestSuiteCollection) {
+        this.runInTestSuiteCollection = runInTestSuiteCollection;
+    }
+
+    protected String getRetryStrategy() {
+        if (runConfig.getExecutionSetting().getExecutedEntity() instanceof TestSuiteExecutedEntity) {
+            TestSuiteExecutedEntity testSuiteExecutedEntity = (TestSuiteExecutedEntity) runConfig.getExecutionSetting()
+                    .getExecutedEntity();
+            return String.valueOf(testSuiteExecutedEntity.getRetryStrategy());
+        }
+        return "";
+    }
+    
+    protected int getNumberOfRetry() {
+        if (runConfig.getExecutionSetting().getExecutedEntity() instanceof TestSuiteExecutedEntity) {
+            TestSuiteExecutedEntity testSuiteExecutedEntity = (TestSuiteExecutedEntity) runConfig.getExecutionSetting()
+                    .getExecutedEntity();
+            return testSuiteExecutedEntity.getPreviousRerunTimes() + testSuiteExecutedEntity.getRemainingRerunTimes();
+        }
+        return 0;
     }
 }
