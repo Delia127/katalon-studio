@@ -148,11 +148,11 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     }
 
     private boolean shouldRetryImmediately(TestSuiteExecutedEntity t, String retryImmediatelyTcBindings) {
-        return RetryStrategyValue.immediately.equals(t.getRetryStrategy()) && !StringUtils.EMPTY.equals(retryImmediatelyTcBindings);
+        return RetryStrategyValue.IMMEDIATELY.equals(t.getRetryStrategy()) && !StringUtils.EMPTY.equals(retryImmediatelyTcBindings);
     }
 
     private boolean shouldRetryFailedExecutionsOnly(TestSuiteExecutedEntity t, String retryFailedExecutionsTcBindings) {
-        return RetryStrategyValue.failedExecutions.equals(t.getRetryStrategy())
+        return RetryStrategyValue.FAILED_EXECUTIONS.equals(t.getRetryStrategy())
                 && !StringUtils.EMPTY.equals(retryFailedExecutionsTcBindings);
     }
 

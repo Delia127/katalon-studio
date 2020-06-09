@@ -521,11 +521,11 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     
     public RetryStrategyValue getRetryStrategy() {
         if (isRerunFailedTestCasesAndTestDataOnly() || isRerunFailedTestCasesOnly()) {
-            return RetryStrategyValue.failedExecutions;
+            return RetryStrategyValue.FAILED_EXECUTIONS;
         } else if (isRerunImmediately()) {
-            return RetryStrategyValue.immediately;
+            return RetryStrategyValue.IMMEDIATELY;
         } else if (getRemainingRerunTimes() > 0) {
-            return RetryStrategyValue.allExecutions;
+            return RetryStrategyValue.ALL_EXECUTIONS;
         }
         return null;
     }

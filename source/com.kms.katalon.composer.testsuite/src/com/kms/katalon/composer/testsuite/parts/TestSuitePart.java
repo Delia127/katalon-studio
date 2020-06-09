@@ -313,7 +313,7 @@ public class TestSuitePart implements EventHandler {
         txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
         
         
-        retryUiProvider.registerRetryControlListeners(verifyNumberListener);
+        retryUiProvider.registerRetryControlListeners();
 
         childrenView.registerControlModifyListeners();
     }

@@ -7,6 +7,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,6 +27,12 @@ import com.kms.katalon.execution.entity.DefaultRerunSetting.RetryStrategyValue;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
+/**
+ * This class represents a panel of retry controls which is used in Test Suite UI and Command Generator Dialog
+ * 
+ * @author thanhto
+ *
+ */
 public class TestSuiteRetryUiPart {
     
     private String RETRY_DOCS_URL = "https://docs.katalon.com/katalon-studio/docs/test-suite.html#modify-execution-information";
@@ -50,7 +57,29 @@ public class TestSuiteRetryUiPart {
         return adapter.getTestSuite();
     }
 
-    public void registerRetryControlListeners(VerifyListener verifyNumberListener) {
+    /**
+     * This method must be called after {@link TestSuiteRetryUiPart#createRetryComposite(Composite)}
+     * in order to register control listeners
+     */
+    public void registerRetryControlListeners() {
+        // Number only
+        VerifyListener verifyNumberListener = new VerifyListener() {
+
+            @Override
+            public void verifyText(VerifyEvent e) {
+                String string = e.text;
+                char[] chars = new char[string.length()];
+                string.getChars(0, chars.length, chars, 0);
+                for (int i = 0; i < chars.length; i++) {
+                    if (!('0' <= chars[i] && chars[i] <= '9')) {
+                        e.doit = false;
+                        return;
+                    }
+                }
+                setDirty(true);
+            }
+        };
+        
         if (getTestSuite() == null) {
             return;
         }
@@ -255,6 +284,11 @@ public class TestSuiteRetryUiPart {
         radioBtnRetryFailedExecutionsOnly.setText(StringConstants.PA_LBL_RETRY_FAILED_EXECUTIONS);
     }
 
+    /**
+     * Synchronize retry controls given a {@link TestSuiteEntity}, used to read a Test Suite's retry configurations
+     * 
+     * @param testSuite
+     */
     public void syncRetryControlStatesWithTestSuiteInfo(TestSuiteEntity testSuite) {
         boolean shouldRetryFailedExecutions = (testSuite.isRerunFailedTestCasesOnly()
                 || testSuite.isRerunFailedTestCasesAndTestDataOnly());
@@ -283,13 +317,19 @@ public class TestSuiteRetryUiPart {
         }
     }
 
+    /**
+     * Synchronize retry controls given a {@link RetryControlStateDescription}, is used to read raw user-defined retry configurations.
+     * 
+     * @param description
+     */
     public void synRetryControlStatesByDescription(RetryControlStateDescription description) {
+        // Shouldn't retry immediately for free users
         boolean shouldRetryImmediately = (LicenseUtil.isNotFreeLicense()
-                && description.getRetryStrategyValue().equals(RetryStrategyValue.immediately));
+                && description.getRetryStrategyValue().equals(RetryStrategyValue.IMMEDIATELY));
         boolean shouldRetryAfterExecuteAll = !shouldRetryImmediately;
-        boolean shouldRetryAllExecutions = description.getRetryStrategyValue().equals(RetryStrategyValue.allExecutions);
+        boolean shouldRetryAllExecutions = description.getRetryStrategyValue().equals(RetryStrategyValue.ALL_EXECUTIONS);
         boolean shouldRetryFailedExecutions = description.getRetryStrategyValue()
-                .equals(RetryStrategyValue.failedExecutions);
+                .equals(RetryStrategyValue.FAILED_EXECUTIONS);
         radioBtnRetryAfterExecuteAll.setSelection(shouldRetryAfterExecuteAll);
         radioBtnRetryImmediately.setSelection(shouldRetryImmediately);
         radioBtnRetryAllExecutions.setSelection(shouldRetryAllExecutions);
@@ -315,13 +355,13 @@ public class TestSuiteRetryUiPart {
     
     public RetryStrategyValue getRetryStrategy() {
         if (radioBtnRetryAllExecutions.getSelection()) {
-            return RetryStrategyValue.allExecutions;
+            return RetryStrategyValue.ALL_EXECUTIONS;
         } else if (radioBtnRetryFailedExecutionsOnly.getSelection()) {
-            return RetryStrategyValue.failedExecutions;
+            return RetryStrategyValue.FAILED_EXECUTIONS;
         } else if (radioBtnRetryImmediately.getSelection()) {
-            return RetryStrategyValue.immediately;
+            return RetryStrategyValue.IMMEDIATELY;
         }
-        return RetryStrategyValue.failedExecutions;
+        return RetryStrategyValue.FAILED_EXECUTIONS;
     }
 
     private void setDirty(boolean b) {

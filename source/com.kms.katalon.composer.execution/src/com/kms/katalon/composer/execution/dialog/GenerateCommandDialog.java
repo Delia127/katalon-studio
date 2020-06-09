@@ -522,14 +522,14 @@ public class GenerateCommandDialog extends AbstractDialog {
         RetryStrategyValue value;
         if (DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_ONLY
                 || DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_TEST_DATA_ONLY) {
-            value = RetryStrategyValue.failedExecutions;
+            value = RetryStrategyValue.FAILED_EXECUTIONS;
         } else if (DefaultRerunSetting.DEFAULT_RERUN_IMMEDIATELY) {
-            value = RetryStrategyValue.immediately;
+            value = RetryStrategyValue.IMMEDIATELY;
         } else {
-            value = RetryStrategyValue.allExecutions;
+            value = RetryStrategyValue.ALL_EXECUTIONS;
         }
         RetryControlStateDescription description = new RetryControlStateDescription(
-                DefaultRerunSetting.DEFAULT_RERUN_TIME, RetryStrategyValue.allExecutions);
+                DefaultRerunSetting.DEFAULT_RERUN_TIME, RetryStrategyValue.ALL_EXECUTIONS);
         retryUiProvider.synRetryControlStatesByDescription(description);
     }
 
@@ -586,7 +586,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void loadLastWorkingDataForRetry(ScopedPreferenceStore prefs) {
         int retryNumber = 0;
-        RetryStrategyValue value = RetryStrategyValue.allExecutions;
+        RetryStrategyValue value = RetryStrategyValue.ALL_EXECUTIONS;
         if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)) {
             retryNumber = prefs.getInt(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY);
         }
@@ -595,7 +595,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             boolean shouldRetryFailedExecution = prefs
                     .getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_EXECUTIONS);
             if (shouldRetryFailedExecution) {
-                value = RetryStrategyValue.failedExecutions;
+                value = RetryStrategyValue.FAILED_EXECUTIONS;
             }
         }
 
@@ -603,7 +603,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             boolean shouldRetryAllExecutions = prefs
                     .getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_ALL_EXECUTIONS);
             if (shouldRetryAllExecutions) {
-                value = RetryStrategyValue.allExecutions;
+                value = RetryStrategyValue.ALL_EXECUTIONS;
             }
         }
 
@@ -611,7 +611,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             boolean shouldRetryImmediately = LicenseUtil.isNotFreeLicense()
                     && prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_IMMEDIATELY);
             if (shouldRetryImmediately) {
-                value = RetryStrategyValue.immediately;
+                value = RetryStrategyValue.IMMEDIATELY;
             }
         }
         RetryControlStateDescription description = new RetryControlStateDescription(retryNumber, value);
@@ -669,7 +669,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         };
         
-        retryUiProvider.registerRetryControlListeners(verifyNumberListener);
+        retryUiProvider.registerRetryControlListeners();
 
         txtStatusDelay.addVerifyListener(verifyNumberListener);
         txtStatusDelay.addFocusListener(new FocusListener() {
@@ -1028,7 +1028,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private String getRetryStrategy() {
-        return retryUiProvider.getRetryStrategy().toString();
+        return retryUiProvider.getRetryStrategy().getUserFacingValue();
     }
 
     private void putConfigArgs(Map<String, String> args) {
@@ -1272,11 +1272,11 @@ public class GenerateCommandDialog extends AbstractDialog {
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID, txtTestSuite.getText());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY, Integer.toString(retryUiProvider.getRetryNumber()));
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_EXECUTIONS,
-               retryUiProvider.getRetryStrategy().equals(RetryStrategyValue.failedExecutions));
+               retryUiProvider.getRetryStrategy().equals(RetryStrategyValue.FAILED_EXECUTIONS));
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_ALL_EXECUTIONS,
-                retryUiProvider.getRetryStrategy().equals(RetryStrategyValue.allExecutions));
+                retryUiProvider.getRetryStrategy().equals(RetryStrategyValue.ALL_EXECUTIONS));
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_IMMEDIATELY,
-                retryUiProvider.getRetryStrategy().equals(RetryStrategyValue.immediately));
+                retryUiProvider.getRetryStrategy().equals(RetryStrategyValue.IMMEDIATELY));
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_APPLY_PROXY,
                 chkApplyProxy.getSelection());
         prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_OVERRIDE_PLATFORM, chkOverridePlatform.getSelection());

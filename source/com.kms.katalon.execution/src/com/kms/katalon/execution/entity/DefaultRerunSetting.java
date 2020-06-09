@@ -33,7 +33,32 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
     private boolean overrideRemainingRerunTimes;
     
     public enum RetryStrategyValue {
-        immediately, allExecutions, failedExecutions
+        
+        IMMEDIATELY, ALL_EXECUTIONS, FAILED_EXECUTIONS;
+        
+        public static RetryStrategyValue getEnum(String value) {
+            if("immediately".equals(value)) {
+                return RetryStrategyValue.IMMEDIATELY;
+            } else if("allExecutions".equals(ALL_EXECUTIONS)) {
+                return RetryStrategyValue.ALL_EXECUTIONS;
+            } else if("failedExecutions".equals(FAILED_EXECUTIONS)) {
+                return RetryStrategyValue.FAILED_EXECUTIONS;
+            }
+            return RetryStrategyValue.ALL_EXECUTIONS;
+        }
+
+        public String getUserFacingValue() {
+            if (this.equals(IMMEDIATELY)) {
+                return "immediately";
+            }
+            if (this.equals(ALL_EXECUTIONS)) {
+                return "allExecutions";
+            }
+            if (this.equals(FAILED_EXECUTIONS)) {
+                return "failedExecutions";
+            }
+            return "allExecutions";
+        }
     };
 
     public static final IntegerConsoleOption RETRY_CONSOLE_OPTION = new IntegerConsoleOption() {
@@ -141,20 +166,20 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
             setRerunFailedTestCaseAndTestDataOnly(Boolean.valueOf(argumentValue));
             overrideRerunFailedTestCaseWithTestDataOnly = true;
         } else if (consoleOption == RERUN_STRATEGY_CONSOLE_OPTION) {
-            RetryStrategyValue strategyValue = RetryStrategyValue.valueOf(argumentValue);
+            RetryStrategyValue strategyValue = RetryStrategyValue.getEnum(argumentValue);
             resetAllLegacyRetrySettings();
             switch (strategyValue) {
-                case immediately:
+                case IMMEDIATELY:
                     setRerunImmediately(true);
                     overrideRerunImmediately = true;
                     break;
-                case failedExecutions:
+                case FAILED_EXECUTIONS:
                     setRerunFailedTestCaseOnly(true);
                     overrideRerunFailedTestCaseOnly = true;
                     setRerunFailedTestCaseAndTestDataOnly(true);
                     overrideRerunFailedTestCaseWithTestDataOnly = true;
                     break;
-                case allExecutions:
+                case ALL_EXECUTIONS:
                 default:
                     break;
             }
