@@ -36,12 +36,16 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
         
         IMMEDIATELY, ALL_EXECUTIONS, FAILED_EXECUTIONS;
         
+        private static final String FAILED_EXECUTIONS_CONSOLE_ARG = "failedExecutions";
+        private static final String ALL_EXECUTIONS_CONSOLE_ARG = "allExecutions";
+        private static final String IMMEDIATELY_CONSOLE_ARG = "immediately";
+
         public static RetryStrategyValue getEnum(String value) {
-            if("immediately".equals(value)) {
+            if(IMMEDIATELY_CONSOLE_ARG.equals(value)) {
                 return RetryStrategyValue.IMMEDIATELY;
-            } else if("allExecutions".equals(ALL_EXECUTIONS)) {
+            } else if(ALL_EXECUTIONS_CONSOLE_ARG.equals(value)) {
                 return RetryStrategyValue.ALL_EXECUTIONS;
-            } else if("failedExecutions".equals(FAILED_EXECUTIONS)) {
+            } else if(FAILED_EXECUTIONS_CONSOLE_ARG.equals(value)) {
                 return RetryStrategyValue.FAILED_EXECUTIONS;
             }
             return RetryStrategyValue.ALL_EXECUTIONS;
@@ -49,15 +53,15 @@ public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor 
 
         public String getUserFacingValue() {
             if (this.equals(IMMEDIATELY)) {
-                return "immediately";
+                return IMMEDIATELY_CONSOLE_ARG;
             }
             if (this.equals(ALL_EXECUTIONS)) {
-                return "allExecutions";
+                return ALL_EXECUTIONS_CONSOLE_ARG;
             }
             if (this.equals(FAILED_EXECUTIONS)) {
-                return "failedExecutions";
+                return FAILED_EXECUTIONS_CONSOLE_ARG;
             }
-            return "allExecutions";
+            return ALL_EXECUTIONS_CONSOLE_ARG;
         }
     };
 
