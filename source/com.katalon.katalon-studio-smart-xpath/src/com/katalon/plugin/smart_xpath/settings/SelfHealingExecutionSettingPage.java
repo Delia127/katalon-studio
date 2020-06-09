@@ -16,8 +16,12 @@ import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.settings.composites.ExcludeObjectsUsedWithKeywordsComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.PrioritizeSelectionMethodsComposite;
 import com.kms.katalon.composer.components.controls.HelpComposite;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.util.collections.Pair;
 
 public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
@@ -121,15 +125,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 	private boolean getEnableSelfHealingFromPluginPreference() {
 		return preferenceStore.getSelfHealingEnabled();
 	}
-
-	private void setEnableSelfHealingIntoPluginPreference() throws IOException {
-		preferenceStore.setEnableSelfHealing(isEnableSelfHealing);
-	}
-
-	public void setUpdatedMethodsPriorityOrderIntoPluginPreference() throws IOException {
-		preferenceStore.setMethodsPritorityOrder(prioritizeSelectionMethodsComposite.getInput());
-	}
-
+	
 	private List<Pair<SelectorMethod, Boolean>> getMethodsPriorityOrderFromPluginPreference() {
 		List<Pair<SelectorMethod, Boolean>> value = null;
 		try {
@@ -149,10 +145,6 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
             LoggerSingleton.logError(exception);
 		}
 		return value;
-	}
-
-	public void setUpdatedExcludeKeywordsIntoPluginPreference() throws IOException {
-		preferenceStore.setExcludeKeywordList(excludeObjectsUsedWithKeywordsComposite.getInput());
 	}
 
     @Override
@@ -176,10 +168,16 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	@Override
 	protected boolean saveSettings() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        if (!featureService.canUse(KSEFeature.SELF_HEALING)) {
+            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
+            return false;
+        }
+
 		try {
-			this.setUpdatedExcludeKeywordsIntoPluginPreference();
-			this.setUpdatedMethodsPriorityOrderIntoPluginPreference();
-			this.setEnableSelfHealingIntoPluginPreference();
+	        preferenceStore.setExcludeKeywordList(excludeObjectsUsedWithKeywordsComposite.getInput());
+	        preferenceStore.setMethodsPritorityOrder(prioritizeSelectionMethodsComposite.getInput());
+	        preferenceStore.setEnableSelfHealing(isEnableSelfHealing);
 		} catch (IOException exception) {
             LoggerSingleton.logError(exception);
 			return false;
