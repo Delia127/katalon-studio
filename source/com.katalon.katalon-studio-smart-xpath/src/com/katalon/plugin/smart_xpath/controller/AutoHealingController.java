@@ -153,7 +153,7 @@ public class AutoHealingController {
                 SmartXPathConstants.SELF_HEALING_FOLDER_PATH);
 
         String selfHealingDir = FilenameUtils.separatorsToSystem(rawSelfHealingDir);
-        ///huyen: chi tao khi khong co
+
         File selfHealingDirectory = new File(selfHealingDir);
         if (!selfHealingDirectory.exists()) {
             boolean isCreateSelfHealingFolderSucceeded = selfHealingDirectory.mkdirs();

@@ -57,7 +57,7 @@ public class SmartXPathMessageConstants extends NLS {
 
     public static String LBL_COL_PROPOSED_LOCATOR;
 
-    public static String LBL_COL_RECOVER_BY;
+    public static String LBL_COL_RECOVERED_BY;
 
     public static String LBL_COL_SCREENSHOT;
 

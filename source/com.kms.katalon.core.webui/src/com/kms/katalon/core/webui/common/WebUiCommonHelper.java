@@ -760,7 +760,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
 
         for (Pair<SelectorMethod, Boolean> element : methodsPriorityOrder) {
-            if (!element.getRight()) {
+            boolean isEnableMethod = element.getRight();
+            if (!isEnableMethod) {
                 continue;
             }
             SelectorMethod method = element.getLeft();

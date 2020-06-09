@@ -16,6 +16,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,6 +57,12 @@ public class SelfHealingInsightsPart implements EventHandler {
     private FileWatcher dataWatcher;
     
     private static SelfHealingInsightsPart prevInstance;
+
+    private final static String ICON_URI_FOR_PART = "IconUriForPart";
+
+    private final static String NOTIFICATION_SELF_HEALING_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self-healing_notification_16.png";
+
+    private final static String SELF_HEALING_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self-healing_16.png";
 
     @PostConstruct
     public void init(Composite parent) {
@@ -226,8 +233,14 @@ public class SelfHealingInsightsPart implements EventHandler {
 
         String selfHealingInsightsLabel = SmartXPathConstants.SELF_HEALING_INSIGHTS_PART_LABEL;
 
-        selfHealingInsightsPart.setLabel(numBrokenTestObjects > 0
-                ? MessageFormat.format("{0} ({1})", selfHealingInsightsLabel, numBrokenTestObjects)
-                : selfHealingInsightsLabel);
+        if (numBrokenTestObjects > 0) {
+            selfHealingInsightsPart.getTransientData().put(ICON_URI_FOR_PART, NOTIFICATION_SELF_HEALING_ICON);
+            selfHealingInsightsPart.setIconURI(NOTIFICATION_SELF_HEALING_ICON);
+            selfHealingInsightsPart.setLabel(MessageFormat.format("{0} ({1})", selfHealingInsightsLabel, numBrokenTestObjects));
+        } else {
+            selfHealingInsightsPart.getTransientData().put(ICON_URI_FOR_PART, SELF_HEALING_ICON);
+            selfHealingInsightsPart.setIconURI(SELF_HEALING_ICON);
+            selfHealingInsightsPart.setLabel(selfHealingInsightsLabel);
+        }
     }
 }

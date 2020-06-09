@@ -149,9 +149,9 @@ public class BrokenTestObjectsTableComposite extends Composite {
             }
         });
 
-        TableViewerColumn colRecoverBy = new TableViewerColumn(tbViewer, SWT.NONE);
-        colRecoverBy.getColumn().setText(SmartXPathMessageConstants.LBL_COL_RECOVER_BY);
-        colRecoverBy.setLabelProvider(new ColumnLabelProvider() {
+        TableViewerColumn colRecoveredBy = new TableViewerColumn(tbViewer, SWT.NONE);
+        colRecoveredBy.getColumn().setText(SmartXPathMessageConstants.LBL_COL_RECOVERED_BY);
+        colRecoveredBy.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 String recoveryMethod = ((BrokenTestObject) element).getRecoveryMethod().getName();
@@ -242,7 +242,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
         tableColumnLayout.setColumnData(colObjectId.getColumn(), new ColumnWeightData(40, 100));
         tableColumnLayout.setColumnData(colBrokenLocator.getColumn(), new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(colProposedLocator.getColumn(), new ColumnWeightData(30, 100));
-        tableColumnLayout.setColumnData(colRecoverBy.getColumn(), new ColumnWeightData(5, 70));
+        tableColumnLayout.setColumnData(colRecoveredBy.getColumn(), new ColumnWeightData(7, 90));
         tableColumnLayout.setColumnData(colScreenshot.getColumn(), new ColumnWeightData(5, 70));
         tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(4, 60));
     }
