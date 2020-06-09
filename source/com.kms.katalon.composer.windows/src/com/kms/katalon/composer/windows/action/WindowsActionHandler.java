@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +41,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.windows.constant.ComposerWindowsMessage;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.element.SnapshotWindowsElement;
 import com.kms.katalon.composer.windows.exception.WindowsComposerException;
@@ -783,12 +785,12 @@ public class WindowsActionHandler {
             composite.setLayout(new GridLayout(2, false));
 
             Label lblRawText = new Label(composite, SWT.NONE);
-            lblRawText.setText(StringConstants.LBL_RAW_TEXT);
+            lblRawText.setText(ComposerWindowsMessage.LBL_RAW_TEXT);
             txtRawText = new Text(composite, SWT.BORDER);
             txtRawText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
             Label lblEncryptedText = new Label(composite, SWT.NONE);
-            lblEncryptedText.setText(StringConstants.LBL_ENCRYPTED_TEXT);
+            lblEncryptedText.setText(ComposerWindowsMessage.LBL_ENCRYPTED_TEXT);
             txtEncryptedText = new Text(composite, SWT.BORDER);
             txtEncryptedText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
             txtEncryptedText.setEditable(false);
@@ -823,19 +825,19 @@ public class WindowsActionHandler {
 
         @Override
         protected void createButtonsForButtonBar(Composite parent) {
-            this.btnApplyAction = createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
-            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+            this.btnApplyAction = createButton(parent, IDialogConstants.OK_ID, ComposerWindowsMessage.BTN_APPLY, true);
+            createButton(parent, IDialogConstants.CANCEL_ID, ComposerWindowsMessage.BTN_CANCEL, false);
             this.btnApplyAction.setEnabled(false);
         }
 
         @Override
         protected Point getInitialSize() {
-            return new Point(400, 155);
+            return new Point(400, super.getInitialSize().y);
         }
 
         @Override
         public String getDialogTitle() {
-            return "Set Encrypted Text action";
+            return ComposerWindowsMessage.TITLE_SET_ENCRYPTED_TEXT_DIALOG;
         }
 
         @Override
@@ -853,6 +855,8 @@ public class WindowsActionHandler {
         private Text txtText;
 
         private String text;
+
+        private Button btnApplyAction;
 
         protected GetAttributeInputDialog(Shell parentShell) {
             super(parentShell, false);
@@ -873,28 +877,45 @@ public class WindowsActionHandler {
             composite.setLayout(new GridLayout(1, false));
 
             Label lblText = new Label(composite, SWT.NONE);
-            lblText.setText("Please input attribute name to set to element:");
+            lblText.setText(ComposerWindowsMessage.LBL_GET_ATTRIBUTE_INPUT);
 
             txtText = new Text(composite, SWT.BORDER);
             txtText.setLayoutData(new GridData(SWT.FILL, SWT.WRAP, true, true));
 
+            addControlListeners();
             return composite;
+        }
+
+        private void addControlListeners() {
+            txtText.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent event) {
+                    String text = txtText.getText();
+                    if (!StringUtils.isEmpty(text)) {
+                        btnApplyAction.setEnabled(true);
+                    } else {
+                        btnApplyAction.setEnabled(false);
+                    }
+                }
+            });
         }
 
         @Override
         protected void createButtonsForButtonBar(Composite parent) {
-            createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
-            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+            btnApplyAction = createButton(parent, IDialogConstants.OK_ID, ComposerWindowsMessage.BTN_APPLY, true);
+            createButton(parent, IDialogConstants.CANCEL_ID, ComposerWindowsMessage.BTN_CANCEL, false);
+            this.btnApplyAction.setEnabled(false);
         }
 
         @Override
         protected Point getInitialSize() {
-            return new Point(400, 155);
+            return new Point(400, super.getInitialSize().y);
         }
 
         @Override
         public String getDialogTitle() {
-            return "Get Attribute action";
+            return ComposerWindowsMessage.TITLE_GET_ATTRIBUTE_DIALOG;
         }
 
         @Override
@@ -930,7 +951,7 @@ public class WindowsActionHandler {
             composite.setLayout(new GridLayout());
 
             Label lblText = new Label(composite, SWT.NONE);
-            lblText.setText("The attribute value would be:");
+            lblText.setText(ComposerWindowsMessage.LBL_GET_ATTRIBUTE_RESULT);
 
             txtText = new Text(composite, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER | SWT.WRAP);
             txtText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -939,8 +960,8 @@ public class WindowsActionHandler {
 
         @Override
         protected void createButtonsForButtonBar(Composite parent) {
-            createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
-            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+            createButton(parent, IDialogConstants.OK_ID, ComposerWindowsMessage.BTN_APPLY, true);
+            createButton(parent, IDialogConstants.CANCEL_ID, ComposerWindowsMessage.BTN_CANCEL, false);
         }
 
         @Override
@@ -950,7 +971,7 @@ public class WindowsActionHandler {
 
         @Override
         public String getDialogTitle() {
-            return "Get Attribute action";
+            return ComposerWindowsMessage.TITLE_GET_ATTRIBUTE_DIALOG;
         }
     }
 }
