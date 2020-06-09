@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IFolder;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.annotation.Keyword;
@@ -69,17 +70,17 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
             URLClassLoader classLoader = ProjectController.getInstance().getProjectClassLoader(projectEntity);
             IFolder srcFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
             IFolder pluginFolder = GroovyUtil.getPluginsFolder(projectEntity);
-            List<Method> allKeywordMethod = CustomKeywordParser.getInstance()
-                    .parseProjectCustomKeywordsIntoAst(classLoader, srcFolder);
-
-            allKeywordMethod
-                    .addAll(CustomKeywordParser.getInstance().parsePluginKeywordsIntoAst(classLoader, pluginFolder));
-
+            List<Method> allKeywordMethod = CustomKeywordParser.getInstance().parseProjectCustomKeywordsIntoAst(
+            		classLoader, srcFolder);
+            
+            allKeywordMethod.addAll(CustomKeywordParser.getInstance().parsePluginKeywordsIntoAst(
+                    classLoader, pluginFolder));
+            
             for (File customKeywordPlugin : ProjectController.getInstance().getCustomKeywordPlugins(projectEntity)) {
                 allKeywordMethod.addAll(CustomKeywordParser.getInstance().parsePluginKeywordJarIntoAst(classLoader,
                         customKeywordPlugin));
             }
-
+            
             Map<String, List<Method>> methodActionMap = new HashMap<String, List<Method>>();
 
             for (Method method : allKeywordMethod) {
@@ -93,16 +94,14 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
                     methodList.add(method);
                 }
             }
-            List<String> listFolder = new ArrayList<String>();
             Iterator<Entry<String, List<Method>>> it = methodActionMap.entrySet().iterator();
             while (it.hasNext()) {
                 Entry<String, List<Method>> pair = (Entry<String, List<Method>>) it.next();
-
-                KeywordBrowserFolderTreeEntity keywordFolder = new KeywordBrowserFolderTreeEntity(pair.getKey(),
-                        this);
-                for (Method currentMethod : pair.getValue()) {
+                KeywordBrowserFolderTreeEntity keywordFolder = new KeywordBrowserFolderTreeEntity(pair.getKey(), this);
+                for (Method method : pair.getValue()) {
                     keywordFolder.children.add(new KeywordBrowserTreeEntity(CUSTOM_KEYWORD_CLASS_NAME,
-                            CUSTOM_KEYWORD_CLASS_NAME, currentMethod.getName(), true, keywordFolder));
+                            CUSTOM_KEYWORD_CLASS_NAME, "'" + method.getDeclaringClass().getName() + "."
+                                    + method.getName() + "'", true, keywordFolder));
                 }
 
                 Collections.sort(keywordFolder.children, new Comparator<IKeywordBrowserTreeEntity>() {
@@ -112,26 +111,18 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
                         return keywordA.getName().compareToIgnoreCase(keywordB.getName());
                     }
                 });
-                
-                if (listFolder.contains(pair.getKey())) {
-                    KeywordBrowserFolderTreeEntity existedKeywordFolder = (KeywordBrowserFolderTreeEntity) this.children
-                            .get(listFolder.indexOf(pair.getKey()));
-                    existedKeywordFolder.appendNewChild(keywordFolder);
-                } else {
-                    listFolder.add(pair.getKey());
-                    childTreeEntityList.add(keywordFolder);
-                }
+
+                childTreeEntityList.add(keywordFolder);
             }
         }
         return childTreeEntityList;
     }
-    
+
     private String getKeywordObject(Method method) throws IllegalAccessException, IllegalArgumentException,
             InvocationTargetException, NoSuchMethodException, SecurityException {
         for (Annotation annotation : method.getDeclaredAnnotations()) {
             if (annotation.annotationType().getName().equals(Keyword.class.getName())) {
-                return (String) annotation.annotationType()
-                        .getMethod(KEYWORD_OBJECT_ANNOTATION_METHOD)
+                return (String) annotation.annotationType().getMethod(KEYWORD_OBJECT_ANNOTATION_METHOD)
                         .invoke(annotation);
             }
         }

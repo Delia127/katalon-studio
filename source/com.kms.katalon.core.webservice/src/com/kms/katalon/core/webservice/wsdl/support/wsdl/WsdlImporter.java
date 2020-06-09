@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ibm.wsdl.BindingOperationImpl;
 import com.kms.katalon.constants.SystemProperties;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.helper.SafeHelper;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
@@ -78,9 +79,21 @@ public class WsdlImporter {
         entity.setSoapBody(requestMessage != null ? requestMessage : "");
 
         String wsdlAddress = wsdlLocator.getWsdlLocation();
+        String projectLocation = System.getProperty(SystemProperties.PROJECT_LOCATION);
+        if (isFile(wsdlAddress) && wsdlAddress.startsWith(projectLocation)) {
+            wsdlAddress = PathUtil.absoluteToRelativePath(wsdlAddress, projectLocation);
+        }
         entity.setWsdlAddress(wsdlAddress);
 
         return entity;
+    }
+
+    private static boolean isFile(String url) {
+        return !isWebUrl(url);
+    }
+
+    private static boolean isWebUrl(String url) {
+        return url.startsWith(RequestHeaderConstants.HTTP) || url.startsWith(RequestHeaderConstants.HTTPS);
     }
 
     public interface WebServiceRequestEntityCreator {

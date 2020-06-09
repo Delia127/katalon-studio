@@ -2,7 +2,6 @@ package com.kms.katalon.execution.webui.configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.kms.katalon.constants.IdConstants;
@@ -11,7 +10,6 @@ import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.WebDriverCleanerUtil;
-import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -69,14 +67,6 @@ public class EdgeChromiumRunConfiguration extends WebUiRunConfiguration {
             }
         }
         return driverConnectors;
-    }
-    
-    @Override
-    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
-        Map<String, String> environmentVariables = new HashMap<>(super.getAdditionalEnvironmentVariables());
-        environmentVariables.put(WebDriverPropertyUtil.KATALON_DOCKER_ENV_KEY,
-                String.valueOf(WebDriverPropertyUtil.isRunningInDocker()));
-        return environmentVariables;
     }
 
     @Override

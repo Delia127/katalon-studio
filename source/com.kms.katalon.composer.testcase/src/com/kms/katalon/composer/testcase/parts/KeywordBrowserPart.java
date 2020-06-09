@@ -8,17 +8,12 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.menu.MDirectToolItem;
-import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
-import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
-import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -32,9 +27,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -43,7 +35,6 @@ import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
-import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.keywords.BuiltinKeywordFolderBrowserTreeEntity;
@@ -57,14 +48,11 @@ import com.kms.katalon.composer.testcase.providers.KeywordBrowserEntityViewerFil
 import com.kms.katalon.composer.testcase.providers.KeywordTreeContentProvider;
 import com.kms.katalon.composer.testcase.providers.KeywordTreeLabelProvider;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.custom.keyword.KeywordClass;
 
 public class KeywordBrowserPart implements EventHandler {
     private static final String SEARCH_TEXT_DEFAULT_VALUE = "Enter text to search...";
-    
-    private ToolItem tiRefresh;
 
     private TreeViewer treeViewer;
 
@@ -79,7 +67,6 @@ public class KeywordBrowserPart implements EventHandler {
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
-        createToolBar(mpart);
         createControls(parent);
         registerListerners();
         hookDoubleClickEvent();
@@ -90,34 +77,8 @@ public class KeywordBrowserPart implements EventHandler {
     private void registerListerners() {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
         eventBroker.subscribe(EventConstants.KEYWORD_BROWSER_REFRESH, this);
-        eventBroker.subscribe(EventConstants.CUSTOMKEYWORD_REFRESH, this);
     }
 
-    private void createToolBar(MPart part) {
-        CTabFolder ctabfolder = (CTabFolder) part.getParent().getWidget();
-        ToolBar toolbar = new ToolBar(ctabfolder, SWT.FLAT);
-        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
-        MToolBar mToolbar = MMenuFactory.INSTANCE.createToolBar();
-        mToolbar.setWidget(toolbar);
-        part.setToolbar(mToolbar);
-
-        List<MToolBarElement> toolItems = mToolbar.getChildren();
-
-        MDirectToolItem mtiRefresh = MMenuFactory.INSTANCE.createDirectToolItem();
-        toolItems.add(mtiRefresh);
-
-        tiRefresh = new ToolItem(toolbar, SWT.PUSH);
-        tiRefresh.setImage(ImageConstants.IMG_16_REFRESH);
-        tiRefresh.setToolTipText(GlobalStringConstants.REFRESH);
-        tiRefresh.addListener(SWT.Selection, new Listener() {
-
-            @Override
-            public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                loadTreeData();
-            }
-        });
-    }
-    
     private void hookDoubleClickEvent() {
         treeViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
@@ -390,44 +351,12 @@ public class KeywordBrowserPart implements EventHandler {
 
         return controlKeywordFolderTreeEntity;
     }
-    
-    @SuppressWarnings("unchecked")
-    private void refreshCustomKeywordFolder() {
-        List<Object> keywordTreeEntities = (List<Object>) treeViewer.getInput();
-        int keywordTreeEntitiesSize = keywordTreeEntities.size();
-        treeViewer.getTree().setRedraw(false);
-
-        for (int i = 0; i < keywordTreeEntitiesSize; i++) {
-            if (!(keywordTreeEntities.get(i) instanceof KeywordBrowserFolderTreeEntity)) {
-                continue;
-            }
-            
-            KeywordBrowserFolderTreeEntity keywordTreeEntity = (KeywordBrowserFolderTreeEntity) keywordTreeEntities.get(i);
-            if (keywordTreeEntity.getName().equals(StringConstants.KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL)) {
-                keywordTreeEntities.set(i, new CustomKeywordFolderBrowserTreeEntity(null));
-                boolean isExpanded = treeViewer.getTree().getItem(i).getExpanded();
-
-                KeywordTreeContentProvider contentProvider = (KeywordTreeContentProvider) treeViewer.getContentProvider();
-                treeViewer.refresh(true);
-                if (contentProvider.hasChildren(keywordTreeEntity)) {
-                    List<Object> newKeywordTreeEntities = (List<Object>) treeViewer.getInput();
-                    treeViewer.setExpandedState(newKeywordTreeEntities.get(i), isExpanded);
-                }
-                break;
-            }
-        }
-        treeViewer.getTree().setRedraw(true);
-    }
 
     @Override
     public void handleEvent(Event event) {
         if (event.getTopic().equals(EventConstants.PROJECT_OPENED)
                 || event.getTopic().equals(EventConstants.KEYWORD_BROWSER_REFRESH)) {
             loadTreeData();
-        }
-
-        if (event.getTopic().equals(EventConstants.CUSTOMKEYWORD_REFRESH)) {
-            refreshCustomKeywordFolder();
         }
     }
 }

@@ -180,8 +180,6 @@ public interface IImageKeys {
     public static final String CHROME_24 = "execution/chrome_24.png"; //$NON-NLS-1$
 
     public static final String EDGE_24 = "execution/edge_24.png"; //$NON-NLS-1$
-    
-    public static final String EDGE_CHROMIUM_24 = "execution/edge_chromium_24.png"; //$NON-NLS-1$
 
     public static final String FIREFOX_24 = "execution/firefox_24.png"; //$NON-NLS-1$
 

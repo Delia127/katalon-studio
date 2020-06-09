@@ -427,10 +427,6 @@ public class Trackings {
         trackUserAction("openKSEBrochurePage");
     }
     
-    public static void trackClickOnExceptionDocInLogViewer(String link) {
-        trackUserAction("clickOnExceptionLinkInLogViewer", "link", link);
-    }
-    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }

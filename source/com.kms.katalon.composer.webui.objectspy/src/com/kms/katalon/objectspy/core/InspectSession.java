@@ -59,7 +59,7 @@ import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.selenium.driver.CFirefoxDriver;
 
 public class InspectSession implements Runnable {
-
+    
     private static final String HTTP = "http";
 
     private static final String ABOUT_BLANK = "about:blank";
@@ -68,19 +68,11 @@ public class InspectSession implements Runnable {
 
     protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
 
-    protected static final String LOAD_EXTENSION_EDGE_CHROMIUM_PREFIX = "load-extension=";
-
     private static final String VARIABLE_INIT_EXPRESSION_FOR_CHROME = "katalonServerPort = ''{0}''\r\n"
             + "katalonOnOffStatus = true\r\n" + "spy_captureObjectHotKey = {1};\r\n"
             + "spy_loadDomMapHotKey = {2};\r\n";
 
-    private static final String VARIABLE_INIT_EXPRESSION_FOR_EDGE_CHROMIUM = "katalonServerPort = ''{0}''\r\n"
-            + "katalonOnOffStatus = true\r\n" + "spy_captureObjectHotKey = {1};\r\n"
-            + "spy_loadDomMapHotKey = {2};\r\n";
-
     private static final String VARIABLE_INIT_FILE_FOR_CHROME = "chrome_variables_init.js";
-
-    private static final String VARIABLE_INIT_FILE_FOR_EDGE_CHROMIUM = "edge_chromium_variables_init.js";
 
     private static final String SERVER_URL_FILE_NAME = "serverUrl.txt";
 
@@ -97,22 +89,16 @@ public class InspectSession implements Runnable {
     protected static final String CHROME_RECORD_SPY_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
             + OBJECT_SPY_ADD_ON_NAME + File.separator + "KR";
 
-    protected static final String EDGE_CHROMIUM_RECORD_SPY_EXTENSION_RELATIVE_PATH = File.separator + "Edge Chromium" + File.separator
-            + OBJECT_SPY_ADD_ON_NAME + File.separator + "KR";
+    protected static final String FIREFOX_RECORD_SPY_EXTENSION_RELATIVE_PATH = File.separator + "Firefox" + File.separator
+            + "objectspy.xpi";
     
-    protected static final String FIREFOX_RECORD_SPY_EXTENSION_RELATIVE_PATH = File.separator + "Firefox"
-            + File.separator + "objectspy.xpi";
-
     protected static final String FIREFOX_RECORD_SMART_WAIT_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "smartwait.xpi";
 
     protected static final String FIREFOX_RECORD_SPY_FOLDER_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy";
-
+    
     protected static final String CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
-            + "Smart Wait";
-
-    protected static final String EDGE_CHROMIUM_SMART_WAIT_EXTENSION_RELATIVE_PATH = File.separator + "Edge Chromium" + File.separator
             + "Smart Wait";
     
     private static final String CAP_IE_USE_PER_PROCESS_PROXY = "ie.usePerProcessProxy";
@@ -197,42 +183,37 @@ public class InspectSession implements Runnable {
 
             driver = DriverFactory.openWebDriver(webUiDriverType, options);
             driverStarted = true;
-            switch (webUiDriverType) {
-                case FIREFOX_DRIVER: {
-                    LoggerSingleton.logInfo(MessageFormat.format("Installing Katalon Recorder for {0}...",
-                            DriverFactory.getBrowserVersion(driver)));
+            if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                LoggerSingleton.logInfo(MessageFormat.format("Installing Katalon Recorder for {0}...",
+                        DriverFactory.getBrowserVersion(driver)));
 
-                    // Fix KAT-3652: Cannot Record/Spy with Firefox latest version (v.62.0)
-                    CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
-                    URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
+                // Fix KAT-3652: Cannot Record/Spy with Firefox latest version (v.62.0)
+                CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
+                URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
+                
+                // Install Record-Spy extension
+                CloseableHttpClient recordSpyInstallclient = HttpClientBuilder.create().build();
+                HttpPost httpRecordSpyInstallPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
+                        + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
+                String recordSpyInstallBodyContent = String.format("{\"path\": \"%s\"}",
+                        StringEscapeUtils.escapeJava(getFirefoxRecordSpyAddonFile().getAbsolutePath()));
+                httpRecordSpyInstallPost.setEntity(new StringEntity(recordSpyInstallBodyContent));
+                recordSpyInstallclient.execute(httpRecordSpyInstallPost);
 
-                    // Install Record-Spy extension
-                    CloseableHttpClient recordSpyInstallclient = HttpClientBuilder.create().build();
-                    HttpPost httpRecordSpyInstallPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
+                if (shouldInstallSmartWait()) {
+                    // Install Smart Wait extension
+                    CloseableHttpClient smartWaitInstallclient = HttpClientBuilder.create().build();
+                    HttpPost smartWaitHttpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
                             + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
-                    String recordSpyInstallBodyContent = String.format("{\"path\": \"%s\"}",
-                            StringEscapeUtils.escapeJava(getFirefoxRecordSpyAddonFile().getAbsolutePath()));
-                    httpRecordSpyInstallPost.setEntity(new StringEntity(recordSpyInstallBodyContent));
-                    recordSpyInstallclient.execute(httpRecordSpyInstallPost);
-
-                    if (shouldInstallSmartWait()) {
-                        // Install Smart Wait extension
-                        CloseableHttpClient smartWaitInstallclient = HttpClientBuilder.create().build();
-                        HttpPost smartWaitHttpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
-                                + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
-                        String smartWaitBodyContent = String.format("{\"path\": \"%s\"}",
-                                StringEscapeUtils.escapeJava(getFirefoxSmartWaitAddonFile().getAbsolutePath()));
-                        smartWaitHttpPost.setEntity(new StringEntity(smartWaitBodyContent));
-                        smartWaitInstallclient.execute(smartWaitHttpPost);
-                    }
-
-                    handleForFirefoxAddon();
-                    break;
+                    String smartWaitBodyContent = String.format("{\"path\": \"%s\"}",
+                            StringEscapeUtils.escapeJava(getFirefoxSmartWaitAddonFile().getAbsolutePath()));
+                    smartWaitHttpPost.setEntity(new StringEntity(smartWaitBodyContent));
+                    smartWaitInstallclient.execute(smartWaitHttpPost);
                 }
 
-                default:
-                    break;
+                handleForFirefoxAddon();
             }
+
             if (StringUtils.isNotEmpty(startUrl)) {
                 try {
                     driver.navigate().to(PathUtil.getUrl(startUrl, HTTP));
@@ -299,7 +280,7 @@ public class InspectSession implements Runnable {
                 RunConfiguration.getDriverPreferencesProperties(DriverFactory.WEB_UI_DRIVER_PROPERTY), driverType);
         switch (driverType) {
             case CHROME_DRIVER:
-                return createChromeDriverOptions(capabilities);
+                return createChromDriverOptions(capabilities);
             case IE_DRIVER:
                 return createIEDesiredCapabilities(capabilities);
             case FIREFOX_DRIVER:
@@ -308,8 +289,6 @@ public class InspectSession implements Runnable {
                     capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
                 }
                 return capabilities;
-            case EDGE_CHROMIUM_DRIVER:
-                return createEdgeChromiumDriverOptions(capabilities);
             default:
                 return capabilities;
         }
@@ -335,7 +314,7 @@ public class InspectSession implements Runnable {
         return firefoxProfile;
     }
 
-    protected DesiredCapabilities createChromeDriverOptions(DesiredCapabilities capabilities)
+    protected DesiredCapabilities createChromDriverOptions(DesiredCapabilities capabilities)
             throws IOException, ExtensionNotFoundException {
         
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
@@ -374,54 +353,11 @@ public class InspectSession implements Runnable {
         WebDriverPropertyUtil.addArgumentsForChrome(capabilities, extensions);
         return capabilities;
     }
-
-    protected DesiredCapabilities createEdgeChromiumDriverOptions(DesiredCapabilities capabilities)
-            throws IOException, ExtensionNotFoundException {
-
-        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
-        if (proxyInformation.isApplyToDesiredCapabilities()
-                && ProxyOption.valueOf(proxyInformation.getProxyOption()) == ProxyOption.MANUAL_CONFIG) {
-            if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-                WebDriverPropertyUtil.addArgumentsForEdgeChromium(capabilities,
-                        "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
-            } else {
-                capabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
-            }
-        }
-
-        File edgeChromiumRecordSpyExtensionFolder = getEdgeChromiumRecordSpyExtensionFile();
-        if (edgeChromiumRecordSpyExtensionFolder == null || !edgeChromiumRecordSpyExtensionFolder.isDirectory()
-                || !edgeChromiumRecordSpyExtensionFolder.exists()) {
-            throw new ExtensionNotFoundException(getChromeRecordSpyExtensionPath(),
-                    WebUIDriverType.EDGE_CHROMIUM_DRIVER);
-        }
-
-        File edgeChromiumSmartWaitExtensionFolder = getEdgeChromiumSmartWaitExtensionFile();
-        if (edgeChromiumSmartWaitExtensionFolder == null || !edgeChromiumSmartWaitExtensionFolder.isDirectory()
-                || !edgeChromiumSmartWaitExtensionFolder.exists()) {
-            throw new ExtensionNotFoundException(getChromeSmartWaitExtensionPath(),
-                    WebUIDriverType.EDGE_CHROMIUM_DRIVER);
-        }
-        generateVariableInitFileForEdgeChromium(edgeChromiumRecordSpyExtensionFolder);
-        WebDriverPropertyUtil.removeArgumentsForEdgeChromium(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
-
-        String extensions = "";
-        if (shouldInstallSmartWait()) {
-            extensions = LOAD_EXTENSION_EDGE_CHROMIUM_PREFIX + edgeChromiumRecordSpyExtensionFolder.getCanonicalPath()
-                    + "," + edgeChromiumSmartWaitExtensionFolder.getCanonicalPath();
-        } else {
-            extensions = LOAD_EXTENSION_EDGE_CHROMIUM_PREFIX + edgeChromiumSmartWaitExtensionFolder.getCanonicalPath();
-        }
-
-        WebDriverPropertyUtil.addArgumentsForEdgeChromium(capabilities, extensions);
-
-        return capabilities;
-    }
-
+    
     private static Map<String, Object> getDefaultProxy() {
         return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
     }
-
+    
     private static Map<String, Object> getDefaultProxy(String url, String driverType) {
         return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation(), url, driverType);
     }
@@ -438,18 +374,6 @@ public class InspectSession implements Runnable {
                 Charset.defaultCharset());
     }
 
-    private void generateVariableInitFileForEdgeChromium(File edgeChromiumExtensionFolder) throws IOException {
-        File variableInitJSFile = new File(
-                edgeChromiumExtensionFolder.getAbsolutePath() + File.separator + VARIABLE_INIT_FILE_FOR_EDGE_CHROMIUM);
-        AddonHotKeyData captureObjectHotKey = AddonHotKeyData.buildFrom(ObjectSpyPreferences.getCaptureObjectHotKey());
-        AddonHotKeyData loadDomMapHotKey = AddonHotKeyData.buildFrom(ObjectSpyPreferences.getLoadDomMapHotKey());
-        Gson gson = new Gson();
-        FileUtils.writeStringToFile(variableInitJSFile,
-                MessageFormat.format(VARIABLE_INIT_EXPRESSION_FOR_EDGE_CHROMIUM, String.valueOf(server.getServerPort()),
-                        gson.toJson(captureObjectHotKey), gson.toJson(loadDomMapHotKey)),
-                Charset.defaultCharset());
-    }
-
     protected File getRecordSpyExtensionFile() throws IOException {
         File chromeExtension = null;
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
@@ -458,7 +382,7 @@ public class InspectSession implements Runnable {
         }
         return chromeExtension;
     }
-
+    
     protected File getSmartWaitExtensionFile() throws IOException {
         File chromeExtension = null;
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
@@ -466,24 +390,6 @@ public class InspectSession implements Runnable {
             chromeExtension = new File(extensionFolder.getAbsolutePath() + CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH);
         }
         return chromeExtension;
-    }
-    
-    protected File getEdgeChromiumRecordSpyExtensionFile() throws IOException {
-        File EdgeChromium = null;
-        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
-        if (extensionFolder.exists() && extensionFolder.isDirectory()) {
-            EdgeChromium = new File(extensionFolder.getAbsolutePath() + getEdgeChromiumRecordSpyExtensionPath());
-        }
-        return EdgeChromium;
-    }
-    
-    protected File getEdgeChromiumSmartWaitExtensionFile() throws IOException {
-        File edgeExtension = null;
-        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
-        if (extensionFolder.exists() && extensionFolder.isDirectory()) {
-            edgeExtension = new File(extensionFolder.getAbsolutePath() + getEdgeChromiumSmartWaitExtensionPath());
-        }
-        return edgeExtension;
     }
 
     protected File getFirefoxAddonExtractedFolder() throws IOException {
@@ -508,7 +414,7 @@ public class InspectSession implements Runnable {
         }
         return null;
     }
-
+    
     protected File getFirefoxSmartWaitAddonFile() throws IOException {
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
@@ -548,17 +454,9 @@ public class InspectSession implements Runnable {
         // return CHROME_EXTENSION_RELATIVE_PATH;
         return CHROME_RECORD_SPY_EXTENSION_RELATIVE_PATH;
     }
-
+    
     protected String getChromeSmartWaitExtensionPath() {
         return CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH;
-    }
-    
-    protected String getEdgeChromiumRecordSpyExtensionPath() {
-        return EDGE_CHROMIUM_RECORD_SPY_EXTENSION_RELATIVE_PATH;
-    }
-    
-    protected String getEdgeChromiumSmartWaitExtensionPath() {
-        return EDGE_CHROMIUM_SMART_WAIT_EXTENSION_RELATIVE_PATH;
     }
 
     protected String getFirefoxExtensionPath() {
@@ -576,7 +474,7 @@ public class InspectSession implements Runnable {
     public WebUIDriverType getWebUiDriverType() {
         return webUiDriverType;
     }
-
+    
     private boolean shouldInstallSmartWait() {
         // Default to false if previously an error occurs in writing the value in RunConfiguration
         boolean globalSmartWaitEnabled = (boolean) Optional

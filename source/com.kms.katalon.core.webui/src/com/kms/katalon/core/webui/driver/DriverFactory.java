@@ -53,7 +53,6 @@ import org.openqa.selenium.remote.http.HttpClient.Builder;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
-import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
@@ -124,8 +123,6 @@ public class DriverFactory {
     private static final String REMOTE_WEB_DRIVER_TYPE_SELENIUM = "Selenium";
 
     public static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
-    
-    public static final String EDGE_CHROMIUM_DRIVER_PATH_PROPERTY_KEY = "webdriver.edge.driver";
 
     private static final String IE_DRIVER_PATH_PROPERTY_KEY = "webdriver.ie.driver";
 
@@ -348,10 +345,10 @@ public class DriverFactory {
                 webDriver = WebMobileDriverFactory.createMobileDriver(driver);
                 break;
             case EDGE_DRIVER:
-                webDriver = createNewEdgeDriver(desireCapibilities);
+                webDriver = createNewEdgeDriver(driverPreferenceProps);
                 break;
             case EDGE_CHROMIUM_DRIVER:
-                webDriver = createNewEdgeChromiumDriver(desireCapibilities);
+                webDriver = createNewEdgeChromiumDriver(driverPreferenceProps);
                 break;
             case REMOTE_FIREFOX_DRIVER:
                 webDriver = createNewRemoteFirefoxDriver(desireCapibilities);
@@ -412,7 +409,7 @@ public class DriverFactory {
         }
         return capabilities;
     }
-    
+
     private static File getChromeExtensionFile() {
         try {
             return new File(FileUtil.getExtensionsDirectory(), SMART_WAIT_ADDON_CHROME_RELATIVE_PATH);
@@ -574,22 +571,48 @@ public class DriverFactory {
         return webDriver;
     }
 
-    private static WebDriver createNewEdgeDriver(DesiredCapabilities desiredCapabilities) throws IOException {
+    private static WebDriver createNewEdgeDriver(Map<String, Object> driverPreferenceProps) throws IOException {
         EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
         if (!edgeService.isRunning()) {
             edgeService.start();
         }
+        DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                DesiredCapabilities.edge(), false);
+        // Edge driver doesn't support proxy: https://docs.microsoft.com/en-us/microsoft-edge/webdriver
+        // desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
     }
     
-    private static WebDriver createNewEdgeChromiumDriver(DesiredCapabilities desiredCapabilities) throws IOException {
+    private static WebDriver createNewEdgeChromiumDriver(Map<String, Object> driverPreferenceProps) throws IOException {
+        DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil
+                .getDesiredCapabilitiesForEdgeChromium(driverPreferenceProps, false);
 
         EdgeDriverService edgeService = localEdgeChromiumDriverServiceStorage.get();
         if (!edgeService.isRunning()) {
             edgeService.start();
         }
 
+        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
+        if (proxyInformation.isApplyToDesiredCapabilities()) {
+            desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        }
+
+        addSmartWaitExtensionToEdgeChromium(desiredCapabilities);
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
+    }
+
+    private static DesiredCapabilities addSmartWaitExtensionToEdgeChromium(DesiredCapabilities desiredCapabilities) {
+        if (shouldInstallSmartWait()) {
+            try {
+                File chromeExtensionFolder = getChromeExtensionFile();
+                WebDriverPropertyUtil.removeArgumentsForEdgeChromium(desiredCapabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
+                WebDriverPropertyUtil.addArgumentsForEdgeChromium(desiredCapabilities,
+                        LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
+            } catch (Exception e) {
+                logger.logError(ExceptionUtils.getFullStackTrace(e));
+            }
+        }
+        return desiredCapabilities;
     }
 
     private static WebDriver createNewIEDriver(DesiredCapabilities desireCapibilities) {
@@ -801,12 +824,6 @@ public class DriverFactory {
                     if (options instanceof DesiredCapabilities) {
                         CChromeDriver chromeDriver = new CChromeDriver((DesiredCapabilities) options, 0);
                         return chromeDriver;
-                    }
-                    break;
-                case EDGE_CHROMIUM_DRIVER:
-                    System.setProperty(EDGE_CHROMIUM_DRIVER_PATH_PROPERTY_KEY, getEdgeChromiumDriverPath());
-                    if (options instanceof DesiredCapabilities) {
-                        webDriver = createNewEdgeChromiumDriver((DesiredCapabilities) options);
                     }
                     break;
                 default:

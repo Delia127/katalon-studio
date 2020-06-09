@@ -3,9 +3,10 @@ package com.kms.katalon.core.webservice.wsdl.support.wsdl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
+
+import com.kms.katalon.constants.SystemProperties;
+import com.kms.katalon.core.util.internal.PathUtil;
 
 public class WsdlDefinitionFileLocator extends BaseWsdlDefinitionLocator {
 
@@ -22,22 +23,24 @@ public class WsdlDefinitionFileLocator extends BaseWsdlDefinitionLocator {
     @Override
     public String getBaseURI() {
         try {
-            File file = new File(wsdlLocation);
+            File file = new File(getAbsolutePath(wsdlLocation));
             return file.toURI().toURL().toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private String getAbsolutePath(String filePath) {
+        String projectLocation = System.getProperty(SystemProperties.PROJECT_LOCATION);
+        String absolutePath = PathUtil.relativeToAbsolutePath(wsdlLocation, projectLocation);
+        return absolutePath;
+    }
+
     @Override
-    protected InputStream load(String location) {
+    protected InputStream load(String url) {
         try {
-            try {
-                URL url = new URL(location);
-                return new FileInputStream(url.toURI().getPath());
-            } catch (MalformedURLException e) {
-                return new FileInputStream(location);
-            }
+            FileInputStream inputStream = new FileInputStream(getAbsolutePath(url));
+            return inputStream;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

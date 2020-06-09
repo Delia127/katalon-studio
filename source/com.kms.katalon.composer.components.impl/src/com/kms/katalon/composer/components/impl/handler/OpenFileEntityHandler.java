@@ -3,7 +3,6 @@ package com.kms.katalon.composer.components.impl.handler;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -31,9 +30,6 @@ public abstract class OpenFileEntityHandler<T extends FileEntity> implements Par
     @Inject
     protected IEventBroker eventBroker;
 
-    @Inject
-    private IEclipseContext context;
-
     @PostConstruct
     protected void initialize() {
         eventBroker.subscribe(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, new EventServiceAdapter() {
@@ -48,7 +44,6 @@ public abstract class OpenFileEntityHandler<T extends FileEntity> implements Par
         });
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void execute(T fileEntity) {
         String partId = getPartId(fileEntity);
         MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
@@ -68,9 +63,6 @@ public abstract class OpenFileEntityHandler<T extends FileEntity> implements Par
         if (mPart.getObject() == null) {
             mPart.setObject(fileEntity);
         }
-
-        Class entityClass = getEntityType();
-        context.set(entityClass, entityClass.cast(fileEntity));
 
         partService.showPart(mPart, PartState.ACTIVATE);
         stack.setSelectedElement(mPart);

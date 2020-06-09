@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -19,7 +18,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 
@@ -28,8 +26,6 @@ public class DeleteKeywordHandler implements IDeleteEntityHandler {
     @Inject
     private UISynchronize sync;
     
-    @Inject
-    private IEventBroker eventBroker;
 
     @Override
     public Class<? extends ITreeEntity> entityType() {
@@ -65,7 +61,6 @@ public class DeleteKeywordHandler implements IDeleteEntityHandler {
                     }
                     
                     unit.delete(true, null);
-                    eventBroker.post(EventConstants.CUSTOMKEYWORD_REFRESH, null);
                 }
                 return true;
             } else {

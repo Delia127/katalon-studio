@@ -61,7 +61,6 @@ public class EditorSavedHandler implements EventHandler {
                     try {
                         KeywordController.getInstance().parseCustomKeywordFile(file,
                                 ProjectController.getInstance().getCurrentProject());
-                        eventBroker.post(EventConstants.CUSTOMKEYWORD_REFRESH, null);
                     } catch (Exception ex) {
                         LoggerSingleton.logError(ex);
                     }

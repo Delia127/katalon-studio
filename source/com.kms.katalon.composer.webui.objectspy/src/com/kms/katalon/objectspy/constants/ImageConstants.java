@@ -23,8 +23,6 @@ public class ImageConstants {
     public static final Image IMG_24_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_24);
 
     public static final Image IMG_24_IE = ImageManager.getImage(IImageKeys.IE_24);
-    
-    public static final Image IMG_24_EDGE_CHROMIUM = ImageManager.getImage(IImageKeys.EDGE_CHROMIUM_24);
 
     public static final Image IMG_24_ADD_TO_OBJECT_REPOSITORY = ImageManager
             .getImage(IImageKeys.ADD_TO_OBJECT_REPOSITORY_24);
@@ -51,8 +49,6 @@ public class ImageConstants {
     public static final Image IMG_16_BROWSER_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_16);
 
     public static final Image IMG_16_BROWSER_IE = ImageManager.getImage(IImageKeys.IE_16);
-    
-    public static final Image IMG_16_BROWSER_EDGE_CHROMIUM = ImageManager.getImage(IImageKeys.EDGE_CHROMIUM_16);
 
     public static final Image IMG_16_NEW_BROWSER = ImageManager.getImage(IImageKeys.NEW_BROWSER_16);
 

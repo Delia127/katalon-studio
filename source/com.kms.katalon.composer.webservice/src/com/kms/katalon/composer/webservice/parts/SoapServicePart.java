@@ -385,7 +385,6 @@ public class SoapServicePart extends WebServicePart {
     private WsdlDefinitionLocator getWsdlLocator(String wsdlLocation) throws IOException {
         Map<String, Object> locatorParams = new HashMap<>();
         locatorParams.put(WsdlLocatorParams.HTTP_HEADERS, getAuthorizationHeaderMap());
-        locatorParams.put(WsdlLocatorParams.PROXY, ProxyPreferences.getSystemProxyInformation());
         WsdlDefinitionLocator wsdlLocator = WsdlLocatorProvider.getLocator(wsdlLocation, locatorParams);
         return wsdlLocator;
     }
