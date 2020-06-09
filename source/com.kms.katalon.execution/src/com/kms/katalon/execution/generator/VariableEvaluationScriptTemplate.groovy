@@ -37,6 +37,7 @@ evaluatedVariables.put("<%= entry.key %>", <%= entry.value %>.toString())
 <% } %>
 
 evaluatedVariables.put('GlobalVariable', internal.GlobalVariable)
+evaluatedVariables.put('RunConfiguration', RunConfiguration)
 
 return evaluatedVariables
  
