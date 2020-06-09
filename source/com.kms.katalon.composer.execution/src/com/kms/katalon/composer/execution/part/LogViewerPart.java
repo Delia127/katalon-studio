@@ -650,17 +650,16 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             String testObject = getTestObject(result.getMessage());
             causedByStrBuilder.append("At object: " + testObject + "\n");
         }
-
+        causedByStrBuilder.append("\nFor trouble shooting, please visit: ");
         String visitDocs = "https://docs.katalon.com/katalon-studio/docs/troubleshoot-common-execution-exceptions-web-test.html";
         StyleRange range = new StyleRange();
-        // Take into account newline char at beginning and end of visitDocs
-        range.start = causedByStrBuilder.length() + 1;
+        range.start = causedByStrBuilder.length();
         range.length = visitDocs.length();
         range.underline = true;
         range.data = visitDocs;
         range.foreground = ColorUtil.getHyperlinkTextColor();
         range.underlineStyle = SWT.UNDERLINE_LINK;
-        causedByStrBuilder.append("\n" + visitDocs + "\n");
+        causedByStrBuilder.append(visitDocs + "\n");
         styleRanges.add(range);
         
         causedByStrBuilder.append("================================================" + "\n\n");
