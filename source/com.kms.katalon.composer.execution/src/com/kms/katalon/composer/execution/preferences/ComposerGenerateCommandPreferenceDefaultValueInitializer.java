@@ -41,7 +41,9 @@ public class ComposerGenerateCommandPreferenceDefaultValueInitializer extends Ab
 
     public static final int DEFAULT_RETRY = DefaultRerunSetting.DEFAULT_RERUN_TIME;
 
-    public static final boolean DEFAULT_RETRY_FOR_FAILED_TEST_CASES = false;
+    public static final boolean DEFAULT_RETRY_FOR_FAILED_EXECUTIONS = true;
+    
+    public static final boolean DEFAULT_RETRY_FOR_ALL_EXECUTIONS = false;
 
     public static final int DEFAULT_UPDATE_STATUS_TIME_INTERVAL = ConsoleMain.DEFAULT_SHOW_PROGRESS_DELAY;
 
@@ -51,12 +53,13 @@ public class ComposerGenerateCommandPreferenceDefaultValueInitializer extends Ab
                 .getPreferenceStore(ComposerGenerateCommandPreferenceDefaultValueInitializer.class);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID, DEFAULT_SUITE_ID);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY, DEFAULT_RETRY);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES,
-                DEFAULT_RETRY_FOR_FAILED_TEST_CASES);
+        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_EXECUTIONS,
+                DEFAULT_RETRY_FOR_FAILED_EXECUTIONS);
+        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_ALL_EXECUTIONS,
+                DEFAULT_RETRY_FOR_FAILED_EXECUTIONS);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL,
                 DEFAULT_UPDATE_STATUS_TIME_INTERVAL);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION,
-                StringUtils.EMPTY);
+        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION, StringUtils.EMPTY);
     }
 
 }
