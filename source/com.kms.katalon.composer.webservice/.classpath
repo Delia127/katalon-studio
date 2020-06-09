@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="resources/lib/xmlbeans-3.1.0.jar" sourcepath="/var/folders/yb/cw31__5d31n42rd5vm530mrm0000gp/T/.org.sf.feeling.decompiler1592279686134/source/xmlbeans-3.1.0-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="resources/lib/soapui.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>

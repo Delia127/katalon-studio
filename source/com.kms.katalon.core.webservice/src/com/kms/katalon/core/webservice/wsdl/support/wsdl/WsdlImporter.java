@@ -95,8 +95,4 @@ public class WsdlImporter {
     private static boolean isWebUrl(String url) {
         return url.startsWith(RequestHeaderConstants.HTTP) || url.startsWith(RequestHeaderConstants.HTTPS);
     }
-
-    public interface WebServiceRequestEntityCreator {
-        WebServiceRequestEntity create();
-    }
 }

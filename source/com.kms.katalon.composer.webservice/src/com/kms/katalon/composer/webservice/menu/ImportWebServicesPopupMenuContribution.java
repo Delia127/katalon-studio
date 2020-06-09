@@ -15,6 +15,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.handlers.ImportSoapUIRestServicesHandler;
 import com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromSwaggerHandler;
 import com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromWSDLHandler;
 import com.kms.katalon.constants.IdConstants;
@@ -67,6 +68,10 @@ public class ImportWebServicesPopupMenuContribution {
                 wsdlMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportWebServiceRequestObjectsFromWSDLHandler.class.getName());
                 importMenu.getChildren().add(wsdlMenuItem);
                 
+                MDirectMenuItem soapUIMenuItem = getSoapUIMenu();
+                soapUIMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportSoapUIRestServicesHandler.class.getName());
+                importMenu.getChildren().add(soapUIMenuItem);
+                
                 if (importMenu.getChildren().size() > 0) {
                     menuItems.add(0, importMenu);
                 }
@@ -93,6 +98,13 @@ public class ImportWebServicesPopupMenuContribution {
     private MDirectMenuItem getWSDLMenu() {
         MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
         dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL);
+        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
+        return dynamicItem;
+    }
+    
+    private MDirectMenuItem getSoapUIMenu() {
+        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
+        dynamicItem.setLabel("From SoapUI");
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }

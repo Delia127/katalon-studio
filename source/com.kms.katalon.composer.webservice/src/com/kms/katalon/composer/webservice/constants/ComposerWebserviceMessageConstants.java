@@ -323,6 +323,14 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String FormDataBodyEditor_CONTENT_TYPE_AUTO;
 
+    public static String ImportSoapUIRestServicesDialog_DIA_TITLE_IMPORT_REST_SERVICES_FROM_SOAPUI;
+
+    public static String ImportSoapUIRestServicesDialog_LBL_SOAPUI_PROJECT;
+
+    public static String ImportSoapUIRestServicesDialog_MSG_IMPORT_REST_SERVICES_FROM_SOAPUI_PROJECT;
+
+    public static String ERROR_MSG_FAIL_TO_IMPORT_SOAPUI;
+
     public static String PREF_WARN_CLIENT_CERT;
 
     static {
