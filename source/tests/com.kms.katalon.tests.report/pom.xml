@@ -198,5 +198,17 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+		    <groupId>com.kms</groupId>
+		    <artifactId>com.kms.katalon.selenium.ide</artifactId>
+		    <version>${project.version}</version>
+		    <scope>compile</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.kms</groupId>
+		    <artifactId>com.kms.katalon.selenium.ide.test</artifactId>
+		    <version>${project.version}</version>
+		    <scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
