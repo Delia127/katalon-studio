@@ -505,12 +505,12 @@ public class WindowsActionHandler {
 
         @Override
         protected void performActionBeforeProgress() throws InterruptedException {
-                SetEncryptedTextDialog dialog = new SetEncryptedTextDialog(activeShell);
-                if (dialog.open() != InputDialog.OK) {
-                    throw new InterruptedException();
-                }
-                rawTextInput = StringUtils.defaultString(dialog.rawText);
-                encryptedTextInput = StringUtils.defaultString(dialog.encryptedText);
+            SetEncryptedTextDialog dialog = new SetEncryptedTextDialog(activeShell);
+            if (dialog.open() != InputDialog.OK) {
+                throw new InterruptedException();
+            }
+            rawTextInput = StringUtils.defaultString(dialog.rawText);
+            encryptedTextInput = StringUtils.defaultString(dialog.encryptedText);
         }
 
         @Override
@@ -763,10 +763,12 @@ public class WindowsActionHandler {
         private Text txtEncryptedText;
 
         private String rawText;
-        
+
         private String encryptedText;
 
         private Button btnApplyAction;
+        
+        private Composite composite;
 
         protected SetEncryptedTextDialog(Shell parentShell) {
             super(parentShell, false);
@@ -779,20 +781,27 @@ public class WindowsActionHandler {
 
         @Override
         protected Control createDialogContainer(Composite parent) {
-            Composite composite = new Composite(parent, SWT.NONE);
-            composite.setLayout(new GridLayout(2, false));
+            composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout(1, false));
 
-            Label lblRawText = new Label(composite, SWT.NONE);
+            Composite subComposite = new Composite(composite, SWT.NONE);
+            subComposite.setLayout(new GridLayout(2, false));
+            GridData subGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+            subGridData.widthHint = 400;
+            subComposite.setLayoutData(subGridData);
+
+            Label lblRawText = new Label(subComposite, SWT.NONE);
             lblRawText.setText(StringConstants.LBL_RAW_TEXT);
-            txtRawText = new Text(composite, SWT.BORDER);
+            txtRawText = new Text(subComposite, SWT.BORDER);
             txtRawText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-            Label lblEncryptedText = new Label(composite, SWT.NONE);
+            Label lblEncryptedText = new Label(subComposite, SWT.NONE);
             lblEncryptedText.setText(StringConstants.LBL_ENCRYPTED_TEXT);
-            txtEncryptedText = new Text(composite, SWT.BORDER);
-            txtEncryptedText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+            txtEncryptedText = new Text(subComposite, SWT.BORDER);
+            GridData gdEncryptedText = new GridData(SWT.FILL, SWT.FILL, true, false);
+            txtEncryptedText.setLayoutData(gdEncryptedText);
             txtEncryptedText.setEditable(false);
-            
+
             addControlListeners();
             return composite;
         }
@@ -829,13 +838,14 @@ public class WindowsActionHandler {
         }
 
         @Override
-        protected Point getInitialSize() {
-            return new Point(400, 155);
+        public String getDialogTitle() {
+            return "Set Encrypted Text action";
         }
 
         @Override
-        public String getDialogTitle() {
-            return "Set Encrypted Text action";
+        protected Point getInitialSize() {
+            composite.getShell().pack();
+            return super.getInitialSize();
         }
 
         @Override
@@ -854,6 +864,10 @@ public class WindowsActionHandler {
 
         private String text;
 
+        private Composite composite;
+
+        private Button btnApplyAction;
+
         protected GetAttributeInputDialog(Shell parentShell) {
             super(parentShell, false);
         }
@@ -869,27 +883,51 @@ public class WindowsActionHandler {
 
         @Override
         protected Control createDialogContainer(Composite parent) {
-            Composite composite = new Composite(parent, SWT.NONE);
+            composite = new Composite(parent, SWT.NONE);
             composite.setLayout(new GridLayout(1, false));
 
-            Label lblText = new Label(composite, SWT.NONE);
+            Composite subComposite = new Composite(composite, SWT.NONE);
+            subComposite.setLayout(new GridLayout(1, false));
+            GridData subGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+            subGridData.widthHint = 400;
+            subComposite.setLayoutData(subGridData);
+
+            Label lblText = new Label(subComposite, SWT.NONE);
             lblText.setText("Please input attribute name to set to element:");
 
-            txtText = new Text(composite, SWT.BORDER);
+            txtText = new Text(subComposite, SWT.BORDER);
             txtText.setLayoutData(new GridData(SWT.FILL, SWT.WRAP, true, true));
 
+            addControlListeners();
             return composite;
+        }
+
+        private void addControlListeners() {
+            txtText.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent event) {
+                    String text = txtText.getText();
+                    if (!StringUtils.isEmpty(text)) {
+                        btnApplyAction.setEnabled(true);
+                    } else {
+                        btnApplyAction.setEnabled(false);
+                    }
+                }
+            });
         }
 
         @Override
         protected void createButtonsForButtonBar(Composite parent) {
-            createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
+            btnApplyAction = createButton(parent, IDialogConstants.OK_ID, "Apply action", true);
             createButton(parent, IDialogConstants.CANCEL_ID, "Cancel action", false);
+            this.btnApplyAction.setEnabled(false);
         }
 
         @Override
         protected Point getInitialSize() {
-            return new Point(400, 155);
+            composite.getShell().pack();
+            return super.getInitialSize();
         }
 
         @Override
@@ -909,7 +947,7 @@ public class WindowsActionHandler {
         private Text txtText;
 
         private String text;
-        
+
         protected GetAttributeResultDialog(Shell parentShell, String text) {
             super(parentShell, false);
             this.text = text;
