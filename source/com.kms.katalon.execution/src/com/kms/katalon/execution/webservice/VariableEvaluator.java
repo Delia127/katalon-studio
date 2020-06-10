@@ -26,7 +26,7 @@ public class VariableEvaluator {
 
     private static final String TEST_CASE_ID_PREFIX = "Variable-Eval_";
     
-    public Map<String, Object> evaluate(String testObjectId, Map<String, String> variables) throws Exception {
+    public Map<String, Object> evaluate(Map<String, String> variables) throws Exception {
         
         Map<String, Object> evaluatedVariables = new HashMap<>();
         

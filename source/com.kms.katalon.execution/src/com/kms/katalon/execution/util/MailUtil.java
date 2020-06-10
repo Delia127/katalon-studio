@@ -4,13 +4,12 @@ import static org.apache.commons.lang.StringUtils.split;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.apache.commons.mail.HtmlEmail;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.setting.ReportFormatType;
+import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
@@ -36,6 +36,7 @@ import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
+import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.logging.LogUtil;
 
@@ -356,7 +357,7 @@ public class MailUtil {
             conf.setCc(store.getEmailCc());
             conf.setBcc(store.getEmailBcc());
             conf.addRecipients(splitRecipientsString(store.getRecipients(encryptionEnabled)));
-            conf.setSubject(store.getEmailSubject());
+            conf.setSubject(prepareSubject(store.getEmailSubject()));
             conf.setHtmTemplateForTestSuite(store.getEmailHTMLTemplateForTestSuite());
             conf.setAttachmentOptions(store.getReportFormatOptions());
             conf.setSendTestSuiteReportEnabled(store.isSendTestSuiteReportEnabled());
@@ -366,9 +367,17 @@ public class MailUtil {
             conf.setSkipInvidiualTestSuiteReport(store.isSkipInvidualTestSuiteReport());
             
             return conf;
-        } catch (IOException | URISyntaxException | GeneralSecurityException e) {
+        } catch (Exception e) {
             LogUtil.logError(e);
             return null;
         }
+    }
+
+    public static String prepareSubject(String subject) throws Exception {
+        VariableEvaluator evaluator = new VariableEvaluator();
+        Map<String, Object> evaluatedVariables = evaluator.evaluate(new HashMap<String, String>());
+        StrSubstitutor substitutor = new StrSubstitutor(
+                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
+        return substitutor.replace(subject);
     }
 }

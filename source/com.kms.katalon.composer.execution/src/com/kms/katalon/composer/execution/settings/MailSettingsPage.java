@@ -2,7 +2,6 @@ package com.kms.katalon.composer.execution.settings;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -219,13 +218,13 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 emailConfig.setPort(txtPort.getText());
                 emailConfig.setSecurityProtocol(MailSecurityProtocolType.valueOf(comboProtocol.getText()));
                 emailConfig.addRecipients(txtRecipients.getText());
-                emailConfig.setSubject(txtSubject.getText());
                 emailConfig.setCc(txtCc.getText());
                 emailConfig.setBcc(txtBcc.getText());
                 emailConfig.setAttachmentOptions(getSelectedAttachmentOptions());
                 try {
+                    emailConfig.setSubject(MailUtil.prepareSubject(txtSubject.getText()));
                     emailConfig.setHtmTemplateForTestSuite(getSettingStore().getEmailHTMLTemplateForTestSuite());
-                } catch (IOException | URISyntaxException ex) {
+                } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
                 }
                 sendTestEmail(emailConfig);
