@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -66,7 +67,7 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
     }
 
     private Composite createLocatorPriorityTabs(Composite parent) {
-        DragableCTabFolder tabFolder = new DragableCTabFolder(parent, SWT.BORDER);
+        CTabFolder tabFolder = new CTabFolder(parent, SWT.BORDER);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.DEFAULT, true, false));
         defaultLocatorOptions.forEach((label, selectorMethod) -> {
             CTabItem tabItem = new CTabItem(tabFolder, SWT.NULL);

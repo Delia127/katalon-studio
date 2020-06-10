@@ -48,7 +48,7 @@ import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.util.collections.Pair;
 
 public class WebElementUtils {
-    private static final String SCREENSHOT_PATH = "/Screenshots/Targets";
+    private static final String SCREENSHOT_PATH = "/Screenshots/Targets/";
 
     private static final String PAGE_ELEMENT_NAME_PREFIX = "Page_";
 
@@ -270,9 +270,10 @@ public class WebElementUtils {
 	 */
     public static String takeScreenShotForImageBasedObjectRecognition(WebDriver driver, WebElement el) {
         String currentProjectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-        File imageFolder = new File(currentProjectLocation + SCREENSHOT_PATH);
-        imageFolder.mkdirs();
         TestObject testObject = WebElementUtils.buildTestObject(el);
+        String objectRepositoryFolder = testObject.getObjectId().replace(el.getName(), "");
+        File imageFolder = new File(currentProjectLocation + SCREENSHOT_PATH + objectRepositoryFolder);
+        imageFolder.mkdirs();
         boolean isValidLocator = testObject.getSelectorMethod() != SelectorMethod.IMAGE;
         SelectorMethod selectorMethod = isValidLocator ? testObject.getSelectorMethod() : SelectorMethod.XPATH;
         By findElementBy = WebUiCommonHelper.buildLocator(testObject, selectorMethod);
