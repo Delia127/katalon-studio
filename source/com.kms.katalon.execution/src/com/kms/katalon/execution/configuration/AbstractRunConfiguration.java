@@ -19,7 +19,6 @@ import org.apache.commons.lang.StringUtils;
 import com.google.gson.Gson;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -34,6 +33,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.configuration.impl.LocalHostConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.entity.DefaultRerunSetting.RetryStrategyValue;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -42,6 +42,9 @@ import com.kms.katalon.execution.generator.TestCaseScriptGenerator;
 import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 
 public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
@@ -66,6 +69,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private String executionSessionId;
 
     private static final String PATH = "PATH";
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public AbstractRunConfiguration() {
         doInitExecutionSetting();
@@ -79,7 +84,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     }
     
     protected void initVmArguments() {
-        if (LicenseUtil.isNotFreeLicense()) {
+        if (featureService.canUse(KSEFeature.LAUNCH_ARGUMENTS_SETTINGS)) {
             vmArgs.addAll(Arrays.asList(ExecutionUtil.getVmArgs()));
         }
     }
@@ -107,20 +112,18 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
-                // Get and use the prepared test case bindings for rerunFailedTestCaseTestData
                 TestSuiteExecutedEntity t = (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity();
-                String currentFailedTcBindings = additionalData
-                        .getOrDefault(RunConfiguration.TC_BINDINGS_OF_FAILED_TEST_CASES, StringUtils.EMPTY);
-                if (!StringUtils.EMPTY.equals(currentFailedTcBindings)
-                        && t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
-                    return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
-                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
-                                    .generateScriptFile(currentFailedTcBindings);
+                String retryFailedExecutionsTcBindings = additionalData
+                        .getOrDefault(RunConfiguration.TC_RETRY_FAILED_EXECUTIONS_ONLY, StringUtils.EMPTY);
+                String retryImmediatelyTcBindings = additionalData
+                        .getOrDefault(RunConfiguration.TC_RETRY_IMMEDIATELY_BINDINGS, StringUtils.EMPTY);
+                if (shouldRetryImmediately(t, retryImmediatelyTcBindings)) {
+                    return generatetTempScriptFileWithCustomRetry(fileEntity, retryImmediatelyTcBindings);
                 }
-                // Recalculate the test case bindings for rerunFailedTestCase
-                return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
-                        (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
-
+                if (shouldRetryFailedExecutionsOnly(t, retryFailedExecutionsTcBindings)) {
+                    return generatetTempScriptFileWithCustomRetry(fileEntity, retryFailedExecutionsTcBindings);
+                }
+                return generateTempScriptFileWithDefaultRetry(fileEntity);
             } else if (fileEntity instanceof TestCaseEntity) {
                 return new TestCaseScriptGenerator((TestCaseEntity) fileEntity, this).generateScriptFile();
             } else if (fileEntity instanceof SystemFileEntity) {
@@ -130,6 +133,27 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         } catch (Exception ex) {
             throw new ExecutionException(ex);
         }
+    }
+
+    private File generateTempScriptFileWithDefaultRetry(FileEntity fileEntity) throws Exception {
+        return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
+    }
+
+    private File generatetTempScriptFileWithCustomRetry(FileEntity fileEntity, String retryImmediatelyTcBindings)
+            throws Exception {
+        return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
+                        .generateScriptFile(retryImmediatelyTcBindings);
+    }
+
+    private boolean shouldRetryImmediately(TestSuiteExecutedEntity t, String retryImmediatelyTcBindings) {
+        return RetryStrategyValue.IMMEDIATELY.equals(t.getRetryStrategy()) && !StringUtils.EMPTY.equals(retryImmediatelyTcBindings);
+    }
+
+    private boolean shouldRetryFailedExecutionsOnly(TestSuiteExecutedEntity t, String retryFailedExecutionsTcBindings) {
+        return RetryStrategyValue.FAILED_EXECUTIONS.equals(t.getRetryStrategy())
+                && !StringUtils.EMPTY.equals(retryFailedExecutionsTcBindings);
     }
 
     protected void init(FileEntity fileEntity) throws IOException {
@@ -224,11 +248,11 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
         propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
-        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, LicenseUtil.isNotFreeLicense());
+        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, featureService.canUse(KSEFeature.IMAGE_BASED_OBJECT_DETECTION));
         
 //        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
         
-        propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, LicenseUtil.isNotFreeLicense());
+        propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, featureService.canUse(KSEFeature.SMART_XPATH));
         
         return propertyMap;
     }

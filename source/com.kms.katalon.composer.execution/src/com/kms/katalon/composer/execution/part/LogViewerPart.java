@@ -61,6 +61,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -124,6 +125,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
 
@@ -185,6 +187,13 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private LogLoadingJob loadingJob;
 
     private static final List<StyleRangeMatcher> ARTIFACT_MATCHERS;
+    
+    private static final String[] commonSeleniumExceptions = new String[] {
+            "org.openqa.selenium.NoSuchElementException", "org.openqa.selenium.NoSuchWindowException",
+            "org.openqa.selenium.NoSuchFrameException", "org.openqa.selenium.InvalidSelectorException",
+            "org.openqa.selenium.ElementNotInteractableException", "org.openqa.selenium.ElementNotVisibleException",
+            "org.openqa.selenium.ElementNotSelectableException", "org.openqa.selenium.TimeoutException",
+            "org.openqa.selenium.StaleElementReferenceException" };
 
     static {
         ARTIFACT_MATCHERS = Arrays.asList(new TestObjectStyleRangeMatcher(),
@@ -609,10 +618,12 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                         }
                     }
                 }
-                
-                messageBuilder.append(result.getMessage());
 
-                writeMessage(true, messageBuilder.toString());
+                StringBuilder causedByStrBuilder = insertRootCauseToTop(messageBuilder, result, styleRanges);
+                
+                causedByStrBuilder.append(messageBuilder);
+
+                writeMessage(true, causedByStrBuilder.toString());
                 
                 if (styleRanges.size() > 0) {
                     txtMessage.setStyleRanges(styleRanges.toArray(new StyleRange[0]));
@@ -624,6 +635,58 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         } else {
             writeMessage(false, messageBuilder.toString());
         }
+    }
+
+    private StringBuilder insertRootCauseToTop(StringBuilder messageBuilder, XmlLogRecord result, List<StyleRange> styleRanges) {
+        StringBuilder causedByStrBuilder = new StringBuilder();
+        String causedBy = getCausedBySentence(result.getMessage());
+        causedByStrBuilder.append("=============== ROOT CAUSE =====================" + "\n");
+        causedByStrBuilder.append(causedBy + "\n");
+        if (Arrays.asList(commonSeleniumExceptions)
+                .stream()
+                .filter(commonException -> causedBy.contains(commonException))
+                .findAny()
+                .isPresent()) {
+            String testObject = getTestObject(result.getMessage());
+            causedByStrBuilder.append("At object: " + testObject + "\n");
+        }
+        causedByStrBuilder.append("\nFor trouble shooting, please visit: ");
+        String visitDocs = "https://docs.katalon.com/katalon-studio/docs/troubleshoot-common-execution-exceptions-web-test.html";
+        StyleRange range = new StyleRange();
+        range.start = causedByStrBuilder.length();
+        range.length = visitDocs.length();
+        range.underline = true;
+        range.data = visitDocs;
+        range.foreground = ColorUtil.getHyperlinkTextColor();
+        range.underlineStyle = SWT.UNDERLINE_LINK;
+        causedByStrBuilder.append(visitDocs + "\n");
+        styleRanges.add(range);
+        
+        causedByStrBuilder.append("================================================" + "\n\n");
+        messageBuilder.append(result.getMessage());
+        return causedByStrBuilder;
+    }
+
+    private String getCausedBySentence(String msg) {
+        String causedBy = "";
+        try {
+            causedBy = msg.substring(msg.indexOf("Caused by:"));
+            causedBy = causedBy.substring(0, causedBy.indexOf("\n"));
+        } catch (Exception e) {
+            return "";
+        }
+        return causedBy;
+    }
+
+    private String getTestObject(String msg) {
+        String testObject = "";
+        try {
+            testObject = msg.substring(msg.indexOf("'Object Repository"));
+            testObject = testObject.substring(0, testObject.indexOf("'", 1) + 1);
+        } catch (Exception e) {
+            return "";
+        }
+        return testObject;
     }
     
     private void writeMessage(boolean error, String message) {
@@ -668,6 +731,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 if (styleData instanceof ArtifactStyleRangeMatcher) {
                     ArtifactStyleRangeMatcher matcher = (ArtifactStyleRangeMatcher) styleData;
                     matcher.onClick(txtMessage.getText(), style);
+                }
+                if (styleData instanceof String) {
+                    String url = (String) styleData;
+                    Program.launch(url);
+                    Trackings.trackClickOnExceptionDocInLogViewer(url);
                 }
             } catch (Exception e) {
                 // no character under event.x, event.y

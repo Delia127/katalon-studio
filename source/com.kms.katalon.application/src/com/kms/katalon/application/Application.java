@@ -17,7 +17,6 @@ import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
-import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.model.RunningMode;
@@ -117,7 +116,7 @@ public class Application implements IApplication {
         try {
             // hide splash screen
             context.applicationRunning();
-            ApplicationRunningMode.setRunningMode(RunningMode.CONSOLE);
+            ApplicationRunningMode.set(RunningMode.CONSOLE);
             return KatalonApplicationActivator.getInstance().getApplicationStarters().get(RunningMode.CONSOLE).start(appArgs);
         } catch (Error e) {
             LogUtil.logError(e);
@@ -181,7 +180,7 @@ public class Application implements IApplication {
     }
 
     private int runGUI(String[] arguments) {
-        ApplicationRunningMode.setRunningMode(RunningMode.GUI);
+        ApplicationRunningMode.set(RunningMode.GUI);
         return KatalonApplicationActivator.getInstance().getApplicationStarters().get(RunningMode.GUI).start(arguments);
     }
 

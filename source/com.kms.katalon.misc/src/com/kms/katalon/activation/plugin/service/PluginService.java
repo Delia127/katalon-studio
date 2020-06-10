@@ -14,11 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.swt.widgets.Shell;
-
-import com.kms.katalon.application.KatalonApplication;
-import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.application.utils.LicenseUtil;
 
 import com.kms.katalon.activation.plugin.ActivationBundleActivator;
 import com.kms.katalon.activation.plugin.constant.ActivationMessageConstants;
@@ -36,6 +31,8 @@ import com.kms.katalon.activation.plugin.util.KStoreCredentialsHelper;
 import com.kms.katalon.activation.plugin.util.PlatformHelper;
 import com.kms.katalon.activation.plugin.util.PluginFactory;
 import com.kms.katalon.activation.plugin.util.PluginSettings;
+import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
@@ -49,6 +46,8 @@ import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.constants.PluginOptions;
 import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.license.models.LicenseType;
@@ -61,6 +60,8 @@ public class PluginService {
     private static PluginService instance;
 
     private IEventBroker eventBroker;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     private PluginService() {
         eventBroker = ActivationBundleActivator.getInstance().getEventBroker();
@@ -380,7 +381,7 @@ public class PluginService {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();
         if (currentProject != null) {
-            boolean allowSourceAttachment = LicenseUtil.isNotFreeLicense();
+            boolean allowSourceAttachment = featureService.canUse(KSEFeature.SOURCE_CODE_FOR_DEBUGGING);
             GroovyUtil.initGroovyProjectClassPath(currentProject,
                     projectController.getCustomKeywordPlugins(currentProject), false, allowSourceAttachment, monitor);
             projectController.updateProjectClassLoader(currentProject);

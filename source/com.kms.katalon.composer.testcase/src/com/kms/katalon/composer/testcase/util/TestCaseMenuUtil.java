@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.session.RemoteMobileExecutionSession;
@@ -177,12 +179,32 @@ public class TestCaseMenuUtil {
                 TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID, SWT.PUSH);
     }
 
-    public static MenuItem generateExecuteFromTestStepMenuItem(Menu menu, SelectionListener selectionListener) {
-        return generateExecuteFromTestStepMenuItem(menu, selectionListener, -1);
+    public static MenuItem generateExecuteFromTestStepMenuItem(Menu menu, SelectionListener selectionListener,
+            int menuIndex) {
+        return generateExecuteFromTestStepMenuItem(menu, selectionListener, menuIndex, LaunchMode.RUN);
+    }
+
+    public static List<MenuItem> generateExecuteFromTestStepMenuItems(Menu menu, SelectionListener selectionListener) {
+        List<MenuItem> executeFromTestStepMenuItems = new ArrayList<>();
+        MenuItem runFromTestStepMenuItem = generateExecuteFromTestStepMenuItem(menu, selectionListener, -1,
+                LaunchMode.RUN);
+        executeFromTestStepMenuItems.add(runFromTestStepMenuItem);
+        MenuItem debugFromTestStepMenuItem = generateExecuteFromTestStepMenuItem(menu, selectionListener, -1,
+                LaunchMode.DEBUG);
+        executeFromTestStepMenuItems.add(debugFromTestStepMenuItem);
+        return executeFromTestStepMenuItems;
+    }
+
+    private static String appearTextDependOnLaunchMode(LaunchMode launchMode) {
+        if (launchMode == LaunchMode.DEBUG) {
+            return ComposerTestcaseMessageConstants.ADAP_MENU_CONTEXT_DEBUG_FROM_TEST_STEP;
+        } else {
+            return ComposerTestcaseMessageConstants.ADAP_MENU_CONTEXT_RUN_FROM_TEST_STEP;
+        }
     }
 
     public static MenuItem generateExecuteFromTestStepMenuItem(Menu menu, SelectionListener selectionListener,
-            int menuIndex) {
+            int menuIndex, LaunchMode launchMode) {
         List<ExecutionSession> allAvailableExecutionSessions = ExecutionSessionSocketServer.getInstance()
                 .getAllAvailableExecutionSessions();
         boolean isExecutionSessionsEmpty = allAvailableExecutionSessions.isEmpty();
@@ -190,7 +212,8 @@ public class TestCaseMenuUtil {
         MenuItem executeFromTestStepMenuItem = menuIndex >= 0
                 ? new MenuItem(menu, isExecutionSessionsEmpty ? SWT.PUSH : SWT.CASCADE, menuIndex)
                 : new MenuItem(menu, isExecutionSessionsEmpty ? SWT.PUSH : SWT.CASCADE);
-        executeFromTestStepMenuItem.setText(ComposerTestcaseMessageConstants.ADAP_MENU_CONTEXT_EXECUTE_FROM_TEST_STEP);
+        String executeFromTestStepMenuItemText = appearTextDependOnLaunchMode(launchMode);
+        executeFromTestStepMenuItem.setText(executeFromTestStepMenuItemText);
         executeFromTestStepMenuItem.addSelectionListener(selectionListener);
         if (isExecutionSessionsEmpty) {
             executeFromTestStepMenuItem.setEnabled(false);
@@ -198,6 +221,7 @@ public class TestCaseMenuUtil {
         }
         Map<String, Integer> labelMap = new HashMap<>();
         Menu executeSessionMenu = new Menu(executeFromTestStepMenuItem);
+        executeSessionMenu.setData(launchMode);
         for (ExecutionSession executionSession : allAvailableExecutionSessions) {
             MenuItem executionSessionMenuItem = new MenuItem(executeSessionMenu, SWT.PUSH);
             String menuLabel = getLabelForExecutionSession(executionSession);

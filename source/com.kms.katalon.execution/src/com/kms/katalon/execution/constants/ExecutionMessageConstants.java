@@ -112,7 +112,7 @@ public class ExecutionMessageConstants extends NLS {
     public static String LAU_MESSAGE_UPLOADING_RPT;
 
     public static String LAU_MESSAGE_SENDING_EMAIL;
-    
+        
     public static String LAU_MESSAGE_UNABLE_TO_EXECUTE_TEST_SUITE;
     
     public static String LAU_MESSAGE_EMPTY_TEST_SUITE;
@@ -133,6 +133,8 @@ public class ExecutionMessageConstants extends NLS {
     
     //ConsoleMain
     public static String MNG_PRT_INVALID_PROPERTY_FILE_ARG;
+
+    public static String MSG_MIXED_PROXIES_DETECTED;
 
     public static String ACTIVATE_MOVE_TO_KATALONC;
 

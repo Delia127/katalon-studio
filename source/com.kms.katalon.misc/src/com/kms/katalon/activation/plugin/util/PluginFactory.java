@@ -32,6 +32,10 @@ public class PluginFactory {
         plugins.add(plugin);
     }
     
+    public void removePluginByName(String name) {
+        plugins.removeIf(p -> p.getName().equals(name));
+    }
+    
     public void clear() {
         plugins.clear();
     }

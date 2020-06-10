@@ -17,6 +17,7 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.webui.util.PlatformUtil;
 
 public class WebDriverManagerRunConfiguration {
 
@@ -71,10 +72,17 @@ public class WebDriverManagerRunConfiguration {
     }
 
     private String getArchitecture(WebUIDriverType webUIDriverType) {
-        if (webUIDriverType == WebUIDriverType.IE_DRIVER) {
-            return "-Dwdm.architecture=32";
+        switch (webUIDriverType) {
+            case IE_DRIVER:
+                return "-Dwdm.architecture=32";
+            case EDGE_CHROMIUM_DRIVER: {
+                if (PlatformUtil.isWindowsOS()) {
+                    return "-Dwdm.architecture=32";
+                }
+            }
+            default:
+                return "";
         }
-        return "";
     }
 
     private String getDriverName(WebUIDriverType webUIDriverType) {
@@ -96,7 +104,7 @@ public class WebDriverManagerRunConfiguration {
     }
 
     private String getProxyCommand() {
-        ProxyInformation proxy = ProxyPreferences.getProxyInformation();
+        ProxyInformation proxy = ProxyPreferences.getSystemProxyInformation();
         switch (ProxyOption.valueOf(proxy.getProxyOption())) {
             case NO_PROXY:
             case USE_SYSTEM:
