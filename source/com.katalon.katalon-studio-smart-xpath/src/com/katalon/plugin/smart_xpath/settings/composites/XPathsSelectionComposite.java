@@ -29,11 +29,14 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TypedListener;
 
+import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
+import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -65,9 +68,12 @@ public class XPathsSelectionComposite extends Composite {
         compositeXpathTableToolBar.setLayout(new GridLayout(1, false));
 
         Button resetDefault = new Button(compositeXpathTableToolBar, SWT.WRAP);
-        resetDefault.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        resetDefault.setLayoutData(new GridData(SWT.BEGINNING , SWT.FILL, false, false));
         resetDefault.setText(StringConstants.RESET_DEFAULT);
-        
+
+        Label lblDragDropXPath = new Label(compositeXpathTableToolBar, SWT.NONE);
+        lblDragDropXPath.setText(SmartXPathMessageConstants.LBL_TIPS_FOR_XPATH_TEST_DESIGN_SETTING);
+
         resetDefault.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {

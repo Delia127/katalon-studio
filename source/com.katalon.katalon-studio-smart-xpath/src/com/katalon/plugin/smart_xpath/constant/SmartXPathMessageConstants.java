@@ -85,6 +85,11 @@ public class SmartXPathMessageConstants extends NLS {
 
     public static String MSG_CANNOT_CREATE_SELF_HEALING_FOLDER;
 
+    public static String LBL_TIPS_FOR_XPATH_TEST_DESIGN_SETTING;
+
+    public static String LBL_TIPS_FOR_BASIC_TEST_DESIGN_SETTING;
+
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, SmartXPathMessageConstants.class);

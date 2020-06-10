@@ -137,7 +137,12 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
                 getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
                         DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
     }
-    
+
+    public List<Pair<String,Boolean>> getDefaultCapturedTestObjectAttributeLocators() throws IOException{
+         return parseStringBooleanString(
+                 getString(DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES, DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
+    }
+
     // TestObjectXpathLocators - has a getDefault function for resetDefault button
 
     public List<Pair<String, Boolean>> getCapturedTestObjectXpathLocators() throws IOException {

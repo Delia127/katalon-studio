@@ -1,5 +1,6 @@
 package com.katalon.plugin.smart_xpath.settings.composites;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +34,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -44,12 +47,15 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
 
+import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
+import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
 
 public class AttributesSelectionComposite extends Composite {
@@ -78,6 +84,29 @@ public class AttributesSelectionComposite extends Composite {
     }
 
     private Control createAttributeTableToolbar(Composite parent) {
+        Composite compositeUpperAttributeTable = new Composite(parent, SWT.NONE);
+        compositeUpperAttributeTable.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        compositeUpperAttributeTable.setLayout(new GridLayout(1, false));
+
+        Button resetDefault = new Button(compositeUpperAttributeTable, SWT.WRAP);
+        resetDefault.setLayoutData(new GridData(SWT.BEGINNING , SWT.FILL, false, false));
+        resetDefault.setText(StringConstants.RESET_DEFAULT);
+        resetDefault.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+                    setInput(store.getDefaultCapturedTestObjectAttributeLocators());
+                    handleSelectionChange(null);
+                } catch (IOException exception) {
+                    LoggerSingleton.logError(exception);
+                }
+            }
+        });
+
+        Label lblDragDropXPath = new Label(compositeUpperAttributeTable, SWT.NONE);
+        lblDragDropXPath.setText(SmartXPathMessageConstants.LBL_TIPS_FOR_BASIC_TEST_DESIGN_SETTING);
+
         Composite compositeAttributeTableToolBar = new Composite(parent, SWT.NONE);
         compositeAttributeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         compositeAttributeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));

@@ -36,8 +36,6 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
         {
             put("XPath", SelectorMethod.XPATH);
             put("Attributes", SelectorMethod.BASIC);
-            put("CSS", SelectorMethod.CSS);
-            put("Image", SelectorMethod.IMAGE);
         }
     };
 
@@ -89,9 +87,7 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
             default:
                 break;
         }
-        Text text = new Text(parent, SWT.BORDER);
-        text.setText("This is page " + selectorMethod.name());
-        return text;
+        return null;
     }
 
     private Composite createXPathComposite(Composite parent) {
