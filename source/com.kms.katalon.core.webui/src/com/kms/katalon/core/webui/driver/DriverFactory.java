@@ -493,9 +493,7 @@ public class DriverFactory {
             throws URISyntaxException, IOException, GeneralSecurityException {
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Proxy proxy = proxyInfo.isApplyToDesiredCapabilities()
-                ? ProxyUtil.getProxy(proxyInfo)
-                : null;
+        Proxy proxy = ProxyUtil.getProxy(proxyInfo);
         Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, url, clientFactory);
         return executor;
@@ -505,9 +503,7 @@ public class DriverFactory {
             throws URISyntaxException, IOException, GeneralSecurityException {
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Proxy proxy = proxyInfo.isApplyToDesiredCapabilities()
-                ? ProxyUtil.getProxy(proxyInfo, url)
-                : null;
+        Proxy proxy = ProxyUtil.getProxy(proxyInfo, url);
         Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
         HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, clientFactory);
         return executor;

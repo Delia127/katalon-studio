@@ -563,9 +563,7 @@ public class AppiumDriverManager {
     
     private static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl) throws URISyntaxException, IOException {
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Proxy proxy = proxyInfo.isApplyToDesiredCapabilities()
-                ? ProxyUtil.getProxy(proxyInfo, remoteWebServerUrl)
-                : null;
+        Proxy proxy = ProxyUtil.getProxy(proxyInfo, remoteWebServerUrl);
         Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, remoteWebServerUrl, clientFactory);
         return executor;
