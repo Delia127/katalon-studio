@@ -130,14 +130,14 @@ public class Trackings {
     public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result,
             long duration, String retryStrategy, int numberOfRetry) {
         trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType,
-                "executionResult", result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRetry",
+                "executionResult", result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
                 numberOfRetry);
     }
 
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result,
             long duration, String retryStrategy, int numberOfRetry) {
         trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType, "executionResult",
-                result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRetry", numberOfRetry);
+                result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun", numberOfRetry);
     }
 
     public static void trackExecuteSequentialTestSuiteCollectionInGuiMode(String result, long duration) {

@@ -1,8 +1,9 @@
 package com.kms.katalon.composer.testsuite.parts;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -35,6 +36,10 @@ import com.kms.katalon.tracking.service.Trackings;
  */
 public class TestSuiteRetryUiPart {
     
+    private static final int MAX_RETRY = 1000000;
+
+    private static final int MIN_RETRY = 0;
+
     private String RETRY_DOCS_URL = "https://docs.katalon.com/katalon-studio/docs/test-suite.html#modify-execution-information";
 
     private static final int MINIMUM_COMPOSITE_SIZE = 300;
@@ -61,68 +66,14 @@ public class TestSuiteRetryUiPart {
      * This method must be called after {@link TestSuiteRetryUiPart#createRetryComposite(Composite)}
      * in order to register control listeners
      */
-    public void registerRetryControlListeners() {
-        // Number only
-        VerifyListener verifyNumberListener = new VerifyListener() {
-
-            @Override
-            public void verifyText(VerifyEvent e) {
-                String string = e.text;
-                char[] chars = new char[string.length()];
-                string.getChars(0, chars.length, chars, 0);
-                for (int i = 0; i < chars.length; i++) {
-                    if (!('0' <= chars[i] && chars[i] <= '9')) {
-                        e.doit = false;
-                        return;
-                    }
-                }
-                setDirty(true);
-            }
-        };
-        
+    public void registerRetryControlListeners() {        
         if (getTestSuite() == null) {
             return;
         }
-        txtRetryAfterExecuteAll.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.getSource()).getText();
-                try {
-                    int rerun = Integer.parseInt(text);
-                    // limit to 100 times only
-                    if (rerun > 100) {
-                        rerun = 100;
-                        ((Text) e.getSource()).setText(String.valueOf(rerun));
-                    }
-                    getTestSuite().setNumberOfRerun(rerun);
-                    radioBtnRetryAllExecutions.setEnabled(!(rerun == 0));
-                    radioBtnRetryFailedExecutionsOnly.setEnabled(!(rerun == 0));
-                } catch (NumberFormatException ex) {}
-            }
-        });
-
-        txtRetryAfterExecuteAll.addVerifyListener(verifyNumberListener);
-
-        txtRetryImmediately.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.getSource()).getText();
-                try {
-                    int rerun = Integer.parseInt(text);
-                    // limit to 100 times only
-                    if (rerun > 100) {
-                        rerun = 100;
-                        ((Text) e.getSource()).setText(String.valueOf(rerun));
-                    }
-                    getTestSuite().setNumberOfRerun(rerun);
-                } catch (NumberFormatException ex) {}
-            }
-        });
-
-        txtRetryImmediately.addVerifyListener(verifyNumberListener);
-
+        
+        addNumberVerification(txtRetryAfterExecuteAll, MIN_RETRY, MAX_RETRY);
+        addNumberVerification(txtRetryImmediately, MIN_RETRY, MAX_RETRY);
+        
         radioBtnRetryImmediately.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -366,6 +317,60 @@ public class TestSuiteRetryUiPart {
 
     private void setDirty(boolean b) {
         adapter.setDirty(b);
+    }
+    
+    private void addNumberVerification(Text txtInput, final int min, final int max) {
+        if (txtInput == null || txtInput.isDisposed()) {
+            return;
+        }
+        txtInput.addVerifyListener(new VerifyListener() {
+
+            @Override
+            public void verifyText(VerifyEvent e) {
+                String oldValue = ((Text) e.getSource()).getText();
+                String enterValue = e.text;
+                String newValue = oldValue.substring(0, e.start) + enterValue + oldValue.substring(e.end);
+                if (!newValue.matches("\\d+")) {
+                    e.doit = false;
+                    return;
+                }
+                try {
+                    int val = Integer.parseInt(newValue);
+                    e.doit = val >= min && val <= max;
+                } catch (NumberFormatException ex) {
+                    e.doit = false;
+                }
+            }
+        });
+        txtInput.addFocusListener(new FocusAdapter() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                ((Text) e.getSource()).selectAll();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                Text inputField = (Text) e.getSource();
+                String value = inputField.getText();
+                if (value.length() <= 1 || !value.startsWith("0")) {
+                    return;
+                }
+                try {
+                    int val = Integer.parseInt(value);
+                    inputField.setText(String.valueOf(val));
+                } catch (NumberFormatException ex) {
+                    // Do nothing
+                }
+            }
+        });
+        txtInput.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseUp(MouseEvent e) {
+                ((Text) e.getSource()).selectAll();
+            }
+        });
     }
 
     public static class RetryControlStateDescription {
