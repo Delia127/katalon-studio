@@ -150,7 +150,7 @@ public class InstallApplitoolsPluginHandler {
     }
 
     private File getPluginFile() throws IOException {
-        Bundle bundle = FrameworkUtil.getBundle(LocalRepository.class);
+        Bundle bundle = FrameworkUtil.getBundle(InstallApplitoolsPluginHandler.class);
         Path pluginFolderPath = new Path("/resources/applitools");
         URL pluginFolderUrl = FileLocator.find(bundle, pluginFolderPath, null);
         File pluginFolder = FileUtils.toFile(FileLocator.toFileURL(pluginFolderUrl));
