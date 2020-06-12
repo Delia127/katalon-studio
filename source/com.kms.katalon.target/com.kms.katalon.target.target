@@ -263,7 +263,7 @@
 <plugin id="jackson-mapper-asl"/>
 <plugin id="javaewah"/>
 <plugin id="javassist"/>
-<plugin id="javax.activation" version="1.1.0.v201211130549"/>
+<plugin id="javax.activation"/>
 <plugin id="javax.annotation"/>
 <plugin id="javax.annotation-api"/>
 <plugin id="javax.annotation.source"/>
@@ -745,25 +745,25 @@
 <plugin id="org.eclipse.mylyn.bugzilla.ui"/>
 <plugin id="org.eclipse.mylyn.builds.core"/>
 <plugin id="org.eclipse.mylyn.builds.ui"/>
-<plugin id="org.eclipse.mylyn.commons.core" version="3.25.0.v20190131-2250"/>
-<plugin id="org.eclipse.mylyn.commons.identity.core" version="1.17.0.v20180628-1730"/>
-<plugin id="org.eclipse.mylyn.commons.net" version="3.25.0.v20180628-1730"/>
-<plugin id="org.eclipse.mylyn.commons.notifications.core" version="1.17.0.v20180628-1730"/>
-<plugin id="org.eclipse.mylyn.commons.notifications.feed" version="1.17.0.v20190115-0848"/>
-<plugin id="org.eclipse.mylyn.commons.notifications.ui" version="1.17.0.v20180628-1730"/>
-<plugin id="org.eclipse.mylyn.commons.repositories.core" version="1.17.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.commons.core"/>
+<plugin id="org.eclipse.mylyn.commons.identity.core"/>
+<plugin id="org.eclipse.mylyn.commons.net"/>
+<plugin id="org.eclipse.mylyn.commons.notifications.core"/>
+<plugin id="org.eclipse.mylyn.commons.notifications.feed"/>
+<plugin id="org.eclipse.mylyn.commons.notifications.ui"/>
+<plugin id="org.eclipse.mylyn.commons.repositories.core"/>
 <plugin id="org.eclipse.mylyn.commons.repositories.http.core"/>
-<plugin id="org.eclipse.mylyn.commons.repositories.ui" version="1.17.0.v20180628-1730"/>
-<plugin id="org.eclipse.mylyn.commons.screenshots" version="3.25.0.v20180628-1730"/>
-<plugin id="org.eclipse.mylyn.commons.ui" version="3.25.0.v20180706-1510"/>
-<plugin id="org.eclipse.mylyn.commons.workbench" version="3.25.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.commons.repositories.ui"/>
+<plugin id="org.eclipse.mylyn.commons.screenshots"/>
+<plugin id="org.eclipse.mylyn.commons.ui"/>
+<plugin id="org.eclipse.mylyn.commons.workbench"/>
 <plugin id="org.eclipse.mylyn.commons.xmlrpc"/>
 <plugin id="org.eclipse.mylyn.context.core"/>
 <plugin id="org.eclipse.mylyn.context.tasks.ui"/>
 <plugin id="org.eclipse.mylyn.context.ui"/>
 <plugin id="org.eclipse.mylyn.debug.ui"/>
-<plugin id="org.eclipse.mylyn.discovery.core" version="3.25.0.v20190131-2250"/>
-<plugin id="org.eclipse.mylyn.discovery.ui" version="3.25.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.discovery.core"/>
+<plugin id="org.eclipse.mylyn.discovery.ui"/>
 <plugin id="org.eclipse.mylyn.gerrit.core"/>
 <plugin id="org.eclipse.mylyn.gerrit.ui"/>
 <plugin id="org.eclipse.mylyn.git.core"/>
@@ -775,8 +775,8 @@
 <plugin id="org.eclipse.mylyn.ide.ui"/>
 <plugin id="org.eclipse.mylyn.java.tasks"/>
 <plugin id="org.eclipse.mylyn.java.ui"/>
-<plugin id="org.eclipse.mylyn.monitor.core" version="3.25.0.v20180628-1730"/>
-<plugin id="org.eclipse.mylyn.monitor.ui" version="3.25.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.monitor.core"/>
+<plugin id="org.eclipse.mylyn.monitor.ui"/>
 <plugin id="org.eclipse.mylyn.pde.ui"/>
 <plugin id="org.eclipse.mylyn.resources.ui"/>
 <plugin id="org.eclipse.mylyn.reviews.core"/>
