@@ -181,7 +181,7 @@ public class AttributesSelectionComposite extends Composite {
         Composite tablePropertyComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.minimumHeight = 70;
-        ldTableComposite.heightHint = 380;
+        ldTableComposite.heightHint = 300;
         tablePropertyComposite.setLayoutData(ldTableComposite);
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         tablePropertyComposite.setLayout(tableColumnLayout);

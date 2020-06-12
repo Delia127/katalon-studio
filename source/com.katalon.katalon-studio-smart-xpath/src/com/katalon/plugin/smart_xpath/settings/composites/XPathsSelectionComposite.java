@@ -93,7 +93,7 @@ public class XPathsSelectionComposite extends Composite {
         Composite tableXPathComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.minimumHeight = 70;
-        ldTableComposite.heightHint = 380;
+        ldTableComposite.heightHint = 300;
         tableXPathComposite.setLayoutData(ldTableComposite);
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         tableXPathComposite.setLayout(tableColumnLayout);
