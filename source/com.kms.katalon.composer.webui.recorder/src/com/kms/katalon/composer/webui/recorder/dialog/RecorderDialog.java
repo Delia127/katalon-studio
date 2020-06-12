@@ -258,9 +258,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private boolean isOkPressed = false;
 
     private boolean isUsingIE = false;
-    
+
     private boolean isNavigationAdded = false;
-    
+
     private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     /**
@@ -628,7 +628,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         capturedObjectComposite.addListener(objectPropertiesView,
                 Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
-        
+
         selectorEditor.addListener(verifyView, Arrays.asList(ObjectSpyEvent.SELECTOR_HAS_CHANGED));
         objectPropertiesView.addListener(selectorEditor, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
         objectPropertiesView.addListener(verifyView, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
@@ -1254,6 +1254,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 ImageManager.getImage(IImageKeys.NEW_BROWSER_16));
         addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
         addNewBrowserItem(newBrowser, WebUIDriverType.CHROME_DRIVER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.EDGE_CHROMIUM_DRIVER);
 
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
                 ImageManager.getImage(IImageKeys.ACTIVE_BROWSER_16));
@@ -1474,6 +1475,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             case IE_DRIVER:
                 return ImageConstants.IMG_16_IE;
 
+            case EDGE_CHROMIUM_DRIVER:
+                return ImageConstants.IMG_16_EDGE_CHROMIUM;
+
             default:
                 return null;
         }
@@ -1489,6 +1493,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
             case IE_DRIVER:
                 return ImageConstants.IMG_24_IE;
+
+            case EDGE_CHROMIUM_DRIVER:
+                return ImageConstants.IMG_24_EDGE_CHROMIUM;
 
             default:
                 return null;
@@ -1664,7 +1671,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         super.handleShellCloseEvent();
         dispose();
     }
-    
+
     private boolean verifyActionMapping(final HTMLActionMapping newAction) {
         if (newAction.getAction().equals(HTMLAction.Navigate)) {
             if (!isNavigationAdded && newAction.getData().length > 0
@@ -1681,7 +1688,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         if (isPauseRecording || !verifyActionMapping(newAction)) {
             return;
         }
-        
+
         WebElement targetElement = newAction.getTargetElement();
         if (targetElement != null) {
 
@@ -1810,7 +1817,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private String getElementShortName(WebElement element) {
         String elementName = element.getName();
-        elementName = StringUtils.replaceChars(elementName, "\n<>:\"/\\|?*", ""); //escape special characters
+        elementName = StringUtils.replaceChars(elementName, "\n<>:\"/\\|?*", ""); // escape special characters
         String shortName;
         if (elementName.length() > MAX_ELEMENT_NAME_LENGTH) {
             String hash = Hashing.sha256().hashString(elementName, StandardCharsets.UTF_8).toString();
