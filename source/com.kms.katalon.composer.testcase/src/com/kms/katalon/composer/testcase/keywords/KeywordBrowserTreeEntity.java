@@ -15,13 +15,21 @@ public class KeywordBrowserTreeEntity implements IKeywordBrowserTreeEntity {
     private String keywordName;
 
     private IKeywordBrowserTreeEntity parent;
+    
+    private Class<?>[] parameterTypes;
 
     public KeywordBrowserTreeEntity(String fullClassName, String simpleClassName, String keywordName, boolean isCustom,
             IKeywordBrowserTreeEntity parent) {
+        this(fullClassName, simpleClassName, keywordName, null, isCustom, parent);
+    }
+    
+    public KeywordBrowserTreeEntity(String fullClassName, String simpleClassName, String keywordName,
+            Class<?>[] parameterTypes, boolean isCustom, IKeywordBrowserTreeEntity parent) {
         this.simpleClassName = simpleClassName;
         this.keywordName = keywordName;
         this.isCustom = isCustom;
         this.parent = parent;
+        this.parameterTypes = parameterTypes;
     }
 
     @Override
@@ -35,7 +43,7 @@ public class KeywordBrowserTreeEntity implements IKeywordBrowserTreeEntity {
         if (isCustom || project == null) {
             return getName();
         }
-        String keywordJavaDoc = TestCaseEntityUtil.getKeywordJavaDocText(simpleClassName, keywordName);
+        String keywordJavaDoc = TestCaseEntityUtil.getBuiltinKeywordJavadocText(simpleClassName, keywordName);
         if (keywordJavaDoc.isEmpty()) {
             return TreeEntityUtil.getReadableKeywordName(getName());
         } else {
@@ -66,4 +74,7 @@ public class KeywordBrowserTreeEntity implements IKeywordBrowserTreeEntity {
         return parent;
     }
 
+    public Class<?>[] getParameterTypes() {
+        return parameterTypes;
+    }
 }
