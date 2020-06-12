@@ -17,6 +17,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class MobileExecutionUtil {
     private static final String MAC_DEFAULT_NODEJS_LOCATION = "/usr/local/bin/node";
+    
+    private static final String ENV_APPIUM_HOME_DIRECTORY = System.getenv("APPIUM_HOME");
 
     public static void detectInstalledAppiumAndNodeJs() throws MobileSetupException {
         String appiumDir = null;
@@ -53,6 +55,9 @@ public class MobileExecutionUtil {
     private static String findAppiumDir() throws IOException {
         final ScopedPreferenceStore mobilePreferenceStore = PreferenceStoreManager
                 .getPreferenceStore(MobilePreferenceConstants.MOBILE_QUALIFIER);
+        if (StringUtils.isNotBlank(ENV_APPIUM_HOME_DIRECTORY)) {
+            return ENV_APPIUM_HOME_DIRECTORY;
+        }
         String appiumDir = mobilePreferenceStore.getString(MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY);
         if (StringUtils.isNotEmpty(appiumDir)) {
             return appiumDir;
