@@ -317,8 +317,8 @@
 <plugin id="org.apache.commons.dbutils"/>
 <plugin id="org.apache.commons.digester"/>
 <plugin id="org.apache.commons.email"/>
-<plugin id="org.apache.commons.io" version="2.2.0.v201405211200"/>
 <plugin id="org.apache.commons.io" version="2.4.0"/>
+<plugin id="org.apache.commons.io" version="2.2.0.v201405211200"/>
 <plugin id="org.apache.commons.jxpath"/>
 <plugin id="org.apache.commons.jxpath.source"/>
 <plugin id="org.apache.commons.lang" version="2.6"/>
