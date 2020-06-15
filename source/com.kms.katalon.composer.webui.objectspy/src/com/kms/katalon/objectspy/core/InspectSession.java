@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.handlers.UpdateChromeWebdriverHandler;
+import com.kms.katalon.composer.handlers.UpdateEdgeChromiumWebdriverHandler;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
@@ -264,6 +265,9 @@ public class InspectSession implements Runnable {
             if (failedDueToOutdatedChromeDriver(e.getMessage())) {
                 Trackings.trackFailedToSpyRecordDueToOutdatedChromeDriver();
                 updateChromeDriver();
+            } else if (failedDueToOutdatedEdgeChromiumDriver(e.getMessage())) {
+                Trackings.trackFailedToSpyRecordDueToOutdatedEdgeChromiumDriver();
+                updateEdgeChromiumDriver();
             } else {
                 showErrorMessageDialog(e.getMessage());
             }
@@ -275,6 +279,10 @@ public class InspectSession implements Runnable {
         }
     }
 
+    private boolean failedDueToOutdatedEdgeChromiumDriver(String message) {
+        return message.contains("This version of MSEdgeDriver only supports MSEdge version");
+    }
+
     private boolean failedDueToOutdatedChromeDriver(String message) {
         return message.contains("This version of ChromeDriver only supports Chrome version");
     }
@@ -284,11 +292,22 @@ public class InspectSession implements Runnable {
             @Override
             public void run() {
                 boolean upgrade = MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
-                        StringConstants.ERROR_TITLE,
-                        StringConstants.DIA_MSG_DRIVER_OUTDATED);
+                        StringConstants.ERROR_TITLE, StringConstants.DIA_MSG_DRIVER_OUTDATED_CHROME_DRIVER);
                 if (upgrade) {
-                    Trackings.trackFailedToSpyRecordDueToOutdatedChromeDriver();
                     new UpdateChromeWebdriverHandler().execute(Display.getCurrent().getActiveShell());
+                }
+            }
+        });
+    }
+    
+    private void updateEdgeChromiumDriver() {
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                boolean upgrade = MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
+                        StringConstants.ERROR_TITLE, StringConstants.DIA_MSG_DRIVER_OUTDATED_EDGE_CHROMIUM_DRIVER);
+                if (upgrade) {
+                    new UpdateEdgeChromiumWebdriverHandler().execute(Display.getCurrent().getActiveShell());
                 }
             }
         });

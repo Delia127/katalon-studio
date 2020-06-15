@@ -431,10 +431,10 @@ public class Trackings {
         trackUserAction("failedToSpyRecordDueToOutdatedChromeDriver");
     }
     
-    public static void trackFailedToExecuteDueToOutdatedChromeDriver() {
-        trackUserAction("failedToExecuteDueToOutdatedChromeDriver");
+    public static void trackFailedToSpyRecordDueToOutdatedEdgeChromiumDriver() {
+        trackUserAction("failedToSpyRecordDueToOutdatedEdgeChromiumDriver");
     }
-
+    
     public static void trackUseAutoUpdateChromeDriver() {
         trackUserAction("autoUpdateChromeDriver");
     }

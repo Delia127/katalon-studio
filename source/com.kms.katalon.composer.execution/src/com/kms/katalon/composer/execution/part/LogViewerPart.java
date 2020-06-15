@@ -664,10 +664,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private String getCausedBySentence(String msg) {
-        if (failedDueToOutdatedChromeDriver(msg)) {
-            return StringConstants.PA_MSG_DRIVER_OUTDATED;
-        }
-        if(failureDueToOutdatedEdgeChromium(msg)) {
+        if (failedDueToOutdatedChromeDriver(msg) || failureDueToOutdatedEdgeChromium(msg)) {
             return StringConstants.PA_MSG_DRIVER_OUTDATED;
         }
         String causedBy = "";
