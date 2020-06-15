@@ -182,8 +182,8 @@ public class TestSuiteRetryUiPart {
         grpRetryExecution.setLayout(gl_grpRetryExecution);
 
         radioBtnRetryImmediately = new Button(grpRetryExecution, SWT.RADIO);
-        GridData gdLblStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblStopImmediately.widthHint = 150;
+        GridData gdLblStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+        gdLblStopImmediately.widthHint = 200;
         radioBtnRetryImmediately.setLayoutData(gdLblStopImmediately);
         radioBtnRetryImmediately.setText(StringConstants.PA_LBL_RETRY_IMMEDIATELY);
         
@@ -192,7 +192,7 @@ public class TestSuiteRetryUiPart {
         linkToRetryDocs1.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
         
         txtRetryImmediately = new Text(grpRetryExecution, SWT.BORDER);
-        GridData gdTxtStopImmediately = new GridData(SWT.RIGHT, SWT.FILL, true, false, 2, 1);
+        GridData gdTxtStopImmediately = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
         gdTxtStopImmediately.widthHint = 20;
         txtRetryImmediately.setLayoutData(gdTxtStopImmediately);
         txtRetryImmediately.setTextLimit(3);
@@ -205,8 +205,8 @@ public class TestSuiteRetryUiPart {
         grpRetryExecutions.setLayout(gl_grpRetryExecutions);
 
         radioBtnRetryAfterExecuteAll = new Button(grpRetryExecutions, SWT.RADIO);
-        GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblReRun.widthHint = 150;
+        GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+        gdLblReRun.widthHint = 200;
         radioBtnRetryAfterExecuteAll.setLayoutData(gdLblReRun);
         radioBtnRetryAfterExecuteAll.setText(StringConstants.PA_LBL_RETRY_AFTER_EXECUTE_ALL);
         radioBtnRetryAfterExecuteAll.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
@@ -216,7 +216,7 @@ public class TestSuiteRetryUiPart {
         linkToRetryDocs2.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
 
         txtRetryAfterExecuteAll = new Text(grpRetryExecutions, SWT.BORDER);
-        GridData gdTxtRerun = new GridData(SWT.RIGHT, SWT.FILL, false, false, 2, 1);
+        GridData gdTxtRerun = new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1);
         gdTxtRerun.widthHint = 20;
         txtRetryAfterExecuteAll.setLayoutData(gdTxtRerun);
         txtRetryAfterExecuteAll.setTextLimit(3);
