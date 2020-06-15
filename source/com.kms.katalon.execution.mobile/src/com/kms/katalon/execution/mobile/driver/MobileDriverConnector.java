@@ -11,6 +11,7 @@ import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;
 import com.kms.katalon.execution.mobile.constants.MobilePreferenceConstants;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -54,7 +55,7 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
     }
 
     private String getAppiumDirectory() {
-        return getMobilePreferenceStore().getString(MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY);
+        return MobileExecutionUtil.findAppiumDir();
     }
 
     private String getAppiumLogLevel() {
