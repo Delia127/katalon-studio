@@ -127,12 +127,17 @@ public class Trackings {
         trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType,"executionResult", result, "duration", duration);
     }
 
-    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result, long duration) {
-        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType, "executionResult", result, "duration", duration);
+    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result,
+            long duration, String retryStrategy, int numberOfRetry) {
+        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType,
+                "executionResult", result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
+                numberOfRetry);
     }
 
-    public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result, long duration) {
-        trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType, "executionResult", result, "duration", duration);
+    public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result,
+            long duration, String retryStrategy, int numberOfRetry) {
+        trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType, "executionResult",
+                result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun", numberOfRetry);
     }
 
     public static void trackExecuteSequentialTestSuiteCollectionInGuiMode(String result, long duration) {
@@ -441,6 +446,10 @@ public class Trackings {
 
     public static void trackUseAutoUpdateEdgeChromiumDriver() {
         trackUserAction("autoUpdateEdgeChromiumDriver");
+    }
+    
+    public static void trackClickOnExceptionDocInLogViewer(String link) {
+        trackUserAction("clickOnExceptionLinkInLogViewer", "link", link);
     }
     
     private static void trackUserAction(String actionName, Object... properties) {
