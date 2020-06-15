@@ -48,6 +48,7 @@ import <%= it %>
 <% } %>
 <% methodNodesMap.each { key, value ->
     value.each { %>
+<%= CustomMethodNodeFactory.getInstance().getJavadoc(it) %>
 def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex { item, index -> %>
     <% if (index > 0) { %> , <% }%>	<%= CustomKeywordTemplate.getInitialExpression(it, item, index) %>	<% } %>) {
     (new <%= key %>()).<%= it.getName() %>(<% it.getParameters().eachWithIndex { item, index -> %>
@@ -65,10 +66,11 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
         def binding = [
             "importClassNames": importClassNames,
             "methodNodesMap":  methodNodesMap,
-            "CustomKeywordTemplate": CustomKeywordTemplate
+            "CustomKeywordTemplate": CustomKeywordTemplate,
+            "CustomMethodNodeFactory": CustomMethodNodeFactory
         ]
 
-        def engine = new GStringTemplateEngine()
+        def engine = new GStringTemplateEngine(this.getClass().getClassLoader())
         def tpl = engine.createTemplate(tpl).make(binding)
         if (file.canWrite()) {
             file.write(tpl.toString());

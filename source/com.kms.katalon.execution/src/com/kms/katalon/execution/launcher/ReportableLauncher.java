@@ -161,10 +161,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteEntity testSuite = getTestSuite();
 
-            // Prepare and store test case bindings for rerunFailedTestCaseTestData
-            String strFailedTcBindings = getTestCaseBindingsOfFailedTestCases();
-            Map<String, String> currentFailedTcBindings = new HashMap<String, String>();
-            currentFailedTcBindings.put(RunConfiguration.TC_BINDINGS_OF_FAILED_TEST_CASES, strFailedTcBindings);
+            String strRetryFailedExecutionsTcBindings = getRetryFailedExecutionsOnlyTcBindings();
+            String strRetryImmediatelyTcBindings = getRetryImmediatelyTcBindings();
+            Map<String, String> customTcBindings = new HashMap<String, String>();
+            customTcBindings.put(RunConfiguration.TC_RETRY_FAILED_EXECUTIONS_ONLY, strRetryFailedExecutionsTcBindings);
+            customTcBindings.put(RunConfiguration.TC_RETRY_IMMEDIATELY_BINDINGS, strRetryImmediatelyTcBindings);
 
             try {
                 IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil
@@ -179,7 +180,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
                     ((AbstractRunConfiguration) newConfig)
                             .setOverridingGlobalVariables(getRunConfig().getOverridingGlobalVariables());
-                    ((AbstractRunConfiguration) newConfig).setTestSuiteAdditionalData(currentFailedTcBindings);
+                    ((AbstractRunConfiguration) newConfig).setTestSuiteAdditionalData(customTcBindings);
                 }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
@@ -195,12 +196,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     /**
      * @return The lines in testCaseBiding file where the associated test cases failed
      */
-    private String getTestCaseBindingsOfFailedTestCases() {
+    private String getRetryFailedExecutionsOnlyTcBindings() {
         File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
         try {
             List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);
             List<String> currentFailedTcBindings = new ArrayList<>();
-            List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity()).getExecutedItems();
+            List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity())
+                    .getExecutedItems();
             TestStatusValue[] prevResultValues = getResult().getResultValues();
             int rsIdx = 0;
 
@@ -214,6 +216,46 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 rsIdx += prevExecutedTC.getLoopTimes();
             }
             return String.join("\n", currentFailedTcBindings);
+        } catch (IOException e) {}
+
+        return "";
+    }
+    
+    /**
+     * @return The lines in testCaseBiding file where the associated test cases failed
+     */
+    private String getRetryImmediatelyTcBindings() {
+        File testCaseBindingFile = new File(getRunConfig().getExecutionSetting().getFolderPath(), "testCaseBinding");
+        try {
+            List<String> currentTcBindings = FileUtils.readLines(testCaseBindingFile);
+            List<String> retryImmediatelyTcBindings = new ArrayList<>();
+            List<IExecutedEntity> prevTestCaseExecutedEntities = ((TestSuiteExecutedEntity) getExecutedEntity())
+                    .getExecutedItems();
+            TestStatusValue[] prevResultValues = getResult().getResultValues();
+            int rsIdx = 0;
+            int indexOfFirstFailedTc = 0;
+            for (IExecutedEntity prevExecutedItem : prevTestCaseExecutedEntities) {
+                TestCaseExecutedEntity prevExecutedTC = (TestCaseExecutedEntity) prevExecutedItem;
+                for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
+                    if ((prevResultValues[i] == TestStatusValue.FAILED
+                            || prevResultValues[i] == TestStatusValue.ERROR)) {
+                        retryImmediatelyTcBindings.add(currentTcBindings.get(i));
+                        indexOfFirstFailedTc = i;
+                        break;
+                    }
+                }
+                rsIdx += prevExecutedTC.getLoopTimes();
+            }
+            // Increment to avoid adding another row of the first failed execution
+            indexOfFirstFailedTc = indexOfFirstFailedTc + 1;
+            if (indexOfFirstFailedTc < prevResultValues.length) {
+                for (int i = indexOfFirstFailedTc; i < prevResultValues.length; i++) {
+                    if (i < currentTcBindings.size()) {
+                        retryImmediatelyTcBindings.add(currentTcBindings.get(i));
+                    }
+                }
+            }
+            return String.join("\n", retryImmediatelyTcBindings);
         } catch (IOException e) {}
 
         return "";
@@ -600,5 +642,23 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     public void setRunInTestSuiteCollection(boolean runInTestSuiteCollection) {
         this.runInTestSuiteCollection = runInTestSuiteCollection;
+    }
+
+    protected String getRetryStrategy() {
+        if (runConfig.getExecutionSetting().getExecutedEntity() instanceof TestSuiteExecutedEntity) {
+            TestSuiteExecutedEntity testSuiteExecutedEntity = (TestSuiteExecutedEntity) runConfig.getExecutionSetting()
+                    .getExecutedEntity();
+            return String.valueOf(testSuiteExecutedEntity.getRetryStrategy());
+        }
+        return "";
+    }
+    
+    protected int getNumberOfRetry() {
+        if (runConfig.getExecutionSetting().getExecutedEntity() instanceof TestSuiteExecutedEntity) {
+            TestSuiteExecutedEntity testSuiteExecutedEntity = (TestSuiteExecutedEntity) runConfig.getExecutionSetting()
+                    .getExecutedEntity();
+            return testSuiteExecutedEntity.getPreviousRerunTimes() + testSuiteExecutedEntity.getRemainingRerunTimes();
+        }
+        return 0;
     }
 }

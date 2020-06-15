@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -33,7 +32,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 
-public class KeywordNodeTooltip {
+public class BuiltinKeywordNodeTooltip extends AbstractKeywordNodeTooltip {
     private static final String JAVADOC_SUFFIX = "[JAVADOC_";
 
     private static final String JAVADOC_HEADER = JAVADOC_SUFFIX + "HEADER]";
@@ -48,45 +47,30 @@ public class KeywordNodeTooltip {
 
     private StyledText javaDocContent;
 
-    private String text = "";
-
-    private int preferedWidth = 600;
-
-    private int preferedHeight = 200;
-
     private final int TOOLBAR_DEFAULT_HEIGHT = 24;
 
     private Shell tip;
 
     private String keywordDescURI = null;
 
-    private Control control;
-
     private ToolItem openKeywordDescToolItem;
 
     private ToolBar toolBar;
-
-    private boolean showBelow = true;
 
     private Shell openKeywordDescTooltip;
 
     private boolean openedDesc;
 
     private boolean isOpeningKeywordDescription = false;
+    
+    private String text;
 
-    private Point location;
-
-    private static KeywordNodeTooltip currentTooltip = null;
-
-    public KeywordNodeTooltip(Control control) {
+    public BuiltinKeywordNodeTooltip(Control control) {
         this.control = control;
     }
 
-    public Shell getShell() {
-        return tip;
-    }
-
-    private void initComponents(Composite parent) { 
+    @Override
+    protected void initComponents(Composite parent) { 
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.marginWidth = 0;
@@ -196,99 +180,10 @@ public class KeywordNodeTooltip {
         }
     }
 
-    private void createTooltip() {
-        tip = new Shell(control.getShell(), SWT.ON_TOP | SWT.TOOL | SWT.RESIZE);
-        tip.setLayout(new FillLayout());
-        initComponents(tip);
-    }
-
-    public boolean isShowBelowPoint() {
-        return showBelow;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getText() {
-        return this.text;
-    }
-
-    public void setPreferedSize(int w, int h) {
-        if (w > 0) {
-            preferedWidth = w;
-        }
-        if (h > 0) {
-            preferedHeight = h;
-        }
-    }
-
+    @Override
     public void show(Point p) {
-        hide();
-        location = p;
-        createTooltip();
-        tip.setLocation(p);
-             
-        Point tipSize = getBestSizeForKeywordDescriptionPopup();
-        tip.setSize(tipSize);
-        
-        if (currentTooltip != null && currentTooltip != this) {
-            currentTooltip.hide();
-        }
-        currentTooltip = this;
+        super.show(p);
         openedDesc = false;
-        tip.setVisible(true);
-    }
-
-    private Point getBestSizeForKeywordDescriptionPopup() {
-        Monitor currentMonitor = null;
-        for (Monitor monitor : Display.getCurrent().getMonitors()) {
-            if (monitor.getClientArea().contains(location)) {
-                currentMonitor = monitor;
-                break;
-            }
-        }
-        Rectangle displayRect = currentMonitor.getClientArea();
-        int width = preferedWidth;
-        if (location.x + width > displayRect.x + displayRect.width ) {
-            width = displayRect.x + displayRect.width - location.x;
-        }
-        return new Point(width, preferedHeight);
-    }
-    
-    private Point getLocation(Point suggestionLoc) {
-        Rectangle bounds = Display.getCurrent().getBounds();
-        Point tipSize = tip.getSize();
-        showBelow = true;
-
-        if (suggestionLoc.x + tipSize.x < bounds.width && suggestionLoc.y + tipSize.y < bounds.height) {
-            return suggestionLoc;
-        }
-        if (suggestionLoc.x + tipSize.x > bounds.width) {
-            suggestionLoc.x -= tipSize.x;
-        }
-        if (suggestionLoc.y + tipSize.y > bounds.height) {
-            showBelow = false;
-            suggestionLoc.y -= tipSize.y;
-        }
-
-        return suggestionLoc;
-    }
-
-    public synchronized void hide() {
-        if (tip != null && !tip.isDisposed()) {
-            Point cursorLoc = Display.getCurrent().getCursorLocation();
-            if (isOpenKeywordDescToolItem(cursorLoc) && !isOpeningKeywordDescription()) {
-                openKeywordDesc();
-            } else {
-                tip.dispose();
-            }
-            currentTooltip = null;
-        }
-    }
-
-    public boolean isVisible() {
-        return tip != null && !tip.isDisposed() && tip.isVisible();
     }
 
     public void setKeywordURL(String keywordDescURI) {
@@ -326,10 +221,6 @@ public class KeywordNodeTooltip {
             }
             setIsOpeingKeywordDescription(false);
         }
-    }
-
-    public Rectangle getBounds() {
-        return tip.getBounds();
     }
 
     private void formatJavaDoc() {
@@ -453,4 +344,11 @@ public class KeywordNodeTooltip {
         return isOpeningKeywordDescription;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 }

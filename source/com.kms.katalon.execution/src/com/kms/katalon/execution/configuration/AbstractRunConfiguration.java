@@ -33,6 +33,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.configuration.impl.LocalHostConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.entity.DefaultRerunSetting.RetryStrategyValue;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -111,21 +112,18 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
-                // Get and use the prepared test case bindings for rerunFailedTestCaseTestData
                 TestSuiteExecutedEntity t = (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity();
-                String currentFailedTcBindings = additionalData
-                        .getOrDefault(RunConfiguration.TC_BINDINGS_OF_FAILED_TEST_CASES, StringUtils.EMPTY);
-                if (!StringUtils.EMPTY.equals(currentFailedTcBindings)
-                        && t.getRerunSetting().isRerunFailedTestCasesOnly()
-                        && t.getRerunSetting().isRerunFailedTestCasesAndTestDataOnly()) {
-                    return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
-                            (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
-                                    .generateScriptFile(currentFailedTcBindings);
+                String retryFailedExecutionsTcBindings = additionalData
+                        .getOrDefault(RunConfiguration.TC_RETRY_FAILED_EXECUTIONS_ONLY, StringUtils.EMPTY);
+                String retryImmediatelyTcBindings = additionalData
+                        .getOrDefault(RunConfiguration.TC_RETRY_IMMEDIATELY_BINDINGS, StringUtils.EMPTY);
+                if (shouldRetryImmediately(t, retryImmediatelyTcBindings)) {
+                    return generatetTempScriptFileWithCustomRetry(fileEntity, retryImmediatelyTcBindings);
                 }
-                // Recalculate the test case bindings for rerunFailedTestCase
-                return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
-                        (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
-
+                if (shouldRetryFailedExecutionsOnly(t, retryFailedExecutionsTcBindings)) {
+                    return generatetTempScriptFileWithCustomRetry(fileEntity, retryFailedExecutionsTcBindings);
+                }
+                return generateTempScriptFileWithDefaultRetry(fileEntity);
             } else if (fileEntity instanceof TestCaseEntity) {
                 return new TestCaseScriptGenerator((TestCaseEntity) fileEntity, this).generateScriptFile();
             } else if (fileEntity instanceof SystemFileEntity) {
@@ -135,6 +133,27 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         } catch (Exception ex) {
             throw new ExecutionException(ex);
         }
+    }
+
+    private File generateTempScriptFileWithDefaultRetry(FileEntity fileEntity) throws Exception {
+        return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
+    }
+
+    private File generatetTempScriptFileWithCustomRetry(FileEntity fileEntity, String retryImmediatelyTcBindings)
+            throws Exception {
+        return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity())
+                        .generateScriptFile(retryImmediatelyTcBindings);
+    }
+
+    private boolean shouldRetryImmediately(TestSuiteExecutedEntity t, String retryImmediatelyTcBindings) {
+        return RetryStrategyValue.IMMEDIATELY.equals(t.getRetryStrategy()) && !StringUtils.EMPTY.equals(retryImmediatelyTcBindings);
+    }
+
+    private boolean shouldRetryFailedExecutionsOnly(TestSuiteExecutedEntity t, String retryFailedExecutionsTcBindings) {
+        return RetryStrategyValue.FAILED_EXECUTIONS.equals(t.getRetryStrategy())
+                && !StringUtils.EMPTY.equals(retryFailedExecutionsTcBindings);
     }
 
     protected void init(FileEntity fileEntity) throws IOException {
