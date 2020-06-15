@@ -431,6 +431,22 @@ public class Trackings {
     public static void trackOpenKSEBrochurePage() {
         trackUserAction("openKSEBrochurePage");
     }
+
+    public static void trackFailedToSpyRecordDueToOutdatedChromeDriver() {
+        trackUserAction("failedToSpyRecordDueToOutdatedChromeDriver");
+    }
+    
+    public static void trackFailedToSpyRecordDueToOutdatedEdgeChromiumDriver() {
+        trackUserAction("failedToSpyRecordDueToOutdatedEdgeChromiumDriver");
+    }
+    
+    public static void trackUseAutoUpdateChromeDriver() {
+        trackUserAction("autoUpdateChromeDriver");
+    }
+
+    public static void trackUseAutoUpdateEdgeChromiumDriver() {
+        trackUserAction("autoUpdateEdgeChromiumDriver");
+    }
     
     public static void trackClickOnExceptionDocInLogViewer(String link) {
         trackUserAction("clickOnExceptionLinkInLogViewer", "link", link);
