@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
@@ -77,36 +78,40 @@ public class TestSuiteRetryUiPart {
         radioBtnRetryImmediately.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_IMMEDIATELY);
-                    radioBtnRetryImmediately.setSelection(false);
-                }
-                boolean value = radioBtnRetryImmediately.getSelection();
-                if (value) {
-                    radioBtnRetryAfterExecuteAll.setSelection(false);
-                    radioBtnRetryAllExecutions.setSelection(false);
-                    radioBtnRetryFailedExecutionsOnly.setSelection(false);
-                    txtRetryImmediately.setEnabled(true);
-                    getTestSuite().setRerunFailedTestCasesOnly(false);
-                    getTestSuite().setRerunFailedTestCasesTestDataOnly(false);
-                    enableRetryAfterExecuteAll(false);
-                }
-                getTestSuite().setRerunImmediately(value);
-                setDirty(true);
+                UISynchronizeService.syncExec(() -> {
+                    if (LicenseUtil.isFreeLicense()) {
+                        KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.RERUN_IMMEDIATELY);
+                        radioBtnRetryImmediately.setSelection(false);
+                    }
+                    boolean value = radioBtnRetryImmediately.getSelection();
+                    if (value) {
+                        radioBtnRetryAfterExecuteAll.setSelection(false);
+                        radioBtnRetryAllExecutions.setSelection(false);
+                        radioBtnRetryFailedExecutionsOnly.setSelection(false);
+                        txtRetryImmediately.setEnabled(true);
+                        getTestSuite().setRerunFailedTestCasesOnly(false);
+                        getTestSuite().setRerunFailedTestCasesTestDataOnly(false);
+                        enableRetryAfterExecuteAll(false);
+                    }
+                    getTestSuite().setRerunImmediately(value);
+                    setDirty(true);
+                });
             }
         });
 
         radioBtnRetryAfterExecuteAll.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean value = radioBtnRetryAfterExecuteAll.getSelection();
-                if (value) {
-                    radioBtnRetryImmediately.setSelection(false);
-                    txtRetryImmediately.setEnabled(false);
-                    getTestSuite().setRerunImmediately(false);
-                    enableRetryAfterExecuteAll(true);
-                }
-                setDirty(true);
+                UISynchronizeService.syncExec(() -> {
+                    boolean value = radioBtnRetryAfterExecuteAll.getSelection();
+                    if (value) {
+                        radioBtnRetryImmediately.setSelection(false);
+                        txtRetryImmediately.setEnabled(false);
+                        getTestSuite().setRerunImmediately(false);
+                        enableRetryAfterExecuteAll(true);
+                    }
+                    setDirty(true);
+                });
             }
         });
 
@@ -298,10 +303,12 @@ public class TestSuiteRetryUiPart {
     }
     
     public int getRetryNumber() {
+        String immediately = txtRetryImmediately.getText();
+        String afterExecuteAll = txtRetryAfterExecuteAll.getText();
         if (radioBtnRetryAfterExecuteAll.getSelection()) {
-            return Integer.valueOf(txtRetryAfterExecuteAll.getText());
+            return Integer.valueOf("".equals(afterExecuteAll) ? "0" : immediately);
         }
-        return Integer.valueOf(txtRetryImmediately.getText());
+        return Integer.valueOf("".equals(immediately) ? "0" : immediately);
     }
     
     public RetryStrategyValue getRetryStrategy() {
