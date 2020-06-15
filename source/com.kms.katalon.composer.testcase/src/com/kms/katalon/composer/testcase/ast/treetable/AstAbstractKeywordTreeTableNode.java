@@ -381,4 +381,8 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     public String getTooltipForTestObjectArgument(MethodCallExpressionWrapper methodCall) {
         return AstEntityInputUtil.getEntityRelativeIdFromMethodCall(methodCall);
     }
+    
+    public String[] getParameterTypes() {
+        return methodCall.getArguments().getArgumentListParameterTypes();
+    }
 }

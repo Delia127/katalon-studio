@@ -13,6 +13,7 @@ import org.codehaus.groovy.ast.MethodNode;
 
 import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.custom.parser.MethodUtils;
+import com.kms.katalon.util.groovy.MethodNodeUtil;
 
 public class CustomMethodNodeFactory {
 
@@ -27,12 +28,15 @@ public class CustomMethodNodeFactory {
      * key: file path, value: class name;
      */
     private Map<String, Set<String>> classPathMap;
+        
+    private Map<String, String> javadocMap;
 
     private static CustomMethodNodeFactory _instance;
 
     private CustomMethodNodeFactory() {
         methodNodesMap = new HashMap<String, List<MethodNode>>();
         classPathMap = new HashMap<>();
+        javadocMap = new HashMap<>();
         methodParameterNamesMap = new HashMap<>();
     }
 
@@ -58,6 +62,16 @@ public class CustomMethodNodeFactory {
         }
         methodNodesMap.put(className, customKeywordMethods);
         addClassToClassPath(className, filePath);
+    }
+    
+    public void addJavadoc(MethodNode methodNode, String htmlJavadoc) {
+        String descriptor = MethodNodeUtil.getDescriptor(methodNode);
+        javadocMap.put(descriptor, htmlJavadoc);
+    }
+    
+    public String getJavadoc(MethodNode methodNode) {
+        String descriptor = MethodNodeUtil.getDescriptor(methodNode);
+        return StringUtils.defaultIfBlank(javadocMap.get(descriptor), "");
     }
     
     public void addPluginMethodNodes(String className, List<MethodNode> methodNodes, String filePath, Map<String, List<String>> parameterMaps) {
@@ -113,6 +127,7 @@ public class CustomMethodNodeFactory {
         methodNodesMap.clear();
         classPathMap.clear();
         methodParameterNamesMap.clear();
+        javadocMap.clear();
     }
     
     public boolean isCustomKeywordClass(String className) {
@@ -128,6 +143,35 @@ public class CustomMethodNodeFactory {
             }
         }
         return false;
+    }
+    
+    public MethodNode findBestMatch(String className, String methodName, String[] parameterTypes) {
+        MethodNode methodNode = find(className, methodName, parameterTypes);
+        if (methodNode == null) {
+            methodNode = find(className, methodName, parameterTypes.length);
+        }
+        return methodNode;
+    }
+
+    private MethodNode find(String className, String methodName, String[] parameterTypes) {
+        List<MethodNode> methodNodes = getMethodNodesMap().get(className);
+        for (MethodNode methodNode : methodNodes) {
+            if (MethodNodeUtil.matchMethodWithLooseParamTypesChecking(methodNode, className, methodName,
+                    parameterTypes)) {
+                return methodNode;
+            }
+        }
+        return null;
+    }
+
+    private MethodNode find(String className, String methodName, int numberOfParameters) {
+        List<MethodNode> methodNodes = getMethodNodesMap().get(className);
+        for (MethodNode methodNode : methodNodes) {
+            if (MethodNodeUtil.matchMethod(methodNode, className, methodName, numberOfParameters)) {
+                return methodNode;
+            }
+        }
+        return null;
     }
     
     public Map<String, List<MethodNode>> getMethodNodesMap() {

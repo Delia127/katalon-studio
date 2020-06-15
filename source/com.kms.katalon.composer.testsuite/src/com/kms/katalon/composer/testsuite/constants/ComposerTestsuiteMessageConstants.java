@@ -5,7 +5,7 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerTestsuiteMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.testsuite.constants.composerTestsuiteMessages";
 
-    public static String PA_LBL_TEST_CASE_TEST_DATA_ONLY;
+    public static String PA_LBL_RETRY_FAILED_EXECUTIONS;
 
     public static String INFORMATION_TITLE;
 
@@ -97,9 +97,9 @@ public class ComposerTestsuiteMessageConstants extends NLS {
 
     public static String PA_LBL_LAST_RUN;
 
-    public static String PA_LBL_RETRY;
+    public static String PA_LBL_RETRY_AFTER_EXECUTE_ALL;
 
-    public static String PA_LBL_TEST_CASE_ONLY;
+    public static String PA_LBL_RETRY_ALL_EXECUTIONS;
 
     public static String PA_LBL_TIP_LAST_RUN;
 
@@ -133,7 +133,7 @@ public class ComposerTestsuiteMessageConstants extends NLS {
 
     public static String PA_LBL_TOOLTIP_RETRY;
 
-    public static String PA_LBL_TOOLTIP_TEST_CASE_ONLY;
+    public static String PA_LBL_TOOLTIP_RETRY_FAILED_EXECUTIONS;
 
     public static String SUP_WARN_MSG_TEST_DATA_NOT_FOUND;
 
@@ -177,7 +177,11 @@ public class ComposerTestsuiteMessageConstants extends NLS {
     
     public static String DIA_INFO_KSE_COMBINE_MULTI_DATASOURCE;
 
-    public static String PA_LBL_TOOLTIP_TEST_CASE_TEST_DATA_ONLY;
+    public static String PA_LBL_TOOLTIP_RETRY_ALL_EXECUTIONS;
+
+    public static String PA_LBL_RETRY_IMMEDIATELY;
+
+    public static String PA_LBL_TOOLTIP_RETRY_IMMEDIATELY;
 
     static {
         // initialize resource bundle
