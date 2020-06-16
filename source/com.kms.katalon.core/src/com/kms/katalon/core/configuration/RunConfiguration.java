@@ -124,7 +124,9 @@ public class RunConfiguration {
     
     public static final String VM_ARGUMENTS = "vmArguments";
     
-    public static final String TC_BINDINGS_OF_FAILED_TEST_CASES = "currentFailedTcBindings";
+    public static final String TC_RETRY_FAILED_EXECUTIONS_ONLY = "retryFailedExecutionsOnlyTcBinding";
+    
+    public static final String TC_RETRY_IMMEDIATELY_BINDINGS = "retryImmediatelyTcBinding";
     
     private static String settingFilePath;
 

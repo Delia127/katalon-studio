@@ -279,6 +279,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
 
+    public static String MSG_REQUEST_BODY_NO_CONTENT;
+
     public static String DIA_TITLE_TEST_CASE_BROWSER;
 
     public static String TITLE_QUICKSTART;

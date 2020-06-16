@@ -69,7 +69,7 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
                         String itemText = getItemText(items[i]);
                         if (itemText.length() >= contents.length()
                                 && itemText.substring(0, contents.length()).equalsIgnoreCase(contents)) {
-                            list.add(new ContentProposal(itemText, toolTips[i]));
+                            list.add(new KeywordContentProposal(itemText, toolTips[i], items[i]));
                         }
                     }
                     return list.toArray(new IContentProposal[list.size()]);

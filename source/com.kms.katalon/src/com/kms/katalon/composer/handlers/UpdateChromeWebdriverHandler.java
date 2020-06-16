@@ -17,6 +17,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class UpdateChromeWebdriverHandler {
 
@@ -42,7 +43,7 @@ public class UpdateChromeWebdriverHandler {
             }
         };
         installationManager.appendStep(installationStep);
-
+        Trackings.trackUseAutoUpdateChromeDriver();
         try {
             installationManager.startInstallation();
         } catch (InvocationTargetException error) {

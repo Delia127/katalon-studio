@@ -353,7 +353,7 @@ public class ConsoleMain {
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());
             return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtil.printErrorLine(ExceptionUtils.getStackTrace(e));
             return LauncherResult.RETURN_CODE_ERROR;
         } finally {

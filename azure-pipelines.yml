@@ -135,7 +135,7 @@ stages:
         awsSubCommand: 'cp'
         awsArguments: '$(TMP_DIR)/update/$(TAG)/ s3://katalon/update/$(TAG) --recursive --acl public-read'
       displayName: Upload Update Package
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.WITH_UPDATE, 'true')
 
     - bash: |
         rm -rf $(TMP_DIR)/update/$(TAG)
