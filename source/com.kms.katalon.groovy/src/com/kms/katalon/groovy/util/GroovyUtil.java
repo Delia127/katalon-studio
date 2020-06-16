@@ -378,6 +378,7 @@ public class GroovyUtil {
 
         if (isStartFromEclipseIDE()) {
             addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.entity"), allowSourceAttachment);
+            addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("org.eclipse.core.commands"), allowSourceAttachment);
         }
 
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {

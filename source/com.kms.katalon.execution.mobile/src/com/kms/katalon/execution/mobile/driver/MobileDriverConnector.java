@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.appium.constants.AppiumLogLevel;
 import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;
@@ -59,7 +60,10 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
     }
 
     private String getAppiumLogLevel() {
-        return getMobilePreferenceStore().getString(MobilePreferenceConstants.MOBILE_APPIUM_LOG_LEVEL);
+        String appiumLogLevel = getMobilePreferenceStore().getString(MobilePreferenceConstants.MOBILE_APPIUM_LOG_LEVEL);
+        return StringUtils.isNotBlank(appiumLogLevel)
+                ? appiumLogLevel
+                : AppiumLogLevel.INFO;
     }
 
     private ScopedPreferenceStore getMobilePreferenceStore() {
