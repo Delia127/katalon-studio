@@ -102,7 +102,8 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
                         this);
                 for (Method currentMethod : pair.getValue()) {
                     keywordFolder.children.add(new KeywordBrowserTreeEntity(CUSTOM_KEYWORD_CLASS_NAME,
-                            CUSTOM_KEYWORD_CLASS_NAME, currentMethod.getName(), true, keywordFolder));
+                            CUSTOM_KEYWORD_CLASS_NAME, "'" + currentMethod.getDeclaringClass().getName() + "."
+                                    + currentMethod.getName() + "'", currentMethod.getParameterTypes(), true, keywordFolder));
                 }
 
                 Collections.sort(keywordFolder.children, new Comparator<IKeywordBrowserTreeEntity>() {

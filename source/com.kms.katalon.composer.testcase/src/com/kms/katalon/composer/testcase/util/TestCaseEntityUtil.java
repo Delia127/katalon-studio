@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
@@ -96,8 +97,17 @@ public class TestCaseEntityUtil {
     }
     
     private static Map<String, Map<String, String>> keywordMethodJavaDocMap;
+    
+    public static String getBuiltinKeywordJavadocText(String keywordClassName, String keywordName) {
+        Map<String, String> javadocsByMethods = getKeywordMethodJavaDocMap().get(keywordClassName);
+        if (javadocsByMethods == null) {
+            return "";
+        }
+        
+        return StringUtils.defaultIfBlank(javadocsByMethods.get(keywordName), "");  
+    }
 
-    public static Map<String, Map<String, String>> getKeywordMethodJavaDocMap() {
+    private static Map<String, Map<String, String>> getKeywordMethodJavaDocMap() {
         if (keywordMethodJavaDocMap == null || reloadJavaDoc) {
             initKeywordJavaDocMap();
         }
@@ -161,14 +171,6 @@ public class TestCaseEntityUtil {
             return findBuiltinMethods(javaProject.findType(type.getSuperclassName()), methodName, javaProject);
         }
         return null;
-    }
-
-    public static String getKeywordJavaDocText(String keywordClassName, String methodName) {
-        Map<String, String> keywordClassMethodJavaDocMap = getKeywordMethodJavaDocMap().get(keywordClassName);
-        if (keywordClassMethodJavaDocMap == null || keywordClassMethodJavaDocMap.get(methodName) == null) {
-            return "";
-        }
-        return keywordClassMethodJavaDocMap.get(methodName);
     }
 
     /**
