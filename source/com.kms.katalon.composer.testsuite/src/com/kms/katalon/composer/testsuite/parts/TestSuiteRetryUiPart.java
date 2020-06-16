@@ -67,14 +67,10 @@ public class TestSuiteRetryUiPart {
      * This method must be called after {@link TestSuiteRetryUiPart#createRetryComposite(Composite)}
      * in order to register control listeners
      */
-    public void registerRetryControlListeners() {        
-        if (getTestSuite() == null) {
-            return;
-        }
-        
+    public void registerRetryControlListeners() {
         addNumberVerification(txtRetryAfterExecuteAll, MIN_RETRY, MAX_RETRY);
         addNumberVerification(txtRetryImmediately, MIN_RETRY, MAX_RETRY);
-        
+
         radioBtnRetryImmediately.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -136,9 +132,9 @@ public class TestSuiteRetryUiPart {
                 setDirty(true);
             }
         });
-        
+
         MouseListener openDocsMouseHandler = new MouseListener() {
-            
+
             @Override
             public void mouseUp(MouseEvent e) {
                 Program.launch(RETRY_DOCS_URL);
@@ -149,13 +145,13 @@ public class TestSuiteRetryUiPart {
             public void mouseDown(MouseEvent e) {
                 // Do nothing
             }
-            
+
             @Override
             public void mouseDoubleClick(MouseEvent e) {
                 // Do nothing
             }
         };
-        
+
         linkToRetryDocs1.addMouseListener(openDocsMouseHandler);
         linkToRetryDocs2.addMouseListener(openDocsMouseHandler);
     }
