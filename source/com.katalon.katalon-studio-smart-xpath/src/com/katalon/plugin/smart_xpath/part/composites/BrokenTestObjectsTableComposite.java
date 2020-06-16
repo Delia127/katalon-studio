@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TypedListener;
 
@@ -46,6 +47,10 @@ public class BrokenTestObjectsTableComposite extends Composite {
     private final int APRROVE_COLUMN_INDEX = 5;
 
     private ProjectEntity project;
+
+    private boolean acceptAll = true;
+
+    private TableColumn cApproveNewLocator;
 
     public ProjectEntity getProject() {
         return project;
@@ -90,18 +95,9 @@ public class BrokenTestObjectsTableComposite extends Composite {
                 if (event.index == APRROVE_COLUMN_INDEX) {
                     BrokenTestObject data = (BrokenTestObject) ((TableItem) event.item).getData();
                     Image tmpImage = getCheckboxSymbol(data.getApproved());
-                    int tmpWidth = 0;
-                    int tmpHeight = 0;
-                    int tmpX = 0;
-                    int tmpY = 0;
 
-                    tmpWidth = table.getColumn(event.index).getWidth();
-                    tmpHeight = ((TableItem) event.item).getBounds().height;
-
-                    tmpX = tmpImage.getBounds().width;
-                    tmpX = (tmpWidth / 2 - tmpX / 2);
-                    tmpY = tmpImage.getBounds().height;
-                    tmpY = (tmpHeight / 2 - tmpY / 2);
+                    int tmpX = tmpImage.getBounds().x + 5;
+                    int tmpY = tmpImage.getBounds().y;
                     if (tmpX <= 0)
                         tmpX = event.x;
                     else tmpX += event.x;
@@ -217,7 +213,9 @@ public class BrokenTestObjectsTableComposite extends Composite {
         });
 
         TableViewerColumn colApproveNewLocator = new TableViewerColumn(tbViewer, SWT.NONE);
-        colApproveNewLocator.getColumn().setText(SmartXPathMessageConstants.LBL_COL_APPROVE);
+        cApproveNewLocator = colApproveNewLocator.getColumn();
+        cApproveNewLocator.setText(SmartXPathMessageConstants.LBL_COL_APPROVE);
+        setAcceptAllBrokenTestObjectsImage(acceptAll);
         colApproveNewLocator.setLabelProvider(new CellLabelProvider() {
             @Override
             public void update(ViewerCell cell) {
@@ -236,19 +234,47 @@ public class BrokenTestObjectsTableComposite extends Composite {
                 super.setValue(element, value);
                 tbViewer.update(element, null);
                 handleSelectionChange(null);
+                if (!(boolean) value) {
+                    acceptAll = false;
+                    setAcceptAllBrokenTestObjectsImage(acceptAll);
+                }
             }
         });
 
-        tableColumnLayout.setColumnData(colObjectId.getColumn(), new ColumnWeightData(40, 100));
+        cApproveNewLocator.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                toggleAcceptAllBrokenTestObjects();
+            }
+        });
+
+        tableColumnLayout.setColumnData(colObjectId.getColumn(), new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(colBrokenLocator.getColumn(), new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(colProposedLocator.getColumn(), new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(colRecoveredBy.getColumn(), new ColumnWeightData(7, 90));
         tableColumnLayout.setColumnData(colScreenshot.getColumn(), new ColumnWeightData(5, 70));
-        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(4, 60));
+        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(7, 90));
+    }
+
+    public boolean toggleAcceptAllBrokenTestObjects() {
+        acceptAll = !acceptAll;
+        Set<BrokenTestObject> brokenTestObjects = this.getInput();
+        for (BrokenTestObject element : brokenTestObjects) {
+            element.setApproved(acceptAll);
+        }
+        setAcceptAllBrokenTestObjectsImage(acceptAll);
+        this.setInput(brokenTestObjects);
+        return acceptAll;
+    }
+    
+    private void setAcceptAllBrokenTestObjectsImage(boolean value) {
+        Image toggleApproveAllImage = getCheckboxSymbol(value);
+        cApproveNewLocator.setImage(toggleApproveAllImage);
     }
 
     protected Image getCheckboxSymbol(boolean isChecked) {
-        return isChecked ? ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16)
+        return isChecked
+                ? ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16)
                 : ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
     }
 
@@ -286,7 +312,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<BrokenTestObject> getApprovedTestObjects() {
+    public Set<BrokenTestObject> getSelectedTestObjects() {
         Set<BrokenTestObject> brokenTestObjects = (Set<BrokenTestObject>) tbViewer.getInput();
         return brokenTestObjects.stream()
                 .filter(brokenTestObject -> brokenTestObject.getApproved())
@@ -294,7 +320,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<BrokenTestObject> getUnapprovedTestObjects() {
+    public Set<BrokenTestObject> getDeselectedTestObjects() {
         Set<BrokenTestObject> brokenTestObjects = (Set<BrokenTestObject>) tbViewer.getInput();
         return brokenTestObjects.stream()
                 .filter(brokenTestObject -> !brokenTestObject.getApproved())

@@ -75,7 +75,7 @@ public class SmartXPathMessageConstants extends NLS {
 
     public static String BTN_APPROVE_PROPOSED_LOCATORS;
 
-    public static String BTN_DISCARD_ALL_PROPOSED_LOCATORS;
+    public static String BTN_DISCARD_PROPOSED_LOCATORS;
 
     public static String MSG_RECOVER_BROKEN_TEST_OBJECTS_SUCCEEDED_SINGULAR;
 

@@ -119,21 +119,21 @@ public class SelfHealingInsightsPart implements EventHandler {
         toolbarComposite.addApproveListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                Set<BrokenTestObject> approvedBrokenTestObjects = brokenTestObjectsTableComposite
-                        .getApprovedTestObjects();
-                int numApprovedTestObjects = approvedBrokenTestObjects.size();
+                Set<BrokenTestObject> selectedBrokenTestObjects = brokenTestObjectsTableComposite
+                        .getSelectedTestObjects();
+                int numSelectedTestObjects = selectedBrokenTestObjects.size();
                 AutoHealingController.autoHealBrokenTestObjects(Display.getCurrent().getActiveShell(),
-                        approvedBrokenTestObjects);
+                        selectedBrokenTestObjects);
 
                 ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                Set<BrokenTestObject> unapprovedBrokenTestObjects = brokenTestObjectsTableComposite
-                        .getUnapprovedTestObjects();
+                Set<BrokenTestObject> deselectedBrokenTestObjects = brokenTestObjectsTableComposite
+                        .getDeselectedTestObjects();
                 BrokenTestObjects brokenTestObjects = new BrokenTestObjects();
-                brokenTestObjects.setBrokenTestObjects(unapprovedBrokenTestObjects);
+                brokenTestObjects.setBrokenTestObjects(deselectedBrokenTestObjects);
                 AutoHealingController.writeBrokenTestObjects(brokenTestObjects, currentProject);
 
                 refresh();
-                toolbarComposite.notifyRecoverSucceeded(numApprovedTestObjects);
+                toolbarComposite.notifyRecoverSucceeded(numSelectedTestObjects);
             }
         });
 
@@ -141,11 +141,14 @@ public class SelfHealingInsightsPart implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+                Set<BrokenTestObject> deselectedBrokenTestObjects = brokenTestObjectsTableComposite
+                        .getDeselectedTestObjects();
                 BrokenTestObjects brokenTestObjects = new BrokenTestObjects();
+                brokenTestObjects.setBrokenTestObjects(deselectedBrokenTestObjects);
                 AutoHealingController.writeBrokenTestObjects(brokenTestObjects, currentProject);
 
                 refresh();
-                toolbarComposite.clearStatusMessage();
+//                toolbarComposite.clearStatusMessage();
             }
         });
 

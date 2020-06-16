@@ -85,7 +85,7 @@ public class SelfHealingToolbarComposite extends Composite {
 
     protected Button createDiscardButton(Composite buttonsComposite) {
         Button btnDiscard = new Button(buttonsComposite, SWT.PUSH);
-        btnDiscard.setText(SmartXPathMessageConstants.BTN_DISCARD_ALL_PROPOSED_LOCATORS);
+        btnDiscard.setText(SmartXPathMessageConstants.BTN_DISCARD_PROPOSED_LOCATORS);
         return btnDiscard;
     }
 
