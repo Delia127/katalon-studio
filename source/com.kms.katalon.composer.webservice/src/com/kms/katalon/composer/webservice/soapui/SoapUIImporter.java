@@ -33,10 +33,10 @@ import com.kms.katalon.entity.folder.FolderEntity;
 public class SoapUIImporter {
 
     public SoapUIProjectImportResult importServices(String projectFilePath, FolderEntity rootFolder) throws Exception {
-        Preconditions.checkNotNull(projectFilePath);
+        Preconditions.checkNotNull(projectFilePath, "SoapUI project file path must not be null or empty.");
         File projectFile = new File(projectFilePath);
-        Preconditions.checkArgument(projectFile.exists());
-        Preconditions.checkNotNull(rootFolder);
+        Preconditions.checkArgument(projectFile.exists(), "SoapUI project file does not exist.");
+        Preconditions.checkNotNull(rootFolder, "Root folder must not be null.");
 
         SoapuiProjectDocument projectDocument = SoapuiProjectDocument.Factory.parse(projectFile);
         Project project = projectDocument.getSoapuiProject();

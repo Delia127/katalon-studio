@@ -104,7 +104,7 @@ public class ImportWebServicesPopupMenuContribution {
     
     private MDirectMenuItem getSoapUIMenu() {
         MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
-        dynamicItem.setLabel("From SoapUI");
+        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }

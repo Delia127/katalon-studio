@@ -88,6 +88,12 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
 
         return composite;
     }
+    
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        super.createButtonsForButtonBar(parent);
+        getButton(IDialogConstants.OK_ID).setEnabled(false);
+    }
 
     @Override
     protected void registerControlModifyListeners() {
@@ -144,13 +150,12 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
                     }
                 }
             });
-
+            super.okPressed();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
                     ComposerWebserviceMessageConstants.ERROR_MSG_FAIL_TO_IMPORT_SOAPUI);
-        }
-        super.okPressed();
+        } 
     }
 
     private void importRestServicesFromSoapUI() throws Exception {

@@ -60,6 +60,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+    
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI;
 
     public static String PA_TITLE_HTTP;
 
