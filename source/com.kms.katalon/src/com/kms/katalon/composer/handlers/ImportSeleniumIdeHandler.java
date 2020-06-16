@@ -33,6 +33,7 @@ import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.project.constants.StringConstants;
@@ -126,31 +127,60 @@ public class ImportSeleniumIdeHandler {
     }
 
     private void createTests(ParsedResult result) throws Exception {
-        FolderEntity testSuiteParentFolderEntity = newGetOrCreateFolder(IMPORTED_FOLDER_NAME,
-                testSuiteTreeRoot.getObject());
-        FolderEntity testCaseParentFolderEntity = newGetOrCreateFolder(IMPORTED_FOLDER_NAME,
-                testCaseTreeRoot.getObject());
-        for (TestSuite ts : result.getTestSuites())
-            createTestSuite(ts, testSuiteParentFolderEntity, testCaseParentFolderEntity);
-        createTestCases(null, result.getTestCases(), testCaseParentFolderEntity);
+        Map<String, String> createdTestCaseIds = new HashMap<>();
+
+        if (!result.getTestCases().isEmpty()) {
+            FolderEntity testCaseParentFolderEntity = newGetOrCreateFolder(IMPORTED_FOLDER_NAME,
+                    testCaseTreeRoot.getObject());
+            for (TestCase tc : result.getTestCases()) {
+                createTestCase(tc, testCaseParentFolderEntity, result.getMonoSuiteTests(), createdTestCaseIds);
+            }
+        }
+
+        if (!result.getTestSuites().isEmpty()) {
+            FolderEntity testSuiteParentFolderEntity = newGetOrCreateFolder(IMPORTED_FOLDER_NAME,
+                    testSuiteTreeRoot.getObject());
+            for (TestSuite ts : result.getTestSuites()) {
+                createTestSuite(ts, testSuiteParentFolderEntity, createdTestCaseIds);
+            }
+        }
+    }
+
+    private void createTestCase(TestCase testCase, FolderEntity importTestCaseFolder,
+            Map<String, String> monoSuiteTests, Map<String, String> createdTestCaseIds) throws Exception {
+        String id = testCase.getId();
+        if (monoSuiteTests.get(id) != null) {
+            importTestCaseFolder = getOrCreateFolder(monoSuiteTests.get(id), importTestCaseFolder);
+        }
+        TestCaseEntity testCaseEntity = createTestCaseEntity(testCase, importTestCaseFolder);
+        createdTestCaseIds.put(id, testCaseEntity.getIdForDisplay());
     }
 
     private void createTestSuite(TestSuite testSuite, FolderEntity testSuiteParentFolderEntity,
-            FolderEntity testCaseParentFolderEntity) throws Exception {
-        if (testSuite == null) {
-            return;
-        }
+            Map<String, String> createdTestCaseIds) throws Exception {
         TestSuiteController tsController = TestSuiteController.getInstance();
-
         TestSuiteEntity testSuiteEntity = tsController.newTestSuiteWithoutSave(testSuiteParentFolderEntity,
                 testSuite.getName());
-        testSuiteEntity = tsController.saveNewTestSuite(testSuiteEntity);
 
-        createTestCases(testSuiteEntity, testSuite.getTestCases(), testCaseParentFolderEntity);
+        if (!testSuite.getTests().isEmpty()) {
+            List<TestSuiteTestCaseLink> testSuiteTestCaseLinks = new ArrayList<>();
+            testSuite.getTests().forEach(id -> {
+                TestSuiteTestCaseLink testSuiteTestCaseLink = new TestSuiteTestCaseLink();
+                testSuiteTestCaseLink.setTestCaseId(createdTestCaseIds.get(id));
+                testSuiteTestCaseLinks.add(testSuiteTestCaseLink);
+            });
+            testSuiteEntity.setTestSuiteTestCaseLinks(testSuiteTestCaseLinks);
+        }
+
+        tsController.saveNewTestSuite(testSuiteEntity);
 
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteTreeRoot);
-        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
-                new TestSuiteTreeEntity(testSuiteEntity, testSuiteTreeRoot));
+        try {
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
+                    TreeEntityUtil.getTestSuiteTreeEntity(testSuiteEntity, testSuiteEntity.getProject()));
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
         eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
     }
 
@@ -194,34 +224,6 @@ public class ImportSeleniumIdeHandler {
             testSuiteEntity.setTestSuiteTestCaseLinks(testSuiteTestCaseLinks);
             tsController.updateTestSuite(testSuiteEntity);
             eventBroker.send(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
-        }
-    }
-
-    private void createTestCases(TestSuiteEntity testSuiteEntity, List<TestCase> testCases,
-            FolderEntity importTestCaseFolder) throws Exception {
-        if (testSuiteEntity != null) {
-            importTestCaseFolder = createImportTestCaseFolderEntity(testSuiteEntity.getName(), importTestCaseFolder);
-        }
-        if (!testCases.isEmpty()) {
-
-            List<TestSuiteTestCaseLink> testSuiteTestCaseLinks = new ArrayList<>();
-            for (TestCase testCase : testCases) {
-
-                TestCaseEntity testCaseEntity = createTestCaseEntity(testCase, importTestCaseFolder);
-
-                if (testSuiteEntity != null) {
-                    TestSuiteTestCaseLink testSuiteTestCaseLink = new TestSuiteTestCaseLink();
-                    testSuiteTestCaseLink.setTestCaseId(testCaseEntity.getIdForDisplay());
-                    testSuiteTestCaseLinks.add(testSuiteTestCaseLink);
-                }
-            }
-
-            TestSuiteController tsController = TestSuiteController.getInstance();
-            if (testSuiteEntity != null) {
-                testSuiteEntity.setTestSuiteTestCaseLinks(testSuiteTestCaseLinks);
-                tsController.updateTestSuite(testSuiteEntity);
-                eventBroker.send(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
-            }
         }
     }
 
@@ -298,11 +300,6 @@ public class ImportSeleniumIdeHandler {
 
     private FolderEntity createImportTestCaseFolderEntity(String testCaseFolderName) throws Exception {
         FolderEntity parentFolderEntity = getOrCreateFolder(IMPORTED_FOLDER_NAME, testCaseTreeRoot.getObject());
-        return FolderController.getInstance().addNewFolder(parentFolderEntity, testCaseFolderName);
-    }
-
-    private FolderEntity createImportTestCaseFolderEntity(String testCaseFolderName, FolderEntity parentFolderEntity)
-            throws Exception {
         return FolderController.getInstance().addNewFolder(parentFolderEntity, testCaseFolderName);
     }
 

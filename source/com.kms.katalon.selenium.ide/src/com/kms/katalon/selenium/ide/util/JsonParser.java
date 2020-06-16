@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -19,43 +18,34 @@ public final class JsonParser {
     public static ParsedResult parse(File file) {
         String projectJsonContent = FileUtils.readFileToString(file.toPath());
         JsonObject convertedProject = JsonUtil.fromJson(projectJsonContent, JsonObject.class);
-        JsonArray testSuiteJsonArray = convertedProject.getAsJsonArray("suites");
 
         Type testCaseListType = new TypeToken<ArrayList<TestCase>>() {
         }.getType();
         List<TestCase> testCases = JsonUtil.fromJson(convertedProject.get("tests").toString(), testCaseListType);
         String baseUrl = convertedProject.get("url").getAsString();
 
-        Map<String, TestCase> testCaseMap = new HashMap<>();
+        Type testSuiteListType = new TypeToken<ArrayList<TestSuite>>() {
+        }.getType();
+        List<TestSuite> testSuites = JsonUtil.fromJson(convertedProject.get("suites").toString(), testSuiteListType);
+
+        Map<String, String> monoSuiteTests = new HashMap<>();
+        testSuites.forEach(ts -> {
+            ts.setName(toValidFileName(ts.getName()));
+            ts.getTests().forEach(id -> {
+                if (!monoSuiteTests.containsKey(id))
+                    monoSuiteTests.put(id, ts.getName());
+                else if (monoSuiteTests.get(id) != null)
+                    monoSuiteTests.put(id, null); // already existed in a suite
+            });
+        });
+
         testCases.forEach(tc -> {
-            testCaseMap.put(tc.getId(), tc);
             tc.setBaseUrl(baseUrl);
             tc.setName(toValidFileName(tc.getName()));
             tc.setFilePath(file.getAbsolutePath());
         });
 
-        List<TestSuite> testSuites = new ArrayList<>();
-        testSuiteJsonArray.forEach(ts -> {
-            TestSuite testSuite = parseTestSuite((JsonObject) ts, testCaseMap);
-            testSuites.add(testSuite);
-        });
-
-        return new ParsedResult(testSuites, new ArrayList<TestCase>(testCaseMap.values()));
-    }
-
-    private static TestSuite parseTestSuite(JsonObject testSuiteJsonObject, Map<String, TestCase> testCaseMap) {
-        JsonArray testIds = testSuiteJsonObject.getAsJsonArray("tests");
-        List<TestCase> testCases = new ArrayList<>();
-        testIds.forEach(id -> {
-            TestCase tc = testCaseMap.remove(id.getAsString());
-            testCases.add(tc);
-        });
-
-        TestSuite testSuite = new TestSuite();
-        testSuite.setName(toValidFileName(testSuiteJsonObject.get("name").getAsString()));
-        testSuite.setTestCases(testCases);
-
-        return testSuite;
+        return new ParsedResult(testSuites, testCases, monoSuiteTests);
     }
 
     private static String toValidFileName(String fileName) {

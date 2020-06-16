@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -25,30 +26,31 @@ public class JsonParserTest {
         ParsedResult result = JsonParser.parse(seleniumIdeV3File);
         List<TestSuite> testSuites = result.getTestSuites();
         List<TestCase> testCases = result.getTestCases();
+        Map<String, String> monoSuiteTests = result.getMonoSuiteTests();
 
         assertEquals(testSuites.size(), 1);
-        assertEquals(testCases.size(), 1);
+        assertEquals(testCases.size(), 2);
+        assertEquals(monoSuiteTests.size(), 1);
 
-        TestSuite ts = testSuites.get(0);
-        assertEquals(ts.getName(), "Default Suite");
-        List<TestCase> tcs = ts.getTestCases();
-        assertEquals(tcs.size(), 1);
+        TestSuite testSuite = testSuites.get(0);
+        assertEquals(testSuite.getName(), "Default Suite");
+        List<String> testIds = testSuite.getTests();
+        assertEquals(testIds.size(), 1);
+        String testId = testIds.get(0);
+        assertEquals(testId, "8e1e0cb5-1a26-4ad2-b337-2033a48ac9ad");
+        assertEquals(monoSuiteTests.get("8e1e0cb5-1a26-4ad2-b337-2033a48ac9ad"), "Default Suite");
 
-        TestCase tc = tcs.get(0);
-        assertEquals(tc.getName(), "Test Case 1");
-        assertEquals(tc.getBaseUrl(), "https://katalon-demo-cura.herokuapp.com");
-        assertEquals(tc.getFilePath(), seleniumIdeV3File.getAbsolutePath());
-
-        List<Command> cmds = tc.getCommands();
+        TestCase testCase = testCases.get(0);
+        assertEquals(testCase.getName(), "Test Case 1");
+        assertEquals(testCase.getBaseUrl(), "https://katalon-demo-cura.herokuapp.com");
+        assertEquals(testCase.getFilePath(), seleniumIdeV3File.getAbsolutePath());
+        List<Command> cmds = testCase.getCommands();
         assertEquals(cmds.size(), 11);
         Command cmd = cmds.get(0);
         assertEquals(cmd.getCommand(), "open");
         assertEquals(cmd.getComment(), "open demo app");
         assertEquals(cmd.getTarget(), "/");
         assertEquals(cmd.getValue(), "");
-
-        TestCase tc2 = testCases.get(0);
-        assertEquals(tc2.getName(), "Test Case 2");
     }
 
     private File getFile(String path) throws IOException {
