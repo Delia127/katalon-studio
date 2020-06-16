@@ -252,7 +252,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
         tableColumnLayout.setColumnData(colProposedLocator.getColumn(), new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(colRecoveredBy.getColumn(), new ColumnWeightData(7, 90));
         tableColumnLayout.setColumnData(colScreenshot.getColumn(), new ColumnWeightData(5, 70));
-        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(5, 20));
+        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(3, 30));
     }
 
     public boolean toggleAcceptAllBrokenTestObjects() {
