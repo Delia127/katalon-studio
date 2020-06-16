@@ -48,7 +48,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
 
     private ProjectEntity project;
 
-    private boolean acceptAll = true;
+    private boolean acceptAll = false;
 
     private TableColumn cApproveNewLocator;
 
@@ -214,7 +214,6 @@ public class BrokenTestObjectsTableComposite extends Composite {
 
         TableViewerColumn colApproveNewLocator = new TableViewerColumn(tbViewer, SWT.NONE);
         cApproveNewLocator = colApproveNewLocator.getColumn();
-        cApproveNewLocator.setText(SmartXPathMessageConstants.LBL_COL_APPROVE);
         setAcceptAllBrokenTestObjectsImage(acceptAll);
         colApproveNewLocator.setLabelProvider(new CellLabelProvider() {
             @Override
@@ -253,7 +252,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
         tableColumnLayout.setColumnData(colProposedLocator.getColumn(), new ColumnWeightData(30, 100));
         tableColumnLayout.setColumnData(colRecoveredBy.getColumn(), new ColumnWeightData(7, 90));
         tableColumnLayout.setColumnData(colScreenshot.getColumn(), new ColumnWeightData(5, 70));
-        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(7, 90));
+        tableColumnLayout.setColumnData(colApproveNewLocator.getColumn(), new ColumnWeightData(5, 20));
     }
 
     public boolean toggleAcceptAllBrokenTestObjects() {

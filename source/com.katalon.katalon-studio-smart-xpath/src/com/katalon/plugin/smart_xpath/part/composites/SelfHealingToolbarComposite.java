@@ -111,6 +111,12 @@ public class SelfHealingToolbarComposite extends Composite {
         setSuccessMessage(SmartXPathMessageConstants.MSG_RECOVER_BROKEN_TEST_OBJECTS_FAILED);
     }
 
+    public void notifyDiscardSucceeded(int numberDiscarded) {
+        setSuccessMessage(MessageFormat.format(numberDiscarded == 1
+                ? SmartXPathMessageConstants.MSG_DISCARD_BROKEN_TEST_OBJECTS_SUCCEEDED_SINGULAR
+                : SmartXPathMessageConstants.MSG_DISCARD_BROKEN_TEST_OBJECTS_SUCCEEDED_PLURAL, numberDiscarded));
+    }
+
     public void clearStatusMessage() {
         lblHealingStatus.setText(StringUtils.EMPTY);
         lblHealingStatus.requestLayout();

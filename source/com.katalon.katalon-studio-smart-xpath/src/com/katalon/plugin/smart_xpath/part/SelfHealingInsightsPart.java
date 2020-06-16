@@ -16,8 +16,8 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
-import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,6 +29,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
+import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.controller.AutoHealingController;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
@@ -55,7 +56,7 @@ public class SelfHealingInsightsPart implements EventHandler {
     protected SelfHealingToolbarComposite toolbarComposite;
 
     private FileWatcher dataWatcher;
-    
+
     private static SelfHealingInsightsPart prevInstance;
 
     private final static String ICON_URI_FOR_PART = "IconUriForPart";
@@ -140,15 +141,27 @@ public class SelfHealingInsightsPart implements EventHandler {
         toolbarComposite.addDiscardListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                Set<BrokenTestObject> deselectedBrokenTestObjects = brokenTestObjectsTableComposite
-                        .getDeselectedTestObjects();
-                BrokenTestObjects brokenTestObjects = new BrokenTestObjects();
-                brokenTestObjects.setBrokenTestObjects(deselectedBrokenTestObjects);
-                AutoHealingController.writeBrokenTestObjects(brokenTestObjects, currentProject);
+                Set<BrokenTestObject> selectedBrokenTestObjects = brokenTestObjectsTableComposite
+                        .getSelectedTestObjects();
+                int numSelectedTestObjects = selectedBrokenTestObjects.size();
+                if (numSelectedTestObjects > 0) {
+                    toolbarComposite.clearStatusMessage();
+                    boolean isOK = MessageDialog.openQuestion(parent.getShell(),
+                            SmartXPathConstants.SELF_HEALING_INSIGHTS_PART_LABEL,
+                            MessageFormat.format(SmartXPathMessageConstants.MSG_DISCARD_BROKEN_TEST_OBJECT_DIALOG,
+                                    numSelectedTestObjects));
+                    if (isOK) {
+                        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+                        Set<BrokenTestObject> deselectedBrokenTestObjects = brokenTestObjectsTableComposite
+                                .getDeselectedTestObjects();
+                        BrokenTestObjects brokenTestObjects = new BrokenTestObjects();
+                        brokenTestObjects.setBrokenTestObjects(deselectedBrokenTestObjects);
+                        AutoHealingController.writeBrokenTestObjects(brokenTestObjects, currentProject);
 
-                refresh();
-//                toolbarComposite.clearStatusMessage();
+                        refresh();
+                        toolbarComposite.notifyDiscardSucceeded(numSelectedTestObjects);
+                    }
+                }
             }
         });
 
