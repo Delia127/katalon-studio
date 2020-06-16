@@ -265,7 +265,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
         this.setInput(brokenTestObjects);
         return acceptAll;
     }
-    
+
     private void setAcceptAllBrokenTestObjectsImage(boolean value) {
         Image toggleApproveAllImage = getCheckboxSymbol(value);
         cApproveNewLocator.setImage(toggleApproveAllImage);
