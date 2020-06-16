@@ -306,7 +306,7 @@ public class TestSuiteRetryUiPart {
         String immediately = txtRetryImmediately.getText();
         String afterExecuteAll = txtRetryAfterExecuteAll.getText();
         if (radioBtnRetryAfterExecuteAll.getSelection()) {
-            return Integer.valueOf("".equals(afterExecuteAll) ? "0" : immediately);
+            return Integer.valueOf("".equals(afterExecuteAll) ? "0" : afterExecuteAll);
         }
         return Integer.valueOf("".equals(immediately) ? "0" : immediately);
     }
