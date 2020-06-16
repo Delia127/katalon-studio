@@ -331,6 +331,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String ImportSoapUIRestServicesDialog_MSG_IMPORT_REST_SERVICES_FROM_SOAPUI_PROJECT;
 
+    public static String ImportSoapUIRestServicesDialog_MSG_IMPORTING_FROM_SOAPUI;
+
     public static String ERROR_MSG_FAIL_TO_IMPORT_SOAPUI;
 
     public static String PREF_WARN_CLIENT_CERT;
