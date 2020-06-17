@@ -5,7 +5,7 @@ from build_utils import write_file, read_file
 
 def get_version(branch):
     p = Properties()
-    p.load(open("source/com.kms.katalon/about.mappings"))
+    p.load(open("source/com.kms.katalon.application/about.mappings"))
 
     version = p['1']
     print("Version", version)
