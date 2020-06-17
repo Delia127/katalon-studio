@@ -91,5 +91,5 @@ Export-Package: com.kms.katalon.composer.webservice.constants,
  com.kms.katalon.composer.webservice.editor,
  com.kms.katalon.composer.webservice.parser
 Bundle-ClassPath: .,
- resources/lib/soapui.jar,
- resources/lib/xmlbeans-3.1.0.jar
+ resources/lib/xmlbeans-3.1.0.jar,
+ resources/lib/su.jar
