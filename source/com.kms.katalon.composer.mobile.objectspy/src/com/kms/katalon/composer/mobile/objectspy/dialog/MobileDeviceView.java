@@ -256,11 +256,13 @@ public class MobileDeviceView {
                     }
     
                     // Calculate scaled ratio
-    
+                    double imageRatio = rootHeight / (double) img.getBounds().height;
+
                     hRatio = (double) (canvas.getSize().y / rootHeight);
+                    
+                    currentScreenShot = scaleImage(img, ((double) img.getBounds().width) * imageRatio * hRatio,
+                            ((double) img.getBounds().height) * hRatio * imageRatio);
                 });
-    
-                currentScreenShot = scaleImage(img, ((double) img.getBounds().width) * hRatio, ((double) img.getBounds().height) * hRatio);
             }
 
             UISynchronizeService.asyncExec(new Runnable() {
