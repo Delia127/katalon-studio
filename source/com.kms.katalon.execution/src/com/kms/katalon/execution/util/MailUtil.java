@@ -4,9 +4,11 @@ import static org.apache.commons.lang.StringUtils.split;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -368,7 +370,7 @@ public class MailUtil {
             conf.setSkipInvidiualTestSuiteReport(store.isSkipInvidualTestSuiteReport());
 
             return conf;
-        } catch (Exception e) {
+        } catch (IOException | GeneralSecurityException | URISyntaxException e) {
             LogUtil.logError(e);
             return null;
         }

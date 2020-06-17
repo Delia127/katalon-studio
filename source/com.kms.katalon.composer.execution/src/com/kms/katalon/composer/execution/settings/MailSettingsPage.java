@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.settings;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.EmailConfig;
@@ -229,7 +231,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                     MailUtil.overrideEmailSettings(emailConfig,
                             GlobalVariableController.getInstance().getDefaultExecutionProfile(project));
                     emailConfig.setHtmTemplateForTestSuite(getSettingStore().getEmailHTMLTemplateForTestSuite());
-                } catch (Exception ex) {
+                } catch (ControllerException | IOException | URISyntaxException ex) {
                     LoggerSingleton.logError(ex);
                 }
                 sendTestEmail(emailConfig);
