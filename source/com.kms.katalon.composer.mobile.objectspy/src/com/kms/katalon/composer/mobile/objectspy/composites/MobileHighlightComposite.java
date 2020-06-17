@@ -89,7 +89,6 @@ public class MobileHighlightComposite {
                 displayWaitMessage(locator, locatorStrategyName);
             });
 
-            // TODO: Run searching task in another thread to prevent UI block
             try {
                 long startTime = System.currentTimeMillis();
                 List<WebElement> webElements = findElements(editingElement);
@@ -122,8 +121,6 @@ public class MobileHighlightComposite {
                 });
             } catch (Exception e) {
                 UISynchronizeService.syncExec(() -> {
-                    MultiStatusErrorDialog.showErrorDialog("Unable to highlight element!", e.getMessage(),
-                            ExceptionsUtil.getStackTraceForThrowable(e));
                     displayNotFoundMessage(locatorStrategyName, locator);
                 });
             } finally {

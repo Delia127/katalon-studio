@@ -257,6 +257,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
+
+    @Override
     protected void okPressed() {
         int recordedActionCount = getRecordedActions().size();
 
@@ -760,7 +766,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         @Override
         protected void createButtonsForButtonBar(Composite parent) {
-            createButton(parent, IDialogConstants.OK_ID, MobileRecoderMessagesConstants.BTN_APPLY_ACTION, true);
+            createButton(parent, IDialogConstants.OK_ID, MobileRecoderMessagesConstants.BTN_APPLY_ACTION, false);
             createButton(parent, IDialogConstants.CANCEL_ID, MobileRecoderMessagesConstants.BTN_CANCEL_ACTION, false);
         }
 
