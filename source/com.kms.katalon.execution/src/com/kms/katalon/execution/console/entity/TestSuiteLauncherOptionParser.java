@@ -30,6 +30,7 @@ import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.LauncherProviderFactory;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.execution.util.MailUtil;
 
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
     protected static final String EXECUTION_PROFILE_OPTION = "executionProfile";
@@ -258,7 +259,6 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         TestSuiteEntity testSuite = getTestSuite(project, testSuitePathOption.getValue());
         TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuite);
         executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
-        executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
         executedEntity.setRerunSetting(rerunSetting);
 
         if (testSuiteQuery.getValue() == null) {
@@ -280,6 +280,8 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             throw new ExecutionException(
                     MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
         }
+        executedEntity.setEmailConfig(
+                MailUtil.overrideEmailSettings(reportableSetting.getEmailConfig(project), executionProfile));
         runConfig.setExecutionProfile(executionProfile);
         runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
         runConfig.setExecutionUUID(executionUUIDOption.getValue());

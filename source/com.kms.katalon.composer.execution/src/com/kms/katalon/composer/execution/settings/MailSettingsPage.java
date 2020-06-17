@@ -45,8 +45,10 @@ import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageCons
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.ReportFormatType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.util.MailUtil;
@@ -220,9 +222,12 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 emailConfig.addRecipients(txtRecipients.getText());
                 emailConfig.setCc(txtCc.getText());
                 emailConfig.setBcc(txtBcc.getText());
+                emailConfig.setSubject(txtSubject.getText());
                 emailConfig.setAttachmentOptions(getSelectedAttachmentOptions());
                 try {
-                    emailConfig.setSubject(MailUtil.prepareSubject(txtSubject.getText()));
+                    ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+                    MailUtil.overrideEmailSettings(emailConfig,
+                            GlobalVariableController.getInstance().getDefaultExecutionProfile(project));
                     emailConfig.setHtmTemplateForTestSuite(getSettingStore().getEmailHTMLTemplateForTestSuite());
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
@@ -278,35 +283,35 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             }
         });
 
-        txtSender.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent arg0) {
-                setValidationAndEnableSendEmail("sender", validator.isValidEmail(txtSender.getText())); //$NON-NLS-1$
-            }
-        });
-
-        txtRecipients.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                setValidationAndEnableSendEmail("recipients", validator.isValidListEmail(txtRecipients.getText())); //$NON-NLS-1$
-            }
-        });
-
-        txtCc.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = txtCc.getText();
-                setValidationAndEnableSendEmail("cc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
-            }
-        });
-
-        txtBcc.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = txtBcc.getText();
-                setValidationAndEnableSendEmail("bcc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
-            }
-        });
+//        txtSender.addModifyListener(new ModifyListener() {
+//            @Override
+//            public void modifyText(ModifyEvent arg0) {
+//                setValidationAndEnableSendEmail("sender", validator.isValidEmail(txtSender.getText())); //$NON-NLS-1$
+//            }
+//        });
+//
+//        txtRecipients.addModifyListener(new ModifyListener() {
+//            @Override
+//            public void modifyText(ModifyEvent e) {
+//                setValidationAndEnableSendEmail("recipients", validator.isValidListEmail(txtRecipients.getText())); //$NON-NLS-1$
+//            }
+//        });
+//
+//        txtCc.addModifyListener(new ModifyListener() {
+//            @Override
+//            public void modifyText(ModifyEvent e) {
+//                String text = txtCc.getText();
+//                setValidationAndEnableSendEmail("cc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
+//            }
+//        });
+//
+//        txtBcc.addModifyListener(new ModifyListener() {
+//            @Override
+//            public void modifyText(ModifyEvent e) {
+//                String text = txtBcc.getText();
+//                setValidationAndEnableSendEmail("bcc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
+//            }
+//        });
 
         btnChkAttachment.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -636,8 +641,8 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             validation.put("port", false); //$NON-NLS-1$
             validation.put("username", false); //$NON-NLS-1$
             validation.put("password", false); //$NON-NLS-1$
-            validation.put("sender", false); //$NON-NLS-1$
-            validation.put("recipients", false); //$NON-NLS-1$
+            validation.put("sender", true); //$NON-NLS-1$
+            validation.put("recipients", true); //$NON-NLS-1$
             validation.put("cc", true); //$NON-NLS-1$
             validation.put("bcc", true); //$NON-NLS-1$
         }

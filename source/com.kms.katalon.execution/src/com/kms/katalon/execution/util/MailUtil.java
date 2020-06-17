@@ -29,6 +29,7 @@ import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.core.util.StrSubstitutor;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
@@ -342,13 +343,13 @@ public class MailUtil {
             EmailConfig conf = new EmailConfig();
             conf.setHost(store.getHost(encryptionEnabled));
             conf.setPort(store.getPort(encryptionEnabled));
-            
+
             String sender = store.getSender();
             if (store.useUsernameAsSender()) {
                 sender = store.getUsername(encryptionEnabled);
             }
             conf.setFrom(sender);
-            
+
             conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol(encryptionEnabled)));
             conf.setUsername(store.getUsername(encryptionEnabled));
             conf.setPassword(store.getPassword(encryptionEnabled));
@@ -357,7 +358,7 @@ public class MailUtil {
             conf.setCc(store.getEmailCc());
             conf.setBcc(store.getEmailBcc());
             conf.addRecipients(splitRecipientsString(store.getRecipients(encryptionEnabled)));
-            conf.setSubject(prepareSubject(store.getEmailSubject()));
+            conf.setSubject(store.getEmailSubject());
             conf.setHtmTemplateForTestSuite(store.getEmailHTMLTemplateForTestSuite());
             conf.setAttachmentOptions(store.getReportFormatOptions());
             conf.setSendTestSuiteReportEnabled(store.isSendTestSuiteReportEnabled());
@@ -365,7 +366,7 @@ public class MailUtil {
             conf.setHtmlTemplateForTestSuiteCollection(store.getEmailHTMLTemplateForTestSuiteCollection());
             conf.setSendTestSuiteCollectionReportEnabled(store.isSendTestSuiteCollectionReportEnabled());
             conf.setSkipInvidiualTestSuiteReport(store.isSkipInvidualTestSuiteReport());
-            
+
             return conf;
         } catch (Exception e) {
             LogUtil.logError(e);
@@ -373,11 +374,25 @@ public class MailUtil {
         }
     }
 
-    public static String prepareSubject(String subject) throws Exception {
-        VariableEvaluator evaluator = new VariableEvaluator();
-        Map<String, Object> evaluatedVariables = evaluator.evaluate(new HashMap<String, String>());
-        StrSubstitutor substitutor = new StrSubstitutor(
-                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
-        return substitutor.replace(subject);
+    public static EmailConfig overrideEmailSettings(EmailConfig emailConfig, ExecutionProfileEntity executionProfile) {
+        try {
+            VariableEvaluator evaluator = new VariableEvaluator();
+            Map<String, Object> evaluatedVariables = evaluator.evaluate(new HashMap<String, String>(),
+                    executionProfile);
+            StrSubstitutor substitutor = new StrSubstitutor(
+                    Collections.<String, Object>unmodifiableMap(evaluatedVariables));
+            emailConfig.setFrom(substitutor.replace(emailConfig.getFrom()));
+            Set<String> tos = new HashSet<>();
+            for (String recipient : emailConfig.getTos()) {
+                tos.add(substitutor.replace(recipient));
+            }
+            emailConfig.setTos(tos);
+            emailConfig.setCc(substitutor.replace(emailConfig.getCc()));
+            emailConfig.setBcc(substitutor.replace(emailConfig.getBcc()));
+            emailConfig.setSubject(substitutor.replace(emailConfig.getSubject()));
+            return emailConfig;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

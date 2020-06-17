@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -22,9 +21,9 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.launcher.IDETestSuiteCollectionLauncher;
 import com.kms.katalon.composer.execution.launcher.SubIDELauncher;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
@@ -43,7 +42,7 @@ import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
-import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.execution.util.MailUtil;
 
 public class TestSuiteCollectionBuilderJob extends Job {
 
@@ -144,6 +143,9 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     .getRunConfiguration(configuration.getRunConfigurationId(), projectDir, configuration);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
+            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+            executedEntity.setEmailConfig(MailUtil.overrideEmailSettings(executedEntity.getEmailConfig(project),
+                    GlobalVariableController.getInstance().getDefaultExecutionProfile(project)));
             executedEntity.prepareTestCases();
             runConfig.setExecutionSessionId(executionSessionId);
             runConfig.build(testSuiteEntity, executedEntity);
