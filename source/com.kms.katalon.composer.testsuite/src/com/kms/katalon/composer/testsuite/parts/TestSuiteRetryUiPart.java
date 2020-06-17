@@ -105,6 +105,8 @@ public class TestSuiteRetryUiPart {
                         txtRetryImmediately.setEnabled(false);
                         getTestSuite().setRerunImmediately(false);
                         enableRetryAfterExecuteAll(true);
+                        // Default to all executions
+                        radioBtnRetryAllExecutions.setSelection(true);
                     }
                     setDirty(true);
                 });
@@ -172,50 +174,49 @@ public class TestSuiteRetryUiPart {
 
         Composite grpRetryExecution = new Composite(compositeLastRunAndReRun, SWT.NONE);
         grpRetryExecution.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
-        GridLayout gl_grpRetryExecution = new GridLayout(4, false);
+        GridLayout gl_grpRetryExecution = new GridLayout(3, false);
         gl_grpRetryExecution.marginWidth = 5;
         gl_grpRetryExecution.marginHeight = 5;
         grpRetryExecution.setLayout(gl_grpRetryExecution);
 
         radioBtnRetryImmediately = new Button(grpRetryExecution, SWT.RADIO);
-        GridData gdLblStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-        gdLblStopImmediately.widthHint = 200;
+        GridData gdLblStopImmediately = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
         radioBtnRetryImmediately.setLayoutData(gdLblStopImmediately);
         radioBtnRetryImmediately.setText(StringConstants.PA_LBL_RETRY_IMMEDIATELY);
         
-        linkToRetryDocs1 = new Label(grpRetryExecution, SWT.NONE);
-        linkToRetryDocs1.setImage(ImageManager.getImage(IImageKeys.HELP_16));
-        linkToRetryDocs1.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
         
         txtRetryImmediately = new Text(grpRetryExecution, SWT.BORDER);
         GridData gdTxtStopImmediately = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
         gdTxtStopImmediately.widthHint = 20;
         txtRetryImmediately.setLayoutData(gdTxtStopImmediately);
         txtRetryImmediately.setTextLimit(3);
+
+        linkToRetryDocs1 = new Label(grpRetryExecution, SWT.NONE);
+        linkToRetryDocs1.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        linkToRetryDocs1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         
         Composite grpRetryExecutions = new Composite(compositeLastRunAndReRun, SWT.NONE);
         grpRetryExecutions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
-        GridLayout gl_grpRetryExecutions = new GridLayout(4, false);
+        GridLayout gl_grpRetryExecutions = new GridLayout(3, false);
         gl_grpRetryExecutions.marginWidth = 5;
         gl_grpRetryExecutions.marginHeight = 5;
-        grpRetryExecutions.setLayout(gl_grpRetryExecutions);
+        grpRetryExecutions.setLayout(gl_grpRetryExecutions);        
 
         radioBtnRetryAfterExecuteAll = new Button(grpRetryExecutions, SWT.RADIO);
-        GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-        gdLblReRun.widthHint = 200;
+        GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
         radioBtnRetryAfterExecuteAll.setLayoutData(gdLblReRun);
         radioBtnRetryAfterExecuteAll.setText(StringConstants.PA_LBL_RETRY_AFTER_EXECUTE_ALL);
-        radioBtnRetryAfterExecuteAll.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
-        
-        linkToRetryDocs2 = new Label(grpRetryExecutions, SWT.NONE);
-        linkToRetryDocs2.setImage(ImageManager.getImage(IImageKeys.HELP_16));
-        linkToRetryDocs2.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+        radioBtnRetryAfterExecuteAll.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);        
 
         txtRetryAfterExecuteAll = new Text(grpRetryExecutions, SWT.BORDER);
         GridData gdTxtRerun = new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1);
         gdTxtRerun.widthHint = 20;
         txtRetryAfterExecuteAll.setLayoutData(gdTxtRerun);
         txtRetryAfterExecuteAll.setTextLimit(3);
+
+        linkToRetryDocs2 = new Label(grpRetryExecutions, SWT.NONE);
+        linkToRetryDocs2.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        linkToRetryDocs2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         Composite grpRetryExecutionsChildComposite = new Composite(grpRetryExecutions, SWT.NONE);
         grpRetryExecutionsChildComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
