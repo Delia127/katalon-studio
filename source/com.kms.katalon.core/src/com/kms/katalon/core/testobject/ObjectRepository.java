@@ -348,7 +348,20 @@ public class ObjectRepository {
             Map<String, Object> variables) {
         MobileTestObject mobileTestObject = new MobileTestObject(mobileObjectId);
         String locator = reqElement.elementText("locator");
-        StrSubstitutor strSubstitutor = new StrSubstitutor(variables);
+        
+        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+        for (Entry<String, Object> entry : variables.entrySet()) {
+            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        try {
+            ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
+            variablesStringMap.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
+        } catch (ClassNotFoundException | ResourceException | ScriptException | IOException e) {
+        }
+        
+        StrSubstitutor strSubstitutor = new StrSubstitutor(variablesStringMap);
+
         mobileTestObject.setMobileLocator(strSubstitutor.replace(locator));
 
         String locatorStrategyStr = reqElement.elementText("locatorStrategy");
