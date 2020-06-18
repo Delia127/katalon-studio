@@ -399,6 +399,8 @@ public class EventConstants {
     
     // Keyword Browser
     public static final String KEYWORD_BROWSER_REFRESH = "KEYWORD_BROWSER/REFRESH";
+    
+    public static final String CUSTOMKEYWORD_REFRESH = "CUSTOMKEYWORD/REFRESH";
 
     // Plugin events
     public static final String RELOAD_PLUGINS = "PLUGIN/RELOAD_PLUGINS";

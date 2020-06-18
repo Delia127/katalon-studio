@@ -223,6 +223,7 @@ public class TooltipComboBoxCellEditor extends CellEditor {
      * Updates the list of choices for the combo box for the current control.
      */
     private void populateComboBoxItems() {
+        comboBox.setData(items);
         if (comboBox != null && items != null) {
             comboBox.removeAll();
             for (int i = 0; i < items.length; i++) {

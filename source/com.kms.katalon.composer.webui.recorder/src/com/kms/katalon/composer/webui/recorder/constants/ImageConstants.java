@@ -35,6 +35,10 @@ public class ImageConstants {
     public static final Image IMG_16_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_16);
 
     public static final Image IMG_16_IE = ImageManager.getImage(IImageKeys.IE_16);
+    
+    public static final Image IMG_16_EDGE_CHROMIUM = ImageManager.getImage(IImageKeys.EDGE_CHROMIUM_16);
+    
+    public static final Image IMG_24_EDGE_CHROMIUM = ImageManager.getImage(IImageKeys.EDGE_CHROMIUM_24);
 
     public static final Image IMG_24_CHROME = ImageManager.getImage(IImageKeys.CHROME_24);
 

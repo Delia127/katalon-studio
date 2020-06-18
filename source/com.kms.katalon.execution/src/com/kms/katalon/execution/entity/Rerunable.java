@@ -9,6 +9,8 @@ public interface Rerunable {
     boolean isRerunFailedTestCasesOnly();
     
     boolean isRerunFailedTestCasesAndTestDataOnly();
+    
+    boolean isRerunImmediately();
 
     Rerunable mergeWith(Rerunable rerunable);
 }

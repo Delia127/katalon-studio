@@ -39,6 +39,10 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.activation.plugin.ActivationBundleActivator;
+import com.kms.katalon.activation.plugin.models.Plugin;
+import com.kms.katalon.activation.plugin.service.LocalRepository;
+import com.kms.katalon.activation.plugin.util.PluginFactory;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -53,9 +57,6 @@ import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.plugin.models.Plugin;
-import com.kms.katalon.plugin.service.LocalRepository;
-import com.kms.katalon.plugin.util.PluginFactory;
 
 public class InstallApplitoolsPluginHandler {
     private static final String APPLITOOLS_CUSTOM_KEYWORD_ID = Long.toString(44);
@@ -74,7 +75,7 @@ public class InstallApplitoolsPluginHandler {
 
     @PostConstruct
     private void registerEventHandler() {
-        EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.WORKSPACE_PLUGIN_LOADED,
+        ActivationBundleActivator.getInstance().getEventBroker().subscribe(EventConstants.WORKSPACE_PLUGIN_LOADED,
                 new EventHandler() {
                     @Override
                     public void handleEvent(Event event) {
@@ -149,7 +150,7 @@ public class InstallApplitoolsPluginHandler {
     }
 
     private File getPluginFile() throws IOException {
-        Bundle bundle = FrameworkUtil.getBundle(LocalRepository.class);
+        Bundle bundle = FrameworkUtil.getBundle(InstallApplitoolsPluginHandler.class);
         Path pluginFolderPath = new Path("/resources/applitools");
         URL pluginFolderUrl = FileLocator.find(bundle, pluginFolderPath, null);
         File pluginFolder = FileUtils.toFile(FileLocator.toFileURL(pluginFolderUrl));

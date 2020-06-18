@@ -20,13 +20,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
-import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
+import com.kms.katalon.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.execution.collection.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.execution.collection.provider.TestExecutionGroup;
 
 public class RunConfigurationSelectionDialog extends AbstractDialog {
 

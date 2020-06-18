@@ -22,6 +22,10 @@ import org.osgi.service.event.EventHandler;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kms.katalon.activation.plugin.models.KStorePlugin;
+import com.kms.katalon.activation.plugin.models.Plugin;
+import com.kms.katalon.activation.plugin.service.LocalRepository;
+import com.kms.katalon.activation.plugin.util.PluginFactory;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
@@ -37,10 +41,6 @@ import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.Plugin;
-import com.kms.katalon.plugin.service.LocalRepository;
-import com.kms.katalon.plugin.util.PluginFactory;
 
 public class InstallBasicReportPluginHandler {
     
