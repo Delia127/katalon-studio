@@ -989,8 +989,6 @@ public class WebUiCommonHelper extends KeywordHelper {
         String screenshotPath = StringUtils.EMPTY;
 
         boolean hasFound = false;
-        long startTime = System.currentTimeMillis();
-        do {
             for (int i = 0; i < allXPaths.size(); i++) {
                 selectedXPath = allXPaths.get(i);
                 String xpathValue = selectedXPath.getValue();
@@ -1019,7 +1017,6 @@ public class WebUiCommonHelper extends KeywordHelper {
                 }
             }
             hasFound = foundElements != null && !foundElements.isEmpty();
-        } while (!hasFound && (System.currentTimeMillis() - startTime) / 1000 <= timeout);
 
         if (selectedXPath == null) {
             SelfHealingController.logInfo(StringConstants.KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS);
