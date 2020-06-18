@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
 import com.kms.katalon.application.utils.VersionUtil;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
@@ -26,6 +25,7 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
@@ -404,7 +404,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                 .build();
         TestSuiteCollectionExecutionEvent eventObject = new TestSuiteCollectionExecutionEvent(eventName,
                 executionContext);
-        EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
+        ExecutionBundleActivator.getInstance().getEventBroker().post(eventName, eventObject);
 
         return eventObject;
     }

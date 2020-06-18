@@ -34,6 +34,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.activation.plugin.models.KStoreBasicCredentials;
+import com.kms.katalon.activation.plugin.models.KStoreClientException;
+import com.kms.katalon.activation.plugin.models.KStorePlugin;
+import com.kms.katalon.activation.plugin.models.Plugin;
+import com.kms.katalon.activation.plugin.models.ReloadItem;
+import com.kms.katalon.activation.plugin.service.KStoreRestClient;
+import com.kms.katalon.activation.plugin.store.PluginPreferenceStore;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
@@ -42,13 +49,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.plugin.models.KStoreBasicCredentials;
-import com.kms.katalon.plugin.models.KStoreClientException;
-import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.Plugin;
-import com.kms.katalon.plugin.models.ReloadItem;
-import com.kms.katalon.plugin.service.KStoreRestClient;
-import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
 public class ReloadPluginsResultDialog extends Dialog {
     

@@ -72,7 +72,7 @@ public class CucumberReporter implements Formatter {
             public void receive(TestStepStarted event) {
                 if (event.testStep instanceof PickleStepTestStep) {
                     logger.startKeyword(getStepText(event), new HashMap<String, String>(),
-                            new Stack<KeywordLogger.KeywordStackElement>());
+                            null);
                 }
             }
         });
@@ -85,7 +85,7 @@ public class CucumberReporter implements Formatter {
                     Result result = event.result;
                     logResult(name, result);
                     logger.endKeyword(name, new HashMap<String, String>(),
-                            new Stack<KeywordLogger.KeywordStackElement>());
+                            null);
                 }
             }
         });

@@ -64,7 +64,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
         String builtInKWClassSimpleName = getBuiltInKWClassSimpleName();
         for (KeywordMethod keywordMethod : builtInKeywordMethods) {
             keywordNames.add(TreeEntityUtil.getReadableKeywordName(keywordMethod.getName()));
-            toolTips.add(TestCaseEntityUtil.getKeywordJavaDocText(builtInKWClassSimpleName, keywordMethod.getName()));
+            toolTips.add(TestCaseEntityUtil.getBuiltinKeywordJavadocText(builtInKWClassSimpleName, keywordMethod.getName()));
         }
         return new KeywordComboBoxCellEditorWithContentProposal(parent, parentStatement, getBuiltInKWClassAliasName(),
                 builtInKeywordMethods.toArray(new KeywordMethod[builtInKeywordMethods.size()]),
@@ -73,7 +73,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     @Override
     public String getItemTooltipText() {
-        String keywordJavaDoc = TestCaseEntityUtil.getKeywordJavaDocText(getBuiltInKWClassSimpleName(),
+        String keywordJavaDoc = TestCaseEntityUtil.getBuiltinKeywordJavadocText(getBuiltInKWClassSimpleName(),
                 getKeywordName());
         if (!keywordJavaDoc.isEmpty()) {
             return keywordJavaDoc;

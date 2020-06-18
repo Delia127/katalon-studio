@@ -633,6 +633,17 @@ public class AppiumDriverManager {
         return localStorageAppiumDriver.get();
     }
 
+    /**
+     * Sets the current active Appium driver.
+     * 
+     * @param driver    the Appium driver to be set
+     * @see             AppiumDriver
+     * @since           7.6.0
+     */
+    public static void setDriver(AppiumDriver<?> driver) {
+        localStorageAppiumDriver.set(driver);
+    }
+
     public static Process getAppiumSeverProcess() {
         return localStorageAppiumServer.get();
     }

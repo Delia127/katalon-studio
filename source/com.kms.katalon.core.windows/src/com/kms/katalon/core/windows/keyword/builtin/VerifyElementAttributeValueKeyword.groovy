@@ -89,15 +89,21 @@ public class VerifyElementAttributeValueKeyword extends AbstractKeyword {
 
                 WebElement foundElement = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).findElement(testObject, timeout, true);
 
-				logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
-                String actualAttributeValue = foundElement.getAttribute(attributeName)
-                    if (actualAttributeValue.equals(attributeValue)) {
-                        logger.logPassed(String.format("Object '%s' has attribute '%s' with name '%s'", testObject.getObjectId(), attributeName, attributeValue));
-                        return true
-                    } else {
-                        KeywordMain.stepFailed(String.format("Object '%s' has attribute '%s' with actual value '%s' instead of expected value '%s'", testObject.getObjectId(), attributeName, actualAttributeValue, attributeValue), flowControl)
-                        return false
-                    }
+                logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()));
+                String actualAttributeValue = null
+                try {
+                    actualAttributeValue = foundElement.getAttribute(attributeName)
+                } catch (WebDriverException getValueException) {
+                    KeywordMain.stepFailed(String.format("Object '%s' does not have attribute '%s'", testObject.getObjectId() , attributeName), flowControl)
+                    return false;
+                }
+                if (actualAttributeValue.equals(attributeValue)) {
+                    logger.logPassed(String.format("Object '%s' has attribute '%s' with name '%s'", testObject.getObjectId(), attributeName, attributeValue));
+                    return true
+                } else {
+                    KeywordMain.stepFailed(String.format("Object '%s' has attribute '%s' with actual value '%s' instead of expected value '%s'", testObject.getObjectId(), attributeName, actualAttributeValue, attributeValue), flowControl)
+                    return false
+                }
             } catch (TimeoutException e) {
                 KeywordMain.stepFailed(String.format("Object '%s' is not present", testObject.getObjectId()), flowControl)
 				return false

@@ -60,6 +60,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+    
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI;
 
     public static String PA_TITLE_HTTP;
 
@@ -279,6 +281,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
 
+    public static String MSG_REQUEST_BODY_NO_CONTENT;
+
     public static String DIA_TITLE_TEST_CASE_BROWSER;
 
     public static String TITLE_QUICKSTART;
@@ -322,6 +326,16 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String FormDataBodyEditor_COL_VALUE;
 
     public static String FormDataBodyEditor_CONTENT_TYPE_AUTO;
+
+    public static String ImportSoapUIRestServicesDialog_DIA_TITLE_IMPORT_REST_SERVICES_FROM_SOAPUI;
+
+    public static String ImportSoapUIRestServicesDialog_LBL_SOAPUI_PROJECT;
+
+    public static String ImportSoapUIRestServicesDialog_MSG_IMPORT_REST_SERVICES_FROM_SOAPUI_PROJECT;
+
+    public static String ImportSoapUIRestServicesDialog_MSG_IMPORTING_FROM_SOAPUI;
+
+    public static String ERROR_MSG_FAIL_TO_IMPORT_SOAPUI;
 
     public static String PREF_WARN_CLIENT_CERT;
 

@@ -65,6 +65,8 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     // KeywordTreeLabelProvider
     public static final Image IMG_16_KEYWORD = ImageManager.getImage(IImageKeys.KEYWORD_16);
 
+    public static final Image IMG_16_REFRESH = ImageManager.getImage(IImageKeys.REFRESH_16);
+
     // ArgumentInputBuilderDialog
     public static final Image IMG_16_WARN_TABLE_ITEM = ImageManager.getImage(IImageKeys.WARNING_16);
 

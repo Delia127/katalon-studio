@@ -241,6 +241,16 @@ public class MobileDriverFactory {
     }
 
     /**
+     * Sets the current active mobile driver.
+     * 
+     * @param driver the mobile driver to set
+     * @since 7.6.0
+     */
+    public static void setDriver(AppiumDriver<?> driver) {
+        AppiumDriverManager.setDriver(driver);
+    }
+
+    /**
      * Close the current active mobile driver
      */
     public static void closeDriver() {
