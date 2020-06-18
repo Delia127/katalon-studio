@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.text.StrMatcher;
 import org.json.JSONObject;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -430,7 +431,13 @@ public class MobileInspectorController {
     }
 
     private TreeMobileElement getXCUIObjectRoot() throws ParserConfigurationException, SAXException, IOException {
-        String pageSource = driver.getPageSource();
+        HashMap<String,String> obj = new HashMap<String,String>();
+        obj.put("format", "xml");
+        obj.put("excludedAttributes", "visible");
+        String pageSource = ((JavascriptExecutor) driver).executeScript("mobile: source", obj).toString();
+        if (StringUtils.isEmpty(pageSource)) {
+            pageSource = driver.getPageSource();
+        }
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(pageSource));
@@ -452,7 +459,7 @@ public class MobileInspectorController {
         IosXCUISnapshotMobileElement htmlMobileElementRootNode = new IosXCUISnapshotMobileElement();
 
         htmlMobileElementRootNode.getAttributes().put(IOSProperties.IOS_TYPE, appElement.getTagName());
-        htmlMobileElementRootNode.render(appElement);
+        htmlMobileElementRootNode.render(rootElement);
         return htmlMobileElementRootNode;
     }
 
