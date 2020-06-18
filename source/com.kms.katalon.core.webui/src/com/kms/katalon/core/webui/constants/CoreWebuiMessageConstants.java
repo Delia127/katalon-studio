@@ -187,7 +187,7 @@ public class CoreWebuiMessageConstants extends NLS {
     
     public static String KW_LOG_INFO_SMART_XPATHS_SUPPORT_START; 
     
-    public static String KW_LOG_INFO_SMART_XPATHS_USING;
+    public static String KW_LOG_INFO_SELF_HEALING_USING;
     
     public static String KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION;
     

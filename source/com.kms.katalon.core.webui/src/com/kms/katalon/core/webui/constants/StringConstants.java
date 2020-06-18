@@ -540,7 +540,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_INFO_DEFAULT_LOCATOR_FAILED_TRY_SELF_HEALING = CoreWebuiMessageConstants.KW_LOG_INFO_DEFAULT_LOCATOR_FAILED_TRY_SELF_HEALING;
     public static final String KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR = CoreWebuiMessageConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR;
     public static final String KW_LOG_INFO_SMART_XPATHS_SUPPORT_START = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_START;
-    public static final String KW_LOG_INFO_SMART_XPATHS_USING = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_USING;
+    public static final String KW_LOG_INFO_SELF_HEALING_USING = CoreWebuiMessageConstants.KW_LOG_INFO_SELF_HEALING_USING;
     public static final String KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION;
     public static final String KW_LOG_INFO_SMART_XPATHS_SUPPORT_END = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END;
     public static final String KW_LOG_INFO_USING_HEURISTIC_METHOD = CoreWebuiMessageConstants.KW_LOG_INFO_USING_HEURISTIC_METHOD;

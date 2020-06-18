@@ -40,6 +40,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testcase.TestCaseFactory;
+import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
@@ -102,10 +103,6 @@ public class TestCaseExecutor {
         keywordStack = new Stack<KeywordLogger.KeywordStackElement>();
         parentErrors = errorCollector.getCoppiedErrors();
         errorCollector.clearErrors();
-
-        if (RunConfiguration.shouldApplySelfHealing()) {
-            logger.logInfoHighlight(StringConstants.SELF_HEALING_OPENING);
-        }
     }
 
     private void onExecutionComplete() {
@@ -181,13 +178,13 @@ public class TestCaseExecutor {
     }
 
     private void postExecution() {
-    	
+
 		if (RunConfiguration.shouldApplySelfHealing()) {
 
-			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_OPENING);
-			logger.logInfo(StringConstants.SMART_XPATH_VISIT_BELOW_LINK);
-			logger.logInfo(StringConstants.SMART_XPATH_DOCUMENT);
-			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_ENDING);
+			logger.logInfo(StringConstants.SELF_HEALING_REPORT_AVAILABLE_OPENING);
+			logger.logInfo(StringConstants.SELF_HEALING_REPORT_VISIT_INSIGHT_PART);
+			logger.logInfo(StringConstants.SELF_HEALING_REFER_TO_DOCUMENT);
+			logger.logInfo(StringConstants.SELF_HEALING_REPORT_AVAILABLE_ENDING);
 			
 		}
 

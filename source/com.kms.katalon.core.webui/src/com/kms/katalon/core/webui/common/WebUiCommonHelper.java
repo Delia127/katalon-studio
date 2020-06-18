@@ -916,8 +916,8 @@ public class WebUiCommonHelper extends KeywordHelper {
 
         long startTime = System.currentTimeMillis();
         do {
-            foundElements = webDriver.findElements(defaultLocator);
             try {
+                foundElements = webDriver.findElements(defaultLocator);
                 if (foundElements != null && !foundElements.isEmpty()) {
                     logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                             foundElements.size(), testObject.getObjectId(), defaultLocator.toString(), timeout));
@@ -946,70 +946,50 @@ public class WebUiCommonHelper extends KeywordHelper {
 
         SelfHealingController.setLogger(logger);
 
-        SelfHealingController.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_USING);
-
-        Map<TestObjectXpath, List<WebElement>> smartXPathsMap = new HashMap<>();
         List<TestObjectXpath> allXPaths = testObject.getXpaths();
-        TestObjectXpath selectedSmartXPath = null;
-        String pathToSelectedSmartXPathScreenshot = StringUtils.EMPTY;
+        TestObjectXpath selectedXPath = null;
+        List<WebElement> foundElements = null;
+        String screenshotPath = StringUtils.EMPTY;
 
-        int index = atomicCounter.getAndIncrement();
-
-        for (int i = 0; i < allXPaths.size(); i++) {
-            TestObjectXpath thisXPath = allXPaths.get(i);
-            By byThisXPath = By.xpath(thisXPath.getValue());
-            List<WebElement> elementsFoundByThisXPath = null;
-            try {
-                elementsFoundByThisXPath = webDriver.findElements(byThisXPath);
-            } catch (InvalidSelectorException e) {
-                // do nothing
+        boolean hasFound = false;
+        long startTime = System.currentTimeMillis();
+        do {
+            for (int i = 0; i < allXPaths.size(); i++) {
+                selectedXPath = allXPaths.get(i);
+                String xpathValue = selectedXPath.getValue();
+                if (StringUtils.isBlank(xpathValue)) {
+                    continue;
+                }
+    
+                By bySelectedXPath = By.xpath(selectedXPath.getValue());
+                try {
+                    foundElements = webDriver.findElements(bySelectedXPath);
+                } catch (NoSuchElementException e) {
+                    // do nothing
+                }
+    
+                if (foundElements != null && !foundElements.isEmpty()) {
+                    SelfHealingController.logInfo(MessageFormat.format(
+                            StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_THIS_SMART_XPATH, selectedXPath.getValue()));
+                    String screenshotName = selectedXPath.getName().split(":")[1];
+    
+                    screenshotPath = SelfHealingController.takeScreenShot(webDriver, foundElements.get(0), testObject,
+                            screenshotName);
+                    break;
+                } else {
+                    SelfHealingController.logInfo(MessageFormat.format(
+                            StringConstants.KW_LOG_INFO_COULD_NOT_FIND_WEB_ELEMENT_WITH_THIS_SMART_XPATH, xpathValue));
+                }
             }
-            if (elementsFoundByThisXPath != null && elementsFoundByThisXPath.size() > 0) {
+            hasFound = foundElements != null && !foundElements.isEmpty();
+        } while (!hasFound && (System.currentTimeMillis() - startTime) / 1000 <= timeout);
 
-                SelfHealingController.logInfo(MessageFormat.format(
-                        StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_THIS_SMART_XPATH, thisXPath.getValue()));
-
-                if (smartXPathsMap.get(thisXPath) == null) {
-                    // save the first working XPath
-                    if (selectedSmartXPath == null) {
-                        selectedSmartXPath = thisXPath;
-                    }
-                    smartXPathsMap.put(thisXPath, elementsFoundByThisXPath);
-                }
-
-                // By convention all XPath finders must abide
-                // 'xpath:finder_name'
-                String xpathFinder = thisXPath.getName().split(":")[1];
-
-                String screenShotName = xpathFinder;
-
-                // Increase local index for neighbor
-                if (xpathFinder.equals("neighbor")) {
-                    screenShotName += "_" + (index++);
-                }
-
-                // Save the first working XPath's screenshot
-                String screenshotByCurrentXPath = SelfHealingController.takeScreenShot(webDriver,
-                        elementsFoundByThisXPath.get(0), testObject, screenShotName);
-                if (StringUtils.isBlank(pathToSelectedSmartXPathScreenshot)) {
-                    pathToSelectedSmartXPathScreenshot = screenshotByCurrentXPath;
-                }
-
-            } else {
-                SelfHealingController.logInfo(MessageFormat.format(
-                        StringConstants.KW_LOG_INFO_COULD_NOT_FIND_WEB_ELEMENT_WITH_THIS_SMART_XPATH,
-                        thisXPath.getValue()));
-            }
-        }
-
-        if (selectedSmartXPath == null) {
+        if (selectedXPath == null) {
             SelfHealingController.logInfo(StringConstants.KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS);
             return FindElementsResult.from(SelectorMethod.XPATH);
         }
 
-        List<WebElement> elementsFoundWithSelectedSmartXPath = smartXPathsMap.get(selectedSmartXPath);
-        return FindElementsResult.from(elementsFoundWithSelectedSmartXPath, selectedSmartXPath.getValue(),
-                SelectorMethod.XPATH, pathToSelectedSmartXPathScreenshot);
+        return FindElementsResult.from(foundElements, selectedXPath.getValue(), SelectorMethod.XPATH, screenshotPath);
     }
 
     private static FindElementsResult findElementsByImage(TestObject testObject, int timeout) {

@@ -58,7 +58,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
 	private static final String COLUMN_SELECTION_METHOD = SmartXPathMessageConstants.COLUMN_SELECTION_METHOD;
 
-	private static final String COLUMN_DETECT_OBJECT_BY = SmartXPathMessageConstants.COLUMN_DETECT_OBJECT_BY;
+	private static final String COLUMN_SELECT = SmartXPathMessageConstants.COLUMN_SELECT;
 
 	private TableViewer tvPrioritizeSelectionMethods;
 
@@ -210,7 +210,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
 		cvMethodsSelected = new TableViewerColumn(tvPrioritizeSelectionMethods, SWT.CENTER);
 		cMethodsSelected = cvMethodsSelected.getColumn();
-		cMethodsSelected.setText(COLUMN_DETECT_OBJECT_BY);
+		cMethodsSelected.setText(COLUMN_SELECT);
 
 		cvMethodsSelected.setLabelProvider(new CellLabelProvider() {
 			@Override

@@ -509,13 +509,11 @@ public class StringConstants {
     // TestCaseExecutor
 	public static final String TEST_CASE_SKIPPED = CoreMessageConstants.TEST_CASE_SKIPPED;
 	
-    public static final String SELF_HEALING_OPENING = "Your test is executed with Self-Healing Execution Mode";
-
-	public static final String SMART_XPATH_REPORT_AVAILABLE_OPENING = "===================== Self-Healing Report ====================";
+	public static final String SELF_HEALING_REPORT_AVAILABLE_OPENING = "===================== Self-Healing Report ====================";
 	
-	public static final String SMART_XPATH_REPORT_AVAILABLE_ENDING = "==============================================================";
+	public static final String SELF_HEALING_REPORT_AVAILABLE_ENDING = "==============================================================";
 
-	public static final String SMART_XPATH_VISIT_BELOW_LINK = CoreMessageConstants.SMART_XPATH_VISIT_BELOW_LINK;
+	public static final String SELF_HEALING_REPORT_VISIT_INSIGHT_PART = CoreMessageConstants.SELF_HEALING_REPORT_VISIT_INSIGHT_PART;
 	
-	public static final String SMART_XPATH_DOCUMENT = CoreMessageConstants.SMART_XPATH_DOCUMENT;
+	public static final String SELF_HEALING_REFER_TO_DOCUMENT = CoreMessageConstants.SELF_HEALING_REFER_TO_DOCUMENT;
 }

@@ -18,15 +18,21 @@
       </page>
       <page
             category="com.katalon.katalon-studio-smart-xpath.self_healing"
+            class="com.katalon.plugin.smart_xpath.settings.SelfHealingWebTestingSettingPage"
+            id="com.katalon.katalon-studio-smart-xpath.self_healing.web_testing"
+            name="Web Testing">
+      </page>
+      <page
+            category="com.katalon.katalon-studio-smart-xpath.self_healing.web_testing"
             class="com.katalon.plugin.smart_xpath.settings.SelfHealingTestDesignSettingPage"
-            id="com.katalon.katalon-studio-smart-xpath.self_healing.testDesign"
+            id="com.katalon.katalon-studio-smart-xpath.self_healing.web_testing.testDesign"
             name="Test Design">
       </page>
       <page
-            category="com.katalon.katalon-studio-smart-xpath.self_healing"
+            category="com.katalon.katalon-studio-smart-xpath.self_healing.web_testing"
             class="com.katalon.plugin.smart_xpath.settings.SelfHealingExecutionSettingPage"
-            id="com.katalon.katalon-studio-smart-xpath.self_healing.execution"
-            name="Execution">
+            id="com.katalon.katalon-studio-smart-xpath.self_healing.web_testing.execution"
+            name="Test Execution">
       </page>
    </extension>
    <extension

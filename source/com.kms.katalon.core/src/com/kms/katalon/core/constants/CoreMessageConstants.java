@@ -307,9 +307,9 @@ public class CoreMessageConstants extends NLS {
     
     //TestCaseExecutor
 	
-	public static String SMART_XPATH_VISIT_BELOW_LINK;
+	public static String SELF_HEALING_REPORT_VISIT_INSIGHT_PART;
 
-	public static String SMART_XPATH_DOCUMENT;
+	public static String SELF_HEALING_REFER_TO_DOCUMENT;
 
     static {
         // initialize resource bundle

@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TypedListener;
 
+import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 
 public class DefaultWebLocatorSelectionComposite extends Group {
@@ -48,7 +49,7 @@ public class DefaultWebLocatorSelectionComposite extends Group {
         defaultLocatorRowLayout.marginHeight = 5;
         defaultLocatorRowLayout.marginWidth = 5;
         this.setLayout(defaultLocatorRowLayout);
-        this.setText("Default Web Locator");
+        this.setText(SmartXPathMessageConstants.GROUP_DEFAULT_LOCATOR_SELECTION_AREA);
 
         defaultLocatorOptions.forEach((label, selectorMethod) -> {
             Button radioDefaultLocator = new Button(this, SWT.RADIO);

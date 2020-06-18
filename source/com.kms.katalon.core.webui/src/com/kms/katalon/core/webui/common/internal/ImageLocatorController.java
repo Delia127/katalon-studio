@@ -200,7 +200,6 @@ public class ImageLocatorController {
             logger.logDebug(MessageFormat.format("Scrolled to (0, {0})", heightPos));
             return true;
         } catch (Exception e) {
-            logger.logInfo("Cannot scroll viewport anymore !");
         }
         return false;
     }

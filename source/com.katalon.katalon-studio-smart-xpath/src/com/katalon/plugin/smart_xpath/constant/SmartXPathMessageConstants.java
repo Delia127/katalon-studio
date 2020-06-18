@@ -25,7 +25,7 @@ public class SmartXPathMessageConstants extends NLS {
 
     public static String COLUMN_KEYWORD;
 
-    public static String COLUMN_DETECT_OBJECT_BY;
+    public static String COLUMN_SELECT;
 
     public static String XPATH_METHOD;
 
@@ -94,6 +94,8 @@ public class SmartXPathMessageConstants extends NLS {
     public static String TITLE_DISCARD_BROKEN_TEST_OBJECT_DIALOG;
     
     public static String MSG_DISCARD_BROKEN_TEST_OBJECT_DIALOG;
+
+    public static String GROUP_DEFAULT_LOCATOR_SELECTION_AREA;
 
     static {
         // initialize resource bundle
