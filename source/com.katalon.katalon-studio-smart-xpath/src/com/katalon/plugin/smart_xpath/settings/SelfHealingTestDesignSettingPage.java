@@ -149,12 +149,6 @@ public class SelfHealingTestDesignSettingPage extends AbstractSettingPage {
 
     @Override
     protected boolean saveSettings() {
-        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
-        if (!featureService.canUse(KSEFeature.SELF_HEALING)) {
-            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
-            return false;
-        }
-
         try {
             WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
 

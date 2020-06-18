@@ -226,7 +226,7 @@ public class AutoHealingController {
         if (projectEntity == null) {
             return;
         }
-        String location = projectEntity.getFileLocation();
+        String location = projectEntity.getFolderLocation();
         createBrokenTestObjectsFile(location);
     }
 }

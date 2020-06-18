@@ -36,7 +36,6 @@ public class WebUiExecutionSettingStoreTest {
         assertThat("Page load timeout default is 30", store.getPageLoadTimeout() == 30);
         assertThat("Disable page load timeout by default", store.getEnablePageLoadTimeout() == false);
         assertThat("Disable ignore page load timeout by default", store.getIgnorePageLoadTimeout() == false);
-        assertThat("Disable Self Healing by default", store.getSelfHealingEnabled() == false);
         assertThat("Default exclude keywords must be verifyElementPresent and verifyElementNotPresent",
                 store.getExcludeKeywordList().equals(Arrays.asList("verifyElementPresent", "verifyElementNotPresent")));
         String actualMethodsPriorityOrder = convertMethodsPriorityOrderToString(store);
@@ -75,7 +74,6 @@ public class WebUiExecutionSettingStoreTest {
                 anotherStore.getCapturedTestObjectSelectorMethod().toString().equals("XPATH"));
         assertThat("User can change option to ignore page load timeout",
                 anotherStore.getIgnorePageLoadTimeout() == true);
-        assertThat("User can toggle Self Healing status", anotherStore.getSelfHealingEnabled() == true);
         assertThat("User can change excluded Keyword List", anotherStore.getExcludeKeywordList().size() == 0);
         assertThat("User can change methods priority order", anotherStore.getMethodsPriorityOrder().size() == 0);
         

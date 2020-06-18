@@ -10,13 +10,10 @@ import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 
 public class SelfHealingWebTestingSettingPage extends PreferencePageWithHelp {
-	
-    private ExecutionDefaultSettingStore defaultSettingStore;
     
     private Composite container;
 
 	public SelfHealingWebTestingSettingPage() {
-        defaultSettingStore = ExecutionDefaultSettingStore.getStore();
 	}
 
 	@Override

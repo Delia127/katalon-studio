@@ -8,6 +8,9 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class WebUIExecutionSetting extends DefaultExecutionSetting {
@@ -34,12 +37,17 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
                     webUiSettingStore.getIgnorePageLoadTimeout());
             reportProps.put(RunConfiguration.EXCLUDE_KEYWORDS, webUiSettingStore.getExcludeKeywordList());
             reportProps.put(RunConfiguration.METHODS_PRIORITY_ORDER, webUiSettingStore.getMethodsPriorityOrder());
-            reportProps.put(RunConfiguration.SELF_HEALING_ENABLE, webUiSettingStore.getSelfHealingEnabled());
+            reportProps.put(RunConfiguration.SELF_HEALING_ENABLE, webUiSettingStore.getSelfHealingEnabled(canUseSelfHealing()));
             reportProps.put(RunConfiguration.XPATHS_PRIORITY, webUiSettingStore.getCapturedTestObjectXpathLocators());
         } catch (IOException e) {
             LogUtil.logError(e);
         }
 
         return reportProps;
+    }
+    
+    private boolean canUseSelfHealing() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        return featureService.canUse(KSEFeature.SELF_HEALING);
     }
 }

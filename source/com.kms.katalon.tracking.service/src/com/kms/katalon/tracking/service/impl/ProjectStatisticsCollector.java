@@ -394,8 +394,9 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     }
     
     private boolean getSelfHealingEnabled() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-        return store.getSelfHealingEnabled();
+        return store.getSelfHealingEnabled(featureService.canUse(KSEFeature.SELF_HEALING));
     }
     
     private String getAdditionalTestDataSourceForEnterpriseUser() throws IOException {

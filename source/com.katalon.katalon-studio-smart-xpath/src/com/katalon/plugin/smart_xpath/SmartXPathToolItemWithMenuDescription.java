@@ -24,7 +24,6 @@ import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.controller.AutoHealingController;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
@@ -34,6 +33,8 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 
 public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDescription {
@@ -54,26 +55,22 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
     public void defaultEventHandler() {
         if (newMenu != null) {
             evaluateAndAddMenuItem(newMenu);
-            // Display menu at the mouse position (guaranteed to be within the
-            // ToolItem icon)
             newMenu.setVisible(true);
         }
     }
 
     private void evaluateAndAddMenuItem(Menu newMenu) {
-        // Dispose all items
         for (MenuItem item : newMenu.getItems()) {
             item.dispose();
         }
 
-        // Re-evaluate the PreferenceStore and add the appropriate menu item
         Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
         if (currentProject != null) {
             AutoHealingController.createXPathFilesIfNecessary(currentProject);
             WebUiExecutionSettingStore webUIExecutionSettingStore = new WebUiExecutionSettingStore(
                     ProjectController.getInstance().getCurrentProject());
 
-            if (webUIExecutionSettingStore.getSelfHealingEnabled()) {
+            if (canUseSelfHealing() && webUIExecutionSettingStore.getSelfHealingEnabled(canUseSelfHealing())) {
                 addDisableSelfHealingMenuItem(newMenu, true);
             } else {
                 addEnableSelfHealingMenuItem(newMenu, true);
@@ -91,10 +88,8 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
         selfHealingEnable.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isNotFreeLicense()) {
+                if (canUseSelfHealing()) {
                     try {
-                        // Retrieve PreferenceStore on click in case user installed
-                        // this plug-in when no project was opened
                         WebUiExecutionSettingStore preferenceStore = new WebUiExecutionSettingStore(
                                 ProjectController.getInstance().getCurrentProject());
                         preferenceStore.setEnableSelfHealing(true);
@@ -117,7 +112,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
         selfHealingDisable.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isNotFreeLicense()) {
+                if (canUseSelfHealing()) {
                     try {
                         WebUiExecutionSettingStore preferenceStore = new WebUiExecutionSettingStore(
                                 ProjectController.getInstance().getCurrentProject());
@@ -204,6 +199,11 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
     @Override
     public String toolItemId() {
         return SmartXPathConstants.SELF_HEALING_TOOLBAR_MENU_ID;
+    }
+    
+    private boolean canUseSelfHealing() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        return featureService.canUse(KSEFeature.SELF_HEALING);
     }
 
 }

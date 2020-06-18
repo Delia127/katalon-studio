@@ -36,8 +36,6 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	private final String documentationUrl = null;
 
-	private boolean isEnableSelfHealing;
-
 	private List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder;
 
 	private List<String> excludeKeywordNames;
@@ -59,8 +57,8 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		excludeObjectsUsedWithKeywordsComposite.setInput(excludeKeywordNames);
 		prioritizeSelectionMethodsComposite.setInput(methodsPriorityOrder);
 
-		isEnableSelfHealing = getEnableSelfHealingFromPluginPreference();
-		checkboxEnableSelfHealing.setSelection(isEnableSelfHealing);
+		boolean isEnableSelfHealing = getEnableSelfHealingFromPluginPreference();
+		checkboxEnableSelfHealing.setSelection(canUseSelfHealing() && isEnableSelfHealing);
 	}
 
 	@Override
@@ -86,7 +84,10 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 		checkboxEnableSelfHealing.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				isEnableSelfHealing = !isEnableSelfHealing;
+		        if (!canUseSelfHealing()) {
+		            checkboxEnableSelfHealing.setSelection(false);
+		            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
+		        }
 
 				handleInputChanged(checkboxEnableSelfHealing, null);
 			}
@@ -123,7 +124,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 	}
 
 	private boolean getEnableSelfHealingFromPluginPreference() {
-		return preferenceStore.getSelfHealingEnabled();
+		return preferenceStore.getSelfHealingEnabled(canUseSelfHealing());
 	}
 	
 	private List<Pair<SelectorMethod, Boolean>> getMethodsPriorityOrderFromPluginPreference() {
@@ -155,7 +156,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
     @Override
     protected void performDefaults() {
         try {
-            preferenceStore.setDefaultEnableSelfHealing();
+            preferenceStore.setEnableSelfHealing(canUseSelfHealing());
             preferenceStore.setDefaultMethodsPriorityOrder();
             preferenceStore.setDefaultExcludeKeywordList();
 
@@ -168,16 +169,13 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
 	@Override
 	protected boolean saveSettings() {
-        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
-        if (!featureService.canUse(KSEFeature.SELF_HEALING)) {
-            KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
-            return false;
-        }
-
 		try {
 	        preferenceStore.setExcludeKeywordList(excludeObjectsUsedWithKeywordsComposite.getInput());
 	        preferenceStore.setMethodsPritorityOrder(prioritizeSelectionMethodsComposite.getInput());
-	        preferenceStore.setEnableSelfHealing(isEnableSelfHealing);
+
+            if (canUseSelfHealing()) {
+                preferenceStore.setEnableSelfHealing(checkboxEnableSelfHealing.getSelection());
+            }
 		} catch (IOException exception) {
             LoggerSingleton.logError(exception);
 			return false;
@@ -191,6 +189,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 			return false;
 		}
 
+		boolean isEnableSelfHealing = checkboxEnableSelfHealing.getSelection();
 		if (isEnableSelfHealing != this.getEnableSelfHealingFromPluginPreference()) {
 			return true;
 		}
@@ -211,5 +210,10 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 	@Override
 	public boolean hasDocumentation() {
 		return false;
+	}
+	
+	private boolean canUseSelfHealing() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        return featureService.canUse(KSEFeature.SELF_HEALING);
 	}
 }

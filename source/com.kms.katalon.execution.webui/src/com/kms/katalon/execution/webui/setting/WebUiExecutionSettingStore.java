@@ -276,9 +276,9 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         setProperty(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, DEFAULT_METHODS_PRIORITY_ORDER);
     }
 
-    public boolean getSelfHealingEnabled() {
+    public boolean getSelfHealingEnabled(boolean defaultValue) {
         try {
-            return getBoolean(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, DEFAULT_IS_ENABLE_SELF_HEALING);
+            return getBoolean(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, defaultValue);
         } catch (IOException e) {
             return DEFAULT_IS_ENABLE_SELF_HEALING;
         }
@@ -286,9 +286,5 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
 
     public void setEnableSelfHealing(boolean isEnable) throws IOException{
         setProperty(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, isEnable);
-    }
-
-    public void setDefaultEnableSelfHealing() throws IOException{
-        setProperty(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, DEFAULT_IS_ENABLE_SELF_HEALING);
     }
 }
