@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.kms</groupId>
@@ -109,17 +109,17 @@
 		</dependency>
 		<dependency>
 			<groupId>com.kms</groupId>
-			<artifactId>com.kms.katalon.composer.webui.test</artifactId>	
+			<artifactId>com.kms.katalon.composer.webui.test</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-    <dependency>
+		<dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.composer.testcase</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
-		</dependency>  	
-    <dependency>
+		</dependency>
+		<dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.composer.testcase.test</artifactId>
 			<version>${project.version}</version>
@@ -131,19 +131,19 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-	<dependency>
+		<dependency>
 			<groupId>com.kms</groupId>
-			 <artifactId>com.kms.katalon.core.webui.test</artifactId>
+			<artifactId>com.kms.katalon.core.webui.test</artifactId>
 			<version>${project.version}</version>
-			<scope>test</scope>		
-    </dependency> 
-    <dependency>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.execution.mobile</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
-		</dependency> 
-     
+		</dependency>
+
 		<dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.execution.mobile.test</artifactId>
@@ -195,6 +195,18 @@
 		<dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.application.test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.selenium.ide</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.selenium.ide.test</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

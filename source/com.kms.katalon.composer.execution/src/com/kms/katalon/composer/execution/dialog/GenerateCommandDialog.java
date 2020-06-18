@@ -1104,10 +1104,8 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         }
 
-        if (proxyOption != ProxyOption.NO_PROXY) {
-            args.put(ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES,
-                    Boolean.toString(proxyInfo.isApplyToDesiredCapabilities()));
-        }
+        args.put(ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES,
+                Boolean.toString(proxyInfo.isApplyToDesiredCapabilities()));
     }
 
     private String encodeSensitiveInfo(String sensitiveInfo) {
