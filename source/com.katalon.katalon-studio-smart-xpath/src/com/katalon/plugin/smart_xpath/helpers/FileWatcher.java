@@ -62,16 +62,10 @@ public class FileWatcher {
                 try {
                     do {
                         isTrackedFileUpdated = false;
-                        File file = new File(trackedFile);
-                        if (!file.exists()) {
-                            return;
-                        }
-
                         Path filePath = FileSystems.getDefault().getPath(trackedFile);
                         WatchService watcher = FileSystems.getDefault().newWatchService();
                         Path dir = filePath.getParent();
                         WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-                        // key = watcher.take();
 
                         while (canRun && !isTrackedFileUpdated) {
                             for (WatchEvent<?> watchEvent : key.pollEvents()) {

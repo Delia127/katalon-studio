@@ -1,7 +1,9 @@
 package com.kms.katalon.core.webui.common.internal;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.List;
@@ -165,6 +167,7 @@ public class SelfHealingController {
 
 	private static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath) {
 		try {
+		    prepareDataFile(filePath);
 			Writer writer = new FileWriter(filePath);
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			gson.toJson(brokenTestObjects, writer);
@@ -177,6 +180,7 @@ public class SelfHealingController {
 
 	private static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
 		try {
+            prepareDataFile(filePath);
 			Gson gson = new Gson();
 			JsonReader reader = new JsonReader(new FileReader(filePath));
 			return gson.fromJson(reader, BrokenTestObjects.class);
@@ -185,6 +189,45 @@ public class SelfHealingController {
 		}
 		return null;
 	}
+	
+	private static File prepareDataFile(String dataFilePath) {
+	    File autoHealingFile = new File(dataFilePath);
+        File selfHealingDirectory = autoHealingFile.getParentFile();
+        
+        if (!selfHealingDirectory.exists()) {
+            boolean isCreateSelfHealingFolderSucceeded = selfHealingDirectory.mkdirs();
+            if (!isCreateSelfHealingFolderSucceeded) {
+                logError(MessageFormat
+                        .format("The folder \"{0}\" does not exist, no file is created.", selfHealingDirectory.getAbsolutePath()));
+                return null;
+            }
+        }
+
+        if (!autoHealingFile.exists()) {
+            try {
+                if (autoHealingFile.createNewFile()) {
+                    BrokenTestObjects emptyBrokenTestObjects = new BrokenTestObjects();
+                    Writer writer = new FileWriter(autoHealingFile.getAbsolutePath());
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    gson.toJson(emptyBrokenTestObjects, writer);
+                    return autoHealingFile;
+                }
+            } catch (IOException exception) {
+                logError(exception.getMessage());
+                return null;
+            }
+        }
+        return autoHealingFile;
+    }
+
+    public static String getDataFilePath(String projectDir) {
+        if (StringUtils.isBlank(projectDir)) {
+            return null;
+        }
+        String rawBrokenTestObjectsPath = FilenameUtils.concat(projectDir,
+                SELF_HEALING_DATA_FILE_PATH);
+        return FilenameUtils.separatorsToSystem(rawBrokenTestObjectsPath);
+    }
 
     private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String proposedLocator,
             SelectorMethod proposedLocatorMethod, SelectorMethod recoveryMethod, String pathToScreenshot) {

@@ -127,27 +127,6 @@ public class AutoHealingController {
         return null;
     }
 
-    /**
-     * Set content of the file to a BrokenTestObjects entity which consists of a
-     * list of BrokenTestObjects
-     */
-    public static void writeToFilesWithBrokenObjects(Set<BrokenTestObject> brokenTestObjectsToUpdate, String filePath) {
-        try {
-            BrokenTestObjects brokenTestObjects = new BrokenTestObjects();
-            brokenTestObjects.setBrokenTestObjects(brokenTestObjectsToUpdate);
-            File file = new File(filePath);
-            if (file.exists()) {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                mapper.writeValue(file, brokenTestObjects);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace(System.out);
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-        }
-    }
-
     private static File createBrokenTestObjectsFile(String projectDir) {
         String rawSelfHealingDir = FilenameUtils.concat(projectDir,
                 SmartXPathConstants.SELF_HEALING_FOLDER_PATH);
@@ -188,6 +167,7 @@ public class AutoHealingController {
             return;
         }
         try {
+            createBrokenTestObjectsFile(project.getFolderLocation());
             ObjectMapper mapper = new ObjectMapper();
             File file = new File(getDataFilePath(project));
             if (file.exists()) {
@@ -197,19 +177,6 @@ public class AutoHealingController {
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
-    }
-
-    public static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            File file = new File(filePath);
-            if (file.exists()) {
-                return mapper.readValue(file, BrokenTestObjects.class);
-            }
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
-        return null;
     }
 
     @SuppressWarnings("unused")
