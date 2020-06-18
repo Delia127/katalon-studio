@@ -176,6 +176,16 @@ public class AndroidSnapshotMobileElement extends RenderedTreeSnapshotMobileElem
         
         htmlMobileElementProps.put(AndroidProperties.XPATH, makeXpath());
     }
+    
+    @Override
+    protected String makeXpath() {
+        String xpath = super.makeXpath();
+        if (xpath.contains("ActionBar$Tab")) {
+            // https://katalon.atlassian.net/browse/HELPDESK-249
+            xpath = xpath.replace("ActionBar$Tab", "ActionBar.Tab");
+        }
+        return xpath;
+    }
 
     @Override
     public MobileDriverType getMobileDriverType() {
