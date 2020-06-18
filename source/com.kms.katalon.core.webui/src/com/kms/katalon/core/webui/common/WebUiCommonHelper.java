@@ -708,6 +708,8 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     public static List<WebElement> findWebElements(TestObject testObject, int timeout) {
+        timeout = WebUiCommonHelper.checkTimeout(timeout);
+        
         boolean shouldApplySelfHealing = RunConfiguration.shouldApplySelfHealing();
         if (shouldApplySelfHealing) {
             return findElementsWithSelfHealing(testObject, timeout);
@@ -745,7 +747,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         List<TestObject> healedTestObjects = SelfHealingController.findHealedTestObjects(testObject);
         if (healedTestObjects != null && !healedTestObjects.isEmpty()) {
             for (TestObject healedTestObject : healedTestObjects) {
-                List<WebElement> foundElements = findElementsByDefault(healedTestObject, 1);
+                List<WebElement> foundElements = findElementsByDefault(healedTestObject, 0);
                 if (foundElements != null && !foundElements.isEmpty()) {
                     String proposedLocator = healedTestObject.getSelectorCollection().get(healedTestObject.getSelectorMethod());
                     SelfHealingController
@@ -773,10 +775,10 @@ public class WebUiCommonHelper extends KeywordHelper {
                     FindElementsResult findResult = null;
                     boolean hasFindWithDefaultXPath = elementMethod == SelectorMethod.XPATH;
                     if (currentMethod == SelectorMethod.XPATH && !hasFindWithDefaultXPath) {
-                        findResult = findElementsBySelectedMethod(testObject, 1, currentMethod, false);
+                        findResult = findElementsBySelectedMethod(testObject, 0, currentMethod, false);
                     }
                     if (findResult == null || findResult.isEmpty()) {
-                        findResult = findElementsBySelectedMethod(testObject, 1, currentMethod, true);
+                        findResult = findElementsBySelectedMethod(testObject, 0, currentMethod, true);
                     }
                     
                     if (findResult != null && !findResult.isEmpty()) {
@@ -938,7 +940,6 @@ public class WebUiCommonHelper extends KeywordHelper {
     private static FindElementsResult findElementByNormalMethods(TestObject testObject, SelectorMethod locatorMethod,
             int timeout) {
         WebDriver webDriver = DriverFactory.getWebDriver();
-        timeout = WebUiCommonHelper.checkTimeout(timeout);
 
         By defaultLocator = buildLocator(testObject, locatorMethod);
         if (defaultLocator == null) {
@@ -989,6 +990,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         String screenshotPath = StringUtils.EMPTY;
 
         boolean hasFound = false;
+        long startTime = System.currentTimeMillis();
+        do {
             for (int i = 0; i < allXPaths.size(); i++) {
                 selectedXPath = allXPaths.get(i);
                 String xpathValue = selectedXPath.getValue();
@@ -1017,6 +1020,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 }
             }
             hasFound = foundElements != null && !foundElements.isEmpty();
+        } while (!hasFound && (System.currentTimeMillis() - startTime) / 1000 <= timeout);
 
         if (selectedXPath == null) {
             SelfHealingController.logInfo(StringConstants.KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS);
