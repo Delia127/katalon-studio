@@ -11,12 +11,10 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +26,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
-import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
@@ -73,8 +70,6 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
 
     public static final String WEB_ELEMENT_XPATH = "xpath";
-    
-    private static AtomicInteger atomicCounter = new AtomicInteger(0);
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {
@@ -750,8 +745,14 @@ public class WebUiCommonHelper extends KeywordHelper {
         List<TestObject> healedTestObjects = SelfHealingController.findHealedTestObjects(testObject);
         if (healedTestObjects != null && !healedTestObjects.isEmpty()) {
             for (TestObject healedTestObject : healedTestObjects) {
-                List<WebElement> foundElements = findElementsByDefault(healedTestObject, timeout);
+                List<WebElement> foundElements = findElementsByDefault(healedTestObject, 1);
                 if (foundElements != null && !foundElements.isEmpty()) {
+                    String proposedLocator = healedTestObject.getSelectorCollection().get(healedTestObject.getSelectorMethod());
+                    SelfHealingController
+                            .logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR,
+                                    testObject.getObjectId(), proposedLocator));
+
+                    KeywordExecutionContext.setHasHealedSomeObjects(true);
                     return foundElements;
                 }
             }
@@ -759,21 +760,33 @@ public class WebUiCommonHelper extends KeywordHelper {
 
         List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
 
-        for (Pair<SelectorMethod, Boolean> element : methodsPriorityOrder) {
-            boolean isEnableMethod = element.getRight();
-            if (!isEnableMethod) {
+        SelectorMethod elementMethod = testObject.getSelectorMethod();
+        for (Pair<SelectorMethod, Boolean> rawMethod : methodsPriorityOrder) {
+            boolean isMethodEnabled = rawMethod.getRight();
+            if (!isMethodEnabled) {
                 continue;
             }
-            SelectorMethod method = element.getLeft();
-            if (method != testObject.getSelectorMethod() || method == SelectorMethod.XPATH) {
+            SelectorMethod currentMethod = rawMethod.getLeft();
+            boolean shouldFindWithSelectedMethod = currentMethod != elementMethod || currentMethod == SelectorMethod.XPATH; // Find one more time with Smart XPath
+            if (shouldFindWithSelectedMethod) {
                 try {
-                    FindElementsResult findResult = findElementsBySelectedMethod(testObject, timeout, method, true);
-                    if (!findResult.isEmpty()) {
+                    FindElementsResult findResult = null;
+                    boolean hasFindWithDefaultXPath = elementMethod == SelectorMethod.XPATH;
+                    if (currentMethod == SelectorMethod.XPATH && !hasFindWithDefaultXPath) {
+                        findResult = findElementsBySelectedMethod(testObject, 1, currentMethod, false);
+                    }
+                    if (findResult == null || findResult.isEmpty()) {
+                        findResult = findElementsBySelectedMethod(testObject, 1, currentMethod, true);
+                    }
+                    
+                    if (findResult != null && !findResult.isEmpty()) {
                         BrokenTestObject brokenTestObject = registerBrokenTestObject(findResult, testObject);
 
                         SelfHealingController
                                 .logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR,
                                         testObject.getObjectId(), brokenTestObject.getProposedLocator()));
+
+                        KeywordExecutionContext.setHasHealedSomeObjects(true);
                         return findResult.getElements();
                     }
                 } catch (NoSuchElementException e) {
@@ -822,7 +835,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     private static FindElementsResult findElementsBySelectedMethod(TestObject testObject, int timeout,
-            SelectorMethod method, boolean isInSelfHealingStage) {
+            SelectorMethod method, boolean useSmartXPath) {
         if (isElementInsideShadowDOM(testObject)) {
             return findElementsInsideShadowDOM(testObject, timeout);
         }
@@ -833,7 +846,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             case CSS:
                 return findElementByNormalMethods(testObject, method, timeout);
             case XPATH:
-                return isInSelfHealingStage
+                return useSmartXPath
                         ? findWebElementsWithSmartXPath(testObject, timeout)
                         : findElementByNormalMethods(testObject, method, timeout);
             case IMAGE:
@@ -863,36 +876,60 @@ public class WebUiCommonHelper extends KeywordHelper {
 
         logger.logDebug(MessageFormat.format(CoreWebuiMessageConstants.MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT,
                 testObject.getObjectId(), testObject.getParentObject().getObjectId()));
-        try {
-            isSwitchToParentFrame = switchToParentFrame(parentObject);
-            shadowRootElement = findWebElement(parentObject, timeout);
-        } catch (WebElementNotFoundException e) {
-            return FindElementsResult.from(cssLocator, SelectorMethod.CSS);
-        }
-
-        if (shadowRootElement == null) {
-            return FindElementsResult.from(cssLocator, SelectorMethod.CSS);
-        }
-
-        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
-                testObject.getObjectId(), cssLocator, timeout));
-
-        try {
-            foundElements = doFindElementsInsideShadowDom(testObject, timeout, webDriver, cssLocator, parentObject,
-                    shadowRootElement);
-            if (foundElements == null || foundElements.isEmpty()) {
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR,
-                        cssLocator));
+        long startTime = System.currentTimeMillis();
+        do {
+            try {
+                isSwitchToParentFrame = switchToParentFrame(parentObject);
+                shadowRootElement = findWebElement(parentObject, timeout);
+            } catch (WebElementNotFoundException e) {
+                return FindElementsResult.from(cssLocator, SelectorMethod.CSS);
             }
-        } catch (WebElementNotFoundException exception) {
-            // Element not found, do nothing
-        } finally {
-            if (isSwitchToParentFrame) {
-                switchToDefaultContent();
+    
+            if (shadowRootElement == null) {
+                return FindElementsResult.from(cssLocator, SelectorMethod.CSS);
             }
-        }
+    
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
+                    testObject.getObjectId(), cssLocator, timeout));
+    
+            try {
+                foundElements = doFindElementsInsideShadowDom(testObject, timeout, webDriver, cssLocator, parentObject,
+                        shadowRootElement);
+                if (foundElements == null || foundElements.isEmpty()) {
+                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR,
+                            cssLocator));
+                }
+            } catch (WebElementNotFoundException exception) {
+                // Element not found, do nothing
+            } finally {
+                if (isSwitchToParentFrame) {
+                    switchToDefaultContent();
+                }
+            }
+        } while ((System.currentTimeMillis() - startTime) / 1000 <= timeout);
 
         return FindElementsResult.from(foundElements, cssLocator, SelectorMethod.CSS, StringUtils.EMPTY);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<WebElement> doFindElementsInsideShadowDom(TestObject testObject, int timeOut,
+            WebDriver webDriver, final String cssLocator, final TestObject parentObject, WebElement shadowRootElement)
+            throws WebElementNotFoundException {
+        Object shadowRootElementSandbox = ((JavascriptExecutor) webDriver)
+                .executeScript("return arguments[0].shadowRoot;", shadowRootElement);
+        if (shadowRootElementSandbox == null) {
+            throw new StepFailedException(MessageFormat
+                    .format(CoreWebuiMessageConstants.MSG_FAILED_WEB_ELEMENT_X_IS_NOT_SHADOW_ROOT, parentObject));
+        }
+        
+        String filteredCssSelector = StringUtils.defaultString(cssLocator).replace("'", "\\\'");
+        List<WebElement> webElements = (List<WebElement>) ((JavascriptExecutor) webDriver).executeScript(
+                "return arguments[0].querySelectorAll('" + filteredCssSelector + "');", shadowRootElementSandbox);
+        if (webElements != null && webElements.size() > 0) {
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
+                    webElements.size(), testObject.getObjectId(), cssLocator, timeOut));
+        }
+        return webElements;
     }
 
     /**
@@ -1247,27 +1284,6 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (webElements != null && webElements.size() > 0) {
             logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), locator.toString(), timeOut));
-        }
-        return webElements;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static List<WebElement> doFindElementsInsideShadowDom(TestObject testObject, int timeOut,
-            WebDriver webDriver, final String cssLocator, final TestObject parentObject, WebElement shadowRootElement)
-            throws WebElementNotFoundException {
-        Object shadowRootElementSandbox = ((JavascriptExecutor) webDriver)
-                .executeScript("return arguments[0].shadowRoot;", shadowRootElement);
-        if (shadowRootElementSandbox == null) {
-            throw new StepFailedException(MessageFormat
-                    .format(CoreWebuiMessageConstants.MSG_FAILED_WEB_ELEMENT_X_IS_NOT_SHADOW_ROOT, parentObject));
-        }
-        
-        String filteredCssSelector = StringUtils.defaultString(cssLocator).replace("'", "\\\'");
-        List<WebElement> webElements = (List<WebElement>) ((JavascriptExecutor) webDriver).executeScript(
-                "return arguments[0].querySelectorAll('" + filteredCssSelector + "');", shadowRootElementSandbox);
-        if (webElements != null && webElements.size() > 0) {
-            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
-                    webElements.size(), testObject.getObjectId(), cssLocator, timeOut));
         }
         return webElements;
     }

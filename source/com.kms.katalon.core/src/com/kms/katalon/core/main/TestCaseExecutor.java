@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
@@ -30,6 +31,7 @@ import com.kms.katalon.core.context.internal.ExecutionEventManager;
 import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
 import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
+import com.kms.katalon.core.keyword.internal.KeywordExecutionContext;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
@@ -40,7 +42,6 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testcase.TestCaseFactory;
-import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
@@ -103,6 +104,7 @@ public class TestCaseExecutor {
         keywordStack = new Stack<KeywordLogger.KeywordStackElement>();
         parentErrors = errorCollector.getCoppiedErrors();
         errorCollector.clearErrors();
+        KeywordExecutionContext.setHasHealedSomeObjects(false);
     }
 
     private void onExecutionComplete() {
@@ -178,14 +180,13 @@ public class TestCaseExecutor {
     }
 
     private void postExecution() {
-
-		if (RunConfiguration.shouldApplySelfHealing()) {
-
+        boolean hasHealedSomeObjects = KeywordExecutionContext.hasHealedSomeObjects();
+		if (hasHealedSomeObjects && RunConfiguration.shouldApplySelfHealing()) {
+            logger.logInfo(StringUtils.EMPTY);
 			logger.logInfo(StringConstants.SELF_HEALING_REPORT_AVAILABLE_OPENING);
 			logger.logInfo(StringConstants.SELF_HEALING_REPORT_VISIT_INSIGHT_PART);
 			logger.logInfo(StringConstants.SELF_HEALING_REFER_TO_DOCUMENT);
 			logger.logInfo(StringConstants.SELF_HEALING_REPORT_AVAILABLE_ENDING);
-			
 		}
 
         errorCollector.clearErrors();
