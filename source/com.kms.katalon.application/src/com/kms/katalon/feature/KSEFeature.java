@@ -1,9 +1,8 @@
 package com.kms.katalon.feature;
 
 public enum KSEFeature {
-    SMART_XPATH,
+    SELF_HEALING,
     WEB_LOCATOR_SETTINGS,
-    IMAGE_BASED_OBJECT_DETECTION,
     CUSTOM_WEB_SERVICE_METHOD,
     ORACLE_EXTERNAL_DATA,
     SQL_SERVER_EXTERNAL_DATA,

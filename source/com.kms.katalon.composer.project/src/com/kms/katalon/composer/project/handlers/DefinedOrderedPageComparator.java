@@ -25,7 +25,6 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
         predefinedOrder.add(StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID);
         
         predefinedOrder.add(StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID);
-        predefinedOrder.add(StringConstants.WEB_LOCATORS_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.TEST_CASE_SETTING_PAGE_ID);
         
         predefinedOrder.add(StringConstants.EXTERNAL_LIBRARIES_SETTING_PAGE_ID);

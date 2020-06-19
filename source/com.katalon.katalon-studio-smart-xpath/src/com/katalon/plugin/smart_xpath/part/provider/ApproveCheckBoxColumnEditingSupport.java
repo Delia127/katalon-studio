@@ -1,4 +1,4 @@
-package com.katalon.plugin.smart_xpath.dialog.provider;
+package com.katalon.plugin.smart_xpath.part.provider;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -8,11 +8,11 @@ import org.eclipse.swt.SWT;
 
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 
-public class CheckBoxColumnEditingSupport extends EditingSupport {
+public class ApproveCheckBoxColumnEditingSupport extends EditingSupport {
 
 	private TableViewer tableViewer;
 
-	public CheckBoxColumnEditingSupport(TableViewer viewer) {
+	public ApproveCheckBoxColumnEditingSupport(TableViewer viewer) {
 		super(viewer);
 		this.tableViewer = viewer;
 	}

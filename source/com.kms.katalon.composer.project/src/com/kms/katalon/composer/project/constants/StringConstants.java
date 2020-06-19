@@ -35,6 +35,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_REFRESHING_EXPLORER = ComposerProjectMessageConstants.HAND_REFRESHING_EXPLORER;
 
+    // Self Healing
+    public static final String PROJECT_EXECUTION_SELF_HEALING_ID = "com.katalon.composer.self_healing";
+    
     // RebuildProjectHandler
     public static final String HAND_REBUILD_PROJ = ComposerProjectMessageConstants.HAND_REBUILD_PROJ;
 
@@ -58,8 +61,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PROJECT_INFORMATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.project.information";
 
     public static final String TEST_DESIGN_SETTINGS_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign";
-
-    public static final String WEB_LOCATORS_SETTING_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign.1";
     
     public static final String WS_METHOD_SETTING_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign.webservicemethod";
     

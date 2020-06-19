@@ -248,11 +248,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
         propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
-        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, featureService.canUse(KSEFeature.IMAGE_BASED_OBJECT_DETECTION));
-        
+
 //        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
-        
-        propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, featureService.canUse(KSEFeature.SMART_XPATH));
+
+        propertyMap.put(RunConfiguration.ALLOW_USING_SELF_HEALING, featureService.canUse(KSEFeature.SELF_HEALING));
         
         return propertyMap;
     }

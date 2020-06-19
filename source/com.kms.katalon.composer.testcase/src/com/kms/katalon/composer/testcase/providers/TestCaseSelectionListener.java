@@ -9,7 +9,7 @@ import com.kms.katalon.composer.testcase.parts.TestStepManualComposite;
 
 public class TestCaseSelectionListener extends SelectionAdapter {
 
-    TestStepManualComposite testStepManualComposite;
+	TestStepManualComposite testStepManualComposite;
 
     public TestCaseSelectionListener(TestStepManualComposite testStepManualComposite) {
         this.testStepManualComposite = testStepManualComposite;
@@ -19,11 +19,11 @@ public class TestCaseSelectionListener extends SelectionAdapter {
     public void widgetSelected(SelectionEvent e) {
         Object item = e.getSource();
         if (item instanceof ToolItem) {
-            testStepManualComposite.performToolItemSelected((ToolItem) e.getSource(), e);
+        	testStepManualComposite.performToolItemSelected((ToolItem) e.getSource(), e);
             return;
         }
         if (item instanceof MenuItem) {
-            testStepManualComposite.performMenuItemSelected((MenuItem) e.getSource());
+        	testStepManualComposite.performMenuItemSelected((MenuItem) e.getSource());
         }
     }
 }

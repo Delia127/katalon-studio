@@ -205,12 +205,6 @@ public class SettingHandler {
                     String nodeId = node.getId();
                     boolean disabled = false;
                     switch (nodeId) {
-                        case StringConstants.WEB_LOCATORS_SETTING_PAGE_ID:
-                            if (!featureService.canUse(KSEFeature.WEB_LOCATOR_SETTINGS)) {
-                                KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.WEB_LOCATOR_SETTINGS);
-                                disabled = true;
-                            }
-                            break;
                         case StringConstants.WS_METHOD_SETTING_PAGE_ID:
                             if (!featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_METHOD)) {
                                 KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CUSTOM_WEB_SERVICE_METHOD);
@@ -373,7 +367,6 @@ public class SettingHandler {
             return;
         }
 
-        testDesignSettings.remove(StringConstants.WEB_LOCATORS_SETTING_PAGE_ID);
         testDesignSettings.remove(StringConstants.WS_METHOD_SETTING_PAGE_ID);
     }
 
