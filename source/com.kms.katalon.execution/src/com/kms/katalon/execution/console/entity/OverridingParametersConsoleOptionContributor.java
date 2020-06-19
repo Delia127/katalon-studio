@@ -3,11 +3,11 @@ package com.kms.katalon.execution.console.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.core.util.internal.GroovyConstants;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.logging.LogUtil;
 
 public class OverridingParametersConsoleOptionContributor implements ConsoleOptionContributor{
     private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
@@ -38,7 +38,7 @@ public class OverridingParametersConsoleOptionContributor implements ConsoleOpti
 			});
 			
 		} catch (Exception e) {
-			LoggerSingleton.logError(e);
+			LogUtil.logError(e);
 		}
 	}
 	

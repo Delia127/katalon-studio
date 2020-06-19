@@ -1,0 +1,41 @@
+{
+  "description": "",
+  "manifest_version": 2,
+  "name": "Katalon Smart Wait Utility",
+  "applications": {
+    "gecko": {
+      "id": "{54dcd9e9-903f-43e9-95f0-22bd0e0f3c0a}",
+      "strict_min_version": "48.0"
+    }
+  },
+  "version": "1.0.1",
+  "homepage_url": "https://www.katalon.com/",
+  "icons": {},
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "webRequest",
+    "contextMenus",
+    "downloads",
+    "webNavigation",
+    "notifications",
+    "http://*/",
+    "https://*/",
+    "storage",
+    "unlimitedStorage",
+    "<all_urls>",
+    "debugger"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["common/browser-polyfill.js", "content/wait-injector.js"],
+      "match_about_blank": true,
+      "all_frames": true,
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": ["content/wait.js"],
+
+  "offline_enabled": true
+}

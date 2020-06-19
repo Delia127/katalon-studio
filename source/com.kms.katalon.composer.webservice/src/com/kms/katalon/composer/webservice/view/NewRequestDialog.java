@@ -85,6 +85,7 @@ public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEnt
         if (WebServiceRequestEntity.SOAP.equals(webServiveType)) {
             entity.setWsdlAddress(endPoint);
             entity.setSoapRequestMethod(WebServiceRequestEntity.SOAP);
+            entity.setUseServiceInfoFromWsdl(false);
         } else {
             entity.setRestUrl(endPoint);
             entity.setRestRequestMethod(WebServiceRequestEntity.GET_METHOD);

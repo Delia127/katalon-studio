@@ -2,6 +2,7 @@ package com.kms.katalon.integration.analytics.handler;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import com.kms.katalon.application.KatalonApplicationActivator;
-import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
@@ -32,12 +31,12 @@ public class AnalyticsAuthorizationHandler {
             AnalyticsTokenInfo tokenInfo = requestToken(serverUrl, email, password);
             settingStore.setToken(tokenInfo.getAccess_token());
             return tokenInfo;
-        } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
+        } catch(Exception ex) {
+            LogUtil.logError(ex);
             try {
                 settingStore.enableIntegration(false);
             } catch (IOException e) {
-                LoggerSingleton.logError(e);
+                LogUtil.logError(e);
             }
         }
         return null;
@@ -48,7 +47,8 @@ public class AnalyticsAuthorizationHandler {
             AnalyticsTokenInfo tokenInfo = requestToken(serverUrl, email, password);
             settingStore.setToken(tokenInfo.getAccess_token());
             return tokenInfo;
-        } catch (Exception ex) {
+        } catch(Exception ex) {
+            LogUtil.logError(ex);
             try {
                 settingStore.enableIntegration(false);
             } catch (IOException e) {
@@ -57,14 +57,13 @@ public class AnalyticsAuthorizationHandler {
             try {
                 String message = KatalonApplicationActivator.getFeatureActivator().getTestOpsMessage(ex.getMessage());
                 LogUtil.logError(MessageFormat.format(IntegrationAnalyticsMessages.MSG_ERROR_WITH_REASON, message));
-                MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
-                        message);
+//                MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+//                        message);
             } catch (Exception e) {
                 //Cannot get message from TestOps
-                MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
-                        IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+//                MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+//                        IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
             }
-            LogUtil.logError(ex);
         }
         return null;
     }
@@ -78,7 +77,7 @@ public class AnalyticsAuthorizationHandler {
                 organizations.addAll(loaded);
             }
         } catch (AnalyticsApiExeception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
         }
         return organizations;
     }
@@ -92,7 +91,7 @@ public class AnalyticsAuthorizationHandler {
                 projects.addAll(loaded);
             }
         } catch (AnalyticsApiExeception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
         }
         return projects;
     }
@@ -123,10 +122,10 @@ public class AnalyticsAuthorizationHandler {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-                MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
-                        cause.getMessage());
+//                MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
+//                        cause.getMessage());
             } else {
-                LoggerSingleton.logError(cause);
+                LogUtil.logError(cause);
             }
         } catch (InterruptedException e) {
             // Ignore this
@@ -143,7 +142,7 @@ public class AnalyticsAuthorizationHandler {
                 teams.addAll(loaded);
             }
         } catch (AnalyticsApiExeception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
         }
         
         return teams;
@@ -176,10 +175,10 @@ public class AnalyticsAuthorizationHandler {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-                MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
-                        cause.getMessage());
+//                MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
+//                        cause.getMessage());
             } else {
-                LoggerSingleton.logError(cause);
+                LogUtil.logError(cause);
             }
         } catch (InterruptedException e) {
             // Ignore this
@@ -189,19 +188,15 @@ public class AnalyticsAuthorizationHandler {
     
     public static int getDefaultTeamIndex(AnalyticsSettingStore analyticsSettingStore, List<AnalyticsTeam> teams) {
         int selectionIndex = 0;
-        try {
-            AnalyticsTeam storedTeam = analyticsSettingStore.getTeam();
-            if (storedTeam != null && storedTeam.getId() != null && teams != null) {
-                for (int i = 0; i < teams.size(); i++) {
-                    AnalyticsTeam p = teams.get(i);
-                    if (storedTeam.getId().equals(p.getId())) {
-                        selectionIndex = i;
-                        return selectionIndex;
-                    }
+        AnalyticsTeam storedTeam = analyticsSettingStore.getTeam();
+        if (storedTeam != null && storedTeam.getId() != null && teams != null) {
+            for (int i = 0; i < teams.size(); i++) {
+                AnalyticsTeam p = teams.get(i);
+                if (storedTeam.getId().equals(p.getId())) {
+                    selectionIndex = i;
+                    return selectionIndex;
                 }
             }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
         }
         return selectionIndex;
     }
@@ -219,7 +214,7 @@ public class AnalyticsAuthorizationHandler {
                 }
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
         }
         return selectionIndex;
     }
@@ -254,7 +249,7 @@ public class AnalyticsAuthorizationHandler {
                 }
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
         }
         return selectionIndex;
     }
@@ -262,19 +257,15 @@ public class AnalyticsAuthorizationHandler {
     public static int getDefaultProjectIndex(AnalyticsSettingStore analyticsSettingStore,
             List<AnalyticsProject> projects) {
         int selectionIndex = 0;
-        try {
-            AnalyticsProject storedProject = analyticsSettingStore.getProject();
-            if (storedProject != null && storedProject.getId() != null) {
-                for (int i = 0; i < projects.size(); i++) {
-                    AnalyticsProject p = projects.get(i);
-                    if (storedProject.getId().equals(p.getId())) {
-                        selectionIndex = i;
-                        return selectionIndex;
-                    }
+        AnalyticsProject storedProject = analyticsSettingStore.getProject();
+        if (storedProject != null && storedProject.getId() != null) {
+            for (int i = 0; i < projects.size(); i++) {
+                AnalyticsProject p = projects.get(i);
+                if (storedProject.getId().equals(p.getId())) {
+                    selectionIndex = i;
+                    return selectionIndex;
                 }
             }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
         }
         return selectionIndex;
     }

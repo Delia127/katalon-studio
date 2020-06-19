@@ -253,7 +253,11 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_LBL_RETRY_TIMES;
 
-    public static String DIA_CHK_FOR_FAILED_TEST_CASES;
+    public static String DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS;
+
+    public static String DIA_CHK_APPLY_PROXY;
+
+    public static String DIA_CHK_OVERRIDE_PLATFORM;
 
     public static String DIA_TITLE_TEST_SUITE_BROWSER;
     
@@ -286,6 +290,12 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String LBL_SETT_RECIPIENT_DEL;
     
     public static String LBL_ACTION_DELAY;
+
+    public static String MailSettingsPage_MSG_ENABLE_COLLECTION_REPORT;
+
+    public static String MailSettingsPage_MSG_ENABLE_TEST_SUITE_REPORT;
+
+    public static String MailSettingsPage_MSG_SKIP_SENDING_INDIVIDUAL_REPORT;
 
     public static String MSG_DELETING_FILE_X;
 
@@ -325,7 +335,9 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_LBL_BODY;
 
-    public static String PREF_LNK_EDIT_TEMPLATE;
+    public static String PREF_LNK_EDIT_TEMPLATE_TEST_SUITE;
+
+    public static String PREF_LNK_EDIT_TEMPLATE_TEST_SUITE_COLLECTION;
 
     public static String PREF_LBL_REPORT_FORMAT;
 
@@ -386,6 +398,12 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String REPORT_MSG_MUST_ENTER_API_KEY;
     
     public static String MSG_WARN_VM_ARGUMENTS;
+
+    public static String DIA_CHK_FOR_RETRY_ALL_EXECUTIONS;
+
+    public static String DIA_CHK_FOR_RETRY_IMMEDIATELY;
+
+    public static String PA_MSG_DRIVER_OUTDATED;
 
     static {
         // initialize resource bundle

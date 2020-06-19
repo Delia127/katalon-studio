@@ -14,4 +14,7 @@ Require-Bundle: com.google.guava;bundle-version="23.0.0",
  com.kms.katalon.logging;bundle-version="1.0.0",
  com.kms.katalon.selenium-standalone;bundle-version="1.0.0",
  com.kms.katalon.core.webui;bundle-version="1.0.0"
-Import-Package: com.kms.katalon.core.webui.driver
+Import-Package: com.google.gson,
+ com.google.gson.reflect,
+ com.kms.katalon.core.util.internal,
+ com.kms.katalon.core.webui.driver

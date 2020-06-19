@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.mobile.objectspy.actions;
 
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionUtil;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
@@ -11,9 +12,9 @@ public class MobileActionMapping {
 
     private MobileActionParamValueType[] paramDatas;
 
-    private MobileElement targetElement;
+    private CapturedMobileElement targetElement;
 
-    public MobileActionMapping(IMobileAction action, String recordedData, MobileElement targetElement) {
+    public MobileActionMapping(IMobileAction action, String recordedData, CapturedMobileElement targetElement) {
         paramDatas = new MobileActionParamValueType[action.getParams().length];
         for (int i = 0; i < action.getParams().length; i++) {
             MobileActionParam mobileActionParam = action.getParams()[i];
@@ -27,13 +28,13 @@ public class MobileActionMapping {
         this.setAction(action);
     }
 
-    public MobileActionMapping(IMobileAction action, MobileActionParamValueType[] data, MobileElement targetElement) {
+    public MobileActionMapping(IMobileAction action, MobileActionParamValueType[] data, CapturedMobileElement targetElement) {
         this.setData(data);
         this.setTargetElement(targetElement);
         this.setAction(action);
     }
 
-    public MobileActionMapping(IMobileAction action, MobileElement targetElement) {
+    public MobileActionMapping(IMobileAction action, CapturedMobileElement targetElement) {
         this.setTargetElement(targetElement);
         this.setAction(action);
     }
@@ -46,11 +47,11 @@ public class MobileActionMapping {
         this.paramDatas = paramDatas;
     }
 
-    public MobileElement getTargetElement() {
+    public CapturedMobileElement getTargetElement() {
         return targetElement;
     }
 
-    public void setTargetElement(MobileElement targetElement) {
+    public void setTargetElement(CapturedMobileElement targetElement) {
         this.targetElement = targetElement;
     }
 

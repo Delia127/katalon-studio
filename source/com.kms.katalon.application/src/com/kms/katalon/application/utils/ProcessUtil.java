@@ -1,6 +1,7 @@
 package com.kms.katalon.application.utils;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.core.model.KatalonPackage;
@@ -8,9 +9,9 @@ import com.kms.katalon.core.util.ConsoleCommandExecutor;
 
 public class ProcessUtil {
     
-    private static String[] MAC_COMMAND = new String[] { "/bin/sh", "-c", "pgrep -i -x -u $(whoami) katalonc | wc -l" };
+    private static String[] MAC_COMMAND = new String[] { "/bin/sh", "-c", "pgrep -x -u $(whoami) katalonc | wc -l" };
     
-    private static String[] LINUX_COMMAND = new String[] { "/bin/sh", "-c", "pgrep -i -x -u $(whoami) katalonc | wc -l" };
+    private static String[] LINUX_COMMAND = new String[] { "/bin/sh", "-c", "pgrep -x -u $(whoami) katalonc | wc -l" };
 
     private static String[] WINDOW_COMMAND = new String[] {"cmd", "/c", "tasklist /fi \"imagename eq katalonc.exe\" | find /i \"katalonc.exe\" /c"};
     
@@ -35,6 +36,10 @@ public class ProcessUtil {
 
         String kataloncProcessCount = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(command, true);
         return Integer.valueOf(kataloncProcessCount.trim());
+    }
+    
+    public static boolean isKRE() {
+        return Platform.getProduct().getId().equals("com.kms.katalon.console.product");
     }
 
 }

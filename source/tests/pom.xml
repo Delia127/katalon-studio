@@ -23,7 +23,10 @@
 		<module>com.kms.katalon.execution.webui.test</module>
 		<module>com.kms.katalon.core.webui.test</module>
 		<module>com.kms.katalon.tests.report</module>
+		<module>com.kms.katalon.composer.webui.test</module>
 		<module>com.kms.katalon.composer.testcase.test</module>
+		<module>com.kms.katalon.application.test</module>
+		<module>com.kms.katalon.selenium.ide.test</module>
 		<module>com.kms.katalon.composer.controller.test</module>
 		<module>com.kms.katalon.execution.webservice.test</module>
 	</modules>

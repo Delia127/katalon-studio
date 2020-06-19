@@ -12,18 +12,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
-import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class GeneralPreferencePage extends PreferencePage {
     private Button radioAutoRestorePrevSession;
@@ -37,6 +34,8 @@ public class GeneralPreferencePage extends PreferencePage {
     private Button chkShowHelpAtStartUp;
 
     private Composite parentComposite;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     @Override
     protected Control createContents(Composite parent) {
@@ -95,8 +94,8 @@ public class GeneralPreferencePage extends PreferencePage {
         }
         chkShowHelpAtStartUp.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP));
         
-        boolean isPaidAccount = LicenseUtil.isPaidLicense();
-        if (isPaidAccount) {
+        boolean canConfigUsageTracking = featureService.canUse(KSEFeature.CONFIGURE_USAGE_TRACKING);
+        if (canConfigUsageTracking) {
             if (!prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING)){
                 prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_ALLOW_USAGE_TRACKING, true);
             }

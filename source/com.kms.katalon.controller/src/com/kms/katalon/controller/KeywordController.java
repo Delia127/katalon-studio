@@ -28,6 +28,9 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class KeywordController extends EntityController {
     private static final String TESTNG_BUILTIN_KEYWORDS_CLASS_NAME = "TestNGBuiltinKeywords";
+    
+    public static final String CUSTOM_KEYWORD_CLASS_NAME = "CustomKeywords";
+    
     private static EntityController _instance;
 
     private KeywordController() {
@@ -205,6 +208,7 @@ public class KeywordController extends EntityController {
 
     public void parseCustomKeywordFile(IFile file, ProjectEntity project) throws Exception {
         synchronized (file) {
+            ProjectController.getInstance().updateProjectClassLoader(project);
             IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
             CustomKeywordParser.getInstance().parseCustomKeywordFile(file, libFolder, true);
             refreshCustomKeywordLibFile(project, null);
