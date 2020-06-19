@@ -50,7 +50,7 @@ import com.kms.katalon.util.collections.Pair;
 
 public class PrioritizeSelectionMethodsComposite extends Composite {
 
-    private static final String GRP_LBL_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION = SmartXPathMessageConstants.GRP_LBL_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION;
+    private static final String GRP_LBL_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION = SmartXPathMessageConstants.GRP_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION;
 
     private static final String BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER = SmartXPathMessageConstants.BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER;
 

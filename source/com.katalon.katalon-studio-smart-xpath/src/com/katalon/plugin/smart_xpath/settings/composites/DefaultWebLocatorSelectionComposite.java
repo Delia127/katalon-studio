@@ -49,7 +49,7 @@ public class DefaultWebLocatorSelectionComposite extends Group {
         defaultLocatorRowLayout.marginHeight = 5;
         defaultLocatorRowLayout.marginWidth = 5;
         this.setLayout(defaultLocatorRowLayout);
-        this.setText(SmartXPathMessageConstants.GROUP_DEFAULT_LOCATOR_SELECTION_AREA);
+        this.setText(SmartXPathMessageConstants.GRP_DEFAULT_LOCATOR_SELECTION_AREA);
 
         defaultLocatorOptions.forEach((label, selectorMethod) -> {
             Button radioDefaultLocator = new Button(this, SWT.RADIO);

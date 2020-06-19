@@ -22,5 +22,11 @@ public class SmartXPathConstants {
     public static final String SELF_HEALING_INSIGHTS_PART_ID = "com.kms.katalon.composer.execution.part.selfHealing";
 
     public static final String SELF_HEALING_INSIGHTS_PART_LABEL = "Self-Healing Insights";
-   
+
+    public final static String NOTIFICATION_SELF_HEALING_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self_healing_notification_16px.png";
+
+    public final static String SELF_HEALING_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self_healing_16px.png";
+
+    public final static String ICON_URI_FOR_PART = "IconUriForPart";
+
 }

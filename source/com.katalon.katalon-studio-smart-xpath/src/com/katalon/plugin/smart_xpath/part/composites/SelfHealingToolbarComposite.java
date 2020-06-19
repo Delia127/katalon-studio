@@ -3,7 +3,6 @@ package com.katalon.plugin.smart_xpath.part.composites;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
