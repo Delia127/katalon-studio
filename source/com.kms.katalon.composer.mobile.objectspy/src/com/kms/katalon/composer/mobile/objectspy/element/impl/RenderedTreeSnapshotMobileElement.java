@@ -10,6 +10,10 @@ import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.composer.mobile.objectspy.element.SnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
+import com.kms.katalon.entity.repository.MobileElementEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity.LocatorStrategy;
+
+import io.appium.java_client.AppiumDriver;
 
 public abstract class RenderedTreeSnapshotMobileElement<T> extends BasicMobileElement implements
         SnapshotMobileElement<T> {
@@ -20,6 +24,10 @@ public abstract class RenderedTreeSnapshotMobileElement<T> extends BasicMobileEl
     private List<RenderedTreeSnapshotMobileElement<T>> childrenElement;
 
     private CapturedMobileElement capturedElement;
+    
+    private String locator = "";
+
+    private MobileElementEntity.LocatorStrategy locatorStrategy = LocatorStrategy.XPATH;
 
     protected RenderedTreeSnapshotMobileElement() {
         this(null);
@@ -88,16 +96,21 @@ public abstract class RenderedTreeSnapshotMobileElement<T> extends BasicMobileEl
     }
 
     @Override
-    public CapturedMobileElement newCapturedElement() {
+    public CapturedMobileElement newCapturedElement(AppiumDriver<?> appiumDriver) {
         CapturedMobileElement capturedElement = new CapturedMobileElement(this, true);
         capturedElement.setName(getName());
         capturedElement.setAttributes(getAttributes());
-
+        buildLocator(appiumDriver);
+        capturedElement.setLocator(getLocator());
+        capturedElement.setLocatorStrategy(getLocatorStrategy());
         setCapturedElement(capturedElement);
         return capturedElement;
     }
 
-    @Override
+    protected void buildLocator(AppiumDriver<?> appiumDriver) {
+	}
+
+	@Override
     public TreeMobileElement findBestMatch(final CapturedMobileElement needToVerify) {
         if (needToVerify == null) {
             return null;
@@ -130,4 +143,20 @@ public abstract class RenderedTreeSnapshotMobileElement<T> extends BasicMobileEl
         }
         return true;
     }
+
+	public String getLocator() {
+		return locator;
+	}
+
+	public void setLocator(String locator) {
+		this.locator = locator;
+	}
+
+	public MobileElementEntity.LocatorStrategy getLocatorStrategy() {
+		return locatorStrategy;
+	}
+
+	public void setLocatorStrategy(MobileElementEntity.LocatorStrategy locatorStrategy) {
+		this.locatorStrategy = locatorStrategy;
+	}
 }

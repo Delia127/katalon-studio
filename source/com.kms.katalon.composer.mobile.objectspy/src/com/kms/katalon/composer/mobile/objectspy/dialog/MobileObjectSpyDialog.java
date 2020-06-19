@@ -11,39 +11,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -51,16 +31,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.Widget;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -68,24 +42,24 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileAllObjectsWithCheckboxComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileCapturedObjectsComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileConfigurationsComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileElementPropertiesComposite;
+import com.kms.katalon.composer.mobile.objectspy.composites.MobileHighlightComposite;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverterV2;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
-import com.kms.katalon.composer.mobile.objectspy.element.provider.CapturedElementLabelProvider;
-import com.kms.katalon.composer.mobile.objectspy.element.provider.SelectableElementEditingSupport;
-import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabelProvider;
-import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementTreeContentProvider;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
-import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewer;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
@@ -93,18 +67,15 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog, MobileElementDialog {
+public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog {
 
-    public static final Point DIALOG_SIZE = new Point(800, 800);
+    public static final Point DIALOG_SIZE = new Point(1100, 800);
 
     private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_SPY;
-
-    private static final int DIALOG_MARGIN_OFFSET = 5;
-
-    private CheckboxTreeViewer allElementTreeViewer;
 
     private ToolItem btnStart, btnCapture, btnAdd, btnStop;
 
@@ -113,22 +84,24 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     private boolean disposed;
 
     private MobileInspectorController inspectorController;
-
-    private MobileDeviceDialog deviceView;
+    
+    private MobileDeviceView deviceView;
 
     private Composite container;
 
     private boolean canceledBeforeOpening;
-
-    private CapturedObjectTableViewer capturedObjectsTableViewer;
-
-    private TableColumn tblclmnCapturedObjectsSelection;
+    
+    private MobileConfigurationsComposite configurationsComposite;
 
     private MobileElementPropertiesComposite propertiesComposite;
+    
+    private MobileCapturedObjectsComposite capturedObjectsComposite;
+
+    private MobileHighlightComposite highlightElementComposite;
+    
+    private MobileAllObjectsWithCheckboxComposite allObjectsComposite;
 
     private MobileObjectSpyPreferencesHelper preferencesHelper;
-
-    private Composite appsComposite;
 
     private MobileAppComposite mobileComposite;
     
@@ -161,172 +134,84 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         sashForm.setLayout(new FillLayout());
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        ScrolledComposite leftSashForm = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
-        leftSashForm.setExpandHorizontal(true);
-        leftSashForm.setExpandVertical(true);
-        leftSashForm.setMinSize(180, 400);
+        createLeftPanel(sashForm);
+        createRightPanel(sashForm);
+        
+        deviceView = new MobileDeviceView(this);
+        deviceView.createControls(sashForm);
 
-        Composite explorerComposite = new Composite(leftSashForm, SWT.BORDER);
-        explorerComposite.setLayout(layout);
-
-        addElementTreeToolbar(explorerComposite);
-
-        SashForm hSashForm = new SashForm(explorerComposite, SWT.VERTICAL);
-        hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        createCapturedObjectsComposite(hSashForm);
-
-        propertiesComposite = new MobileElementPropertiesComposite(this);
-        propertiesComposite.createObjectPropertiesComposite(hSashForm);
-
-        hSashForm.setWeights(new int[] { 1, 1 });
-        leftSashForm.setContent(explorerComposite);
-
-        ScrolledComposite rightSashForm = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
-        rightSashForm.setExpandHorizontal(true);
-        rightSashForm.setExpandVertical(true);
-        rightSashForm.setMinSize(280, 400);
-
-        Composite contentComposite = new Composite(rightSashForm, SWT.BORDER);
-        contentComposite.setLayout(layout);
-
-        addStartStopToolbar(contentComposite);
-
-        createSettingComposite(contentComposite);
-
-        createAllObjectsComposite(contentComposite);
-        rightSashForm.setContent(contentComposite);
-
-        sashForm.setWeights(new int[] { 4, 6 });
+        sashForm.setWeights(new int[] { 4, 4, 4 });
 
         new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_OBJECT_SPY_MOBILE);
 
         return container;
     }
+    
+    private void createLeftPanel(Composite parent) {
+        ScrolledComposite leftPanelScrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        leftPanelScrolledComposite.setExpandHorizontal(true);
+        leftPanelScrolledComposite.setExpandVertical(true);
+        leftPanelScrolledComposite.setMinSize(180, 400);
 
-    private void createCapturedObjectsComposite(SashForm hSashForm) {
-        Composite capturedObjectsComposite = new Composite(hSashForm, SWT.NONE);
-        capturedObjectsComposite.setLayout(new GridLayout());
+        Composite leftPanelComposite = new Composite(leftPanelScrolledComposite, SWT.BORDER);
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        leftPanelComposite.setLayout(layout);
 
-        Label lblCapturedObjects = new Label(capturedObjectsComposite, SWT.NONE);
-        lblCapturedObjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblCapturedObjects.setText(StringConstants.DIA_LBL_CAPTURED_OBJECTS);
-        ControlUtils.setFontToBeBold(lblCapturedObjects);
+        addElementTreeToolbar(leftPanelComposite);
 
-        Composite capturedObjectTableComposite = new Composite(capturedObjectsComposite, SWT.NONE);
-        capturedObjectTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        TableColumnLayout tbclCapturedObjects = new TableColumnLayout();
-        capturedObjectTableComposite.setLayout(tbclCapturedObjects);
+        SashForm hSashForm = new SashForm(leftPanelComposite, SWT.VERTICAL);
+        hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        capturedObjectsTableViewer = new CapturedObjectTableViewer(capturedObjectTableComposite,
-                SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION, this);
-        Table capturedObjectsTable = capturedObjectsTableViewer.getTable();
-        capturedObjectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-        capturedObjectsTable.setHeaderVisible(true);
-        capturedObjectsTable.setLinesVisible(ControlUtils.shouldLineVisble(capturedObjectsTable.getDisplay()));
+        createCapturedObjectsComposite(hSashForm);
+        createElementPropertiesComposite(hSashForm);
+        createHighlightElementComposite(hSashForm);
 
-        TableViewerColumn tbvclCapturedObjectsSelection = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
-        tblclmnCapturedObjectsSelection = tbvclCapturedObjectsSelection.getColumn();
-        tbvclCapturedObjectsSelection
-                .setLabelProvider(new CapturedElementLabelProvider(CapturedElementLabelProvider.SELECTION_COLUMN_IDX));
-        tbvclCapturedObjectsSelection
-                .setEditingSupport(new SelectableElementEditingSupport(capturedObjectsTableViewer));
+        hSashForm.setWeights(new int[] { 5, 6, 1 });
+        leftPanelScrolledComposite.setContent(leftPanelComposite);
+    }
+    
+    private void createRightPanel(Composite parent) {
+        ScrolledComposite rightPanelScrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        rightPanelScrolledComposite.setExpandHorizontal(true);
+        rightPanelScrolledComposite.setExpandVertical(true);
+        rightPanelScrolledComposite.setMinSize(280, 400);
 
-        TableViewerColumn tableViewerColumnCapturedObjects = new TableViewerColumn(capturedObjectsTableViewer,
-                SWT.NONE);
-        TableColumn tblclmnCapturedObjects = tableViewerColumnCapturedObjects.getColumn();
-        tblclmnCapturedObjects.setText(StringConstants.NAME);
-        tableViewerColumnCapturedObjects
-                .setLabelProvider(new CapturedElementLabelProvider(CapturedElementLabelProvider.ELEMENT_COLUMN_IDX));
+        Composite rightPanelComposite = new Composite(rightPanelScrolledComposite, SWT.BORDER);
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        rightPanelComposite.setLayout(layout);
 
-        capturedObjectsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-        int selectionColMinWidth = Platform.OS_MACOSX.equals(Platform.getOS()) ? 21 : 30;
-        tbclCapturedObjects.setColumnData(tblclmnCapturedObjectsSelection,
-                new ColumnWeightData(0, selectionColMinWidth, false));
-        tbclCapturedObjects.setColumnData(tblclmnCapturedObjects, new ColumnWeightData(60, 250 - selectionColMinWidth));
-
-        capturedObjectsTable.setToolTipText(StringUtils.EMPTY);
-        ColumnViewerToolTipSupport.enableFor(capturedObjectsTableViewer);
-
-        capturedObjectsTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-                CapturedMobileElement firstElement = (CapturedMobileElement) selection.getFirstElement();
-                propertiesComposite.setEditingElement(firstElement);
-            }
-        });
-
-        capturedObjectsTableViewer.getTable().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseDown(MouseEvent e) {
-                if (e.button != 1) {
-                    return;
-                }
-                Point pt = new Point(e.x, e.y);
-                TableItem item = capturedObjectsTableViewer.getTable().getItem(pt);
-                if (item != null) {
-                    highlightObject((CapturedMobileElement) item.getData());
-                }
-            }
-        });
-
-        capturedObjectsTable.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                CapturedMobileElement[] elements = capturedObjectsTableViewer.getSelectedElements();
-                if (elements == null || elements.length == 0) {
-                    return;
-                }
-                switch (e.keyCode) {
-                    case SWT.DEL: {
-                        removeSelectedCapturedElements(elements);
-                        break;
-                    }
-                    case SWT.F5: {
-                        verifyCapturedElementsStates(elements);
-                        break;
-                    }
-                    case SWT.F2: {
-                        if (elements.length == 1) {
-                            propertiesComposite.focusAndEditCapturedElementName();
-                        }
-                        break;
-                    }
-                }
-            }
-        });
-
-        capturedObjectsTableViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-            @Override
-            public void doubleClick(DoubleClickEvent event) {
-                CapturedMobileElement mobileElement = capturedObjectsTableViewer.getSelectedElement();
-                TreeMobileElement link = mobileElement.getLink();
-                if (link != null) {
-                    allElementTreeViewer.setSelection(new StructuredSelection(link));
-                    allElementTreeViewer.getTree().setFocus();
-                }
-            }
-        });
-
-        tblclmnCapturedObjectsSelection.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                capturedObjectsTableViewer.checkAllElements(!capturedObjectsTableViewer.isAllElementChecked());
-            }
-        });
+        addStartStopToolbar(rightPanelComposite);
+        createSettingComposite(rightPanelComposite);
+        createAllObjectsComposite(rightPanelComposite);
+        
+        rightPanelScrolledComposite.setContent(rightPanelComposite);
     }
 
-    public void updateCapturedElementSelectingColumnHeader() {
-        tblclmnCapturedObjectsSelection.setImage(capturedObjectsTableViewer.isAllElementChecked()
-                ? ImageConstants.IMG_16_CHECKED : ImageConstants.IMG_16_UNCHECKED);
-        btnAdd.setEnabled(capturedObjectsTableViewer.isAnyElementChecked());
+    private void createCapturedObjectsComposite(Composite parent) {
+        capturedObjectsComposite = new MobileCapturedObjectsComposite(this, parent);
+    }
+    
+    private void createElementPropertiesComposite(Composite parent) {
+        propertiesComposite = new MobileElementPropertiesComposite(this, parent);
     }
 
-    private void verifyCapturedElementsStates(CapturedMobileElement[] elements) {
+    @Override
+    public void handleCapturedObjectsTableSelectionChange() {
+        capturedObjectsComposite.updateCheckAllCheckboxState();
+        btnAdd.setEnabled(capturedObjectsComposite.isAnyElementChecked());
+    }
+
+    private void createHighlightElementComposite(Composite parent) {
+        highlightElementComposite = new MobileHighlightComposite(this);
+        highlightElementComposite.createComposite(parent);
+    }
+
+    @Override
+    public void verifyCapturedElementsStates(CapturedMobileElement[] elements) {
         // clear previous state
         clearAllObjectState(elements);
 
@@ -338,21 +223,30 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                 }
                 needToVerify.setLink(foundElement);
                 foundElement.setCapturedElement(needToVerify);
-                allElementTreeViewer.setChecked(foundElement, true);
+                allObjectsComposite.getAllElementTreeViewer().setChecked(foundElement, true);
             }
         }
 
-        allElementTreeViewer.refresh();
-        capturedObjectsTableViewer.refresh();
+        allObjectsComposite.refreshTree();
+        capturedObjectsComposite.refresh();
     }
 
-    private void removeSelectedCapturedElements(CapturedMobileElement[] elements) {
+    @Override
+    public void removeCapturedElement(CapturedMobileElement element) {
+        capturedObjectsComposite.removeElement(element);
+        if (element == propertiesComposite.getEditingElement()) {
+            propertiesComposite.setEditingElement(null);
+            highlightElementComposite.setEditingElement(null);
+        }
+    }
+
+    @Override
+    public void removeSelectedCapturedElements(CapturedMobileElement[] elements) {
         clearAllObjectState(elements);
-        allElementTreeViewer.refresh();
-
-        capturedObjectsTableViewer.removeCapturedElements(Arrays.asList(elements));
-
+        allObjectsComposite.refreshTree();
+        capturedObjectsComposite.removeElements(Arrays.asList(elements));
         propertiesComposite.setEditingElement(null);
+        highlightElementComposite.setEditingElement(null);
     }
 
     private void clearAllObjectState(CapturedMobileElement[] elements) {
@@ -364,6 +258,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             treeElementLink.setCapturedElement(null);
             captured.setLink(null);
 
+            CheckboxTreeViewer allElementTreeViewer = allObjectsComposite.getAllElementTreeViewer();
             Tree elementTree = allElementTreeViewer.getTree();
             if (elementTree != null && !elementTree.isDisposed() && allElementTreeViewer.getChecked(treeElementLink)) {
                 allElementTreeViewer.setChecked(treeElementLink, false);
@@ -371,101 +266,12 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
     }
 
-    private void createAllObjectsComposite(Composite parentComposite) {
-        Composite allObjectsComposite = new Composite(parentComposite, SWT.NONE);
-        allObjectsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        allObjectsComposite.setLayout(new GridLayout());
-
-        Label lblAllObjects = new Label(allObjectsComposite, SWT.NONE);
-        lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        lblAllObjects.setFont(getFontBold(lblAllObjects));
-        lblAllObjects.setText(StringConstants.DIA_LBL_ALL_OBJECTS);
-
-        allElementTreeViewer = new CheckboxTreeViewer(allObjectsComposite,
-                SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI) {
-            @Override
-            public boolean setSubtreeChecked(Object element, boolean state) {
-                Widget widget = internalExpand(element, false);
-                if (widget instanceof TreeItem) {
-                    TreeItem item = (TreeItem) widget;
-                    item.setChecked(state);
-                    return true;
-                }
-                return false;
-            }
-        };
-        Tree tree = allElementTreeViewer.getTree();
-        tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        allElementTreeViewer.setLabelProvider(new MobileElementLabelProvider());
-        allElementTreeViewer.setContentProvider(new MobileElementTreeContentProvider());
-
-        tree.setToolTipText(StringUtils.EMPTY);
-        ColumnViewerToolTipSupport.enableFor(allElementTreeViewer, ToolTip.NO_RECREATE);
-
-        tree.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseDown(MouseEvent e) {
-                if (e.button != 1) {
-                    return;
-                }
-                Point pt = new Point(e.x, e.y);
-                TreeItem item = tree.getItem(pt);
-                if (item != null) {
-                    highlightObject((MobileElement) item.getData());
-                }
-            }
-        });
-
-        allElementTreeViewer.addCheckStateListener(new ICheckStateListener() {
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event) {
-                TreeMobileElement selectedElement = (TreeMobileElement) event.getElement();
-                if (event.getChecked()) {
-                    List<CapturedMobileElement> mobileElements = new ArrayList<>();
-                    mobileElements.add(selectedElement.newCapturedElement());
-                    capturedObjectsTableViewer.addMobileElements(mobileElements);
-
-                    propertiesComposite.focusAndEditCapturedElementName();
-                } else {
-                    CapturedMobileElement capturedElement = selectedElement.getCapturedElement();
-                    if (capturedObjectsTableViewer.contains(capturedElement)) {
-                        capturedObjectsTableViewer.removeCapturedElement(capturedElement);
-                        selectedElement.setCapturedElement(null);
-                        propertiesComposite.setEditingElement(null);
-                    }
-                }
-                allElementTreeViewer.refresh(selectedElement);
-            }
-        });
+    private void createAllObjectsComposite(Composite parent) {
+        allObjectsComposite = new MobileAllObjectsWithCheckboxComposite(this, parent);
     }
 
     private void createSettingComposite(Composite parent) {
-        Composite settingComposite = new Composite(parent, SWT.NONE);
-        settingComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glSettingComposite = new GridLayout(2, false);
-        glSettingComposite.horizontalSpacing = 10;
-        settingComposite.setLayout(glSettingComposite);
-
-        Label lblConfiguration = new Label(settingComposite, SWT.NONE);
-        lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        lblConfiguration.setFont(getFontBold(lblConfiguration));
-        lblConfiguration.setText(StringConstants.DIA_LBL_CONFIGURATIONS);
-
-        appsComposite = new Composite(settingComposite, SWT.NONE);
-        appsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-        appsComposite.setLayout(new FillLayout());
-
-        mobileComposite.createComposite(appsComposite, SWT.NONE, this);
-    }
-
-    public void updateSelectedElement(CapturedMobileElement selectedElement) {
-        capturedObjectsTableViewer.refresh(selectedElement, true);
-        TreeMobileElement element = selectedElement.getLink();
-        if (element != null) {
-            allElementTreeViewer.refresh(element);
-            allElementTreeViewer.setSelection(new StructuredSelection(element));
-        }
+        configurationsComposite = new MobileConfigurationsComposite(this, parent, mobileComposite);
     }
 
     @Override
@@ -480,8 +286,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         initializeData();
 
         refreshButtonsState();
-
-        capturedObjectsTableViewer.setCapturedElements(new ArrayList<CapturedMobileElement>());
     }
 
     private void initializeData() {
@@ -531,11 +335,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
     }
 
-    private Font getFontBold(Label label) {
-        FontDescriptor boldDescriptor = FontDescriptor.createFrom(label.getFont()).setStyle(SWT.BOLD);
-        return boldDescriptor.createFont(label.getDisplay());
-    }
-
     private void addElementTreeToolbar(Composite explorerComposite) {
         ToolBar elementTreeToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
         elementTreeToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
@@ -564,7 +363,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
                     Trackings.trackSaveSpy("mobile", newTreeEntities.size());
                     removeSelectedCapturedElements(
-                            capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedMobileElement[0]));
+                            capturedObjectsComposite.getAllCheckedElements().toArray(new CapturedMobileElement[0]));
                     updateExplorerState(folderTreeEntity, newTreeEntities);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
@@ -580,13 +379,13 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
             private List<ITreeEntity> addElementsToRepository(FolderTreeEntity folderTreeEntity, FolderEntity folder)
                     throws Exception {
-                CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
+                CapturedMobileElementConverterV2 converter = new CapturedMobileElementConverterV2();
                 List<ITreeEntity> newTreeEntities = new ArrayList<>();
 
                 ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
                 MobileDriverType currentMobileType = getCurrentMobileDriverType();
-                for (CapturedMobileElement mobileElement : capturedObjectsTableViewer.getAllCheckedElements()) {
-                    WebElementEntity testObject = converter.convert(mobileElement, folder, currentMobileType);
+                for (CapturedMobileElement mobileElement : capturedObjectsComposite.getAllCheckedElements()) {
+                    MobileElementEntity testObject = converter.convert(mobileElement, folder, currentMobileType);
                     objectRepositoryController.updateTestObject(testObject);
                     newTreeEntities.add(new WebElementTreeEntity(testObject, folderTreeEntity));
                 }
@@ -677,28 +476,17 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     // Highlight Selected object on captured screenshot
-    private void highlightObject(MobileElement selectedElement) {
+    @Override
+    public void highlightElement(MobileElement selectedElement) {
         if (selectedElement == null || deviceView == null || deviceView.isDisposed()) {
             return;
         }
-
         deviceView.highlightElement(selectedElement);
     }
 
-    private boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
-        return startX < 0 || startX + dialogSize.x > displayBounds.width + displayBounds.x;
-    }
-
-    private int getDeviceViewStartXIfPlaceRight(Rectangle objectSpyViewBounds) {
-        return objectSpyViewBounds.x + objectSpyViewBounds.width + DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDeviceViewStartXIfPlaceLeft(Rectangle objectSpyViewBounds, Point dialogSize) {
-        return objectSpyViewBounds.x - dialogSize.x - DIALOG_MARGIN_OFFSET;
-    }
-
-    private int getDefaultDeviceViewDialogStartX(Rectangle displayBounds, Point dialogSize) {
-        return displayBounds.width - dialogSize.x;
+    @Override
+    public void highlightElementRects(List<Rectangle> rects) {
+        deviceView.highlightRects(rects);
     }
 
     private int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
@@ -712,29 +500,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         return Math.max(startY, 0) / 2;
     }
 
-    private Point calculateInitPositionForDeviceViewDialog() {
-        Rectangle displayBounds = getShell().getMonitor().getBounds();
-        Point dialogSize = new Point(MobileDeviceDialog.DIALOG_WIDTH, MobileDeviceDialog.DIALOG_HEIGHT);
-        Rectangle objectSpyViewBounds = getShell().getBounds();
-        int startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
-        if (isOutOfBound(displayBounds, dialogSize, startX)) {
-            startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
-            if (isOutOfBound(displayBounds, dialogSize, startX)) {
-                startX = getDefaultDeviceViewDialogStartX(displayBounds, dialogSize);
-            }
-        }
-        return new Point(startX, objectSpyViewBounds.y);
-    }
-
-    private void openDeviceView() {
-        if (deviceView != null && !deviceView.isDisposed()) {
-            return;
-        }
-        deviceView = new MobileDeviceDialog(getParentShell(), this, calculateInitPositionForDeviceViewDialog());
-        deviceView.open();
-        setDeviceView(deviceView);
-    }
-
     @Override
     public void setSelectedElementByLocation(int x, int y) {
         if (appRootElement == null) {
@@ -744,13 +509,13 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         if (foundElement == null) {
             return;
         }
-        highlightObject(foundElement);
+        highlightElement(foundElement);
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
                 getShell().setFocus();
-                allElementTreeViewer.getTree().setFocus();
-                allElementTreeViewer.setSelection(new StructuredSelection(foundElement));
+                allObjectsComposite.focusToElementsTree();
+                allObjectsComposite.setSelection(foundElement);
             }
         });
     }
@@ -781,7 +546,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     private void captureObjectAction() {
-        final String appName = getAppName();
         final ProgressMonitorDialogWithThread dialog = new ProgressMonitorDialogWithThread(getShell());
 
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
@@ -794,9 +558,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     @Override
                     public Object call() throws Exception {
                         appRootElement = inspectorController.getMobileObjectRoot();
-                        if (appRootElement != null) {
-                            appRootElement.setName(appName);
-                        }
                         return null;
                     }
                 });
@@ -811,12 +572,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
                 refreshDeviceView(imgPath);
 
-                UISynchronizeService.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceView.getShell().forceActive();
-                    }
-                });
                 monitor.done();
             }
 
@@ -826,6 +581,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     @Override
                     public void run() {
                         dialog.setCancelable(false);
+                        TreeViewer allElementTreeViewer = allObjectsComposite.getAllElementTreeViewer();
                         if (appRootElement != null) {
                             allElementTreeViewer.setInput(new Object[] { appRootElement });
                         } else {
@@ -834,7 +590,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                         allElementTreeViewer.refresh();
                         allElementTreeViewer.expandAll();
                         verifyCapturedElementsStates(
-                                capturedObjectsTableViewer.getCapturedElements().toArray(new CapturedMobileElement[0]));
+                                capturedObjectsComposite.getCapturedElements().toArray(new CapturedMobileElement[0]));
                         dialog.setCancelable(true);
                     }
                 });
@@ -859,7 +615,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         try {
             btnCapture.setEnabled(false);
-            openDeviceView();
+            //openDeviceView();
             dialog.run(true, true, runnable);
         } catch (InterruptedException ignored) {
             // User canceled
@@ -953,14 +709,11 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
 
-            if (allElementTreeViewer != null) {
-                allElementTreeViewer.setInput(new Object[] {});
-                allElementTreeViewer.refresh();
-            }
+            allObjectsComposite.clearAllElements();
         }
 
         if (deviceView != null) {
-            deviceView.closeApp();
+            deviceView.dispose();
         }
 
         dispose();
@@ -1003,10 +756,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                 calculateObjectSpyDialogStartY(displayBounds, initialSize));
     }
 
-    private void setDeviceView(MobileDeviceDialog deviceView) {
-        this.deviceView = deviceView;
-    }
-
     public void addElements(List<WebElementEntity> webElements) {
         if (webElements == null) {
             return;
@@ -1018,8 +767,8 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             newMobileElements.add(converter.revert(webElement));
         }
 
-        capturedObjectsTableViewer.addMobileElements(newMobileElements);
-        verifyCapturedElementsStates(capturedObjectsTableViewer.getSelectedElements());
+        capturedObjectsComposite.addElements(newMobileElements);
+        verifyCapturedElementsStates(capturedObjectsComposite.getSelectedElements());
     }
 
     @Override
@@ -1033,5 +782,86 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     public static void setInstance(MobileObjectSpyDialog instance) {
         MobileObjectSpyDialog.instance = instance;
+    }
+
+    @Override
+    public void setSelectedElement(MobileElement element) {
+//        if (element != null) {
+//            TreeMobileElement link = element.getLink();
+//            if (link != null) {
+//                allObjectsComposite.setSelection(link);
+//            }
+//        } else {
+//            allObjectsComposite.setSelection(null);
+//        }
+//        capturedObjectsComposite.setSelection(element);
+//        propertiesComposite.setEditingElement(element);
+        highlightElement(element);
+    }
+
+    @Override
+    public void updateSelectedElement(CapturedMobileElement selectedElement) {
+        capturedObjectsComposite.refresh(selectedElement, true);
+        TreeMobileElement element = selectedElement.getLink();
+        if (element != null) {
+            allObjectsComposite.refreshTree(element);
+            allObjectsComposite.setSelection(element);
+        }
+    }
+
+    @Override
+    public void setEdittingElement(CapturedMobileElement element) {
+        highlightElementComposite.setEditingElement(element);
+        propertiesComposite.setEditingElement(element);
+    }
+
+    @Override
+    public void addCapturedElement(CapturedMobileElement element) {
+        capturedObjectsComposite.addElement(element);
+        propertiesComposite.focusAndEditCapturedElementName();
+    }
+
+    @Override
+    public boolean isAddedCapturedElement(CapturedMobileElement element) {
+        return capturedObjectsComposite.containsElement(element);
+    }
+
+    @Override
+    public void focusAndEditCapturedElementName() {
+        propertiesComposite.focusAndEditCapturedElementName();
+    }
+
+	@Override
+	public CapturedMobileElement captureMobileElement(TreeMobileElement selectedElement) {
+		List<CapturedMobileElement> mobileElements = new ArrayList<>();
+		ProgressMonitorDialog monitorDialog = new ProgressMonitorDialog(getShell());
+		try {
+			monitorDialog.run(true, false, new IRunnableWithProgress() {
+
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					try {
+						monitor.beginTask("Capturing Mobile element...", 1);
+						mobileElements.add(selectedElement.newCapturedElement(inspectorController.getDriver()));
+						monitor.worked(1);
+					} finally {
+						monitor.done();
+					}
+				}
+			});
+		} catch (InterruptedException ignored) {
+		} catch (InvocationTargetException e) {
+			MultiStatusErrorDialog.showErrorDialog(e, "Error", "Unable to capture object");
+		}
+		
+		if (mobileElements.size() > 0) {
+			return mobileElements.get(0);
+		}
+		return null;
+	}
+
+    @Override
+    public MobileInspectorController getInspectorController() {
+        return inspectorController;
     }
 }

@@ -1,13 +1,14 @@
-package com.kms.katalon.composer.mobile.objectspy.dialog;
+package com.kms.katalon.composer.mobile.objectspy.composites;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -19,12 +20,19 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
@@ -33,59 +41,120 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileLocatorFinder;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
+import com.kms.katalon.entity.repository.MobileElementEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity.LocatorStrategy;
 
-public class MobileElementPropertiesComposite {
+public class MobileElementPropertiesComposite extends Composite {
     private Text txtObjectName;
 
     private CapturedMobileElement editingElement;
 
     private TableViewer attributesTableViewer;
 
-    private MobileElementDialog dialog;
+    private MobileElementInspectorDialog parentDialog;
 
-    public MobileElementPropertiesComposite(MobileElementDialog dialog) {
-        this.dialog = dialog;
+    private Combo cbbLocatorStrategy;
+
+    private StyledText txtLocator;
+
+    private Button btnGenerate;
+
+    private static String[] strategies = MobileElementEntity.LocatorStrategy.getStrategies();
+
+    public MobileElementPropertiesComposite(MobileElementInspectorDialog parentDialog, Composite parent, int style) {
+        super(parent, style);
+        this.parentDialog = parentDialog;
+        createComposite();
+    }
+
+    public MobileElementPropertiesComposite(MobileElementInspectorDialog dialog, Composite parent) {
+        this(dialog, parent, SWT.NONE);
     }
 
     public void setEditingElement(CapturedMobileElement editingElement) {
         this.editingElement = editingElement;
         refreshAttributesTable();
+        refreshButtonStates();
+    }
+
+    public CapturedMobileElement getEditingElement() {
+        return editingElement;
     }
 
     /**
      * @wbp.parser.entryPoint
      */
-    public void createObjectPropertiesComposite(Composite parent) {
-        Composite objectPropertiesComposite = new Composite(parent, SWT.NONE);
+    private void createComposite() {
         GridLayout glObjectPropertiesComposite = new GridLayout(2, false);
         glObjectPropertiesComposite.horizontalSpacing = 10;
-        objectPropertiesComposite.setLayout(glObjectPropertiesComposite);
+        setLayout(glObjectPropertiesComposite);
 
-        Label lblObjectProperties = new Label(objectPropertiesComposite, SWT.NONE);
+        Label lblObjectProperties = new Label(this, SWT.NONE);
         lblObjectProperties.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         ControlUtils.setFontToBeBold(lblObjectProperties);
         lblObjectProperties.setText(StringConstants.DIA_LBL_OBJECT_PROPERTIES);
 
         // Object Name
-        Label objectNameLabel = new Label(objectPropertiesComposite, SWT.NONE);
+        Label objectNameLabel = new Label(this, SWT.NONE);
         GridData gdObjectNameLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdObjectNameLabel.widthHint = 90;
         objectNameLabel.setLayoutData(gdObjectNameLabel);
         objectNameLabel.setText(StringConstants.DIA_LBL_OBJECT_NAME);
 
-        txtObjectName = new Text(objectPropertiesComposite, SWT.BORDER);
+        txtObjectName = new Text(this, SWT.BORDER);
         txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtObjectName.setToolTipText(StringConstants.DIA_TOOLTIP_OBJECT_NAME);
 
-        Composite attributesTableComposite = new Composite(objectPropertiesComposite, SWT.NONE);
+        // Locator Strategy
+        Composite locatorComposite = new Composite(this, SWT.NONE);
+        GridLayout glLocatorComposite = new GridLayout(2, false);
+        glLocatorComposite.marginWidth = 0;
+        glLocatorComposite.marginHeight = 0;
+        locatorComposite.setLayout(glLocatorComposite);
+        locatorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+
+        Label lblLocatorStrategy = new Label(locatorComposite, SWT.NONE);
+        lblLocatorStrategy.setText("Locator Strategy");
+        GridData gdLocatorStrategy = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblLocatorStrategy.setLayoutData(gdLocatorStrategy);
+
+        Composite locatorStrategyComposite = new Composite(locatorComposite, SWT.NONE);
+        locatorStrategyComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        
+        GridLayout glLocatorStrategy = new GridLayout(2, false);
+        glLocatorStrategy.marginWidth = 0;
+        glLocatorStrategy.marginHeight = 0;
+        locatorStrategyComposite.setLayout(glLocatorStrategy);
+
+        cbbLocatorStrategy = new Combo(locatorStrategyComposite, SWT.READ_ONLY);
+        cbbLocatorStrategy.setItems(strategies);
+        cbbLocatorStrategy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        btnGenerate = new Button(locatorStrategyComposite, SWT.PUSH);
+        btnGenerate.setText("Generate");
+
+        // Locator
+        Label lblLocator = new Label(locatorComposite, SWT.NONE);
+        GridData gdLocator = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblLocator.setLayoutData(gdLocator);
+        lblLocator.setText("Locator");
+
+        txtLocator = new StyledText(locatorComposite, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
+        GridData gdTxtEditor = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gdTxtEditor.heightHint = 50;
+        txtLocator.setLayoutData(gdTxtEditor);
+
+        Composite attributesTableComposite = new Composite(this, SWT.NONE);
         attributesTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         attributesTableComposite.setLayout(tableColumnLayout);
 
-        attributesTableViewer = new CTableViewer(attributesTableComposite, SWT.MULTI | SWT.FULL_SELECTION
-                | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        attributesTableViewer = new CTableViewer(attributesTableComposite,
+                SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 
         createColumns(attributesTableViewer, tableColumnLayout);
 
@@ -99,6 +168,7 @@ public class MobileElementPropertiesComposite {
         attributesTableViewer.setInput(Collections.emptyList());
 
         registerControlModifyListeners();
+        refreshButtonStates();
     }
 
     private void commitEditingName() {
@@ -110,7 +180,7 @@ public class MobileElementPropertiesComposite {
 
         if (isNotBlank(objectName) && !StringUtils.equals(editingElement.getName(), objectName)) {
             editingElement.setName(objectName);
-            dialog.updateSelectedElement(editingElement);
+            parentDialog.updateSelectedElement(editingElement);
         }
     }
 
@@ -118,7 +188,7 @@ public class MobileElementPropertiesComposite {
         txtObjectName.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-               commitEditingName();
+                commitEditingName();
             }
         });
 
@@ -140,6 +210,26 @@ public class MobileElementPropertiesComposite {
             }
         });
 
+        cbbLocatorStrategy.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (editingElement == null) {
+                    return;
+                }
+                int index = cbbLocatorStrategy.getSelectionIndex();
+                editingElement.setLocatorStrategy(LocatorStrategy.valueOfStrategy(strategies[index]));
+            }
+        });
+
+        txtLocator.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if (editingElement != null) {
+                    editingElement.setLocator(txtLocator.getText());
+                }
+            }
+        });
+
         attributesTableViewer.getTable().addKeyListener(new KeyAdapter() {
             @SuppressWarnings("unchecked")
             @Override
@@ -155,6 +245,15 @@ public class MobileElementPropertiesComposite {
                     }
                     refreshAttributesTable();
                 }
+            }
+        });
+        
+        btnGenerate.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String locator = new MobileLocatorFinder(editingElement).findLocator(
+                        parentDialog.getInspectorController().getDriver(), editingElement.getLocatorStrategy());
+                txtLocator.setText(locator);
             }
         });
     }
@@ -245,12 +344,28 @@ public class MobileElementPropertiesComposite {
 
         if (editingElement != null) {
             txtObjectName.setText(editingElement.getName());
+            txtLocator.setText(StringUtils.defaultString(editingElement.getLocator()));
+            int selectedIndex = Arrays.asList(strategies)
+                    .indexOf(editingElement.getLocatorStrategy().getLocatorStrategy());
+            if (selectedIndex >= 0) {
+                cbbLocatorStrategy.select(selectedIndex);
+            }
             attributesTableViewer.setInput(new ArrayList<>(editingElement.getAttributes().entrySet()));
         } else {
             txtObjectName.setText(StringUtils.EMPTY);
+            txtLocator.setText(StringUtils.EMPTY);
+            cbbLocatorStrategy.select(-1);
             attributesTableViewer.setInput(Collections.emptyList());
         }
         attributesTableViewer.refresh();
+    }
+
+    private void refreshButtonStates() {
+        boolean isActive = editingElement != null;
+        txtObjectName.setEnabled(isActive);
+        txtLocator.setEnabled(isActive);
+        cbbLocatorStrategy.setEnabled(isActive);
+        btnGenerate.setEnabled(isActive);
     }
 
     public void focusAndEditCapturedElementName() {
