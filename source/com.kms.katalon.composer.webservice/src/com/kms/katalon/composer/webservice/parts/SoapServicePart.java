@@ -60,6 +60,7 @@ import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
 import com.kms.katalon.core.webservice.common.HarLogger;
+import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.constants.WsdlLocatorParams;
 import com.kms.katalon.core.webservice.helper.WsdlLocatorProvider;
 import com.kms.katalon.core.webservice.wsdl.support.wsdl.WsdlDefinitionLocator;
@@ -603,7 +604,7 @@ public class SoapServicePart extends WebServicePart {
         if (OAUTH_1_0.equals(authType)) {
             try {
                 String oauth1AuthorizationHeader = BasicRequestor
-                        .createOAuth1AuthorizationHeaderValue(txtWsdlLocation.getText().trim(), map);
+                        .createOAuth1AuthorizationHeaderValue(txtWsdlLocation.getText().trim(), map, RequestHeaderConstants.POST);
                 return StringUtils.isBlank(oauth1AuthorizationHeader) ? null : oauth1AuthorizationHeader;
             } catch (GeneralSecurityException e) {
                 LoggerSingleton.logError(e);
