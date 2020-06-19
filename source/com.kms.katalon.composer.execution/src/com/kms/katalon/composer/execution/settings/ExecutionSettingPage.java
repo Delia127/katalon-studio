@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -39,6 +38,8 @@ import com.kms.katalon.execution.configuration.contributor.IRunConfigurationCont
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 
 public class ExecutionSettingPage extends PreferencePageWithHelp {
@@ -83,8 +84,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
     private String selectedExecutionConfiguration;
 
     private GridData gdCbLogTestSteps;
-
-    private Button chckEnableImageRecognition;
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public ExecutionSettingPage() {
         defaultSettingStore = ExecutionDefaultSettingStore.getStore();
@@ -164,30 +165,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         gdCbLogTestSteps = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdCbLogTestSteps.widthHint = INPUT_WIDTH * 2;
         cbLogTestSteps.setLayoutData(gdCbLogTestSteps);
-        
-        /* 	// Smart XPath's related functionality - only supported in commercial ver
-         * 	Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
-	        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
-	        GridData gdLblApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-	        lblApplyNeighborXpaths.setLayoutData(gdLblApplyNeighborXpaths);
-	        
-	        chckApplyNeighborXpaths= new Button(comp, SWT.CHECK);
-	        GridData gdChckApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-	        chckApplyNeighborXpaths.setLayoutData(gdChckApplyNeighborXpaths);
-         */
-        
-    
-        Group grpImageRecognition = new Group(parent, SWT.NONE);
-        grpImageRecognition.setText("Image Recognition");
-        GridLayout glGrpImageRecognition = new GridLayout(3, false);
-        glGrpImageRecognition.marginLeft = 15;
-        grpImageRecognition.setLayout(glGrpImageRecognition);
-        grpImageRecognition.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        
-        chckEnableImageRecognition = new Button(grpImageRecognition, SWT.CHECK);
-        GridData gdChckEnableImageRecognition = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        chckEnableImageRecognition.setText("Enable Image Recognition");
-        chckEnableImageRecognition.setLayoutData(gdChckEnableImageRecognition);
         
         Group grpAfterExecuting = new Group(parent, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
@@ -308,20 +285,10 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             }
         });
         
-        chckEnableImageRecognition.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.IMAGE_BASED_OBJECT_DETECTION);
-                    chckEnableImageRecognition.setSelection(false);
-                }
-            }
-        });
-        
         cbLogTestSteps.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
+                if (!featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION)) {
                     KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CONSOLE_LOG_CUSTOMIZATION);
                     cbLogTestSteps.select(0); // Free users cannot disable this setting
                 }
@@ -421,27 +388,16 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         Boolean selectedSmartWaitMode = defaultSettingStore.getDefaultSmartWaitMode();
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
         cbDefaultSmartWait.select(selectedSmartWaitMode.booleanValue() ? 0 : 1);
-        if (chckEnableImageRecognition != null) {
-            if (LicenseUtil.isNotFreeLicense()) {
-                chckEnableImageRecognition.setSelection(webSettingStore.getImageRecognitionEnabled());
-            } else {
-                chckEnableImageRecognition.setSelection(false);
-            }
-        }
         
         Boolean selectedLogTestSteps = defaultSettingStore.getLogTestSteps();
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(selectedLogTestSteps.booleanValue() ? 0 : 1);
-        if (LicenseUtil.isFreeLicense()) {
+        if (!featureService.canUse(KSEFeature.CONSOLE_LOG_CUSTOMIZATION)) {
             cbLogTestSteps.select(0); // Enable by default for free user
         }
         
         txtDefaultElementTimeout.setText(Integer.toString(defaultSettingStore.getElementTimeout()));
         
-		/*		
-		 * Smart XPath-related functionality - only supported in commercialized version        
-		   chckApplyNeighborXpaths.setSelection(defaultSettingStore.isAutoApplyNeighborXpathsEnabled());        
-		*/
         chckOpenReport.setSelection(defaultSettingStore.isPostExecOpenReport());
         chckQuitDriversTestCase.setSelection(defaultSettingStore.isPostTestCaseExecQuitDriver());
         chckQuitDriversTestSuite.setSelection(defaultSettingStore.isPostTestSuiteExecQuitDriver());
@@ -494,11 +450,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
         cbDefaultSmartWait.select(0);
-        
-        if (chckEnableImageRecognition != null) {
-            chckEnableImageRecognition
-                    .setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED);
-        }
         
         cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
         cbLogTestSteps.select(0);
@@ -564,15 +515,6 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
                 defaultSettingStore.setLogTestSteps(
                         cbLogTestSteps.getSelectionIndex() == 0 ? Boolean.valueOf(true) : Boolean.valueOf(false));
             }
-            
-            if (chckEnableImageRecognition != null) {
-                webSettingStore.setDefaultImageRecognitionEnabled(chckEnableImageRecognition.getSelection());
-            }
-            
-            /* 
-            if (chckApplyNeighborXpaths != null) {
-                defaultSettingStore.setApplyNeighborXpathsEnabled(chckApplyNeighborXpaths.getSelection());
-            }*/
             
             if (txtDefaultElementTimeout != null) {
                 defaultSettingStore.setElementTimeout(Integer.parseInt(txtDefaultElementTimeout.getText()));

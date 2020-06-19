@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 
+import com.kms.katalon.composer.util.groovy.GroovyCompilationHelper;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;

@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 
 import javax.security.auth.x500.X500Principal;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 import com.kms.katalon.execution.mobile.identity.IosIdentityInfo;
+import com.kms.katalon.logging.LogUtil;
 
 public class SystemCertificationUtil {
     static final String GET_CERTIFICATE_COMMAND = "security find-certificate -p -c \"%s\"";
@@ -46,7 +46,7 @@ public class SystemCertificationUtil {
                 Certificate cert = certificateFactory.generateCertificate(inputStream);
                 certificates.add(cert);
             } catch (CertificateException error) {
-                LoggerSingleton.logError(error);
+                LogUtil.logError(error);
                 // Just skip invalid certificates
             }
         }

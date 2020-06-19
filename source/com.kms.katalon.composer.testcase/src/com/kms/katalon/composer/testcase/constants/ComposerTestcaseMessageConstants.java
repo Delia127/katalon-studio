@@ -19,7 +19,9 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String ADAP_MENU_CONTEXT_ENABLE;
 
-    public static String ADAP_MENU_CONTEXT_EXECUTE_FROM_TEST_STEP;
+    public static String ADAP_MENU_CONTEXT_RUN_FROM_TEST_STEP;
+
+    public static String ADAP_MENU_CONTEXT_DEBUG_FROM_TEST_STEP;
 
     public static String ADAP_MENU_CONTEXT_CHANGE_TO_STATEMENTS;
 
@@ -423,6 +425,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String DIALOG_TITLE_TEST_CASE_FOLDER_SELECTION;
     
     public static String LBL_QUERY_BUILDER_USAGE;
+    
+    public static String JavadocHover_openDeclaration;
     
     static {
         // initialize resource bundle

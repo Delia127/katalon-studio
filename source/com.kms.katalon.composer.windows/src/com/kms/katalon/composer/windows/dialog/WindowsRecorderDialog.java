@@ -168,7 +168,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     @Override
     protected void setShellStyle(int newShellStyle) {
-        super.setShellStyle(newShellStyle);
+        super.setShellStyle(newShellStyle | SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE);
         setBlockOnOpen(true);
     }
 
@@ -780,9 +780,19 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         btnStop.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                addStopAction();
                 stopObjectInspectorAction();
             }
         });
+    }
+
+    private void addStopAction() {
+        WindowsActionMapping stopAction = new WindowsActionMapping(WindowsAction.CloseApplication, null);
+        try {
+            stepView.addNode(stopAction);
+        } catch (ClassNotFoundException exception) {
+            LoggerSingleton.logError(exception);
+        }
     }
 
     private boolean validateAppSetting() {

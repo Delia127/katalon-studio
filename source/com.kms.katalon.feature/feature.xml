@@ -1763,13 +1763,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.microsoft.sqlserver.sqljdbc4"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.commons.dbutils"
          download-size="0"
          install-size="0"
@@ -2461,13 +2454,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.codehaus.mojo.animal-sniffer-annotations"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"
          download-size="0"
          install-size="0"
@@ -2475,21 +2461,7 @@
          unpack="false"/>
 
    <plugin
-         id="com.google.errorprone.error_prone_annotations"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.fasterxml.woodstox.woodstox-core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.j2objc.annotations"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -2717,6 +2689,13 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+         
+   <plugin
+         id="com.microsoft.sqlserver.mssql-jdbc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="com.kms.katalon.core.testng"
@@ -2725,4 +2704,31 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="io.github.kostaskougios.cloning"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.objenesis"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+    <plugin
+         id="com.kms.katalon.activation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+    <plugin
+         id="com.kms.katalon.composer.platform.internal"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 </feature>

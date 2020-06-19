@@ -45,6 +45,8 @@ import com.kms.katalon.core.util.internal.DateUtil;
 
 public class ReportUtil {
 
+    public static final String JUNIT_REPORT_FILE_NAME = "JUnit_Report.xml";
+    
     private static StringBuilder generateVars(List<String> strings, TestSuiteLogRecord suiteLogEntity,
             StringBuilder model) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -257,7 +259,7 @@ public class ReportUtil {
                         JUnitProperty.class, JUnitTestCase.class, JUnitTestSuites.class, JUnitTestSuite.class });
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.marshal(tss, new File(logFolder, "JUnit_Report.xml"));
+        marshaller.marshal(tss, new File(logFolder, JUNIT_REPORT_FILE_NAME));
     }
 
     public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)

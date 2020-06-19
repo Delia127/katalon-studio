@@ -17,7 +17,6 @@ import com.kms.katalon.application.utils.FileUtil;
 import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.UsagePropertyConstant;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.logging.LogUtil;

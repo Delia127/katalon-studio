@@ -10,7 +10,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.logging.LogUtil;
 
 public class ZipHelper {
 
@@ -27,7 +27,7 @@ public class ZipHelper {
             zipStream.flush();
             zipStream.close();
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
         }
     }
 

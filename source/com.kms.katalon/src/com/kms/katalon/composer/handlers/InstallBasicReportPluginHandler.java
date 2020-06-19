@@ -22,9 +22,10 @@ import org.osgi.service.event.EventHandler;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.activation.plugin.models.KStorePlugin;
+import com.kms.katalon.activation.plugin.models.Plugin;
+import com.kms.katalon.activation.plugin.service.LocalRepository;
+import com.kms.katalon.activation.plugin.util.PluginFactory;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
@@ -35,15 +36,15 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.groovy.util.GroovyUtil;
-import com.kms.katalon.license.models.LicenseType;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.Plugin;
-import com.kms.katalon.plugin.service.LocalRepository;
-import com.kms.katalon.plugin.util.PluginFactory;
 
 public class InstallBasicReportPluginHandler {
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     @PostConstruct
     private void registerEventHandler() {
@@ -116,7 +117,7 @@ public class InstallBasicReportPluginHandler {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();
         if (currentProject != null) {
-            boolean allowSourceAttachment = LicenseUtil.isNotFreeLicense();
+            boolean allowSourceAttachment = featureService.canUse(KSEFeature.SOURCE_CODE_FOR_DEBUGGING);
             GroovyUtil.initGroovyProjectClassPath(currentProject,
                     projectController.getCustomKeywordPlugins(currentProject), false, allowSourceAttachment, monitor);
             projectController.updateProjectClassLoader(currentProject);

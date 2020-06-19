@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.webservice.view;
 
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -42,16 +43,16 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
         Trackings.trackOpenImportingWsdl();
     }
    
-    private void createSoapWebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException{
+    private void createSoapWebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException, IOException{
     	soapWebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP, directory); 
     }
     
-    private void createSoap12WebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException{
+    private void createSoap12WebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException, IOException{
     	soap12WebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP12, directory); 
     	
     }
     
-    private void createWebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException{
+    private void createWebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException, IOException{
     	createSoapWebServiceRequestEntities();
     	createSoap12WebServiceRequestEntities();
     }

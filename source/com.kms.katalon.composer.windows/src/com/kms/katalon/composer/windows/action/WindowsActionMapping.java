@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.windows.action;
 
+import java.util.Date;
+
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
@@ -11,6 +13,8 @@ public class WindowsActionMapping {
     private WindowsActionParamValueType[] paramDatas;
 
     private CapturedWindowsElement targetElement;
+    
+    private Date recordedTime;
 
     public WindowsActionMapping(IWindowsAction action, String recordedData, CapturedWindowsElement targetElement) {
         paramDatas = new WindowsActionParamValueType[action.getParams().length];
@@ -64,5 +68,13 @@ public class WindowsActionMapping {
         if (!action.hasElement()) {
             setTargetElement(null);
         }
+    }
+
+    public Date getRecordedTime() {
+        return recordedTime;
+    }
+
+    public void setRecordedTime(Date recordedTime) {
+        this.recordedTime = recordedTime;
     }
 }

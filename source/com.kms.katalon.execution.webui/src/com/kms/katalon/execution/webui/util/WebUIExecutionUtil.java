@@ -14,6 +14,7 @@ import com.kms.katalon.execution.webui.driver.IEDriverConnector;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.execution.webui.driver.SafariDriverConnector;
 import com.kms.katalon.execution.webui.configuration.ChromeRunConfiguration;
+import com.kms.katalon.execution.webui.configuration.EdgeChromiumRunConfiguration;
 import com.kms.katalon.execution.webui.configuration.FirefoxRunConfiguration;
 import com.kms.katalon.execution.webui.configuration.IERunConfiguration;
 import com.kms.katalon.execution.webui.configuration.SafariRunConfiguration;
@@ -39,6 +40,9 @@ public class WebUIExecutionUtil {
                 break;
             case SAFARI_DRIVER:
                 driverConnectors = new SafariRunConfiguration(projectDirectory).getDriverConnectors();
+                break;
+            case EDGE_CHROMIUM_DRIVER:
+                driverConnectors = new EdgeChromiumRunConfiguration(projectDirectory).getDriverConnectors();
                 break;
             default:
                 return null;

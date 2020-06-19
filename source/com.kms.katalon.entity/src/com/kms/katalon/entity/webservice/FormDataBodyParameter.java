@@ -11,6 +11,8 @@ public class FormDataBodyParameter {
     private String value;
     
     private String type = PARAM_TYPE_TEXT;
+    
+    private String contentType = "";
 
     public String getName() {
         return name;
@@ -34,5 +36,13 @@ public class FormDataBodyParameter {
     
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }
