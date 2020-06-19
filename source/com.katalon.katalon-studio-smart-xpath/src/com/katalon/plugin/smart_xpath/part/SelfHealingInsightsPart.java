@@ -61,9 +61,9 @@ public class SelfHealingInsightsPart implements EventHandler {
 
     private final static String ICON_URI_FOR_PART = "IconUriForPart";
 
-    private final static String NOTIFICATION_SELF_HEALING_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self-healing_notification_16.png";
+    private final static String NOTIFICATION_SELF_HEALING_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self_healing_notification_16px.png";
 
-    private final static String SELF_HEALING_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self-healing_16.png";
+    private final static String SELF_HEALING_ICON = "platform:/plugin/com.katalon.katalon-studio-smart-xpath/resources/icons/self_healing_16px.png";
 
     @PostConstruct
     public void init(Composite parent) {
