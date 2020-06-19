@@ -83,10 +83,8 @@ public class CustomKeywordNodeTooltip extends AbstractKeywordNodeTooltip impleme
     
     public CustomKeywordNodeTooltip(Control control, String keywordName, String[] parameterTypes) {
         this.control = control;
-        
-        int lastDotIdx = keywordName.lastIndexOf(".");
-        this.keywordClass = keywordName.substring(0, lastDotIdx);
-        this.keywordName = keywordName.substring(lastDotIdx + 1);
+        this.keywordClass = "CustomKeywords";
+        this.keywordName = keywordName;
         this.parameterTypes = parameterTypes;
     }
 
