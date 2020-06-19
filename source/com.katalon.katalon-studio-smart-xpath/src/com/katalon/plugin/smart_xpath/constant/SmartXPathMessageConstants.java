@@ -97,6 +97,8 @@ public class SmartXPathMessageConstants extends NLS {
 
     public static String GROUP_DEFAULT_LOCATOR_SELECTION_AREA;
 
+    public static String SELF_HEALING_DOCUMENT_LINK;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, SmartXPathMessageConstants.class);

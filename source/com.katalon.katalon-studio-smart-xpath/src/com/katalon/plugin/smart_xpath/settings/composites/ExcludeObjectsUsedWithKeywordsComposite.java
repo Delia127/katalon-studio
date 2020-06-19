@@ -1,6 +1,7 @@
 package com.katalon.plugin.smart_xpath.settings.composites;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,195 +47,192 @@ import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 
-public class ExcludeObjectsUsedWithKeywordsComposite extends Composite{
+public class ExcludeObjectsUsedWithKeywordsComposite extends Composite {
 
-	private Composite tableExcludeObjectsWithKeywordsComposite;
+    private TableViewer tableViewer;
 
-	private ToolItem tltmAddVariable, tltmRemoveVariable;
+    private List<String> excludeKeywordNames = Collections.emptyList();
 
-	private TableViewer tableViewer;
+    public ExcludeObjectsUsedWithKeywordsComposite(Composite parent, int style,
+            WebUiExecutionSettingStore preferenceStore) {
+        super(parent, style);
+        createContent(parent);
+    }
 
-	private List<String> excludeKeywordNames;
+    public void createContent(Composite parent) {
+        this.setLayout(new GridLayout(1, false));
+        this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-	public ExcludeObjectsUsedWithKeywordsComposite(Composite parent, int style, WebUiExecutionSettingStore preferenceStore) {
-		super(parent, style);
-		createContent(parent);
-	}
-	
-	public void setInput(List<String> excludeKeywordNames) {
-		this.excludeKeywordNames = excludeKeywordNames;
-		tableViewer.setInput(this.excludeKeywordNames);
-	}
+        Group excludeKeywordsGroup = new Group(this, SWT.NONE);
+        excludeKeywordsGroup.setLayout(new GridLayout());
+        excludeKeywordsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        excludeKeywordsGroup.setText(SmartXPathMessageConstants.LABEL_EXCLUDE_OBJECTS_USED_WITH_KEYWORDS);
 
-	public void createContent(Composite parent) {
-		this.setLayout(new GridLayout(1, false));
-		this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        Composite compositeToolbar = new Composite(excludeKeywordsGroup, SWT.NONE);
+        compositeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
+        compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-		Group excludeKeywordsGroup = new Group(this, SWT.NONE);
-		excludeKeywordsGroup.setLayout(new GridLayout());
-		excludeKeywordsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		excludeKeywordsGroup.setText(SmartXPathMessageConstants.LABEL_EXCLUDE_OBJECTS_USED_WITH_KEYWORDS);
+        ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
-		Composite compositeToolbar = new Composite(excludeKeywordsGroup, SWT.NONE);
-		compositeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
-		compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-		ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
-		toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
-
-		tltmAddVariable = new ToolItem(toolBar, SWT.NONE);
-		tltmAddVariable.setText("Add");
-		tltmAddVariable.setImage(ImageManager.getImage(IImageKeys.ADD_16));
-		Menu addMenu = new Menu(tltmAddVariable.getParent().getShell());
-		tltmAddVariable.setData(addMenu);
-		tltmAddVariable.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				int newDefaultKeywordIndex = 0;
-				List<KeywordMethod> webUIKeywordList = KeywordController.getInstance().getBuiltInKeywords(
-						SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_SIMPLE_CLASS_NAME, true);
-				KeywordMethod newDefaultKeyword = webUIKeywordList.get(newDefaultKeywordIndex);
-				/// Avoid double Keyword
-				for (int i = 0; i < excludeKeywordNames.size(); i++) {
-					if (newDefaultKeyword.getName().equals(excludeKeywordNames.get(i))) {
-						newDefaultKeyword = webUIKeywordList.get(++newDefaultKeywordIndex);
-						i = -1;
-					}
-				}
-				excludeKeywordNames.add(newDefaultKeyword.getName());
-				tableViewer.refresh();
+        ToolItem tltmAddVariable = new ToolItem(toolBar, SWT.NONE);
+        tltmAddVariable.setText("Add");
+        tltmAddVariable.setImage(ImageManager.getImage(IImageKeys.ADD_16));
+        Menu addMenu = new Menu(tltmAddVariable.getParent().getShell());
+        tltmAddVariable.setData(addMenu);
+        tltmAddVariable.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                int newDefaultKeywordIndex = 0;
+                List<KeywordMethod> webUIKeywordList = KeywordController.getInstance().getBuiltInKeywords(
+                        SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_SIMPLE_CLASS_NAME, true);
+                KeywordMethod newDefaultKeyword = webUIKeywordList.get(newDefaultKeywordIndex);
+                /// Avoid double Keyword
+                for (int i = 0; i < excludeKeywordNames.size(); i++) {
+                    if (newDefaultKeyword.getName().equals(excludeKeywordNames.get(i))) {
+                        newDefaultKeyword = webUIKeywordList.get(++newDefaultKeywordIndex);
+                        i = -1;
+                    }
+                }
+                excludeKeywordNames.add(newDefaultKeyword.getName());
+                tableViewer.refresh();
 
                 handleSelectionChange(null);
-			}
-		});
+            }
+        });
 
-		tltmRemoveVariable = new ToolItem(toolBar, SWT.NONE);
-		tltmRemoveVariable.setText("Remove");
-		tltmRemoveVariable.setImage(ImageManager.getImage(IImageKeys.DELETE_16));
-		tltmRemoveVariable.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				tableViewer.getTable().setRedraw(false);
-				IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+        ToolItem tltmRemoveVariable = new ToolItem(toolBar, SWT.NONE);
+        tltmRemoveVariable.setText("Remove");
+        tltmRemoveVariable.setImage(ImageManager.getImage(IImageKeys.DELETE_16));
+        tltmRemoveVariable.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                tableViewer.getTable().setRedraw(false);
+                IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 
-				for (Iterator< ?>iterator = selection.iterator(); iterator.hasNext();) {
-					String selectedObject = (String) iterator.next();
-					tableViewer.remove(selectedObject);
-					excludeKeywordNames.remove(selectedObject);
-				}
-				tableViewer.getTable().setRedraw(true);
+                for (Iterator< ?>iterator = selection.iterator(); iterator.hasNext();) {
+                    String selectedObject = (String) iterator.next();
+                    tableViewer.remove(selectedObject);
+                    excludeKeywordNames.remove(selectedObject);
+                }
+                tableViewer.getTable().setRedraw(true);
 
                 handleSelectionChange(null);
-			}
-		});
+            }
+        });
 
-		tableExcludeObjectsWithKeywordsComposite = new Composite(excludeKeywordsGroup, SWT.NONE);
-		GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		ldTableComposite.minimumHeight = 100;
-		tableExcludeObjectsWithKeywordsComposite.setLayoutData(ldTableComposite);
-		TableColumnLayout tableColumnLayout = new TableColumnLayout();
-		tableExcludeObjectsWithKeywordsComposite.setLayout(tableColumnLayout);
+        Composite tableExcludeObjectsWithKeywordsComposite = new Composite(excludeKeywordsGroup, SWT.NONE);
+        GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        ldTableComposite.minimumHeight = 100;
+        tableExcludeObjectsWithKeywordsComposite.setLayoutData(ldTableComposite);
+        TableColumnLayout tableColumnLayout = new TableColumnLayout();
+        tableExcludeObjectsWithKeywordsComposite.setLayout(tableColumnLayout);
 
-		tableViewer = new TableViewer(tableExcludeObjectsWithKeywordsComposite,
-				SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.NO_SCROLL | SWT.V_SCROLL);
-		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        tableViewer = new TableViewer(tableExcludeObjectsWithKeywordsComposite,
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.NO_SCROLL | SWT.V_SCROLL);
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-		Table table = tableViewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        Table table = tableViewer.getTable();
+        table.setHeaderVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		TableViewerColumn tvcName = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tName = tvcName.getColumn();
-		tName.setText(SmartXPathMessageConstants.COLUMN_KEYWORD);
-		tvcName.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-			    SelectorMethod label = (SelectorMethod) element;
-				return label.getName();
-			}
-		});
-		tvcName.setEditingSupport(new EditingSupport(tableViewer) {
-			@Override
-			protected void setValue(Object element, Object value) {
-				if (element != null && element instanceof String && value != null && value instanceof String) {
-					String property = (String) element;
-					if (!value.equals(property)) {
-						KeywordMethod newProperty = KeywordController.getInstance().getBuiltInKeywordByName(
-								SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_CLASS_NAME, (String) value);
-						int changedKeywordIndex = excludeKeywordNames.indexOf(property);
-						if (changedKeywordIndex >= 0) {
-							excludeKeywordNames.set(changedKeywordIndex, newProperty.getName());
-						}
-						tableViewer.refresh();
+        TableViewerColumn tvcName = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tName = tvcName.getColumn();
+        tName.setText(SmartXPathMessageConstants.COLUMN_KEYWORD);
+        tvcName.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                SelectorMethod label = (SelectorMethod) element;
+                return label.getName();
+            }
+        });
+        tvcName.setEditingSupport(new EditingSupport(tableViewer) {
+            @Override
+            protected void setValue(Object element, Object value) {
+                if (element != null && element instanceof String && value != null && value instanceof String) {
+                    String property = (String) element;
+                    if (!value.equals(property)) {
+                        KeywordMethod newProperty = KeywordController.getInstance().getBuiltInKeywordByName(
+                                SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_CLASS_NAME, (String) value);
+                        int changedKeywordIndex = excludeKeywordNames.indexOf(property);
+                        if (changedKeywordIndex >= 0) {
+                            excludeKeywordNames.set(changedKeywordIndex, newProperty.getName());
+                        }
+                        tableViewer.refresh();
 
-	                    handleSelectionChange(null);
-					}
-				}
-			}
+                        handleSelectionChange(null);
+                    }
+                }
+            }
 
-			@Override
-			protected CellEditor getCellEditor(Object element) {
-				final StringComboBoxCellEditor editor = new StringComboBoxCellEditor(table,
-						getWebUIKeywordsStringList());
-				CCombo combo = (CCombo) editor.getControl();
-				combo.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent event) {
-						String text = combo.getText();
-						setValue(element, text);
-					}
-				});
-				combo.addModifyListener(new ModifyListener() {
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                final StringComboBoxCellEditor editor = new StringComboBoxCellEditor(table,
+                        getWebUIKeywordsStringList());
+                CCombo combo = (CCombo) editor.getControl();
+                combo.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent event) {
+                        String text = combo.getText();
+                        setValue(element, text);
+                    }
+                });
+                combo.addModifyListener(new ModifyListener() {
 
-					@Override
-					public void modifyText(ModifyEvent e) {
-					}
-				});
-				return editor;
-			}
+                    @Override
+                    public void modifyText(ModifyEvent e) {
+                    }
+                });
+                return editor;
+            }
 
-			@Override
-			protected boolean canEdit(Object element) {
-				return true;
-			}
+            @Override
+            protected boolean canEdit(Object element) {
+                return true;
+            }
 
-			@Override
-			protected Object getValue(Object element) {
-				String keyword = (String) element;
-				return keyword;
-			}
-		});
-		tvcName.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				String keyword = (String) element;
-				return keyword;
-			}
-		});
-		tableColumnLayout.setColumnData(tName, new ColumnWeightData(80, 100));
-	}
+            @Override
+            protected Object getValue(Object element) {
+                String keyword = (String) element;
+                return keyword;
+            }
+        });
+        tvcName.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                String keyword = (String) element;
+                return keyword;
+            }
+        });
+        tableColumnLayout.setColumnData(tName, new ColumnWeightData(80, 100));
+    }
 
-	private String[] getWebUIKeywordsStringList() {
-		List<KeywordMethod> webUIKeywordList = KeywordController.getInstance()
-				.getBuiltInKeywords(SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_SIMPLE_CLASS_NAME, true);
-		List<String> webUIKeywordStringList = new ArrayList<>();
-		for (KeywordMethod keyword : webUIKeywordList) {
-			if (excludeKeywordNames.contains(keyword.getName())) {
-				continue;
-			}
-			webUIKeywordStringList.add(keyword.getName());
-		}
-		return webUIKeywordStringList.toArray(new String[0]);
-	}
-	
-	public List<String> getInput() {
-		return excludeKeywordNames;
-	}
-	
-	public boolean compareInput(List<String> excludeKeywordNamesBeforeSetting) {
-		return excludeKeywordNames != null && excludeKeywordNames.equals(excludeKeywordNamesBeforeSetting);
-	}
+    public void setInput(List<String> excludeKeywordNames) {
+        this.excludeKeywordNames = excludeKeywordNames;
+        tableViewer.setInput(this.excludeKeywordNames);
+    }
+
+    private String[] getWebUIKeywordsStringList() {
+        List<KeywordMethod> webUIKeywordList = KeywordController.getInstance()
+                .getBuiltInKeywords(SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_SIMPLE_CLASS_NAME, true);
+        List<String> webUIKeywordStringList = new ArrayList<>();
+        for (KeywordMethod keyword : webUIKeywordList) {
+            if (excludeKeywordNames.contains(keyword.getName())) {
+                continue;
+            }
+            webUIKeywordStringList.add(keyword.getName());
+        }
+        return webUIKeywordStringList.toArray(new String[0]);
+    }
+
+    public List<String> getInput() {
+        return excludeKeywordNames;
+    }
+
+    public boolean compareInput(List<String> excludeKeywordNamesBeforeSetting) {
+        return excludeKeywordNames != null && excludeKeywordNames.equals(excludeKeywordNamesBeforeSetting);
+    }
 
     private void handleSelectionChange(TypedEvent selectionEvent) {
         dispatchSelectionEvent(selectionEvent);

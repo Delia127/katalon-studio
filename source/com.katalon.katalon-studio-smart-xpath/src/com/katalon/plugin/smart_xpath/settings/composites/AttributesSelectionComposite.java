@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -29,7 +28,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TypedEvent;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -89,7 +87,7 @@ public class AttributesSelectionComposite extends Composite {
         compositeUpperAttributeTable.setLayout(new GridLayout(1, false));
 
         Button resetDefault = new Button(compositeUpperAttributeTable, SWT.WRAP);
-        resetDefault.setLayoutData(new GridData(SWT.BEGINNING , SWT.FILL, false, false));
+        resetDefault.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, false));
         resetDefault.setText(StringConstants.RESET_DEFAULT);
         resetDefault.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -155,7 +153,7 @@ public class AttributesSelectionComposite extends Composite {
                         .collect(Collectors.toList());
                 selectedAttributes.removeAll(selectedProperties);
                 tvProperty.refresh();
-                
+
                 handleSelectionChange(event);
             }
 
@@ -167,7 +165,7 @@ public class AttributesSelectionComposite extends Composite {
             public void widgetSelected(SelectionEvent event) {
                 selectedAttributes.clear();
                 tvProperty.refresh();
-                
+
                 handleSelectionChange(event);
             }
 
@@ -229,7 +227,7 @@ public class AttributesSelectionComposite extends Composite {
                 }
                 ((Pair<String, Boolean>) element).setLeft(newName);
                 tvProperty.update(element, null);
-                
+
                 handleSelectionChange(null);
             }
 
@@ -313,14 +311,16 @@ public class AttributesSelectionComposite extends Composite {
                     tmpX = (tmpWidth / 2 - tmpX / 2);
                     tmpY = tmpImage.getBounds().height;
                     tmpY = (tmpHeight / 2 - tmpY / 2);
-                    if (tmpX <= 0) tmpX = event.x;
+                    if (tmpX <= 0)
+                        tmpX = event.x;
                     else tmpX += event.x;
-                    if (tmpY <= 0) tmpY = event.y;
+                    if (tmpY <= 0)
+                        tmpY = event.y;
                     else tmpY += event.y;
                     event.gc.drawImage(tmpImage, tmpX, tmpY);
                 }
             }
-            
+
         });
         // Register Listeners
 

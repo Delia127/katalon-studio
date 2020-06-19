@@ -30,7 +30,7 @@ public class WebUiExecutionSettingStoreTest {
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(projectEntity);
         assertThat("Action delay default is 0", store.getActionDelay() == 0);
         assertThat("Action delay default is in second", store.getUseDelayActionTimeUnit().equals(TimeUnit.SECONDS));
-        assertThat("Selector method default is BASIC", store.getCapturedTestObjectSelectorMethod()
+        assertThat("Selector method default is XPATH", store.getCapturedTestObjectSelectorMethod()
                 .toString()
                 .equals(WebUiExecutionSettingStore.DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD));
         assertThat("Page load timeout default is 30", store.getPageLoadTimeout() == 30);
