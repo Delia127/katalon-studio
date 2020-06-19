@@ -27,18 +27,16 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.activation.plugin.models.KStoreBasicCredentials;
+import com.kms.katalon.activation.plugin.models.KStoreClientAuthException;
+import com.kms.katalon.activation.plugin.models.KStoreClientException;
+import com.kms.katalon.activation.plugin.models.KStoreProduct;
+import com.kms.katalon.activation.plugin.service.KStoreRestClient;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.handlers.RequireAuthorizationHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.execution.constants.StringConstants;
-import com.kms.katalon.plugin.models.KStoreClientAuthException;
-import com.kms.katalon.plugin.models.KStoreClientException;
-import com.kms.katalon.plugin.models.KStoreProduct;
-import com.kms.katalon.plugin.models.KStoreBasicCredentials;
-import com.kms.katalon.plugin.service.KStoreRestClient;
-import com.kms.katalon.plugin.service.PluginService;
 
 public class RecommendPluginsDialog extends Dialog {
     List<Long> idProduct = new ArrayList<>();

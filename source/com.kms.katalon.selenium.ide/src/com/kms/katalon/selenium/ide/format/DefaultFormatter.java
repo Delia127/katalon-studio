@@ -12,7 +12,7 @@ public class DefaultFormatter implements Formatter {
 		String method = getCleanCommandTail(command.getCommand());
 		boolean hasMethod = ClazzUtils.hasMethod(method);
 		if (!hasMethod) {
-			return String.format("Method %s is not found\n", command.getCommand());
+			return String.format("// Method %s is not supported\n", command.getCommand());
 		}
 				
 		StringBuffer buffer = new StringBuffer();

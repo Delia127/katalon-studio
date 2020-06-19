@@ -241,6 +241,16 @@ public class MobileDriverFactory {
     }
 
     /**
+     * Sets the current active mobile driver.
+     * 
+     * @param driver the mobile driver to set
+     * @since 7.6.0
+     */
+    public static void setDriver(AppiumDriver<?> driver) {
+        AppiumDriverManager.setDriver(driver);
+    }
+
+    /**
      * Close the current active mobile driver
      */
     public static void closeDriver() {
@@ -265,6 +275,14 @@ public class MobileDriverFactory {
         if (driverPreferences.containsKey(MobileCapabilityType.BROWSER_NAME)) {
             driverPreferences.remove(MobileCapabilityType.BROWSER_NAME);
         }
+        if (StringUtils.isNotEmpty(mobileDeviceInfo.getDeviceOS())) {
+            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, mobileDeviceInfo.getDeviceOS());
+        }
+        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, mobileDeviceInfo.getDeviceName());
+        if (mobileDeviceInfo.getDeviceId() != null) {
+            capabilities.setCapability(MobileCapabilityType.UDID, mobileDeviceInfo.getDeviceId());
+        }
+        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         if (driverPreferences != null && mobileDeviceInfo.getDriverType() == MobileDriverType.IOS_DRIVER) {
             capabilities.setCapability("bundleId", appId);
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
@@ -296,14 +314,6 @@ public class MobileDriverFactory {
             capabilities.merge(
                     convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
         }
-        if (StringUtils.isNotEmpty(mobileDeviceInfo.getDeviceOS())) {
-            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, mobileDeviceInfo.getDeviceOS());
-        }
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, mobileDeviceInfo.getDeviceName());
-        if (mobileDeviceInfo.getDeviceId() != null) {
-            capabilities.setCapability(MobileCapabilityType.UDID, mobileDeviceInfo.getDeviceId());
-        }
-        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         return capabilities;
     }
 
@@ -315,6 +325,17 @@ public class MobileDriverFactory {
         if (driverPreferences.containsKey(MobileCapabilityType.BROWSER_NAME)) {
             driverPreferences.remove(MobileCapabilityType.BROWSER_NAME);
         }
+        if (StringUtils.isNotEmpty(platformVersion)) {
+            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, platformVersion);
+        }
+        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
+        capabilities.setCapability(MobileCapabilityType.APP, appFile);
+        if (deviceId != null) {
+            capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
+        }
+        capabilities.setCapability(FULL_RESET, uninstallAfterCloseApp);
+        capabilities.setCapability(NO_RESET, !uninstallAfterCloseApp);
+        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         if (driverPreferences != null && osType == MobileDriverType.IOS_DRIVER) {
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
             try {
@@ -342,17 +363,6 @@ public class MobileDriverFactory {
             capabilities.merge(
                     convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
         }
-        if (StringUtils.isNotEmpty(platformVersion)) {
-            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, platformVersion);
-        }
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
-        capabilities.setCapability(MobileCapabilityType.APP, appFile);
-        if (deviceId != null) {
-            capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
-        }
-        capabilities.setCapability(FULL_RESET, uninstallAfterCloseApp);
-        capabilities.setCapability(NO_RESET, !uninstallAfterCloseApp);
-        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         return capabilities;
     }
 

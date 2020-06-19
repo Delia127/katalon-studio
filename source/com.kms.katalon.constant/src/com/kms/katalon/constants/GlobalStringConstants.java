@@ -104,6 +104,10 @@ public class GlobalStringConstants {
 
     public static final String REFRESH = GlobalMessageConstants.REFRESH;
 
+    public static final String DEFAULT = GlobalMessageConstants.DEFAULT;
+
+    public static final String RESET_DEFAULT = GlobalMessageConstants.RESET_DEFAULT;
+
     public static final String SEARCH = GlobalMessageConstants.SEARCH;
 
     public static final String BROWSE = GlobalMessageConstants.BROWSE;
@@ -193,6 +197,8 @@ public class GlobalStringConstants {
     public static final String VALUE = GlobalMessageConstants.VALUE;
 
     public static final String IMAGE = GlobalMessageConstants.IMAGE;
+
+    public static final String PATH = GlobalMessageConstants.PATH;
 
     public static final String DESCRIPTION = GlobalMessageConstants.DESCRIPTION;
 
@@ -293,7 +299,12 @@ public class GlobalStringConstants {
     
     public static final String APP_TEMP_DIR = System.getProperty("java.io.tmpdir") + File.separator + "Katalon";
 
-    public static final String APP_USER_DIR_LOCATION = System.getProperty("user.home") + File.separator + ".katalon";
+    public static final String KATALON_HOME_ENV_NAME = "KATALON_HOME";
+
+    public static final String KATALON_HOME_DIR = System.getenv(KATALON_HOME_ENV_NAME) != null
+            ? System.getenv(KATALON_HOME_ENV_NAME) : System.getProperty("user.home");
+
+    public static final String APP_USER_DIR_LOCATION = KATALON_HOME_DIR + File.separator + ".katalon";
 
     public static final String APP_INFO_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
             + "application.properties";

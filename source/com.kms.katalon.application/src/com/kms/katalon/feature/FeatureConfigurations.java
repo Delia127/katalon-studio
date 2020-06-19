@@ -15,9 +15,8 @@ public class FeatureConfigurations implements IFeatureService {
     @SuppressWarnings("serial")
     private static final Map<KSEFeature, Boolean> coreFeaturesMap = new HashMap<KSEFeature, Boolean>() {
         {
-            put(KSEFeature.SMART_XPATH, Boolean.TRUE);
+            put(KSEFeature.SELF_HEALING, Boolean.TRUE);
             put(KSEFeature.WEB_LOCATOR_SETTINGS, Boolean.TRUE);
-            put(KSEFeature.IMAGE_BASED_OBJECT_DETECTION, Boolean.TRUE);
             put(KSEFeature.CUSTOM_WEB_SERVICE_METHOD, Boolean.TRUE);
             put(KSEFeature.ORACLE_EXTERNAL_DATA, Boolean.TRUE);
             put(KSEFeature.SQL_SERVER_EXTERNAL_DATA, Boolean.TRUE);
@@ -45,9 +44,10 @@ public class FeatureConfigurations implements IFeatureService {
             put(KSEFeature.TEST_CASE_RUN_FROM_SELECTED_STEP, Boolean.TRUE);
             put(KSEFeature.TEST_CASE_DEBUG_FROM_SELECTED_STEP, Boolean.TRUE);
             put(KSEFeature.TEST_CASE_TOGGLE_STEP, Boolean.TRUE);
-            put(KSEFeature.RERUN_TEST_CASE_WITH_TEST_DATA_ONLY, Boolean.TRUE);
+            put(KSEFeature.RERUN_IMMEDIATELY, Boolean.TRUE);
             put(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL, Boolean.TRUE);
             put(KSEFeature.WINDOWS_NATIVE_RECORDER, Boolean.TRUE);
+            put(KSEFeature.IMPORT_SELENIUM_IDE_V3, Boolean.TRUE);
         }
     };
 

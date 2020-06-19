@@ -47,6 +47,7 @@ public class CallTestCaseKeyword extends AbstractKeyword {
     @CompileStatic
     public Object callTestCase(TestCase calledTestCase, Map<String, Object> binding, FailureHandling flowControl) throws Exception {
         KeywordMain.runKeyword({
+            logger.startKeyword("Call test case", new HashMap<>(), new Stack<>())
             List<Throwable> parentErrors = ErrorCollector.getCollector().getCoppiedErrors()
             try {
                 logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_CALLED_TC)
@@ -77,6 +78,7 @@ public class CallTestCaseKeyword extends AbstractKeyword {
                     ErrorCollector.getCollector().clearErrors()
                     ErrorCollector.getCollector().getErrors().addAll(parentErrors)
                 }
+                logger.endKeyword("Call test case", new HashMap<>(), new Stack<>())
             }
         }, flowControl, (calledTestCase != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CALL_TC_W_ID_X, calledTestCase.getTestCaseId())
         : StringConstants.KW_MSG_CANNOT_CALL_TC)

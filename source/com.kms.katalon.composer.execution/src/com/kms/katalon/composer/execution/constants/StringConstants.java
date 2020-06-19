@@ -125,6 +125,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LOG_RESUME = ComposerExecutionMessageConstants.PA_LOG_RESUME;
 
     public static final String PA_LOG_PAUSE = ComposerExecutionMessageConstants.PA_LOG_PAUSE;
+    
+    public static final String PA_MSG_DRIVER_OUTDATED = ComposerExecutionMessageConstants.PA_MSG_DRIVER_OUTDATED;
 
     // LogExceptionNavigator
     public static final String WARN_TITLE = WARN;
@@ -301,11 +303,13 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_LBL_RETRY_TIMES = ComposerExecutionMessageConstants.DIA_LBL_RETRY_TIMES;
 
-    public static final String DIA_CHK_FOR_FAILED_TEST_CASES = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES;
+    public static final String DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS;
 
     public static final String DIA_CHK_APPLY_PROXY = ComposerExecutionMessageConstants.DIA_CHK_APPLY_PROXY;
     
-    public static final String DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA;
+    public static final String DIA_CHK_FOR_RETRY_ALL_EXECUTIONS = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_ALL_EXECUTIONS;
+    
+    public static final String DIA_CHK_FOR_RETRY_IMMEDIATELY = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_IMMEDIATELY;
     
     public static final String DIA_LBL_API_KEY_USAGE = ComposerExecutionMessageConstants.API_KEY_USAGE;
     

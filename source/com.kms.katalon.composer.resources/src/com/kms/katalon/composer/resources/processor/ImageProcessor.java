@@ -315,6 +315,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.KATALON_TWEETABOUTUS_24);
         ImageManager.registerImage(IImageKeys.KATALON_FEEDBACK_24);
         ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_24);
+        ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_DOT_24);
         ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_1_24);
         ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_2_24);
         ImageManager.registerImage(IImageKeys.KATALON_NOTIFICATION_UNREAD_3_24);
@@ -369,6 +370,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.CHROME_16);
         ImageManager.registerImage(IImageKeys.CHROME_HEADLESS_16);
         ImageManager.registerImage(IImageKeys.EDGE_16);
+        ImageManager.registerImage(IImageKeys.EDGE_CHROMIUM_16);
         ImageManager.registerImage(IImageKeys.FIREFOX_16);
         ImageManager.registerImage(IImageKeys.FIREFOX_HEADLESS_16);
         ImageManager.registerImage(IImageKeys.IE_16);
@@ -382,6 +384,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.APPLE_24);
         ImageManager.registerImage(IImageKeys.CHROME_24);
         ImageManager.registerImage(IImageKeys.EDGE_24);
+        ImageManager.registerImage(IImageKeys.EDGE_CHROMIUM_24);
         ImageManager.registerImage(IImageKeys.FIREFOX_24);
         ImageManager.registerImage(IImageKeys.IE_24);
         ImageManager.registerImage(IImageKeys.REMOTE_24);

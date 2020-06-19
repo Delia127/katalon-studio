@@ -219,6 +219,12 @@ public interface IdConstants {
     // Bundle
     public static final String KATALON_GENERAL_BUNDLE_ID = "com.kms.katalon";
 
+    public static final String KATALON_PLATFORM_BUNDLE_ID = "com.katalon.platform";
+
+    public static final String KATALON_INTERNAL_PLATFORM_BUNDLE_ID = "com.kms.katalon.platform.internal";
+
+    public static final String KATALON_INTERNAL_COMPOSER_PLATFORM_BUNDLE_ID = "com.kms.katalon.composer.platform.internal";
+
     public static final String KATALON_LOGGING_BUNDLE_ID = "com.kms.katalon.logging";
 
     public static final String KATALON_CUSTOM_BUNDLE_ID = "com.kms.katalon.custom";

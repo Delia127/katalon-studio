@@ -33,12 +33,16 @@ import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.swt.program.Program;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.activation.plugin.ActivationBundleActivator;
+import com.kms.katalon.activation.plugin.models.Plugin;
+import com.kms.katalon.activation.plugin.service.LocalRepository;
+import com.kms.katalon.activation.plugin.util.PluginFactory;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -53,73 +57,100 @@ import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.plugin.models.Plugin;
-import com.kms.katalon.plugin.service.LocalRepository;
-import com.kms.katalon.plugin.util.PluginFactory;
 
 public class InstallApplitoolsPluginHandler {
+    private static final String APPLITOOLS_CUSTOM_KEYWORD_ID = Long.toString(44);
+    private static final String APPLITOOLS_PLUGIN_NAME = "Applitools Integration";
     private static final String APPLITOOLS_ID = "Applitools";
+    private static final String APPLITOOLS_PREFERENCE_ID = "com.kms.katalon.keyword.Applitools-Keywords";
     private IEclipseContext context;
 
     @Inject
     public InstallApplitoolsPluginHandler(IEclipseContext context) {
         this.context = context;
     }
+    
+    @Inject
+    private PluginInstaller pluginInstaller;
 
     @PostConstruct
     private void registerEventHandler() {
-        EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.WORKSPACE_PLUGIN_LOADED,
+        ActivationBundleActivator.getInstance().getEventBroker().subscribe(EventConstants.WORKSPACE_PLUGIN_LOADED,
                 new EventHandler() {
                     @Override
                     public void handleEvent(Event event) {
-                        installIfNotAvailable();
+                        installOfflineApplitoolsPluginIfNotAvailable();
                     }
                 });
     }
 
-    public void installIfNotAvailable() {
-        if (!isApplitoolsPluginInstalled() && LicenseUtil.isNotFreeLicense()) {
-            Job job = new Job("Installing Applitools plugins...") {
-                @Override
-                protected IStatus run(IProgressMonitor monitor) {
-                    try {
-                        CustomKeywordPlugin customKeywordPlugin = new CustomKeywordPlugin();
-                        customKeywordPlugin.setId(Long.toString(44));
-                        customKeywordPlugin.setPluginFile(getPluginFile());
-                        CustomKeywordPluginFactory.getInstance().addPluginFile(getPluginFile(), customKeywordPlugin);
-
-                        Plugin resolvedPlugin = new Plugin();
-                        resolvedPlugin.setName("Applitools Integration");
-                        resolvedPlugin.setOnline(false);
-                        resolvedPlugin.setFile(getPluginFile());
-
-                        PluginFactory.getInstance().addPlugin(resolvedPlugin);
-
-                        refreshProjectClasspath(monitor);
-
-                        if (ApplicationRunningMode.get() == RunningMode.GUI) {
-                            uninstallApplitoolsPluginToolItem();
-                            installApplitoolsPluginToolItem();
-                            EventBrokerSingleton.getInstance()
-                                    .getEventBroker()
-                                    .post(EventConstants.APPLITOOLS_PLUGIN_INSTALLED, null);
+    public void installOfflineApplitoolsPluginIfNotAvailable() {
+        // Do not change logic for free version
+        if (LicenseUtil.isNotFreeLicense()) {
+            doUninstallApplitoolsPluginFromStore();
+            if (!isAnyApplitoolsPluginInstalled()) {
+                Job job = new Job("Installing Applitools plugins...") {
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor) {
+                        try {
+                            doInstallApplitoolsPlugin(monitor);
+                            if (ApplicationRunningMode.get() == RunningMode.GUI) {
+                                uninstallApplitoolsPluginToolItem();
+                                installApplitoolsPluginToolItem();
+                                EventBrokerSingleton.getInstance()
+                                        .getEventBroker()
+                                        .post(EventConstants.APPLITOOLS_PLUGIN_INSTALLED, null);
+                            }
+                        } catch (Exception e) {
+                            LogUtil.logError(e);
+                            return new Status(Status.ERROR, "com.kms.katalon", "Error installing Applitools plugin",
+                                    new Exception(ExceptionsUtil.getStackTraceForThrowable(e)));
                         }
-                    } catch (Exception e) {
-                        LogUtil.logError(e);
-                        return new Status(Status.ERROR, "com.kms.katalon", "Error installing Applitools plugin",
-                                new Exception(ExceptionsUtil.getStackTraceForThrowable(e)));
+                        return Status.OK_STATUS;
                     }
-                    return Status.OK_STATUS;
-                }
-            };
+                };
 
-            job.setUser(false);
-            job.schedule();
+                job.setUser(false);
+                job.schedule();
+            }
         }
     }
 
+    private void doInstallApplitoolsPlugin(IProgressMonitor monitor) throws IOException, Exception {
+        CustomKeywordPlugin customKeywordPlugin = new CustomKeywordPlugin();
+        customKeywordPlugin.setId(APPLITOOLS_CUSTOM_KEYWORD_ID);
+        customKeywordPlugin.setPluginFile(getPluginFile());
+        CustomKeywordPluginFactory.getInstance().addPluginFile(getPluginFile(), customKeywordPlugin);
+
+        Plugin resolvedPlugin = new Plugin();
+        resolvedPlugin.setName(APPLITOOLS_PLUGIN_NAME);
+        resolvedPlugin.setOnline(false);
+        resolvedPlugin.setFile(getPluginFile());
+
+        PluginFactory.getInstance().addPlugin(resolvedPlugin);
+
+        refreshProjectClasspath(monitor);
+    }
+
+    private void doUninstallApplitoolsPluginFromStore() {
+        PluginFactory.getInstance()
+                .getPlugins()
+                .stream()
+                .filter(plugin -> plugin.isOnline() && APPLITOOLS_PLUGIN_NAME.equals(plugin.getName()))
+                .findAny()
+                .ifPresent(onlineApplitoolsPlugin -> {
+                    CustomKeywordPlugin customKeywordPlugin = new CustomKeywordPlugin();
+                    customKeywordPlugin.setId(onlineApplitoolsPlugin.getFile().getAbsolutePath());
+                    File pluginFile = onlineApplitoolsPlugin.getFile();
+                    customKeywordPlugin.setPluginFile(pluginFile);
+                    CustomKeywordPluginFactory.getInstance().removePluginFile(pluginFile, customKeywordPlugin);
+                    // Remove it from PluginFactory to maintain consistency
+                    PluginFactory.getInstance().removePluginByName(APPLITOOLS_PLUGIN_NAME);
+                });
+    }
+
     private File getPluginFile() throws IOException {
-        Bundle bundle = FrameworkUtil.getBundle(LocalRepository.class);
+        Bundle bundle = FrameworkUtil.getBundle(InstallApplitoolsPluginHandler.class);
         Path pluginFolderPath = new Path("/resources/applitools");
         URL pluginFolderUrl = FileLocator.find(bundle, pluginFolderPath, null);
         File pluginFolder = FileUtils.toFile(FileLocator.toFileURL(pluginFolderUrl));
@@ -142,9 +173,9 @@ public class InstallApplitoolsPluginHandler {
         }
     }
 
-    private boolean isApplitoolsPluginInstalled() {
-        List<Plugin> plugins = PluginFactory.getInstance().getPlugins();
-        return plugins.stream().filter(p -> p.getName().equals("Applitools Integration")).findFirst().isPresent();
+    private boolean isAnyApplitoolsPluginInstalled() {
+        List<CustomKeywordPlugin> plugins = CustomKeywordPluginFactory.getInstance().getPlugins();
+        return plugins.stream().filter(p -> p.getId().equals(APPLITOOLS_ID)).findFirst().isPresent();
     }
 
     @SuppressWarnings("restriction")
@@ -194,7 +225,8 @@ public class InstallApplitoolsPluginHandler {
 
             @Override
             public Object execute(ExecutionEvent event) throws ExecutionException {
-                Program.launch("https://docs.katalon.com/katalon-studio/docs/applitools-integration.html#applitools-settings");
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_SETTINGS_PAGE,
+                        APPLITOOLS_CUSTOM_KEYWORD_ID);
                 return null;
             }
         });

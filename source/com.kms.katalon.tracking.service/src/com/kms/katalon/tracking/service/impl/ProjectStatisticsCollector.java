@@ -108,7 +108,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         
         statistics.setLogTestStepsEnabled(getLogTestStepsEnabled());
         
-        statistics.setImageRecognitionEnabled(getImageRecognitionEnabled());
+        statistics.setSelfHealingEnabled(getSelfHealingEnabled());
         
         statistics.setAdditionalTestDataSourceForEnterpriseUser(getAdditionalTestDataSourceForEnterpriseUser());
         
@@ -142,6 +142,9 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         int mobileTestStepCount = 0;
         int apiTestStepCount = 0;
         int customKeywordTestStepCount = 0;
+        int testNGTestSuiteStepCount = 0;
+        int testNGTestCaseStepCount = 0;
+        int jUnitClassStepCount = 0;
         int totalTestStepCount = 0;
         
         String testCaseScriptFolderPath = project.getFolderLocation() + File.separator + TEST_CASE_SCRIPT_FOLDER;
@@ -167,7 +170,17 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
                 } else if (token.startsWith("CustomKeywords.")) {
                     customKeywordTestStepCount++;
                     totalTestStepCount++;
-                } else {
+                } else if (token.startsWith("TestNGKW.runTestNGTestSuites") || token.startsWith("TestNGBuiltinKeywords.runTestNGTestSuites")) {
+                    testNGTestSuiteStepCount++;
+                    totalTestStepCount++;
+                } else if (token.startsWith("TestNGKW.runTestNGTestClasses") || token.startsWith("TestNGBuiltinKeywords.runTestNGTestClasses")) {
+                    testNGTestCaseStepCount++;
+                    totalTestStepCount++;
+                } else if (token.startsWith("TestNGKW.runJUnitTestClasses") || token.startsWith("TestNGBuiltinKeywords.runJUnitTestClasses")) {
+                    jUnitClassStepCount++;
+                    totalTestStepCount++;
+                }
+                else {
                     if (token.startsWith("import ")
                         || token.startsWith("class ")
                         || token.startsWith("// ")
@@ -189,6 +202,9 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         statistics.setMobileTestStepCount(mobileTestStepCount);
         statistics.setApiTestStepCount(apiTestStepCount);
         statistics.setCustomKeywordTestStepCount(customKeywordTestStepCount);
+        statistics.setTestNGTestSuiteStepCount(testNGTestSuiteStepCount);
+        statistics.setTestNGTestCaseStepCount(testNGTestCaseStepCount);
+        statistics.setJUnitClassStepCount(jUnitClassStepCount);
         statistics.setTotalTestStepCount(totalTestStepCount);
     }
 
@@ -393,9 +409,10 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         return doLogTestStep;
     }
     
-    private boolean getImageRecognitionEnabled() {
+    private boolean getSelfHealingEnabled() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-        return store.getImageRecognitionEnabled();
+        return store.getSelfHealingEnabled(featureService.canUse(KSEFeature.SELF_HEALING));
     }
     
     private String getAdditionalTestDataSourceForEnterpriseUser() throws IOException {

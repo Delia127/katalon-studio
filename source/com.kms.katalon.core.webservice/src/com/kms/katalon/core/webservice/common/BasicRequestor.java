@@ -65,7 +65,7 @@ public abstract class BasicRequestor implements Requestor {
 
         ResponseObject responseObject = toResponseObject(httpResponse);
         responseObject.setWaitingTime(waitingTime);
-
+         
         return responseObject;
     }
 

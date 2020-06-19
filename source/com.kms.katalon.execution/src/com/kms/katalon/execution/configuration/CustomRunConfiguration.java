@@ -2,6 +2,7 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -9,11 +10,13 @@ import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.execution.collector.DriverConnectorCollector;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
+import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class CustomRunConfiguration extends AbstractRunConfiguration {
     private String name;
     private Map<String, IDriverConnector> driverConnectors;
+    private Map<String, IRunConfiguration> runConfigurations;
     private File configFolder;
     protected String projectDir;
     
@@ -35,10 +38,23 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
 
     private void initDriverConnectors() throws IOException, ExecutionException {
         driverConnectors = new LinkedHashMap<String, IDriverConnector>();
+        runConfigurations = new HashMap<>();
         if (configFolder == null || !configFolder.exists()) {
             return;
         }
         driverConnectors = DriverConnectorCollector.getInstance().getDriverConnectors(getConfigFolder());
+        for (IDriverConnector driverConnector : driverConnectors.values()) {
+            String driverName = driverConnector.getDriverType().toString();
+            IRunConfigurationContributor contributor = RunConfigurationCollector.getInstance().getRunContributor(driverName);
+            
+            try {
+                IRunConfiguration runConfig = contributor.getRunConfiguration(projectDir, driverConnector);
+
+                if (runConfig != null) {
+                    runConfigurations.put(driverName, runConfig);
+                }
+            } catch (Exception ignored) {}
+        }
     }
 
     private File getConfigFolder(String projectFolderLocation) {
@@ -112,5 +128,14 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
             valueString.append(driverConnector.getDriverType().toString() + ": " + driverConnector.toString());
         }
         return valueString.toString();
+    }
+    
+    @Override
+    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
+        Map<String, String> environmentVariables = new HashMap<>(super.getAdditionalEnvironmentVariables());
+        for (IRunConfiguration runConfig : runConfigurations.values()) {
+            environmentVariables.putAll(runConfig.getAdditionalEnvironmentVariables());
+        }
+        return environmentVariables;
     }
 }

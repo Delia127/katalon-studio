@@ -15,6 +15,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.ssl.KeyMaterial;
 import org.apache.http.HttpHost;
@@ -22,6 +23,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -70,7 +72,8 @@ public class HttpUtil {
         HttpClientBuilder clientBuilder = getClientBuilder(url, followRedirects, proxyInformation);
         CloseableHttpClient httpClient = clientBuilder.build();
         HttpContext httpContext = getDefaultHttpContext(certificateOption, clientCertSettings);
-        HttpResponse response = httpClient.execute(request, httpContext);
+        CloseableHttpResponse response = httpClient.execute(request, httpContext);
+        IOUtils.closeQuietly(httpClient);
         return response;
     }
 

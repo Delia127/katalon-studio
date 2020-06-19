@@ -64,6 +64,8 @@ public class WebDriverPropertyUtil {
         case FIREFOX_DRIVER:
         case FIREFOX_HEADLESS_DRIVER:
             return getDesireCapabilitiesForFirefox(propertyMap);
+        case EDGE_CHROMIUM_DRIVER:
+            return getDesiredCapabilitiesForEdgeChromium(propertyMap, false);
         default:
             return toDesireCapabilities(propertyMap);
         }
@@ -170,7 +172,7 @@ public class WebDriverPropertyUtil {
                             driverProperty.getValue()));
         }
         injectAddtionalArgumentsForChrome(chromeOptions);
-//        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
         return desireCapabilities;
     }
 
