@@ -111,7 +111,7 @@ public class BrokenTestObjectsTableComposite extends Composite {
     }
 
     private void createColumns() {
-        TableViewerColumn colObjectId = new TableViewerColumn(tbViewer, SWT.RIGHT);
+        TableViewerColumn colObjectId = new TableViewerColumn(tbViewer, SWT.NONE);
         colObjectId.getColumn().setText(SmartXPathMessageConstants.LBL_COL_TEST_OBJECT_ID);
         colObjectId.setLabelProvider(new ColumnLabelProvider() {
             @Override
