@@ -558,6 +558,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         responseComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         populateDataToUI();
+        GroovyEditorUtil.saveEditor(scriptEditorPart);
         updatePartImage();
         registerListeners();
     }
