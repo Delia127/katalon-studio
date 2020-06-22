@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.Composite;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.settings.composites.ExcludeObjectsUsedWithKeywordsComposite;
+import com.katalon.plugin.smart_xpath.settings.composites.HelpCompositeForExecutionDialog;
 import com.katalon.plugin.smart_xpath.settings.composites.PrioritizeSelectionMethodsComposite;
-import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
@@ -75,7 +75,6 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
         createCheckboxEnableSelfHealing(mainContainer);
         createMethodsPriorityOrderComposite(mainContainer);
         createExcludeWithKeywordsComposite(mainContainer);
-
     }
 
     private void createCheckboxEnableSelfHealing(Composite parent) {
@@ -93,7 +92,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
                 handleInputChanged(checkboxEnableSelfHealing, null);
             }
         });
-        new HelpComposite(parent, documentationUrl);
+        new HelpCompositeForExecutionDialog(parent, documentationUrl);
     }
 
     private List<Pair<SelectorMethod, Boolean>> createMethodsPriorityOrderComposite(Composite parent) {

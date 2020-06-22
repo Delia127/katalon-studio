@@ -7,11 +7,11 @@ import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 
-public class SelfHealingWebTestingSettingPage extends PreferencePageWithHelp {
+public class SelfHealingWebUISettingPage extends PreferencePageWithHelp {
     
     private Composite container;
 
-	public SelfHealingWebTestingSettingPage() {
+	public SelfHealingWebUISettingPage() {
 	}
 
 	@Override

@@ -47,7 +47,6 @@ public class DefaultWebLocatorSelectionComposite extends Group {
         RowLayout defaultLocatorRowLayout = new RowLayout(SWT.HORIZONTAL);
         defaultLocatorRowLayout.spacing = 5;
         defaultLocatorRowLayout.marginHeight = 5;
-        defaultLocatorRowLayout.marginWidth = 5;
         this.setLayout(defaultLocatorRowLayout);
         this.setText(SmartXPathMessageConstants.GRP_DEFAULT_LOCATOR_SELECTION_AREA);
 
@@ -55,9 +54,6 @@ public class DefaultWebLocatorSelectionComposite extends Group {
             Button radioDefaultLocator = new Button(this, SWT.RADIO);
             radioDefaultLocator.setText(label);
             radioDefaultLocator.setData(selectorMethod);
-            // InputStream input = RadioButtonDemo.class.getResourceAsStream("/org/o7planning/swt/icon/male-16.png");
-            // Image image = new Image(null, input);
-            // radioButton.setImage(image);
 
             radioDefaultLocator.setSelection(selectorMethod == selectedSelectorMethod);
 

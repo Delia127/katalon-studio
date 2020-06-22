@@ -25,9 +25,7 @@ public class InstallSmartXPathBundleHandler {
                     @Override
                     public void handleEvent(Event event) {
                         try {
-                            if (LicenseUtil.isNotFreeLicense()) {
-                                PlatformHelper.installSmartXPathBundle();
-                            }
+                            PlatformHelper.installSmartXPathBundle();
                         } catch (BundleException e) {
                             LogUtil.logError(e);
                         }

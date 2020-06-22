@@ -37,7 +37,15 @@ public class StringConstants extends GlobalStringConstants {
 
     // Self Healing
     public static final String PROJECT_EXECUTION_SELF_HEALING_ID = "com.katalon.composer.self_healing";
-    
+
+    public static final String SELF_HEALING_SETTINGS_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing";
+
+    public static final String SELF_HEALING_WEB_SETTINGS_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing.web_testing";
+
+    public static final String SELF_HEALING_WEB_SETTINGS_TEST_DESIGN_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing.web_testing.testDesign";
+
+    public static final String SELF_HEALING_WEB_SETTINGS_EXECUTION_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing.web_testing.execution";
+
     // RebuildProjectHandler
     public static final String HAND_REBUILD_PROJ = ComposerProjectMessageConstants.HAND_REBUILD_PROJ;
 
