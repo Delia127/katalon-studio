@@ -6,9 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.kms.katalon.composer.execution.ExecutionComposerPlugin
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.composer.execution.collection.collector,
- com.kms.katalon.composer.execution.collection.dialog,
- com.kms.katalon.composer.execution.collection.provider,
+Export-Package: com.kms.katalon.composer.execution.collection.dialog,
  com.kms.katalon.composer.execution.components,
  com.kms.katalon.composer.execution.components.contributor,
  com.kms.katalon.composer.execution.constants,

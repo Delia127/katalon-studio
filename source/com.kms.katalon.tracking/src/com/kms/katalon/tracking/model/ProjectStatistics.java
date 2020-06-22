@@ -42,6 +42,12 @@ public class ProjectStatistics {
 
     private int customKeywordCount = 0;
 
+    private int testNGTestCaseStepCount = 0;
+
+    private int testNGTestSuiteStepCount = 0;
+
+    private int jUnitClassStepCount = 0;
+
     private int testListenerCount = 0;
     
     private int reportCount = 0;
@@ -74,7 +80,7 @@ public class ProjectStatistics {
     
     private boolean logTestStepsEnabled = false;
     
-    private boolean imageRecognitionEnabled = false;
+    private boolean selfHealingEnabled = false;
     
     private String additionalTestDatasourceForEnterpriseUser;
     
@@ -240,6 +246,30 @@ public class ProjectStatistics {
         this.customKeywordCount = customKeywordCount;
     }
 
+    public int getTestNGTestCaseStepCount() {
+        return testNGTestCaseStepCount;
+    }
+
+    public void setTestNGTestCaseStepCount(int testNGTestCaseStepCount) {
+        this.testNGTestCaseStepCount = testNGTestCaseStepCount;
+    }
+
+    public int getTestNGTestSuiteStepCount() {
+        return testNGTestSuiteStepCount;
+    }
+
+    public void setTestNGTestSuiteStepCount(int testNGTestSuiteStepCount) {
+        this.testNGTestSuiteStepCount = testNGTestSuiteStepCount;
+    }
+
+    public int getJUnitClassStepCount() {
+        return jUnitClassStepCount;
+    }
+
+    public void setJUnitClassStepCount(int jUnitClassStepCount) {
+        this.jUnitClassStepCount = jUnitClassStepCount;
+    }
+
     public int getTestListenerCount() {
         return testListenerCount;
     }
@@ -368,12 +398,12 @@ public class ProjectStatistics {
         this.logTestStepsEnabled = logTestStepsEnabled;
     }
 
-    public boolean getImageRecognitionEnabled() {
-        return imageRecognitionEnabled;
+    public boolean getSelfHealingEnabled() {
+        return selfHealingEnabled;
     }
 
-    public void setImageRecognitionEnabled(boolean imageRecognitionEnabled) {
-        this.imageRecognitionEnabled = imageRecognitionEnabled;
+    public void setSelfHealingEnabled(boolean selfHealingEnabled) {
+        this.selfHealingEnabled = selfHealingEnabled;
     }
 
     public String getAdditionalTestDataSourceForEnterpriseUser() {

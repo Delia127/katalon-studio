@@ -117,7 +117,7 @@ public class WelcomeLeftPart extends Composite {
                 MessageConstants.PA_LBL_TUTORIALS_URL, null, ColorUtil.getTextWhiteColor());
         addMenuSeparator(lowerComposite);
 
-        faqComposite = addMenuItem(lowerComposite, ImageConstants.IMG_FAQ, StringConstants.PA_LBL_FAQ, StringConstants.PA_LBL_FAQ_URL, null, ColorUtil.getTextWhiteColor());
+        faqComposite = addMenuItem(lowerComposite, ImageConstants.IMG_FAQ, StringConstants.PA_LBL_HELP_CENTER, StringConstants.PA_LBL_HELP_CENTER_URL, null, ColorUtil.getTextWhiteColor());
 
         addMenuSeparator(lowerComposite);
 

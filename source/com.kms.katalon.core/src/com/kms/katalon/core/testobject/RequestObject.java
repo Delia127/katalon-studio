@@ -69,18 +69,22 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     private String soapServiceFunction = "";
 
+    private String soapServiceEndpoint = "";
+
+    private boolean useServiceInfoFromWsdl = false;
+
     private List<TestObjectProperty> restParameters;
 
     private HttpBodyContent bodyContent;
 
     private String objectId;
-    
+
     private String verificationScript;
-    
+
     private Map<String, Object> variables;
-    
+
     private boolean followRedirects;
-    
+
     private int redirectTimes = 0;
     
     private int connectionTimeout = TIMEOUT_UNSET;
@@ -107,7 +111,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the id for this request object
      * 
-     * @param objectId the new id of this request object
+     * @param objectId
+     *            the new id of this request object
      */
     public void setObjectId(String objectId) {
         this.objectId = objectId;
@@ -125,7 +130,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the name for this request object
      * 
-     * @param name the new name of this request object
+     * @param name
+     *            the new name of this request object
      */
     public void setName(String name) {
         this.name = name;
@@ -145,7 +151,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the service type for this request object
      * 
-     * @param serviceType the new request type for this request object
+     * @param serviceType
+     *            the new request type for this request object
      */
     public void setServiceType(String serviceType) {
         this.serviceType = serviceType;
@@ -166,7 +173,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the http headers of this request object
      * 
-     * @param httpHeaderProperties the new list contains the http headers for this request object
+     * @param httpHeaderProperties
+     *            the new list contains the http headers for this request object
      */
     public void setHttpHeaderProperties(List<TestObjectProperty> httpHeaderProperties) {
         this.httpHeaderProperties = httpHeaderProperties;
@@ -176,7 +184,8 @@ public class RequestObject extends TestObject implements HttpMessage {
      * Get the http body for this request object
      * 
      * @return the http body for this request object as a String
-     * @deprecated Deprecated from 5.4. Please use {@link #setBodyContent(HttpBodyContent)} instead.
+     * @deprecated Deprecated from 5.4. Please use
+     *             {@link #setBodyContent(HttpBodyContent)} instead.
      */
     public String getHttpBody() {
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
@@ -191,8 +200,10 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the http body for this request object
      * 
-     * @param httpBody the new http body for this request object as a String
-     * @deprecated Deprecated from 5.4. Please use {@link #setBodyContent(HttpBodyContent)} instead.
+     * @param httpBody
+     *            the new http body for this request object as a String
+     * @deprecated Deprecated from 5.4. Please use
+     *             {@link #setBodyContent(HttpBodyContent)} instead.
      */
     public void setHttpBody(String httpBody) {
         this.bodyContent = new HttpTextBodyContent(httpBody);
@@ -200,9 +211,11 @@ public class RequestObject extends TestObject implements HttpMessage {
     }
 
     /**
-     * Get the wsdl address of this request object if it is a "SOAP" request object
+     * Get the wsdl address of this request object if it is a "SOAP" request
+     * object
      * 
-     * @return the wsdl address of this request object if it is a "SOAP" request object, or null if it is not
+     * @return the wsdl address of this request object if it is a "SOAP" request
+     *         object, or null if it is not
      */
     public String getWsdlAddress() {
         return wsdlAddress;
@@ -211,7 +224,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the wsdl address of this request object
      * 
-     * @param wsdlAddress the new wsdl address of this request object
+     * @param wsdlAddress
+     *            the new wsdl address of this request object
      */
     public void setWsdlAddress(String wsdlAddress) {
         this.wsdlAddress = wsdlAddress;
@@ -220,7 +234,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Get the soap body of this request object if it is a "SOAP" request object
      * 
-     * @return the soap body of this request object if it is a "SOAP" request object, or null if it is not
+     * @return the soap body of this request object if it is a "SOAP" request
+     *         object, or null if it is not
      */
     public String getSoapBody() {
         return soapBody;
@@ -229,18 +244,21 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the soap body for this request object
      * 
-     * @param soapBody the new soap body for this request object
+     * @param soapBody
+     *            the new soap body for this request object
      */
     public void setSoapBody(String soapBody) {
         this.soapBody = soapBody;
     }
 
     /**
-     * Get the soap request method of this request object if it is a "SOAP" request object
+     * Get the soap request method of this request object if it is a "SOAP"
+     * request object
      * <p>
      * Possible values: SOAP, SOAP12, GET, POST
      * 
-     * @return the soap request method of this request object if it is a "SOAP" request object, or null if it is not
+     * @return the soap request method of this request object if it is a "SOAP"
+     *         request object, or null if it is not
      */
     public String getSoapRequestMethod() {
         return soapRequestMethod;
@@ -249,16 +267,40 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the soap request method for this request object
      * 
-     * @param soapRequestMethod the new soap request method for this request object
+     * @param soapRequestMethod
+     *            the new soap request method for this request object
      */
     public void setSoapRequestMethod(String soapRequestMethod) {
         this.soapRequestMethod = soapRequestMethod;
     }
 
     /**
-     * Get the rest url of this request object if it is a "RESTful" request object
+     * Get a flag that determines whether to use the service info (service
+     * endpoint, SOAP action,...) parsed from WSDL when sending a SOAP request.
      * 
-     * @return the rest url of this request object if it is a "RESTful" request object, or null if it is not
+     * @since 7.4.5
+     */
+    public boolean useServiceInfoFromWsdl() {
+        return useServiceInfoFromWsdl;
+    }
+
+    /**
+     * Set a flag that determines whether to use the service info (service
+     * endpoint, SOAP action,...) parsed from WSDL when sending a SOAP request.
+     * 
+     * @param useServiceInfoFromWsdl
+     * @since 7.4.5
+     */
+    public void setUseServiceInfoFromWsdl(boolean useServiceInfoFromWsdl) {
+        this.useServiceInfoFromWsdl = useServiceInfoFromWsdl;
+    }
+
+    /**
+     * Get the rest url of this request object if it is a "RESTful" request
+     * object
+     * 
+     * @return the rest url of this request object if it is a "RESTful" request
+     *         object, or null if it is not
      */
     public String getRestUrl() {
         return restUrl;
@@ -267,37 +309,37 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the rest url for this request object
      * 
-     * @param restUrl the new rest url for this request object
+     * @param restUrl
+     *            the new rest url for this request object
      */
     public void setRestUrl(String restUrl) {
         this.restUrl = restUrl;
     }
 
     /**
-     * Get the rest request of this request object if it is a "RESTful" request object
-     * <p>
-     * Possible values: GET, POST, PUT, DELETE
+     * Get the rest request method of this request object if it is a "RESTful" request object
      * 
-     * @return the get request of this request object if it is a "RESTful" request object, or null if it is not
+     * @return the rest request method of this request object if it is a "RESTful" request object, or null if it is not
      */
     public String getRestRequestMethod() {
         return restRequestMethod;
     }
 
     /**
-     * Set the rest request for this request object
+     * Set the rest request method for this request object
      * 
-     * @param restRequestMethod the new get request for this request object
+     * @param restRequestMethod the new request method for this request object
      */
     public void setRestRequestMethod(String restRequestMethod) {
         this.restRequestMethod = restRequestMethod;
     }
 
     /**
-     * Get the rest parameters of this request object if it is a "RESTful" request object
+     * Get the rest parameters of this request object if it is a "RESTful"
+     * request object
      * 
-     * @return the rest parameters of this request object if it is a "RESTful" request object, or empty list if it is
-     * not
+     * @return the rest parameters of this request object if it is a "RESTful"
+     *         request object, or empty list if it is not
      */
     public List<TestObjectProperty> getRestParameters() {
         if (restParameters == null) {
@@ -309,16 +351,19 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the rest parameters for this request object
      * 
-     * @param restParameters the new rest parameters of this request object
+     * @param restParameters
+     *            the new rest parameters of this request object
      */
     public void setRestParameters(List<TestObjectProperty> restParameters) {
         this.restParameters = restParameters;
     }
 
     /**
-     * Get the soap service function of this request object if it is a "SOAP" request object
+     * Get the soap service function of this request object if it is a "SOAP"
+     * request object
      * 
-     * @return the soap service function of this request object if it is a "SOAP" request object, or null if it is not
+     * @return the soap service function of this request object if it is a
+     *         "SOAP" request object, or null if it is not
      */
     public String getSoapServiceFunction() {
         return soapServiceFunction;
@@ -327,10 +372,29 @@ public class RequestObject extends TestObject implements HttpMessage {
     /**
      * Set the soap service function for this request object
      * 
-     * @param soapServiceFunction the new soap service function for this request object
+     * @param soapServiceFunction
+     *            the new soap service function for this request object
      */
     public void setSoapServiceFunction(String soapServiceFunction) {
         this.soapServiceFunction = soapServiceFunction;
+    }
+
+    /**
+     * Get SOAP service endpoint
+     * 
+     * @since 7.4.5
+     */
+    public String getSoapServiceEndpoint() {
+        return soapServiceEndpoint;
+    }
+
+    /**
+     * Set SOAP service endpoint
+     * 
+     * @since 7.4.5
+     */
+    public void setSoapServiceEndpoint(String soapServiceEndpoint) {
+        this.soapServiceEndpoint = soapServiceEndpoint;
     }
 
     /**
@@ -346,7 +410,9 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     /**
      * Sets the body content for this request.
-     * @param bodyContent an implementation of {@link HttpBodyContent}
+     * 
+     * @param bodyContent
+     *            an implementation of {@link HttpBodyContent}
      * 
      * @see {@link HttpTextBodyContent}
      * @see {@link HttpFileBodyContent}
@@ -390,14 +456,16 @@ public class RequestObject extends TestObject implements HttpMessage {
     }
 
     /**
-     * Get the proxy of this request. This proxy will take precedence over proxy settings in Preferences.
+     * Get the proxy of this request. This proxy will take precedence over proxy
+     * settings in Preferences.
      */
     public ProxyInformation getProxy() {
         return proxy;
     }
 
     /**
-     * Set the proxy for this request. This proxy will take precedence over proxy settings in Preferences.
+     * Set the proxy for this request. This proxy will take precedence over
+     * proxy settings in Preferences.
      */
     public void setProxy(ProxyInformation proxy) {
         this.proxy = proxy;
@@ -405,6 +473,7 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     /**
      * Get the connection timeout of this request in milliseconds.
+     * @since 7.6.0
      */
     public int getConnectionTimeout() {
         return connectionTimeout;
@@ -427,6 +496,7 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     /**
      * Get the socket timeout of this request in milliseconds.
+     * @since 7.6.0
      */
     public int getSocketTimeout() {
         return socketTimeout;

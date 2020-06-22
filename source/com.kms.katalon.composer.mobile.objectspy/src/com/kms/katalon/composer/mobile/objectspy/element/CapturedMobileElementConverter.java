@@ -21,6 +21,9 @@ public class CapturedMobileElementConverter implements Converter<CapturedMobileE
     @Override
     public WebElementEntity convert(CapturedMobileElement element) {
         WebElementEntity newWebElement = new WebElementEntity();
+        if (element == null) {
+            return null;
+        }
         newWebElement.setName(element.getName());
         List<WebElementPropertyEntity> webElementProperties = new ArrayList<>();
 

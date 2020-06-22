@@ -5,7 +5,9 @@ import com.kms.katalon.constants.GlobalStringConstants;
 public class StringConstants extends GlobalStringConstants {
     
     //MailSettingsPage
-    public static final String EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.emailTemplate";
+    public static final String TEST_SUITE_EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.testSuiteEmailTemplate";
+
+    public static final String TEST_SUITE_COLLECTION_EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.testSuiteCollectionEmailTemplate";
 
     // TestExecutionAddon
     public static final String KATALON_COMPOSER_EXECUTION_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.execution/";
@@ -123,6 +125,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LOG_RESUME = ComposerExecutionMessageConstants.PA_LOG_RESUME;
 
     public static final String PA_LOG_PAUSE = ComposerExecutionMessageConstants.PA_LOG_PAUSE;
+    
+    public static final String PA_MSG_DRIVER_OUTDATED = ComposerExecutionMessageConstants.PA_MSG_DRIVER_OUTDATED;
 
     // LogExceptionNavigator
     public static final String WARN_TITLE = WARN;
@@ -299,7 +303,13 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_LBL_RETRY_TIMES = ComposerExecutionMessageConstants.DIA_LBL_RETRY_TIMES;
 
-    public static final String DIA_CHK_FOR_FAILED_TEST_CASES = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES;
+    public static final String DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS;
+
+    public static final String DIA_CHK_APPLY_PROXY = ComposerExecutionMessageConstants.DIA_CHK_APPLY_PROXY;
+    
+    public static final String DIA_CHK_FOR_RETRY_ALL_EXECUTIONS = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_ALL_EXECUTIONS;
+    
+    public static final String DIA_CHK_FOR_RETRY_IMMEDIATELY = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_IMMEDIATELY;
     
     public static final String DIA_LBL_API_KEY_USAGE = ComposerExecutionMessageConstants.API_KEY_USAGE;
     

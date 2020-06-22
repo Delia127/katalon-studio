@@ -14,11 +14,15 @@
 				<xml-element java-attribute="soapBody" />
 				<xml-element java-attribute="soapRequestMethod" />
 				<xml-element java-attribute="soapServiceFunction" />
+				<xml-element java-attribute="soapServiceEndpoint" />
+				<xml-element java-attribute="useServiceInfoFromWsdl" />
 				<xml-element java-attribute="soapParameters" />
 				
 				<xml-element java-attribute="restUrl" />
 				<xml-element java-attribute="restRequestMethod" />
 				<xml-element java-attribute="restParameters" />
+				
+				<xml-element java-attribute="katalonVersion" />
 			</java-attributes>
 		</java-type>
 	</java-types>

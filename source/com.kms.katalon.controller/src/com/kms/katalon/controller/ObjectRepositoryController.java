@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.kms.katalon.constants.SystemProperties;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.Entity;
@@ -16,6 +17,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -48,6 +50,22 @@ public class ObjectRepositoryController extends EntityController {
     public WebElementEntity newTestObject(FolderEntity parentFolder, String testObjectName) throws ControllerException {
         try {
             return saveNewTestObject(newTestObjectWithoutSave(parentFolder, testObjectName));
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
+    }
+
+    /**
+     * Create and save new Mobile Object
+     * 
+     * @param parentFolder
+     * @param testObjectName Test Object name. Default name (New Element) will be used if this null or empty
+     * @return {@link WebElementEntity}
+     * @throws Exception
+     */
+    public MobileElementEntity newMobileElement(MobileElementEntity mobileElement) throws ControllerException {
+        try {
+            return (MobileElementEntity) getDataProviderSetting().getWebElementDataProvider().saveNewTestObject(mobileElement);
         } catch (Exception e) {
             throw new ControllerException(e);
         }
@@ -107,7 +125,7 @@ public class ObjectRepositoryController extends EntityController {
     public DraftWebServiceRequestEntity newDraftWebServiceEntity(ProjectEntity project) {
         DraftWebServiceRequestEntity newWebElement = new DraftWebServiceRequestEntity();
         newWebElement.setProject(project);
-
+        newWebElement.setKatalonVersion(System.getProperty(SystemProperties.KATALON_VERSION));
         return newWebElement;
     }
 
@@ -135,7 +153,8 @@ public class ObjectRepositoryController extends EntityController {
         newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
         newWS.setParentFolder(parentFolder);
         newWS.setProject(parentFolder.getProject());
-
+        newWS.setKatalonVersion(System.getProperty(SystemProperties.KATALON_VERSION));
+        
         return newWS;
     }
     

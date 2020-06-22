@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.net.UrlEscapers;
@@ -62,6 +63,8 @@ public class WebServiceController extends EntityController {
             requestObject.setSoapServiceFunction(entity.getSoapServiceFunction());
             requestObject.setHttpHeaderProperties(parseProperties(entity.getHttpHeaderProperties(), substitutor));
             requestObject.setSoapBody(substitutor.replace(entity.getSoapBody()));
+            requestObject.setUseServiceInfoFromWsdl(entity.isUseServiceInfoFromWsdl());
+            requestObject.setSoapServiceEndpoint(substitutor.replace(entity.getSoapServiceEndpoint()));
         } else if ("RESTful".equals(serviceType)) {
             String rawUrl = entity.getRestUrl();
             String url = buildUrlFromRaw(rawUrl, substitutor);
@@ -70,16 +73,17 @@ public class WebServiceController extends EntityController {
             requestObject.setRestParameters(parseProperties(entity.getRestParameters(), new StrSubstitutor()));
             requestObject
                     .setHttpHeaderProperties(parseProperties(entity.getHttpHeaderProperties(), substitutor));
-            requestObject.setHttpBody(entity.getHttpBody());
+//            requestObject.setHttpBody(entity.getHttpBody());
 
             String httpBodyType = entity.getHttpBodyType();
-            if (StringUtils.isBlank(httpBodyType)) {
+            String oldVersionBodyContent = entity.getHttpBody();
+            if (StringUtils.isNotBlank(oldVersionBodyContent)) {
                 // migrated from 5.3.1 (KAT-3200)
                 httpBodyType = "text";
                 String body = entity.getHttpBody();
                 HttpTextBodyContent httpBodyContent = new HttpTextBodyContent(body);
                 requestObject.setBodyContent(httpBodyContent);
-            } else if (isBodySupported(requestObject)) {
+            } else if (StringUtils.isNotBlank(httpBodyType)) {
                 String httpBodyContent = entity.getHttpBodyContent();
                 HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
                         projectDir, substitutor);

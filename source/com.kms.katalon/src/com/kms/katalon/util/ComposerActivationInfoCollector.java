@@ -21,7 +21,6 @@ import com.kms.katalon.composer.quickstart.QuickStartDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.plugin.util.PlatformHelper;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
@@ -55,7 +54,9 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                     }
                     ApplicationInfo.cleanAll();
                 }
+                LogUtil.logInfo("Start checking and mark activated for GUI mode");
                 isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
+                LogUtil.logInfo("End checking and mark activated for GUI mode");
                 monitor.done();
             }
         });

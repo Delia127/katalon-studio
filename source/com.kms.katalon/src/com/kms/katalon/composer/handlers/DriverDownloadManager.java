@@ -65,6 +65,18 @@ public class DriverDownloadManager {
                         new File(edgeDriverPath).getParentFile());
             }
             break;
+        case EDGE_CHROMIUM_DRIVER: {
+            WebDriverCleanerUtil.cleanup();
+       
+            String edgeChromiumDriverPath = SeleniumWebDriverProvider.getEdgeChromiumDriverPath();
+            
+            WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
+            webDriverManagerRunConfiguration.setLogFile(logFile);
+            webDriverManagerRunConfiguration.setErrorLogFile(errorLogFile);
+            webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.EDGE_CHROMIUM_DRIVER,
+                    new File(edgeChromiumDriverPath).getParentFile());
+            }
+            break;
         default:
             break;
         }

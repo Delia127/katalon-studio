@@ -32,7 +32,7 @@ import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
-    private static final String EXECUTION_PROFILE_OPTION = "executionProfile";
+    protected static final String EXECUTION_PROFILE_OPTION = "executionProfile";
 
     private static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
 

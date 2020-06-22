@@ -12,18 +12,14 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.utils.LicenseUtil;
-import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
-import com.kms.katalon.feature.KSEFeature;
 
 public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
 
@@ -36,11 +32,6 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
     private ExecutionDefaultSettingStore defaultSettingStore;
 
     private Combo cbDefaultSmartWait;
-
-    @SuppressWarnings("unused")
-    private Button chckApplyNeighborXpaths;
-
-    private Button chckEnableImageRecognition;
 
     private Text txtDefaultPageLoadTimeout, txtActionDelayInSecond, txtActionDelayInMilisecond, txtDefaultIEHangTimeout;
 
@@ -76,19 +67,6 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
         GridData gdCbDefaultSmartWait = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdCbDefaultSmartWait.widthHint = INPUT_WIDTH * 2;
         cbDefaultSmartWait.setLayoutData(gdCbDefaultSmartWait);
-
-        // Image Recognition
-        Group grpImageRecognition = new Group(settingsComposite, SWT.NONE);
-        grpImageRecognition.setText(ComposerExecutionMessageConstants.PREF_WEBUI_GROUP_LBL_IMAGE_RECOGNITION);
-        GridLayout glGrpImageRecognition = new GridLayout(3, false);
-        glGrpImageRecognition.marginLeft = 15;
-        grpImageRecognition.setLayout(glGrpImageRecognition);
-        grpImageRecognition.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
-
-        chckEnableImageRecognition = new Button(grpImageRecognition, SWT.CHECK);
-        GridData gdChckEnableImageRecognition = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        chckEnableImageRecognition.setText(ComposerExecutionMessageConstants.PREF_WEBUI_LBL_ENABLE_IMAGE_RECOGNITION);
-        chckEnableImageRecognition.setLayoutData(gdChckEnableImageRecognition);
 
         /*
          * // Smart XPath's related functionality - only supported in commercial ver
@@ -189,16 +167,6 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
 
     @Override
     protected void registerListeners() {
-        chckEnableImageRecognition.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (LicenseUtil.isFreeLicense()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.IMAGE_BASED_OBJECT_DETECTION);
-                    chckEnableImageRecognition.setSelection(false);
-                }
-            }
-        });
-
         radioUsePageLoadTimeout.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -241,14 +209,6 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
          * chckApplyNeighborXpaths.setSelection(defaultSettingStore.isAutoApplyNeighborXpathsEnabled());
          */
 
-        if (chckEnableImageRecognition != null) {
-            if (LicenseUtil.isNotFreeLicense()) {
-                chckEnableImageRecognition.setSelection(webUISettingStore.getImageRecognitionEnabled());
-            } else {
-                chckEnableImageRecognition.setSelection(false);
-            }
-        }
-
         Boolean usePageLoadTimeout = webUISettingStore.getEnablePageLoadTimeout();
         radioUsePageLoadTimeout.setSelection(usePageLoadTimeout);
         radioNotUsePageLoadTimeout.setSelection(!usePageLoadTimeout);
@@ -283,11 +243,6 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
     protected void performDefaults() {
         if (container == null) {
             return;
-        }
-
-        if (chckEnableImageRecognition != null) {
-            chckEnableImageRecognition
-                    .setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED);
         }
 
         cbDefaultSmartWait.setItems(ENABLE_DISABLE_ITEMS);
@@ -332,10 +287,6 @@ public class WebUIExecutionSettingPage extends AbstractExecutionSettingPage {
         }
 
         try {
-            if (chckEnableImageRecognition != null) {
-                webUISettingStore.setDefaultImageRecognitionEnabled(chckEnableImageRecognition.getSelection());
-            }
-
             if (cbDefaultSmartWait != null) {
                 defaultSettingStore.setDefaultSmartWaitMode(
                         cbDefaultSmartWait.getSelectionIndex() == 0 ? Boolean.valueOf(true) : Boolean.valueOf(false));

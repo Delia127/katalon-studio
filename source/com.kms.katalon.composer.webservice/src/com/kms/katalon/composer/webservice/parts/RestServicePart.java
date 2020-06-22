@@ -1,10 +1,9 @@
 package com.kms.katalon.composer.webservice.parts;
 
-//import java.awt.Label;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -25,6 +24,7 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
+import org.osgi.service.event.Event;
 
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -47,6 +48,7 @@ import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWit
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
@@ -60,7 +62,10 @@ import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.HarLogger;
+import com.kms.katalon.core.webservice.common.WebServiceMethod;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
+import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -85,57 +90,147 @@ public class RestServicePart extends WebServicePart {
 
     private ModifyListener requestURLModifyListener;
 
+    private CCombo cbbRequestMethod;
+
+    private Text txtRequestURL;
+
     @Override
-    protected void createAPIControls(Composite parent) {
-        super.createAPIControls(parent);
+    protected void createServiceInfoComposite(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(3, false);
+        gridLayout.marginHeight = 0;
+        gridLayout.marginWidth = 0;
+        gridLayout.verticalSpacing = 0;
+        composite.setLayout(gridLayout);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        requestURLModifyListener = new ModifyListener() {
+        cbbRequestMethod = new CCombo(composite, SWT.BORDER);
+        cbbRequestMethod.setBackground(ColorUtil.getWhiteBackgroundColor());
+        GridData gdRequestMethod = new GridData(SWT.FILL, SWT.CENTER, false, false);
+        gdRequestMethod.widthHint = 100;
+        gdRequestMethod.heightHint = 22;
+        cbbRequestMethod.setLayoutData(gdRequestMethod);
+        cbbRequestMethod.setEditable(true);
+        cbbRequestMethod.setItems(getRestRequestMethods());
+        cbbRequestMethod.setText(originalWsObject.getRestRequestMethod());
 
+        txtRequestURL = new Text(composite, SWT.BORDER);
+        GridData gdRequestURL = new GridData(SWT.FILL, SWT.CENTER, true, true);
+        gdRequestURL.heightHint = 20;
+        txtRequestURL.setLayoutData(gdRequestURL);
+        txtRequestURL.setMessage(StringConstants.PA_LBL_URL);
+        String url = originalWsObject.getRestUrl();
+        if (!StringUtils.trim(url).isEmpty()) {
+            txtRequestURL.setText(url);
+        }
+
+        createApiControls(composite);
+        
+        Composite requestOptions = createRequestOptionsComposite(composite);
+        requestOptions.setLayoutData(new GridData(SWT.DEFAULT, SWT.DEFAULT, true, false, gridLayout.numColumns, 1));
+
+        Composite queryParamsComp = new Composite(composite, SWT.NONE);
+        queryParamsComp.setLayout(new GridLayout());
+        queryParamsComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
+        createQueryParamsComposite(queryParamsComp);
+
+        registerControlListeners();
+
+        registerEventListeners();
+    }
+
+    protected void createQueryParamsComposite(Composite parent) {
+        ExpandableComposite paramsExpandableComposite = new ExpandableComposite(parent, StringConstants.PA_LBL_PARAMS,
+                1, true);
+        Composite paramsComposite = paramsExpandableComposite.createControl();
+        GridLayout glParams = (GridLayout) paramsComposite.getLayout();
+        glParams.marginLeft = 0;
+        glParams.marginRight = 0;
+        ToolBar toolbar = createAddRemoveToolBar(paramsComposite, new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                tblParams.addRow();
+            }
+        }, new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                // tblParams.deleteSelections();
+                deleteSelectedParams();
+            }
+        });
+
+        tblParams = createKeyValueTable(paramsComposite, false);
+        tblParams.setInput(params);
+        tblParams.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                toolbar.getItem(1).setEnabled(tblParams.getTable().getSelectionCount() > 0);
+            }
+        });
+    }
+
+    private void registerEventListeners() {
+        eventBroker.subscribe(EventConstants.UPDATE_WEBSERVICE_METHODS, this);
+    }
+
+    private String[] getRestRequestMethods() {
+        WebServiceSettingStore store = getWebServiceSettingStore();
+        List<WebServiceMethod> methods;
+        try {
+            methods = store.getWebServiceMethods();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            methods = store.getDefaultWebServiceMethods();
+        }
+
+        return methods.stream().map(WebServiceMethod::getName).toArray(value -> new String[value]);
+    }
+
+    private WebServiceSettingStore getWebServiceSettingStore() {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        return WebServiceSettingStore.create(project.getFolderLocation());
+    }
+
+    private void registerControlListeners() {
+        txtRequestURL.addModifyListener(requestURLModifyListener = new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
                 Text text = (Text) e.widget;
                 updateParamsTable(text.getText());
-            }
-        };
-
-        wsApiControl.addRequestURLModifyListener(requestURLModifyListener);
-
-        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                setTabBodyContentBasedOnRequestMethod();
+                setDirty(true);
             }
         });
 
-        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
-
+        cbbRequestMethod.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 setTabBodyContentBasedOnRequestMethod();
+                setDirty(true);
             }
         });
-        
-        wsApiControl.addRequestMethodModifyListener(new ModifyListener() {
 
+        cbbRequestMethod.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
                 setTabBodyContentBasedOnRequestMethod();
+                setDirty(true);
             }
         });
-        
-        wsApiControl.addRequestMethodFocusListener(new FocusListener() {
 
+        cbbRequestMethod.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (StringUtils.isBlank(wsApiControl.getRequestMethod())) {
-                    wsApiControl.setRequestMethodSelection(0);
+                if (StringUtils.isBlank(cbbRequestMethod.getText())) {
+                    cbbRequestMethod.select(0);
                 }
+                setDirty(true);
             }
         });
     }
@@ -152,11 +247,6 @@ public class RestServicePart extends WebServicePart {
         }
 
         clearPreviousResponse();
-
-        String requestURL = wsApiControl.getRequestURL().trim();
-        // if (isInvalidURL(requestURL)) {
-        // return;
-        // }
 
         if (wsApiControl.getSendingState()) {
             progress.getProgressMonitor().setCanceled(true);
@@ -186,19 +276,19 @@ public class RestServicePart extends WebServicePart {
                         configRequest(requestEntity);
                         
                         Map<String, Object> evaluatedVariables = evaluateRequestVariables();
-                        
+
                         HarLogger harLogger = new HarLogger();
                         harLogger.initHarFile();
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
-                                projectDir, ProxyPreferences.getProxyInformation(),
+                                projectDir, ProxyPreferences.getSystemProxyInformation(),
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables), false);
                         deleteTempHarFile();
-                        
+
                         RequestObject requestObject = WebServiceController.getRequestObject(requestEntity, projectDir,
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables));
                         String logFolder = Files.createTempDirectory("har").toFile().getAbsolutePath();
                         harFile = harLogger.logHarFile(requestObject, responseObject, logFolder);
-        
+
                         if (monitor.isCanceled()) {
                             return;
                         }
@@ -220,10 +310,11 @@ public class RestServicePart extends WebServicePart {
                         if (runVerificationScript) {
                             executeVerificationScript(responseObject);
                         }
-                        
-                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(
-                                new Date(), (WebServiceRequestEntity) getWSRequestObject().clone());
-                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED, new Object[] { requestHistoryEntity });
+
+                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(new Date(),
+                                (WebServiceRequestEntity) getWSRequestObject().clone());
+                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED,
+                                new Object[] { requestHistoryEntity });
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     } finally {
@@ -260,7 +351,7 @@ public class RestServicePart extends WebServicePart {
             gdLblBodyNotSupported.exclude = false;
             lblBodyNotSupported.setVisible(true);
             lblBodyNotSupported.setText(String.format(ComposerWebserviceMessageConstants.LBL_BODY_NOT_SUPPORTED,
-                    wsApiControl.getRequestMethod()));
+                    cbbRequestMethod.getText()));
             gdRequestBodyEditor.exclude = true;
             requestBodyEditor.setVisible(false);
         }
@@ -268,55 +359,26 @@ public class RestServicePart extends WebServicePart {
         lblBodyNotSupported.getParent().requestLayout();
     }
 
+    protected boolean isBodySupported() {
+        String requestMethod = cbbRequestMethod.getText();
+        return RestRequestMethodHelper.isBodySupported(requestMethod);
+    }
+
     private void updateParamsTable(String newUrl) {
         params = extractRestParameters(newUrl);
         tblParams.setInput(params);
         tblParams.refresh();
     }
-    
+
     private List<WebElementPropertyEntity> extractRestParameters(String url) {
         List<WebElementPropertyEntity> paramEntities = new ArrayList<>();
-        
+
         urlBuilder = new URLBuilder(url);
         List<NameValuePair> params = urlBuilder.getQueryParams();
         paramEntities = params.stream().map(param -> new WebElementPropertyEntity(param.getName(), param.getValue()))
                 .collect(Collectors.toList());
 
         return paramEntities;
-    }
-
-    @Override
-    protected void createParamsComposite(Composite parent) {
-        ExpandableComposite paramsExpandableComposite = new ExpandableComposite(parent, StringConstants.PA_LBL_PARAMS,
-                1, true);
-        Composite paramsComposite = paramsExpandableComposite.createControl();
-        GridLayout glParams = (GridLayout) paramsComposite.getLayout();
-        glParams.marginLeft = 0;
-        glParams.marginRight = 0;
-        ToolBar toolbar = createAddRemoveToolBar(paramsComposite, new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                tblParams.addRow();
-            }
-        }, new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                // tblParams.deleteSelections();
-                deleteSelectedParams();
-            }
-        });
-
-        tblParams = createKeyValueTable(paramsComposite, false);
-        tblParams.setInput(params);
-        tblParams.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                toolbar.getItem(1).setEnabled(tblParams.getTable().getSelectionCount() > 0);
-            }
-        });
     }
 
     @Override
@@ -380,10 +442,9 @@ public class RestServicePart extends WebServicePart {
         List<NameValuePair> params = toNameValuePair(paramProperties);
         urlBuilder.setParameters(params);
         String newUrl = urlBuilder.buildString();
-        Text text = wsApiControl.getRequestURLControl();
-        text.removeModifyListener(requestURLModifyListener);
-        text.setText(newUrl);
-        text.addModifyListener(requestURLModifyListener);
+        txtRequestURL.removeModifyListener(requestURLModifyListener);
+        txtRequestURL.setText(newUrl);
+        txtRequestURL.addModifyListener(requestURLModifyListener);
     }
 
     private List<NameValuePair> toNameValuePair(List<WebElementPropertyEntity> propertyEntities) {
@@ -393,8 +454,8 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void handleRequestParamNameChanged(Object element, Object value) {
-        if (element != null && element instanceof WebElementPropertyEntity && value != null && value instanceof String) {
-
+        if (element != null && element instanceof WebElementPropertyEntity && value != null
+                && value instanceof String) {
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setName((String) value);
             tblParams.refresh();
@@ -406,8 +467,8 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void handleRequestParamValueChanged(Object element, Object value) {
-        if (element != null && element instanceof WebElementPropertyEntity && value != null && value instanceof String) {
-
+        if (element != null && element instanceof WebElementPropertyEntity && value != null
+                && value instanceof String) {
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setValue((String) value);
             tblParams.refresh();
@@ -425,14 +486,10 @@ public class RestServicePart extends WebServicePart {
         Composite tabBodyComposite = new Composite(tabComposite, SWT.NONE);
         tabBodyComposite.setLayout(new GridLayout());
 
-        // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL,
-        // SWT.FILL, true, true));
         requestBodyEditor = new HttpBodyEditorComposite(tabBodyComposite, SWT.NONE, this);
         requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         lblBodyNotSupported = new Label(tabBodyComposite, SWT.NONE);
-        // requestBodyEditor.setInput(originalWsObject);
-
         lblBodyNotSupported.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
 
@@ -454,24 +511,22 @@ public class RestServicePart extends WebServicePart {
     protected void preSaving() {
         tblParams.removeEmptyProperty();
         updateRequestUrlWithNewParams(tblParams.getInput());
-        
-        originalWsObject.setRestUrl(wsApiControl.getRequestURL());
-        String requestMethod = wsApiControl.getRequestMethod();
+
+        originalWsObject.setRestUrl(getRequestURL());
+        String requestMethod = getRequestMethod();
         originalWsObject.setRestRequestMethod(requestMethod);
 
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
-        if (isBodySupported(requestMethod) && requestBodyEditor.getHttpBodyType() != null) {
-            originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
-            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
+        if (requestBodyEditor.getHttpBodyType() != null) {
+            String bodyType = requestBodyEditor.getHttpBodyType();
+            String bodyContent = requestBodyEditor.getHttpBodyContent();
+            originalWsObject.setHttpBodyContent(bodyContent);
+            originalWsObject.setHttpBodyType(bodyType);
         }
 
         updatePartImage();
-    }
-
-    private boolean isBodySupported(String requestMethod) {
-        return RestRequestMethodHelper.isBodySupported(requestMethod);
     }
 
     @Override
@@ -480,13 +535,9 @@ public class RestServicePart extends WebServicePart {
 
         String restUrl = clone.getRestUrl();
 
-        wsApiControl.getRequestURLControl().setText(restUrl);
+        setRequestURL(restUrl);
 
         updateParamsTable(restUrl);
-
-        String restRequestMethod = clone.getRestRequestMethod();
-        int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
-        wsApiControl.getRequestMethodControl();
 
         tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getHttpHeaderProperties());
         httpHeaders.clear();
@@ -501,14 +552,29 @@ public class RestServicePart extends WebServicePart {
 
         requestBodyEditor.setInput(clone);
 
-        setTabBodyContentBasedOnRequestMethod();
+//        setTabBodyContentBasedOnRequestMethod();
+
+        cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
+
+        populateVariableManualView();
+
+        populateVariableScriptView();
+
+        reloadVerificationScript();
 
         dirtyable.setDirty(false);
+    }
 
-        // if (isOldVersion) {
-        // originalWsObject = clone;
-        // // save();
-        // }
+    private String getRequestURL() {
+        return txtRequestURL.getText();
+    }
+
+    private void setRequestURL(String url) {
+        txtRequestURL.setText(url);
+    }
+
+    private String getRequestMethod() {
+        return cbbRequestMethod.getText();
     }
 
     public void updateHeaders(WebServiceRequestEntity cloneWS) {
@@ -534,5 +600,17 @@ public class RestServicePart extends WebServicePart {
     @Override
     public boolean isDirty() {
         return mPart.isDirty();
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+        super.handleEvent(event);
+
+        if (cbbRequestMethod == null || cbbRequestMethod.isDisposed()) {
+            return;
+        }
+        if (EventConstants.UPDATE_WEBSERVICE_METHODS.equals(event.getTopic())) {
+            cbbRequestMethod.setItems(getRestRequestMethods());
+        }
     }
 }

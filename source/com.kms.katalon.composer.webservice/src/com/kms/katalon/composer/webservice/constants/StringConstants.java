@@ -16,6 +16,7 @@ public class StringConstants extends GlobalStringConstants {
     // ImportWebServicesPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+	public static final String MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI;
 	
 	// SparserInvalidException
 	public static final String EXC_INVALID_SWAGGER_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_SWAGGER_FILE;	
@@ -76,7 +77,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PARAM_TABLE_MENU_ITEM_REMOVE = ComposerWebserviceMessageConstants.PARAM_TABLE_MENU_ITEM_REMOVE;
     
     public static final String MSG_CANNOT_LOAD_WS = ComposerWebserviceMessageConstants.MSG_CANNOT_LOAD_WS;
-    public static final String LBL_LOAD_FROM_WSDL = ComposerWebserviceMessageConstants.LBL_LOAD_FROM_WSDL;
+    public static final String LBL_LOAD_SERVICE_FUNCTION = ComposerWebserviceMessageConstants.LBL_LOAD_SERVICE_FUNCTION;
     public static final String MSG_CANNOT_PARSE_WSDL = ComposerWebserviceMessageConstants.MSG_CANNOT_PARSE_WSDL;
     public static final String MSG_FETCHING_FROM_WSDL = ComposerWebserviceMessageConstants.MSG_FETCHING_FROM_WSDL;     
 

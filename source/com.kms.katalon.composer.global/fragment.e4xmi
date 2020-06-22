@@ -8,8 +8,13 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pla4kATQEeiwwLBO_0k_Ig" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_r3YUIATQEeiwwLBO_0k_Ig" elementId="com.kms.katalon.composer.global.command.newExecutionProfile" commandName="New Execution Profile"/>
+    <elements xsi:type="commands:Command" xmi:id="_FHvxMGNyEeqEA9_cBC-OKw" elementId="com.kms.katalon.composer.global.command.setDefaultExecutionProfile" commandName="Set Default Execution Profile"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_3mMrsATQEeiwwLBO_0k_Ig" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_6KOusATQEeiwwLBO_0k_Ig" elementId="com.kms.katalon.composer.global.handler.new" contributionURI="bundleclass://com.kms.katalon.composer.global/com.kms.katalon.composer.global.handler.NewExecutionProfileHandler" command="_r3YUIATQEeiwwLBO_0k_Ig"/>
+    <elements xsi:type="commands:Handler" xmi:id="_NC8tMGNyEeqEA9_cBC-OKw" elementId="com.kms.katalon.composer.global.handler.0" contributionURI="bundleclass://com.kms.katalon.composer.global/com.kms.katalon.composer.global.handler.SetDefaultExecutionProfileHandler" command="_FHvxMGNyEeqEA9_cBC-OKw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_DsRpAGODEeqEA9_cBC-OKw" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="last">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_16rKEGNxEeqEA9_cBC-OKw" elementId="com.kms.katalon.composer.global.dynamicmenucontribution.setDefaultExecutionProfile" label="Set as default Execution Profile" contributionURI="bundleclass://com.kms.katalon.composer.global/com.kms.katalon.composer.global.menu.SetDefaultExecutionProfileMenuContribution"/>
   </fragments>
 </fragment:ModelFragments>

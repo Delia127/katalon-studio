@@ -11,5 +11,7 @@ Require-Bundle: com.kms.katalon.core,
  com.kms.katalon.custom,
  org.eclipse.core.runtime,
  org.codehaus.groovy,
- org.junit
+ org.junit,
+ com.google.gson,
+ org.apache.commons.lang3
 Export-Package: com.kms.katalon.core.testng.keyword

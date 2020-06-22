@@ -1,5 +1,9 @@
 package com.kms.katalon.composer.testcase.components;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -12,19 +16,18 @@ import org.eclipse.swt.widgets.TreeItem;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
+import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 
 public class TreeViewerKeywordTooltip {
-    private static KeywordNodeTooltip tip;
+    private static AbstractKeywordNodeTooltip tip;
 
     private TreeViewer treeViewer;
 
     protected static final int SHIFT_X = -10;
 
     protected static final int SHIFT_Y = 2;
-    
-    private static final String CUSTOM_KEYWORD_CLASS = "CustomKeywords";
 
     private String currentKeyword;
 
@@ -95,7 +98,7 @@ public class TreeViewerKeywordTooltip {
 
     }
 
-    protected KeywordNodeTooltip getTooltip() {
+    protected AbstractKeywordNodeTooltip getTooltip() {
         return tip;
     }
 
@@ -112,14 +115,8 @@ public class TreeViewerKeywordTooltip {
         }
         KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
         String classKeyword = keywordBrowserEntity.getClassName();
-        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
-            return;
-        }
         String keywordName = keywordBrowserEntity.getName();
-        String text = TestCaseEntityUtil.getKeywordJavaDocText(classKeyword, keywordName);
-        if (text == null || text.length() < 1) {
-            text = keywordName;
-        }
+      
         if (tip != null && tip.isVisible() && keywordName != null && keywordName.equals(currentKeyword)) {
             return;
         }
@@ -127,18 +124,50 @@ public class TreeViewerKeywordTooltip {
             tip.hide();
         }
         currentKeyword = keywordName;
-        createTooltip(text, classKeyword, keywordName).show(getTooltipLocation(point));
+        createTooltip(classKeyword, keywordName, getParameterTypes(keywordBrowserEntity)).show(getTooltipLocation(point));
     }
+    
+    private String[] getParameterTypes(KeywordBrowserTreeEntity keywordBrowserEntity) {
+        Class<?>[] parameterClasses = keywordBrowserEntity.getParameterTypes() != null
+                ? keywordBrowserEntity.getParameterTypes() : new Class<?>[0];
+        return Stream.of(parameterClasses)
+                .map(t -> t.getName())
+                .collect(Collectors.toList())
+                .toArray(new String[parameterClasses.length]);
+    }     
 
-    protected KeywordNodeTooltip createTooltip(String text, String classKeyword, String keyword) {
-        tip = new KeywordNodeTooltip(treeViewer.getTree());
-        tip.setText(text);
+    protected AbstractKeywordNodeTooltip createTooltip(String classKeyword, String keyword,
+            String[] parameterTypes) {
+        if (KeywordController.CUSTOM_KEYWORD_CLASS_NAME.equals(classKeyword)) {
+            tip = new CustomKeywordNodeTooltip(treeViewer.getTree(), removeQuotes(keyword),
+                    parameterTypes);
+        } else {
+            tip = getBuiltinKeywordTooltip(classKeyword, keyword);
+        }
+        
+        return tip;
+    }
+    
+    private BuiltinKeywordNodeTooltip getBuiltinKeywordTooltip(String classKeyword, String keyword) {
+        BuiltinKeywordNodeTooltip tip = new BuiltinKeywordNodeTooltip(treeViewer.getTree());
         if (keyword.toLowerCase().equals(BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME.toLowerCase())) {
             classKeyword = BuiltinKeywords.class.getSimpleName();
         }
-        tip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeyword, keyword));
-        return tip;
+        ((BuiltinKeywordNodeTooltip) tip).setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeyword, keyword));
 
+        String text = TestCaseEntityUtil.getBuiltinKeywordJavadocText(classKeyword, keyword);
+        if (text == null || text.length() < 1) {
+            text = keyword;
+        }
+        ((BuiltinKeywordNodeTooltip) tip).setText(text);
+        ;
+        return tip;
+    }
+
+    private String removeQuotes(String str) {
+        String result = StringUtils.replace(str, "'", "");
+        result = StringUtils.replace(result, "\"", "");
+        return result;
     }
 
     protected String getCurrentKeyword() {
@@ -162,12 +191,7 @@ public class TreeViewerKeywordTooltip {
         TreeItem item = treeViewer.getTree().getItem(point);
         if (item == null || !(item.getData() instanceof KeywordBrowserTreeEntity)) {
             return false;
-        }
-        KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
-        String classKeyword = keywordBrowserEntity.getClassName();
-        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
-            return false;
-        }
+        }   
         return true;
     }
 }

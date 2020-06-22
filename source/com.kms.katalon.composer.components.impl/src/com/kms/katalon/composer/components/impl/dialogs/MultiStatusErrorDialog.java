@@ -177,15 +177,22 @@ public class MultiStatusErrorDialog extends AbstractDialog {
         return detailsShowed ? "<< " + detailsButtonText : detailsButtonText + " >>";
     }
 
-    public static void showErrorDialog(Throwable e, String title, String errorDescription) {
-        MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(Display.getCurrent().getActiveShell(), title,
-                errorDescription, ExceptionUtils.getFullStackTrace(e));
+    public static void showErrorDialog(Throwable error, String title, String errorDescription) {
+        showErrorDialog(error, title, errorDescription, Display.getCurrent().getActiveShell());
+    }
+
+    public static void showErrorDialog(Throwable error, String title, String errorDescription, Shell shell) {
+        MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(shell, title, errorDescription,
+                ExceptionUtils.getFullStackTrace(error));
         dialog.open();
     }
 
     public static void showErrorDialog(String message, String reason, String details) {
-        MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(Display.getCurrent().getActiveShell(), message,
-                reason, details);
+        showErrorDialog(message, reason, details, Display.getCurrent().getActiveShell());
+    }
+
+    public static void showErrorDialog(String message, String reason, String details, Shell shell) {
+        MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(shell, message, reason, details);
         dialog.open();
     }
 }

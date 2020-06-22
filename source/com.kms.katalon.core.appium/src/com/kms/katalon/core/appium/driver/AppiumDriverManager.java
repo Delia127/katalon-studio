@@ -26,6 +26,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
+import org.openqa.selenium.remote.http.HttpClient.Builder;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 
 import com.kms.katalon.core.appium.constants.AppiumStringConstants;
@@ -551,7 +552,10 @@ public class AppiumDriverManager {
 
             @Override
             public org.openqa.selenium.remote.internal.OkHttpClient.Builder builder() {
-                return factory.builder().proxy(proxy);
+                Builder builder = factory.builder();
+                return proxy != null
+                        ? builder.proxy(proxy)
+                        : builder;
             }
         };
     }
@@ -559,7 +563,8 @@ public class AppiumDriverManager {
     
     private static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl) throws URISyntaxException, IOException {
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo, remoteWebServerUrl));
+        Proxy proxy = ProxyUtil.getProxy(proxyInfo, remoteWebServerUrl);
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, remoteWebServerUrl, clientFactory);
         return executor;
     }
@@ -624,6 +629,17 @@ public class AppiumDriverManager {
     public static AppiumDriver<?> getDriver() throws StepFailedException {
         verifyWebDriverIsOpen();
         return localStorageAppiumDriver.get();
+    }
+
+    /**
+     * Sets the current active Appium driver.
+     * 
+     * @param driver    the Appium driver to be set
+     * @see             AppiumDriver
+     * @since           7.6.0
+     */
+    public static void setDriver(AppiumDriver<?> driver) {
+        localStorageAppiumDriver.set(driver);
     }
 
     public static Process getAppiumSeverProcess() {
