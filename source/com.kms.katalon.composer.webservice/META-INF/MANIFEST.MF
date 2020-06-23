@@ -85,7 +85,6 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.netlightbody,
  com.google.guava,
  org.apache.log4j,
- org.apache.xmlbeans,
  com.kms.katalon.application,
  com.kms.katalon.execution.webservice
 Export-Package: com.kms.katalon.composer.webservice.constants,
