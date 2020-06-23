@@ -18,6 +18,7 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.ssl.KeyMaterial;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -45,7 +46,9 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.webservice.exception.ConnectionTimeoutException;
+import com.kms.katalon.core.webservice.exception.ResponseSizeLimitException;
 import com.kms.katalon.core.webservice.exception.SocketTimeoutException;
+import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.util.WebServiceCommonUtil;
 
@@ -65,7 +68,7 @@ public class HttpUtil {
     }
 
     public static HttpResponse sendRequest(HttpUriRequest request) throws KeyManagementException, MalformedURLException,
-            URISyntaxException, IOException, GeneralSecurityException, ConnectionTimeoutException, SocketTimeoutException {
+            URISyntaxException, IOException, GeneralSecurityException, ConnectionTimeoutException, SocketTimeoutException, ResponseSizeLimitException {
         return sendRequest(request, true, null, SSLCertificateOption.BYPASS, null);
     }
 
@@ -73,16 +76,16 @@ public class HttpUtil {
             ProxyInformation proxyInformation, SSLCertificateOption certificateOption,
             SSLClientCertificateSettings clientCertSettings)
             throws KeyManagementException, MalformedURLException, URISyntaxException, IOException,
-            GeneralSecurityException, ConnectionTimeoutException, SocketTimeoutException {
+            GeneralSecurityException, ConnectionTimeoutException, SocketTimeoutException, ResponseSizeLimitException {
         return sendRequest(request, true, null, RequestObject.DEFAULT_TIMEOUT, RequestObject.DEFAULT_TIMEOUT,
-                SSLCertificateOption.BYPASS, null);
+                RequestObject.DEFAULT_MAX_RESPONSE_SIZE, SSLCertificateOption.BYPASS, null);
     }
 
     public static HttpResponse sendRequest(HttpUriRequest request, boolean followRedirects,
-            ProxyInformation proxyInformation, int connectionTimeout, int socketTimeout,
+            ProxyInformation proxyInformation, int connectionTimeout, int socketTimeout, long maxResponseSize,
             SSLCertificateOption certificateOption, SSLClientCertificateSettings clientCertSettings)
             throws URISyntaxException, IOException, KeyManagementException, GeneralSecurityException,
-            ConnectionTimeoutException, SocketTimeoutException {
+            ConnectionTimeoutException, SocketTimeoutException, ResponseSizeLimitException {
 
         String url = request.getURI().toURL().toString();
         HttpClientBuilder clientBuilder = getClientBuilder(url, followRedirects, proxyInformation, connectionTimeout, socketTimeout);
@@ -97,6 +100,19 @@ public class HttpUtil {
         } catch (java.net.SocketTimeoutException exception) {
             throw new SocketTimeoutException(exception);
         }
+
+        HttpEntity responseEntity = response.getEntity();
+        if (responseEntity != null) {
+            long headerLength = WebServiceCommonHelper.calculateHeaderLength(response);
+            long bodyLength = responseEntity.getContentLength();
+            long totalResponseSize = headerLength + bodyLength;
+            boolean isLimitResponseSize = WebServiceCommonUtil.isLimitedRequestResponseSize(maxResponseSize);
+            if (isLimitResponseSize && totalResponseSize > maxResponseSize) {
+                request.abort();
+                throw new ResponseSizeLimitException();
+            }
+        }
+        
         
         IOUtils.closeQuietly(httpClient);
         return response;

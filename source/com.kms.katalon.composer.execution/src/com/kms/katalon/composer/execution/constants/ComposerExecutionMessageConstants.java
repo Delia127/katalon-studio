@@ -117,6 +117,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_WEBSERVICE_LBL_SOCKET_TIMEOUT;
 
+    public static String PREF_WEBSERVICE_LBL_MAX_RESPONSE_SIZE;
+
     public static String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY;
 
     public static String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY;

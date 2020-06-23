@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.webservice.setting;
+package com.kms.katalon.execution.setting;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.execution.webservice.constants.WebServiceExecutionSettingConstants;
+import com.kms.katalon.execution.constants.WebServiceExecutionSettingConstants;
 
 public class WebServiceExecutionSettingStore extends BundleSettingStore {
 

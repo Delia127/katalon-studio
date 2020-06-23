@@ -61,6 +61,7 @@ public abstract class BasicRequestor implements Requestor {
                 proxyInformation,
                 requestObject.getConnectionTimeout(),
                 requestObject.getSocketTimeout(),
+                requestObject.getMaxResponseSize(),
                 getSslCertificateOption(),
                 getSSLSettings());
         long waitingTime = System.currentTimeMillis() - startTime;

@@ -132,6 +132,10 @@ public class RunConfiguration {
     public static final String REQUEST_CONNECTION_TIMEOUT = "requestConnectionTimeout";
 
     public static final String REQUEST_SOCKET_TIMEOUT = "requestSocketTimeout";
+
+    public static final String ALLOW_CUSTOMIZE_REQUEST_RESPONSE_SIZE_LIMIT = "allowCustomizeRequestResponseSizeLimit";
+
+    public static final String REQUEST_MAX_RESPONSE_SIZE = "maxResponseSize";
     
     public static final String VM_ARGUMENTS = "vmArguments";
     
@@ -648,5 +652,9 @@ public class RunConfiguration {
     
     public static boolean canCustomizeRequestTimeout() {
         return Boolean.TRUE.equals(getProperty(ALLOW_CUSTOMIZE_REQUEST_TIMEOUT));
+    }
+    
+    public static boolean canCustomizeRequestResponseSizeLimit() {
+        return Boolean.TRUE.equals(getProperty(ALLOW_CUSTOMIZE_REQUEST_RESPONSE_SIZE_LIMIT));
     }
 }

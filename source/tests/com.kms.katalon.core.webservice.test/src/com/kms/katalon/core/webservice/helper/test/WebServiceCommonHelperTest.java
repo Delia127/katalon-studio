@@ -131,4 +131,109 @@ public class WebServiceCommonHelperTest {
         Assert.assertEquals(customConnectionTimeout, request.getConnectionTimeout());
         Assert.assertEquals(customSocketTimeout, request.getSocketTimeout());
     }
+
+    @Test
+    public void configRequestMaxResponseSizeFreeLicenseTest() throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+        // Given
+        long maxResponseSize = 1234;
+        RequestObject request = new RequestObject(RandomStringUtils.random(8));
+        request.setMaxResponseSize(maxResponseSize);
+
+        Map<String, Object> executionSettingMap = new HashMap<>();
+        Map<String, Object> executionProperty = new HashMap<>();
+        executionSettingMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperty);
+
+        Map<String, Object> generalSettings = new HashMap<>();
+        generalSettings.put(RunConfiguration.REQUEST_MAX_RESPONSE_SIZE, maxResponseSize);
+
+        executionProperty.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, generalSettings);
+
+        RunConfiguration.setExecutionSetting(executionSettingMap);
+
+        Class<?> runConfigurationClass = RunConfiguration.class;
+        Field localExecutionSettingMapStorageField = runConfigurationClass
+                .getDeclaredField(LOCAL_EXECUTION_SETTING_STORAGE_FIELD);
+        localExecutionSettingMapStorageField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = (ThreadLocal<Map<String, Object>>) localExecutionSettingMapStorageField
+                .get(RunConfiguration.class);
+        localExecutionSettingMapStorage.get().put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_RESPONSE_SIZE_LIMIT, false);
+
+        // When
+        WebServiceCommonHelper.configRequestResponseSizeLimit(request);
+
+        // Then
+        Assert.assertEquals(RequestObject.MAX_RESPONSE_SIZE_UNSET, request.getMaxResponseSize());
+    }
+
+    @Test
+    public void configRequestMaxResponseSizeEnterpriseLicenseTest() throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+        // Given
+        long maxResponseSize = 1234;
+        RequestObject request = new RequestObject(RandomStringUtils.random(8));
+
+        Map<String, Object> executionSettingMap = new HashMap<>();
+        Map<String, Object> executionProperty = new HashMap<>();
+        executionSettingMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperty);
+
+        Map<String, Object> generalSettings = new HashMap<>();
+        generalSettings.put(RunConfiguration.REQUEST_MAX_RESPONSE_SIZE, maxResponseSize);
+
+        executionProperty.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, generalSettings);
+
+        RunConfiguration.setExecutionSetting(executionSettingMap);
+
+        Class<?> runConfigurationClass = RunConfiguration.class;
+        Field localExecutionSettingMapStorageField = runConfigurationClass
+                .getDeclaredField(LOCAL_EXECUTION_SETTING_STORAGE_FIELD);
+        localExecutionSettingMapStorageField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = (ThreadLocal<Map<String, Object>>) localExecutionSettingMapStorageField
+                .get(RunConfiguration.class);
+        localExecutionSettingMapStorage.get().put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_RESPONSE_SIZE_LIMIT, true);
+
+        // When
+        WebServiceCommonHelper.configRequestResponseSizeLimit(request);
+
+        // Then
+        Assert.assertEquals(maxResponseSize, request.getMaxResponseSize());
+    }
+
+    @Test
+    public void configRequestMaxResponseSizeEnterpriseLicenseCustomMaxResponseSizeTest() throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+        // Given
+        int customMaxResponseSize = 1111;
+        RequestObject request = new RequestObject(RandomStringUtils.random(8));
+        request.setMaxResponseSize(customMaxResponseSize);
+
+        Map<String, Object> executionSettingMap = new HashMap<>();
+        Map<String, Object> executionProperty = new HashMap<>();
+        executionSettingMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperty);
+
+        Map<String, Object> generalSettings = new HashMap<>();
+        int globalMaxResponseSize = 1234;
+        generalSettings.put(RunConfiguration.REQUEST_MAX_RESPONSE_SIZE, globalMaxResponseSize);
+
+        executionProperty.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, generalSettings);
+
+        RunConfiguration.setExecutionSetting(executionSettingMap);
+
+        Class<?> runConfigurationClass = RunConfiguration.class;
+        Field localExecutionSettingMapStorageField = runConfigurationClass
+                .getDeclaredField(LOCAL_EXECUTION_SETTING_STORAGE_FIELD);
+        localExecutionSettingMapStorageField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = (ThreadLocal<Map<String, Object>>) localExecutionSettingMapStorageField
+                .get(RunConfiguration.class);
+        localExecutionSettingMapStorage.get().put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_RESPONSE_SIZE_LIMIT, true);
+
+        // When
+        WebServiceCommonHelper.configRequestResponseSizeLimit(request);
+
+        // Then
+        Assert.assertEquals(customMaxResponseSize, request.getMaxResponseSize());
+    }
 }

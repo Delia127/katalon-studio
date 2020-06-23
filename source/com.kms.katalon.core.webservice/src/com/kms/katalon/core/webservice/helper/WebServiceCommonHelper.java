@@ -24,6 +24,7 @@ public class WebServiceCommonHelper {
 
     public static ResponseObject sendRequest(RequestObject request) throws Exception {
         configRequestTimeout(request);
+        configRequestResponseSizeLimit(request);
         ResponseObject responseObject = ServiceRequestFactory.getInstance(request).send(request);
         return responseObject;
     }
@@ -53,6 +54,22 @@ public class WebServiceCommonHelper {
         }
     }
 
+    public static void configRequestResponseSizeLimit(RequestObject request) {
+        if (RunConfiguration.canCustomizeRequestResponseSizeLimit()) {
+            Map<String, Object> executionSettings = RunConfiguration.getExecutionGeneralProperties();
+
+            if (WebServiceCommonUtil.isUnsetMaxRequestResponseSize(request.getMaxResponseSize())) {
+                Object maxResponseSize = executionSettings.get(RunConfiguration.REQUEST_MAX_RESPONSE_SIZE);
+                if (maxResponseSize != null) {
+                    long maxResponseSizeLongVal = ((Number) maxResponseSize).longValue();
+                    request.setMaxResponseSize(maxResponseSizeLongVal);
+                }
+            }
+        } else {
+            request.setMaxResponseSize(RequestObject.MAX_RESPONSE_SIZE_UNSET);
+        }
+    }
+    
 	public static void checkRequestObject(RequestObject requestObject) throws IllegalArgumentException {
 	    logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_REQUEST_OBJECT);
 		if (requestObject == null) {

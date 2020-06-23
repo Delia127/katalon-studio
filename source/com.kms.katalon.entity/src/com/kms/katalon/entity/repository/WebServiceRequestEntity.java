@@ -87,6 +87,8 @@ public class WebServiceRequestEntity extends WebElementEntity {
     
     private int socketTimeout = RequestObject.TIMEOUT_UNSET;
     
+    private long maxResponseSize = RequestObject.MAX_RESPONSE_SIZE_UNSET;
+    
     private List<VariableEntity> variables = new ArrayList<>();
 
     private String katalonVersion = null;
@@ -286,6 +288,14 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public void setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
+    }
+
+    public long getMaxResponseSize() {
+        return maxResponseSize;
+    }
+
+    public void setMaxResponseSize(long maxResponseSize) {
+        this.maxResponseSize = maxResponseSize;
     }
 
     @Override

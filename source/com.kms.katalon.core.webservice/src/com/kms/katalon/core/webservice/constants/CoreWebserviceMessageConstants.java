@@ -81,6 +81,8 @@ public class CoreWebserviceMessageConstants extends NLS {
     public static String MSG_CONNECTION_TIMEOUT_EXCEPTION;
 
     public static String MSG_SOCKET_TIMEOUT_EXCEPTION;
+
+    public static String MSG_RESPONSE_SIZE_LIMIT_EXCEPTION;
     
     static {
         // initialize resource bundle

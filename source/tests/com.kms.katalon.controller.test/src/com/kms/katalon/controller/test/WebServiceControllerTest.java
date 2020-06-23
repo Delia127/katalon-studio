@@ -33,4 +33,21 @@ public class WebServiceControllerTest {
         Assert.assertEquals(requestEntity.getConnectionTimeout(), request.getConnectionTimeout());
         Assert.assertEquals(requestEntity.getSocketTimeout(), request.getSocketTimeout());
     }
+
+    @Test
+    public void getRequestObjectMaxResponseSizeTest() {
+        // Given
+        WebServiceRequestEntity requestEntity = new WebServiceRequestEntity();
+        requestEntity.setServiceType(RandomStringUtils.random(8));
+        requestEntity.setMaxResponseSize(random.nextInt());
+
+        String projectDir = RandomStringUtils.random(8);
+        Map<String, Object> variables = new HashMap<String, Object>();
+
+        // When
+        RequestObject request = WebServiceController.getRequestObject(requestEntity, projectDir, variables);
+
+        // Then
+        Assert.assertEquals(requestEntity.getMaxResponseSize(), request.getMaxResponseSize());
+    }
 }

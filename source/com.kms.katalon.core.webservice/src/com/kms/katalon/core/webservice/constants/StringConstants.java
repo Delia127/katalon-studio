@@ -64,4 +64,6 @@ public class StringConstants {
     public static final String MSG_CONNECTION_TIMEOUT_EXCEPTION = CoreWebserviceMessageConstants.MSG_CONNECTION_TIMEOUT_EXCEPTION;
 
     public static final String MSG_SOCKET_TIMEOUT_EXCEPTION = CoreWebserviceMessageConstants.MSG_SOCKET_TIMEOUT_EXCEPTION;
+
+    public static final String MSG_RESPONSE_SIZE_LIMIT_EXCEPTION = CoreWebserviceMessageConstants.MSG_RESPONSE_SIZE_LIMIT_EXCEPTION;
 }

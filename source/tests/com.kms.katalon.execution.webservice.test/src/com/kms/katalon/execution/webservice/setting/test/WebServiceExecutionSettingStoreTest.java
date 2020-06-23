@@ -49,4 +49,17 @@ public class WebServiceExecutionSettingStoreTest {
         Assert.assertEquals(connectionTimeout, settingStore.getConnectionTimeout());
         Assert.assertEquals(socketTimeout, settingStore.getSocketTimeout());
     }
+
+    @Test
+    public void getSetMaxResponseSizeTest() throws Exception {
+        // Given
+        WebServiceExecutionSettingStore settingStore = WebServiceExecutionSettingStore.getStore();
+        long maxResponseSize = 1234;
+
+        // When
+        settingStore.setMaxResponseSize(maxResponseSize);
+
+        // Then
+        Assert.assertEquals(maxResponseSize, settingStore.getMaxResponseSize());
+    }
 }

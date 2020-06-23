@@ -255,6 +255,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         
         propertyMap.put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_TIMEOUT, featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_REQUEST_TIMEOUT));
         
+        propertyMap.put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_RESPONSE_SIZE_LIMIT, featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_RESPONSE_SIZE_LIMIT));
+        
         return propertyMap;
     }
     

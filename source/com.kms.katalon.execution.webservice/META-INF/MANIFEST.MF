@@ -12,6 +12,7 @@ Require-Bundle: com.kms.katalon.execution,
  com.kms.katalon.controller
 Export-Package: com.kms.katalon.execution.webservice.configuration,
  com.kms.katalon.execution.webservice.configuration.impl,
+ com.kms.katalon.execution.webservice.constants,
  com.kms.katalon.execution.webservice.contribution,
  com.kms.katalon.execution.webservice.setting
 Bundle-ActivationPolicy: lazy
