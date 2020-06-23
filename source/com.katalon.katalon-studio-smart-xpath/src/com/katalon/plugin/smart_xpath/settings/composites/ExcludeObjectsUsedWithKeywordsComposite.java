@@ -1,10 +1,14 @@
 package com.katalon.plugin.smart_xpath.settings.composites;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.fieldassist.AutoCompleteField;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -153,11 +157,16 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite {
                 if (element != null && element instanceof String && value != null && value instanceof String) {
                     String property = (String) element;
                     if (!value.equals(property)) {
-                        KeywordMethod newProperty = KeywordController.getInstance().getBuiltInKeywordByName(
-                                SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_CLASS_NAME, (String) value);
-                        int changedKeywordIndex = excludeKeywordNames.indexOf(property);
-                        if (changedKeywordIndex >= 0) {
-                            excludeKeywordNames.set(changedKeywordIndex, newProperty.getName());
+                        try {
+                            KeywordMethod newProperty = KeywordController.getInstance().getBuiltInKeywordByName(
+                                    SmartXPathMessageConstants.WEB_UI_BUILT_IN_KEYWORDS_CLASS_NAME, (String) value);
+                            int changedKeywordIndex = excludeKeywordNames.indexOf(property);
+                            if (changedKeywordIndex >= 0) {
+                                excludeKeywordNames.set(changedKeywordIndex, newProperty.getName());
+                            }
+                        } catch (NullPointerException exception) {
+                            MessageDialog.openError(parent.getShell(), "Project Settings",
+                                    MessageFormat.format(SmartXPathMessageConstants.ERROR_MESSAGE_WHEN_ENTER_WRONG_EXCLUDED_KEYWORD, value));
                         }
                         tableViewer.refresh();
 
@@ -170,20 +179,6 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite {
             protected CellEditor getCellEditor(Object element) {
                 final StringComboBoxCellEditor editor = new StringComboBoxCellEditor(table,
                         getWebUIKeywordsStringList());
-                CCombo combo = (CCombo) editor.getControl();
-                combo.addSelectionListener(new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent event) {
-                        String text = combo.getText();
-                        setValue(element, text);
-                    }
-                });
-                combo.addModifyListener(new ModifyListener() {
-
-                    @Override
-                    public void modifyText(ModifyEvent e) {
-                    }
-                });
                 return editor;
             }
 
