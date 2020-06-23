@@ -817,4 +817,9 @@ public interface IImageKeys {
     public static final String IMG_ABOUT_BG_DRANK = "about/background_dark.png";
 
     public static final String KATALON_NOTIFICATION_DOT_24 = "toolbar/noti_blue_dot_32x24.png";
+    
+    // Job Progress
+    public static final String JOB_ERROR_16 = "job_error_16.png"; //$NON-NLS-1$
+    public static final String JOB_FAILED_16 = "job_failed_16.png"; //$NON-NLS-1$
+    public static final String JOB_SKIPPED_16 = "job_skipped_16.png"; //$NON-NLS-1$
 }
