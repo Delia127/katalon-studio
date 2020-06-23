@@ -1332,8 +1332,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                                     && !showInstantBrowserDialog()) {
                                 return;
                             }
-                            changeBrowser(webUIDriverType, true);
                             startBrowser(true);
+                            changeBrowser(webUIDriverType, true);
                         } catch (IOException | URISyntaxException e) {
                             LoggerSingleton.logError(e);
                         }
