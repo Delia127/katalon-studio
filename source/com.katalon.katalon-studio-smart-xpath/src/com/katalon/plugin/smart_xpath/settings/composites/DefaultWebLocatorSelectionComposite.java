@@ -9,6 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -44,20 +46,20 @@ public class DefaultWebLocatorSelectionComposite extends Group {
     }
 
     private void createContents() {
+        this.setLayout(new GridLayout());
+        this.setText(SmartXPathMessageConstants.GRP_DEFAULT_LOCATOR_SELECTION_AREA);
+        this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+
+        Composite defaultWebLocatorComposite = new Composite(this, SWT.NONE);
         RowLayout defaultLocatorRowLayout = new RowLayout(SWT.HORIZONTAL);
         defaultLocatorRowLayout.spacing = 5;
         defaultLocatorRowLayout.marginHeight = 5;
-        defaultLocatorRowLayout.marginWidth = 5;
-        this.setLayout(defaultLocatorRowLayout);
-        this.setText(SmartXPathMessageConstants.GROUP_DEFAULT_LOCATOR_SELECTION_AREA);
+        defaultWebLocatorComposite.setLayout(defaultLocatorRowLayout);
 
         defaultLocatorOptions.forEach((label, selectorMethod) -> {
-            Button radioDefaultLocator = new Button(this, SWT.RADIO);
+            Button radioDefaultLocator = new Button(defaultWebLocatorComposite, SWT.RADIO);
             radioDefaultLocator.setText(label);
             radioDefaultLocator.setData(selectorMethod);
-            // InputStream input = RadioButtonDemo.class.getResourceAsStream("/org/o7planning/swt/icon/male-16.png");
-            // Image image = new Image(null, input);
-            // radioButton.setImage(image);
 
             radioDefaultLocator.setSelection(selectorMethod == selectedSelectorMethod);
 

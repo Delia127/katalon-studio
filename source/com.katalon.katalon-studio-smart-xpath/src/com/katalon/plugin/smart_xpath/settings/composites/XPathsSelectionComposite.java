@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TypedListener;
 
-import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
@@ -68,7 +67,7 @@ public class XPathsSelectionComposite extends Composite {
         compositeXpathTableToolBar.setLayout(new GridLayout(1, false));
 
         Button resetDefault = new Button(compositeXpathTableToolBar, SWT.WRAP);
-        resetDefault.setLayoutData(new GridData(SWT.BEGINNING , SWT.FILL, false, false));
+        resetDefault.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, false));
         resetDefault.setText(StringConstants.RESET_DEFAULT);
 
         Label lblDragDropXPath = new Label(compositeXpathTableToolBar, SWT.NONE);

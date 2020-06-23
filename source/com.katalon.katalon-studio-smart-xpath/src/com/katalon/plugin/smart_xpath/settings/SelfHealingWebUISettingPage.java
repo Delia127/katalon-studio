@@ -5,15 +5,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
-import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 
-public class SelfHealingWebTestingSettingPage extends PreferencePageWithHelp {
+public class SelfHealingWebUISettingPage extends PreferencePageWithHelp {
     
     private Composite container;
 
-	public SelfHealingWebTestingSettingPage() {
+	public SelfHealingWebUISettingPage() {
 	}
 
 	@Override

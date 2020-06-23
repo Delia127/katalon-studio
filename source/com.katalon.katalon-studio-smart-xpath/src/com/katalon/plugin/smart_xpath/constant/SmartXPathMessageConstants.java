@@ -5,15 +5,9 @@ import org.eclipse.osgi.util.NLS;
 public class SmartXPathMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.katalon.plugin.smart_xpath.constant.SmartXpathMessages";
 
-    public static String METHODS_PRIORITY_ORDER_VARIABLE;
-
-    public static String EXCLUDE_KEYWORDS_VARIABLE;
-
-    public static String SELF_HEALING_ENABLED_VARIABLE;
-
     public static String LABEL_EXCLUDE_OBJECTS_USED_WITH_KEYWORDS;
 
-    public static String GRP_LBL_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION;
+    public static String GRP_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION;
 
     public static String LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD;
 
@@ -95,7 +89,11 @@ public class SmartXPathMessageConstants extends NLS {
     
     public static String MSG_DISCARD_BROKEN_TEST_OBJECT_DIALOG;
 
-    public static String GROUP_DEFAULT_LOCATOR_SELECTION_AREA;
+    public static String GRP_DEFAULT_LOCATOR_SELECTION_AREA;
+
+    public static String SELF_HEALING_DOCUMENT_LINK;
+
+    public static String ERROR_MESSAGE_WHEN_ENTER_WRONG_EXCLUDED_KEYWORD;
 
     static {
         // initialize resource bundle

@@ -13,13 +13,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
 
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.settings.composites.AttributesSelectionComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.DefaultWebLocatorSelectionComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.XPathsSelectionComposite;
-import com.kms.katalon.composer.components.impl.control.DragableCTabFolder;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
