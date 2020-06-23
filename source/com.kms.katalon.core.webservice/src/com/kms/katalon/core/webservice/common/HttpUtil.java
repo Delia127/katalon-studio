@@ -23,10 +23,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -41,7 +43,11 @@ import org.apache.http.protocol.HttpContext;
 import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
+import com.kms.katalon.core.testobject.RequestObject;
+import com.kms.katalon.core.webservice.exception.ConnectionTimeoutException;
+import com.kms.katalon.core.webservice.exception.SocketTimeoutException;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
+import com.kms.katalon.core.webservice.util.WebServiceCommonUtil;
 
 public class HttpUtil {
 
@@ -59,26 +65,46 @@ public class HttpUtil {
     }
 
     public static HttpResponse sendRequest(HttpUriRequest request) throws KeyManagementException, MalformedURLException,
-            URISyntaxException, IOException, GeneralSecurityException {
+            URISyntaxException, IOException, GeneralSecurityException, ConnectionTimeoutException, SocketTimeoutException {
         return sendRequest(request, true, null, SSLCertificateOption.BYPASS, null);
     }
 
     public static HttpResponse sendRequest(HttpUriRequest request, boolean followRedirects,
             ProxyInformation proxyInformation, SSLCertificateOption certificateOption,
-            SSLClientCertificateSettings clientCertSettings) throws MalformedURLException, URISyntaxException,
-            IOException, KeyManagementException, GeneralSecurityException {
+            SSLClientCertificateSettings clientCertSettings)
+            throws KeyManagementException, MalformedURLException, URISyntaxException, IOException,
+            GeneralSecurityException, ConnectionTimeoutException, SocketTimeoutException {
+        return sendRequest(request, true, null, RequestObject.DEFAULT_TIMEOUT, RequestObject.DEFAULT_TIMEOUT,
+                SSLCertificateOption.BYPASS, null);
+    }
+
+    public static HttpResponse sendRequest(HttpUriRequest request, boolean followRedirects,
+            ProxyInformation proxyInformation, int connectionTimeout, int socketTimeout,
+            SSLCertificateOption certificateOption, SSLClientCertificateSettings clientCertSettings)
+            throws URISyntaxException, IOException, KeyManagementException, GeneralSecurityException,
+            ConnectionTimeoutException, SocketTimeoutException {
 
         String url = request.getURI().toURL().toString();
-        HttpClientBuilder clientBuilder = getClientBuilder(url, followRedirects, proxyInformation);
+        HttpClientBuilder clientBuilder = getClientBuilder(url, followRedirects, proxyInformation, connectionTimeout, socketTimeout);
         CloseableHttpClient httpClient = clientBuilder.build();
         HttpContext httpContext = getDefaultHttpContext(certificateOption, clientCertSettings);
-        CloseableHttpResponse response = httpClient.execute(request, httpContext);
+
+        CloseableHttpResponse response = null;
+        try {
+            response = httpClient.execute(request, httpContext);
+        } catch (ConnectTimeoutException exception) {
+            throw new ConnectionTimeoutException(exception);
+        } catch (java.net.SocketTimeoutException exception) {
+            throw new SocketTimeoutException(exception);
+        }
+        
         IOUtils.closeQuietly(httpClient);
         return response;
     }
 
     private static HttpClientBuilder getClientBuilder(String url, boolean followRedirects,
-            ProxyInformation proxyInformation) throws MalformedURLException, URISyntaxException, IOException {
+            ProxyInformation proxyInformation, int connectionTimeout, int socketTimeout)
+            throws MalformedURLException, URISyntaxException, IOException {
 
         HttpClientBuilder clientBuilder = HttpClients.custom();
 
@@ -92,6 +118,8 @@ public class HttpUtil {
         clientBuilder.setConnectionManagerShared(true);
 
         configureProxy(clientBuilder, url, proxyInformation);
+
+        configTimeout(clientBuilder, connectionTimeout, socketTimeout);
 
         clientBuilder.setKeepAliveStrategy(new DefaultKeepAliveStrategy());
 
@@ -123,6 +151,14 @@ public class HttpUtil {
         }
 
         clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+    }
+
+    private static void configTimeout(HttpClientBuilder httpClientBuilder, int connectionTimeout, int socketTimeout) {
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(WebServiceCommonUtil.getValidRequestTimeout(connectionTimeout))
+                .setSocketTimeout(WebServiceCommonUtil.getValidRequestTimeout(socketTimeout))
+                .build();
+        httpClientBuilder.setDefaultRequestConfig(config);
     }
 
     private static HttpContext getDefaultHttpContext(SSLCertificateOption certificateOption,

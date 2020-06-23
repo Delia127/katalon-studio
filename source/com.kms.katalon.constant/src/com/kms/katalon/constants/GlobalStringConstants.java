@@ -124,6 +124,10 @@ public class GlobalStringConstants {
 
     public static final String PROPERTIES = GlobalMessageConstants.PROPERTIES;
 
+    public static final String ENABLE = GlobalMessageConstants.ENABLE;
+
+    public static final String DISABLE = GlobalMessageConstants.DISABLE;
+
     // Dialog Title
     public static final String CONFIRMATION = GlobalMessageConstants.CONFIRMATION;
 

@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.ByteArrayEntity;

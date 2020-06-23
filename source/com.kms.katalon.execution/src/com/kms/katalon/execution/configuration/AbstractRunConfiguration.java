@@ -253,6 +253,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
         propertyMap.put(RunConfiguration.ALLOW_USING_SELF_HEALING, featureService.canUse(KSEFeature.SELF_HEALING));
         
+        propertyMap.put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_TIMEOUT, featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_REQUEST_TIMEOUT));
+        
         return propertyMap;
     }
     

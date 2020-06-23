@@ -105,6 +105,18 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_GRP_POST_EXECUTION_OPTIONS;
 
+    public static String PREF_WEBUI_LBL_DEFAULT_SMART_WAIT;
+
+    public static String PREF_WEBUI_GROUP_LBL_IMAGE_RECOGNITION;
+
+    public static String PREF_WEBUI_LBL_ENABLE_IMAGE_RECOGNITION;
+
+    public static String PREF_WEBSERVICE_GROUP_LBL_HTTP;
+
+    public static String PREF_WEBSERVICE_LBL_CONNECTION_TIMEOUT;
+
+    public static String PREF_WEBSERVICE_LBL_SOCKET_TIMEOUT;
+
     public static String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY;
 
     public static String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY;

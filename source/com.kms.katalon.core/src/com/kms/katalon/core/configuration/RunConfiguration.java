@@ -126,6 +126,12 @@ public class RunConfiguration {
     public static final String LOG_TEST_STEPS = "logTestSteps";
 
     public static final String XPATHS_PRIORITY = "xpathsPriority";
+
+    public static final String ALLOW_CUSTOMIZE_REQUEST_TIMEOUT = "allowCustomizeRequestTimeout";
+
+    public static final String REQUEST_CONNECTION_TIMEOUT = "requestConnectionTimeout";
+
+    public static final String REQUEST_SOCKET_TIMEOUT = "requestSocketTimeout";
     
     public static final String VM_ARGUMENTS = "vmArguments";
     
@@ -638,5 +644,9 @@ public class RunConfiguration {
         });
 
         return xpathPriority;
+    }
+    
+    public static boolean canCustomizeRequestTimeout() {
+        return Boolean.TRUE.equals(getProperty(ALLOW_CUSTOMIZE_REQUEST_TIMEOUT));
     }
 }

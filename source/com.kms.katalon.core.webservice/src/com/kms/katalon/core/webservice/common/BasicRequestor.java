@@ -59,6 +59,8 @@ public abstract class BasicRequestor implements Requestor {
                 httpRequest,
                 requestObject.isFollowRedirects(),
                 proxyInformation,
+                requestObject.getConnectionTimeout(),
+                requestObject.getSocketTimeout(),
                 getSslCertificateOption(),
                 getSSLSettings());
         long waitingTime = System.currentTimeMillis() - startTime;
@@ -260,7 +262,7 @@ public abstract class BasicRequestor implements Requestor {
             return null;
         }
     }
-
+    
     protected Map<String, List<String>> getResponseHeaderFields(HttpResponse httpResponse) {
         Map<String, List<String>> headerFields = new HashMap<>();
         Header[] headers = httpResponse.getAllHeaders();

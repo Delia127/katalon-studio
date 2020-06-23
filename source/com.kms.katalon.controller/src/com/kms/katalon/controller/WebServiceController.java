@@ -53,6 +53,9 @@ public class WebServiceController extends EntityController {
         requestObject.setName(entity.getName());
         StrSubstitutor substitutor = new StrSubstitutor(variables);
         
+        requestObject.setConnectionTimeout(entity.getConnectionTimeout());
+        requestObject.setSocketTimeout(entity.getSocketTimeout());
+        
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(substitutor.replace(entity.getWsdlAddress()));
             requestObject.setSoapRequestMethod(entity.getSoapRequestMethod());

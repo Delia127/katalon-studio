@@ -59,6 +59,10 @@ public class GlobalMessageConstants extends NLS {
 
     public static String PROPERTIES;
 
+    public static String ENABLE;
+
+    public static String DISABLE;
+
     public static String CONFIRMATION;
 
     public static String NOTIFICATION;
