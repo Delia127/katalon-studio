@@ -807,7 +807,7 @@ public class KeywordContentProposalAdapter {
      * a boolean indicating whether the popup was autoactivated. If
      * false, a beep will sound when no proposals can be shown.
      */
-    private void openProposalPopup(boolean autoActivated) {
+    public void openProposalPopup(boolean autoActivated) {
         if (isValid()) {
             if (popup == null) {
                 // Check whether there are any proposals to be shown.

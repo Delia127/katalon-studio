@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.dialogs.EncryptedTextDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
@@ -18,7 +17,6 @@ import com.kms.katalon.composer.testcase.ast.editors.CheckpointSelectionMethodCa
 import com.kms.katalon.composer.testcase.ast.editors.ClosureInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ClosureListInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.GlobalVariablePropertyComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.GlobalVariablePropertyComboBoxCellEditorWithContentProposal;
 import com.kms.katalon.composer.testcase.ast.editors.KeyInputComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.KeysInputCellEditor;
@@ -56,8 +54,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionW
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.ITestCasePart;
-import com.kms.katalon.controller.GlobalVariableController;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -254,7 +250,7 @@ public class AstValueUtil {
         List<String> variableNames = new ArrayList<String>();
         for (GlobalVariableEntity variable : variables) {
             variableNames.add(variable.getName());
-            toolTips.add("");
+            toolTips.add(variable.getName());
         }
         return new GlobalVariablePropertyComboBoxCellEditorWithContentProposal(parent, propertyExpressionWrapper,
                 variables.toArray(new GlobalVariableEntity[variables.size()]),

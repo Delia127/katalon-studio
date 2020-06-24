@@ -45,8 +45,7 @@ public class KeywordComboBoxCellEditorWithContentProposal extends ComboBoxCellEd
         ASTNodeWrapper currentInput = parentStatement.getInput();
         ArgumentListExpressionWrapper currentArguments = currentInput instanceof MethodCallExpressionWrapper
                 ? ((MethodCallExpressionWrapper) currentInput).getArguments() : null;
-        return AstKeywordsInputUtil.generateBuiltInKeywordExpression(keywordClass, newMethodName, currentArguments,
-                parentStatement);
+        return AstKeywordsInputUtil.generateBuiltInKeywordExpression(keywordClass, newMethodName, currentArguments, parentStatement);
     }
 
     @Override
