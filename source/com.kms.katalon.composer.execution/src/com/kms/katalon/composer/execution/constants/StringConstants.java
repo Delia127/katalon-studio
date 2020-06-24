@@ -304,7 +304,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_CHK_FOR_FAILED_TEST_CASES = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES;
 
     public static final String DIA_CHK_APPLY_PROXY = ComposerExecutionMessageConstants.DIA_CHK_APPLY_PROXY;
-    
+
+    public static final String DIA_CHK_OVERRIDE_PLATFORM = ComposerExecutionMessageConstants.DIA_CHK_OVERRIDE_PLATFORM;
+
     public static final String DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES_TEST_DATA;
     
     public static final String DIA_LBL_API_KEY_USAGE = ComposerExecutionMessageConstants.API_KEY_USAGE;
