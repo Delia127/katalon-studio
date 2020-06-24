@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -284,7 +285,7 @@ public class CustomKeywordNodeTooltip extends AbstractKeywordNodeTooltip impleme
                 method = JDTUtil.findMethod(project, keywordClass, keywordName, parameterTypes.length);
             }
             return method;
-        } catch (JavaModelException e) {
+        } catch (JavaModelException | IllegalArgumentException | ExecutionException e) {
             LoggerSingleton.logError(e);
             return null;
         }
