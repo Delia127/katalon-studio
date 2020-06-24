@@ -24,7 +24,7 @@ public class WsdlDefinitionApiLocator extends BaseWsdlDefinitionLocator {
     private SSLCertificateOption certificateOption;
 
     private SSLClientCertificateSettings clientCertSettings;
-
+    
     public WsdlDefinitionApiLocator(String wsdlLocation, Map<String, Object> params) {
 
         this.wsdlLocation = wsdlLocation;
@@ -53,10 +53,11 @@ public class WsdlDefinitionApiLocator extends BaseWsdlDefinitionLocator {
 
             HttpEntity responseEntity = response.getEntity();
             InputStream is = null;
+            
             if (responseEntity != null) {
                 is = responseEntity.getContent();
             }
-
+            
             return is;
         } catch (Exception e) {
             throw new RuntimeException(e);

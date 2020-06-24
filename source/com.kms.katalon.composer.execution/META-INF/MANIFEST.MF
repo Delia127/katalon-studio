@@ -6,9 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.kms.katalon.composer.execution.ExecutionComposerPlugin
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.composer.execution.collection.collector,
- com.kms.katalon.composer.execution.collection.dialog,
- com.kms.katalon.composer.execution.collection.provider,
+Export-Package: com.kms.katalon.composer.execution.collection.dialog,
  com.kms.katalon.composer.execution.components,
  com.kms.katalon.composer.execution.components.contributor,
  com.kms.katalon.composer.execution.constants,
@@ -88,7 +86,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.tracking,
  com.katalon.platform,
  org.eclipse.core.filesystem,
- com.kms.katalon.integration.analytics
+ com.kms.katalon.integration.analytics,
+ com.kms.katalon.execution.webservice
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.base,

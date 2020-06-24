@@ -192,6 +192,10 @@ public class EventConstants {
 
     public static final String TEST_OBJECT_OPEN = "TESTOBJECT/OPEN";
 
+    public static final String MOBILE_TEST_OBJECT_OPEN = "MOBILE_TESTOBJECT/OPEN";
+    
+    public static final String WINDOWS_TEST_OBJECT_OPEN = "WINDOWS_TEST_OBJECT/OPEN";
+    
     public static final String TEST_OBJECT_SAVE = "TESTOBJECT/SAVE";
 
     public static final String TEST_OBJECT_UPDATED = "TESTOBJECT/UPDATED";
@@ -262,6 +266,9 @@ public class EventConstants {
     public static final String JOB_UPDATE_PROGRESS = "JOB/UPDATE_PROGRESS";
 
     public static final String JOB_COMPLETED = "JOB/COMPLETED";
+
+    // Self-Healing Insights Events
+    public static final String SEFL_HEALING_INSIGHTS_REFRESH = "SELF_HEALING_INSIGHTS/REFRESH";
 
     // Object Spy Events
     public static final String OBJECT_SPY_RESET_SELECTED_TARGET = "OBJECT_SPY/RESET_SELECTED_TARGET";
@@ -396,6 +403,8 @@ public class EventConstants {
     
     // Keyword Browser
     public static final String KEYWORD_BROWSER_REFRESH = "KEYWORD_BROWSER/REFRESH";
+    
+    public static final String CUSTOMKEYWORD_REFRESH = "CUSTOMKEYWORD/REFRESH";
 
     // Plugin events
     public static final String RELOAD_PLUGINS = "PLUGIN/RELOAD_PLUGINS";
@@ -409,6 +418,8 @@ public class EventConstants {
     public static final String JIRA_PLUGIN_UNINSTALLED = "PLUGIN/JIRA_UNINSTALLED";
     
     public static final String BASIC_REPORT_PLUGIN_INSTALLED = "PLUGIN/BASIC_REPORT_INSTALLED";
+    
+    public static final String APPLITOOLS_PLUGIN_INSTALLED = "PLUGIN/APPLITOOOLS_INSTALLED";
 
     public static final String REPORT_EXPORT_PROVIDERS_COLLECTED = "PLUGIN/EXPORT_PROVIDER_COLLECTED";
     

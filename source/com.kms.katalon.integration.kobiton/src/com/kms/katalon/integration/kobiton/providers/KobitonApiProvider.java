@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -29,6 +30,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.kobiton.constants.KobitonStringConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
 import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
@@ -54,9 +57,17 @@ public class KobitonApiProvider {
 
     private static final String DATE_FORMAT_ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
+    public static HttpClient getHttpClient() throws KobitonApiException {
+        try {
+            return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
+        } catch (GeneralSecurityException | URISyntaxException | IOException e) {
+            throw new KobitonApiException(e.getMessage());
+        }
+    }
+
     public static KobitonLoginInfo login(String username, String password)
             throws URISyntaxException, ClientProtocolException, IOException, KobitonApiException {
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpClient httpClient = getHttpClient();
         HttpPost httpPost = new HttpPost(getKobitonURI(KobitonStringConstants.KOBITON_API_LOGIN));
         JsonObject jsonObject = new JsonObject();
         jsonObject.add(LOGIN_PARAM_EMAIL_OR_USERNAME, new JsonPrimitive(username));
@@ -91,7 +102,7 @@ public class KobitonApiProvider {
 
     public static List<KobitonApiKey> getApiKeyList(String token)
             throws URISyntaxException, ClientProtocolException, IOException, KobitonApiException {
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpClient httpClient = getHttpClient();
         HttpGet httpGet = new HttpGet(getKobitonURI(KobitonStringConstants.KOBITON_API_GET_KEYS));
         setHeaderForKobitonGetRequest(token, httpGet);
         HttpResponse httpResponse = httpClient.execute(httpGet);

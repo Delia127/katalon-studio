@@ -51,9 +51,13 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddTyp
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.WindowsElementController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -364,13 +368,21 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
                 if (!(object instanceof MenuItem)) {
                     return;
                 }
-                WebElementEntity webElementEntity = getWebElementFromMenuItem((MenuItem) object);
+                FileEntity webElementEntity = getWebElementFromMenuItem((MenuItem) object);
                 if (webElementEntity == null) {
                     return;
                 }
-                String openEventName = webElementEntity instanceof WebServiceRequestEntity
-                        ? EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN : EventConstants.TEST_OBJECT_OPEN;
-                eventBroker.send(openEventName, webElementEntity);
+                String openEventName = "";
+                if (webElementEntity instanceof WebServiceRequestEntity) {
+                    openEventName = EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN;
+                } else if (webElementEntity instanceof MobileElementEntity) {
+                    openEventName = EventConstants.MOBILE_TEST_OBJECT_OPEN;
+                } else if (webElementEntity instanceof WindowsElementEntity) {
+                    openEventName = EventConstants.WINDOWS_TEST_OBJECT_OPEN;
+                } else if (webElementEntity instanceof WebElementEntity) {
+                    openEventName = EventConstants.TEST_OBJECT_OPEN;
+                }
+                eventBroker.post(openEventName, webElementEntity);
             }
         };
 
@@ -388,33 +400,43 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         String name = ComposerTestcaseMessageConstants.MENU_OPEN + " " + entity.getName();
         if (entity instanceof TestCaseEntity) {
             ControlUtils.createSubMenuOpen(menu, entity, openTestCaseAdapter, name);
-        } else if (entity instanceof WebElementEntity) {
+        } else if (entity instanceof WebElementEntity || entity instanceof WindowsElementEntity) {
             ControlUtils.createSubMenuOpen(menu, entity, openTestObjectAdapter, name);
         }
     }
 
-    private WebElementEntity getTestObjectFromMethod(AstBuiltInKeywordTreeTableNode node) {
+    private FileEntity getTestObjectFromMethod(AstBuiltInKeywordTreeTableNode node) {
         Object findTestObjectMethodCall = node.getTestObject();
         if (!(findTestObjectMethodCall instanceof MethodCallExpressionWrapper)) {
             return null;
         }
         String testObjectId = AstEntityInputUtil
                 .findTestObjectIdFromFindTestObjectMethodCall((MethodCallExpressionWrapper) findTestObjectMethodCall);
-        if (testObjectId == null) {
-            return null;
+        if (testObjectId != null) {
+            try {
+                return ObjectRepositoryController.getInstance().getWebElementByDisplayPk(testObjectId);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+                return null;
+            }
         }
-        try {
-            return ObjectRepositoryController.getInstance().getWebElementByDisplayPk(testObjectId);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
+        
+
+        testObjectId = AstEntityInputUtil.findWindowsTestObjectIdFromFindTestObjectMethodCall((MethodCallExpressionWrapper) findTestObjectMethodCall);
+        if (testObjectId != null) {
+            try {
+                return WindowsElementController.getInstance().getWindowsElementByDisplayId(testObjectId);
+            } catch (ControllerException e) {
+                return null;
+            }
         }
         return null;
     }
 
-    private WebElementEntity getWebElementFromMenuItem(MenuItem menuItem) {
-        WebElementEntity webElementEntity = null;
-        if (menuItem.getData() instanceof WebElementEntity) {
-            webElementEntity = (WebElementEntity) menuItem.getData();
+    private FileEntity getWebElementFromMenuItem(MenuItem menuItem) {
+        FileEntity webElementEntity = null;
+        if (menuItem.getData() instanceof FileEntity) {
+            webElementEntity = (FileEntity) menuItem.getData();
         }
         return webElementEntity;
     }
@@ -437,7 +459,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
                 }
 
             } else if (object instanceof AstBuiltInKeywordTreeTableNode) {
-                WebElementEntity testObject = getTestObjectFromMethod((AstBuiltInKeywordTreeTableNode) object);
+                FileEntity testObject = getTestObjectFromMethod((AstBuiltInKeywordTreeTableNode) object);
                 if (testObject != null && !testObjects.contains(testObject)) {
                     testObjects.add(testObject);
                 }
@@ -453,6 +475,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
             if (fileEntity instanceof TestCaseEntity) {
                 map.put(fileEntity, openTestCase);
             } else if (fileEntity instanceof WebElementEntity) {
+                map.put(fileEntity, openTestObject);
+            } else if (fileEntity instanceof WindowsElementEntity) {
                 map.put(fileEntity, openTestObject);
             }
         }

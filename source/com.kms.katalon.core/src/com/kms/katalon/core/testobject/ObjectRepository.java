@@ -29,6 +29,7 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.main.ScriptEngine;
+import com.kms.katalon.core.testobject.MobileTestObject.MobileLocatorStrategy;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.testobject.internal.impl.WindowsObjectRepository;
@@ -53,6 +54,8 @@ public class ObjectRepository {
     private static final String WEB_SERVICES_TYPE_NAME = "WebServiceRequestEntity";
 
     private static final String WEB_ELEMENT_TYPE_NAME = "WebElementEntity";
+
+    private static final String MOBILE_ELEMENT_TYPE_NAME = "MobileElementEntity";
 
     private static final String WEBELEMENT_FILE_EXTENSION = ".rs";
 
@@ -225,6 +228,10 @@ public class ObjectRepository {
             if (WEB_SERVICES_TYPE_NAME.equals(elementName)) {
                 return findRequestObject(testObjectId, rootElement, projectDir, variables);
             }
+            
+            if (MOBILE_ELEMENT_TYPE_NAME.equals(elementName)) {
+                return findMobileTestObject(testObjectId, rootElement, projectDir, variables);
+            }
             return null;
         } catch (DocumentException e) {
             logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
@@ -336,6 +343,33 @@ public class ObjectRepository {
 
         return testObject;
     }
+    
+    private static MobileTestObject findMobileTestObject(String mobileObjectId, Element reqElement, String projectDir,
+            Map<String, Object> variables) {
+        MobileTestObject mobileTestObject = new MobileTestObject(mobileObjectId);
+        String locator = reqElement.elementText("locator");
+        
+        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+        for (Entry<String, Object> entry : variables.entrySet()) {
+            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        try {
+            ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
+            variablesStringMap.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
+        } catch (ClassNotFoundException | ResourceException | ScriptException | IOException e) {
+        }
+        
+        StrSubstitutor strSubstitutor = new StrSubstitutor(variablesStringMap);
+
+        mobileTestObject.setMobileLocator(strSubstitutor.replace(locator));
+
+        String locatorStrategyStr = reqElement.elementText("locatorStrategy");
+
+        MobileLocatorStrategy locatorStrategy = MobileTestObject.MobileLocatorStrategy.valueOf(locatorStrategyStr);
+        mobileTestObject.setMobileLocatorStrategy(locatorStrategy);
+        return mobileTestObject;
+    }
 
     @SuppressWarnings("unchecked")
     private static RequestObject findRequestObject(String requestObjectId, Element reqElement, String projectDir,
@@ -386,7 +420,6 @@ public class ObjectRepository {
             mergedVariables.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
         } catch (ClassNotFoundException | ResourceException | ScriptException | IOException e) {
         }
-
         
         StrSubstitutor substitutor = new StrSubstitutor(mergedVariables);
         if ("SOAP".equals(serviceType)) {
@@ -395,8 +428,14 @@ public class ObjectRepository {
             requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
             requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
             requestObject.setSoapBody(substitutor.replace(reqElement.elementText("soapBody")));
-            requestObject.setUseServiceInfoFromWsdl(Boolean.valueOf(StringEscapeUtils.unescapeXml(reqElement.elementText("useServiceInfoFromWsdl"))));
-            requestObject.setSoapServiceEndpoint(reqElement.elementText("soapServiceEndpoint"));
+            String useServiceInfoFromWsdlValue = reqElement.elementText("useServiceInfoFromWsdl");
+            if (StringUtils.isNotBlank(useServiceInfoFromWsdlValue)) {
+                requestObject.setUseServiceInfoFromWsdl(Boolean.valueOf(StringEscapeUtils.unescapeXml(useServiceInfoFromWsdlValue)));
+            } else {
+                requestObject.setUseServiceInfoFromWsdl(false);
+            }
+
+            requestObject.setSoapServiceEndpoint(substitutor.replace(reqElement.elementText("soapServiceEndpoint")));
         } else if ("RESTful".equals(serviceType)) {
             String rawUrl = reqElement.elementText("restUrl");
             String url = buildUrlFromRaw(rawUrl, substitutor);
@@ -406,16 +445,17 @@ public class ObjectRepository {
             requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
             requestObject
                     .setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
-            requestObject.setHttpBody(reqElement.elementText("httpBody"));
+//            requestObject.setHttpBody(reqElement.elementText("httpBody"));
 
             String httpBodyType = reqElement.elementText("httpBodyType");
-            if (StringUtils.isBlank(httpBodyType)) {
+            String oldVersionBodyContent = reqElement.elementText("httpBody");
+            if (StringUtils.isNotBlank(oldVersionBodyContent)) {
                 // migrated from 5.3.1 (KAT-3200)
                 httpBodyType = "text";
                 String body = reqElement.elementText("httpBody");
                 HttpTextBodyContent httpBodyContent = new HttpTextBodyContent(body);
                 requestObject.setBodyContent(httpBodyContent);
-            } else if (isBodySupported(requestObject)) {
+            } else if (StringUtils.isNotBlank(httpBodyType)) {
                 String httpBodyContent = reqElement.elementText("httpBodyContent");
                 HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
                         projectDir, substitutor);

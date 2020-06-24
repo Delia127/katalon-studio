@@ -17,14 +17,12 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class MobileExecutionUtil {
     private static final String MAC_DEFAULT_NODEJS_LOCATION = "/usr/local/bin/node";
+    
+    private static final String ENV_APPIUM_HOME_DIRECTORY = System.getenv("APPIUM_HOME");
 
     public static void detectInstalledAppiumAndNodeJs() throws MobileSetupException {
         String appiumDir = null;
-        try {
-            appiumDir = findAppiumDir();
-        } catch (IOException e) {
-            LogUtil.logError(e);
-        }
+        appiumDir = findAppiumDir();
 
         String nodeEnvPath = StringUtils.EMPTY;
         try {
@@ -50,17 +48,29 @@ public class MobileExecutionUtil {
         }
     }
 
-    private static String findAppiumDir() throws IOException {
+    public static String findAppiumDir() {
         final ScopedPreferenceStore mobilePreferenceStore = PreferenceStoreManager
                 .getPreferenceStore(MobilePreferenceConstants.MOBILE_QUALIFIER);
         String appiumDir = mobilePreferenceStore.getString(MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY);
         if (StringUtils.isNotEmpty(appiumDir)) {
             return appiumDir;
         }
-        appiumDir = findAppiumFromDefaultLocation();
+
+        if (StringUtils.isNotBlank(ENV_APPIUM_HOME_DIRECTORY)) {
+            appiumDir = ENV_APPIUM_HOME_DIRECTORY;
+        }
+
+        if (StringUtils.isEmpty(appiumDir) || !(new File(appiumDir).exists())) {
+            appiumDir = findAppiumFromDefaultLocation();
+        }
+
         if (StringUtils.isNotEmpty(appiumDir) && new File(appiumDir).exists()) {
             mobilePreferenceStore.setValue(MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY, appiumDir);
-            mobilePreferenceStore.save();
+            try {
+                mobilePreferenceStore.save();
+            } catch (IOException error) {
+                LogUtil.logError(error);
+            }
         }
         return appiumDir;
     }

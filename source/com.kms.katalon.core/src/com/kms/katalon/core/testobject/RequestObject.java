@@ -14,6 +14,38 @@ import com.kms.katalon.core.testobject.impl.HttpUrlEncodedBodyContent;
 
 public class RequestObject extends TestObject implements HttpMessage {
 
+    /**
+     * Set connection/socket timeout to this value mean to unset its current timeout.
+     * The project's socket timeout will be used.
+     */
+    public static final int TIMEOUT_UNSET = -1;
+
+    /**
+     * Set connection/socket timeout to this value mean to this request has no connection/socket timeout limit.
+     */
+    public static final int TIMEOUT_UNLIMITED = 0;
+
+    /**
+     * The default connection/socket timeout. The default value is set to unlimited.
+     */
+    public static final int DEFAULT_TIMEOUT = TIMEOUT_UNLIMITED;
+
+    /**
+     * Set max response size to this value mean to unset its current max response size.
+     * The project's max response size will be used.
+     */
+    public static final long MAX_RESPONSE_SIZE_UNSET = -1;
+
+    /**
+     * Set response size limit to this value mean to this request has no response size limit.
+     */
+    public static final long MAX_RESPONSE_SIZE_UNLIMITED = 0;
+
+    /**
+     * The default maximum response size. Default value is same to unlimited.
+     */
+    public static final long DEFAULT_MAX_RESPONSE_SIZE = MAX_RESPONSE_SIZE_UNLIMITED;
+
     private static final String DF_CHARSET = "UTF-8";
 
     private String name;
@@ -39,7 +71,7 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     private String soapServiceEndpoint = "";
 
-    private boolean useServiceInfoFromWsdl;
+    private boolean useServiceInfoFromWsdl = false;
 
     private List<TestObjectProperty> restParameters;
 
@@ -54,6 +86,12 @@ public class RequestObject extends TestObject implements HttpMessage {
     private boolean followRedirects;
 
     private int redirectTimes = 0;
+    
+    private int connectionTimeout = TIMEOUT_UNSET;
+    
+    private int socketTimeout = TIMEOUT_UNSET;
+    
+    private long maxResponseSize = RequestObject.MAX_RESPONSE_SIZE_UNSET;
 
     private ProxyInformation proxy;
 
@@ -279,23 +317,18 @@ public class RequestObject extends TestObject implements HttpMessage {
     }
 
     /**
-     * Get the rest request of this request object if it is a "RESTful" request
-     * object
-     * <p>
-     * Possible values: GET, POST, PUT, DELETE
+     * Get the rest request method of this request object if it is a "RESTful" request object
      * 
-     * @return the get request of this request object if it is a "RESTful"
-     *         request object, or null if it is not
+     * @return the rest request method of this request object if it is a "RESTful" request object, or null if it is not
      */
     public String getRestRequestMethod() {
         return restRequestMethod;
     }
 
     /**
-     * Set the rest request for this request object
+     * Set the rest request method for this request object
      * 
-     * @param restRequestMethod
-     *            the new get request for this request object
+     * @param restRequestMethod the new request method for this request object
      */
     public void setRestRequestMethod(String restRequestMethod) {
         this.restRequestMethod = restRequestMethod;
@@ -436,5 +469,74 @@ public class RequestObject extends TestObject implements HttpMessage {
      */
     public void setProxy(ProxyInformation proxy) {
         this.proxy = proxy;
+    }
+
+    /**
+     * Get the connection timeout of this request in milliseconds.
+     * @since 7.6.0
+     */
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    /**
+     * Set the connection timeout for this request.
+     * @param connectionTimeout The connection timeout in milliseconds.
+     * <br>Additional available values:
+     * <ul>
+     *  <li><b>RequestObject.TIMEOUT_UNLIMITED</b>: Set the connection timeout of this request to unlimited.</li>
+     *  <li><b>RequestObject.DEFAULT_TIMEOUT</b>: Set the connection timeout of this request to the default value (The default value is set to unlimited).</li>
+     *  <li><b>RequestObject.TIMEOUT_UNSET</b>: Unset the connection timeout of this request. The project's connection timeout will be used.</li>
+     * </ul>
+     * @since 7.6.0
+     */
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    /**
+     * Get the socket timeout of this request in milliseconds.
+     * @since 7.6.0
+     */
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    /**
+     * Set the socket timeout for this request.
+     * @param socketTimeout The socket timeout in milliseconds.
+     * <br>Additional available values:
+     * <ul>
+     *  <li><b>RequestObject.TIMEOUT_UNLIMITED</b>: Set the socket timeout of this request to unlimited.</li>
+     *  <li><b>RequestObject.DEFAULT_TIMEOUT</b>: Set the socket timeout of this request to the default value (The default value is set to unlimited).</li>
+     *  <li><b>RequestObject.TIMEOUT_UNSET</b>: Unset the socket timeout of this request. The project's socket timeout will be used.</li>
+     * </ul>
+     * @since 7.6.0
+     */
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
+    }
+
+    /**
+     * Get the maximum response size of this request in bytes.
+     * @since 7.6.0
+     */
+    public long getMaxResponseSize() {
+        return maxResponseSize;
+    }
+
+    /**
+     * Set the maximum response size for this request.
+     * @param maxResponseSize The response size limit in bytes
+     * <br>Additional available values:
+     * <ul>
+     *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNLIMITED</b>: Set the maximum response size of this request to unlimited.</li>
+     *  <li><b>RequestObject.DEFAULT_MAX_RESPONSE_SIZE</b>: Set the maximum response size of this request to the default value (The default value is set to unlimited).</li>
+     *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNSET</b>: Unset the maximum response size of this request. The project's maximum response size will be used.</li>
+     * </ul>
+     * @since 7.6.0
+     */
+    public void setMaxResponseSize(long maxResponseSize) {
+        this.maxResponseSize = maxResponseSize;
     }
 }

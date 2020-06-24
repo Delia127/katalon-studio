@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testsuite.constants;
 
+import org.eclipse.osgi.util.NLS;
+
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
@@ -135,12 +137,14 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_DESC = DESCRIPTION;
 
     public static final String PA_LBL_LAST_RUN = ComposerTestsuiteMessageConstants.PA_LBL_LAST_RUN;
+    
+    public static final String PA_LBL_RETRY_IMMEDIATELY = ComposerTestsuiteMessageConstants.PA_LBL_RETRY_IMMEDIATELY;
 
-    public static final String PA_LBL_RETRY = ComposerTestsuiteMessageConstants.PA_LBL_RETRY;
+    public static final String PA_LBL_RETRY_AFTER_EXECUTE_ALL = ComposerTestsuiteMessageConstants.PA_LBL_RETRY_AFTER_EXECUTE_ALL;
     
-    public static final String PA_LBL_TEST_CASE_ONLY = ComposerTestsuiteMessageConstants.PA_LBL_TEST_CASE_ONLY;
+    public static final String PA_LBL_RETRY_ALL_EXECUTIONS = ComposerTestsuiteMessageConstants.PA_LBL_RETRY_ALL_EXECUTIONS;
     
-    public static final String PA_LBL_TEST_CASE_TEST_DATA_ONLY = ComposerTestsuiteMessageConstants.PA_LBL_TEST_CASE_TEST_DATA_ONLY;
+    public static final String PA_LBL_RETRY_FAILED_EXECUTIONS = ComposerTestsuiteMessageConstants.PA_LBL_RETRY_FAILED_EXECUTIONS;
 
     public static final String PA_LBL_TIP_LAST_RUN = ComposerTestsuiteMessageConstants.PA_LBL_TIP_LAST_RUN;
 
@@ -212,9 +216,11 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_TOOLTIP_RETRY = ComposerTestsuiteMessageConstants.PA_LBL_TOOLTIP_RETRY;
     
-    public static final String PA_LBL_TOOLTIP_TEST_CASE_ONLY = ComposerTestsuiteMessageConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY;
+    public static final String PA_LBL_TOOLTIP_RETRY_FAILED_EXECUTIONS = ComposerTestsuiteMessageConstants.PA_LBL_TOOLTIP_RETRY_FAILED_EXECUTIONS;
+    
+    public static final String PA_LBL_TOOLTIP_RETRY_ALL_EXECUTIONS = ComposerTestsuiteMessageConstants.PA_LBL_TOOLTIP_RETRY_ALL_EXECUTIONS;
 
-    public static final String PA_LBL_TOOLTIP_TEST_CASE_TEST_DATA_ONLY = ComposerTestsuiteMessageConstants.PA_LBL_TOOLTIP_TEST_CASE_TEST_DATA_ONLY;
+    public static final String PA_LBL_TOOLTIP_RETRY_IMMEDIATELY = ComposerTestsuiteMessageConstants.PA_LBL_TOOLTIP_RETRY_IMMEDIATELY;
     
     // VariableValueEditingSupport
     public static final String SUP_WARN_MSG_TEST_DATA_NOT_FOUND = ComposerTestsuiteMessageConstants.SUP_WARN_MSG_TEST_DATA_NOT_FOUND;

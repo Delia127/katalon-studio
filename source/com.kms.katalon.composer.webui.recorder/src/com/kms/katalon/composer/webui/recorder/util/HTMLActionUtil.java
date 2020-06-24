@@ -151,7 +151,7 @@ public class HTMLActionUtil {
             }
             validationActions.add(new HTMLValidationAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
                     WebUiBuiltInKeywords.class.getSimpleName(), method.getName(),
-                    TestCaseEntityUtil.getKeywordJavaDocText(WebUiBuiltInKeywords.class.getName(), method.getName())));
+                    TestCaseEntityUtil.getBuiltinKeywordJavadocText(WebUiBuiltInKeywords.class.getName(), method.getName())));
         }
         return validationActions;
     }
@@ -167,7 +167,7 @@ public class HTMLActionUtil {
             }
             synchronizeActions.add(new HTMLSynchronizeAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
                     WebUiBuiltInKeywords.class.getSimpleName(), method.getName(),
-                    TestCaseEntityUtil.getKeywordJavaDocText(WebUiBuiltInKeywords.class.getName(), method.getName())));
+                    TestCaseEntityUtil.getBuiltinKeywordJavadocText(WebUiBuiltInKeywords.class.getName(), method.getName())));
         }
         return synchronizeActions;
     }

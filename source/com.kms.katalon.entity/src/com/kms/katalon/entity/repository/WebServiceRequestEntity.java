@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class WebServiceRequestEntity extends WebElementEntity {
@@ -82,7 +82,13 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private String migratedVersion;
 
     private boolean followRedirects = false;
-
+    
+    private int connectionTimeout = RequestObject.TIMEOUT_UNSET;
+    
+    private int socketTimeout = RequestObject.TIMEOUT_UNSET;
+    
+    private long maxResponseSize = RequestObject.MAX_RESPONSE_SIZE_UNSET;
+    
     private List<VariableEntity> variables = new ArrayList<>();
 
     private String katalonVersion = null;
@@ -266,6 +272,30 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public boolean isCreatedBeforeV7_4_5() {
         return StringUtils.isBlank(katalonVersion);
+    }
+
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
+    }
+
+    public long getMaxResponseSize() {
+        return maxResponseSize;
+    }
+
+    public void setMaxResponseSize(long maxResponseSize) {
+        this.maxResponseSize = maxResponseSize;
     }
 
     @Override

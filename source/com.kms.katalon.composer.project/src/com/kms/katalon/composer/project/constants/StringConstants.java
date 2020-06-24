@@ -35,6 +35,17 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_REFRESHING_EXPLORER = ComposerProjectMessageConstants.HAND_REFRESHING_EXPLORER;
 
+    // Self Healing
+    public static final String PROJECT_EXECUTION_SELF_HEALING_ID = "com.katalon.composer.self_healing";
+
+    public static final String SELF_HEALING_SETTINGS_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing";
+
+    public static final String SELF_HEALING_WEB_SETTINGS_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing.web_testing";
+
+    public static final String SELF_HEALING_WEB_SETTINGS_TEST_DESIGN_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing.web_testing.testDesign";
+
+    public static final String SELF_HEALING_WEB_SETTINGS_EXECUTION_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing.web_testing.execution";
+
     // RebuildProjectHandler
     public static final String HAND_REBUILD_PROJ = ComposerProjectMessageConstants.HAND_REBUILD_PROJ;
 
@@ -53,17 +64,15 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PROJECT_EXECUTION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.execution.settings";
 
-    public static final String PROJECT_INTEGRATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.preferences.integration";
-    
     public static final String PROJECT_QTEST_INTEGRATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.intergration.qtest.setting";
     // Setting Page Id
     public static final String PROJECT_INFORMATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.project.information";
 
     public static final String TEST_DESIGN_SETTINGS_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign";
-
-    public static final String WEB_LOCATORS_SETTING_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign.1";
     
     public static final String WS_METHOD_SETTING_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign.webservicemethod";
+    
+    public static final String EXECUTION_WEB_SERVICE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.webservice";
     
     public static final String LAUNCH_ARGUMENTS_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.launchArgs";
     
@@ -99,10 +108,10 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String ANDROID_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.2.1";
 
-    public static final String INTEGRATION_SETTING_PAGE_ID = "com.kms.katalon.composer.preferences.integration";
-
     public static final String KATALON_ANALYTICS_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.analytics.page";
 
+    public static final String PLUGINS_SETTING_PAGE_ID = "com.kms.katalon.composer.project.preference.pluginPreferencePage";
+    
     public static final String QTEST_SETTING_PAGE_ID = "com.kms.katalon.composer.intergration.qtest.setting";
 
     public static final String TEST_CASE_REPOSITORIES_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.qtest.testCaseRepoMapping";

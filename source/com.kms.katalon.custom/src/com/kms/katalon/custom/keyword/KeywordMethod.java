@@ -90,7 +90,7 @@ public class KeywordMethod {
         return parameters;
     }
 
-    public void setParamters(KeywordParameter[] paramters) {
+    public void setParameters(KeywordParameter[] paramters) {
         this.parameters = paramters;
     }
 

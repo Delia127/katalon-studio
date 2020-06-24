@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity.MATCH_CONDITION;
 
@@ -31,8 +32,6 @@ public class WebElementEntity extends FileEntity {
     private List<WebElementPropertyEntity> webElementProperties;
     
     private List<WebElementXpathEntity> webElementXpaths;
-
-    private String imagePath;
 
     private boolean useRalativeImagePath;
 
@@ -134,11 +133,11 @@ public class WebElementEntity extends FileEntity {
     }
 
     public String getImagePath() {
-        return imagePath;
+        return getSelectorCollection().get(WebElementSelectorMethod.IMAGE);
     }
 
     public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+        getSelectorCollection().put(WebElementSelectorMethod.IMAGE, imagePath);
     }
 
     public boolean getUseRalativeImagePath() {

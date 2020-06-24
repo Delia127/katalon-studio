@@ -23,8 +23,6 @@ public class SoapRequestMessageEditor extends Composite {
 
     private Button chckWrapLine;
 
-    private WebServiceRequestEntity requestEntity;
-
     public SoapRequestMessageEditor(Composite parent, int style, SoapServicePart servicePart) {
         super(parent, style);
         this.servicePart = (SoapServicePart) servicePart;
@@ -53,12 +51,8 @@ public class SoapRequestMessageEditor extends Composite {
         chckWrapLine.setSelection(true);
     }
 
-    public void setInput(WebServiceRequestEntity requestEntity) {
-        this.requestEntity = requestEntity;
-
-        if (requestEntity != null) {
-            mirrorEditor.setText(requestEntity.getSoapBody());
-        }
+    public void setInput(String input) {
+        mirrorEditor.setText(input);
     }
 
     private void handleControlModifyListeners() {

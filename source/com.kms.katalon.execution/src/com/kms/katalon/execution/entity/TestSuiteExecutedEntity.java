@@ -20,7 +20,6 @@ import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testdata.TestDataInfo;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestDataCombinationType;
@@ -32,6 +31,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.entity.DefaultRerunSetting.RetryStrategyValue;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.exception.ExtensionRequiredException;
 import com.kms.katalon.execution.platform.DynamicQueryingTestSuiteExtensionProvider;
@@ -39,9 +39,13 @@ import com.kms.katalon.execution.platform.ExecutionPlatformServiceProvider;
 import com.kms.katalon.execution.util.MailUtil;
 
 public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportable, Rerunable, ConsoleOptionContributor {
+    public static final String SHOULD_STOP_IMMEDIATELY_KEY = "stopImmediately";
+
     private List<IExecutedEntity> executedItems;
 
     private Map<String, TestData> testDataMap;
+
+    private WebServiceExecutionSettings webServiceSettings;
 
     private ReportLocationSetting reportLocationSetting;
 
@@ -55,6 +59,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     public TestSuiteExecutedEntity() {
         testDataMap = new HashMap<>();
+        webServiceSettings = new WebServiceExecutionSettings();
         reportLocationSetting = new ReportLocationSetting();
         emailSettings = new EmailSettings();
         rerunSetting = new DefaultRerunSetting();
@@ -72,6 +77,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         rerunSetting.setRemainingRerunTimes(rerunnable.getRemainingRerunTimes());
         rerunSetting.setRerunFailedTestCaseOnly(rerunnable.isRerunFailedTestCasesOnly());
         rerunSetting.setRerunFailedTestCaseAndTestDataOnly(rerunnable.isRerunFailedTestCasesAndTestDataOnly());
+        rerunSetting.setRerunImmediately(rerunnable.isRerunImmediately());
     }
 
     public void setTestSuite(TestSuiteEntity testSuite) throws IOException, Exception {
@@ -81,6 +87,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         rerunSetting.setRemainingRerunTimes(testSuite.getNumberOfRerun());
         rerunSetting.setRerunFailedTestCaseOnly(testSuite.isRerunFailedTestCasesOnly());
         rerunSetting.setRerunFailedTestCaseAndTestDataOnly(testSuite.isRerunFailedTestCasesAndTestDataOnly());
+        rerunSetting.setRerunImmediately(testSuite.isRerunImmediately());
     }
 
     public void prepareTestCases() throws Exception {
@@ -460,12 +467,21 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         return emailSettings.getEmailConfig(project);
     }
 
+    public WebServiceExecutionSettings getWebServiceSettings() {
+        return webServiceSettings;
+    }
+
+    public void setWebServiceSettings(WebServiceExecutionSettings webServiceSettings) {
+        this.webServiceSettings = webServiceSettings;
+    }
+
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
         consoleOptionList.addAll(reportLocationSetting.getConsoleOptionList());
         consoleOptionList.addAll(emailSettings.getConsoleOptionList());
         consoleOptionList.addAll(rerunSetting.getConsoleOptionList());
+        consoleOptionList.addAll(webServiceSettings.getConsoleOptionList());
         return consoleOptionList;
     }
 
@@ -474,6 +490,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         reportLocationSetting.setArgumentValue(consoleOption, argumentValue);
         emailSettings.setArgumentValue(consoleOption, argumentValue);
         rerunSetting.setArgumentValue(consoleOption, argumentValue);
+        webServiceSettings.setArgumentValue(consoleOption, argumentValue);
     }
 
     @Override
@@ -487,6 +504,19 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         }
         return collectedInfo;
     }
+    
+
+    /**
+     * These attributes are used to created TestSuiteScriptTemplate, which
+     * are read by Test Suite Executor to decide to stop the suite execution
+     * after a failed execution
+     */    
+    @Override
+    public Map<String, Object> getAttributes() {
+        Map<String, Object> attributes = super.getAttributes();
+        attributes.put(SHOULD_STOP_IMMEDIATELY_KEY, isRerunImmediately());
+        return attributes;
+    }
 
     @Override
     public Rerunable mergeWith(Rerunable rerunable) {
@@ -495,5 +525,19 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     public boolean isRerunFailedTestCasesAndTestDataOnly() {
         return rerunSetting.isRerunFailedTestCasesAndTestDataOnly();
+    }
+
+    @Override
+    public boolean isRerunImmediately() {
+        return rerunSetting.isRerunImmediately();
+    }
+    
+    public RetryStrategyValue getRetryStrategy() {
+        if (isRerunFailedTestCasesAndTestDataOnly() || isRerunFailedTestCasesOnly()) {
+            return RetryStrategyValue.FAILED_EXECUTIONS;
+        } else if (isRerunImmediately()) {
+            return RetryStrategyValue.IMMEDIATELY;
+        }
+        return RetryStrategyValue.ALL_EXECUTIONS;
     }
 }

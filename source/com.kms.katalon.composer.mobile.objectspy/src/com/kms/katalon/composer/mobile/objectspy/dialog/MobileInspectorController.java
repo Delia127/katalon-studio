@@ -18,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.text.StrMatcher;
 import org.json.JSONObject;
@@ -72,6 +73,8 @@ import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvide
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.AndroidMobileCapabilityType;
+import io.appium.java_client.remote.MobileCapabilityType;
 
 public class MobileInspectorController {
 
@@ -260,6 +263,7 @@ public class MobileInspectorController {
         RunConfiguration.setExecutionSetting(
                 ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(kobitonDevice.toDesireCapabilitiesMap());
+        desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         driver = MobileDriverFactory.startRemoteMobileDriver(connector.getRemoteServerUrl(), desiredCapabilities,
                 connector.getMobileDriverType(), kobitonApplication.buildAutomationKey());
     }
@@ -365,6 +369,9 @@ public class MobileInspectorController {
                 return getIosObjectRoot();
             } else {
                 String pageSource = driver.getPageSource();
+                if (StringUtils.isBlank(pageSource)) {
+                    return null;
+                }
                 DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 Document doc = null;
                 try {

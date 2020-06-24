@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
-import com.kms.katalon.execution.configuration.BasicRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.webservice.configuration.WebServiceRunConfiguration;
 
 public class WebServiceConfigurationContributor implements IRunConfigurationContributor {
 
@@ -30,13 +30,13 @@ public class WebServiceConfigurationContributor implements IRunConfigurationCont
 
     @Override
     public int getPreferredOrder() {
-        return -1;
+        return 0;
     }
 
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir)
             throws IOException, ExecutionException, InterruptedException {
-        return new BasicRunConfiguration();
+        return new WebServiceRunConfiguration();
     }
 
     @Override
