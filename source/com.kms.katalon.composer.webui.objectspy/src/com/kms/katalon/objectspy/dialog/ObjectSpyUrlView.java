@@ -323,8 +323,9 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
     private void createDropdownContent(Dropdown dropdown) {
         DropdownGroup newBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_NEW_BROWSERS,
                 ImageConstants.IMG_16_NEW_BROWSER);
-        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
+
         addNewBrowserItem(newBrowser, WebUIDriverType.CHROME_DRIVER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
         addNewBrowserItem(newBrowser, WebUIDriverType.EDGE_CHROMIUM_DRIVER);
 
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,

@@ -1252,8 +1252,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private void createDropdownContent(Dropdown dropdown) {
         DropdownGroup newBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_NEW_BROWSERS,
                 ImageManager.getImage(IImageKeys.NEW_BROWSER_16));
-        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
+
         addNewBrowserItem(newBrowser, WebUIDriverType.CHROME_DRIVER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
         addNewBrowserItem(newBrowser, WebUIDriverType.EDGE_CHROMIUM_DRIVER);
 
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
