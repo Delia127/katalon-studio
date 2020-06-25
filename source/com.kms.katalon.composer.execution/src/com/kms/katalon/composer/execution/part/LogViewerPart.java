@@ -170,6 +170,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     // For log table viewer
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
             btnShowWarningLogs, btnShowNotRunLogs;
+    
+    private boolean userDecidedOnUpdateWebDriverOrNot = false;
 
     // For log tree viewer
     private ToolItem tltmFilterFailedLogs;
@@ -666,8 +668,19 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         messageBuilder.append(result.getMessage());
         return causedByStrBuilder;
     }
+    
+    private boolean failedDueToOutdatedChromeDriver(String message) {
+        return message.contains("This version of ChromeDriver only supports Chrome version");
+    }
+
+    private boolean failureDueToOutdatedEdgeChromium(String message) {
+        return message.contains("This version of MSEdgeDriver only supports MSEdge version");
+    }
 
     private String getCausedBySentence(String msg) {
+        if (failedDueToOutdatedChromeDriver(msg) || failureDueToOutdatedEdgeChromium(msg)) {
+            return StringConstants.PA_MSG_DRIVER_OUTDATED;
+        }
         String causedBy = "";
         try {
             causedBy = msg.substring(msg.indexOf("Caused by:"));

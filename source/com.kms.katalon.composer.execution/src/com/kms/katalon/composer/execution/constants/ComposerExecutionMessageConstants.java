@@ -391,6 +391,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_CHK_FOR_RETRY_IMMEDIATELY;
 
+    public static String PA_MSG_DRIVER_OUTDATED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);
