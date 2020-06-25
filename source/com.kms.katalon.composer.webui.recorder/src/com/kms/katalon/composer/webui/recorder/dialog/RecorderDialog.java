@@ -324,6 +324,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         startBrowser(false);
     }
 
+    private HTMLActionMapping addNavigateActionAfterOpeningBrowserOnIEDriver() {
+        if (!isNavigationAdded && isUsingIE) {
+            HTMLActionMapping navigateHTML = new HTMLActionMapping(HTMLAction.Navigate, txtStartUrl.getText(), null);
+            addNewActionMapping(navigateHTML);
+            isNavigationAdded = true;
+            return navigateHTML;
+        }
+        return null;
+    }
+
     private void startBrowser(boolean isInstant) {
         if (!BrowserUtil.isBrowserInstalled(getSelectedBrowserType())) {
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
@@ -348,6 +358,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
             if (!isPauseRecording) {
                 recordStepsView.addSimpleKeyword("openBrowser", true);
+                addNavigateActionAfterOpeningBrowserOnIEDriver();
             }
 
             isNavigationAdded = false;
