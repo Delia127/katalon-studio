@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest;
+package com.kms.katalon.integration.qtest;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,13 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.qtest.model.QTestLogEvaluation;
-import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
-import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
-import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.LogRecordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
@@ -29,11 +25,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
-import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
-import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
-import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
-import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
@@ -43,8 +34,12 @@ import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
+import com.kms.katalon.integration.qtest.model.QTestLogEvaluation;
+import com.kms.katalon.integration.qtest.model.TestCaseRepo;
+import com.kms.katalon.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
+import com.kms.katalon.logging.LogUtil;
 
 public class QTestIntegrationUtil {
 
@@ -119,7 +114,7 @@ public class QTestIntegrationUtil {
                     }
 
                 } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
+                    LogUtil.logError(ex);
                 } finally {
                     repo.setQTestModule(qTestModule);
                 }
@@ -519,7 +514,7 @@ public class QTestIntegrationUtil {
             return QTestLogEvaluation.CANNOT_INTEGRATE;
         }
 
-        if (!isSameQTestProject(testCaseLogRecord, LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity))) {
+        if (!isSameQTestProject(testCaseLogRecord, LogRecordController.getInstance().getTestSuiteLogRecord(reportEntity))) {
             return QTestLogEvaluation.CANNOT_INTEGRATE;
         }
 
@@ -571,7 +566,7 @@ public class QTestIntegrationUtil {
 
             return testCaseRepo.getQTestProject().getId() == testSuiteRepo.getQTestProject().getId();
         } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
+            LogUtil.logError(ex);
             return false;
         }
     }
@@ -593,7 +588,7 @@ public class QTestIntegrationUtil {
                         .getQTestTestCaseByIntegratedEntity(getIntegratedEntity(testCaseEntity));
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
         }
         return null;
     }
@@ -607,7 +602,7 @@ public class QTestIntegrationUtil {
      * @return
      */
     public static int getTestCaseLogIndex(TestCaseLogRecord testCaseLogRecord, ReportEntity reportEntity) {
-        TestSuiteLogRecord testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity);
+        TestSuiteLogRecord testSuiteLogRecord = LogRecordController.getInstance().getTestSuiteLogRecord(reportEntity);
         if (testCaseLogRecord == null || testSuiteLogRecord == null) {
             return -1;
         }
@@ -641,7 +636,7 @@ public class QTestIntegrationUtil {
                 return QTestIntegrationTestSuiteManager.getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
         }
         return null;
     }
@@ -663,7 +658,7 @@ public class QTestIntegrationUtil {
             reportEntity = ReportController.getInstance().updateReport(reportEntity);
             return reportEntity;
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            LogUtil.logError(e);
             return null;
         }
     }

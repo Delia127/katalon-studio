@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.model;
+package com.kms.katalon.integration.qtest.model;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 

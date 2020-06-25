@@ -24,11 +24,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseResultJob;
-import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
-import com.kms.katalon.composer.integration.qtest.model.ReportUploadedPreviewPair;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -40,12 +37,15 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.model.ReportTestCaseLogPair;
+import com.kms.katalon.integration.qtest.model.ReportUploadedPreviewPair;
 
 public class QTestUploadReportHandler extends AbstractQTestHandler {
     private List<ReportTestCaseLogPair> fPairs;

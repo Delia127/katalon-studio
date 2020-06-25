@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.report;
+package com.kms.katalon.integration.qtest.report;
 
 import static com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity;
 
@@ -9,11 +9,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
-import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
-import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
-import com.kms.katalon.composer.report.lookup.LogRecordLookup;
+import com.kms.katalon.controller.LogRecordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
@@ -34,6 +30,8 @@ import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
@@ -42,6 +40,8 @@ import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.model.TestCaseRepo;
+import com.kms.katalon.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
@@ -147,7 +147,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         if (isUploadByDefault()) {
             return;
         }
-        System.out.println(MessageFormat.format(StringConstants.REPORT_MSG_UPLOAD_SUCCESFULLY, Long.toString(destId),
+        System.out.println(MessageFormat.format(QTestMessageConstants.REPORT_MSG_UPLOAD_SUCCESFULLY, Long.toString(destId),
                 destType));
     }
 
@@ -294,7 +294,8 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
     @Override
     public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
         for (String reportFullpath : reportFolder.getReportFolders()) {
-            TestSuiteLogRecord suiteLog = LogRecordLookup.getInstance().getTestSuiteLogRecordByFullPath(reportFullpath);
+            TestSuiteLogRecord suiteLog = LogRecordController.getInstance()
+                    .getTestSuiteLogRecordByFullPath(reportFullpath);
 
             if (!isIntegrationActive(testSuite) || suiteLog == null) {
                 return;
