@@ -11,10 +11,8 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestSuiteJob;
-import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -25,9 +23,11 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
+import com.kms.katalon.integration.qtest.model.TestSuiteRepo;
 
 public class QTestDisintegrateTestSuiteHandler extends AbstractQTestHandler {
 
