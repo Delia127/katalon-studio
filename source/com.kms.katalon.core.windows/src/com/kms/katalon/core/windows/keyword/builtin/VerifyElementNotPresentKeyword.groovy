@@ -69,8 +69,6 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
 
     public boolean verifyElementNotPresent(WindowsTestObject testObject, int timeOut, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            boolean elementNotFound = false;
-
 			logger.logDebug(StringConstants.KW_CHECK_WINDOWS_DRIVER)
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
             if (windowsDriver == null) {
@@ -82,8 +80,9 @@ public class VerifyElementNotPresentKeyword extends AbstractKeyword {
 
 			logger.logDebug(String.format(StringConstants.KW_LOG_INFO_CHECKING_TEST_OBJECT))
 			if (testObject == null) {
-				throw new IllegalArgumentException(StringConstants.KW_EXEC_TEST_OBJECT_IS_NULL)
+				KeywordMain.stepFailed(StringConstants.KW_EXEC_TEST_OBJECT_IS_NULL, flowControl)
 			}
+            boolean elementNotFound = false;
 
             try {
                 elementNotFound = new FluentWait<WindowsTestObject>(testObject)
