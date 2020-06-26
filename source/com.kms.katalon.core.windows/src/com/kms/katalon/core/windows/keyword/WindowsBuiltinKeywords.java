@@ -179,7 +179,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
      * windowsObject.<br>
-     * This action will append the given text on the element and doesn't clear the current text of the element.
+     * This action will clear the current text and append the given text on the element.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows Element.
@@ -197,7 +197,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
      * windowsObject.<br>
-     * This action will append the given text on the element and doesn't clear the current text of the element.
+     * This action will clear the current text and append the given text on the element.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows Element.
@@ -225,7 +225,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
      * windowsObject.<br>
-     * This action will append the given text on the element and clear the current text of the element if it exists.
+     * This action will clear the current text and append the new encrypted text on the element.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows element.
@@ -254,7 +254,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
     /**
      * Performs a set text action on the {@link WebElement} that is found by using locator value of the given
      * windowsObject.<br>
-     * This action will append the given text on the element and clear the current text of the element if it exists.
+     * This action will clear the current text and append the new encrypted text on the element.
      * 
      * @param windowsObject
      * An object that describes locator and locator strategy to find Windows element.
