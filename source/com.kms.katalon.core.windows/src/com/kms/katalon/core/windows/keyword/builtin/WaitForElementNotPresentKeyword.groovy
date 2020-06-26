@@ -82,7 +82,7 @@ public class WaitForElementNotPresentKeyword extends AbstractKeyword {
 
 			logger.logDebug(String.format(StringConstants.KW_LOG_INFO_CHECKING_TEST_OBJECT))
 			if (testObject == null) {
-				KeywordMain.stepFailed(StringConstants.KW_EXEC_TEST_OBJECT_IS_NULL, flowControl)
+				throw new IllegalArgumentException(StringConstants.KW_EXEC_TEST_OBJECT_IS_NULL)
 			}
 
             try {
