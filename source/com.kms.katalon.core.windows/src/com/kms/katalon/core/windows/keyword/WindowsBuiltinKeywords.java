@@ -1031,7 +1031,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @return true if element presents; Otherwise, false.
      * @throws StepFailedException
-     * If the Windows element exists.
+     * If the Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.6.0
@@ -1058,7 +1058,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @return true if element presents; Otherwise, false.
      * @throws StepFailedException
-     * If the Windows element exists.
+     * If the Windows element doesn't exist.
      * @throws IllegalArgumentException
      * If timeout < 0.
      * @since 7.6.0
