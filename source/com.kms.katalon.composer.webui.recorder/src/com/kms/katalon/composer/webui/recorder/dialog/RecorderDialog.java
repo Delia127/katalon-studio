@@ -354,7 +354,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmPauseAndResume.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();
-            Trackings.trackWebRecord(getSelectedBrowserType(), isInstant, getWebLocatorConfig());
+            Trackings.trackWebRecord(getSelectedBrowserType().toString(), isInstant, getWebLocatorConfig().toString());
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -916,12 +916,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getNodeWrappersFromFirstSelected()) {
             block.addChild(node.clone());
         }
-        Trackings.trackRecordRunSteps("from");
+        Trackings.trackWebRecordRunSteps("from");
         executeSelectedSteps(cloneScript);
     }
 
     private void runAllSteps() {
-        Trackings.trackRecordRunSteps("all");
+        Trackings.trackWebRecordRunSteps("all");
         executeSelectedSteps(recordStepsView.getWrapper());
     }
 
@@ -933,7 +933,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getSelectedNodeWrappers()) {
             block.addChild(node.clone());
         }
-        Trackings.trackRecordRunSteps("selected");
+        Trackings.trackWebRecordRunSteps("selected");
         executeSelectedSteps(cloneScript);
     }
 
@@ -1580,7 +1580,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
             dispose();
 
-            Trackings.trackCloseWebRecord("ok", stepCount, getWebLocatorConfig());
+            Trackings.trackCloseWebRecordByOk(stepCount, getWebLocatorConfig().toString());
         } catch (Exception exception) {
             LoggerSingleton.logError(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
@@ -1635,7 +1635,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         boolean result = super.close();
         if (!isOkPressed) {
             try {
-                Trackings.trackCloseWebRecord("cancel", 0, getWebLocatorConfig());
+                Trackings.trackCloseWebRecordByCancel(getWebLocatorConfig().toString());
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
             }
@@ -1913,7 +1913,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     protected void setInput() {
-        Boolean continueRecording = null;
+        boolean continueRecording = false;
         if (testCaseEntity != null && nodeWrappers.size() > 0) {
             MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
                     MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
@@ -1971,7 +1971,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         capturedObjectComposite.refreshTree(null);
 
         try {
-            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig());
+            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig().toString());
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
