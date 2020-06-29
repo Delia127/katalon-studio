@@ -512,4 +512,13 @@ public class Trackings {
     public static void trackClickOnTrialNotificationButton() {
         trackUserAction("clickOnTrialNotificationButton");
     }
+
+    public static void trackClickImportSeleniumIde() {
+        trackUserAction("clickImportSeleniumIde");
+    }
+
+    public static void trackImportSeleniumIdeResult(int numTestCases, int numTestSuites) {
+        trackUserAction("importSeleniumIdeResult", "numOfImportedTestCases", numTestCases, "numOfImportedTestSuites",
+                numTestSuites);
+    }
 }
