@@ -33,6 +33,7 @@ import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
+import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunable;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
@@ -117,6 +118,14 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             throws ExecutionException, ControllerException {
         List<ReportableLauncher> tsLaunchers = new ArrayList<>();
         
+        ProjectEntity proj = ProjectController.getInstance().getCurrentProject();
+        String profileName = testSuiteCollection.getProfileName();
+        GlobalVariableController gvController = GlobalVariableController.getInstance();
+        ExecutionProfileEntity execProfile = !StringUtils.isBlank(profileName)
+                ? gvController.getExecutionProfile(profileName, proj) : gvController.getDefaultExecutionProfile(proj);
+        EmailConfig emailConf = MailUtil.overrideEmailSettings(executedEntity.getEmailConfig(proj), execProfile,
+                globalVariables);
+
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
                 continue;
@@ -130,9 +139,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             tsExecutedEntity.setRerunSetting(
                     (DefaultRerunSetting) executedEntity.getRunnable().mergeWith(tsExecutedEntity.getRerunSetting()));
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));
-            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-            tsExecutedEntity.setEmailConfig(MailUtil.overrideEmailSettings(executedEntity.getEmailConfig(project),
-                    GlobalVariableController.getInstance().getDefaultExecutionProfile(project)));
+            tsExecutedEntity.setEmailConfig(emailConf);
             if (tsExecutedEntity.getTotalTestCases() == 0) {
                 throw new ExecutionException(ExecutionMessageConstants.LAU_MESSAGE_EMPTY_TEST_SUITE);
             }

@@ -229,7 +229,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 try {
                     ProjectEntity project = ProjectController.getInstance().getCurrentProject();
                     MailUtil.overrideEmailSettings(emailConfig,
-                            GlobalVariableController.getInstance().getDefaultExecutionProfile(project));
+                            GlobalVariableController.getInstance().getDefaultExecutionProfile(project), null);
                     emailConfig.setHtmTemplateForTestSuite(getSettingStore().getEmailHTMLTemplateForTestSuite());
                 } catch (ControllerException | IOException | URISyntaxException ex) {
                     LoggerSingleton.logError(ex);

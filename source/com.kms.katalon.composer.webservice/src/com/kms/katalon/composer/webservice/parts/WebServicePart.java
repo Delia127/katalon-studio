@@ -861,7 +861,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
 
         VariableEvaluator evaluator = new VariableEvaluator();
-        Map<String, Object> evaluatedVariables = evaluator.evaluate(variableMap, ExecutionProfileStore.getInstance().getSelectedProfile());
+        Map<String, Object> evaluatedVariables = evaluator.evaluate(variableMap, ExecutionProfileStore.getInstance().getSelectedProfile(), null);
 
         return evaluatedVariables;
     }

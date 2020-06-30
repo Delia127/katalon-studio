@@ -376,11 +376,12 @@ public class MailUtil {
         }
     }
 
-    public static EmailConfig overrideEmailSettings(EmailConfig emailConfig, ExecutionProfileEntity executionProfile) {
+    public static EmailConfig overrideEmailSettings(EmailConfig emailConfig, ExecutionProfileEntity executionProfile,
+            Map<String, Object> overridingGlobalVariables) {
         try {
             VariableEvaluator evaluator = new VariableEvaluator();
-            Map<String, Object> evaluatedVariables = evaluator.evaluate(new HashMap<String, String>(),
-                    executionProfile);
+            Map<String, Object> evaluatedVariables = evaluator.evaluate(new HashMap<String, String>(), executionProfile,
+                    overridingGlobalVariables);
             StrSubstitutor substitutor = new StrSubstitutor(
                     Collections.<String, Object>unmodifiableMap(evaluatedVariables));
             emailConfig.setFrom(substitutor.replace(emailConfig.getFrom()));

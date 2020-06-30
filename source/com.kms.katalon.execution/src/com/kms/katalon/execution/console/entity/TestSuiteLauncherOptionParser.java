@@ -280,12 +280,13 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             throw new ExecutionException(
                     MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
         }
-        executedEntity.setEmailConfig(
-                MailUtil.overrideEmailSettings(reportableSetting.getEmailConfig(project), executionProfile));
         runConfig.setExecutionProfile(executionProfile);
         runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
         runConfig.setExecutionUUID(executionUUIDOption.getValue());
         
+        executedEntity.setEmailConfig(MailUtil.overrideEmailSettings(reportableSetting.getEmailConfig(project),
+                executionProfile, runConfig.getOverridingGlobalVariables()));
+
         Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
         runConfig.setAdditionalInfo(additionalInfo);
         

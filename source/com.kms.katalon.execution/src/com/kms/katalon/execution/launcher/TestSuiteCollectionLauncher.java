@@ -16,7 +16,6 @@ import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
@@ -24,7 +23,6 @@ import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.dal.exception.DALException;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
@@ -215,10 +213,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     
     private void sendReportEmail(ReportCollectionEntity reportEntity, TestSuiteCollectionLogRecord logRecord) {
         try {
-            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-            EmailConfig emailConfig = executedEntity.getEmailConfig(project);
-            MailUtil.overrideEmailSettings(emailConfig,
-                    GlobalVariableController.getInstance().getDefaultExecutionProfile(project));
+            EmailConfig emailConfig = executedEntity
+                    .getEmailConfig(ProjectController.getInstance().getCurrentProject());
             if (canSendReport(emailConfig)) {
                 Map<String, Object> variables = EmailVariableBinding.getVariablesForTestSuiteCollectionEmail(logRecord);
 

@@ -26,7 +26,8 @@ public class VariableEvaluator {
 
     private static final String TEST_CASE_ID_PREFIX = "Variable-Eval_";
     
-    public Map<String, Object> evaluate(Map<String, String> variables, ExecutionProfileEntity executionProfile) throws Exception {
+    public Map<String, Object> evaluate(Map<String, String> variables, ExecutionProfileEntity executionProfile,
+            Map<String, Object> overridingGlobalVariables) throws Exception {
         
         Map<String, Object> evaluatedVariables = new HashMap<>();
         
@@ -34,6 +35,7 @@ public class VariableEvaluator {
 
         VariableEvaluationRunConfiguration runConfig = new VariableEvaluationRunConfiguration();
         runConfig.setExecutionProfile(executionProfile);
+        runConfig.setOverridingGlobalVariables(overridingGlobalVariables);
         runConfig.build(testCaseEntity, new WSVerificationTestCaseExecutedEntity(testCaseEntity));
         
         String evaluationScript = generateEvaluationScript(variables, runConfig);

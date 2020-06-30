@@ -442,7 +442,7 @@ public abstract class AbstractExecutionHandler {
                     final TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity(testSuite);
                     MailUtil.overrideEmailSettings(
                             testSuiteExecutedEntity.getEmailConfig(ProjectController.getInstance().getCurrentProject()),
-                            ExecutionProfileStore.getInstance().getSelectedProfile());
+                            ExecutionProfileStore.getInstance().getSelectedProfile(), null);
                     monitor.subTask("Preparing test cases...");
                     testSuiteExecutedEntity.prepareTestCases();
 
