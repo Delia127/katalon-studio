@@ -122,7 +122,7 @@ public class SelfHealingWebUISettingPage extends AbstractSettingPage {
     }
     
     private void navigateToWebUITestDesignPage() {
-//        super.getShell().close();
+        super.getShell().close();
         eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,
                 SmartXPathConstants.TEST_DESIGN_WEB_UI_PAGE_ID);
     }
