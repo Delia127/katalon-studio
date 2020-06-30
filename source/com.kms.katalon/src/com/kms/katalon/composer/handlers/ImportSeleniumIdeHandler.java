@@ -64,6 +64,7 @@ import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 import com.kms.katalon.selenium.ide.model.TestSuite;
 import com.kms.katalon.selenium.ide.util.ParsedResult;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportSeleniumIdeHandler {
 
@@ -91,6 +92,7 @@ public class ImportSeleniumIdeHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
         if (featureService.canUse(KSEFeature.IMPORT_SELENIUM_IDE_V3)) {
+            Trackings.trackClickImportSeleniumIde();
             try {
                 FileDialog fileDialog = new FileDialog(shell, SWT.SYSTEM_MODAL);
                 fileDialog.setText(StringConstants.HAND_IMPORT_SELENIUM_IDE);
@@ -102,6 +104,8 @@ public class ImportSeleniumIdeHandler {
                         if (SeleniumIdeParser.getInstance().isSeleniumIdeV3File(selectedFile)) {
                             ParsedResult result = SeleniumIdeParser.getInstance().parseSeleniumIdeV3File(selectedFile);
                             createTests(result);
+                            Trackings.trackImportSeleniumIdeResult(result.getTestCases().size(),
+                                    result.getTestSuites().size());
                         } else if (SeleniumIdeParser.getInstance().isTestSuiteFile(selectedFile)) {
                             TestSuite testSuite = SeleniumIdeParser.getInstance().parseTestSuite(selectedFile);
                             createTestSuite(testSuite);
