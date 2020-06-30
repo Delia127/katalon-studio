@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -11,13 +13,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
+import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
 import com.katalon.plugin.smart_xpath.settings.composites.ExcludeObjectsUsedWithKeywordsComposite;
 import com.katalon.plugin.smart_xpath.settings.composites.HelpCompositeForExecutionDialog;
 import com.katalon.plugin.smart_xpath.settings.composites.PrioritizeSelectionMethodsComposite;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.feature.FeatureServiceConsumer;
@@ -25,7 +31,8 @@ import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.util.collections.Pair;
 
-public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
+public class SelfHealingWebUISettingPage extends AbstractSettingPage {
+    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
     private static final String LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD = SmartXPathMessageConstants.LBL_TOGGLE_SELF_HEALING_EXECUTION_METHOD;
 
@@ -43,7 +50,7 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
 
     private WebUiExecutionSettingStore preferenceStore;
 
-    public SelfHealingExecutionSettingPage() {
+    public SelfHealingWebUISettingPage() {
         preferenceStore = WebUiExecutionSettingStore.getStore();
     }
 
@@ -104,8 +111,20 @@ public class SelfHealingExecutionSettingPage extends AbstractSettingPage {
                     handleInputChanged(prioritizeSelectionMethodsComposite, null);
                 }
             });
+            prioritizeSelectionMethodsComposite.addNavigateToWebUITestDesignListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    navigateToWebUITestDesignPage();
+                }
+            });
         }
         return methodsPriorityOrder;
+    }
+    
+    private void navigateToWebUITestDesignPage() {
+//        super.getShell().close();
+        eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,
+                SmartXPathConstants.TEST_DESIGN_WEB_UI_PAGE_ID);
     }
 
     private Composite createExcludeWithKeywordsComposite(Composite parent) {

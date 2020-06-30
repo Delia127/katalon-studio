@@ -17,6 +17,8 @@ public class SmartXPathConstants {
 
     public static final String SELF_HEALING_WEB_UI_PAGE_ID = "com.katalon.katalon-studio-smart-xpath.self_healing.webui";
 
+    public static final String TEST_DESIGN_WEB_UI_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign.webui";
+
     public static final String SELF_HEALING_TOOLBAR_MENU_ID = "com.katalon.plugin.smart_xpath.smartXpathToolItemWithDescription";
 
     public static final String SELF_HEALING_INSIGHTS_PART_ID = "com.kms.katalon.composer.execution.part.selfHealing";

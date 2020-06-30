@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -49,7 +50,6 @@ import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.util.collections.Pair;
 
 public class PrioritizeSelectionMethodsComposite extends Composite {
-
     private static final String GRP_LBL_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION = SmartXPathMessageConstants.GRP_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION;
 
     private static final String BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER = SmartXPathMessageConstants.BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER;
@@ -71,6 +71,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
     private TableViewerColumn cvMethodsSelected;
 
     private TableColumn cMethodsSelected;
+
+    private Link link;
 
     private List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = Collections.emptyList();
 
@@ -107,7 +109,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
     private void createPrioritizeOrderToolbar(Composite parent) {
         Composite compositeToolbar = new Composite(parent, SWT.NONE);
         compositeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
-        compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        compositeToolbar.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, false, 1, 1));
 
         ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
         toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
@@ -149,6 +151,13 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
                 }
             }
         });
+        Composite compositeNav = new Composite(compositeToolbar, SWT.NONE);
+        FillLayout navLayout = new FillLayout(SWT.HORIZONTAL);
+        navLayout.marginHeight = 3;
+        compositeNav.setLayout(navLayout);
+
+        link = new Link(compositeNav, SWT.NONE);
+        link.setText("<a>" + SmartXPathMessageConstants.SELF_HEALING_NAVIGATE_TO_TEST_DESIGN + "</a>");
     }
 
     @SuppressWarnings("unchecked")
@@ -314,5 +323,9 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
         TypedListener typedListener = new TypedListener(listener);
         addListener(SWT.Selection, typedListener);
         addListener(SWT.DefaultSelection, typedListener);
+    }
+
+    public void addNavigateToWebUITestDesignListener(SelectionListener listener) {
+        link.addSelectionListener(listener);
     }
 }
