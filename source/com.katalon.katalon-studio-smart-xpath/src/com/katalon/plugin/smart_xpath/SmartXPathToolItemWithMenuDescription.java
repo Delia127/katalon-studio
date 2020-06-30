@@ -137,7 +137,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
             @Override
             public void widgetSelected(SelectionEvent e) {
                 eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,
-                        SmartXPathConstants.SELF_HEALING_EXECUTION_SETTINGS_PAGE_ID);
+                        SmartXPathConstants.SELF_HEALING_WEB_UI_PAGE_ID);
             }
         });
         return selfHealingSettingsMenuItem;
@@ -166,7 +166,7 @@ public class SmartXPathToolItemWithMenuDescription implements ToolItemWithMenuDe
                     consolePartStack.setToBeRendered(true);
                 }
 
-                // Focus to Self-Healing Insights part
+                // Focus to Self-healing Insights part
                 MPart selfHealingInsightsPart = (MPart) modelService
                         .find(SmartXPathConstants.SELF_HEALING_INSIGHTS_PART_ID, consolePartStack);
                 if (!consolePartStack.getChildren().contains(selfHealingInsightsPart)) {

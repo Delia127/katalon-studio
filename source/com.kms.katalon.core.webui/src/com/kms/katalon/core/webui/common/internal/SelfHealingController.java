@@ -27,7 +27,7 @@ import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 
 /**
- * A controller used by Self-Healing Plug-in.
+ * A controller used by Self-healing Plug-in.
  *
  */
 public class SelfHealingController {
@@ -36,7 +36,7 @@ public class SelfHealingController {
 
     public static final String REPORT_FOLDER_NAME = "Reports";
 
-    public static final String SELF_HEALING_FOLDER_NAME = "Self-Healing";
+    public static final String SELF_HEALING_FOLDER_NAME = "Self-healing";
 
     public static final String SELF_HEALING_DATA_FILE_NAME = "broken-test-objects.json";
 
@@ -48,7 +48,7 @@ public class SelfHealingController {
 	private static KeywordLogger logger = KeywordLogger.getInstance(SelfHealingController.class);
 
 	/**
-	 * This method initializes Self-Healing Logger with a logger of the calling
+	 * This method initializes Self-healing Logger with a logger of the calling
 	 * object, should be called first before doing anything
 	 * 
 	 * @param logger
@@ -59,7 +59,7 @@ public class SelfHealingController {
 	}
 
 	/**
-	 * Log an information with Self-Healing plug-in's internal prefix. Note that
+	 * Log an information with Self-healing plug-in's internal prefix. Note that
 	 * a KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
 	 * 
 	 * @param message
@@ -69,7 +69,7 @@ public class SelfHealingController {
 	}
 
 	/**
-	 * Log an error with Self-Healing plug-in's internal prefix. Note that a
+	 * Log an error with Self-healing plug-in's internal prefix. Note that a
 	 * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
 	 * 
 	 * @param message
@@ -79,7 +79,7 @@ public class SelfHealingController {
 	}
 	
 	/**
-     * Log an error with Self-Healing plug-in's internal prefix. Note that a
+     * Log an error with Self-healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
@@ -90,7 +90,7 @@ public class SelfHealingController {
     }
 
     /**
-     * Log an warning with Self-Healing plug-in's internal prefix. Note that a
+     * Log an warning with Self-healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
@@ -100,7 +100,7 @@ public class SelfHealingController {
     }
     
     /**
-     * Log an warning with Self-Healing plug-in's internal prefix. Note that a
+     * Log an warning with Self-healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
@@ -116,7 +116,7 @@ public class SelfHealingController {
 
     /**
      * Register a Test Object as broken, register this information along with a
-     * proposed locator to an internal file provided by Self-Healing Plug-in.
+     * proposed locator to an internal file provided by Self-healing Plug-in.
      * 
      * @param testObject
      *            The broken Test Object to be registered
@@ -136,7 +136,7 @@ public class SelfHealingController {
 
 	/**
 	 * Register a Test Object as broken, register this information along with a
-	 * proposed locator to an internal file provided by Self-Healing Plug-in.
+	 * proposed locator to an internal file provided by Self-healing Plug-in.
 	 * 
 	 * @param testObject
 	 *            The broken Test Object to be registered
@@ -160,7 +160,7 @@ public class SelfHealingController {
 			existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
 			writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
 		} else {
-			logError(jsAutoHealingPath + " does not exist or is provided by Self-Healing Plugin!");
+			logError(jsAutoHealingPath + " does not exist or is provided by Self-healing Plugin!");
 		}
         return brokenTestObject;
 	}
@@ -288,7 +288,7 @@ public class SelfHealingController {
 
 	/**
 	 * Take screenshot of a web element and saved to an internal folder provided
-	 * by Self-Healing Plug-in
+	 * by Self-healing Plug-in
 	 * 
 	 * @param webDriver
 	 *            A WebDriver instance that's being used at the time calling

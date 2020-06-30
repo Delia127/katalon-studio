@@ -1,4 +1,4 @@
-package com.katalon.plugin.smart_xpath.settings;
+package com.kms.katalon.composer.webservice.settings;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -7,15 +7,15 @@ import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 
-public class SelfHealingWebUISettingPage extends PreferencePageWithHelp {
-    
+public class WebServiceSettingPage extends PreferencePageWithHelp {
+
     private Composite container;
 
-	public SelfHealingWebUISettingPage() {
-	}
+    public WebServiceSettingPage() {
+    }
 
-	@Override
-	protected Control createContents(Composite parent) {
+    @Override
+    protected Control createContents(Composite parent) {
         container = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         layout.verticalSpacing = 10;
@@ -23,6 +23,7 @@ public class SelfHealingWebUISettingPage extends PreferencePageWithHelp {
         layout.marginWidth = 0;
         container.setLayout(layout);
 
-		return container;
-	}
+        return container;
+    }
+
 }
