@@ -29,9 +29,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -42,6 +44,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
 
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
@@ -116,7 +119,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
         ToolItem tltmUp = new ToolItem(toolBar, SWT.NONE);
         tltmUp.setText(BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER);
-        tltmUp.setImage(ImageManager.getImage(IImageKeys.MOVE_UP_16));
+        tltmUp.setImage(ImageConstants.IMG_16_MOVE_UP);
         tltmUp.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -135,7 +138,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
         ToolItem tltmDown = new ToolItem(toolBar, SWT.NONE);
         tltmDown.setText(BUTTON_MOVE_DOWN_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER);
-        tltmDown.setImage(ImageManager.getImage(IImageKeys.MOVE_DOWN_16));
+        tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -152,10 +155,12 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
             }
         });
         Composite compositeNav = new Composite(compositeToolbar, SWT.NONE);
-        FillLayout navLayout = new FillLayout(SWT.HORIZONTAL);
-        navLayout.marginHeight = 3;
+        RowLayout navLayout = new RowLayout();
+        navLayout.marginRight = 10;
         compositeNav.setLayout(navLayout);
-
+        
+        Label linkImage = new Label(compositeNav, SWT.NONE);
+        linkImage.setImage(ImageConstants.IMG_16_SETTING);
         link = new Link(compositeNav, SWT.NONE);
         link.setText("<a>" + SmartXPathMessageConstants.SELF_HEALING_NAVIGATE_TO_TEST_DESIGN + "</a>");
     }
@@ -298,8 +303,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
     protected Image getCheckboxSymbol(boolean isChecked) {
         return isChecked
-                ? ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16)
-                : ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
+                ? ImageConstants.IMG_16_CHECKED
+                : ImageConstants.IMG_16_UNCHECKED;
     }
 
     public List<Pair<SelectorMethod, Boolean>> getInput() {

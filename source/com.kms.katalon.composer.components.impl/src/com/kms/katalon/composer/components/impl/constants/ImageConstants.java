@@ -164,6 +164,8 @@ public class ImageConstants {
 
     public static final Image IMG_16_EXPORT_CSV = ImageManager.getImage(IImageKeys.EXPORT_CSV_16);
 
+    public static final Image IMG_16_SETTING = ImageManager.getImage(IImageKeys.SETTING_16);
+
     // CheckpointTreeEntity
     public static final Image IMG_16_CHECKPOINT = ImageManager.getImage(IImageKeys.CHECKPOINT_16);
 
