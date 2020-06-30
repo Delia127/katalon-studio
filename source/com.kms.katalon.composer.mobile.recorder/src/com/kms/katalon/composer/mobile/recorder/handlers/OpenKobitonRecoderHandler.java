@@ -92,7 +92,6 @@ public class OpenKobitonRecoderHandler {
             }
 
             recorderDialog = new MobileRecorderDialog(activeShell, new KobitonAppComposite());
-            Trackings.trackOpenMobileRecord();
             if (recorderDialog.open() != Window.OK) {
                 return false;
             }

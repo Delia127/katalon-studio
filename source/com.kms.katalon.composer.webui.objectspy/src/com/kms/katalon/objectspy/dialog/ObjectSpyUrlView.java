@@ -200,7 +200,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             startInspectSession();
 
             invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
-            Trackings.trackSpy("web");
+            Trackings.trackWebSpy();
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -542,7 +542,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         Win32Helper.switchFocusToBrowser(browserType);
         currentInstantSocket.sendMessage(new StartInspectAddonMessage());
         invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
-        Trackings.trackSpy("web");
+        Trackings.trackWebSpy();
     }
 
     protected void runInstantIE() throws Exception {

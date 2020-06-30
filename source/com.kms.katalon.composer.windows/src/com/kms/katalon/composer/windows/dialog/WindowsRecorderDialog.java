@@ -134,6 +134,8 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     private RecordActionResult recordActionResult;
 
+    private boolean okPressed = false;
+
     public WindowsRecorderDialog(Shell parentShell, WindowsAppComposite appComposite) {
         super(parentShell);
         setShellStyle(SWT.SHELL_TRIM | SWT.RESIZE);
@@ -143,8 +145,16 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
     @Override
     public boolean close() {
         stopObjectInspectorAction();
+        
+        if (okPressed) {
+            int recordedActionCount = stepView.getNodes().size();
+            Trackings.trackCloseWindowsRecordByOk(recordedActionCount);
+        } else {
+            Trackings.trackCloseWindowsRecordByCancel();
+        }
+        
         boolean result = super.close();
-        Trackings.trackCloseRecord("windows", "cancel", 0);
+        
         return result;
     }
 
@@ -171,7 +181,13 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         super.setShellStyle(newShellStyle | SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE);
         setBlockOnOpen(true);
     }
-
+    
+    @Override
+    public int open() {
+        Trackings.trackOpenWindowsRecord();
+        return super.open();
+    }
+    
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
@@ -236,11 +252,8 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
         recordActionResult = new RecordActionResult(stepView.getWrapper(),
                 capturedObjectsTableViewer.getCapturedElements());
 
-        int recordedActionCount = stepView.getNodes().size();
-
+        okPressed = true;
         super.okPressed();
-
-        Trackings.trackCloseRecord("windows", "ok", recordedActionCount);
     }
 
     public FolderTreeEntity getTargetFolderEntity() {
@@ -560,7 +573,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
             targetElementChanged(null);
 
             // send event for tracking
-            Trackings.trackRecord("windows");
+            Trackings.trackWindowsRecord();
         } catch (Exception ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {

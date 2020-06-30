@@ -90,6 +90,8 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     private RecordActionResult recordActionResult;
 
+    private boolean okPressed = false;
+
     public WindowsRecorderDialogV2(Shell parentShell) {
         super(parentShell);
         socketServer.start();
@@ -102,8 +104,20 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     }
 
     @Override
+    public int open() {
+        Trackings.trackOpenWindowsNativeRecord();
+        return super.open();
+    }
+    
+    @Override
     public boolean close() {
         socketServer.close();
+        if (okPressed) {
+            int recordedActionCount = stepView.getNodes().size();
+            Trackings.trackCloseWindowsNativeRecordByOk(recordedActionCount);
+        } else {
+            Trackings.trackCloseWindowsNativeRecordByCancel();
+        }
         return super.close();
     }
 
@@ -112,11 +126,9 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         recordActionResult = new RecordActionResult(stepView.getWrapper(),
                 capturedObjectsTableViewer.getCapturedElements());
 
-        int recordedActionCount = stepView.getNodes().size();
-
+        okPressed  = true;
+        
         super.okPressed();
-
-        Trackings.trackCloseRecord("windows", "ok", recordedActionCount);
     }
 
     @Override
@@ -358,6 +370,7 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     }
 
     private void startRecording() throws Exception {
+        Trackings.trackWindowsNativeRecord();
         startNativeRecorderDriver();
         WindowsStartRecordingPayload message = WindowsSocketMessageUtil
                 .createStartRecordingPayload(mobileComposite.getAppFile());

@@ -327,6 +327,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     public int open() {
         try {
             canceledBeforeOpening = false;
+            Trackings.trackOpenMobileSpy(getDeviceTypeString());
             return super.open();
         } finally {
             if (canceledBeforeOpening) {
@@ -361,7 +362,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
                     FolderEntity folder = folderTreeEntity.getObject();
                     List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
-                    Trackings.trackSaveSpy("mobile", newTreeEntities.size());
+                    Trackings.trackSaveMobileSpy(getDeviceTypeString(), newTreeEntities.size());
                     removeSelectedCapturedElements(
                             capturedObjectsComposite.getAllCheckedElements().toArray(new CapturedMobileElement[0]));
                     updateExplorerState(folderTreeEntity, newTreeEntities);
@@ -671,7 +672,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             btnStop.setEnabled(true);
             
             // send event for tracking
-            Trackings.trackSpy("mobile");
+            Trackings.trackMobileSpy(getDeviceTypeString());
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
@@ -743,8 +744,8 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
+        Trackings.trackCloseMobileSpy(getDeviceTypeString());
         boolean result = super.close();
-        Trackings.trackCloseSpy("mobile");
         instance = null;
         return result;
     }
@@ -858,6 +859,10 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 			return mobileElements.get(0);
 		}
 		return null;
+	}
+	
+	private String getDeviceTypeString() {
+	    return mobileComposite.getSelectedDriverType().toString();
 	}
 
     @Override

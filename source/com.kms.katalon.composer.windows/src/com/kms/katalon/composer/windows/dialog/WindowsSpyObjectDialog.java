@@ -135,6 +135,8 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
 
     private WindowsScreenView screenComposite;
 
+    private boolean okPressed = false;
+
     private static WindowsSpyObjectDialog instance;
 
     public boolean isCanceledBeforeOpening() {
@@ -537,6 +539,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
     public int open() {
         try {
             canceledBeforeOpening = false;
+            Trackings.trackOpenWindowsSpy();
             return super.open();
         } finally {
             if (canceledBeforeOpening) {
@@ -621,8 +624,12 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
     @Override
     protected void okPressed() {
         saveCapturedObjectsToObjectRepository();
+        okPressed = true;
         super.okPressed();
     }
+    
+
+    
     
     private void saveCapturedObjectsToObjectRepository() {
         if (capturedObjectsTableViewer.getAllCheckedElements().size() > 0) {
@@ -635,7 +642,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
                 FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
                 FolderEntity folder = folderTreeEntity.getObject();
                 List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
-                Trackings.trackSaveSpy("windows", newTreeEntities.size());
+                Trackings.trackSaveWindowsSpy(newTreeEntities.size());
                 removeSelectedCapturedElements(
                         capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedWindowsElement[0]));
                 updateExplorerState(folderTreeEntity, newTreeEntities);
@@ -881,7 +888,7 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
             btnStop.setEnabled(true);
 
             // send event for tracking
-            Trackings.trackSpy("windows");
+            Trackings.trackWindowsSpy();
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
@@ -945,8 +952,8 @@ public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialo
     @Override
     public boolean close() {
         stopObjectInspectorAction();
-        boolean result = super.close();
-        Trackings.trackCloseSpy("windows");
+        Trackings.trackCloseWindowsSpy(!okPressed);
+        boolean result = super.close();  
         instance = null;
         return result;
     }

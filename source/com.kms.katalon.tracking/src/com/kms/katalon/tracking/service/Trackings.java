@@ -10,9 +10,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
-import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.feature.KSEFeature;
@@ -28,7 +26,6 @@ import com.kms.katalon.util.SystemInformationUtil;
 public class Trackings {
 
     private static TrackingService trackingService = new TrackingService();
-    private static SystemInformationUtil system = new SystemInformationUtil();
 
     public static void trackOpenApplication(boolean isAnonymous, String runningMode) throws Exception {
         double cpu = 0.0;
@@ -108,19 +105,35 @@ public class Trackings {
 
         trackingService.track(trackInfo);
     }
-
-    public static void trackSpy(String type) {
-        trackUserAction("spy", "type", type);
+    
+    public static void trackWebSpy() {
+        trackUserAction("spyWeb");
+    }
+    
+    public static void trackMobileSpy(String deviceType) {
+        trackUserAction("spyMobile", "deviceType", deviceType);
+    }
+    
+    public static void trackWindowsSpy() {
+        trackUserAction("spyWindows");
     }
 
-    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser,
-            SelectorMethod webLocatorConfig) {
-        trackUserAction("record", "type", "web", "browserType", browserType.toString(), "active", useActiveBrowser,
-                "webLocatorConfig", webLocatorConfig.toString());
+    public static void trackWebRecord(String browserType, boolean useActiveBrowser,
+            String webLocatorConfig) {
+        trackUserAction("recordWeb", "browserType", browserType, "active", useActiveBrowser,
+                "webLocatorConfig", webLocatorConfig);
     }
-
-    public static void trackRecord(String type) {
-        trackUserAction("record", "type", type);
+    
+    public static void trackMobileRecord(String deviceType) {
+        trackUserAction("recordMobile", "deviceType", deviceType);
+    }
+    
+    public static void trackWindowsRecord() {
+        trackUserAction("recordWindows");
+    }
+    
+    public static void trackWindowsNativeRecord() {
+        trackUserAction("recordWindowsNative");
     }
 
     public static void trackExecuteTestCase(String launchMode, String driverType, String result, long duration) {
@@ -208,51 +221,95 @@ public class Trackings {
         trackUserAction("openHelp", "url", url);
     }
 
-    public static void trackOpenSpy(String type) {
-        trackUserAction("openSpy", "type", type);
+    public static void trackOpenWebSpy() {
+        trackUserAction("openWebSpy");
+    }
+    
+    public static void trackOpenMobileSpy(String deviceType) {
+        trackUserAction("openMobileSpy", "deviceType", deviceType);
+    }
+    
+    public static void trackOpenWindowsSpy() {
+        trackUserAction("openWindowsSpy");
+    }
+    
+    public static void trackSaveWebSpy(int numberOfSavedObjects) {
+        trackUserAction("saveWebSpy", "numberOfSavedObjects", numberOfSavedObjects);
+    }
+    
+    public static void trackSaveMobileSpy(String deviceType, int numberOfSavedObjects) {
+        trackUserAction("saveMobileSpy", "deviceType", deviceType, "numberOfSavedObjects", numberOfSavedObjects);
+    }
+    
+    public static void trackSaveWindowsSpy(int numberOfSavedObjects) {
+        trackUserAction("saveWindowsSpy", "numberOfSavedObjects", numberOfSavedObjects);
     }
 
-    public static void trackSaveSpy(String type, int numberOfSavedObjects) {
-        trackUserAction("saveSpy", "type", type, "numberOfSavedObjects", Integer.valueOf(numberOfSavedObjects));
+    public static void trackCloseWebSpy() {
+        trackUserAction("closeWebSpy");
+    }
+    
+    public static void trackCloseMobileSpy(String deviceType) {
+        trackUserAction("closeMobileSpy", "deviceType", deviceType);
+    }
+    
+    public static void trackCloseWindowsSpy(boolean isCancelled) {
+        trackUserAction("closeWindowsSpy", "isCancelled", isCancelled);
     }
 
-    public static void trackCloseSpy(String type) {
-        trackUserAction("closeSpy", "type", type);
+    public static void trackOpenWebRecord(boolean continueRecording, String webLocatorConfig) {
+        trackUserAction("openWebRecord", "continue", continueRecording, "webLocatorConfig",
+                webLocatorConfig);
     }
 
-    public static void trackOpenWebRecord(Boolean continueRecording, SelectorMethod webLocatorConfig) {
-        if (continueRecording != null) {
-            trackUserAction("openRecord", "type", "web", "continue", continueRecording ? "yes" : "no",
-                    "webLocatorConfig", webLocatorConfig.toString());
-        } else {
-            trackUserAction("openRecord", "type", "web", "webLocatorConfig", webLocatorConfig.toString());
-        }
+    public static void trackOpenMobileRecord(String deviceType) {
+        trackUserAction("openMobileRecord", "deviceType", deviceType);
+    }
+    
+    public static void trackOpenWindowsRecord() {
+        trackUserAction("openWindowsRecord");
+    }
+    
+    public static void trackOpenWindowsNativeRecord() {
+        trackUserAction("openWindowsNativeRecord");
     }
 
-    public static void trackOpenMobileRecord() {
-        trackUserAction("openRecord", "type", "mobile");
+    public static void trackCloseWebRecordByOk(int numberOfTestSteps, String webLocatorConfig) {
+        trackUserAction("closeWebRecord", "isCancelled", false, "numberOfTestSteps",
+                String.valueOf(numberOfTestSteps), "webLocatorConfig", webLocatorConfig);
     }
-
-    public static void trackCloseWebRecord(String closeButton, int numberOfTestSteps, SelectorMethod webLocatorConfig) {
-        if ("ok".equals(closeButton)) {
-            trackUserAction("closeRecord", "type", "web", "closePopup", closeButton, "numberOfTestSteps",
-                    String.valueOf(numberOfTestSteps), "webLocatorConfig", webLocatorConfig.toString());
-        } else {
-            trackUserAction("closeRecord", "type", "web", "closePopup", closeButton, "webLocatorConfig",
-                    webLocatorConfig.toString());
-        }
+    
+    public static void trackCloseWebRecordByCancel(String webLocatorConfig) {
+        trackUserAction("closeWebRecord", "isCancelled", true, "webLocatorConfig", webLocatorConfig);
     }
-
-    public static void trackCloseRecord(String type, String closeButton, int numberOfTestSteps) {
-        if ("ok".equals(closeButton)) {
-            trackUserAction("closeRecord", "type", type, "closePopup", closeButton, "numberOfTestSteps",
-                    String.valueOf(numberOfTestSteps));
-        } else {
-            trackUserAction("closeRecord", "type", type, "closePopup", closeButton);
-        }
+    
+    public static void trackCloseMobileRecordByOk(String deviceType, int numberOfTestSteps) {
+        trackUserAction("closeMobileRecord", "deviceType", deviceType, "isCancelled", false, "numberOfTestSteps",
+                numberOfTestSteps);
     }
-
-    public static void trackRecordRunSteps(String type) {
+    
+    public static void trackCloseMobileRecordByCancel(String deviceType) {
+        trackUserAction("closeMobileRecord", "deviceType", deviceType, "isCancelled", true);
+    }
+    
+    public static void trackCloseWindowsRecordByOk(int numberOfRecordedSteps) {
+        trackUserAction("closeWindowsRecord", "isCancelled", false, "numberOfRecordedSteps", numberOfRecordedSteps);
+    }
+    
+    public static void trackCloseWindowsRecordByCancel() {
+        trackUserAction("closeWindowsRecord", "isCancelled", true);
+    }
+    
+    public static void trackCloseWindowsNativeRecordByOk(int numberOfRecordedSteps) {
+        trackUserAction("closeWindowsNativeRecord", "isCancelled", false, "numberOfRecordedSteps",
+                numberOfRecordedSteps);
+    }
+    
+    public static void trackCloseWindowsNativeRecordByCancel() {
+        trackUserAction("closeWindowsNativeRecord", "isCancelled", true);
+    }
+    
+    public static void trackWebRecordRunSteps(String type) {
         trackUserAction("recordRunSteps", "type", type);
     }
 
