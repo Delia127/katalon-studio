@@ -7,6 +7,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
@@ -24,10 +25,16 @@ public class NewMobileElementPopupMenuContribution {
             ExplorerPart explorerPart = ExplorerPart.getInstance();
             List<Object> selectedObjects = explorerPart.getSelectedTreeEntities();
             if (selectedObjects == null || selectedObjects.size() != 1
-                    || !(selectedObjects.get(0) instanceof FolderTreeEntity)) {
+                    || (!(selectedObjects.get(0) instanceof FolderTreeEntity)
+                    && !(selectedObjects.get(0) instanceof WebElementTreeEntity))) {
                 return;
             }
-            FolderEntity folderEntity = ((FolderTreeEntity) selectedObjects.get(0)).getObject();
+            FolderEntity folderEntity = null;
+            if (selectedObjects.get(0) instanceof FolderTreeEntity) {
+                folderEntity = ((FolderTreeEntity) selectedObjects.get(0)).getObject();
+            } else {
+                folderEntity = (FolderEntity) ((WebElementTreeEntity) selectedObjects.get(0)).getParent().getObject();
+            }
             if (folderEntity.getFolderType() == FolderType.WEBELEMENT) {
                 MDirectMenuItem newWindowsElementToolItem = MenuFactory.createDirectMenuItem("Mobile Object",
                         ConstantsHelper.getApplicationURI());

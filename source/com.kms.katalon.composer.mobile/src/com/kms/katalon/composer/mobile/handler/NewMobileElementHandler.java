@@ -6,7 +6,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.composer.mobile.dialog.NewMobileElementDialog;
 import com.kms.katalon.controller.EntityNameController;
@@ -19,9 +21,18 @@ public class NewMobileElementHandler {
     @Execute
     public void createNewWindowsElement(Shell activeShell) {
         try {
-            FolderTreeEntity folderTreeEntity = (FolderTreeEntity) ExplorerPart.getInstance()
+            ITreeEntity selectedEntity = (ITreeEntity) ExplorerPart.getInstance()
                     .getSelectedTreeEntities()
                     .get(0);
+
+            FolderTreeEntity folderTreeEntity = null;
+            if (selectedEntity instanceof FolderTreeEntity) {
+                folderTreeEntity = (FolderTreeEntity) selectedEntity;
+            } else if (selectedEntity instanceof WebElementTreeEntity) {
+                folderTreeEntity = (FolderTreeEntity) selectedEntity.getParent();
+            } else {
+                return;
+            }
 
             FolderEntity folder = folderTreeEntity.getObject();
 
