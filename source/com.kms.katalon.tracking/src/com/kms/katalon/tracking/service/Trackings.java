@@ -1,5 +1,7 @@
 package com.kms.katalon.tracking.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -123,44 +125,128 @@ public class Trackings {
         trackUserAction("record", "type", type);
     }
 
-    public static void trackExecuteTestCase(String launchMode, String driverType, String result, long duration) {
-        trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType,"executionResult", result, "duration", duration);
+    public static void trackExecuteTestCase(String launchMode, String driverType, String result, long duration,
+            boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "launchMode", launchMode, "driver", driverType,
+                "executionResult", result, "duration", duration, "enable_self_healing", isEnableSelfHealing,
+                "trigger_self_healing", isTriggerSelfHealing
+        }));
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+        trackUserAction("executeTestCase", properties.toArray());
     }
 
     public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result,
-            long duration, String retryStrategy, int numberOfRetry) {
-        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType,
+            long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
+            boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "gui", "launchMode", launchMode, "driver", driverType,
                 "executionResult", result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
-                numberOfRetry);
+                numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackUserAction("executeTestSuite", properties.toArray());
     }
 
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result,
-            long duration, String retryStrategy, int numberOfRetry) {
-        trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType, "executionResult",
-                result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun", numberOfRetry);
+            long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
+            boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "runningMode", "console", "driver", driverType, "executionResult",
+                result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
+                numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackAction("executeTestSuite", isAnonymous, properties.toArray());
     }
 
-    public static void trackExecuteSequentialTestSuiteCollectionInGuiMode(String result, long duration) {
-        trackUserAction("executeTestSuiteCollection", "runningMode", "gui", "executionResult", result, "duration",
-                duration, "executionMode", "Sequential");
+    public static void trackExecuteSequentialTestSuiteCollectionInGuiMode(String result, long duration,
+            boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "gui", "executionResult", result, "duration",
+                duration, "executionMode", "Sequential", "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackUserAction("executeTestSuiteCollection", properties.toArray());
     }
 
     public static void trackExecuteParallelTestSuiteCollectionInGuiMode(String result, long duration,
-            int maxConcurrentInstances) {
-        trackUserAction("executeTestSuiteCollection", "runningMode", "gui", "executionResult", result, "duration",
-                duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances);
+            int maxConcurrentInstances, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "gui", "executionResult", result, "duration",
+                duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances,
+                "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackUserAction("executeTestSuiteCollection", properties.toArray());
     }
 
     public static void trackExecuteSequentialTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result,
-            long duration) {
-        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console", "executionResult", result,
-                "duration", duration, "executionMode", "Sequential");
+            long duration, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "console", "executionResult", result,
+                "duration", duration, "executionMode", "Sequential",
+                "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackAction("executeTestSuiteCollection", isAnonymous, properties.toArray());
     }
 
     public static void trackExecuteParallelTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result,
-            long duration, int maxConcurrentInstances) {
-        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console", "executionResult", result,
-                "duration", duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances);
+            long duration, int maxConcurrentInstances, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "console", "executionResult", result,
+                "duration", duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances,
+                "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackAction("executeTestSuiteCollection", isAnonymous, properties.toArray());
     }
 
     public static void trackGenerateCmd() {
@@ -250,6 +336,10 @@ public class Trackings {
         } else {
             trackUserAction("closeRecord", "type", type, "closePopup", closeButton);
         }
+    }
+    
+    public static void trackOpenSelfHealingInsights() {
+        trackUserAction("openSelfHealingInsights");
     }
 
     public static void trackRecordRunSteps(String type) {

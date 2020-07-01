@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
@@ -54,6 +55,7 @@ import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
+import com.kms.katalon.core.webui.util.FileUtil;
 
 public class WebUiCommonHelper extends KeywordHelper {
     
@@ -744,10 +746,16 @@ public class WebUiCommonHelper extends KeywordHelper {
         SelfHealingController.logWarning(MessageFormat
                 .format(StringConstants.KW_LOG_INFO_DEFAULT_LOCATOR_FAILED_TRY_SELF_HEALING, testObject.getObjectId()));
 
-        List<TestObject> healedTestObjects = SelfHealingController.findHealedTestObjects(testObject);
-        if (healedTestObjects != null && !healedTestObjects.isEmpty()) {
-            for (TestObject healedTestObject : healedTestObjects) {
+        String dataFileAtReportFolder = SelfHealingController.getSelfHealingDataFilePath(RunConfiguration.getReportFolder());
+        SelfHealingController.prepareDataFile(dataFileAtReportFolder);
+
+        Set<BrokenTestObject> healingCandidates = SelfHealingController.findBrokenTestObjects(testObject);
+        if (healingCandidates != null && !healingCandidates.isEmpty()) {
+            for (BrokenTestObject healingCandidate : healingCandidates) {
+                TestObject healedTestObject = SelfHealingController.healTestObject(testObject, healingCandidate);
+
                 List<WebElement> foundElements = findElementsByDefault(healedTestObject, 0);
+
                 if (foundElements != null && !foundElements.isEmpty()) {
                     String proposedLocator = healedTestObject.getSelectorCollection().get(healedTestObject.getSelectorMethod());
                     SelfHealingController
@@ -755,6 +763,11 @@ public class WebUiCommonHelper extends KeywordHelper {
                                     testObject.getObjectId(), proposedLocator));
 
                     KeywordExecutionContext.setHasHealedSomeObjects(true);
+                    
+                    FindElementsResult findResultForReport = FindElementsResult.from(foundElements, healedTestObject);
+                    String screenshotPath = SelfHealingController.getScreenshotAbsolutePath(healingCandidate.getPathToScreenshot());
+                    findResultForReport.setScreenshot(screenshotPath);
+                    registerBrokenTestObject(findResultForReport, testObject, RunConfiguration.getReportFolder());
                     return foundElements;
                 }
             }
@@ -783,6 +796,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                     
                     if (findResult != null && !findResult.isEmpty()) {
                         BrokenTestObject brokenTestObject = registerBrokenTestObject(findResult, testObject);
+                        registerBrokenTestObject(findResult, testObject, RunConfiguration.getReportFolder());
 
                         SelfHealingController
                                 .logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR,
@@ -801,6 +815,11 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
     
     private static BrokenTestObject registerBrokenTestObject(FindElementsResult findResult, TestObject testObject) {
+        return registerBrokenTestObject(findResult, testObject, SelfHealingController.getSelfHealingFolderPath());
+    }
+    
+    private static BrokenTestObject registerBrokenTestObject(FindElementsResult findResult, TestObject brokenTestObject,
+            String dataFolder) {
         List<WebElement> foundElements = findResult.getElements();
         WebElement foundElement = foundElements.get(0);
 
@@ -816,11 +835,33 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (StringUtils.isBlank(elementScreenshot)) {
             WebDriver webDriver = DriverFactory.getWebDriver();
             elementScreenshot = SelfHealingController.takeScreenShot(webDriver,
-                    foundElement, testObject, recoveryMethod.name());
+                    foundElement, brokenTestObject, recoveryMethod.name());
+            findResult.setScreenshot(elementScreenshot);
         }
 
-        return SelfHealingController.registerBrokenTestObject(testObject, proposedLocator, proposedMethod,
-                recoveryMethod, elementScreenshot);
+        if (StringUtils.isNotBlank(elementScreenshot)) {
+            try {
+                String screenshotRelativePath = SelfHealingController.getRelativePathToSelfHealindDir(elementScreenshot);
+                String destScreenshotPath = FilenameUtils.concat(dataFolder, screenshotRelativePath);
+                File destScreenshot = new File(destScreenshotPath);
+                if (!destScreenshot.exists()) {
+                    FileUtils.copyFile(new File(elementScreenshot), destScreenshot);
+                }
+                elementScreenshot = destScreenshotPath;
+            } catch (IOException exception) {
+                SelfHealingController
+                        .logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT,
+                                dataFolder, exception.getMessage()), exception);
+            }
+        }
+
+        String projectDir = RunConfiguration.getProjectDir();
+        if (FileUtil.isInBaseFolder(elementScreenshot, projectDir)) {
+            elementScreenshot = FileUtil.getRelativePath(elementScreenshot, projectDir);
+        }
+
+        return SelfHealingController.registerBrokenTestObject(brokenTestObject, proposedLocator, proposedMethod,
+                recoveryMethod, elementScreenshot, dataFolder);
     }
 
     private static List<WebElement> findElementsByDefault(TestObject testObject, int timeout) {
@@ -1309,7 +1350,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (elements != null && elements.size() > 0) {
             return elements.get(0);
         } else {
-            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
+            String locator = getSelectorValue(testObject);
+            throw new WebElementNotFoundException(testObject.getObjectId(), locator);
         }
     }
 

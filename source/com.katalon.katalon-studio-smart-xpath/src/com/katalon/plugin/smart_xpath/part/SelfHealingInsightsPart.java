@@ -36,12 +36,14 @@ import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
 import com.katalon.plugin.smart_xpath.helpers.FileWatcher;
 import com.katalon.plugin.smart_xpath.part.composites.BrokenTestObjectsTableComposite;
 import com.katalon.plugin.smart_xpath.part.composites.SelfHealingToolbarComposite;
+import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class SelfHealingInsightsPart implements EventHandler {
 
@@ -200,6 +202,7 @@ public class SelfHealingInsightsPart implements EventHandler {
     @Focus
     public void onFocus() {
         refresh();
+        Trackings.trackOpenSelfHealingInsights();
     }
 
     @Override
