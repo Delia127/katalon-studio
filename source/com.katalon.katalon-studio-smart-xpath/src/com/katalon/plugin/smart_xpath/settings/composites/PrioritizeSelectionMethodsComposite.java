@@ -162,7 +162,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
         Label linkImage = new Label(compositeNav, SWT.NONE);
         linkImage.setImage(ImageConstants.IMG_16_SETTING);
         link = new Link(compositeNav, SWT.NONE);
-        link.setText("<a>" + SmartXPathMessageConstants.SELF_HEALING_NAVIGATE_TO_TEST_DESIGN + "</a>");
+        link.setText(String.format("<a>%s</a>", SmartXPathMessageConstants.SELF_HEALING_NAVIGATE_TO_TEST_DESIGN));
     }
 
     @SuppressWarnings("unchecked")
