@@ -215,7 +215,6 @@ public class SelfHealingWebUISettingPage extends AbstractSettingPage {
         if (!excludeObjectsUsedWithKeywordsComposite.compareInput(excludeKeywordNamesBeforeSetting)) {
             return true;
         }
-        ;
 
         List<Pair<SelectorMethod, Boolean>> methodsPriorityOrderSetting = getMethodsPriorityOrderFromPluginPreference();
         if (!prioritizeSelectionMethodsComposite.compareInput(methodsPriorityOrderSetting)) {
