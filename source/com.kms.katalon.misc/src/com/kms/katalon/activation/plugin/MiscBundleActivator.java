@@ -6,13 +6,13 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class ActivationBundleActivator implements BundleActivator {
+public class MiscBundleActivator implements BundleActivator {
 
     private IEventBroker eventBroker;
 
-    private static ActivationBundleActivator instance;
+    private static MiscBundleActivator instance;
 
-    public static ActivationBundleActivator getInstance() {
+    public static MiscBundleActivator getInstance() {
         return instance;
     }
 

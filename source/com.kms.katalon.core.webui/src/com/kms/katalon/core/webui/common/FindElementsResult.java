@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.core.testobject.TestObject;
 
 public class FindElementsResult {
 
@@ -31,7 +32,7 @@ public class FindElementsResult {
     }
     
     public FindElementsResult(WebElement element, String locator, SelectorMethod locatorMethod, String screenshot) {
-        this(Collections.emptyList(), locator, locatorMethod, screenshot);
+        this(new ArrayList<WebElement>(), locator, locatorMethod, screenshot);
         if (element != null) {
             elements.add(element);
         }
@@ -61,6 +62,12 @@ public class FindElementsResult {
 
     public static FindElementsResult from(SelectorMethod locatorMethod) {
         return from(StringUtils.EMPTY, locatorMethod, StringUtils.EMPTY);
+    }
+
+    public static FindElementsResult from(List<WebElement> elements, TestObject healedTestObject) {
+        SelectorMethod method = healedTestObject.getSelectorMethod();
+        String locator = healedTestObject.getSelectorCollection().get(method);
+        return from(elements, locator, method);
     }
 
     public SelectorMethod getLocatorMethod() {

@@ -99,7 +99,6 @@ public class OpenIosRecorderHandler {
             }
             recorderDialog = new MobileRecorderDialog(activeShell, 
                     new MobileLocalAppComposite(MobileDriverType.IOS_DRIVER));
-            Trackings.trackOpenMobileRecord();
             if (recorderDialog.open() != Window.OK) {
                 return false;
             }

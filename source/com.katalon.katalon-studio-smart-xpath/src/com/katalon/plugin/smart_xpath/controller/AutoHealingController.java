@@ -135,8 +135,8 @@ public class AutoHealingController {
 
         File selfHealingDirectory = new File(selfHealingDir);
         if (!selfHealingDirectory.exists()) {
-            boolean isCreateSelfHealingFolderSucceeded = selfHealingDirectory.mkdirs();
-            if (!isCreateSelfHealingFolderSucceeded) {
+            selfHealingDirectory.mkdirs();
+            if (!selfHealingDirectory.exists()) {
                 LoggerSingleton.logError(MessageFormat
                         .format(SmartXPathMessageConstants.MSG_CANNOT_CREATE_SELF_HEALING_FOLDER, selfHealingDir));
                 return null;
