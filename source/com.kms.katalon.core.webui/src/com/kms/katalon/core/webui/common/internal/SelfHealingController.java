@@ -147,7 +147,7 @@ public class SelfHealingController {
 			existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
 			writeBrokenTestObjects(existingBrokenTestObjects, dataFilePath);
 		} else {
-			logError(dataFilePath + " does not exist or is provided by Self-Healing Plugin!");
+			logError(dataFilePath + " does not exist or is provided by Self-healing Plugin!");
 		}
         return brokenTestObject;
 	}
