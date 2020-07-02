@@ -341,6 +341,14 @@ public class Trackings {
     public static void trackOpenSelfHealingInsights() {
         trackUserAction("openSelfHealingInsights");
     }
+    
+    public static void trackApproveSelfHealingTestObjects(String approvedProposals) {
+        trackUserAction("approveSelfHealingProposals", "approvedProposals", approvedProposals);
+    }
+    
+    public static void trackDiscardSelfHealingTestObjects(String discardedProposals) {
+        trackUserAction("discardSelfHealingProposals", "discardedProposals", discardedProposals);
+    }
 
     public static void trackRecordRunSteps(String type) {
         trackUserAction("recordRunSteps", "type", type);

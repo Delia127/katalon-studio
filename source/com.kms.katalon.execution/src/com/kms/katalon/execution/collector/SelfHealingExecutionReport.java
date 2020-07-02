@@ -29,12 +29,12 @@ public class SelfHealingExecutionReport {
         
         List<String> healingRecords = new ArrayList<String>();
         brokenTestObjects.forEach(brokenTestObject -> {
-            String healingRecord = MessageFormat.format("'{'\"broken\": \"{0}\", \"recover\": \"{1}\"'}'",
+            String healingRecord = MessageFormat.format("{0}:{1}",
                     brokenTestObject.getBrokenLocatorMethod(), brokenTestObject.getRecoveryMethod());
             healingRecords.add(healingRecord);
         });
 
-        String healingInfo = MessageFormat.format("[{0}]", healingRecords.stream().collect(Collectors.joining(", ")));
+        String healingInfo = healingRecords.stream().collect(Collectors.joining(","));
         return healingInfo;
     }
 

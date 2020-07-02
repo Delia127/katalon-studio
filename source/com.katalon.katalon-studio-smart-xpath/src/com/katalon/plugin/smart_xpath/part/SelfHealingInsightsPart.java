@@ -3,6 +3,7 @@ package com.katalon.plugin.smart_xpath.part;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -36,7 +37,6 @@ import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
 import com.katalon.plugin.smart_xpath.helpers.FileWatcher;
 import com.katalon.plugin.smart_xpath.part.composites.BrokenTestObjectsTableComposite;
 import com.katalon.plugin.smart_xpath.part.composites.SelfHealingToolbarComposite;
-import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.EventConstants;
@@ -60,6 +60,10 @@ public class SelfHealingInsightsPart implements EventHandler {
     private FileWatcher dataWatcher;
 
     private static SelfHealingInsightsPart prevInstance;
+
+    // This property is used to workaround bug #549654
+    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=549654
+    private static long prevFocusTime = 0;
 
     @PostConstruct
     public void init(Composite parent) {
@@ -131,6 +135,12 @@ public class SelfHealingInsightsPart implements EventHandler {
 
                 refresh();
                 toolbarComposite.notifyRecoverSucceeded(numSelectedTestObjects);
+
+                String approvedProposals = selectedBrokenTestObjects.stream()
+                        .map(brokenTestObject -> MessageFormat.format("{0}:{1}",
+                                brokenTestObject.getBrokenLocatorMethod(), brokenTestObject.getRecoveryMethod()))
+                        .collect(Collectors.joining(","));
+                Trackings.trackApproveSelfHealingTestObjects(approvedProposals);
             }
         });
 
@@ -156,6 +166,12 @@ public class SelfHealingInsightsPart implements EventHandler {
 
                         refresh();
                         toolbarComposite.notifyDiscardSucceeded(numSelectedTestObjects);
+
+                        String discardedProposals = selectedBrokenTestObjects.stream()
+                                .map(brokenTestObject -> MessageFormat.format("{0}:{1}",
+                                        brokenTestObject.getBrokenLocatorMethod(), brokenTestObject.getRecoveryMethod()))
+                                .collect(Collectors.joining(","));
+                        Trackings.trackDiscardSelfHealingTestObjects(discardedProposals);
                     }
                 }
             }
@@ -201,6 +217,12 @@ public class SelfHealingInsightsPart implements EventHandler {
 
     @Focus
     public void onFocus() {
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=549654
+        if (System.currentTimeMillis() - prevFocusTime < 1000) {
+            return;
+        }
+        prevFocusTime = System.currentTimeMillis();
+
         refresh();
         Trackings.trackOpenSelfHealingInsights();
     }
