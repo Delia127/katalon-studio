@@ -57,6 +57,8 @@ public class XMLLoggerParser {
     public static final String LOG_RECORD_PROP_NODE_NAME = "property";
 
     private static final String EXECUTION_LOG_FILE_BASE = "execution";
+    
+    public static final String ESCAPED_NODE_NAME = "escapedJava";
 
     public static String unescapeString(String text) {
         return StringEscapeUtils.unescapeJava(StringEscapeUtils.unescapeXml(text));
@@ -155,7 +157,9 @@ public class XMLLoggerParser {
 
     public static XmlLogRecord readRecord(XMLStreamReader reader) throws XMLStreamException {
         XmlLogRecord record = new XmlLogRecord(Level.ALL, "");
-        while (reader.hasNext()) {
+        String message = "";
+        boolean shouldBreakWhile = false;
+        while (reader.hasNext() && !shouldBreakWhile) {
             int eventType = reader.next();
             switch (eventType) {
                 case XMLStreamReader.START_ELEMENT:
@@ -165,7 +169,7 @@ public class XMLLoggerParser {
                             record.setLevel(LogLevel.valueOf(readCharacters(reader)).getLevel());
                             break;
                         case MESSAGE_NODE_NAME:
-                            record.setMessage(unescapeString(readCharacters(reader)));
+                            message = readCharacters(reader);
                             break;
                         case MILLIS_NODE_NAME:
                             record.setMillis(readLong(reader));
@@ -184,15 +188,24 @@ public class XMLLoggerParser {
                         case NESTED_LEVEL_NODE_NAME:
                             record.setNestedLevel(readInt(reader));
                             break;
+                        case ESCAPED_NODE_NAME:
+                            record.setEscapedJava(readBoolean(reader));
                         default:
                             break;
                     }
                 case XMLStreamReader.END_ELEMENT:
                     elementName = reader.getLocalName();
                     if (elementName.equals(LOG_RECORD_NODE_NAME)) {
-                        return record;
+                        shouldBreakWhile = true;
                     }
                     break;
+            }
+        }
+        if (StringUtils.isNotEmpty(message)) {
+            if (record.isEscapedJava()) {
+                record.setMessage(unescapeString(message));
+            } else {
+                record.setMessage(message);
             }
         }
         return record;
@@ -248,6 +261,15 @@ public class XMLLoggerParser {
             }
         }
         return logException;
+    }
+    
+    private static boolean readBoolean(XMLStreamReader reader) throws XMLStreamException {
+        String characters = readCharacters(reader);
+        try {
+            return Boolean.valueOf(characters);
+        } catch (NumberFormatException e) {
+            throw new XMLStreamException("Invalid boolean " + characters);
+        }
     }
 
     private static long readLong(XMLStreamReader reader) throws XMLStreamException {
