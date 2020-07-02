@@ -95,6 +95,8 @@ public class SmartXPathMessageConstants extends NLS {
 
     public static String ERROR_MESSAGE_WHEN_ENTER_WRONG_EXCLUDED_KEYWORD;
 
+    public static String SELF_HEALING_NAVIGATE_TO_TEST_DESIGN;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, SmartXPathMessageConstants.class);

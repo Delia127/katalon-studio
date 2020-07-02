@@ -25,7 +25,10 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
         predefinedOrder.add(StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID);
         
         predefinedOrder.add(StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID);
+        predefinedOrder.add(StringConstants.TEST_DESIGN_WEB_UI_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.TEST_CASE_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.TEST_DESIGN_WEB_SERVICE_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.TEST_DESIGN_CUSTOM_METHOD_SETTING_PAGE_ID);
         
         predefinedOrder.add(StringConstants.EXTERNAL_LIBRARIES_SETTING_PAGE_ID);
         
@@ -58,9 +61,7 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
         
         predefinedOrder.add(StringConstants.EXPLORER_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.SELF_HEALING_SETTINGS_PAGE_ID);
-        predefinedOrder.add(StringConstants.SELF_HEALING_WEB_SETTINGS_PAGE_ID);
-        predefinedOrder.add(StringConstants.SELF_HEALING_WEB_SETTINGS_TEST_DESIGN_PAGE_ID);
-        predefinedOrder.add(StringConstants.SELF_HEALING_WEB_SETTINGS_EXECUTION_PAGE_ID);
+        predefinedOrder.add(StringConstants.SELF_HEALING_WEB_UI_PAGE_ID);
     }
     
     @Override
