@@ -517,12 +517,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private MobileActionMapping performAction(MobileAction action, TreeMobileElement treeElement)
             throws MobileRecordException {
         try {
-        	CapturedMobileElement targetElement = null;
-        	if (action.hasElement()) {
-        	    targetElement = captureMobileElement(treeElement);
-        	}
-            TestObject testObject = convertMobileElementToTestObject(targetElement, getCurrentMobileDriverType());
-            final MobileActionMapping mobileActionMapping = new MobileActionMapping(action, targetElement);
             MobileActionHelper mobileActionHelper = new MobileActionHelper(inspectorController.getDriver());
 
             final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
@@ -533,6 +527,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     getProgressMonitor().done();
                 }
             };
+            
+            final MobileActionMapping mobileActionMapping = MobileActionMapping.newEmpty();
 
             IRunnableWithProgress processToRun = new IRunnableWithProgress() {
                 @Override
@@ -542,6 +538,13 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     progressDlg.runAndWait(new Callable<Object>() {
                         @Override
                         public Object call() throws Exception {
+                            CapturedMobileElement targetElement = null;
+                            if (action.hasElement()) {
+                                targetElement = captureMobileElement(treeElement);
+                            }
+                            TestObject testObject = convertMobileElementToTestObject(targetElement, getCurrentMobileDriverType());
+                            mobileActionMapping.setAction(action);
+                            mobileActionMapping.setTargetElement(targetElement);
                             switch (action) {
                                 case ClearText:
                                     mobileActionHelper.clearText(testObject);
