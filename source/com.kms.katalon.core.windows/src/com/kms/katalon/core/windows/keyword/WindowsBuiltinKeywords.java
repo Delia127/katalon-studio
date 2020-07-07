@@ -187,6 +187,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * The text content to set on the element.
      * @throws StepFailedException
      * If the windowsObject doesn't exist, or KS could not perform set text action on the element.
+     * @throws IllegalArgumentException
+     * If the windowsObject is null.
      * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
@@ -213,6 +215,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
+     * @throws IllegalArgumentException
+     * If the windowsObject is null.
      * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
@@ -237,7 +241,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
      * @throws IllegalArgumentException
-     * If encryptedText is null.
+     * If windowsObject or encryptedText is null.
      * @throws ArrayIndexOutOfBoundsException
      * If something went wrong while decoding encryptedText.
      * Encrypted test was an invalid format. Please check your encrypted
@@ -273,7 +277,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
      * @throws IllegalArgumentException
-     * If encryptedText is null.
+     * If windowsObject or encryptedText is null.
      * @throws ArrayIndexOutOfBoundsException
      * If something went wrong while decoding encryptedText.
      * Encrypted test was an invalid format. Please check your encrypted
@@ -347,7 +351,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get value of the element's attribute.
      * @throws IllegalArgumentException
-     * If attribute is null.
+     * If windowsObject or attribute is null.
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -369,7 +373,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not get value of the element's attribute.
      * @throws IllegalArgumentException
-     * If attribute is null.
+     * If windowsObject or attribute is null.
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -961,8 +965,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      * If:
      * <ul>
-     * <li>attributeName or attributeValue is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>windowsObject, attributeName or attributeValue is null.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
@@ -996,8 +1000,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      * If:
      * <ul>
-     * <li>attributeName or attributeValue is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>windowsObject, attributeName or attributeValue is null.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
@@ -1033,7 +1037,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element exists.
      * @throws IllegalArgumentException
-     * If timeout < 0.
+     * If:
+     * <ul>
+     * <li>windowsObject is null.</li>
+     * <li>timeout < 0.</li>
+     * </ul>
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -1060,7 +1068,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element exists.
      * @throws IllegalArgumentException
-     * If timeout < 0.
+     * If:
+     * <ul>
+     * <li>windowsObject is null.</li>
+     * <li>timeout < 0.</li>
+     * </ul>
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -1094,7 +1106,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element exists.
      * @throws IllegalArgumentException
-     * If timeout < 0.
+     * If:
+     * <ul>
+     * <li>windowsObject is null.</li>
+     * <li>timeout < 0.</li>
+     * </ul>
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -1121,7 +1137,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element exists.
      * @throws IllegalArgumentException
-     * If timeout < 0.
+     * If:
+     * <ul>
+     * <li>windowsObject is null.</li>
+     * <li>timeout < 0.</li>
+     * </ul>
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -1160,8 +1180,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      * If:
      * <ul>
-     * <li>attributeName or attributeValue is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>windowsObject, attributeName or attributeValue is null.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
@@ -1195,8 +1215,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws IllegalArgumentException
      * If:
      * <ul>
-     * <li>attributeName or attributeValue is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>windowsObject, attributeName or attributeValue is null.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
@@ -1232,7 +1252,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element exists.
      * @throws IllegalArgumentException
-     * If timeout < 0.
+     * If:
+     * <ul>
+     * <li>windowsObject is null.</li>
+     * <li>timeout < 0.</li>
+     * </ul>
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -1259,7 +1283,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If the Windows element exists.
      * @throws IllegalArgumentException
-     * If timeout < 0.
+     * If:
+     * <ul>
+     * <li>windowsObject is null.</li>
+     * <li>timeout < 0.</li>
+     * </ul>
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -1293,7 +1321,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
-     * If timeout < 0.
+     * If:
+     * <ul>
+     * <li>windowsObject is null.</li>
+     * <li>timeout < 0.</li>
+     * </ul>
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
@@ -1320,7 +1352,11 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      * If The Windows element doesn't exist.
      * @throws IllegalArgumentException
-     * If timeout < 0.
+     * If:
+     * <ul>
+     * <li>windowsObject is null.</li>
+     * <li>timeout < 0.</li>
+     * </ul>
      * @since 7.6.0
      */
     @Keyword(keywordObject = "Element")
