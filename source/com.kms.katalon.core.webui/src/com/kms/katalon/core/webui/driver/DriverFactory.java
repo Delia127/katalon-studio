@@ -48,9 +48,8 @@ import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.remote.UnreachableBrowserException;
-import org.openqa.selenium.remote.http.HttpClient;
-import org.openqa.selenium.remote.http.HttpClient.Builder;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
+import org.openqa.selenium.remote.internal.OkHttpClient;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.osgi.framework.FrameworkUtil;
@@ -88,6 +87,11 @@ import com.kms.katalon.selenium.driver.CSafariDriver;
 import io.appium.java_client.MobileCommand;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.AppiumCommandExecutor;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
 
 public class DriverFactory {
 
@@ -493,8 +497,7 @@ public class DriverFactory {
             throws URISyntaxException, IOException, GeneralSecurityException {
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Proxy proxy = ProxyUtil.getProxy(proxyInfo);
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxyInfo, url);
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, url, clientFactory);
         return executor;
     }
@@ -503,38 +506,33 @@ public class DriverFactory {
             throws URISyntaxException, IOException, GeneralSecurityException {
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Proxy proxy = ProxyUtil.getProxy(proxyInfo, url);
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxyInfo, url);
         HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, clientFactory);
         return executor;
     }
 
-    private static Factory getClientFactoryForRemoteDriverExecutor(Proxy proxy) {
-        return new Factory() {
+    private static Factory getClientFactoryForRemoteDriverExecutor(ProxyInformation proxyInfo, URL url) throws URISyntaxException, IOException {
+        okhttp3.OkHttpClient.Builder client = new okhttp3.OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS);
 
-            private org.openqa.selenium.remote.internal.OkHttpClient.Factory factory;
-            {
-                factory = new org.openqa.selenium.remote.internal.OkHttpClient.Factory();
-            }
+        Proxy proxy = proxyInfo != null ? ProxyUtil.getProxy(proxyInfo) : null;
+        if (proxy != null) {
+            String proxyUser = proxyInfo.getUsername();
+            String proxyPassword = proxyInfo.getPassword();
 
-            @Override
-            public HttpClient createClient(URL url) {
-                return Factory.super.createClient(url);
-            }
+            Authenticator proxyAuthenticator = new Authenticator() {
+                @Override
+                public Request authenticate(Route route, Response response) throws IOException {
+                    String credential = Credentials.basic(proxyUser, proxyPassword);
+                    return response.request().newBuilder().header("Proxy-Authorization", credential).build();
+                }
+            };
 
-            @Override
-            public void cleanupIdleClients() {
-                factory.cleanupIdleClients();
-            }
+            client = client.proxy(proxy).proxyAuthenticator(proxyAuthenticator);
+        }
 
-            @Override
-            public org.openqa.selenium.remote.internal.OkHttpClient.Builder builder() {
-                Builder builder = factory.builder();
-                return proxy != null
-                        ? builder.proxy(proxy)
-                        : builder;
-            }
-        };
+        return new RemoteHttpClientFactory(new OkHttpClient(client.build(), url));
     }
 
     private static WebDriver createNewRemoteChromeDriver(DesiredCapabilities desireCapibilities)
