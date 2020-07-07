@@ -38,6 +38,14 @@ public class MobileActionMapping {
         this.setTargetElement(targetElement);
         this.setAction(action);
     }
+    
+    private MobileActionMapping() {
+        
+    }
+
+    public static MobileActionMapping newEmpty() {
+        return new MobileActionMapping();
+    }
 
     public MobileActionParamValueType[] getData() {
         return paramDatas;
