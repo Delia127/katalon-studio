@@ -170,6 +170,7 @@ public class ObjectRepositoryService {
         }
 
         FolderEntity conflictedFolderEntity = FolderController.getInstance().getFolder(folderPath);
+        entitySavedMap.put(webPage, conflictedFolderEntity);
         
         if (wrapElement.isConflicted()) {
 
