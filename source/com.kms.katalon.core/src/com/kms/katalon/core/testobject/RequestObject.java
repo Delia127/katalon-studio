@@ -481,7 +481,9 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     /**
      * Set the connection timeout for this request.
-     * @param connectionTimeout The connection timeout in milliseconds.
+     * @param connectionTimeout The connection timeout in milliseconds.<br>
+     *      A timeout value of zero or negative is interpreted as an infinite timeout.<br>
+     *      
      * <br>Additional available values:
      * <ul>
      *  <li><b>RequestObject.TIMEOUT_UNLIMITED</b>: Set the connection timeout of this request to unlimited.</li>
@@ -504,7 +506,9 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     /**
      * Set the socket timeout for this request.
-     * @param socketTimeout The socket timeout in milliseconds.
+     * @param socketTimeout The socket timeout in milliseconds.<br>
+     *      A timeout value of zero or negative is interpreted as an infinite timeout.<br>
+     *      
      * <br>Additional available values:
      * <ul>
      *  <li><b>RequestObject.TIMEOUT_UNLIMITED</b>: Set the socket timeout of this request to unlimited.</li>
