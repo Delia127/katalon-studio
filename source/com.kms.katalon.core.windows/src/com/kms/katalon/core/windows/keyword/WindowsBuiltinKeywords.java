@@ -187,6 +187,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * The text content to set on the element.
      * @throws StepFailedException
      * If the windowsObject doesn't exist, or KS could not perform set text action on the element.
+     * @throws IllegalArgumentException
+     * If the windowsObject is null.
      * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
@@ -213,6 +215,8 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * </ul>
      * @throws StepFailedException
      * If the Windows element doesn't exist, or KS could not perform set text action on the element.
+     * @throws IllegalArgumentException
+     * If the windowsObject is null.
      * @since 7.0.0
      */
     @Keyword(keywordObject = "Element")
@@ -962,7 +966,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject, attributeName or attributeValue is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
@@ -997,7 +1001,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject, attributeName or attributeValue is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
@@ -1036,7 +1040,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @since 7.6.0
      */
@@ -1067,7 +1071,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @since 7.6.0
      */
@@ -1105,7 +1109,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @since 7.6.0
      */
@@ -1136,7 +1140,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @since 7.6.0
      */
@@ -1177,7 +1181,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject, attributeName or attributeValue is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
@@ -1212,7 +1216,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject, attributeName or attributeValue is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @return true if element has the attribute with the specific name and value; Otherwise, false.
      * @since 7.6.0
@@ -1251,7 +1255,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @since 7.6.0
      */
@@ -1282,7 +1286,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @since 7.6.0
      */
@@ -1320,7 +1324,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @since 7.6.0
      */
@@ -1351,7 +1355,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
      * If:
      * <ul>
      * <li>windowsObject is null.</li>
-     * <li>Timeout < 0.</li>
+     * <li>timeout < 0.</li>
      * </ul>
      * @since 7.6.0
      */
