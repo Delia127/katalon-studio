@@ -633,6 +633,15 @@ public class MessageConstants extends NLS {
 
     public static String MSG_QUIT_USING_KATALON_REASON_PLACEHOLDER;
 
+    // Quick Prepare Project Dialog
+    public static String DIALOG_TITLE_QUICK_PREPARE_PROJECT;
+
+    public static String LBL_PREPARE_PROJECT_QUESTION;
+
+    public static String BTN_CREATE_PROJECT;
+
+    public static String BTN_OPEN_PROJECT;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);
