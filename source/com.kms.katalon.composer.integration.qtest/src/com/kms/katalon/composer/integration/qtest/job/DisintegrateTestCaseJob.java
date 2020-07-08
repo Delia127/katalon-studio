@@ -11,9 +11,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.StatusUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -26,7 +24,9 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
+import com.kms.katalon.integration.qtest.model.TestCaseRepo;
 
 public class DisintegrateTestCaseJob extends QTestJob {
 

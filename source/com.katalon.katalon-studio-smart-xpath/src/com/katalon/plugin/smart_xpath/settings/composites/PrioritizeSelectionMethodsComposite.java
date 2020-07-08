@@ -29,9 +29,12 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -41,6 +44,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
 
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
@@ -49,7 +53,6 @@ import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.util.collections.Pair;
 
 public class PrioritizeSelectionMethodsComposite extends Composite {
-
     private static final String GRP_LBL_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION = SmartXPathMessageConstants.GRP_PRIORITIZE_SELECTION_METHODS_FOR_SELF_HEALING_EXECUTION;
 
     private static final String BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER = SmartXPathMessageConstants.BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER;
@@ -71,6 +74,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
     private TableViewerColumn cvMethodsSelected;
 
     private TableColumn cMethodsSelected;
+
+    private Link link;
 
     private List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = Collections.emptyList();
 
@@ -107,14 +112,14 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
     private void createPrioritizeOrderToolbar(Composite parent) {
         Composite compositeToolbar = new Composite(parent, SWT.NONE);
         compositeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
-        compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        compositeToolbar.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, false, 1, 1));
 
         ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
         toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         ToolItem tltmUp = new ToolItem(toolBar, SWT.NONE);
         tltmUp.setText(BUTTON_MOVE_UP_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER);
-        tltmUp.setImage(ImageManager.getImage(IImageKeys.MOVE_UP_16));
+        tltmUp.setImage(ImageConstants.IMG_16_MOVE_UP);
         tltmUp.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -133,7 +138,7 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
         ToolItem tltmDown = new ToolItem(toolBar, SWT.NONE);
         tltmDown.setText(BUTTON_MOVE_DOWN_PRIORITIZE_SELF_HEALING_EXECUTION_ORDER);
-        tltmDown.setImage(ImageManager.getImage(IImageKeys.MOVE_DOWN_16));
+        tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -149,6 +154,15 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
                 }
             }
         });
+        Composite compositeNav = new Composite(compositeToolbar, SWT.NONE);
+        RowLayout navLayout = new RowLayout();
+        navLayout.marginRight = 10;
+        compositeNav.setLayout(navLayout);
+        
+        Label linkImage = new Label(compositeNav, SWT.NONE);
+        linkImage.setImage(ImageConstants.IMG_16_SETTING);
+        link = new Link(compositeNav, SWT.NONE);
+        link.setText(String.format("<a>%s</a>", SmartXPathMessageConstants.SELF_HEALING_NAVIGATE_TO_TEST_DESIGN));
     }
 
     @SuppressWarnings("unchecked")
@@ -289,8 +303,8 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
 
     protected Image getCheckboxSymbol(boolean isChecked) {
         return isChecked
-                ? ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16)
-                : ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
+                ? ImageConstants.IMG_16_CHECKED
+                : ImageConstants.IMG_16_UNCHECKED;
     }
 
     public List<Pair<SelectorMethod, Boolean>> getInput() {
@@ -314,5 +328,9 @@ public class PrioritizeSelectionMethodsComposite extends Composite {
         TypedListener typedListener = new TypedListener(listener);
         addListener(SWT.Selection, typedListener);
         addListener(SWT.DefaultSelection, typedListener);
+    }
+
+    public void addNavigateToWebUITestDesignListener(SelectionListener listener) {
+        link.addSelectionListener(listener);
     }
 }

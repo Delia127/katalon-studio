@@ -95,7 +95,6 @@ public class OpenRemoteDeviceRecorderHander {
             }
             recorderDialog = new MobileRecorderDialog(activeShell, 
                     new RemoteAppComposite());
-            Trackings.trackOpenMobileRecord();
             if (recorderDialog.open() != Window.OK) {
                 return false;
             }

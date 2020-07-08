@@ -509,7 +509,7 @@ public class StringConstants {
     // TestCaseExecutor
 	public static final String TEST_CASE_SKIPPED = CoreMessageConstants.TEST_CASE_SKIPPED;
 	
-	public static final String SELF_HEALING_REPORT_AVAILABLE_OPENING = "===================== Self-Healing Report ====================";
+	public static final String SELF_HEALING_REPORT_AVAILABLE_OPENING = "===================== Self-healing Report ====================";
 	
 	public static final String SELF_HEALING_REPORT_AVAILABLE_ENDING = "==============================================================";
 

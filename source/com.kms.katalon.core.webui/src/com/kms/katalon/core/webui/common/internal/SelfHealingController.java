@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,9 +26,10 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectBuilder;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
+import com.kms.katalon.core.webui.util.FileUtil;
 
 /**
- * A controller used by Self-Healing Plug-in.
+ * A controller used by Self-healing Plug-in.
  *
  */
 public class SelfHealingController {
@@ -36,19 +38,16 @@ public class SelfHealingController {
 
     public static final String REPORT_FOLDER_NAME = "Reports";
 
-    public static final String SELF_HEALING_FOLDER_NAME = "Self-Healing";
+    public static final String SELF_HEALING_FOLDER_NAME = "Self-healing";
 
     public static final String SELF_HEALING_DATA_FILE_NAME = "broken-test-objects.json";
-
-    public static final String SELF_HEALING_DATA_FILE_PATH = REPORT_FOLDER_NAME + "/" + SELF_HEALING_FOLDER_NAME + "/"
-            + SELF_HEALING_DATA_FILE_NAME;
 
     public static final String SELF_HEALING_FOLDER_PATH = REPORT_FOLDER_NAME + "/" + SELF_HEALING_FOLDER_NAME;
 
 	private static KeywordLogger logger = KeywordLogger.getInstance(SelfHealingController.class);
 
 	/**
-	 * This method initializes Self-Healing Logger with a logger of the calling
+	 * This method initializes Self-healing Logger with a logger of the calling
 	 * object, should be called first before doing anything
 	 * 
 	 * @param logger
@@ -59,7 +58,7 @@ public class SelfHealingController {
 	}
 
 	/**
-	 * Log an information with Self-Healing plug-in's internal prefix. Note that
+	 * Log an information with Self-healing plug-in's internal prefix. Note that
 	 * a KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
 	 * 
 	 * @param message
@@ -69,7 +68,7 @@ public class SelfHealingController {
 	}
 
 	/**
-	 * Log an error with Self-Healing plug-in's internal prefix. Note that a
+	 * Log an error with Self-healing plug-in's internal prefix. Note that a
 	 * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
 	 * 
 	 * @param message
@@ -79,7 +78,7 @@ public class SelfHealingController {
 	}
 	
 	/**
-     * Log an error with Self-Healing plug-in's internal prefix. Note that a
+     * Log an error with Self-healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
@@ -90,7 +89,7 @@ public class SelfHealingController {
     }
 
     /**
-     * Log an warning with Self-Healing plug-in's internal prefix. Note that a
+     * Log an warning with Self-healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
@@ -100,7 +99,7 @@ public class SelfHealingController {
     }
     
     /**
-     * Log an warning with Self-Healing plug-in's internal prefix. Note that a
+     * Log an warning with Self-healing plug-in's internal prefix. Note that a
      * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
      * 
      * @param message
@@ -114,29 +113,16 @@ public class SelfHealingController {
 		return SELF_HEALING_PREFIX + " " + message;
 	}
 
-    /**
-     * Register a Test Object as broken, register this information along with a
-     * proposed locator to an internal file provided by Self-Healing Plug-in.
-     * 
-     * @param testObject
-     *            The broken Test Object to be registered
-     * @param proposedLocator
-     *            The proposed locator for the broken Test Object
-     * @param proposedLocatorMethod
-     *            The proposed locator method for the broken Test Object 
-     * @param pathToScreenshot
-     *            Path to the screenshot of the web element retrieved by the
-     *            proposed locator
-     */
-    public static void registerBrokenTestObject(TestObject testObject, String proposedLocator,
-            SelectorMethod proposedLocatorMethod, String pathToScreenshot) {
-        registerBrokenTestObject(testObject, proposedLocator, proposedLocatorMethod, proposedLocatorMethod,
-                pathToScreenshot);
+    public static BrokenTestObject registerBrokenTestObject(TestObject testObject, String proposedLocator,
+            SelectorMethod proposedLocatorMethod, SelectorMethod recoveryMethod, String pathToScreenshot) {
+        String dataFolderPath = getSelfHealingFolderPath();
+        return registerBrokenTestObject(testObject, proposedLocator, proposedLocatorMethod, recoveryMethod,
+                pathToScreenshot, dataFolderPath);
     }
 
 	/**
 	 * Register a Test Object as broken, register this information along with a
-	 * proposed locator to an internal file provided by Self-Healing Plug-in.
+	 * proposed locator to an internal file provided by Self-healing Plug-in.
 	 * 
 	 * @param testObject
 	 *            The broken Test Object to be registered
@@ -151,16 +137,17 @@ public class SelfHealingController {
 	 *            proposed locator
 	 */
     public static BrokenTestObject registerBrokenTestObject(TestObject testObject, String proposedLocator,
-            SelectorMethod proposedLocatorMethod, SelectorMethod recoveryMethod, String pathToScreenshot) {
-        String jsAutoHealingPath = getSelfHealingDataFilePath();
+            SelectorMethod proposedLocatorMethod, SelectorMethod recoveryMethod, String pathToScreenshot,
+            String dataFolderPath) {
+        String dataFilePath = getSelfHealingDataFilePath(dataFolderPath);
         BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, proposedLocator, proposedLocatorMethod,
                 recoveryMethod, pathToScreenshot);
-        BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
+        BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(dataFilePath);
         if (existingBrokenTestObjects != null) {
 			existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
-			writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
+			writeBrokenTestObjects(existingBrokenTestObjects, dataFilePath);
 		} else {
-			logError(jsAutoHealingPath + " does not exist or is provided by Self-Healing Plugin!");
+			logError(dataFilePath + " does not exist or is provided by Self-healing Plugin!");
 		}
         return brokenTestObject;
 	}
@@ -178,25 +165,29 @@ public class SelfHealingController {
 		}
 	}
 
-	private static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
+	public static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
 		try {
             prepareDataFile(filePath);
 			Gson gson = new Gson();
 			JsonReader reader = new JsonReader(new FileReader(filePath));
-			return gson.fromJson(reader, BrokenTestObjects.class);
+			BrokenTestObjects brokenTestObjects = gson.fromJson(reader, BrokenTestObjects.class);
+            reader.close();
+			return brokenTestObjects != null
+			        ? brokenTestObjects
+	                : new BrokenTestObjects();
 		} catch (Exception e) {
 			logError(e.getMessage(), e);
 		}
 		return null;
 	}
 	
-	private static File prepareDataFile(String dataFilePath) {
+	public static File prepareDataFile(String dataFilePath) {
 	    File autoHealingFile = new File(dataFilePath);
         File selfHealingDirectory = autoHealingFile.getParentFile();
         
         if (!selfHealingDirectory.exists()) {
-            boolean isCreateSelfHealingFolderSucceeded = selfHealingDirectory.mkdirs();
-            if (!isCreateSelfHealingFolderSucceeded) {
+            selfHealingDirectory.mkdirs();
+            if (!selfHealingDirectory.exists()) {
                 logError(MessageFormat
                         .format("The folder \"{0}\" does not exist, no file is created.", selfHealingDirectory.getAbsolutePath()));
                 return null;
@@ -210,6 +201,8 @@ public class SelfHealingController {
                     Writer writer = new FileWriter(autoHealingFile.getAbsolutePath());
                     Gson gson = new GsonBuilder().setPrettyPrinting().create();
                     gson.toJson(emptyBrokenTestObjects, writer);
+                    writer.flush();
+                    writer.close();
                     return autoHealingFile;
                 }
             } catch (IOException exception) {
@@ -218,15 +211,6 @@ public class SelfHealingController {
             }
         }
         return autoHealingFile;
-    }
-
-    public static String getDataFilePath(String projectDir) {
-        if (StringUtils.isBlank(projectDir)) {
-            return null;
-        }
-        String rawBrokenTestObjectsPath = FilenameUtils.concat(projectDir,
-                SELF_HEALING_DATA_FILE_PATH);
-        return FilenameUtils.separatorsToSystem(rawBrokenTestObjectsPath);
     }
 
     private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String proposedLocator,
@@ -245,17 +229,26 @@ public class SelfHealingController {
 		return brokenTestObject;
 	}
     
-    public static List<TestObject> findHealedTestObjects(TestObject testObject) {
+    public static Set<BrokenTestObject> findBrokenTestObjects(TestObject testObject) {
         String testObjectId = testObject.getObjectId();
-        String jsAutoHealingPath = getSelfHealingDataFilePath();
-        BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
+        String selfHealingDataFilePath = getSelfHealingDataFilePath();
+        BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(selfHealingDataFilePath);
         if (existingBrokenTestObjects != null) {
             Set<BrokenTestObject> brokenTestObjects = existingBrokenTestObjects.getBrokenTestObjects();
+            return brokenTestObjects.stream()
+                    .filter(brokenTestObject -> {
+                        return StringUtils.equals(brokenTestObject.getTestObjectId(), testObjectId);
+                    })
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    public static List<TestObject> findHealedTestObjects(TestObject testObject) {
+        Set<BrokenTestObject> brokenTestObjects = findBrokenTestObjects(testObject);
+        if (brokenTestObjects != null) {
             if (brokenTestObjects != null && !brokenTestObjects.isEmpty()) {
                 return brokenTestObjects.stream()
-                        .filter(brokenTestObject -> {
-                            return StringUtils.equals(brokenTestObject.getTestObjectId(), testObjectId);
-                        })
                         .map(brokenTestObject -> healTestObject(testObject, brokenTestObject))
                         .collect(Collectors.toList());
             }
@@ -263,7 +256,7 @@ public class SelfHealingController {
         return null;
     }
     
-    private static TestObject healTestObject(TestObject testObject, BrokenTestObject brokenTestObject) {
+    public static TestObject healTestObject(TestObject testObject, BrokenTestObject brokenTestObject) {
         TestObject clone = new TestObjectBuilder(testObject.getObjectId())
                 .withImagePath(testObject.getImagePath())
                 .withParentObject(testObject.getParentObject())
@@ -282,13 +275,17 @@ public class SelfHealingController {
 		return FilenameUtils.concat(RunConfiguration.getProjectDir(), SELF_HEALING_FOLDER_PATH);
 	}
 
-	public static String getSelfHealingDataFilePath() {
-		return FilenameUtils.concat(RunConfiguration.getProjectDir(), SELF_HEALING_DATA_FILE_PATH);
+    public static String getSelfHealingDataFilePath() {
+        return getSelfHealingDataFilePath(getSelfHealingFolderPath());
+    }
+
+	public static String getSelfHealingDataFilePath(String atFolder) {
+		return FilenameUtils.concat(atFolder, SELF_HEALING_DATA_FILE_NAME);
 	}
 
 	/**
 	 * Take screenshot of a web element and saved to an internal folder provided
-	 * by Self-Healing Plug-in
+	 * by Self-healing Plug-in
 	 * 
 	 * @param webDriver
 	 *            A WebDriver instance that's being used at the time calling
@@ -314,5 +311,15 @@ public class SelfHealingController {
 
     public static String takeScreenShot(WebDriver webDriver, WebElement element, TestObject testObject, String name) {
         return takeScreenShot(webDriver, element, testObject.getObjectId() + "_" + name);
+    }
+
+    public static String getRelativePathToSelfHealindDir(String screenshotAbsolutePath) {
+        String selfHealingFolder = getSelfHealingFolderPath();
+        return FileUtil.getRelativePath(screenshotAbsolutePath, selfHealingFolder);
+    }
+
+    public static String getScreenshotAbsolutePath(String screenshotRelativePath) {
+        String projectDir = RunConfiguration.getProjectDir();
+        return FilenameUtils.concat(projectDir, screenshotRelativePath);
     }
 }

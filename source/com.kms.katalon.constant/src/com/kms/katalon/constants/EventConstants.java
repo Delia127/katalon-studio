@@ -267,7 +267,7 @@ public class EventConstants {
 
     public static final String JOB_COMPLETED = "JOB/COMPLETED";
 
-    // Self-Healing Insights Events
+    // Self-healing Insights Events
     public static final String SEFL_HEALING_INSIGHTS_REFRESH = "SELF_HEALING_INSIGHTS/REFRESH";
 
     // Object Spy Events

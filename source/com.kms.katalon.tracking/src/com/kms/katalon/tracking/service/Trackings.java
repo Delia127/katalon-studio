@@ -1,5 +1,7 @@
 package com.kms.katalon.tracking.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,9 +12,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.model.RunningMode;
-import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.feature.KSEFeature;
@@ -28,7 +28,6 @@ import com.kms.katalon.util.SystemInformationUtil;
 public class Trackings {
 
     private static TrackingService trackingService = new TrackingService();
-    private static SystemInformationUtil system = new SystemInformationUtil();
 
     public static void trackOpenApplication(boolean isAnonymous, String runningMode) throws Exception {
         double cpu = 0.0;
@@ -108,59 +107,159 @@ public class Trackings {
 
         trackingService.track(trackInfo);
     }
-
-    public static void trackSpy(String type) {
-        trackUserAction("spy", "type", type);
+    
+    public static void trackWebSpy() {
+        trackUserAction("spyWeb");
+    }
+    
+    public static void trackMobileSpy(String deviceType) {
+        trackUserAction("spyMobile", "deviceType", deviceType);
+    }
+    
+    public static void trackWindowsSpy() {
+        trackUserAction("spyWindows");
     }
 
-    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser,
-            SelectorMethod webLocatorConfig) {
-        trackUserAction("record", "type", "web", "browserType", browserType.toString(), "active", useActiveBrowser,
-                "webLocatorConfig", webLocatorConfig.toString());
+    public static void trackWebRecord(String browserType, boolean useActiveBrowser,
+            String webLocatorConfig) {
+        trackUserAction("recordWeb", "browserType", browserType, "active", useActiveBrowser,
+                "webLocatorConfig", webLocatorConfig);
+    }
+    
+    public static void trackMobileRecord(String deviceType) {
+        trackUserAction("recordMobile", "deviceType", deviceType);
+    }
+    
+    public static void trackWindowsRecord() {
+        trackUserAction("recordWindows");
+    }
+    
+    public static void trackWindowsNativeRecord() {
+        trackUserAction("recordWindowsNative");
     }
 
-    public static void trackRecord(String type) {
-        trackUserAction("record", "type", type);
-    }
-
-    public static void trackExecuteTestCase(String launchMode, String driverType, String result, long duration) {
-        trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType,"executionResult", result, "duration", duration);
+    public static void trackExecuteTestCase(String launchMode, String driverType, String result, long duration,
+            boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "launchMode", launchMode, "driver", driverType,
+                "executionResult", result, "duration", duration, "enable_self_healing", isEnableSelfHealing,
+                "trigger_self_healing", isTriggerSelfHealing
+        }));
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+        trackUserAction("executeTestCase", properties.toArray());
     }
 
     public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result,
-            long duration, String retryStrategy, int numberOfRetry) {
-        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType,
+            long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
+            boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "gui", "launchMode", launchMode, "driver", driverType,
                 "executionResult", result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
-                numberOfRetry);
+                numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackUserAction("executeTestSuite", properties.toArray());
     }
 
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result,
-            long duration, String retryStrategy, int numberOfRetry) {
-        trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType, "executionResult",
-                result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun", numberOfRetry);
+            long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
+            boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "runningMode", "console", "driver", driverType, "executionResult",
+                result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
+                numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackAction("executeTestSuite", isAnonymous, properties.toArray());
     }
 
-    public static void trackExecuteSequentialTestSuiteCollectionInGuiMode(String result, long duration) {
-        trackUserAction("executeTestSuiteCollection", "runningMode", "gui", "executionResult", result, "duration",
-                duration, "executionMode", "Sequential");
+    public static void trackExecuteSequentialTestSuiteCollectionInGuiMode(String result, long duration,
+            boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "gui", "executionResult", result, "duration",
+                duration, "executionMode", "Sequential", "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackUserAction("executeTestSuiteCollection", properties.toArray());
     }
 
     public static void trackExecuteParallelTestSuiteCollectionInGuiMode(String result, long duration,
-            int maxConcurrentInstances) {
-        trackUserAction("executeTestSuiteCollection", "runningMode", "gui", "executionResult", result, "duration",
-                duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances);
+            int maxConcurrentInstances, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "gui", "executionResult", result, "duration",
+                duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances,
+                "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackUserAction("executeTestSuiteCollection", properties.toArray());
     }
 
     public static void trackExecuteSequentialTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result,
-            long duration) {
-        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console", "executionResult", result,
-                "duration", duration, "executionMode", "Sequential");
+            long duration, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "console", "executionResult", result,
+                "duration", duration, "executionMode", "Sequential",
+                "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackAction("executeTestSuiteCollection", isAnonymous, properties.toArray());
     }
 
     public static void trackExecuteParallelTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result,
-            long duration, int maxConcurrentInstances) {
-        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console", "executionResult", result,
-                "duration", duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances);
+            long duration, int maxConcurrentInstances, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
+                "runningMode", "console", "executionResult", result,
+                "duration", duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances,
+                "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
+                isTriggerSelfHealing
+        }));
+
+        boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
+        if (hasAnySuccessfulSelfHealed) {
+            properties.add("successful_self_healing");
+            properties.add(healingInfo);
+        }
+
+        trackAction("executeTestSuiteCollection", isAnonymous, properties.toArray());
     }
 
     public static void trackGenerateCmd() {
@@ -208,51 +307,107 @@ public class Trackings {
         trackUserAction("openHelp", "url", url);
     }
 
-    public static void trackOpenSpy(String type) {
-        trackUserAction("openSpy", "type", type);
+    public static void trackOpenWebSpy() {
+        trackUserAction("openWebSpy");
+    }
+    
+    public static void trackOpenMobileSpy(String deviceType) {
+        trackUserAction("openMobileSpy", "deviceType", deviceType);
+    }
+    
+    public static void trackOpenWindowsSpy() {
+        trackUserAction("openWindowsSpy");
+    }
+    
+    public static void trackSaveWebSpy(int numberOfSavedObjects) {
+        trackUserAction("saveWebSpy", "numberOfSavedObjects", numberOfSavedObjects);
+    }
+    
+    public static void trackSaveMobileSpy(String deviceType, int numberOfSavedObjects) {
+        trackUserAction("saveMobileSpy", "deviceType", deviceType, "numberOfSavedObjects", numberOfSavedObjects);
+    }
+    
+    public static void trackSaveWindowsSpy(int numberOfSavedObjects) {
+        trackUserAction("saveWindowsSpy", "numberOfSavedObjects", numberOfSavedObjects);
     }
 
-    public static void trackSaveSpy(String type, int numberOfSavedObjects) {
-        trackUserAction("saveSpy", "type", type, "numberOfSavedObjects", Integer.valueOf(numberOfSavedObjects));
+    public static void trackCloseWebSpy() {
+        trackUserAction("closeWebSpy");
+    }
+    
+    public static void trackCloseMobileSpy(String deviceType) {
+        trackUserAction("closeMobileSpy", "deviceType", deviceType);
+    }
+    
+    public static void trackCloseWindowsSpy(boolean isCancelled) {
+        trackUserAction("closeWindowsSpy", "isCancelled", isCancelled);
     }
 
-    public static void trackCloseSpy(String type) {
-        trackUserAction("closeSpy", "type", type);
+    public static void trackOpenWebRecord(boolean continueRecording, String webLocatorConfig) {
+        trackUserAction("openWebRecord", "continue", continueRecording, "webLocatorConfig",
+                webLocatorConfig);
     }
 
-    public static void trackOpenWebRecord(Boolean continueRecording, SelectorMethod webLocatorConfig) {
-        if (continueRecording != null) {
-            trackUserAction("openRecord", "type", "web", "continue", continueRecording ? "yes" : "no",
-                    "webLocatorConfig", webLocatorConfig.toString());
-        } else {
-            trackUserAction("openRecord", "type", "web", "webLocatorConfig", webLocatorConfig.toString());
-        }
+    public static void trackOpenMobileRecord(String deviceType) {
+        trackUserAction("openMobileRecord", "deviceType", deviceType);
+    }
+    
+    public static void trackOpenWindowsRecord() {
+        trackUserAction("openWindowsRecord");
+    }
+    
+    public static void trackOpenWindowsNativeRecord() {
+        trackUserAction("openWindowsNativeRecord");
+    }
+    
+    public static void trackOpenSelfHealingInsights() {
+        trackUserAction("openSelfHealingInsights");
+    }
+    
+    public static void trackApproveSelfHealingTestObjects(String approvedProposals) {
+        trackUserAction("approveSelfHealingProposals", "approvedProposals", approvedProposals);
+    }
+    
+    public static void trackDiscardSelfHealingTestObjects(String discardedProposals) {
+        trackUserAction("discardSelfHealingProposals", "discardedProposals", discardedProposals);
     }
 
-    public static void trackOpenMobileRecord() {
-        trackUserAction("openRecord", "type", "mobile");
+    public static void trackCloseWebRecordByOk(int numberOfTestSteps, String webLocatorConfig) {
+        trackUserAction("closeWebRecord", "isCancelled", false, "numberOfTestSteps",
+                String.valueOf(numberOfTestSteps), "webLocatorConfig", webLocatorConfig);
     }
-
-    public static void trackCloseWebRecord(String closeButton, int numberOfTestSteps, SelectorMethod webLocatorConfig) {
-        if ("ok".equals(closeButton)) {
-            trackUserAction("closeRecord", "type", "web", "closePopup", closeButton, "numberOfTestSteps",
-                    String.valueOf(numberOfTestSteps), "webLocatorConfig", webLocatorConfig.toString());
-        } else {
-            trackUserAction("closeRecord", "type", "web", "closePopup", closeButton, "webLocatorConfig",
-                    webLocatorConfig.toString());
-        }
+    
+    public static void trackCloseWebRecordByCancel(String webLocatorConfig) {
+        trackUserAction("closeWebRecord", "isCancelled", true, "webLocatorConfig", webLocatorConfig);
     }
-
-    public static void trackCloseRecord(String type, String closeButton, int numberOfTestSteps) {
-        if ("ok".equals(closeButton)) {
-            trackUserAction("closeRecord", "type", type, "closePopup", closeButton, "numberOfTestSteps",
-                    String.valueOf(numberOfTestSteps));
-        } else {
-            trackUserAction("closeRecord", "type", type, "closePopup", closeButton);
-        }
+    
+    public static void trackCloseMobileRecordByOk(String deviceType, int numberOfTestSteps) {
+        trackUserAction("closeMobileRecord", "deviceType", deviceType, "isCancelled", false, "numberOfTestSteps",
+                numberOfTestSteps);
     }
-
-    public static void trackRecordRunSteps(String type) {
+    
+    public static void trackCloseMobileRecordByCancel(String deviceType) {
+        trackUserAction("closeMobileRecord", "deviceType", deviceType, "isCancelled", true);
+    }
+    
+    public static void trackCloseWindowsRecordByOk(int numberOfRecordedSteps) {
+        trackUserAction("closeWindowsRecord", "isCancelled", false, "numberOfRecordedSteps", numberOfRecordedSteps);
+    }
+    
+    public static void trackCloseWindowsRecordByCancel() {
+        trackUserAction("closeWindowsRecord", "isCancelled", true);
+    }
+    
+    public static void trackCloseWindowsNativeRecordByOk(int numberOfRecordedSteps) {
+        trackUserAction("closeWindowsNativeRecord", "isCancelled", false, "numberOfRecordedSteps",
+                numberOfRecordedSteps);
+    }
+    
+    public static void trackCloseWindowsNativeRecordByCancel() {
+        trackUserAction("closeWindowsNativeRecord", "isCancelled", true);
+    }
+    
+    public static void trackWebRecordRunSteps(String type) {
         trackUserAction("recordRunSteps", "type", type);
     }
 
@@ -511,5 +666,14 @@ public class Trackings {
     
     public static void trackClickOnTrialNotificationButton() {
         trackUserAction("clickOnTrialNotificationButton");
+    }
+
+    public static void trackClickImportSeleniumIde() {
+        trackUserAction("clickImportSeleniumIde");
+    }
+
+    public static void trackImportSeleniumIdeResult(int numTestCases, int numTestSuites) {
+        trackUserAction("importSeleniumIdeResult", "numOfImportedTestCases", numTestCases, "numOfImportedTestSuites",
+                numTestSuites);
     }
 }

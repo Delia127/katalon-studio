@@ -132,6 +132,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private Composite container;
 
     private RecordActionResult recordActionResult;
+    
+    private boolean okPressed = false;
 
     public RecordActionResult getRecordActionResult() {
         return recordActionResult;
@@ -151,8 +153,15 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
+        
+        if (okPressed) {
+            Trackings.trackCloseMobileRecordByOk(getDeviceTypeString(), getRecordedActions().size());
+        } else {
+            Trackings.trackCloseMobileRecordByCancel(getDeviceTypeString());
+        }
+        
         boolean result = super.close();
-        Trackings.trackCloseRecord("mobile", "cancel", 0);
+        
         return result;
     }
 
@@ -264,14 +273,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     @Override
     protected void okPressed() {
-        int recordedActionCount = getRecordedActions().size();
-
         recordActionResult = new RecordActionResult(recordedActionsComposite.getStepView().getWrapper(),
                 capturedObjectsComposite.getCapturedElements());
-
+        
+        okPressed = true;
+        
         super.okPressed();
-
-        Trackings.trackCloseRecord("mobile", "ok", recordedActionCount);
     }
 
     private List<AstTreeTableNode> getRecordedActions() {
@@ -510,12 +517,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private MobileActionMapping performAction(MobileAction action, TreeMobileElement treeElement)
             throws MobileRecordException {
         try {
-        	CapturedMobileElement targetElement = null;
-        	if (action.hasElement()) {
-        	    targetElement = captureMobileElement(treeElement);
-        	}
-            TestObject testObject = convertMobileElementToTestObject(targetElement, getCurrentMobileDriverType());
-            final MobileActionMapping mobileActionMapping = new MobileActionMapping(action, targetElement);
             MobileActionHelper mobileActionHelper = new MobileActionHelper(inspectorController.getDriver());
 
             final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
@@ -526,6 +527,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     getProgressMonitor().done();
                 }
             };
+            
+            final MobileActionMapping mobileActionMapping = MobileActionMapping.newEmpty();
 
             IRunnableWithProgress processToRun = new IRunnableWithProgress() {
                 @Override
@@ -535,6 +538,13 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     progressDlg.runAndWait(new Callable<Object>() {
                         @Override
                         public Object call() throws Exception {
+                            CapturedMobileElement targetElement = null;
+                            if (action.hasElement()) {
+                                targetElement = captureMobileElement(treeElement);
+                            }
+                            TestObject testObject = convertMobileElementToTestObject(targetElement, getCurrentMobileDriverType());
+                            mobileActionMapping.setAction(action);
+                            mobileActionMapping.setTargetElement(targetElement);
                             switch (action) {
                                 case ClearText:
                                     mobileActionHelper.clearText(testObject);
@@ -865,7 +875,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             recordedActionsComposite.getStepView().addNode(mobileComposite.buildStartAppActionMapping());
 
             // send event for tracking
-            Trackings.trackRecord("mobile");
+            Trackings.trackMobileRecord(getDeviceTypeString());
         } catch (InvocationTargetException | InterruptedException | ClassNotFoundException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
@@ -1290,5 +1300,14 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             return script;
         }
     }
+    
+    private String getDeviceTypeString() {
+        return mobileComposite.getSelectedDriverType().toString();
+    }
 
+    @Override
+    public int open() {
+        Trackings.trackOpenMobileRecord(getDeviceTypeString());
+        return super.open();
+    }
 }

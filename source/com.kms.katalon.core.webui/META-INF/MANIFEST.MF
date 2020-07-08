@@ -21,6 +21,7 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore
 Export-Package: com.kms.katalon.core.webui.common,
+ com.kms.katalon.core.webui.common.internal,
  com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
  com.kms.katalon.core.webui.driver.firefox,

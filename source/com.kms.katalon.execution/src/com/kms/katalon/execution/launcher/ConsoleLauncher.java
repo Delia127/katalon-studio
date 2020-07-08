@@ -1,5 +1,6 @@
 package com.kms.katalon.execution.launcher;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -9,6 +10,8 @@ import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
+import com.kms.katalon.execution.collector.SelfHealingExecutionReportCollector;
+import com.kms.katalon.execution.collector.SelfHealingExecutionReport;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
@@ -20,6 +23,7 @@ import com.kms.katalon.execution.launcher.process.LaunchProcessor;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ConsoleLauncher extends ReportableLauncher implements IConsoleLauncher {
+
     public ConsoleLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
     }
@@ -70,9 +74,14 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
     protected void postExecutionComplete() {
         super.postExecutionComplete();
         if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
+            File reportFolder = getReportFolder();
+            SelfHealingExecutionReport selfHealingReport = SelfHealingExecutionReportCollector.getInstance()
+                    .collect(runConfig, reportFolder);
+            
             String result = getExecutionResult();
             Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(), runConfig.getName(),
-                    result, getEndTime().getTime() - getStartTime().getTime(), getRetryStrategy(), getNumberOfRetry());
+                    result, getEndTime().getTime() - getStartTime().getTime(), getRetryStrategy(), getNumberOfRetry(),
+                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
         }
     }
     

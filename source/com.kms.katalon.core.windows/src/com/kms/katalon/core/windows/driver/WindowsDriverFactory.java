@@ -18,14 +18,16 @@ import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.http.HttpClient;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
+import org.openqa.selenium.remote.internal.OkHttpClient;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.ProxyUtil;
+import com.kms.katalon.core.windows.driver.RemoteHttpClientFactory;
 import com.kms.katalon.core.windows.constants.CoreWindowsMessageConstants;
 import com.kms.katalon.core.windows.constants.WindowsDriverConstants;
 import com.kms.katalon.core.windows.keyword.helper.WindowsActionSettings;
@@ -34,6 +36,11 @@ import com.thoughtworks.selenium.SeleniumException;
 import io.appium.java_client.MobileCommand;
 import io.appium.java_client.remote.AppiumCommandExecutor;
 import io.appium.java_client.windows.WindowsDriver;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
 
 public class WindowsDriverFactory {
 
@@ -79,8 +86,8 @@ public class WindowsDriverFactory {
                 : new DesiredCapabilities();
         logger.logRunData(DESIRED_CAPABILITIES_PROPERTY, JsonUtil.toJson(desiredCapabilities.toJson(), false));
 
-        Proxy proxy = ProxyUtil.getProxy(RunConfiguration.getProxyInformation(), remoteAddressURL);
-        WindowsDriver<WebElement> windowsDriver = startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy, appTitle).getRunningDriver();
+        ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
+        WindowsDriver<WebElement> windowsDriver = startApplication(remoteAddressURL, appFile, desiredCapabilities, proxyInfo, appTitle).getRunningDriver();
         
         windowsDriver.manage().timeouts().implicitlyWait(RunConfiguration.getTimeOut(), TimeUnit.SECONDS);
         
@@ -89,14 +96,14 @@ public class WindowsDriverFactory {
     }
 
     public static WindowsSession startApplication(URL remoteAddressURL, String appFile,
-            DesiredCapabilities initCapabilities, Proxy proxy, String appTitle)
+            DesiredCapabilities initCapabilities, ProxyInformation proxyInfo, String appTitle)
             throws SeleniumException, IOException, URISyntaxException {
         try {
-            windowsSession = new WindowsSession(remoteAddressURL, appFile, initCapabilities, proxy);
+            windowsSession = new WindowsSession(remoteAddressURL, appFile, initCapabilities, proxyInfo);
 
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities(initCapabilities);
             desiredCapabilities.setCapability("app", appFile);
-            WindowsDriver<WebElement> windowsDriver = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxy);
+            WindowsDriver<WebElement> windowsDriver = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxyInfo);
             windowsDriver.getWindowHandle();
 
             windowsSession.setApplicationDriver(windowsDriver);
@@ -117,7 +124,7 @@ public class WindowsDriverFactory {
             }
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
-            WindowsDriver<WebElement> desktopDriver = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxy);
+            WindowsDriver<WebElement> desktopDriver = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxyInfo);
 
             FluentWait<WindowsDriver<WebElement>> wait = new FluentWait<WindowsDriver<WebElement>>(desktopDriver)
                     .withTimeout(Duration.ofMillis(WindowsActionSettings.DF_WAIT_ACTION_TIMEOUT_IN_MILLIS))
@@ -165,7 +172,7 @@ public class WindowsDriverFactory {
                 retryDesiredCapabilities.setCapability("appTopLevelWindow",
                         Integer.toHexString(Integer.parseInt(appTopLevelWindow)));
                 WindowsDriver<WebElement> windowsDriver = newWindowsDriver(remoteAddressURL, retryDesiredCapabilities,
-                        proxy);
+                        proxyInfo);
 
                 windowsSession.setApplicationDriver(windowsDriver);
                 windowsSession.setDesktopDriver(desktopDriver);
@@ -176,45 +183,44 @@ public class WindowsDriverFactory {
     }
 
     public static WindowsDriver<WebElement> newWindowsDriver(URL remoteAddressURL,
-            DesiredCapabilities desiredCapabilities, Proxy proxy) throws IOException, URISyntaxException {
+            DesiredCapabilities desiredCapabilities, ProxyInformation proxyInfo) throws IOException, URISyntaxException {
         if (remoteAddressURL != null) {
-            return new WindowsDriver<WebElement>(getAppiumExecutorForRemoteDriver(remoteAddressURL, proxy),
+            return new WindowsDriver<WebElement>(getAppiumExecutorForRemoteDriver(remoteAddressURL, proxyInfo),
                     desiredCapabilities);
         } else {
             return new WindowsDriver<WebElement>(desiredCapabilities);
         }
     }
 
-    public static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl, Proxy proxy)
+    public static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl, ProxyInformation proxyInfo)
             throws IOException, URISyntaxException {
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxyInfo, remoteWebServerUrl);
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, remoteWebServerUrl,
                 clientFactory);
         return executor;
     }
 
-    private static Factory getClientFactoryForRemoteDriverExecutor(Proxy proxy) {
-        return new Factory() {
+    private static Factory getClientFactoryForRemoteDriverExecutor(ProxyInformation proxyInfo, URL url) throws URISyntaxException, IOException {
+        okhttp3.OkHttpClient.Builder client = new okhttp3.OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS);
 
-            private org.openqa.selenium.remote.internal.OkHttpClient.Factory factory;
-            {
-                factory = new org.openqa.selenium.remote.internal.OkHttpClient.Factory();
-            }
+        Proxy proxy = proxyInfo != null ? ProxyUtil.getProxy(proxyInfo) : null;;
+        if (proxy != null) {
+            String proxyUser = proxyInfo.getUsername();
+            String proxyPassword = proxyInfo.getPassword();
 
-            @Override
-            public HttpClient createClient(URL url) {
-                return Factory.super.createClient(url);
-            }
+            Authenticator proxyAuthenticator = new Authenticator() {
+                @Override
+                public Request authenticate(Route route, Response response) throws IOException {
+                    String credential = Credentials.basic(proxyUser, proxyPassword);
+                    return response.request().newBuilder().header("Proxy-Authorization", credential).build();
+                }
+            };
 
-            @Override
-            public void cleanupIdleClients() {
-                factory.cleanupIdleClients();
-            }
+            client = client.proxy(proxy).proxyAuthenticator(proxyAuthenticator);
+        }
 
-            @Override
-            public org.openqa.selenium.remote.internal.OkHttpClient.Builder builder() {
-                return factory.builder().proxy(proxy);
-            }
-        };
+        return new RemoteHttpClientFactory(new OkHttpClient(client.build(), url));
     }
 }

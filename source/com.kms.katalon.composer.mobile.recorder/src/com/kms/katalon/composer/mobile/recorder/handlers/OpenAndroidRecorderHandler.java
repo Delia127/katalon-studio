@@ -97,7 +97,6 @@ public class OpenAndroidRecorderHandler {
             }
             recorderDialog = new MobileRecorderDialog(activeShell,
                     new MobileLocalAppComposite(MobileDriverType.ANDROID_DRIVER));
-            Trackings.trackOpenMobileRecord();
             if (recorderDialog.open() != Window.OK) {
                 return false;
             }

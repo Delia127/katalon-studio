@@ -21,11 +21,9 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestCaseHandler;
 import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseJob;
-import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -36,9 +34,11 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.model.TestCaseRepo;
 
 public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationView {
 
