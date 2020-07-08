@@ -531,7 +531,9 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     /**
      * Set the maximum response size for this request.
-     * @param maxResponseSize The response size limit in bytes
+     * @param maxResponseSize The response size limit in bytes.<br>
+     *      A max response size value of zero or negative is interpreted as an unlimited response size.<br>
+     *
      * <br>Additional available values:
      * <ul>
      *  <li><b>RequestObject.MAX_RESPONSE_SIZE_UNLIMITED</b>: Set the maximum response size of this request to unlimited.</li>
