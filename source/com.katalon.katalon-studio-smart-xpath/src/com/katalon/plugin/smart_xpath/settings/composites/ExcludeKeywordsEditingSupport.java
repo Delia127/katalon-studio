@@ -48,7 +48,7 @@ public class ExcludeKeywordsEditingSupport extends EditingSupport {
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element != null && element instanceof String && value != null && value instanceof String) {
+        if (element instanceof String && value instanceof String) {
             String property = (String) element;
             if (!value.equals(property)) {
                 this.viewer.update(element, null);
