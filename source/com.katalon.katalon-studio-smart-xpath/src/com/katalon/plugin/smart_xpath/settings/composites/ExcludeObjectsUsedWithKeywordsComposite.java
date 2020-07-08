@@ -1,29 +1,18 @@
 package com.katalon.plugin.smart_xpath.settings.composites;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.fieldassist.AutoCompleteField;
-import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -41,7 +30,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
 
 import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
-import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
@@ -151,7 +139,7 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite {
                 return label.getName();
             }
         });
-        tvcName.setEditingSupport(new EditingSupport(tableViewer) {
+        tvcName.setEditingSupport(new ExcludeKeywordsEditingSupport(tableViewer, getWebUIKeywordsStringList()) {
             @Override
             protected void setValue(Object element, Object value) {
                 if (element != null && element instanceof String && value != null && value instanceof String) {
@@ -164,33 +152,13 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite {
                             if (changedKeywordIndex >= 0) {
                                 excludeKeywordNames.set(changedKeywordIndex, newProperty.getName());
                             }
-                        } catch (NullPointerException exception) {
-                            MessageDialog.openError(parent.getShell(), "Project Settings",
-                                    MessageFormat.format(SmartXPathMessageConstants.ERROR_MESSAGE_WHEN_ENTER_WRONG_EXCLUDED_KEYWORD, value));
-                        }
-                        tableViewer.refresh();
 
-                        handleSelectionChange(null);
+                            tableViewer.refresh();
+                            handleSelectionChange(null);
+                        } catch (NullPointerException exception) {
+                        }
                     }
                 }
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                final StringComboBoxCellEditor editor = new StringComboBoxCellEditor(table,
-                        getWebUIKeywordsStringList());
-                return editor;
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                return true;
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                String keyword = (String) element;
-                return keyword;
             }
         });
         tvcName.setLabelProvider(new ColumnLabelProvider() {
