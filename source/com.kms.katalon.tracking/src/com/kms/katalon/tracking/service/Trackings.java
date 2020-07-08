@@ -107,11 +107,15 @@ public class Trackings {
 
         trackingService.track(trackInfo);
     }
-    
+
     public static void trackWebSpy() {
         trackUserAction("spyWeb");
     }
-    
+
+    public static void trackQuickStartAction(String action) {
+        trackUserAction("quickStartAction", "userAction", action);
+    }
+
     public static void trackMobileSpy(String deviceType) {
         trackUserAction("spyMobile", "deviceType", deviceType);
     }
