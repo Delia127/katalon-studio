@@ -44,7 +44,7 @@ public class CustomXmlFormatter extends XMLFormatter {
     }
 
     /**
-     * @deprecated since 7.6.0
+     * @deprecated since 7.6.5
      */
     protected String formatString(String text) {
         return StringEscapeUtils.escapeXml(StringEscapeUtils.escapeJava(text));
