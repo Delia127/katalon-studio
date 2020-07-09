@@ -15,6 +15,7 @@ public class TestSuiteEntityUtil {
         des.setNumberOfRerun(src.getNumberOfRerun());
         des.setRerunFailedTestCasesOnly(src.isRerunFailedTestCasesOnly());
         des.setRerunFailedTestCasesTestDataOnly(src.isRerunFailedTestCasesAndTestDataOnly());
+        des.setRerunImmediately(src.isRerunImmediately());
         des.getTestSuiteTestCaseLinks().clear();
 
         for (TestSuiteTestCaseLink testCaseLink : src.getTestSuiteTestCaseLinks()) {

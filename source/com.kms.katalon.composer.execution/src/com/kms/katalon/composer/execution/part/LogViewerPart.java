@@ -61,6 +61,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -124,6 +125,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
 
@@ -617,7 +619,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     }
                 }
 
-                StringBuilder causedByStrBuilder = insertRootCauseToTop(messageBuilder, result);
+                StringBuilder causedByStrBuilder = insertRootCauseToTop(messageBuilder, result, styleRanges);
                 
                 causedByStrBuilder.append(messageBuilder);
 
@@ -635,7 +637,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         }
     }
 
-    private StringBuilder insertRootCauseToTop(StringBuilder messageBuilder, XmlLogRecord result) {
+    private StringBuilder insertRootCauseToTop(StringBuilder messageBuilder, XmlLogRecord result, List<StyleRange> styleRanges) {
         StringBuilder causedByStrBuilder = new StringBuilder();
         String causedBy = getCausedBySentence(result.getMessage());
         causedByStrBuilder.append("=============== ROOT CAUSE =====================" + "\n");
@@ -648,6 +650,18 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             String testObject = getTestObject(result.getMessage());
             causedByStrBuilder.append("At object: " + testObject + "\n");
         }
+        causedByStrBuilder.append("\nFor trouble shooting, please visit: ");
+        String visitDocs = "https://docs.katalon.com/katalon-studio/docs/troubleshoot-common-execution-exceptions-web-test.html";
+        StyleRange range = new StyleRange();
+        range.start = causedByStrBuilder.length();
+        range.length = visitDocs.length();
+        range.underline = true;
+        range.data = visitDocs;
+        range.foreground = ColorUtil.getHyperlinkTextColor();
+        range.underlineStyle = SWT.UNDERLINE_LINK;
+        causedByStrBuilder.append(visitDocs + "\n");
+        styleRanges.add(range);
+        
         causedByStrBuilder.append("================================================" + "\n\n");
         messageBuilder.append(result.getMessage());
         return causedByStrBuilder;
@@ -717,6 +731,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 if (styleData instanceof ArtifactStyleRangeMatcher) {
                     ArtifactStyleRangeMatcher matcher = (ArtifactStyleRangeMatcher) styleData;
                     matcher.onClick(txtMessage.getText(), style);
+                }
+                if (styleData instanceof String) {
+                    String url = (String) styleData;
+                    Program.launch(url);
+                    Trackings.trackClickOnExceptionDocInLogViewer(url);
                 }
             } catch (Exception e) {
                 // no character under event.x, event.y
