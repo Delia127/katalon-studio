@@ -516,6 +516,20 @@ public class DriverFactory {
                 .writeTimeout(60, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS);
 
+        if (StringUtils.isNotBlank(url.getUserInfo())) {
+            String[] userInfo = url.getUserInfo().split(":");
+            if (userInfo != null && userInfo.length == 2) {
+                Authenticator basicAuthenticator = new Authenticator() {
+                    @Override
+                    public Request authenticate(Route route, Response response) throws IOException {
+                        String credential = Credentials.basic(userInfo[0], userInfo[1]);
+                        return response.request().newBuilder().header("Authorization", credential).build();
+                    }
+                };
+                client = client.authenticator(basicAuthenticator);
+            }
+        }
+
         Proxy proxy = proxyInfo != null ? ProxyUtil.getProxy(proxyInfo) : null;
         if (proxy != null) {
             String proxyUser = proxyInfo.getUsername();
