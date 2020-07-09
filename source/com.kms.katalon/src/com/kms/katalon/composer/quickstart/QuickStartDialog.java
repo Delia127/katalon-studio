@@ -305,12 +305,6 @@ public class QuickStartDialog extends WizardDialog {
     }
 
     @Override
-    protected void cancelPressed() {
-        Trackings.trackQuickStartAction("skip");
-        super.cancelPressed();
-    }
-
-    @Override
     protected void nextPressed() {
         Trackings.trackQuickStartAction("next");
         super.nextPressed();
