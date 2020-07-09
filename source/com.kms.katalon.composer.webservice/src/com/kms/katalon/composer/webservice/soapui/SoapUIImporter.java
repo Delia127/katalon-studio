@@ -309,7 +309,7 @@ public class SoapUIImporter {
     }
 
     private String toValidFileName(String fileName) {
-        return fileName.replaceAll("[\\W&&\\S]+", "_");
+        return fileName.replaceAll("[^a-zA-Z0-9-_\\.\\s]", "_");
     }
 
     private void addParameters(SoapUIRestResourceImportNode holder, RestParameter[] restParameters) {
