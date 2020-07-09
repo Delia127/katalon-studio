@@ -1570,17 +1570,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void okPressed() {
         Shell shell = getShell();
-        int stepCount = countAllSteps();
-        isOkPressed = true;
         try {
             if (!addElementToObjectRepository(shell)) {
                 return;
             }
+            isOkPressed = true;
             super.okPressed();
 
             dispose();
-
-            Trackings.trackCloseWebRecordByOk(stepCount, getWebLocatorConfig().toString());
         } catch (Exception exception) {
             LoggerSingleton.logError(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
@@ -1632,14 +1629,17 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public boolean close() {
         updateStore();
         disposed = true;
-        boolean result = super.close();
-        if (!isOkPressed) {
-            try {
+        try {
+            if (!isOkPressed) {
                 Trackings.trackCloseWebRecordByCancel(getWebLocatorConfig().toString());
-            } catch (IOException e) {
-                LoggerSingleton.logError(e);
+            } else {
+                int stepCount = countAllSteps();
+                Trackings.trackCloseWebRecordByOk(stepCount, getWebLocatorConfig().toString());
             }
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
         }
+        boolean result = super.close();
         return result;
     }
 
