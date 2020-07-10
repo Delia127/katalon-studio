@@ -372,7 +372,7 @@ public class JobViewerPart implements EventHandler {
     }
 
     private TestStatusValue getExecutionStatus(IDEObservableLauncher launcher) {
-        TestStatusValue status = null;
+        TestStatusValue status = TestStatusValue.INCOMPLETE;
         ILauncherResult result = launcher.getResult();
         if (result.getNumErrors() > 0) {
             status = TestStatusValue.ERROR;
