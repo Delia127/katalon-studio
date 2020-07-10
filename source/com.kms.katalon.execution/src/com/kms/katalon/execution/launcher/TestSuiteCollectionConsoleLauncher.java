@@ -214,7 +214,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
         File reportFolder = getReportFolder();
         boolean canUseSelfHealing = featureService.canUse(KSEFeature.SELF_HEALING);
-        boolean isSelfHealingEnabled = WebUiExecutionSettingStore.getStore().getSelfHealingEnabled(canUseSelfHealing);
+        boolean isSelfHealingEnabled = canUseSelfHealing && WebUiExecutionSettingStore.getStore().getSelfHealingEnabled(canUseSelfHealing);
         SelfHealingExecutionReport selfHealingReport = SelfHealingExecutionReportCollector.getInstance()
                 .collect(isSelfHealingEnabled, reportFolder);
 

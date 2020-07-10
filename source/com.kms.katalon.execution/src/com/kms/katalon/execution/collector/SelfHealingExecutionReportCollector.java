@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,16 +17,11 @@ import com.kms.katalon.core.webui.common.internal.BrokenTestObject;
 import com.kms.katalon.core.webui.common.internal.BrokenTestObjects;
 import com.kms.katalon.core.webui.common.internal.SelfHealingController;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.feature.FeatureServiceConsumer;
-import com.kms.katalon.feature.IFeatureService;
-import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.logging.LogUtil;
 
 public class SelfHealingExecutionReportCollector {
 
     private static SelfHealingExecutionReportCollector _instance;
-
-    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     public static SelfHealingExecutionReportCollector getInstance() {
         if (_instance == null) {
@@ -35,16 +31,17 @@ public class SelfHealingExecutionReportCollector {
     }
 
     public SelfHealingExecutionReport collect(IRunConfiguration runConfig, File reportFolder) {
-        boolean isSelfHealingEnabled = (boolean) runConfig.getExecutionSetting()
-                .getGeneralProperties()
-                .get(RunConfiguration.SELF_HEALING_ENABLE);
+        Map<String, Object> generalProperties = runConfig.getExecutionSetting().getGeneralProperties();
+        Object _isSelfHealingEnabled = generalProperties != null
+                ? generalProperties.get(RunConfiguration.SELF_HEALING_ENABLE)
+                : null;
+        boolean isSelfHealingEnabled = _isSelfHealingEnabled != null
+                ? (boolean) _isSelfHealingEnabled
+                : false;
         return collect(isSelfHealingEnabled, reportFolder);
     }
 
     public SelfHealingExecutionReport collect(boolean isSelfHealingEnabled, File reportFolder) {
-        boolean canUseSelfHealing = featureService.canUse(KSEFeature.SELF_HEALING);
-        boolean isEnabled = isSelfHealingEnabled && canUseSelfHealing;
-
         List<File> selfHealingDataFiles = new ArrayList<>();
         try {
             Files.walk(Paths.get(reportFolder.getAbsolutePath()))
@@ -69,7 +66,7 @@ public class SelfHealingExecutionReportCollector {
             }
         });
 
-        return new SelfHealingExecutionReport(isEnabled, isTriggered, brokenTestObjects);
+        return new SelfHealingExecutionReport(isSelfHealingEnabled, isTriggered, brokenTestObjects);
     }
 
     public Set<BrokenTestObject> collectBrokenTestObjects(File reportFolder) {
