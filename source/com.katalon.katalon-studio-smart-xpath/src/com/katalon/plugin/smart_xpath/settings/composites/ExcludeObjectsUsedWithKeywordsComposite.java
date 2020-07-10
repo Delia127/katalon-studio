@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -155,11 +156,16 @@ public class ExcludeObjectsUsedWithKeywordsComposite extends Composite {
 
                             tableViewer.refresh();
                             handleSelectionChange(null);
-                        } catch (NullPointerException exception) {
-                        }
+                        } catch (NullPointerException exception) {}
                     }
                 }
             }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return this.getCellEditor(element, getWebUIKeywordsStringList());
+            }
+
         });
         tvcName.setLabelProvider(new ColumnLabelProvider() {
             @Override

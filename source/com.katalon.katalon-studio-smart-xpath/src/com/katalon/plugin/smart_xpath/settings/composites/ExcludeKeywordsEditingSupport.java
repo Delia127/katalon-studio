@@ -18,16 +18,17 @@ public class ExcludeKeywordsEditingSupport extends EditingSupport {
 
     private TableViewer viewer;
 
-    private String[] keywordList;
-
     public ExcludeKeywordsEditingSupport(TableViewer viewer, String[] keywordList) {
         super(viewer);
         this.viewer = viewer;
-        this.keywordList = keywordList;
     }
 
     @Override
     protected CellEditor getCellEditor(Object element) {
+        return null;
+    }
+
+    protected CellEditor getCellEditor(Object element, String[] keywordList) {
         final StringComboBoxCellEditor editor = new ExcludeKeywordsCellEditor(element, keywordList);
         return editor;
     }
