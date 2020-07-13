@@ -452,7 +452,7 @@ public class NewObjectSpyDialog extends Dialog
         }
         ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
         
-        SaveActionResult saveResult = objectRepositoryService.saveObject(addToObjectRepositoryDialog.getDialogResult());
+        SaveActionResult saveResult = objectRepositoryService.saveObjectForSpyTool(addToObjectRepositoryDialog.getDialogResult());
        
         Trackings.trackSaveWebSpy(saveResult.getSavedObjectCount());
         

@@ -1606,7 +1606,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
 
         ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
-        refeshExplorer(objectRepositoryService.saveObject(targetFolderSelectionResult),
+        refeshExplorer(objectRepositoryService.saveObjectForWebRecorder(targetFolderSelectionResult),
                 addToObjectRepositoryDialog.getSelectedParentFolderResult());
 
         return true;
