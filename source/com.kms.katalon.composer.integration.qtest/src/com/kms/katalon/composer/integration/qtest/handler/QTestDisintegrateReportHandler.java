@@ -22,9 +22,7 @@ import org.eclipse.swt.widgets.Menu;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
@@ -35,7 +33,9 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.entity.QTestReport;
+import com.kms.katalon.integration.qtest.model.ReportTestCaseLogPair;
 
 public class QTestDisintegrateReportHandler extends AbstractQTestHandler {
     private List<ReportTestCaseLogPair> fPairs;

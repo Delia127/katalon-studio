@@ -25,6 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -46,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.common.base.Strings;
+import com.kms.katalon.application.Application;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.ApplicationProxyUtil;
@@ -57,12 +60,8 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.execution.collection.dialog.ExecutionProfileSelectionDialog;
 import com.kms.katalon.composer.execution.collection.dialog.RunConfigurationSelectionDialog;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionEntryItem;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.GenerateCommandPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
@@ -83,7 +82,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.controller.exception.ControllerException;
-import com.kms.katalon.core.application.Application;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
@@ -94,6 +92,10 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.execution.collection.provider.TestExecutionEntryItem;
+import com.kms.katalon.execution.collection.provider.TestExecutionGroup;
+import com.kms.katalon.execution.collection.provider.TestExecutionItem;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.console.ConsoleOptionBuilder;
@@ -356,7 +358,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         chkOverridePlatform = new Button(overrideComposite, SWT.CHECK);
         chkOverridePlatform.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
-        chkOverridePlatform.setText(ComposerExecutionMessageConstants.DIA_CHK_OVERRIDE_PLATFORM);
+        chkOverridePlatform.setText(StringConstants.DIA_CHK_OVERRIDE_PLATFORM);
 
         Label lblHelp = new Label(overrideComposite, SWT.NONE);
         lblHelp.setImage(ImageManager.getImage(IImageKeys.HELP_16));
@@ -1104,10 +1106,8 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         }
 
-        if (proxyOption != ProxyOption.NO_PROXY) {
-            args.put(ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES,
-                    Boolean.toString(proxyInfo.isApplyToDesiredCapabilities()));
-        }
+        args.put(ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES,
+                Boolean.toString(proxyInfo.isApplyToDesiredCapabilities()));
     }
 
     private String encodeSensitiveInfo(String sensitiveInfo) {
@@ -1254,12 +1254,9 @@ public class GenerateCommandDialog extends AbstractDialog {
             return;
         }
         txtTestSuite.setText(testSuite.getIdForDisplay());
-        boolean isTestSuite = false;
         if (testSuite instanceof TestSuiteEntity) {
-            isTestSuite = true;
             this.testSuite = (TestSuiteEntity) testSuite;
         }
-        ControlUtils.recursiveSetEnabled(grpPlatform, isTestSuite);
         updatePlatformLayout();
     }
 

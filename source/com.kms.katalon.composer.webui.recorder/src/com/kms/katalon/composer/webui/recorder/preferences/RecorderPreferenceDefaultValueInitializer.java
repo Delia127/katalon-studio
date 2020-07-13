@@ -13,7 +13,7 @@ public class RecorderPreferenceDefaultValueInitializer extends AbstractPreferenc
 
     public static final boolean WEBUI_RECORDER_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN_DEFAULT = false;
 
-    public static final String WEBUI_RECORDER_DEFAULT_BROWSER = WebUIDriverType.FIREFOX_DRIVER.toString();
+    public static final String WEBUI_RECORDER_DEFAULT_BROWSER = WebUIDriverType.CHROME_DRIVER.toString();
     
     public static final String WEBUI_RECORDER_DEFAULT_URL = "http://demoaut.katalon.com/";
 

@@ -12,7 +12,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestCaseJob;
 import com.kms.katalon.constants.IdConstants;
@@ -22,6 +21,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 
 public class QTestDisintegrateTestCaseHandler extends AbstractQTestHandler {
 

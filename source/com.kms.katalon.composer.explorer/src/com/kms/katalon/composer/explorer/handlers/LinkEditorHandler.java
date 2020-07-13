@@ -65,6 +65,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
@@ -146,6 +147,9 @@ public class LinkEditorHandler implements EventHandler {
 
     private void performLinkWithPart(MPart mpart) {
         try {
+            if (mpart == null) {
+                return;
+            }
             IEntity entity = EntityPartUtil.getEntityByPartId(mpart.getElementId());
 
             ITreeEntity treeEntity = null;
@@ -156,6 +160,8 @@ public class LinkEditorHandler implements EventHandler {
                     treeEntity = TreeEntityUtil.getTestCaseTreeEntity((TestCaseEntity) entity, projectEntity);
                 } else if (entity instanceof WebElementEntity) {
                     treeEntity = TreeEntityUtil.getWebElementTreeEntity((WebElementEntity) entity, projectEntity);
+                } else if (entity instanceof WindowsElementEntity) {
+                    treeEntity = TreeEntityUtil.getWindowsElementTreeEntity((WindowsElementEntity) entity, entity.getParentFolder());
                 } else if (entity instanceof TestSuiteEntity) {
                     treeEntity = TreeEntityUtil.getTestSuiteTreeEntity((TestSuiteEntity) entity, projectEntity);
                 } else if (entity instanceof DataFileEntity) {

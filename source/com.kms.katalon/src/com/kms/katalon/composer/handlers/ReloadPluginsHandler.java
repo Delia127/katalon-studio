@@ -16,6 +16,13 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.activation.dialog.WarningReactivateDialog;
+import com.kms.katalon.activation.plugin.models.KStoreBasicCredentials;
+import com.kms.katalon.activation.plugin.models.KStoreClientAuthException;
+import com.kms.katalon.activation.plugin.models.KStorePlugin;
+import com.kms.katalon.activation.plugin.models.Plugin;
+import com.kms.katalon.activation.plugin.models.ReloadItem;
+import com.kms.katalon.activation.plugin.service.PluginService;
+import com.kms.katalon.activation.plugin.util.KStoreCredentialsHelper;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -26,13 +33,6 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.plugin.dialog.ReloadPluginsHelpDialog;
 import com.kms.katalon.plugin.dialog.ReloadPluginsResultDialog;
-import com.kms.katalon.plugin.models.KStoreBasicCredentials;
-import com.kms.katalon.plugin.models.KStoreClientAuthException;
-import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.Plugin;
-import com.kms.katalon.plugin.models.ReloadItem;
-import com.kms.katalon.plugin.service.PluginService;
-import com.kms.katalon.plugin.util.KStoreCredentialsHelper;
 
 public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 

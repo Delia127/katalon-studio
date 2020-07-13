@@ -8,12 +8,12 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.activation.plugin.models.KStoreBasicCredentials;
+import com.kms.katalon.activation.plugin.models.KStoreClientAuthException;
+import com.kms.katalon.activation.plugin.util.KStoreTokenService;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
-import com.kms.katalon.plugin.models.KStoreBasicCredentials;
-import com.kms.katalon.plugin.models.KStoreClientAuthException;
-import com.kms.katalon.plugin.util.KStoreTokenService;
 import com.kms.katalon.util.CryptoUtil;
 
 public abstract class RequireAuthorizationHandler {

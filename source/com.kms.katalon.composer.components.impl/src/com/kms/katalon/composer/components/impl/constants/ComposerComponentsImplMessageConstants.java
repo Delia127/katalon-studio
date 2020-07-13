@@ -179,6 +179,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String PREF_WARN_KSE_ORACLE_SQL;
     
     public static String PREF_WARN_KSE_CUSTOM_DB_CONNECTION;
+    
+    public static String PREF_WARN_KSE_APPLITOOLS_PLUGIN;
 
     static {
         // initialize resource bundle

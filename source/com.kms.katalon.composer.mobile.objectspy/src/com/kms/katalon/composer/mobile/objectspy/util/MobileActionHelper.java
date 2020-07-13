@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.ScreenOrientation;
@@ -20,7 +21,10 @@ import com.kms.katalon.core.keyword.internal.KeywordMain;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.internal.MobileSearchEngine;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testobject.MobileTestObject;
+import com.kms.katalon.core.testobject.MobileTestObject.MobileLocatorStrategy;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.testobject.WindowsTestObject;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
@@ -35,6 +39,7 @@ import io.appium.java_client.touch.TapOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
+import io.appium.java_client.windows.WindowsDriver;
 
 /**
  * This class duplicated codes from keywords to use for recorder
@@ -52,7 +57,7 @@ public class MobileActionHelper {
         this.driver = driver;
     }
 
-    private WebElement findElement(TestObject to, int timeOut) throws Exception {
+    public WebElement findElement(TestObject to, int timeOut) throws Exception {
         Date startTime = new Date();
         Date endTime;
         long span = 0;
@@ -90,6 +95,18 @@ public class MobileActionHelper {
             span = endTime.getTime() - startTime.getTime();
         }
         return webElement;
+    }
+
+    public List<WebElement> findElements(MobileTestObject testObject)
+            throws Exception
+//            , DriverNotStartedException
+    {
+        if (testObject == null) {
+            throw new IllegalArgumentException("Test object cannot be null");
+        }
+
+        MobileSearchEngine searchEngine = new MobileSearchEngine(driver, testObject);
+        return searchEngine.findWebElements(false);
     }
 
     public void tap(TestObject to) throws Exception {

@@ -57,7 +57,8 @@ public class RecentProjectHandler {
     @Inject
     @Optional
     private void openLastRecentProject(@UIEventTopic(EventConstants.ACTIVATION_CHECKED) Object object) {
-        if (ProjectController.getInstance().getCurrentProject() != null) {
+        if (ProjectController.getInstance().getCurrentProject() != null
+                || ProjectController.getInstance().isOpenning()) {
             return;
         }
 

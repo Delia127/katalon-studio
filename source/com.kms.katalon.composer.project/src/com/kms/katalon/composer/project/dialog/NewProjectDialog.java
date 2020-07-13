@@ -633,6 +633,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         projectEntity.setDescription(projectDescription);
         projectEntity.setType(projectType);
 
+        ProjectController.getInstance().setOpenning(true);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.GIT_CLONE_REMOTE_PROJECT,
                 new Object[] { sampleRemoteProject, projectEntity, false });
     }
@@ -661,6 +662,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
             TimeUnit.SECONDS.sleep(1);
 
+            ProjectController.getInstance().setOpenning(true);
             eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -678,6 +680,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             boolean generateGitignoreFile = cbGenerateGitignoreFile.isEnabled() && cbGenerateGitignoreFile.getSelection();
             boolean generateGradleFile = cbGenerateGradleFile.isEnabled() && cbGenerateGradleFile.getSelection();
 
+            ProjectController.getInstance().setOpenning(true);
             ProjectEntity newProject = createNewProject(projectName, projectLocation, projectDescription,
                     generateGitignoreFile, generateGradleFile);
             if (newProject == null) {

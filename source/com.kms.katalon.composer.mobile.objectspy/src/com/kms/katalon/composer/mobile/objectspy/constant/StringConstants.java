@@ -61,6 +61,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_MSG_ELEMENT_NOT_FOUND = ComposerMobileObjectspyMessageConstants.DIA_MSG_ELEMENT_NOT_FOUND;
 
+    public static final String DIA_MSG_SEARCHING_FOR_ELEMENTS = ComposerMobileObjectspyMessageConstants.DIA_MSG_SEARCHING_FOR_ELEMENTS;
+
     public static final String DIA_LBL_ALL_OBJECTS = ComposerMobileObjectspyMessageConstants.DIA_LBL_ALL_OBJECTS;
 
     public static final String DIA_LBL_CAPTURED_OBJECTS = ComposerMobileObjectspyMessageConstants.DIA_LBL_CAPTURED_OBJECTS;

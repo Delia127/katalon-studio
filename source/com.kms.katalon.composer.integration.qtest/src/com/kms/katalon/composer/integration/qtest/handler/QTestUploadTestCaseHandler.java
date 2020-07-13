@@ -12,7 +12,6 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseJob;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -23,6 +22,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 
 public class QTestUploadTestCaseHandler extends AbstractQTestHandler {
 
