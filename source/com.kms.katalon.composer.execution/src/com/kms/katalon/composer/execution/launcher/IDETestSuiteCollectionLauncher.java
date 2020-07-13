@@ -69,7 +69,7 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
 
         File reportFolder = getReportFolder().getParentFile().getParentFile();
         boolean canUseSelfHealing = featureService.canUse(KSEFeature.SELF_HEALING);
-        boolean isSelfHealingEnabled = WebUiExecutionSettingStore.getStore().getSelfHealingEnabled(canUseSelfHealing);
+        boolean isSelfHealingEnabled = canUseSelfHealing && WebUiExecutionSettingStore.getStore().getSelfHealingEnabled(canUseSelfHealing);
         SelfHealingExecutionReport selfHealingReport = SelfHealingExecutionReportCollector.getInstance()
                 .collect(isSelfHealingEnabled, reportFolder);
         
