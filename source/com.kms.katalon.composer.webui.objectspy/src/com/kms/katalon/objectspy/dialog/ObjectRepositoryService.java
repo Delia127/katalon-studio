@@ -52,7 +52,7 @@ public class ObjectRepositoryService {
             clonedWebPage.setTag("cloned");
             for (ConflictWebElementWrapper webElementChildWrapper : webPageWrapper.getChildren()) {
                 if (webElementChildWrapper.isConflicted()) {
-                    addConflictedWebElement(page, (ConflictWebElementWrapper) webElementChildWrapper, dialogResult, testObjectIds);
+                    addConflictedWebElement(clonedWebPage, (ConflictWebElementWrapper) webElementChildWrapper, dialogResult, testObjectIds);
                 } else {
                     WebElement clonedWebElement = webElementChildWrapper.getOriginalWebElement();
                     clonedWebElement.setParent(clonedWebPage);
