@@ -265,7 +265,6 @@ public class ObjectRepositoryService {
                                 WebElementSelectorMethod.valueOf(entry.getKey().toString()), entry.getValue());
                     });
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
-                    entitySavedMap.put(webPage, conflictedFolderEntity);
                     break;
 
                 default:
