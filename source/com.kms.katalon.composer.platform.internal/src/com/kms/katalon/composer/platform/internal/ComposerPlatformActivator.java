@@ -43,13 +43,14 @@ public class ComposerPlatformActivator implements BundleActivator {
                 .make(DynamicQueryingTestSuiteProviderImpl.class, bundleEclipseContext);
         context.registerService(DynamicQueryingTestSuiteExtensionProvider.class, dynamicQueryingIntegrationViewBuilder, null);
 
-        PlatformUIServiceProvider platformServiceProvider = PlatformUIServiceProvider.getInstance();
-        eventBroker.post("KATALON_PLUGIN/UISERVICE_MANAGER_ADDED", platformServiceProvider.getUiServiceManager());
         
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, new EventHandler() {
             
             @Override
             public void handleEvent(Event event) {
+                PlatformUIServiceProvider platformServiceProvider = PlatformUIServiceProvider.getInstance();
+                eventBroker.send("KATALON_PLUGIN/UISERVICE_MANAGER_ADDED", platformServiceProvider.getUiServiceManager());
+
                 IEclipseContext workbenchEclipseContext = PlatformUI.getWorkbench().getService(IEclipseContext.class);
                 BundleContext bundleContext = Platform.getBundle(IdConstants.KATALON_PLATFORM_BUNDLE_ID).getBundleContext();
                 bundleContext.registerService(IEclipseContext.class, workbenchEclipseContext, null);
