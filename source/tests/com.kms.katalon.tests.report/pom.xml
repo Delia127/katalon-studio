@@ -188,6 +188,18 @@
 		</dependency>
 		<dependency>
 			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.composer.webui.objectspy</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.composer.webui.objectspy.test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.application</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
