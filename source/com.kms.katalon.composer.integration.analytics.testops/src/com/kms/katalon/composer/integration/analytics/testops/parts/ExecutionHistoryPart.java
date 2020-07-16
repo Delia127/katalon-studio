@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
@@ -28,7 +30,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.google.common.base.Strings;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
@@ -38,10 +39,10 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.analytics.testops.constants.TestOpsStringConstants;
 import com.kms.katalon.composer.integration.analytics.testops.utils.ExecutionViewer;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
-import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.util.CryptoUtil;
@@ -124,7 +125,7 @@ public class ExecutionHistoryPart {
 			String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
 			String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
 
-			if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
+			if (!StringUtils.isBlank(email) && !StringUtils.isBlank(encryptedPassword)) {
 				String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
 				AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
 				return AnalyticsApiProvider.getExecutions(project.getId(), serverUrl, token.getAccess_token());
