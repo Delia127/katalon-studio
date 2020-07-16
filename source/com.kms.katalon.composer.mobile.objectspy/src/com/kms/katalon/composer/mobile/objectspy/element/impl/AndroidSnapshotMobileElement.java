@@ -285,13 +285,13 @@ public class AndroidSnapshotMobileElement extends RenderedTreeSnapshotMobileElem
 		this.locatorStrategy = locatorStrategy;
 	}
 	
-	@Override
-	protected String makeXpath() {
-	    String xpath = super.makeXpath();
+    @Override
+    protected String makeXpath() {
+        String xpath = super.makeXpath();
         if (xpath.contains("ActionBar$Tab")) {
             // https://katalon.atlassian.net/browse/HELPDESK-249
             xpath = xpath.replace("ActionBar$Tab", "ActionBar.Tab");
         }
         return xpath;
-	}
+    }
 }
