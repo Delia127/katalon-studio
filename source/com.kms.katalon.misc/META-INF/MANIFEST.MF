@@ -34,5 +34,5 @@ Export-Package: com.kms.katalon.activation.plugin,
  com.kms.katalon.activation.plugin.service,
  com.kms.katalon.activation.plugin.store,
  com.kms.katalon.activation.plugin.util
-Bundle-Activator: com.kms.katalon.activation.plugin.ActivationBundleActivator
+Bundle-Activator: com.kms.katalon.activation.plugin.MiscBundleActivator
 Bundle-ActivationPolicy: lazy

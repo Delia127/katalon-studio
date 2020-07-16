@@ -365,7 +365,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmPauseAndResume.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();
-            Trackings.trackWebRecord(getSelectedBrowserType(), isInstant, getWebLocatorConfig());
+            Trackings.trackWebRecord(getSelectedBrowserType().toString(), isInstant, getWebLocatorConfig().toString());
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -927,12 +927,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getNodeWrappersFromFirstSelected()) {
             block.addChild(node.clone());
         }
-        Trackings.trackRecordRunSteps("from");
+        Trackings.trackWebRecordRunSteps("from");
         executeSelectedSteps(cloneScript);
     }
 
     private void runAllSteps() {
-        Trackings.trackRecordRunSteps("all");
+        Trackings.trackWebRecordRunSteps("all");
         executeSelectedSteps(recordStepsView.getWrapper());
     }
 
@@ -944,7 +944,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getSelectedNodeWrappers()) {
             block.addChild(node.clone());
         }
-        Trackings.trackRecordRunSteps("selected");
+        Trackings.trackWebRecordRunSteps("selected");
         executeSelectedSteps(cloneScript);
     }
 
@@ -1263,8 +1263,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private void createDropdownContent(Dropdown dropdown) {
         DropdownGroup newBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_NEW_BROWSERS,
                 ImageManager.getImage(IImageKeys.NEW_BROWSER_16));
-        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
+
         addNewBrowserItem(newBrowser, WebUIDriverType.CHROME_DRIVER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
         addNewBrowserItem(newBrowser, WebUIDriverType.EDGE_CHROMIUM_DRIVER);
 
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
@@ -1580,17 +1581,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void okPressed() {
         Shell shell = getShell();
-        int stepCount = countAllSteps();
-        isOkPressed = true;
         try {
             if (!addElementToObjectRepository(shell)) {
                 return;
             }
+            isOkPressed = true;
             super.okPressed();
 
             dispose();
-
-            Trackings.trackCloseWebRecord("ok", stepCount, getWebLocatorConfig());
         } catch (Exception exception) {
             LoggerSingleton.logError(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
@@ -1619,7 +1617,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
 
         ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
-        refeshExplorer(objectRepositoryService.saveObject(targetFolderSelectionResult),
+        refeshExplorer(objectRepositoryService.saveObjectForWebRecorder(targetFolderSelectionResult),
                 addToObjectRepositoryDialog.getSelectedParentFolderResult());
 
         return true;
@@ -1642,14 +1640,17 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public boolean close() {
         updateStore();
         disposed = true;
-        boolean result = super.close();
-        if (!isOkPressed) {
-            try {
-                Trackings.trackCloseWebRecord("cancel", 0, getWebLocatorConfig());
-            } catch (IOException e) {
-                LoggerSingleton.logError(e);
+        try {
+            if (!isOkPressed) {
+                Trackings.trackCloseWebRecordByCancel(getWebLocatorConfig().toString());
+            } else {
+                int stepCount = countAllSteps();
+                Trackings.trackCloseWebRecordByOk(stepCount, getWebLocatorConfig().toString());
             }
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
         }
+        boolean result = super.close();
         return result;
     }
 
@@ -1923,7 +1924,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     protected void setInput() {
-        Boolean continueRecording = null;
+        boolean continueRecording = false;
         if (testCaseEntity != null && nodeWrappers.size() > 0) {
             MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
                     MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
@@ -1981,7 +1982,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         capturedObjectComposite.refreshTree(null);
 
         try {
-            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig());
+            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig().toString());
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }

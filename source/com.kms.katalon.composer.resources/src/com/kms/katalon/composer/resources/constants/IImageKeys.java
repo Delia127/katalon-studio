@@ -554,6 +554,8 @@ public interface IImageKeys {
 
     public static final String EXPORT_CSV_16 = "export_csv_16.png"; //$NON-NLS-1$
 
+    public static final String SETTING_16 = "gear_16.png"; //$NON-NLS-1$
+
     // Sub-toolbar disabled icons
     public static final String CLEAR_DISABLED_16 = "clear_disabled_16.png"; //$NON-NLS-1$
 

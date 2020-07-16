@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.ByteArrayEntity;
@@ -12,7 +11,15 @@ import org.apache.http.entity.ByteArrayEntity;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.core.util.internal.ProxyUtil;
+import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.exception.ConnectionTimeoutException;
+import com.kms.katalon.core.webservice.exception.ResponseSizeLimitException;
+import com.kms.katalon.core.webservice.exception.SocketTimeoutException;
+import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
+import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
+import com.kms.katalon.core.webservice.util.WebServiceCommonUtil;
 
 public class RestfulClient extends BasicRequestor {
 

@@ -73,6 +73,8 @@ import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvide
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.AndroidMobileCapabilityType;
+import io.appium.java_client.remote.MobileCapabilityType;
 
 public class MobileInspectorController {
 
@@ -261,6 +263,7 @@ public class MobileInspectorController {
         RunConfiguration.setExecutionSetting(
                 ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(kobitonDevice.toDesireCapabilitiesMap());
+        desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         driver = MobileDriverFactory.startRemoteMobileDriver(connector.getRemoteServerUrl(), desiredCapabilities,
                 connector.getMobileDriverType(), kobitonApplication.buildAutomationKey());
     }

@@ -3,6 +3,8 @@ package com.kms.katalon.composer.testsuite.parts;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -70,6 +72,22 @@ public class TestSuiteRetryUiPart {
     public void registerRetryControlListeners() {
         addNumberVerification(txtRetryAfterExecuteAll, MIN_RETRY, MAX_RETRY);
         addNumberVerification(txtRetryImmediately, MIN_RETRY, MAX_RETRY);
+
+        txtRetryAfterExecuteAll.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                getTestSuite().setNumberOfRerun(Integer.parseInt(txtRetryAfterExecuteAll.getText()));
+            }
+        });
+
+        txtRetryImmediately.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                getTestSuite().setNumberOfRerun(Integer.parseInt(txtRetryImmediately.getText()));
+            }
+        });
 
         radioBtnRetryImmediately.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -331,50 +349,19 @@ public class TestSuiteRetryUiPart {
 
             @Override
             public void verifyText(VerifyEvent e) {
-                String oldValue = ((Text) e.getSource()).getText();
-                String enterValue = e.text;
-                String newValue = oldValue.substring(0, e.start) + enterValue + oldValue.substring(e.end);
-                if (!newValue.matches("\\d+")) {
-                    e.doit = false;
-                    return;
+                String string = e.text;
+                char[] chars = new char[string.length()];
+                string.getChars(0, chars.length, chars, 0);
+                for (int i = 0; i < chars.length; i++) {
+                    if (!('0' <= chars[i] && chars[i] <= '9')) {
+                        e.doit = false;
+                        return;
+                    }
                 }
-                try {
-                    int val = Integer.parseInt(newValue);
-                    e.doit = val >= min && val <= max;
-                } catch (NumberFormatException ex) {
-                    e.doit = false;
-                }
+                setDirty(true);
             }
         });
-        txtInput.addFocusListener(new FocusAdapter() {
 
-            @Override
-            public void focusGained(FocusEvent e) {
-                ((Text) e.getSource()).selectAll();
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                Text inputField = (Text) e.getSource();
-                String value = inputField.getText();
-                if (value.length() <= 1 || !value.startsWith("0")) {
-                    return;
-                }
-                try {
-                    int val = Integer.parseInt(value);
-                    inputField.setText(String.valueOf(val));
-                } catch (NumberFormatException ex) {
-                    // Do nothing
-                }
-            }
-        });
-        txtInput.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseUp(MouseEvent e) {
-                ((Text) e.getSource()).selectAll();
-            }
-        });
     }
 
     public static class RetryControlStateDescription {

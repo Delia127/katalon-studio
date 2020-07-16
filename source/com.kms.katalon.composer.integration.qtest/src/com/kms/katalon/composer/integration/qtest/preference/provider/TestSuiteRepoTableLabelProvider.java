@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
+import com.kms.katalon.integration.qtest.model.TestSuiteRepo;
 
 public class TestSuiteRepoTableLabelProvider extends LabelProvider implements ITableLabelProvider {
 

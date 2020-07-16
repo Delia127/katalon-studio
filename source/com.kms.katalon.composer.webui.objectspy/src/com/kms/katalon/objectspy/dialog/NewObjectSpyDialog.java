@@ -114,7 +114,7 @@ public class NewObjectSpyDialog extends Dialog
     private ObjectSpySelectorEditor selectorEditor;
 
     private Composite bodyComposite;
-
+    
     /**
      * Create the dialog.
      * 
@@ -452,9 +452,9 @@ public class NewObjectSpyDialog extends Dialog
         }
         ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
         
-        SaveActionResult saveResult = objectRepositoryService.saveObject(addToObjectRepositoryDialog.getDialogResult());
+        SaveActionResult saveResult = objectRepositoryService.saveObjectForSpyTool(addToObjectRepositoryDialog.getDialogResult());
        
-        Trackings.trackSaveSpy("web", saveResult.getSavedObjectCount());
+        Trackings.trackSaveWebSpy(saveResult.getSavedObjectCount());
         
         // Refresh tree explorer
         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, addToObjectRepositoryDialog.getSelectedParentFolderResult());
@@ -597,6 +597,7 @@ public class NewObjectSpyDialog extends Dialog
             create();
         }
         getShell().setMinimumSize(MIN_SIZE);
+        Trackings.trackOpenWebSpy();
         return super.open();
     }
 
@@ -605,8 +606,8 @@ public class NewObjectSpyDialog extends Dialog
         if (urlView != null) {
             urlView.save();
         }
+        Trackings.trackCloseWebSpy();
         boolean result = super.close();
-        Trackings.trackCloseSpy("web");
         return result;
     }
 
@@ -724,7 +725,5 @@ public class NewObjectSpyDialog extends Dialog
             default:
                 break;
         }
-
     }
-
 }

@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
-import com.kms.katalon.activation.plugin.ActivationBundleActivator;
+import com.kms.katalon.activation.plugin.MiscBundleActivator;
 import com.kms.katalon.activation.plugin.constant.ActivationMessageConstants;
 import com.kms.katalon.activation.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.activation.plugin.models.KStoreClientExceptionWithInfo;
@@ -27,6 +27,7 @@ import com.kms.katalon.activation.plugin.models.Plugin;
 import com.kms.katalon.activation.plugin.models.ReloadItem;
 import com.kms.katalon.activation.plugin.models.ReloadPluginsException;
 import com.kms.katalon.activation.plugin.models.ResolutionItem;
+import com.kms.katalon.activation.plugin.plugin.applitool.InstallApplitoolsPluginHandler;
 import com.kms.katalon.activation.plugin.util.KStoreCredentialsHelper;
 import com.kms.katalon.activation.plugin.util.PlatformHelper;
 import com.kms.katalon.activation.plugin.util.PluginFactory;
@@ -64,7 +65,7 @@ public class PluginService {
     private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     private PluginService() {
-        eventBroker = ActivationBundleActivator.getInstance().getEventBroker();
+        eventBroker = MiscBundleActivator.getInstance().getEventBroker();
     }
 
     public static PluginService getInstance() {
@@ -219,6 +220,8 @@ public class PluginService {
             
             installPluginMonitor.done();
 
+            installApplitoolsPlugin();
+
             SubMonitor refreshClasspathMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
             refreshClasspathMonitor.beginTask("Refreshing classpath...", 100);
 
@@ -252,6 +255,10 @@ public class PluginService {
         }
     }
     
+    private void installApplitoolsPlugin() throws IOException {
+        new InstallApplitoolsPluginHandler().doinstallApplitoolsPlugin();
+    }
+
     public boolean shouldReloadPluginsOnline() throws IOException {
         PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
         return reloadOption == PluginOptions.ONLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;

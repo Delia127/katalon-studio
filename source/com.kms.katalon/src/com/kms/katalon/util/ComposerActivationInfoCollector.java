@@ -17,6 +17,7 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.quickstart.QuickPrepareProjectDialog;
 import com.kms.katalon.composer.quickstart.QuickStartDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
@@ -68,6 +69,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         if (!isActivated) {
             if (checkActivationDialog()) {
                 showFunctionsIntroductionForTheFirstTime();
+                showQuickPrepareProjectPopupForTheFirstTime();
                 // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
                 return true;
             } else {
@@ -136,6 +138,12 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 //
 //        recommendPlugins.open();
 //        recommendPlugins.installPressed();
+    }
+    
+    private static void showQuickPrepareProjectPopupForTheFirstTime() {
+        QuickPrepareProjectDialog quickCreateProjectDialog = new QuickPrepareProjectDialog(
+                Display.getCurrent().getActiveShell());
+        quickCreateProjectDialog.open();
     }
 
     public static String genRequestActivationInfo() {

@@ -8,10 +8,9 @@ import org.osgi.framework.BundleException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.activation.plugin.util.PlatformHelper;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.activation.plugin.util.PlatformHelper;
 
 public class InstallSmartXPathBundleHandler {
     
@@ -25,23 +24,7 @@ public class InstallSmartXPathBundleHandler {
                     @Override
                     public void handleEvent(Event event) {
                         try {
-                            if (LicenseUtil.isNotFreeLicense()) {
-                                PlatformHelper.installSmartXPathBundle();
-                            }
-                        } catch (BundleException e) {
-                            LogUtil.logError(e);
-                        }
-                    }
-                });
-        
-        eventBroker.subscribe(EventConstants.ACTIVATION_DEACTIVATED,
-                new EventHandler() {
-                    @Override
-                    public void handleEvent(Event event) {
-                        try {
-                            if (PlatformHelper.isSmartXPathBundleInstalled()) {
-                                PlatformHelper.uninstallSmartXPathBundle();
-                            }
+                            PlatformHelper.installSmartXPathBundle();
                         } catch (BundleException e) {
                             LogUtil.logError(e);
                         }

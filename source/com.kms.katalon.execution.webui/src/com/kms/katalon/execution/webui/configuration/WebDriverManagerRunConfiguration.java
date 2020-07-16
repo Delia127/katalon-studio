@@ -31,10 +31,10 @@ public class WebDriverManagerRunConfiguration {
         if (Platform.inDevelopmentMode()) {
             File parentFolder = new File(ClassPathResolver
                     .getBundleLocation(FrameworkUtil.getBundle(WebDriverManagerRunConfiguration.class)));
-            return new File(parentFolder, "resources/tools/webdriver/webdrivermanager-3.6.2-fat.jar");
+            return new File(parentFolder, "resources/tools/webdriver/webdrivermanager-4.0.0-fat.jar");
         } else {
             File parentFolder = ClassPathResolver.getConfigurationFolder();
-            return new File(parentFolder, "resources/tools/webdriver/webdrivermanager-3.6.2-fat.jar");
+            return new File(parentFolder, "resources/tools/webdriver/webdrivermanager-4.0.0-fat.jar");
         }
     }
 
@@ -46,26 +46,41 @@ public class WebDriverManagerRunConfiguration {
         File webdriverFatJarFile = getWebDriverManagerFatJar();
         String proxyCommand = getProxyCommand();
         List<String> commands = new ArrayList<>();
+
         commands.add(ClassPathResolver.getInstalledJRE());
-        commands.add(String.format("-Dwdm.targetPath=%s", driverLocation.getCanonicalPath()));
+
+        commands.add(String.format("-Dwdm.cachePath=%s", driverLocation.getCanonicalPath()));
+        commands.add("-Dwdm.forceDownload=true");
+
         commands.add(String.format("-Dwdm.geckoDriverUrl=%s", GECKO_RELEASES_JSON));
+
         if (StringUtils.isNotEmpty(proxyCommand)) {
             commands.add(proxyCommand);
         }
+
         String architecture = getArchitecture(webUIDriverType);
         if (StringUtils.isNotEmpty(architecture)) {
             commands.add(architecture);
         }
+
+        String osArg = getOSArgument();
+        if (StringUtils.isNotBlank(osArg)) {
+            commands.add(osArg);
+        }
+
         commands.add("-jar");
         commands.add(webdriverFatJarFile.getName());
         commands.add(getDriverName(webUIDriverType));
+
         ProcessBuilder builder = new ProcessBuilder(commands).directory(new File(webdriverFatJarFile.getParent()));
+
         if (getLogFile() != null) {
             builder.redirectOutput(Redirect.appendTo(getLogFile()));
         }
         if (getErrorLogFile() != null) {
             builder.redirectError(Redirect.appendTo(getErrorLogFile()));
         }
+
         if (!builder.start().waitFor(120, TimeUnit.SECONDS)) {
             throw new IOException("Process Timeout");
         }
@@ -83,6 +98,19 @@ public class WebDriverManagerRunConfiguration {
             default:
                 return "";
         }
+    }
+
+    private String getOSArgument() {
+        if (OSUtil.isMac()) {
+            return "-Dwdm.os=MAC";
+        }
+        if (OSUtil.isWindows()) {
+            return "-Dwdm.os=WIN";
+        }
+        if (OSUtil.isUnix() || OSUtil.isSolaris()) {
+            return "-Dwdm.os=LINUX";
+        }
+        return "";
     }
 
     private String getDriverName(WebUIDriverType webUIDriverType) {

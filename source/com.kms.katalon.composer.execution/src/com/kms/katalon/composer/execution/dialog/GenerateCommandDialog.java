@@ -25,6 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -356,7 +358,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         chkOverridePlatform = new Button(overrideComposite, SWT.CHECK);
         chkOverridePlatform.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
-        chkOverridePlatform.setText(ComposerExecutionMessageConstants.DIA_CHK_OVERRIDE_PLATFORM);
+        chkOverridePlatform.setText(StringConstants.DIA_CHK_OVERRIDE_PLATFORM);
 
         Label lblHelp = new Label(overrideComposite, SWT.NONE);
         lblHelp.setImage(ImageManager.getImage(IImageKeys.HELP_16));
@@ -1104,10 +1106,8 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         }
 
-        if (proxyOption != ProxyOption.NO_PROXY) {
-            args.put(ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES,
-                    Boolean.toString(proxyInfo.isApplyToDesiredCapabilities()));
-        }
+        args.put(ProxyPreferenceConstants.SYSTEM_PROXY_APPLY_TO_DESIRED_CAPABILITIES,
+                Boolean.toString(proxyInfo.isApplyToDesiredCapabilities()));
     }
 
     private String encodeSensitiveInfo(String sensitiveInfo) {
@@ -1254,12 +1254,9 @@ public class GenerateCommandDialog extends AbstractDialog {
             return;
         }
         txtTestSuite.setText(testSuite.getIdForDisplay());
-        boolean isTestSuite = false;
         if (testSuite instanceof TestSuiteEntity) {
-            isTestSuite = true;
             this.testSuite = (TestSuiteEntity) testSuite;
         }
-        ControlUtils.recursiveSetEnabled(grpPlatform, isTestSuite);
         updatePlatformLayout();
     }
 
