@@ -1567,7 +1567,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="com.microsoft.sqlserver.mssql-jdbc"
          download-size="0"
@@ -1591,6 +1591,20 @@
 
    <plugin
          id="org.objenesis"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.integration.qtest"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.qas.qtest.sdk-java"
          download-size="0"
          install-size="0"
          version="0.0.0"

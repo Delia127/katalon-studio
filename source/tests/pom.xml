@@ -11,11 +11,13 @@
 	<artifactId>com.kms.katalon.tests</artifactId>
 	<packaging>pom</packaging>
 	<modules>
+		<module>com.katalon.katalon-studio-smart-xpath.test</module>
 		<module>com.kms.katalon.logging.test</module>
 		<module>com.kms.katalon.core.test</module>
 		<module>com.kms.katalon.composer.execution.test</module>
 		<module>com.kms.katalon.execution.test</module>
 		<module>com.kms.katalon.core.webservice.test</module>
+		<module>com.kms.katalon.composer.webui.objectspy.test</module>
 		<module>com.kms.katalon.composer.webservice.test</module>
 		<module>com.kms.katalon.composer.windows.test</module>
 		<module>com.kms.katalon.execution.mobile.test</module>
@@ -26,6 +28,9 @@
 		<module>com.kms.katalon.composer.webui.test</module>
 		<module>com.kms.katalon.composer.testcase.test</module>
 		<module>com.kms.katalon.application.test</module>
+		<module>com.kms.katalon.selenium.ide.test</module>
+		<module>com.kms.katalon.controller.test</module>
+		<module>com.kms.katalon.execution.webservice.test</module>
 	</modules>
 
 	<properties>

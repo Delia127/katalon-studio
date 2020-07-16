@@ -125,6 +125,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return;
         }
         
+        waitForLoggingFinished();
+        
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -145,8 +147,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             writeError(MessageFormat.format(StringConstants.LAU_RPT_ERROR_TO_GENERATE_REPORT, e.getMessage()));
             LogUtil.printAndLogError(e);
         }
-
-        waitForLoggingFinished();
 
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_FINISHED_EVENT);
         

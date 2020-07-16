@@ -47,6 +47,7 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.launcher.IDEObservableLauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -62,6 +63,9 @@ public class JobViewerPart implements EventHandler {
     private static final Image IMG_TERMINATE = ImageConstants.IMG_16_TERMINATE;
     private static final Image IMG_PAUSE = ImageConstants.IMG_16_PAUSE;
     private static final Image IMG_PLAY = ImageConstants.IMG_16_PLAY;
+    private static final Image IMG_ERROR = ImageConstants.IMG_16_JOBVIEW_ERROR;
+    private static final Image IMG_FAIL = ImageConstants.IMG_16_JOBVIEW_FAILED;
+    private static final Image IMG_SKIP = ImageConstants.IMG_16_JOBVIEW_SKIPPED;
 
     private Composite listCompositeLauncher;
     private Composite parentComposite;
@@ -209,8 +213,22 @@ public class JobViewerPart implements EventHandler {
 
             switch (launcher.getStatus()) {
                 case DONE:
-                    lblLauncherStatus.setImage(IMG_DONE);
-                    break;
+                    switch (getExecutionStatus(launcher)) {
+                        case ERROR:
+                            lblLauncherStatus.setImage(IMG_ERROR);
+                            break;
+                        case FAILED:
+                            lblLauncherStatus.setImage(IMG_FAIL);
+                            break;
+                        case PASSED:
+                            lblLauncherStatus.setImage(IMG_DONE);
+                            break;
+                        case SKIPPED:
+                            lblLauncherStatus.setImage(IMG_SKIP);
+                            break;
+                        default:
+                            break;
+                    }
                 case SUSPENDED:
                     break;
                 case TERMINATED:
@@ -228,7 +246,27 @@ public class JobViewerPart implements EventHandler {
         GridData gdLblStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdLblStatus.heightHint = 9;
 
-        lblStatus.setText(launcher.getDisplayMessage());
+        String displayMessage = launcher.getDisplayMessage();
+        String doneMessage = LauncherStatus.DONE.toString();
+        if (displayMessage.indexOf(doneMessage) == 1) {
+            switch (getExecutionStatus(launcher)) {
+                case ERROR:
+                    displayMessage = displayMessage.replaceFirst(doneMessage, "Error");
+                    break;
+                case FAILED:
+                    displayMessage = displayMessage.replaceFirst(doneMessage, "Failed");
+                    break;
+                case PASSED:
+                    displayMessage = displayMessage.replaceFirst(doneMessage, "Passed");
+                    break;
+                case SKIPPED:
+                    displayMessage = displayMessage.replaceFirst(doneMessage, "Skipped");
+                    break;
+                default:
+                    break;
+            }
+        }
+        lblStatus.setText(displayMessage);
         new Label(compositeLauncher, SWT.NONE);
 
         if (launcher.getStatus() == LauncherStatus.RUNNING || launcher.getStatus() == LauncherStatus.WAITING
@@ -331,6 +369,21 @@ public class JobViewerPart implements EventHandler {
                 }
             }
         });
+    }
+
+    private TestStatusValue getExecutionStatus(IDEObservableLauncher launcher) {
+        TestStatusValue status = TestStatusValue.INCOMPLETE;
+        ILauncherResult result = launcher.getResult();
+        if (result.getNumErrors() > 0) {
+            status = TestStatusValue.ERROR;
+        } else if (result.getNumFailures() > 0) {
+            status = TestStatusValue.FAILED;
+        } else if (result.getNumPasses() > 0) {
+            status = TestStatusValue.PASSED;
+        } else if (result.getNumSkips() > 0) {
+            status = TestStatusValue.SKIPPED;
+        }
+        return status;
     }
 
     private void draw() {

@@ -71,6 +71,8 @@ public class ImageConstants {
     // WebElementTreeEntity
     public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);
     
+    public static final Image IMG_16_MOBILE_TEST_OBJECT = ImageManager.getImage(IImageKeys.MOBILE_16);
+    
     public static final Image IMG_16_BTN_TEST_OBJECT = ImageManager.getImage(IImageKeys.BTN_TEST_OBJECT_16);
 
     public static final Image IMG_16_CBX_TEST_OBJECT = ImageManager.getImage(IImageKeys.CBX_TEST_OBJECT_16);
@@ -161,6 +163,8 @@ public class ImageConstants {
     public static final Image IMG_16_RECENT = ImageManager.getImage(IImageKeys.RECENT_16);
 
     public static final Image IMG_16_EXPORT_CSV = ImageManager.getImage(IImageKeys.EXPORT_CSV_16);
+
+    public static final Image IMG_16_SETTING = ImageManager.getImage(IImageKeys.SETTING_16);
 
     // CheckpointTreeEntity
     public static final Image IMG_16_CHECKPOINT = ImageManager.getImage(IImageKeys.CHECKPOINT_16);

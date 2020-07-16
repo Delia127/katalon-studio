@@ -45,6 +45,8 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     private Map<String, TestData> testDataMap;
 
+    private WebServiceExecutionSettings webServiceSettings;
+
     private ReportLocationSetting reportLocationSetting;
 
     private DefaultRerunSetting rerunSetting;
@@ -57,6 +59,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     public TestSuiteExecutedEntity() {
         testDataMap = new HashMap<>();
+        webServiceSettings = new WebServiceExecutionSettings();
         reportLocationSetting = new ReportLocationSetting();
         emailSettings = new EmailSettings();
         rerunSetting = new DefaultRerunSetting();
@@ -464,12 +467,21 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         return emailSettings.getEmailConfig(project);
     }
 
+    public WebServiceExecutionSettings getWebServiceSettings() {
+        return webServiceSettings;
+    }
+
+    public void setWebServiceSettings(WebServiceExecutionSettings webServiceSettings) {
+        this.webServiceSettings = webServiceSettings;
+    }
+
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
         consoleOptionList.addAll(reportLocationSetting.getConsoleOptionList());
         consoleOptionList.addAll(emailSettings.getConsoleOptionList());
         consoleOptionList.addAll(rerunSetting.getConsoleOptionList());
+        consoleOptionList.addAll(webServiceSettings.getConsoleOptionList());
         return consoleOptionList;
     }
 
@@ -478,6 +490,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         reportLocationSetting.setArgumentValue(consoleOption, argumentValue);
         emailSettings.setArgumentValue(consoleOption, argumentValue);
         rerunSetting.setArgumentValue(consoleOption, argumentValue);
+        webServiceSettings.setArgumentValue(consoleOption, argumentValue);
     }
 
     @Override

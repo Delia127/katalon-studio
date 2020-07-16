@@ -37,11 +37,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
+import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -60,6 +63,7 @@ import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
 import com.kms.katalon.core.webservice.common.HarLogger;
+import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.constants.WsdlLocatorParams;
 import com.kms.katalon.core.webservice.helper.WsdlLocatorProvider;
 import com.kms.katalon.core.webservice.wsdl.support.wsdl.WsdlDefinitionLocator;
@@ -70,6 +74,7 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class SoapServicePart extends WebServicePart {
@@ -174,6 +179,9 @@ public class SoapServicePart extends WebServicePart {
         GridData gdServiceEndpoint = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
         gdServiceEndpoint.heightHint = 20;
         txtServiceEndpoint.setLayoutData(gdServiceEndpoint);
+
+        Composite requestOptions = createRequestOptionsComposite(composite);
+        requestOptions.setLayoutData(new GridData(SWT.DEFAULT, SWT.DEFAULT, true, false, gridLayout.numColumns, 1));
 
         if (!originalWsObject.isCreatedBeforeV7_4_5()) {
             ((GridData) lblEmpty.getLayoutData()).exclude = true;
@@ -458,6 +466,8 @@ public class SoapServicePart extends WebServicePart {
                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
+                        
+                        configRequest(requestEntity);
 
                         Map<String, Object> evaluatedVariables = evaluateRequestVariables();
 
@@ -517,6 +527,30 @@ public class SoapServicePart extends WebServicePart {
         } catch (InterruptedException ignored) {
         }
         displayResponseContentBasedOnSendingState(false);
+    }
+
+    @Override
+    protected Composite createRequestOptionsComposite(Composite parent) {
+        Composite requestOptionsComposite = super.createRequestOptionsComposite(parent);
+        createSetRequestTimeoutLink(requestOptionsComposite);
+
+        return requestOptionsComposite;
+    }
+
+    private void createSetRequestTimeoutLink(Composite parent) {
+        Link lnkSetTimeout = new Link(parent, SWT.NONE);
+        lnkSetTimeout.setText(StringConstants.LINK_SET_REQUEST_TIMEOUT_AND_LIMIT);
+        lnkSetTimeout.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (LicenseUtil.isNotFreeLicense()) {
+                    eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,
+                            StringConstants.EXECUTION_WEB_SERVICE_SETTING_PAGE_ID);
+                } else {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.CUSTOM_WEB_SERVICE_REQUEST_TIMEOUT);
+                }
+            }
+        });
     }
 
     @Override
@@ -603,7 +637,7 @@ public class SoapServicePart extends WebServicePart {
         if (OAUTH_1_0.equals(authType)) {
             try {
                 String oauth1AuthorizationHeader = BasicRequestor
-                        .createOAuth1AuthorizationHeaderValue(txtWsdlLocation.getText().trim(), map);
+                        .createOAuth1AuthorizationHeaderValue(txtWsdlLocation.getText().trim(), map, RequestHeaderConstants.POST);
                 return StringUtils.isBlank(oauth1AuthorizationHeader) ? null : oauth1AuthorizationHeader;
             } catch (GeneralSecurityException e) {
                 LoggerSingleton.logError(e);

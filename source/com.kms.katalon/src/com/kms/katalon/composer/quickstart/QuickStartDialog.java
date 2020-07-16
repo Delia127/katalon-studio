@@ -30,6 +30,7 @@ import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.components.impl.wizard.WizardDialog;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.ImageConstants;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class QuickStartDialog extends WizardDialog {
 
@@ -211,8 +212,11 @@ public class QuickStartDialog extends WizardDialog {
                     return;
                 }
                 TableItem item = tableViewer.getTable().getItem(new Point(e.x, e.y));
-                showPage((IWizardPage) item.getData());
+                IWizardPage selectedPage = (IWizardPage) item.getData();
+                showPage(selectedPage);
                 tableViewer.setSelection(new StructuredSelection());
+
+                Trackings.trackQuickStartAction(selectedPage.getClass().getSimpleName());
             }
         });
         
@@ -292,5 +296,17 @@ public class QuickStartDialog extends WizardDialog {
     @Override
     protected void finishPressed() {
         super.okPressed();
+    }
+
+    @Override
+    public boolean close() {
+        Trackings.trackQuickStartAction("skip");
+        return super.close();
+    }
+
+    @Override
+    protected void nextPressed() {
+        Trackings.trackQuickStartAction("next");
+        super.nextPressed();
     }
 }

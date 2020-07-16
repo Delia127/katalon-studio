@@ -26,6 +26,7 @@ public class ImageProcessor {
         registerWalkthroughImages();
         registerResultTabImages();
         registerAboutDialogImages();
+        registerJobImages();
     }
     
     private void registerWalkthroughImages(){
@@ -165,6 +166,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.MAP_ALL_16);
         ImageManager.registerImage(IImageKeys.RECENT_16);
         ImageManager.registerImage(IImageKeys.EXPORT_CSV_16);
+        ImageManager.registerImage(IImageKeys.SETTING_16);
 
         // Sub-toolbar disabled icons
         ImageManager.registerImage(IImageKeys.CLEAR_DISABLED_16);
@@ -476,5 +478,11 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.LOGO_KSE);
         ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_DRANK);
         ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_LIGHT);
+    }
+
+    private void registerJobImages() {
+        ImageManager.registerImage(IImageKeys.JOB_ERROR_16);
+        ImageManager.registerImage(IImageKeys.JOB_FAILED_16);
+        ImageManager.registerImage(IImageKeys.JOB_SKIPPED_16);
     }
 }

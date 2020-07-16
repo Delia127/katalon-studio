@@ -306,7 +306,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS;
 
     public static final String DIA_CHK_APPLY_PROXY = ComposerExecutionMessageConstants.DIA_CHK_APPLY_PROXY;
-    
+
+    public static final String DIA_CHK_OVERRIDE_PLATFORM = ComposerExecutionMessageConstants.DIA_CHK_OVERRIDE_PLATFORM;
+
     public static final String DIA_CHK_FOR_RETRY_ALL_EXECUTIONS = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_ALL_EXECUTIONS;
     
     public static final String DIA_CHK_FOR_RETRY_IMMEDIATELY = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_IMMEDIATELY;
