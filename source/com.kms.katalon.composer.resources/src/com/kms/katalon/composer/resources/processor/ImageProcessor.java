@@ -26,6 +26,7 @@ public class ImageProcessor {
         registerWalkthroughImages();
         registerResultTabImages();
         registerAboutDialogImages();
+        registerTestOpsImages();
     }
     
     private void registerWalkthroughImages(){
@@ -478,4 +479,11 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_DRANK);
         ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_LIGHT);
     }
+    
+    private void registerTestOpsImages() {
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTIONS);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTION_PASSED);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTION_FAILED);
+    }
+    
 }

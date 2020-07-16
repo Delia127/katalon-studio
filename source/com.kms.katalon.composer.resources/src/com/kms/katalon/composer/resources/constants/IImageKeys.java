@@ -819,4 +819,12 @@ public interface IImageKeys {
     public static final String IMG_ABOUT_BG_DRANK = "about/background_dark.png";
 
     public static final String KATALON_NOTIFICATION_DOT_24 = "toolbar/noti_blue_dot_32x24.png";
+    
+    // TestOps
+    public static final String IMG_TESTOPS_EXECUTIONS = "testops/executions.png";
+    
+    public static final String IMG_TESTOPS_EXECUTION_PASSED = "testops/execution_passed.png";
+    
+    public static final String IMG_TESTOPS_EXECUTION_FAILED = "testops/execution_failed.png";
+    
 }

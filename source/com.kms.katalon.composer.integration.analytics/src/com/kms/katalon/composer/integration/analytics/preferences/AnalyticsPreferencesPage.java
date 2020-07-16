@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
@@ -59,6 +61,9 @@ import com.kms.katalon.util.CryptoUtil;
 
 public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp {
 
+	@Inject
+    private IEventBroker eventBroker;
+	
     private Composite container;
 
     private Composite mainComposite;
@@ -288,6 +293,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         if (!integrationEnabled) {
             uploadDataOnPremise();
             updateDataStore();
+            refreshNavigationTree();
             return true;
         }
 
@@ -310,7 +316,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         }
         uploadDataOnPremise();
         updateDataStore();
+        refreshNavigationTree();
         return super.performOk();
+    }
+    
+    private void refreshNavigationTree() {
+    	eventBroker.post(EventConstants.EXPLORER_RELOAD_DATA, true);
     }
 
     @Override
