@@ -4,7 +4,7 @@ Bundle-Name: History
 Bundle-SymbolicName: com.kms.katalon.composer.integration.analytics.testops;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="1.2.0.v20160229-1459",
+Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.composer.components,
  com.kms.katalon.entity,
  com.kms.katalon.constant,
@@ -23,7 +23,6 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="1.2.0.v2016022
  com.kms.katalon.integration.analytics,
  org.eclipse.jface,
  org.apache.commons.lang3,
- org.eclipse.wb.core.lib,
  com.kms.katalon.util,
  com.kms.katalon.controller,
  org.eclipse.osgi

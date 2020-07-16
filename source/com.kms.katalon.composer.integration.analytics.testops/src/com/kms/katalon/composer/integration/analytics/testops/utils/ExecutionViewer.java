@@ -207,9 +207,6 @@ class ExecutionViewerListener implements Listener {
 					break;
 				}
 			}
-			if (column != ExecutionViewer.COLUMN_INDEX_STATUS) {
-				return;
-			}
 
 			switch (column) {
 			case ExecutionViewer.COLUMN_INDEX_STATUS:
