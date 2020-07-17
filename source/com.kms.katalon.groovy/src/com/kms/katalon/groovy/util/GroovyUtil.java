@@ -575,10 +575,15 @@ public class GroovyUtil {
                 return false;
         }
 
-        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName))
+        if (bundleName.startsWith("org.eclipse.core")) {
             return false;
-        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName))
+        }
+        if ("org.eclipse.jdt.core".equalsIgnoreCase(bundleName)) {
             return false;
+        }
+        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName)) {
+            return false;
+        }
 
         for (IClasspathEntry childEntry : entries) {
             if ((childEntry.getPath() != null) && (childEntry.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
