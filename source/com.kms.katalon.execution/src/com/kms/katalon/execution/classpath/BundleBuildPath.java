@@ -71,6 +71,10 @@ public class BundleBuildPath implements IBuildPath {
                 || "org.codehaus.groovy".equalsIgnoreCase(bundleName)) {
             return false;
         }
+        
+        if ("org.eclipse.jdt.core".equalsIgnoreCase(bundleName)) {
+            return false;
+        }
 
         return !isCoreBundle(bundle);
     }
