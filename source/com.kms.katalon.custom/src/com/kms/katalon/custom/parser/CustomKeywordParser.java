@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -306,7 +307,7 @@ public class CustomKeywordParser {
             }
             
             return StringUtils.defaultIfBlank(JDTUtil.findJavadoc(method), "");
-        } catch (JavaModelException e) {
+        } catch (JavaModelException | IllegalArgumentException | ExecutionException e) {
             LogUtil.printAndLogError(e);
             return "";
         }

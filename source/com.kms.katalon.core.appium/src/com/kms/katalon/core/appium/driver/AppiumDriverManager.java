@@ -563,9 +563,7 @@ public class AppiumDriverManager {
     
     private static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl) throws URISyntaxException, IOException {
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Proxy proxy = proxyInfo.isApplyToDesiredCapabilities()
-                ? ProxyUtil.getProxy(proxyInfo, remoteWebServerUrl)
-                : null;
+        Proxy proxy = ProxyUtil.getProxy(proxyInfo, remoteWebServerUrl);
         Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, remoteWebServerUrl, clientFactory);
         return executor;
@@ -631,6 +629,17 @@ public class AppiumDriverManager {
     public static AppiumDriver<?> getDriver() throws StepFailedException {
         verifyWebDriverIsOpen();
         return localStorageAppiumDriver.get();
+    }
+
+    /**
+     * Sets the current active Appium driver.
+     * 
+     * @param driver    the Appium driver to be set
+     * @see             AppiumDriver
+     * @since           7.6.0
+     */
+    public static void setDriver(AppiumDriver<?> driver) {
+        localStorageAppiumDriver.set(driver);
     }
 
     public static Process getAppiumSeverProcess() {

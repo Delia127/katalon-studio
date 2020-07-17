@@ -9,8 +9,8 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
+import com.kms.katalon.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.execution.collection.provider.TestExecutionGroup;
 
 public class CollectTestSuiteExecutionContribution {
     private static final String ATTRIBUTE_NAME = "item";

@@ -11,8 +11,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.program.Program;
 
-import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.util.ZipHelper;
 import com.kms.katalon.controller.ProjectController;
@@ -86,8 +84,8 @@ public class AnalyticsGridHandler {
                 }
             });
         } catch (InvocationTargetException | InterruptedException exception) {
-            MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
-                    exception.getMessage());
+//            MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
+//                    exception.getMessage());
         }
         return testProject;
     }
@@ -127,8 +125,8 @@ public class AnalyticsGridHandler {
                 }
             });
         } catch (InvocationTargetException | InterruptedException exception) {
-            MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
-                    exception.getMessage());
+//            MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
+//                    exception.getMessage());
         }
 
     }

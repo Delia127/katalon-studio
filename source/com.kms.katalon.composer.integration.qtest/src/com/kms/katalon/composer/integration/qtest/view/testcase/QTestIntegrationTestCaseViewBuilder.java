@@ -3,11 +3,11 @@ package com.kms.katalon.composer.integration.qtest.view.testcase;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 
 import com.kms.katalon.composer.components.part.SavableCompositePart;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
 import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationViewBuilder;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 
 public class QTestIntegrationTestCaseViewBuilder implements TestCaseIntegrationViewBuilder {
 

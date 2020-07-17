@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
@@ -30,6 +31,7 @@ import com.kms.katalon.core.context.internal.ExecutionEventManager;
 import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
 import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
+import com.kms.katalon.core.keyword.internal.KeywordExecutionContext;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
@@ -102,6 +104,7 @@ public class TestCaseExecutor {
         keywordStack = new Stack<KeywordLogger.KeywordStackElement>();
         parentErrors = errorCollector.getCoppiedErrors();
         errorCollector.clearErrors();
+        KeywordExecutionContext.setHasHealedSomeObjects(false);
     }
 
     private void onExecutionComplete() {
@@ -177,14 +180,13 @@ public class TestCaseExecutor {
     }
 
     private void postExecution() {
-    	
-		if (RunConfiguration.shouldApplySmartXPath()) {
-
-			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_OPENING);
-			logger.logInfo(StringConstants.SMART_XPATH_VISIT_BELOW_LINK);
-			logger.logInfo(StringConstants.SMART_XPATH_DOCUMENT);
-			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_ENDING);
-			
+        boolean hasHealedSomeObjects = KeywordExecutionContext.hasHealedSomeObjects();
+		if (hasHealedSomeObjects && RunConfiguration.shouldApplySelfHealing()) {
+            logger.logInfo(StringUtils.EMPTY);
+			logger.logInfo(StringConstants.SELF_HEALING_REPORT_AVAILABLE_OPENING);
+			logger.logInfo(StringConstants.SELF_HEALING_REPORT_VISIT_INSIGHT_PART);
+			logger.logInfo(StringConstants.SELF_HEALING_REFER_TO_DOCUMENT);
+			logger.logInfo(StringConstants.SELF_HEALING_REPORT_AVAILABLE_ENDING);
 		}
 
         errorCollector.clearErrors();

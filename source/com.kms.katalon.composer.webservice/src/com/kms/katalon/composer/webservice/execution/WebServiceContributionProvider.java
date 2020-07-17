@@ -9,11 +9,11 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionEntryItem;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
+import com.kms.katalon.execution.collection.provider.TestExecutionEntryItem;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.webservice.contribution.WebServiceConfigurationContributor;
 

@@ -85,6 +85,18 @@
       		name="Launch Arguments">
 	  </page>
       <page
+            category="com.kms.katalon.composer.execution.settings"
+            class="com.kms.katalon.composer.execution.settings.WebUIExecutionSettingPage"
+            id="com.kms.katalon.composer.execution.settings.webui"
+            name="WebUI">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.settings"
+            class="com.kms.katalon.composer.execution.settings.WebServiceExecutionSettingPage"
+            id="com.kms.katalon.composer.execution.settings.webservice"
+            name="Web Service">
+      </page>
+      <page
             class="com.kms.katalon.composer.execution.settings.CustomExecutionSettingPage"
             category="com.kms.katalon.composer.execution.desiredcapabilities"
             id="com.kms.katalon.composer.execution.settings.custom"
@@ -122,7 +134,7 @@
             class="com.kms.katalon.composer.execution.settings.DesiredCapabilitiesSettingPage"
             id="com.kms.katalon.composer.execution.desiredcapabilities"
             name="Desired Capabilities">
-      </page>   
+      </page>
    </extension>
    <extension
          point="org.eclipse.debug.core.watchExpressionDelegates">

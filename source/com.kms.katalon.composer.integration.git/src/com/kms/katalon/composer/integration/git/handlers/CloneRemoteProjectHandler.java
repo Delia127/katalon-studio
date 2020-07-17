@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -88,10 +89,13 @@ public class CloneRemoteProjectHandler {
 
     @Inject
     MApplication application;
+    
+    @Inject
+    IEventBroker eventBroker;
 
     @PostConstruct
     public void registerEventHandler() {
-        EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.GIT_CLONE_REMOTE_PROJECT,
+        eventBroker.subscribe(EventConstants.GIT_CLONE_REMOTE_PROJECT,
                 new EventServiceAdapter() {
 
                     @Override

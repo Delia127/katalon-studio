@@ -1,26 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-	<extension
-            point="com.katalon.platform.extensions">
-        <point
-                id="thanhto.smartxpathplugin.SmartXPathEventListenerInitializer"
-                extensionPointId="com.katalon.platform.api.extension.event"
-                implementationClass="com.katalon.plugin.smart_xpath.SmartXpathEventListenerInitializer">
-        </point>
-    </extension>
-    	<extension
-            point="com.katalon.platform.extensions">
-        <point
-                id="thanhto.smartxpathplugin.SmartXPathToolItemWithMenu"
-                extensionPointId="com.katalon.platform.api.extension.newDropdownToolItem"
-                implementationClass="com.katalon.plugin.smart_xpath.SmartXPathToolItemWithMenuDescription">
-        </point>
-    </extension>
-    <extension
-            point="com.katalon.platform.extensions">
-        <point
-                id="thanhto.smartxpathplugin.SmartXPathPluginActivationListener"
-                extensionPointId="com.katalon.platform.api.extension.pluginActivationListener"
-                implementationClass="com.katalon.plugin.smart_xpath.SmartXPathPluginActivationListener">
-        </point>
-    </extension>    
+
+   <extension
+         point="com.katalon.platform.extensions">
+      <point
+            extensionPointId="com.katalon.platform.api.extension.event"
+            implementationClass="com.katalon.plugin.smart_xpath.SmartXpathEventListenerInitializer"
+            id="thanhto.smartxpathplugin.SmartXPathEventListenerInitializer">
+      </point>
+   </extension>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+            class="com.katalon.plugin.smart_xpath.settings.SelfHealingSettingPage"
+            id="com.katalon.katalon-studio-smart-xpath.self_healing"
+      		name="Self-healing">
+      </page>
+      <page
+           category="com.kms.katalon.composer.webui.setting.testdesign"
+            class="com.katalon.plugin.smart_xpath.settings.SelfHealingTestDesignSettingPage"
+            id="com.kms.katalon.composer.webui.setting.testdesign.webui"
+            name="Web UI">
+      </page>
+      <page
+            category="com.katalon.katalon-studio-smart-xpath.self_healing"
+            class="com.katalon.plugin.smart_xpath.settings.SelfHealingWebUISettingPage"
+            id="com.katalon.katalon-studio-smart-xpath.self_healing.webui"
+            name="Web UI">
+      </page>
+   </extension>
+   <extension
+         point="com.katalon.platform.extensions">
+      <point
+            extensionPointId="com.katalon.platform.api.extension.newDropdownToolItem"
+            implementationClass="com.katalon.plugin.smart_xpath.SmartXPathToolItemWithMenuDescription"
+            id="thanhto.smartxpathplugin.SmartXPathToolItemWithMenu">
+      </point>
+   </extension>
+   <extension
+         point="com.katalon.platform.extensions">
+      <point
+            extensionPointId="com.katalon.platform.api.extension.pluginActivationListener"
+            implementationClass="com.katalon.plugin.smart_xpath.SmartXPathPluginActivationListener"
+            id="thanhto.smartxpathplugin.SmartXPathPluginActivationListener">
+      </point>
+   </extension>
+   <extension
+         id="com.katalon.katalon-studio-smart-xpath.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.katalon.plugin.smart_xpath.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+
 </plugin>

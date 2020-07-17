@@ -200,7 +200,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             startInspectSession();
 
             invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
-            Trackings.trackSpy("web");
+            Trackings.trackWebSpy();
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -323,8 +323,9 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
     private void createDropdownContent(Dropdown dropdown) {
         DropdownGroup newBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_NEW_BROWSERS,
                 ImageConstants.IMG_16_NEW_BROWSER);
-        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
+
         addNewBrowserItem(newBrowser, WebUIDriverType.CHROME_DRIVER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
         addNewBrowserItem(newBrowser, WebUIDriverType.EDGE_CHROMIUM_DRIVER);
 
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
@@ -541,7 +542,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         Win32Helper.switchFocusToBrowser(browserType);
         currentInstantSocket.sendMessage(new StartInspectAddonMessage());
         invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
-        Trackings.trackSpy("web");
+        Trackings.trackWebSpy();
     }
 
     protected void runInstantIE() throws Exception {

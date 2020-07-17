@@ -227,13 +227,14 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
                                             .getContributorName(driverConnector, configFolderPath);
 
                                     runConfiguration.addDriverConnector(name, driverConnector);
-                                }                               
+                                }
                             } catch (IOException e) {
                                 LoggerSingleton.logError(e);
                                 MultiStatusErrorDialog.showErrorDialog(e, "Unable to update custom configuration",
                                         e.getMessage());
                             }
 
+                            tableViewer.refresh(runConfiguration);
                         }
                     }
 

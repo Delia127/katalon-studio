@@ -375,10 +375,25 @@ public class GroovyUtil {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.netlightbody"), allowSourceAttachment);
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.poi"), allowSourceAttachment);
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.proxyvole"), allowSourceAttachment);
+
+        if (isStartFromEclipseIDE()) {
+            addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.entity"), allowSourceAttachment);
+            addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("org.eclipse.core.commands"), allowSourceAttachment);
+        }
+
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());
             addClassPathOfCoreBundleToJavaProject(entries, coreBundle, allowSourceAttachment);
         }
+    }
+
+    private static boolean isStartFromEclipseIDE() throws IOException {
+        Bundle coreBundle = Platform.getBundle("com.kms.katalon.entity");
+        File customBundleFile = FileLocator.getBundleFile(coreBundle).getAbsoluteFile();
+        if (customBundleFile == null || !customBundleFile.exists()) {
+            return false;
+        }
+        return customBundleFile.isDirectory();
     }
 
     private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, Bundle coreBundle, boolean allowSourceAttachment)

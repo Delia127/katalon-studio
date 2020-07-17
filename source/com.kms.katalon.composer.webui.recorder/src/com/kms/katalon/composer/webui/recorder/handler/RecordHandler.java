@@ -176,7 +176,7 @@ public class RecordHandler {
      * via entitySavedMap. Cloned WebPages will be created in recordedElements
      * and references of their children are removed from the original WebPages
      * 
-     * @see com.kms.katalon.objectspy.dialog.ObjectRepositoryService#saveObject(SaveToObjectRepositoryDialogResult)
+     * @see com.kms.katalon.objectspy.dialog.ObjectRepositoryService#saveObjectForWebRecorder(SaveToObjectRepositoryDialogResult)
      * @param recordedElements The list of WebPages and their children of a test case
      * @param entitySavedMap A map of physical folders indexed by WebPage and WebEntity
      */

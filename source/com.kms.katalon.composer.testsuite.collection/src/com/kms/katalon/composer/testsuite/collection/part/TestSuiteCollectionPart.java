@@ -709,7 +709,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @PreDestroy
     public void close() {
         eventBroker.unsubscribe(this);
-        partService.hidePart(mpart, true);
+        // partService.hidePart(mpart, true);
     }
 
     @Focus

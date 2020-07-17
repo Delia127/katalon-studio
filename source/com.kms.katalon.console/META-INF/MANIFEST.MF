@@ -25,8 +25,11 @@ Require-Bundle: org.eclipse.equinox.app,
  com.kms.katalon.application,
  org.greenrobot.eventbus,
  com.kms.katalon.tracking,
- com.kms.katalon.entity
-Export-Package: com.kms.katalon.console.addons,
- com.kms.katalon.console.application,
+ com.kms.katalon.entity,
+ com.kms.katalon.util,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.di
+Export-Package: com.kms.katalon.console.application,
  com.kms.katalon.console.constants
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: com.kms.katalon.console.ConsoleBundleActivator
