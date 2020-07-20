@@ -3,13 +3,8 @@ package com.kms.katalon.integration.analytics;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.runtime.Platform;
-
 import com.kms.katalon.execution.configuration.contributor.IExecutionPropertiesContributor;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportIntegration;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
 
 public class ExecutionPropertiesContribution implements IExecutionPropertiesContributor {
     

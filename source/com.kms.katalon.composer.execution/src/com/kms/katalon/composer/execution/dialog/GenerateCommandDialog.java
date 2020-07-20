@@ -299,8 +299,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         cbTestOpsRelease = new Combo(grpTestOpsContainer, SWT.READ_ONLY);
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
         cbTestOpsRelease.setLayoutData(gridData);
-        cbTestOpsRelease.add(StringConstants.DIA_CB_DEFAULT_LASTEST_RELEASE);
+        cbTestOpsRelease.add(StringConstants.DIA_CB_TESTOPS_LOADING);
         cbTestOpsRelease.select(0);
+        cbTestOpsRelease.setEnabled(false);
     }
 
     private void createPlatformPart(Composite parent) {
@@ -1386,7 +1387,8 @@ public class GenerateCommandDialog extends AbstractDialog {
                     AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                     releases = AnalyticsApiProvider.getReleases(project.getId(), serverUrl, token.getAccess_token());
                     UISynchronizeService.asyncExec(() -> {
-                        if (!cbTestOpsRelease.isDisposed()) {
+                        if (cbTestOpsRelease != null && !cbTestOpsRelease.isDisposed()) {
+                            setDefaultTestOpsRelease();
                             releases.forEach(release -> {
                                 cbTestOpsRelease.add(String.format("%s (id: %s)", release.getName(), release.getId()));
                             });
@@ -1396,9 +1398,21 @@ public class GenerateCommandDialog extends AbstractDialog {
                 }
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
+                UISynchronizeService.asyncExec(() -> {
+                    setDefaultTestOpsRelease();
+                });
             }
         });
         getReleaseThread.start();
+    }
+
+    private void setDefaultTestOpsRelease() {
+        if (cbTestOpsRelease != null && !cbTestOpsRelease.isDisposed()) {
+            cbTestOpsRelease.removeAll();
+            cbTestOpsRelease.add(StringConstants.DIA_CB_DEFAULT_LASTEST_RELEASE);
+            cbTestOpsRelease.select(0);
+            cbTestOpsRelease.setEnabled(true);
+        }
     }
     
     private RunConfigurationDescription getStoredConfigurationDescription() {
