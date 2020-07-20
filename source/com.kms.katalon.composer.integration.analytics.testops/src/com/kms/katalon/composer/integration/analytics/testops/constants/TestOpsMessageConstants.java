@@ -28,6 +28,10 @@ public class TestOpsMessageConstants extends NLS {
 	
 	public static String LBL_EXECUTION_STATUS_FAILED;
 	
+	public static String LNK_EXECUTION_EMPTY;
+	
+	public static String LNK_ENABLE_INTEGRATION_GUIDE;
+	
 	static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, TestOpsMessageConstants.class);

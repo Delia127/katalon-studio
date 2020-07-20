@@ -23,4 +23,8 @@ public class TestOpsStringConstants {
 	public static final String LBL_EXECUTION_STATUS_PASSED = TestOpsMessageConstants.LBL_EXECUTION_STATUS_PASSED;
 	
 	public static final String LBL_EXECUTION_STATUS_FAILED = TestOpsMessageConstants.LBL_EXECUTION_STATUS_FAILED;
+	
+	public static final String LNK_EXECUTION_EMPTY = TestOpsMessageConstants.LNK_EXECUTION_EMPTY;
+	
+	public static final String LNK_ENABLE_INTEGRATION_GUIDE = TestOpsMessageConstants.LNK_ENABLE_INTEGRATION_GUIDE;
 }

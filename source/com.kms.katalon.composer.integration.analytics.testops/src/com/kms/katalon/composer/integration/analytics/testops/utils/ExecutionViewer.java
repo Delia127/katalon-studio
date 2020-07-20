@@ -11,6 +11,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -112,11 +114,20 @@ public class ExecutionViewer extends TableViewer {
 				}
 			});
 
+		    tableItem.addDisposeListener(new DisposeListener() {
+                
+                @Override
+                public void widgetDisposed(DisposeEvent e) {
+                    link.dispose();
+                }
+            });
+		    
 			TableEditor editor = new TableEditor(tableItem.getParent());
 			editor.grabHorizontal = true;
 			editor.grabVertical = true;
 			editor.setEditor(link, tableItem, COLUMN_INDEX_ID);
 			editor.layout();
+			
 		}
 
 	}
@@ -164,7 +175,7 @@ public class ExecutionViewer extends TableViewer {
 		}
 
 		if (name.length() != 0) {
-			name.delete(name.length() - delemiter.length() - 1, name.length() - 1);
+			name.delete(name.length() - delemiter.length(), name.length() - 1);
 		}
 
 		return name.toString();
