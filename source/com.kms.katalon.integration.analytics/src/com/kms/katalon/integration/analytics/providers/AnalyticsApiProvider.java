@@ -63,6 +63,8 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsRelease;
+import com.kms.katalon.integration.analytics.entity.AnalyticsReleasePage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsRunConfiguration;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeamPage;
@@ -77,6 +79,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsExecutionStage;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.query.AnalyticsQuery;
 import com.kms.katalon.integration.analytics.query.AnalyticsQueryCondition;
+import com.kms.katalon.integration.analytics.query.AnalyticsQueryFunction;
 import com.kms.katalon.integration.analytics.query.AnalyticsQueryPagination;
 import com.kms.katalon.logging.LogUtil;
 
@@ -687,6 +690,51 @@ public class AnalyticsApiProvider {
 		httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
 		AnalyticsExecutionPage response = executeRequest(httpGet, AnalyticsExecutionPage.class);
 		return response;
-	}
+    }
+    
+    public static List<AnalyticsRelease> getReleases(Long projectId, String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            AnalyticsReleasePage response = getReleasePage(serverUrl, token, projectId, 0);
+            List<AnalyticsRelease> executions = new ArrayList<>();
+            if (!response.isEmpty()) {
+                executions.addAll(Arrays.asList(response.getContent()));
+            }
+
+            while (!response.isEmpty() && !response.isLast()) {
+                response = getReleasePage(serverUrl, token, projectId, response.getPageable().getPageNumber() + 1);
+                executions.addAll(Arrays.asList(response.getContent()));
+            }
+
+            return executions;
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+    
+    private static AnalyticsReleasePage getReleasePage(String serverUrl, String token, Long projectId, Integer page)
+            throws Exception {
+        URI uri = getApiURI(serverUrl, "/api/v1/search");
+        URIBuilder builder = new URIBuilder(uri);
+
+        AnalyticsQuery query = new AnalyticsQuery();
+        query.setType("Release");
+        query.setGroupBys(new String[] {});
+
+        AnalyticsQueryCondition conditionProject = new AnalyticsQueryCondition("Project.id", "=", projectId.toString());
+        AnalyticsQueryCondition conditionStatus = new AnalyticsQueryCondition("closed", "=", "false");
+        query.setConditions(new AnalyticsQueryCondition[] { conditionProject, conditionStatus });
+        query.setFunctions(new AnalyticsQueryFunction[] {});
+
+        AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(page, 30,
+                new String[] { "closed,asc", "name,asc" });
+        query.setPagination(pagination);
+
+        builder.setParameter("q", JsonUtil.toJson(query));
+        HttpGet httpGet = new HttpGet(builder.build().toASCIIString());
+        httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+        AnalyticsReleasePage response = executeRequest(httpGet, AnalyticsReleasePage.class);
+        return response;
+    }
     
 }

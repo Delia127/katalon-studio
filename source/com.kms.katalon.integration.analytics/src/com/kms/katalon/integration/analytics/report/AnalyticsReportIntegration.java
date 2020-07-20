@@ -1,13 +1,17 @@
 package com.kms.katalon.integration.analytics.report;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.LongConsoleOption;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
@@ -22,15 +26,46 @@ import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsReportIntegration implements ReportIntegrationContribution, AnalyticsComponent {
     
+    public static final String TESTOPS_RELEASE_ID_CONSOLE_OPTION_NAME = "testOpsReleaseId";
+    
+    private static Long TESTOPS_RELEASE_ID = null;
+    
+    public static final LongConsoleOption TESTOPS_RELEASE_ID_CONSOLE_OPTION = new LongConsoleOption() {
+        
+        @Override
+        public String getOption() {
+            return TESTOPS_RELEASE_ID_CONSOLE_OPTION_NAME;
+        }
+        
+        @Override 
+        public Long getValue() {
+            return TESTOPS_RELEASE_ID;
+        }
+    };
+    
     private AnalyticsReportService reportService = new AnalyticsReportService();
 
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
-        return Collections.emptyList();
+        List<ConsoleOption<?>> integrationCommandList = new ArrayList<ConsoleOption<?>>();
+        integrationCommandList.add(TESTOPS_RELEASE_ID_CONSOLE_OPTION);
+        return integrationCommandList;
     }
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
+        if (StringUtils.isBlank(argumentValue)) {
+            return;
+        }
+        
+        if (consoleOption == TESTOPS_RELEASE_ID_CONSOLE_OPTION) {
+            try {
+                TESTOPS_RELEASE_ID = Long.parseLong(argumentValue.trim());
+            } catch (Exception e) {
+                LogUtil.logError(e);
+            }
+            
+        }
     }
 
     @Override
