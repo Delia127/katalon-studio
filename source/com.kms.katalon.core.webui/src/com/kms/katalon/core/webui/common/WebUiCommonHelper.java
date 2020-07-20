@@ -805,7 +805,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                         KeywordExecutionContext.setHasHealedSomeObjects(true);
                         return findResult.getElements();
                     }
-                } catch (NoSuchElementException e) {
+                } catch (Exception e) {
                     // not found element yet, moving on
                 }
             }
