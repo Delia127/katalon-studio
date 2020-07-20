@@ -1302,7 +1302,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
     
     private String getDeviceTypeString() {
-        return mobileComposite.getSelectedDriverType().toString();
+        MobileDriverType deviceType = mobileComposite.getSelectedDriverType();
+        return deviceType != null ? deviceType.toString() : null;
     }
 
     @Override

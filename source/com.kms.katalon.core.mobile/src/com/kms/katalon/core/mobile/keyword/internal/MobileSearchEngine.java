@@ -519,7 +519,11 @@ public class MobileSearchEngine {
 
     public WebElement findWebElement(boolean addLogEntries) throws Exception {
         if (element instanceof MobileTestObject) {
-            return findElementByMobileLocator();
+            List<WebElement> elements = findElementsByMobileLocator();
+            if ((elements == null) || elements.isEmpty()) {
+                return null;
+            }
+            return elements.get(0);
         }
         if (driver instanceof AndroidDriver) {
             List<WebElement> elements = findAndroidElements((AndroidDriver) driver);
