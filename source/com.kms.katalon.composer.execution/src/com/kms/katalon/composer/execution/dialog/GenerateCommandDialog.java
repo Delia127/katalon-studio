@@ -38,6 +38,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
@@ -106,8 +107,11 @@ import com.kms.katalon.execution.entity.DefaultRerunSetting.RetryStrategyValue;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsRelease;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.integration.analytics.report.AnalyticsReportIntegration;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
@@ -132,13 +136,15 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final int GENERATE_COMMAND_ID = 23;
 
     private Text txtTestSuite;
+    
+    private Combo cbTestOpsRelease;
 
     private Text txtStatusDelay;
     
     private Text txtAPIKey;
 
     private Button btnBrowseTestSuite;
-
+    
     private Button chkApplyProxy;
     
     private ProjectEntity project;
@@ -168,6 +174,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY_STRATEGY = DefaultRerunSetting.RETRY_STRATEGY;
     
     private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
+    
+    private static final String ARG_ANALYTICS_RELEASE_ID = AnalyticsReportIntegration.TESTOPS_RELEASE_ID_CONSOLE_OPTION_NAME;
 
     private static final String ARG_API_KEY_ON_PREMISE = OsgiConsoleOptionContributor.API_KEY_ON_PREMISE_OPTION;
 
@@ -194,12 +202,18 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Button btnChangeProfile;
 
     private Button chkOverridePlatform;
+    
+    private Label lblTestSuite;
+    
+    private Label lblRelease;
 
     private AnalyticsSettingStore analyticsSettingStore;
     
     private TestSuiteRetryUiPart retryUiProvider;
 
     private TestSuiteEntity testSuite;
+    
+    private List<AnalyticsRelease> releases;
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -240,6 +254,13 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         createTestSuitePart(main);
         createPlatformPart(main);
+        
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        if (analyticsSettingStore.isIntegrationEnabled()) {
+            createTestOpsPart(main);
+        }
+        
         createOptionsPart(main);
         getConfigurationAnalytics();
         
@@ -251,7 +272,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         testsuiteContainer.setLayout(new GridLayout(3, false));
         testsuiteContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Label lblTestSuite = new Label(testsuiteContainer, SWT.NONE);
+        lblTestSuite = new Label(testsuiteContainer, SWT.NONE);
         lblTestSuite.setText(StringConstants.TEST_SUITE);
 
         txtTestSuite = new Text(testsuiteContainer, SWT.READ_ONLY | SWT.BORDER);
@@ -259,6 +280,27 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         btnBrowseTestSuite = new Button(testsuiteContainer, SWT.FLAT);
         btnBrowseTestSuite.setText(StringConstants.BROWSE);
+    }
+    
+    private void createTestOpsPart(Composite parent) {
+        Composite testopsContainer = new Composite(parent, SWT.NONE);
+        testopsContainer.setLayout(new GridLayout());
+        testopsContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        Group grpTestOpsContainer = new Group(testopsContainer, SWT.NONE);
+        grpTestOpsContainer.setLayout(new GridLayout(2, false));
+        grpTestOpsContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        grpTestOpsContainer.setText(StringConstants.DIA_GRP_KATALON_TESTOPS);
+        
+        Label lblTestOpsRelease = new Label(grpTestOpsContainer, SWT.NONE);
+        lblTestOpsRelease.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        lblTestOpsRelease.setText(StringConstants.DIA_LBL_TESTOPS_RELEASE);
+
+        cbTestOpsRelease = new Combo(grpTestOpsContainer, SWT.READ_ONLY);
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        cbTestOpsRelease.setLayoutData(gridData);
+        cbTestOpsRelease.add(StringConstants.DIA_CB_DEFAULT_LASTEST_RELEASE);
+        cbTestOpsRelease.select(0);
     }
 
     private void createPlatformPart(Composite parent) {
@@ -432,7 +474,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         Label lblSeconds = new Label(grpOptionsContainer, SWT.NONE);
         lblSeconds.setText(StringConstants.DIA_LBL_SECONDS);
-        
         
         Label lblAPIKey = new Label(grpOptionsContainer, SWT.NONE);
         lblAPIKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
@@ -1018,8 +1059,14 @@ public class GenerateCommandDialog extends AbstractDialog {
             args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
         }
 
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(currentProject.getFolderLocation());
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        if (analyticsSettingStore.isIntegrationEnabled() && cbTestOpsRelease.getSelectionIndex() > 0
+                && releases != null) {
+            args.put(ARG_ANALYTICS_RELEASE_ID,
+                    String.valueOf(releases.get(cbTestOpsRelease.getSelectionIndex() - 1).getId()));
+        }
+        
         if (analyticsSettingStore.isOverrideAuthentication()) {
             args.put(ARG_API_KEY_ON_PREMISE, wrapArgumentValue(""));
         }
@@ -1291,6 +1338,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     private void getConfigurationAnalytics() {
         analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
         getApiKey();
+        getRelases();
     }
     
     private void getApiKey() {
@@ -1322,6 +1370,35 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         });
         getApiKey.start();
+    }
+    
+    private void getRelases() {
+        Thread getReleaseThread = new Thread(() -> {
+            try {
+                AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
+                AnalyticsProject project = analyticsSettingStore.getProject();
+                String serverUrl = analyticsSettingStore.getServerEndpoint();
+                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                    releases = AnalyticsApiProvider.getReleases(project.getId(), serverUrl, token.getAccess_token());
+                    UISynchronizeService.asyncExec(() -> {
+                        if (!cbTestOpsRelease.isDisposed()) {
+                            releases.forEach(release -> {
+                                cbTestOpsRelease.add(String.format("%s (id: %s)", release.getName(), release.getId()));
+                            });
+                        }
+                    });
+
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        });
+        getReleaseThread.start();
     }
     
     private RunConfigurationDescription getStoredConfigurationDescription() {
