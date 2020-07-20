@@ -27,10 +27,15 @@ import com.eviware.soapui.config.Setting;
 import com.eviware.soapui.config.SoapuiProjectDocument;
 import com.eviware.soapui.config.StringToStringMap.Entry;
 import com.google.common.base.Preconditions;
-import com.kms.katalon.controller.EntityNameController;
+import com.kms.katalon.composer.webservice.importer.APIImporter;
+import com.kms.katalon.composer.webservice.importing.model.RestMethodImportResult;
+import com.kms.katalon.composer.webservice.importing.model.RestParameterImportResult;
+import com.kms.katalon.composer.webservice.importing.model.RestResourceImportNode;
+import com.kms.katalon.composer.webservice.importing.model.RestResourceImportResult;
+import com.kms.katalon.composer.webservice.importing.model.RestServiceImportResult;
 import com.kms.katalon.entity.folder.FolderEntity;
 
-public class SoapUIImporter {
+public class SoapUIImporter extends APIImporter {
 
     public SoapUIProjectImportResult importServices(String projectFilePath, FolderEntity rootFolder) throws Exception {
         Preconditions.checkNotNull(projectFilePath, "SoapUI project file path must not be null or empty.");
@@ -45,7 +50,7 @@ public class SoapUIImporter {
         for (Interface iface : interfaces) {
             if (iface instanceof RestService) {
                 RestService restService = (RestService) iface;
-                SoapUIRestServiceImportResult serviceImportResult = parseService(projectImportResult, restService);
+                RestServiceImportResult serviceImportResult = parseService(projectImportResult, restService);
                 RestResource[] restResources = restService.getResourceArray();
                 for (RestResource restResource : restResources) {
                     parseResource(serviceImportResult, restResource);
@@ -56,7 +61,7 @@ public class SoapUIImporter {
     }
 
     private SoapUIProjectImportResult parseProject(Project project, FolderEntity parentFolder) throws Exception {
-        FolderEntity projectImportFolder = getProjectImportFolder(project, parentFolder);
+        FolderEntity projectImportFolder = getRootImportFolder(project.getName(), parentFolder);
         SoapUIProjectImportResult projectResult = new SoapUIProjectImportResult(projectImportFolder);
         addOAuth1Credentials(projectResult, project);
         addOAuth2Credentials(projectResult, project);
@@ -90,26 +95,10 @@ public class SoapUIImporter {
         });
     }
 
-    private FolderEntity getProjectImportFolder(Project project, FolderEntity parentFolder) throws Exception {
-        String name = project.getName();
-        if (StringUtils.isBlank(name)) {
-            name = "Imported from SoapUI";
-        }
-        name = toValidFileName(name);
-        name = EntityNameController.getInstance().getAvailableName(name, parentFolder, true);
-        FolderEntity folder = new FolderEntity();
-        folder.setName(name);
-        folder.setParentFolder(parentFolder);
-        folder.setProject(parentFolder.getProject());
-        folder.setFolderType(parentFolder.getFolderType());
-        folder.setDescription("folder");
-        return folder;
-    }
-
-    private SoapUIRestServiceImportResult parseService(SoapUIProjectImportResult projectImportResult,
+    private RestServiceImportResult parseService(SoapUIProjectImportResult projectImportResult,
             RestService restService) {
         String name = getServiceFolderName(projectImportResult, restService);
-        SoapUIRestServiceImportResult serviceImportResult = projectImportResult.newService(name);
+        RestServiceImportResult serviceImportResult = projectImportResult.newService(name);
         serviceImportResult.setBasePath(restService.getBasePath());
         return serviceImportResult;
     }
@@ -128,11 +117,11 @@ public class SoapUIImporter {
         return suggestion;
     }
 
-    private SoapUIRestResourceImportResult parseResource(SoapUIRestServiceImportResult serviceImportResult,
+    private RestResourceImportResult parseResource(RestServiceImportResult serviceImportResult,
             RestResource restResource) {
         String resourcePath = restResource.getPath();
         String resourceName = getResourceFolderName(serviceImportResult, restResource);
-        SoapUIRestResourceImportResult resourceResult = serviceImportResult.newResource(resourceName, resourcePath);
+        RestResourceImportResult resourceResult = serviceImportResult.newResource(resourceName, resourcePath);
         addParameters(resourceResult, restResource.getParameters().getParameterArray());
         for (RestMethod restMethod : restResource.getMethodArray()) {
             parseMethod(resourceResult, restMethod);
@@ -143,11 +132,11 @@ public class SoapUIImporter {
         return resourceResult;
     }
 
-    private SoapUIRestResourceImportResult parseResource(SoapUIRestResourceImportResult parentResourceImportResult,
+    private RestResourceImportResult parseResource(RestResourceImportResult parentResourceImportResult,
             RestResource restResource) {
         String resourcePath = restResource.getPath();
         String resourceName = getResourceFolderName(parentResourceImportResult, restResource);
-        SoapUIRestResourceImportResult resourceResult = parentResourceImportResult.newResource(resourceName,
+        RestResourceImportResult resourceResult = parentResourceImportResult.newResource(resourceName,
                 resourcePath);
         addParameters(resourceResult, restResource.getParameters().getParameterArray());
         for (RestMethod restMethod : restResource.getMethodArray()) {
@@ -160,7 +149,7 @@ public class SoapUIImporter {
         return resourceResult;
     }
 
-    private String getResourceFolderName(SoapUIRestServiceImportResult serviceImportResult, RestResource restResource) {
+    private String getResourceFolderName(RestServiceImportResult serviceImportResult, RestResource restResource) {
         String suggestion = restResource.getName();
         if (StringUtils.isBlank(suggestion)) {
             suggestion = "Resource";
@@ -174,7 +163,7 @@ public class SoapUIImporter {
         return suggestion;
     }
 
-    private String getResourceFolderName(SoapUIRestResourceImportResult resourceImportResult,
+    private String getResourceFolderName(RestResourceImportResult resourceImportResult,
             RestResource restResource) {
         String suggestion = restResource.getName();
         if (StringUtils.isBlank(suggestion)) {
@@ -189,11 +178,11 @@ public class SoapUIImporter {
         return suggestion;
     }
 
-    private SoapUIRestMethodImportResult parseMethod(SoapUIRestResourceImportResult resourceImportResult,
+    private RestMethodImportResult parseMethod(RestResourceImportResult resourceImportResult,
             RestMethod restMethod) {
         String name = getMethodFolderName(resourceImportResult, restMethod);
         String httpMethod = restMethod.getMethod();
-        SoapUIRestMethodImportResult methodResult = resourceImportResult.newMethod(name, httpMethod);
+        RestMethodImportResult methodResult = resourceImportResult.newMethod(name, httpMethod);
         addParameters(methodResult, restMethod.getParameters().getParameterArray());
         for (RestRequest restRequest : restMethod.getRequestArray()) {
             parseRequest(methodResult, restRequest);
@@ -201,7 +190,7 @@ public class SoapUIImporter {
         return methodResult;
     }
 
-    private String getMethodFolderName(SoapUIRestResourceImportResult resourceImportResult, RestMethod restMethod) {
+    private String getMethodFolderName(RestResourceImportResult resourceImportResult, RestMethod restMethod) {
         String suggestion = restMethod.getName();
         if (StringUtils.isBlank(suggestion)) {
             suggestion = "Method";
@@ -215,10 +204,11 @@ public class SoapUIImporter {
         return suggestion;
     }
 
-    private SoapUIRestRequestImportResult parseRequest(SoapUIRestMethodImportResult methodImportResult,
+    private SoapUIRestRequestImportResult parseRequest(RestMethodImportResult methodImportResult,
             RestRequest restRequest) {
         String name = getRequestFileName(methodImportResult, restRequest);
-        SoapUIRestRequestImportResult requestResult = methodImportResult.newRequest(name);
+        SoapUIRestRequestImportResult requestResult = methodImportResult.newRequest(name,
+                () -> new SoapUIRestRequestImportResult(methodImportResult));
         requestResult.setEndpoint(restRequest.getEndpoint());
         requestResult.setMediaType(restRequest.getMediaType());
         requestResult.setPostQueryString(restRequest.getPostQueryString());
@@ -294,7 +284,7 @@ public class SoapUIImporter {
         }
     }
 
-    private String getRequestFileName(SoapUIRestMethodImportResult methodImportResult, RestRequest restRequest) {
+    private String getRequestFileName(RestMethodImportResult methodImportResult, RestRequest restRequest) {
         String suggestion = restRequest.getName();
         if (StringUtils.isBlank(suggestion)) {
             suggestion = "Request";
@@ -308,11 +298,7 @@ public class SoapUIImporter {
         return suggestion;
     }
 
-    private String toValidFileName(String fileName) {
-        return fileName.replaceAll("[^a-zA-Z0-9-_\\.\\s]", "_");
-    }
-
-    private void addParameters(SoapUIRestResourceImportNode holder, RestParameter[] restParameters) {
+    private void addParameters(RestResourceImportNode holder, RestParameter[] restParameters) {
         final int INT_MATRIX = 1;
         final int INT_HEADER = 2;
         final int INT_QUERY = 3;
@@ -322,20 +308,23 @@ public class SoapUIImporter {
             int parameterStyleCode = parameter.getStyle().intValue();
             String name = parameter.getName();
             String value = parameter.getValue();
+            RestParameterImportResult parameterImportResult = holder.hasParameter(name) ? holder.getParameter(name) : holder.addNewParameter(name);
+            parameterImportResult.setName(name);
+            parameterImportResult.setValue(value);
             if (parameterStyleCode == INT_MATRIX) {
-                holder.addParameter(name, value, SoapUIRestParameter.Style.MATRIX);
+                parameterImportResult.setStyle(RestParameterImportResult.Style.MATRIX);
                 continue;
             }
             if (parameterStyleCode == INT_HEADER) {
-                holder.addParameter(name, value, SoapUIRestParameter.Style.HEADER);
+                parameterImportResult.setStyle(RestParameterImportResult.Style.HEADER);
                 continue;
             }
             if (parameterStyleCode == INT_QUERY) {
-                holder.addParameter(name, value, SoapUIRestParameter.Style.QUERY);
+                parameterImportResult.setStyle(RestParameterImportResult.Style.QUERY);
                 continue;
             }
             if (parameterStyleCode == INT_TEMPLATE) {
-                holder.addParameter(name, value, SoapUIRestParameter.Style.TEMPLATE);
+                parameterImportResult.setStyle(RestParameterImportResult.Style.TEMPLATE);
                 continue;
             }
         }

@@ -93,4 +93,5 @@ Export-Package: com.kms.katalon.composer.webservice.constants,
  com.kms.katalon.composer.webservice.parser
 Bundle-ClassPath: .,
  resources/lib/xmlbeans-3.1.0.jar,
- resources/lib/su.jar
+ resources/lib/su.jar,
+ resources/lib/wadl.jar
