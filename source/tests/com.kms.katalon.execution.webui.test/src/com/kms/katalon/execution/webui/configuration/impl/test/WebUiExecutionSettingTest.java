@@ -30,6 +30,7 @@ public class WebUiExecutionSettingTest {
         Mockito.when(store.getActionDelay()).thenReturn(12);
         Mockito.when(store.getUseDelayActionTimeUnit()).thenReturn(TimeUnit.MILLISECONDS);
         Mockito.when(store.getIgnorePageLoadTimeout()).thenReturn(true);
+        Mockito.when(store.getImageRecognitionEnabled()).thenReturn(true);
 
         WebUIExecutionSetting spiedSetting = Mockito.spy(new MyWebUiExecutionSetting(store));
         Mockito.doReturn(new HashMap<>()).when((DefaultExecutionSetting) spiedSetting).getDefaultGeneralProperties();
@@ -40,6 +41,7 @@ public class WebUiExecutionSettingTest {
         assert (TimeUnit) spiedSetting.getGeneralProperties().get(DriverFactory.USE_ACTION_DELAY_IN_SECOND) == TimeUnit.MILLISECONDS;
         assert (boolean) spiedSetting.getGeneralProperties()
                 .get(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION) == true;
+        assert (boolean) spiedSetting.getGeneralProperties().get(RunConfiguration.IMAGE_RECOGNITION_ENABLED) == true;
     }
 
     public static class MyWebUiExecutionSetting extends WebUIExecutionSetting {

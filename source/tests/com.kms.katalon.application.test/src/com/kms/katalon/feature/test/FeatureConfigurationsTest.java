@@ -31,7 +31,7 @@ public class FeatureConfigurationsTest {
 
     private static final KSEFeature FREE_FEATURE = KSEFeature.DEBUG_MODE;
 
-    private static final KSEFeature ENTERPRISE_FEATURE = KSEFeature.SELF_HEALING;
+    private static final KSEFeature ENTERPRISE_FEATURE = KSEFeature.SMART_XPATH;
 
     @Spy
     private FeatureConfigurations featureService = new FeatureConfigurations();
