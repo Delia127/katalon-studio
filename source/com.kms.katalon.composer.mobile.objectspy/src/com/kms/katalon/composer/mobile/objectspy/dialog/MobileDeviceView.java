@@ -34,9 +34,6 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.ios.IOSDriver;
-
 public class MobileDeviceView {
 
     private Image currentScreenShot;
@@ -298,9 +295,10 @@ public class MobileDeviceView {
         });
     }
 
-    public void dispose() {
-        this.isDisposed = true;
+    public void setDisposed(boolean isDisposed) {
+        this.isDisposed = isDisposed;
     }
+    
 
     public boolean isDisposed() {
         return isDisposed;
