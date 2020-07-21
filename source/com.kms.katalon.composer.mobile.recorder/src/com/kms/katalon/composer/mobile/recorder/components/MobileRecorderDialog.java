@@ -848,7 +848,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private void startObjectInspectorAction() {
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-        deviceView.setDisposed(false);
         final AppiumMonitorDialog progressDlg = new AppiumMonitorDialog(getShell()) {
             @Override
             public void cancelPressed() {
@@ -1022,7 +1021,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
 
         if (deviceView != null) {
-            deviceView.setDisposed(true);
+            deviceView.dispose();
         }
 
         try {
