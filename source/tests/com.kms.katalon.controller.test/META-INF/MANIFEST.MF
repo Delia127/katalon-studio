@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Controller Test
-Bundle-SymbolicName: com.kms.katalon.controller.test
-Bundle-Version: 1.0.0.qualifier
-Fragment-Host: com.kms.katalon.controller;bundle-version="1.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.junit,
- com.kms.katalon.mockito
