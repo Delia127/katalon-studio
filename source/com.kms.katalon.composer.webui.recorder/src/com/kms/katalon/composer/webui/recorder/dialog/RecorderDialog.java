@@ -73,6 +73,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
 import com.google.common.hash.Hashing;
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
@@ -131,6 +133,7 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.QuickStartProjectType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -1529,7 +1532,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
      */
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+        createButton(parent, IDialogConstants.OK_ID, GlobalMessageConstants.DIA_SAVE_RECORDING, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
@@ -1969,6 +1972,19 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         elements.addAll(allPages);
         capturedObjectComposite.setInput(elements);
         capturedObjectComposite.refreshTree(null);
+
+        UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+        if (currentProfile.isNewUser() && !currentProfile.isDoneOpenRecorder()
+                && currentProfile.getPreferredTestingType() == QuickStartProjectType.WEBUI) {
+            if (currentProfile.getPreferredBrowser() != null) {
+                txtStartUrl.setText(currentProfile.getPreferredSite());
+                changeBrowser(currentProfile.getPreferredBrowser());
+                startBrowser();
+            }
+
+            currentProfile.setDoneOpenRecorder(true);
+            UserProfileHelper.saveProfile(currentProfile);
+        }
 
         try {
             Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig().toString());

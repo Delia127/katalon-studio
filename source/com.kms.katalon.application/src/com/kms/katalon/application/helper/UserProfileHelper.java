@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.userprofile.UserProfile;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.logging.LogUtil;
 
@@ -22,6 +24,14 @@ public class UserProfileHelper {
     private static Map<String, UserProfile> userProfiles;
 
     public static final String USER_PROFILES_KEY = "userProfiles";
+
+    public static UserProfile getCurrentProfile() {
+        String currentUserEmail = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        if (StringUtils.isBlank(currentUserEmail)) {
+            currentUserEmail = MachineUtil.getMachineId();
+        }
+        return getOrCreateProfile(currentUserEmail);
+    }
 
     public static UserProfile getOrCreateProfile(String email) {
         UserProfile userProfile = getProfile(email);
@@ -46,12 +56,12 @@ public class UserProfileHelper {
         return profiles.getOrDefault(email, null);
     }
 
-    public static void saveProfile(UserProfile newUserProfile) {
-        if (newUserProfile == null || StringUtils.isBlank(newUserProfile.getEmail())) {
+    public static void saveProfile(UserProfile userProfile) {
+        if (userProfile == null || StringUtils.isBlank(userProfile.getEmail())) {
             return;
         }
         Map<String, UserProfile> profiles = getUserProfiles();
-        profiles.put(newUserProfile.getEmail(), newUserProfile);
+        profiles.put(userProfile.getEmail(), userProfile);
         saveUserProfiles();
     }
 

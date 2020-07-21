@@ -675,7 +675,7 @@ public class FolderFileServiceManager {
                     flag = true;
                 else {
                     i++;
-                    newname = name + i;
+                    newname = MessageFormat.format("{0} ({1})", name, i);
                 }
             }
         }

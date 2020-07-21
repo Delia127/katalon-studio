@@ -180,6 +180,8 @@ public class EventConstants {
 
     public static final String ADD_TEST_CASE_FROM_TEST_CASE = "ADD_TESTCASE_TESTCASE";
 
+    public static final String FIRST_TEST_CASE_CREATED = "FIRST_TEST_CASE_CREATED";
+
     // TestData Events
     public static final String TEST_DATA_NEW = "TESTDATA/NEW";
 

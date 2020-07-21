@@ -121,9 +121,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
                 List<ReloadItem> results = resultHolder[0];
 
-                if (silenceMode && !checkExpire(results)) {
+                if (silenceMode) {
                     return;
                 }
+//                if (silenceMode && !checkExpire(results)) {
+//                    return;
+//                }
 
                 Executors.newSingleThreadExecutor().submit(() -> {
                     try {
@@ -137,7 +140,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             }
         });
 
-        reloadPluginsJob.setUser(true);
+        reloadPluginsJob.setUser(silenceMode);
         reloadPluginsJob.schedule();
     }
 

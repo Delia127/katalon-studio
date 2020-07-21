@@ -35,6 +35,8 @@ import org.openqa.selenium.Keys;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
@@ -103,8 +105,9 @@ public class RecordHandler {
         Shell shell = null;
         Shell activeShell = Display.getCurrent().getActiveShell();
         if (activeShell == null) {
-            return;
+            activeShell = new Shell();
         }
+
         try {
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
@@ -144,8 +147,10 @@ public class RecordHandler {
                     || recordDialog.getScriptWrapper().getBlock().getAstChildren().isEmpty()) {
                 return;
             }
+            
+            TestCaseEntity newTestCase = createNewTestCase();
             if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
-                testCaseCompositePart = createNewTestCase();
+                testCaseCompositePart = getTestCasePartByTestCase(newTestCase);
                 shouldOverride = false;
             } else if (!wrapper.isEmpty()) {
                 MessageDialog dialog = new MessageDialog(activeShell, StringConstants.CONFIRMATION, null,
@@ -160,6 +165,11 @@ public class RecordHandler {
                     folderSelectionResult != null ? folderSelectionResult.getEntitySavedMap() : Collections.emptyMap());
             doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedElements,
                     recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
+
+            UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+            if (newTestCase != null && currentProfile.isNewUser() && !currentProfile.isDoneRunFirstTestCase()) {
+                eventBroker.post(EventConstants.FIRST_TEST_CASE_CREATED, newTestCase);
+            }
         } catch (Exception e) {
             MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
@@ -219,7 +229,7 @@ public class RecordHandler {
         return shell;
     }
 
-    private TestCaseCompositePart createNewTestCase() throws Exception {
+    private TestCaseEntity createNewTestCase() throws Exception {
         TestCaseEntity testCase = NewTestCaseHandler.doCreateNewTestCase(
                 new FolderTreeEntity(FolderController.getInstance()
                         .getTestCaseRoot(ProjectController.getInstance().getCurrentProject()), null),
@@ -228,7 +238,7 @@ public class RecordHandler {
             return null;
         }
 
-        return getTestCasePartByTestCase(testCase);
+        return testCase;
     }
 
     private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
