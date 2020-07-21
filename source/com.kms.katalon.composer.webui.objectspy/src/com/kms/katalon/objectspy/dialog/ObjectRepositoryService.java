@@ -224,13 +224,12 @@ public class ObjectRepositoryService {
                                 WebElementSelectorMethod.valueOf(entry.getKey().toString()), entry.getValue());
                     });
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
-                    entitySavedMap.put(webPage, conflictedFolderEntity);
                     break;
 
                 default:
                     break;
             }
-
+            entitySavedMap.put(webPage, conflictedFolderEntity);
             // Update old element.
             ObjectRepositoryController.getInstance().updateTestObject(oldWebElementEntity);
             testObjectIds.add(new Object[] { oldWebElementEntity.getId(), oldWebElementEntity });
