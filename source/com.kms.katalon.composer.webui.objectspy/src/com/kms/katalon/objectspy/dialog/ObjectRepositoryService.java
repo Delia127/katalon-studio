@@ -190,6 +190,8 @@ public class ObjectRepositoryService {
                             conflictedFolderEntity);
 
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), importedWebElement);
+                    
+                    // Do not update old element when creating new object
                     break;
 
                 case REPLACE_EXISTING_OBJECT:
@@ -201,6 +203,9 @@ public class ObjectRepositoryService {
                                 WebElementSelectorMethod.valueOf(entry.getKey().toString()), entry.getValue());
                     });
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
+
+                    // Update old element when replacing existing object
+                    ObjectRepositoryController.getInstance().updateTestObject(oldWebElementEntity);
                     break;
 
                 case MERGE_CHANGE_TO_EXISTING_OBJECT:
@@ -224,14 +229,15 @@ public class ObjectRepositoryService {
                                 WebElementSelectorMethod.valueOf(entry.getKey().toString()), entry.getValue());
                     });
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
+
+                    // Update old element when merging to existing objects
+                    ObjectRepositoryController.getInstance().updateTestObject(oldWebElementEntity);
                     break;
 
                 default:
                     break;
             }
             entitySavedMap.put(webPage, conflictedFolderEntity);
-            // Update old element.
-            ObjectRepositoryController.getInstance().updateTestObject(oldWebElementEntity);
             testObjectIds.add(new Object[] { oldWebElementEntity.getId(), oldWebElementEntity });
         } else {
 

@@ -186,4 +186,75 @@ public class ObjectRepositoryServiceTest {
         Assert.assertEquals(saveActionResult.getUpdatedTestObjectIds().get(0)[0], expectedID);
     }
 
+    @Test
+    public void canCreateNewObjectsForConflictedObjects() throws Exception {
+        ProjectEntity currentPrj = new ProjectEntity();
+        currentPrj.setFolderLocation(getExtensionsDirectory("resources/test_project").getAbsolutePath());
+        FolderTreeEntity selectedParentFolder = new FolderTreeEntity(
+                FolderController.getInstance().getTestCaseRoot(currentPrj), null);
+        DataProviderState.getInstance().setCurrentProject(currentPrj);
+        List<ConflictWebElementWrapper> selectedPages = new ArrayList<ConflictWebElementWrapper>();
+        WebElement webPage = new WebPage("test page");
+        ConflictWebElementWrapper conflictWebPageWrapper = new ConflictWebElementWrapper(webPage, true);
+        WebElement expected = new WebElement("test element 3");
+        expected.setProperties(Arrays.asList(new WebElementPropertyEntity("tag", "a")));
+        expected.setSelectorValue(SelectorMethod.XPATH, "test/xpath");
+        ConflictWebElementWrapper conflictWebElementWrapper = new ConflictWebElementWrapper(expected, true);
+        conflictWebElementWrapper.setParent(conflictWebPageWrapper);
+        conflictWebPageWrapper.setChildren(Arrays.asList(conflictWebElementWrapper));
+        selectedPages.add(conflictWebPageWrapper);
+        SaveToObjectRepositoryDialogResult saveToObjRepoResult = new SaveToObjectRepositoryDialogResult(true,
+                selectedPages, selectedParentFolder, ConflictOptions.CREATE_NEW_OBJECT, 1);
+
+        service.saveObject(saveToObjRepoResult);
+
+        WebElementEntity actual = ObjectRepositoryController.getInstance()
+                .getWebElementByDisplayPk("Test Cases/test page/test element 3 (1)");
+        // Creating a new object in the same place as old object would result in a different name
+        Assert.assertEquals(actual.getName(), "test element 3 (1)");
+        Assert.assertEquals(actual.getWebElementProperties(), expected.getProperties());
+        Assert.assertEquals(actual.getWebElementXpaths(), expected.getXpaths());
+        Assert.assertEquals(actual.getSelectorMethod().toString(), expected.getSelectorMethod().toString());
+        Assert.assertEquals(actual.getSelectorCollection().values(), expected.getSelectorCollection().values());
+
+        ObjectRepositoryController.getInstance().deleteWebElement(actual);
+    }
+
+    @Test
+    public void canProduceCorrectSaveActionResultAfterCreatingNewObjectsForConflictedObjects() throws Exception {
+        String expectedID = getExtensionsDirectory("resources/test_project").getAbsolutePath()
+                + "/Test Cases/test page/test element 3 (1).rs";
+        ProjectEntity currentPrj = new ProjectEntity();
+        currentPrj.setFolderLocation(getExtensionsDirectory("resources/test_project").getAbsolutePath());
+        FolderTreeEntity selectedParentFolder = new FolderTreeEntity(
+                FolderController.getInstance().getTestCaseRoot(currentPrj), null);
+        DataProviderState.getInstance().setCurrentProject(currentPrj);
+        List<ConflictWebElementWrapper> selectedPages = new ArrayList<ConflictWebElementWrapper>();
+        WebElement webPage = new WebPage("test page");
+        ConflictWebElementWrapper conflictWebPageWrapper = new ConflictWebElementWrapper(webPage, true);
+        WebElement expected = new WebElement("test element 3");
+        expected.setProperties(Arrays.asList(new WebElementPropertyEntity("tag", "a")));
+        expected.setSelectorValue(SelectorMethod.XPATH, "test/xpath");
+        ConflictWebElementWrapper conflictWebElementWrapper = new ConflictWebElementWrapper(expected, true);
+        conflictWebElementWrapper.setParent(conflictWebPageWrapper);
+        conflictWebPageWrapper.setChildren(Arrays.asList(conflictWebElementWrapper));
+        selectedPages.add(conflictWebPageWrapper);
+        SaveToObjectRepositoryDialogResult saveToObjRepoResult = new SaveToObjectRepositoryDialogResult(true,
+                selectedPages, selectedParentFolder, ConflictOptions.CREATE_NEW_OBJECT, 1);
+
+        SaveActionResult saveActionResult = service.saveObject(saveToObjRepoResult);
+
+        // save action result must contain two objects: parent's page and element. Parent's element is used in
+        // RecordHandler#addRecordedElements
+        // to set alias to the elements in test script. These aliases are folders that users choose to save these
+        // elements to
+        Assert.assertEquals(saveActionResult.getSavedObjectCount(), 2);
+        Assert.assertEquals(saveActionResult.getUpdatedTestObjectIds().size(), 1);
+        Assert.assertEquals(saveActionResult.getUpdatedTestObjectIds().get(0).length, 2);
+        Assert.assertEquals(saveActionResult.getUpdatedTestObjectIds().get(0)[0], expectedID);
+        WebElementEntity actual = ObjectRepositoryController.getInstance()
+                .getWebElementByDisplayPk("Test Cases/test page/test element 3 (1)");
+        ObjectRepositoryController.getInstance().deleteWebElement(actual);
+    }
+
 }
