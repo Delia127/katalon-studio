@@ -114,8 +114,8 @@ public class ExecutionViewer extends TableViewer {
 				}
 			});
 
-		    tableItem.addDisposeListener(new DisposeListener() {
-                
+            tableItem.addDisposeListener(new DisposeListener() {
+
                 @Override
                 public void widgetDisposed(DisposeEvent e) {
                     link.dispose();

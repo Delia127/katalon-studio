@@ -93,14 +93,14 @@ public class ExecutionHistoryPart {
 		viewerLayout.topControl = loadingPart;
 		viewerPart.layout();
 		Thread getExecutionsThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				final List<AnalyticsExecution> executions = getExecution();
-			    if(executions == null) {
-			        return;
-			    }
-			    
-			    if(executions.isEmpty()) {
+            @Override
+            public void run() {
+                final List<AnalyticsExecution> executions = getExecution();
+                if (executions == null) {
+                    return;
+                }
+
+                if (executions.isEmpty()) {
 			        UISynchronizeService.asyncExec(new Runnable() {
 
 	                    @Override
@@ -142,32 +142,27 @@ public class ExecutionHistoryPart {
 			String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
 
 			if (!StringUtils.isBlank(email) && !StringUtils.isBlank(encryptedPassword)) {
-				String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-				try {
-				    AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-	                return AnalyticsApiProvider.getExecutions(project.getId(), serverUrl, token.getAccess_token());
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
-                    UISynchronizeService.asyncExec(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            viewerLayout.topControl = errorPart;
-                            viewerPart.layout();
-                        }
-                    });
-                    
-                }
+			    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+				AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                return AnalyticsApiProvider.getExecutions(project.getId(), serverUrl, token.getAccess_token());
 			}
 		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		
-		return null;
-	}
+		    LoggerSingleton.logError(e);
+            UISynchronizeService.asyncExec(new Runnable() {
 
-	private void createEmptyPart() {
-	    emptyPart = new Composite(viewerPart, SWT.NONE);
+                @Override
+                public void run() {
+                    viewerLayout.topControl = errorPart;
+                    viewerPart.layout();
+                }
+            });
+		}
+
+		return null;
+    }
+
+    private void createEmptyPart() {
+        emptyPart = new Composite(viewerPart, SWT.NONE);
         RowLayout rowLayout = new RowLayout();
         emptyPart.setLayout(rowLayout);
 
@@ -181,8 +176,8 @@ public class ExecutionHistoryPart {
                 Program.launch(TestOpsStringConstants.LNK_ENABLE_INTEGRATION_GUIDE);
             }
         });
-        
-	}
+
+    }
 	
 	private void createErrorPart() {
 		errorPart = new Composite(viewerPart, SWT.NONE);
