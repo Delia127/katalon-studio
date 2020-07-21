@@ -638,7 +638,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     public static boolean isElementVisibleInViewport(WebDriver driver, TestObject testObject, int timeOut)
-            throws IllegalArgumentException, StepFailedException, WebElementNotFoundException {
+            throws Exception {
         WebUiCommonHelper.checkTestObjectParameter(testObject);
         TestObject parentObject = testObject != null ? testObject.getParentObject() : null;
         List<TestObject> frames = new ArrayList<TestObject>();
@@ -709,7 +709,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return documentRect.intersects(elementRect);
     }
 
-    public static List<WebElement> findWebElements(TestObject testObject, int timeout) {
+    public static List<WebElement> findWebElements(TestObject testObject, int timeout) throws Exception {
         timeout = WebUiCommonHelper.checkTimeout(timeout);
         
         boolean shouldApplySelfHealing = RunConfiguration.shouldApplySelfHealing();
@@ -719,98 +719,112 @@ public class WebUiCommonHelper extends KeywordHelper {
         return findElementsByDefault(testObject, timeout);
     }
 
-    private static List<WebElement> findElementsWithSelfHealing(TestObject testObject, int timeout) {
+    private static List<WebElement> findElementsWithSelfHealing(TestObject testObject, int timeout) throws Exception {
+        SelfHealingController.setLogger(logger);
+
         boolean shouldApplySelfHealing = RunConfiguration.shouldApplySelfHealing();
         if (!shouldApplySelfHealing) {
             return findElementsByDefault(testObject, timeout);
         }
 
+        Exception defaultException = null;
         try {
             List<WebElement> foundElements = findElementsByDefault(testObject, timeout);
             if (foundElements != null && !foundElements.isEmpty()) {
                 return foundElements;
             }
-        } catch (NoSuchElementException exception) {
-            // Just skip
+        } catch (Exception exception) {
+            defaultException = exception;
         }
 
-        boolean isWebPlatform = KeywordExecutionContext.isRunningWebUI();
-        String runningKeyword = KeywordExecutionContext.getRunningKeyword();
+        try {
+            boolean isWebPlatform = KeywordExecutionContext.isRunningWebUI();
+            String runningKeyword = KeywordExecutionContext.getRunningKeyword();
 
-        List<String> excludeKeywords = RunConfiguration.getExcludedKeywordsFromSelfHealing();
-        if (!isWebPlatform || excludeKeywords.contains(runningKeyword)) {
-            return Collections.emptyList();
-        }
-
-        SelfHealingController.setLogger(logger);
-        SelfHealingController.logWarning(MessageFormat
-                .format(StringConstants.KW_LOG_INFO_DEFAULT_LOCATOR_FAILED_TRY_SELF_HEALING, testObject.getObjectId()));
-
-        String dataFileAtReportFolder = SelfHealingController.getSelfHealingDataFilePath(RunConfiguration.getReportFolder());
-        SelfHealingController.prepareDataFile(dataFileAtReportFolder);
-
-        Set<BrokenTestObject> healingCandidates = SelfHealingController.findBrokenTestObjects(testObject);
-        if (healingCandidates != null && !healingCandidates.isEmpty()) {
-            for (BrokenTestObject healingCandidate : healingCandidates) {
-                TestObject healedTestObject = SelfHealingController.healTestObject(testObject, healingCandidate);
-
-                List<WebElement> foundElements = findElementsByDefault(healedTestObject, 0);
-
-                if (foundElements != null && !foundElements.isEmpty()) {
-                    String proposedLocator = healedTestObject.getSelectorCollection().get(healedTestObject.getSelectorMethod());
-                    SelfHealingController
-                            .logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR,
-                                    testObject.getObjectId(), proposedLocator));
-
-                    KeywordExecutionContext.setHasHealedSomeObjects(true);
-                    
-                    FindElementsResult findResultForReport = FindElementsResult.from(foundElements, healedTestObject);
-                    String screenshotPath = SelfHealingController.getScreenshotAbsolutePath(healingCandidate.getPathToScreenshot());
-                    findResultForReport.setScreenshot(screenshotPath);
-                    registerBrokenTestObject(findResultForReport, testObject, RunConfiguration.getReportFolder());
-                    return foundElements;
-                }
+            List<String> excludeKeywords = RunConfiguration.getExcludedKeywordsFromSelfHealing();
+            if (!isWebPlatform || excludeKeywords.contains(runningKeyword)) {
+                return Collections.emptyList();
             }
-        }
 
-        List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
+            SelfHealingController.logWarning(MessageFormat.format(
+                    StringConstants.KW_LOG_INFO_DEFAULT_LOCATOR_FAILED_TRY_SELF_HEALING, testObject.getObjectId()));
 
-        SelectorMethod elementMethod = testObject.getSelectorMethod();
-        for (Pair<SelectorMethod, Boolean> rawMethod : methodsPriorityOrder) {
-            boolean isMethodEnabled = rawMethod.getRight();
-            if (!isMethodEnabled) {
-                continue;
-            }
-            SelectorMethod currentMethod = rawMethod.getLeft();
-            boolean shouldFindWithSelectedMethod = currentMethod != elementMethod || currentMethod == SelectorMethod.XPATH; // Find one more time with Smart XPath
-            if (shouldFindWithSelectedMethod) {
-                try {
-                    FindElementsResult findResult = null;
-                    boolean hasFindWithDefaultXPath = elementMethod == SelectorMethod.XPATH;
-                    if (currentMethod == SelectorMethod.XPATH && !hasFindWithDefaultXPath) {
-                        findResult = findElementsBySelectedMethod(testObject, 0, currentMethod, false);
-                    }
-                    if (findResult == null || findResult.isEmpty()) {
-                        findResult = findElementsBySelectedMethod(testObject, 0, currentMethod, true);
-                    }
-                    
-                    if (findResult != null && !findResult.isEmpty()) {
-                        BrokenTestObject brokenTestObject = registerBrokenTestObject(findResult, testObject);
-                        registerBrokenTestObject(findResult, testObject, RunConfiguration.getReportFolder());
+            String dataFileAtReportFolder = SelfHealingController
+                    .getSelfHealingDataFilePath(RunConfiguration.getReportFolder());
+            SelfHealingController.prepareDataFile(dataFileAtReportFolder);
 
+            Set<BrokenTestObject> healingCandidates = SelfHealingController.findBrokenTestObjects(testObject);
+            if (healingCandidates != null && !healingCandidates.isEmpty()) {
+                for (BrokenTestObject healingCandidate : healingCandidates) {
+                    TestObject healedTestObject = SelfHealingController.healTestObject(testObject, healingCandidate);
+
+                    List<WebElement> foundElements = findElementsByDefault(healedTestObject, 0);
+
+                    if (foundElements != null && !foundElements.isEmpty()) {
+                        String proposedLocator = healedTestObject.getSelectorCollection()
+                                .get(healedTestObject.getSelectorMethod());
                         SelfHealingController
                                 .logWarning(MessageFormat.format(StringConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR,
-                                        testObject.getObjectId(), brokenTestObject.getProposedLocator()));
+                                        testObject.getObjectId(), proposedLocator));
 
                         KeywordExecutionContext.setHasHealedSomeObjects(true);
-                        return findResult.getElements();
+
+                        FindElementsResult findResultForReport = FindElementsResult.from(foundElements,
+                                healedTestObject);
+                        String screenshotPath = SelfHealingController
+                                .getScreenshotAbsolutePath(healingCandidate.getPathToScreenshot());
+                        findResultForReport.setScreenshot(screenshotPath);
+                        registerBrokenTestObject(findResultForReport, testObject, RunConfiguration.getReportFolder());
+                        return foundElements;
                     }
-                } catch (Exception e) {
-                    // not found element yet, moving on
                 }
             }
+
+            List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = RunConfiguration.getMethodsPriorityOrder();
+
+            SelectorMethod elementMethod = testObject.getSelectorMethod();
+            for (Pair<SelectorMethod, Boolean> rawMethod : methodsPriorityOrder) {
+                boolean isMethodEnabled = rawMethod.getRight();
+                if (!isMethodEnabled) {
+                    continue;
+                }
+                SelectorMethod currentMethod = rawMethod.getLeft();
+                boolean shouldFindWithSelectedMethod = currentMethod != elementMethod
+                        || currentMethod == SelectorMethod.XPATH; // Find one more time with Smart XPath
+                if (shouldFindWithSelectedMethod) {
+                    try {
+                        FindElementsResult findResult = null;
+                        boolean hasFindWithDefaultXPath = elementMethod == SelectorMethod.XPATH;
+                        if (currentMethod == SelectorMethod.XPATH && !hasFindWithDefaultXPath) {
+                            findResult = findElementsBySelectedMethod(testObject, 0, currentMethod, false);
+                        }
+                        if (findResult == null || findResult.isEmpty()) {
+                            findResult = findElementsBySelectedMethod(testObject, 0, currentMethod, true);
+                        }
+
+                        if (findResult != null && !findResult.isEmpty()) {
+                            BrokenTestObject brokenTestObject = registerBrokenTestObject(findResult, testObject);
+                            registerBrokenTestObject(findResult, testObject, RunConfiguration.getReportFolder());
+
+                            SelfHealingController.logWarning(
+                                    MessageFormat.format(StringConstants.KW_LOG_INFO_PROPOSE_ALTERNATE_LOCATOR,
+                                            testObject.getObjectId(), brokenTestObject.getProposedLocator()));
+
+                            KeywordExecutionContext.setHasHealedSomeObjects(true);
+                            return findResult.getElements();
+                        }
+                    } catch (Exception exception) {
+                        SelfHealingController.logWarning(exception.getMessage(), exception);
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            SelfHealingController.logWarning(exception.getMessage(), exception);
         }
 
+        if (defaultException != null && !(defaultException instanceof NoSuchElementException)) {
+            throw defaultException;
+        }
         return Collections.emptyList();
     }
     
@@ -864,21 +878,21 @@ public class WebUiCommonHelper extends KeywordHelper {
                 recoveryMethod, elementScreenshot, dataFolder);
     }
 
-    private static List<WebElement> findElementsByDefault(TestObject testObject, int timeout) {
+    private static List<WebElement> findElementsByDefault(TestObject testObject, int timeout) throws Exception {
         return findElementsBySelectedMethod(testObject, timeout).getElements();
     }
 
-    private static FindElementsResult findElementsBySelectedMethod(TestObject testObject, int timeout) {
+    private static FindElementsResult findElementsBySelectedMethod(TestObject testObject, int timeout) throws Exception {
         return findElementsBySelectedMethod(testObject, timeout, testObject.getSelectorMethod());
     }
 
     private static FindElementsResult findElementsBySelectedMethod(TestObject testObject, int timeout,
-            SelectorMethod method) {
+            SelectorMethod method) throws Exception {
         return findElementsBySelectedMethod(testObject, timeout, method, false);
     }
 
     private static FindElementsResult findElementsBySelectedMethod(TestObject testObject, int timeout,
-            SelectorMethod method, boolean useSmartXPath) {
+            SelectorMethod method, boolean useSmartXPath) throws Exception {
         if (isElementInsideShadowDOM(testObject)) {
             return findElementsInsideShadowDOM(testObject, timeout);
         }
@@ -899,7 +913,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
     }
 
-    private static FindElementsResult findElementsInsideShadowDOM(TestObject testObject, int timeout) {
+    private static FindElementsResult findElementsInsideShadowDOM(TestObject testObject, int timeout) throws Exception {
         String cssLocator = CssLocatorBuilder.buildCssSelectorLocator(testObject);
         List<WebElement> foundElements = Collections.emptyList();
 
@@ -1337,9 +1351,9 @@ public class WebUiCommonHelper extends KeywordHelper {
      * @param testObject
      * @param timeOut
      * @return {@link WebElement}
-     * @throws WebElementNotFoundException
+     * @throws Exception 
      */
-    public static WebElement findWebElement(TestObject testObject, int timeOut) throws WebElementNotFoundException {
+    public static WebElement findWebElement(TestObject testObject, int timeOut) throws Exception {
         WebElement cachedWebElement = testObject.getCachedWebElement();
         if (cachedWebElement != null) {
             logger.logDebug("Using cached web element");
@@ -1387,9 +1401,9 @@ public class WebUiCommonHelper extends KeywordHelper {
      * @param testObject
      * @param timeOut
      * @return
-     * @throws WebElementNotFoundException
+     * @throws Exception 
      */
-    public static boolean switchToParentFrame(TestObject testObject, int timeOut) throws WebElementNotFoundException {
+    public static boolean switchToParentFrame(TestObject testObject, int timeOut) throws Exception {
         TestObject parentObject = testObject != null ? testObject.getParentObject() : null;
         boolean isParentShadowRoot = testObject.isParentObjectShadowRoot();
         List<TestObject> parentObjects = new ArrayList<TestObject>();
@@ -1414,7 +1428,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     private static boolean switchToParentFrame(int timeOut, WebDriver webDriver, TestObject currentParentObject)
-            throws WebElementNotFoundException {
+            throws Exception {
         logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
                 currentParentObject.getObjectId()));
         WebElement frameElement = findWebElement(currentParentObject, timeOut);
@@ -1427,7 +1441,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return true;
     }
 
-    public static boolean switchToParentFrame(TestObject testObject) throws WebElementNotFoundException {
+    public static boolean switchToParentFrame(TestObject testObject) throws Exception {
         return switchToParentFrame(testObject, RunConfiguration.getTimeOut());
     }
     
