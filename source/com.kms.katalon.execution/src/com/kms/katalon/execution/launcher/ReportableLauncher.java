@@ -327,7 +327,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         if (emailConfig.isSendReportTestFailedOnly() && testSuiteLogRecord.getStatus() != null
-                && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
+                && testSuiteLogRecord.getTotalFailedTestCases() <= 0) {
             return;
         }
 
