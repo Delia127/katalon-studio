@@ -39,6 +39,8 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String DIA_CB_DEFAULT_LASTEST_RELEASE = ComposerExecutionMessageConstants.DIA_CB_DEFAULT_LASTEST_RELEASE;
     
+    public static final String DIA_CB_TESTOPS_LOADING = ComposerExecutionMessageConstants.DIA_CB_TESTOPS_LOADING;
+    
     // ExecuteHandler
     public static final String ERROR_TITLE = ERROR;
 

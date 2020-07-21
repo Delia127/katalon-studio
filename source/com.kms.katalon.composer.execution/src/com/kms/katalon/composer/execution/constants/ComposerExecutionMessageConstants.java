@@ -412,6 +412,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_GRP_KATALON_TESTOPS;
     
     public static String DIA_CB_DEFAULT_LASTEST_RELEASE;
+    
+    public static String DIA_CB_TESTOPS_LOADING;
 
     static {
         // initialize resource bundle
