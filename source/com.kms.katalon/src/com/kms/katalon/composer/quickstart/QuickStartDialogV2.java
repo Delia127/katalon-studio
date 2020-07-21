@@ -113,7 +113,6 @@ public class QuickStartDialogV2 extends BaseQuickStartDialog {
                         }
                     })
                     .build();
-            btnOption.setForeground(ColorUtil.GRAY_LIGHT_COLOR);
             btnOption.setSelection(option.getLeft() == defaultValue);
         });
     }
