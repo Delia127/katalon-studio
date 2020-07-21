@@ -281,7 +281,7 @@ public class MessageConstants extends NLS {
 
     public static String TAB_LBL_SCRIPTING;
 
-    public static String RELEASE_NOTE_URL;
+    public static String RELEASE_NOTES_URL;
 
     public static String PA_LBL_TUTORIALS;
 
@@ -617,6 +617,9 @@ public class MessageConstants extends NLS {
     public static String Account_LOG_IN;
 
     public static String Account_HELP;
+
+    // Quick Start Dialog
+    public static String DIALOG_TITLE_QUICK_START_DIALOG;
 
     // First Time Use Katalon Survey Dialog
     public static String DIALOG_TITLE_FIRST_TIME_USE_SURVEY;

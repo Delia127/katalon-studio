@@ -90,6 +90,7 @@ import com.kms.katalon.composer.windows.spy.WindowsElementTreeContentProvider;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
@@ -952,7 +953,7 @@ public class WindowsRecorderDialog extends AbstractDialog implements WindowsObje
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+        createButton(parent, IDialogConstants.OK_ID, GlobalMessageConstants.DIA_SAVE_RECORDING, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 

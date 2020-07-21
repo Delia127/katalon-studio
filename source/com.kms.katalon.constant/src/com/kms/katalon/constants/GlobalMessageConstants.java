@@ -245,6 +245,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String DIA_NO;
 
+    public static String DIA_SAVE_RECORDING;
+
     public static String CREATED_DATE;
 
     public static String MODIFIED_DATE;

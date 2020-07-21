@@ -29,7 +29,7 @@ import com.kms.katalon.constants.StringConstants;
 
 public class WelcomeLeftPart extends Composite {
 
-    private static final String RELEASE_NOTES_URL = MessageConstants.RELEASE_NOTE_URL;
+    private static final String RELEASE_NOTES_URL = MessageConstants.RELEASE_NOTES_URL;
 
     private static final Cursor CURSOR_HAND = Display.getDefault().getSystemCursor(SWT.CURSOR_HAND);
 

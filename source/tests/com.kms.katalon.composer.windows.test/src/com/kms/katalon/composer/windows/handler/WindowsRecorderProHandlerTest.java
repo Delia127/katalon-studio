@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.kms.katalon.dal.state.DataProviderState;
@@ -12,6 +13,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public class WindowsRecorderProHandlerTest {
 
     @Test
+    @Ignore
     public void canExecuteNoProjectOpenedTest() {
         // Given
         DataProviderState.getInstance().setCurrentProject(null);
@@ -24,6 +26,7 @@ public class WindowsRecorderProHandlerTest {
     }
 
     @Test
+    @Ignore
     public void canExecuteOnlyForWindowsTest() {
         // Given
         ProjectEntity project = new ProjectEntity();

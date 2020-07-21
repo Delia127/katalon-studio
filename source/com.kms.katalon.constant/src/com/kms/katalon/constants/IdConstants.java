@@ -190,6 +190,8 @@ public interface IdConstants {
 
     public static final String OPEN_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.open";
 
+    public static final String CLONE_PROJECT_COMMAND_ID = "com.kms.katalon.composer.integration.git.command.clone";
+
     // Parameter ID
     public static final String RUN_MODE_PARAMETER_ID = "com.kms.katalon.composer.execution.runMode";
     
