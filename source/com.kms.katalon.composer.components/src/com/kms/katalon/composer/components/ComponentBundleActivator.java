@@ -8,8 +8,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import com.kms.katalon.composer.components.util.FontUtil;
-
 @SuppressWarnings("restriction")
 public class ComponentBundleActivator extends AbstractUIPlugin {
 
@@ -19,7 +17,6 @@ public class ComponentBundleActivator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         themeManager = getThemeManager(context);
-        FontUtil.loadFonts();
     }
 
     private IThemeManager getThemeManager(BundleContext context) {
