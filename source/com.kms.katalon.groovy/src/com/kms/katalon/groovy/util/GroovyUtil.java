@@ -240,6 +240,12 @@ public class GroovyUtil {
             pluginsFolder.create(true, true, null);
         }
 
+        if (isNew) {
+            try {
+                FileUtils.cleanDirectory(new File(projectEntity.getFolderLocation(), OUTPUT_FOLDER_NAME));
+            } catch (IOException ignored) {
+            }
+        }
         IFolder outputParentFolder = groovyProject.getFolder(OUTPUT_FOLDER_NAME);
         if (!outputParentFolder.exists()) {
             outputParentFolder.create(true, true, null);
