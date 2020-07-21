@@ -65,6 +65,8 @@ public class ExecutionHistoryPart {
 	private Composite errorPart;
 
 	private Composite viewerPart;
+	
+	private Composite emptyPart;
 
 	@PostConstruct
 	public void createPartControl(final Composite parent, MCompositePart mpart) {
@@ -80,8 +82,9 @@ public class ExecutionHistoryPart {
 		viewerPart.setLayout(viewerLayout);
 		viewerPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		createErrorpart();
+		createErrorPart();
 		createLoadingPart();
+		createEmptyPart();
 
 		refresh();
 	}
@@ -90,13 +93,26 @@ public class ExecutionHistoryPart {
 		viewerLayout.topControl = loadingPart;
 		viewerPart.layout();
 		Thread getExecutionsThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				final List<AnalyticsExecution> executions = getExecution();
-				if (executions.size() == 0) {
-					return;
-				}
+            @Override
+            public void run() {
+                final List<AnalyticsExecution> executions = getExecution();
+                if (executions == null) {
+                    return;
+                }
 
+                if (executions.isEmpty()) {
+			        UISynchronizeService.asyncExec(new Runnable() {
+
+	                    @Override
+	                    public void run() {
+	                        viewerLayout.topControl = emptyPart;
+	                        viewerPart.layout();
+	                    }
+	                });
+			        
+			        return;
+			    }
+			    
 				UISynchronizeService.asyncExec(new Runnable() {
 
 					@Override
@@ -126,25 +142,44 @@ public class ExecutionHistoryPart {
 			String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
 
 			if (!StringUtils.isBlank(email) && !StringUtils.isBlank(encryptedPassword)) {
-				String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+			    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
 				AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-				return AnalyticsApiProvider.getExecutions(project.getId(), serverUrl, token.getAccess_token());
+                return AnalyticsApiProvider.getExecutions(project.getId(), serverUrl, token.getAccess_token());
 			}
 		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			UISynchronizeService.asyncExec(new Runnable() {
+		    LoggerSingleton.logError(e);
+            UISynchronizeService.asyncExec(new Runnable() {
 
-				@Override
-				public void run() {
-					viewerLayout.topControl = errorPart;
-					viewerPart.layout();
-				}
-			});
+                @Override
+                public void run() {
+                    viewerLayout.topControl = errorPart;
+                    viewerPart.layout();
+                }
+            });
 		}
-		return new ArrayList<>();
-	}
 
-	private void createErrorpart() {
+		return null;
+    }
+
+    private void createEmptyPart() {
+        emptyPart = new Composite(viewerPart, SWT.NONE);
+        RowLayout rowLayout = new RowLayout();
+        emptyPart.setLayout(rowLayout);
+
+        Link link = new Link(emptyPart, SWT.NONE);
+        setFontStyle(link, 14, SWT.NONE);
+        link.setLayoutData(new RowData());
+        link.setText(TestOpsStringConstants.LNK_EXECUTION_EMPTY);
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(TestOpsStringConstants.LNK_ENABLE_INTEGRATION_GUIDE);
+            }
+        });
+
+    }
+	
+	private void createErrorPart() {
 		errorPart = new Composite(viewerPart, SWT.NONE);
 		RowLayout rowLayout = new RowLayout();
 		errorPart.setLayout(rowLayout);
