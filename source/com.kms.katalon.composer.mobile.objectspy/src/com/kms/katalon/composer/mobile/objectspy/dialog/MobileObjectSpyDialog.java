@@ -648,7 +648,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-        deviceView.setDisposed(false);
         final AppiumMonitorDialog progressDlg = new AppiumMonitorDialog(getShell()) {
             @Override
             public void cancelPressed() {
@@ -715,7 +714,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
 
         if (deviceView != null) {
-            deviceView.setDisposed(true);
+            deviceView.dispose();
         }
 
         dispose();
