@@ -210,7 +210,7 @@ public class ComponentUtil {
 
         if (url.startsWith("mailto")) {
             try {
-                Desktop.getDesktop().mail(URI.create(url + "?subject=Hello"));
+                Desktop.getDesktop().mail(URI.create(url));
             } catch (IOException exception) {
                 LoggerSingleton.logError(exception);
             }
