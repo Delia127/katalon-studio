@@ -61,6 +61,8 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsPlan;
+import com.kms.katalon.integration.analytics.entity.AnalyticsPlanPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsRelease;
@@ -737,4 +739,28 @@ public class AnalyticsApiProvider {
         return response;
     }
     
+    public static List<AnalyticsPlan> getPlans(Long projectId, String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, "/api/v1/search");
+            URIBuilder builder = new URIBuilder(uri);
+
+            AnalyticsQuery query = new AnalyticsQuery();
+            query.setType("RunConfiguration");
+            AnalyticsQueryCondition conditionProject = new AnalyticsQueryCondition("Project.id", "=",
+                    projectId.toString());
+            query.setConditions(new AnalyticsQueryCondition[] { conditionProject });
+            AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(0, 30, new String[] { "name,desc" });
+            query.setPagination(pagination);
+
+            builder.setParameter("q", JsonUtil.toJson(query));
+            HttpGet httpGet = new HttpGet(builder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            AnalyticsPlanPage response = executeRequest(httpGet, AnalyticsPlanPage.class);
+            return Arrays.asList(response.getContent());
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
 }

@@ -866,4 +866,9 @@ public interface IImageKeys {
     public static final String IMG_TESTOPS_EXECUTION_PASSED = "testops/execution_passed.png";
 
     public static final String IMG_TESTOPS_EXECUTION_FAILED = "testops/execution_failed.png";
+    
+    public static final String IMG_TESTOPS_PLAN = "testops/plan.png";
+    
+    public static final String IMG_TESTOPS_PLAN_QUEUED = "testops/plan_queued.png";
+    
 }
