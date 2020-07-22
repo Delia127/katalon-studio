@@ -615,7 +615,7 @@ public class ComponentUtil {
         control.setData(key, value);
     }
 
-    public static void setPrimaryButton(Control control) {
+    public static void applyPrimaryButtonStyle(Control control) {
         setCursorPointer(control);
         setBorderRadius(control);
         setColor(control, ColorUtil.getTextWhiteColor());
@@ -626,10 +626,16 @@ public class ComponentUtil {
         setActiveBackground(control, ColorUtil.PRIMARY_ACTIVE_COLOR);
     }
 
-    public static void setPrimaryLabel(Control control) {
+    public static void applyPrimaryBadgeStyle(Control control) {
         setBorderRadius(control);
         setColor(control, ColorUtil.getTextWhiteColor());
         setBackground(control, ColorUtil.PRIMARY_COLOR);
+    }
+
+    public static void applyGrayBadgeStyle(Control control) {
+        setBorderRadius(control);
+        setColor(control, ColorUtil.GRAY_BADGE_COLOR);
+        setBackground(control, ColorUtil.GRAY_BADGE_BACKGROUND);
     }
 
     public static void appendGridChild(Composite container, Control child) {

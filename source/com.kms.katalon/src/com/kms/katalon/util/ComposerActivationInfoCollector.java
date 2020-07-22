@@ -103,7 +103,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 if (!currentProfile.isDoneQuickStart()) {
                     showQuickStartDialogV2ForTheFirstTime();
                 } else {
-                    showQuickPrepareProjectPopupForTheFirstTime();
+//                    showQuickPrepareProjectPopupForTheFirstTime();
                 }
 //                showFunctionsIntroductionForTheFirstTime();
                 // openSignupSurveyDialog(Display.getCurrent().getActiveShell());

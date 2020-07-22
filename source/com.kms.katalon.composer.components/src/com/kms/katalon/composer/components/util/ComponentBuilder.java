@@ -451,12 +451,17 @@ public class ComponentBuilder<T extends Control> {
     }
 
     public ComponentBuilder<T> primaryButton() {
-        ComponentUtil.setPrimaryButton(control);
+        ComponentUtil.applyPrimaryButtonStyle(control);
         return this;
     }
 
-    public ComponentBuilder<T> primaryLabel() {
-        ComponentUtil.setPrimaryLabel(control);
+    public ComponentBuilder<T> primaryBadge() {
+        ComponentUtil.applyPrimaryBadgeStyle(control);
+        return this;
+    }
+
+    public ComponentBuilder<T> grayBadge() {
+        ComponentUtil.applyGrayBadgeStyle(control);
         return this;
     }
 
