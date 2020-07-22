@@ -180,7 +180,7 @@ public class Trackings {
             long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
             boolean isTriggerSelfHealing, String healingInfo) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
-                "runningMode", "runningMode", "console", "driver", driverType, "executionResult",
+                "runningMode", "console", "driver", driverType, "executionResult",
                 result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
                 numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
                 isTriggerSelfHealing
