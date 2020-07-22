@@ -50,7 +50,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     public void reloadPlugins(boolean silenceMode) {
     	ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-    	if (currentProject == null) {
+    	if (!silenceMode && currentProject == null) {
     		openHelpDialog();
     		return;
     	}
@@ -106,9 +106,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                             // wait for Reloading Plugins dialog to close
                             TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
                         } catch (InterruptedException ignored) {}
-                        UISynchronizeService.syncExec(() -> {
-                            openWarningDialog();
-                        });
+                        
+                        if (!silenceMode) {
+                            UISynchronizeService.syncExec(() -> {
+                                openWarningDialog();
+                            });
+                        }
                     });
                     return;
                 }
