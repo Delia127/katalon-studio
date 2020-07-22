@@ -98,7 +98,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
         ComponentBuilder.label(parent)
                 .text(getMainButtonText())
                 // .font(FontUtil.FONT_TTNORMS_MEDIUM)
-                .fontSize(FontUtil.SIZE_H4)
+                .fontSize(FontUtil.SIZE_H3)
                 // .bold()
                 .size(120, 40)
                 .gridMarginTop(10)
@@ -126,7 +126,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
                 .gridMargin(10, 50)
                 .build();
 
-        ComponentBuilder.label(tipsComposite).text("Tips").bold().size(40, 20).primaryLabel().middle().build();
+        ComponentBuilder.label(tipsComposite).text("TIPS").bold().size(40, 20).grayBadge().middle().build();
 
         ComponentBuilder.label(tipsComposite)
                 .text(getTipContent())

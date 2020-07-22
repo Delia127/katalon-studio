@@ -17,6 +17,9 @@ import com.kms.katalon.composer.components.constants.ComponentConstants;
 public class ComponentDataUtil {
 
     public static <T> T get(Control control, String key, T defaultValue) {
+        if (control == null || control.isDisposed()) {
+            return defaultValue;
+        }
         return valueOrDefault(control.getData(key), defaultValue);
     }
 
@@ -33,11 +36,11 @@ public class ComponentDataUtil {
     }
 
     public static String getText(Control control, String key) {
-        return get(control, key, StringUtils.EMPTY);
+        return getText(control, key, StringUtils.EMPTY);
     }
 
     public static String getText(Control control, String key, String defaultValue) {
-        return getText(control, key, defaultValue);
+        return get(control, key, defaultValue);
     }
 
     public static boolean getBoolean(Control control, String key) {

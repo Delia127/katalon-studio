@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.application.userprofile.UserExperienceLevel;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ComponentBuilder;
-import com.kms.katalon.composer.components.util.ComponentUtil;
 import com.kms.katalon.composer.components.util.FontUtil;
 import com.kms.katalon.composer.components.util.StyleContext;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
@@ -98,9 +97,12 @@ public class QuickStartDialogV2 extends BaseQuickStartDialog {
 
     private void createQuickStartQuestion(Composite parent, String question, List<Pair<?, String>> options,
             Object defaultValue, SelectionCallback selectionCallback) {
-        ComponentBuilder.label(parent).text(question).bold().center().gridMarginTop(30).gridMarginBottom(5).build();
+        ComponentBuilder.label(parent).text(question).bold().gridMarginTop(30).gridMarginBottom(5).build();
 
-        Composite optionsGroup = ComponentBuilder.rowContainer(parent).rowSpacing(20).rowJustify().fill().build();
+        Composite optionsGroup = ComponentBuilder.gridContainer(parent, options.size())
+                .gridHorizontalSpacing(30)
+                .gridMarginLeft(20)
+                .build();
 
         options.forEach(option -> {
             Button btnOption = ComponentBuilder.button(optionsGroup, SWT.RADIO)
