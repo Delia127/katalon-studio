@@ -43,7 +43,7 @@ public class WebElementUtilsTest {
 
     @Test
     public void canConvertWebElementToTestObjectAndRemoveInvalidCharactersFromName() throws Exception {
-        WebElement webElement = new WebElement(".This@is!my?name.");
+        WebElement webElement = new WebElement("....This@is!my?name....");
         FolderEntity parentFolder = new FolderEntity();
         ProjectEntity projectEntity = new ProjectEntity();
         File file = getExtensionsDirectory("/test_project");
