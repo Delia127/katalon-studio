@@ -72,9 +72,9 @@ public class ColorUtil {
     
     public static final Color BLUE_DARK_COLOR = getColor("#09092E");
     
-    public static final Color GRAY_LABEL_COLOR = BLUE_DARK_COLOR;
+    public static final Color GRAY_BADGE_COLOR = BLUE_DARK_COLOR;
     
-    public static final Color GRAY_LABEL_BACKGROUND = getColor("#EAEAEA");
+    public static final Color GRAY_BADGE_BACKGROUND = getColor("#EAEAEA");
 
     private static Display display = Display.getCurrent();
 

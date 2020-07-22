@@ -634,8 +634,8 @@ public class ComponentUtil {
 
     public static void applyGrayBadgeStyle(Control control) {
         setBorderRadius(control);
-        setColor(control, ColorUtil.GRAY_LABEL_COLOR);
-        setBackground(control, ColorUtil.GRAY_LABEL_BACKGROUND);
+        setColor(control, ColorUtil.GRAY_BADGE_COLOR);
+        setBackground(control, ColorUtil.GRAY_BADGE_BACKGROUND);
     }
 
     public static void appendGridChild(Composite container, Control child) {
