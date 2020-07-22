@@ -52,7 +52,7 @@ public class WebElementUtilsTest {
         parentFolder.setProject(projectEntity);
         parentFolder.setName("parent_folder");
         WebElementEntity entity = WebElementUtils.convertWebElementToTestObject(webElement, null, parentFolder);
-        Assert.assertEquals(entity.getName(), "Thisismyname");
+        Assert.assertEquals(entity.getName(), "This.is.my.name");
     }
 
     @Test
