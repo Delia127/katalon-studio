@@ -121,10 +121,12 @@ public class BaseQuickStartDialog extends AbstractDialog {
         StyleContext.setFontSize(FontUtil.SIZE_H5);
         StyleContext.setBackground(ColorUtil.getColor("#F5F5F5"));
 
-        tipsComposite = ComponentBuilder.gridContainer(tipsCompositeWrapper, 2)
+        Composite tipsCompositeInner = ComponentBuilder.gridContainer(tipsCompositeWrapper)
                 .fill()
                 .gridMargin(10, 50)
                 .build();
+
+        tipsComposite = ComponentBuilder.gridContainer(tipsCompositeInner, 2).center().build();
 
         ComponentBuilder.label(tipsComposite).text("TIPS").bold().size(40, 20).grayBadge().middle().build();
 
@@ -146,8 +148,8 @@ public class BaseQuickStartDialog extends AbstractDialog {
     }
 
     protected void addTip(Control tip) {
-         ComponentUtil.appendGridChild(tipsComposite, tip);
-         tipsComposite.pack();
+        ComponentUtil.appendGridChild(tipsComposite, tip);
+        tipsComposite.pack();
     }
 
     @Override
