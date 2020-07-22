@@ -319,6 +319,8 @@ public class WebElementUtils {
     }
 
     public static String toValidFileName(String fileName) {
+        fileName = StringUtils.stripStart(fileName, ".");
+        fileName = StringUtils.stripEnd(fileName, ".");
         return fileName.trim().replaceAll("[^A-Za-z0-9_()\\-\\. ]", "");
     }
 
