@@ -75,7 +75,7 @@ public class QuickStartDialogV2 extends BaseQuickStartDialog {
         ComponentBuilder.label(parent)
                 .text("Let us help you and your team become automation experts")
                 .fontSize(FontUtil.SIZE_H3)
-                .color(ColorUtil.getColor("#b4b4c0"))
+                .color(ColorUtil.getColor("#636384"))
                 .center()
                 .build();
     }
