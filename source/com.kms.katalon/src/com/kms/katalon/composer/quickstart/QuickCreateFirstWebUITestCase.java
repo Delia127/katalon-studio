@@ -69,7 +69,7 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
                     Text txtUrl = (Text) event.widget;
                     preferredSite = txtUrl.getText();
                 })
-                .build().setEditable(false);
+                .build();
 
         browserSelect = new BrowserSelect(configComposite, SWT.NONE);
 

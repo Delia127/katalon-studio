@@ -83,7 +83,7 @@ public class ExecuteFirstWebUITestCaseDialog extends BaseQuickStartDialog {
                 .size(350, 22)
                 .fontSize(FontUtil.SIZE_H5)
                 .build();
-        txtTestCase.setEnabled(false);
+        txtTestCase.setEditable(false);
 
         browserSelect = new BrowserSelect(configComposite, SWT.NONE);
 
