@@ -330,6 +330,9 @@ public class RecordHandler {
     }
 
     private TestCaseCompositePart getTestCasePartByTestCase(TestCaseEntity testCase) throws Exception {
+        if (testCase == null) {
+            return null;
+        }
         MPart selectedPart = (MPart) modelService.find(EntityPartUtil.getTestCaseCompositePartId(testCase.getId()),
                 application);
         if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {

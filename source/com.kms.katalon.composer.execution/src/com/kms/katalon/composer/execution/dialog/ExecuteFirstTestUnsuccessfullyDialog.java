@@ -79,8 +79,8 @@ public class ExecuteFirstTestUnsuccessfullyDialog extends BaseQuickStartDialog {
         return "Got it";
     }
 
-    @Override
-    protected String getTipContent() {
-        return "Find the above resources in Help > Katalon help";
-    }
+//    @Override
+//    protected String getTipContent() {
+//        return "Find the above resources in Help > Katalon help";
+//    }
 }
