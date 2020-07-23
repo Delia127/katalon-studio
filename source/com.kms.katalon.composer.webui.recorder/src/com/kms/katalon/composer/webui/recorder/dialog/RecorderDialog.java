@@ -61,6 +61,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -1924,7 +1925,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     protected void setInput() {
         boolean continueRecording = false;
         if (testCaseEntity != null && nodeWrappers.size() > 0) {
-            MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
+            MessageDialog dialog = new MessageDialog(getParentShell(), StringConstants.CONFIRMATION, null,
                     MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
                             testCaseEntity.getName()),
                     MessageDialog.CONFIRM, MessageDialog.OK,
@@ -1936,6 +1937,22 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 continueRecording = false;
             } else {
                 continueRecording = true;
+            }
+
+            Shell shell = getShell();
+            if (shell != null) {
+                shell.getDisplay().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (!shell.getMinimized())
+                        {
+                            shell.setMinimized(true);
+                        }
+                        shell.setMinimized(false);
+                        shell.setActive();
+                    }
+                });
             }
         }
         recordStepsView.addVariables(variables.toArray(new VariableEntity[variables.size()]));
