@@ -24,15 +24,56 @@ public class ComponentDataUtil {
     }
 
     public static void set(Control control, Object data) {
+        if (control == null || control.isDisposed()) {
+            return;
+        }
         control.setData(data);
     }
 
     public static void set(Control control, String key, Object value) {
+        if (control == null || control.isDisposed()) {
+            return;
+        }
         control.setData(key, value);
     }
 
     public static boolean has(Control control, String key) {
+        if (control == null || control.isDisposed()) {
+            return false;
+        }
         return control.getData(key) != null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T invokeGet(Control control, String getterMethodName) {
+        if (control == null || control.isDisposed()) {
+            return null;
+        }
+        try {
+            Method getter = control.getClass().getMethod(getterMethodName);
+            if (getter != null) {
+                return (T) getter.invoke(control);
+            }
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException exception) {
+            // Just skip
+        }
+        return null;
+    }
+
+    public static <T> void invokeSet(Control control, String setterMethodName, T data, Class<?> type) {
+        if (control == null || control.isDisposed()) {
+            return;
+        }
+        try {
+            Method setter = control.getClass().getMethod(setterMethodName, type);
+            if (setter != null) {
+                setter.invoke(control, data);
+            }
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException exception) {
+            // Just skip
+        }
     }
 
     public static String getText(Control control, String key) {
@@ -68,53 +109,19 @@ public class ComponentDataUtil {
     }
 
     public static String getText(Control control) {
-        try {
-            Method getText = control.getClass().getMethod("getText");
-            if (getText != null) {
-                return (String) getText.invoke(control);
-            }
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException exception) {
-            // Just skip
-        }
-        return null;
+        return invokeGet(control, "getText");
     }
 
     public static void setText(Control control, String text) {
-        try {
-            Method setText = control.getClass().getMethod("setText", String.class);
-            if (setText != null) {
-                setText.invoke(control, text);
-            }
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException exception) {
-            // Just skip
-        }
+        invokeSet(control, "setText", text, String.class);
     }
 
     public static Image getImage(Control control) {
-        try {
-            Method getImage = control.getClass().getMethod("getImage");
-            if (getImage != null) {
-                return (Image) getImage.invoke(control);
-            }
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException exception) {
-            // Just skip
-        }
-        return null;
+        return invokeGet(control, "getImage");
     }
 
     public static void setImage(Control control, Image image) {
-        try {
-            Method setImage = control.getClass().getMethod("setImage", Image.class);
-            if (setImage != null) {
-                setImage.invoke(control, image);
-            }
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException exception) {
-            // Just skip
-        }
+        invokeSet(control, "setImage", image, Image.class);
     }
 
     public static MouseTrackListener getMouseTrackListener(Control control) {

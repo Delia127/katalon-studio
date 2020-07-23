@@ -17,7 +17,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -148,7 +150,9 @@ public class RecordHandler {
                 return;
             }
             
-            TestCaseEntity newTestCase = createNewTestCase();
+            TestCaseEntity newTestCase = testCaseEntity == null
+                    ? createNewTestCase()
+                    : testCaseEntity;
             if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
                 testCaseCompositePart = getTestCasePartByTestCase(newTestCase);
                 shouldOverride = false;
@@ -163,13 +167,8 @@ public class RecordHandler {
             }
             updateRecordedElementsAfterSavingToObjectRepository(recordedElements,
                     folderSelectionResult != null ? folderSelectionResult.getEntitySavedMap() : Collections.emptyMap());
-            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedElements,
+            doGenerateTestScripts(newTestCase, testCaseCompositePart, folderSelectionResult, recordedElements,
                     recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
-
-            UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
-            if (newTestCase != null && currentProfile.isNewUser() && !currentProfile.isDoneRunFirstTestCase()) {
-                eventBroker.post(EventConstants.FIRST_TEST_CASE_CREATED, newTestCase);
-            }
         } catch (Exception e) {
             MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
@@ -241,7 +240,7 @@ public class RecordHandler {
         return testCase;
     }
 
-    private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
+    private void doGenerateTestScripts(final TestCaseEntity newTestCase, final TestCaseCompositePart testCaseCompositePart,
             final SaveToObjectRepositoryDialogResult folderSelectionResult, final List<WebPage> recordedElements,
             final ScriptNodeWrapper wrapper, final VariableEntity[] variables, final boolean shouldOverride) {
         if (testCaseCompositePart == null) {
@@ -312,6 +311,16 @@ public class RecordHandler {
                 }
             }
         };
+        
+        job.addJobChangeListener(new JobChangeAdapter() {
+            @Override
+            public void done(IJobChangeEvent event) {
+                UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+                if (newTestCase != null && currentProfile.isNewUser() && !currentProfile.isDoneRunFirstTestCase()) {
+                    eventBroker.post(EventConstants.FIRST_TEST_CASE_CREATED, newTestCase);
+                }
+            }
+        });
 
         job.setUser(true);
         job.schedule();
