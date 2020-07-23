@@ -155,6 +155,24 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     
     public static String LNK_REPORT_WARNING_MSG_NO_PROJECT;
     
+    public static String TASK_MSG_ENABLE_INTEGRATION;
+    
+    public static String TASK_MSG_CHECK_CONNECTION;
+    
+    public static String TASK_MSG_GETTING_TESTOPS_INFO;
+    
+    public static String TASK_MSG_SETTING_INTEGRATION;
+    
+    public static String TASK_MSG_GETTING_TEAMS;
+
+    public static String ERROR_TESTOPS_INTEGRATION;
+
+    public static String ERROR_TESTOPS_INTEGRATION_INVALID_CREDENTIAL;
+
+    public static String ERROR_TESTOPS_INTEGRATION_CONNECTION;
+
+    public static String ERROR_TESTOPS_INTEGRATION_INVALID_DATA;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerIntegrationAnalyticsMessageConstants.class);
