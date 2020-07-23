@@ -84,7 +84,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     if (StringUtils.containsIgnoreCase(e.getMessage(), StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
                         return new Status(Status.CANCEL, "com.kms.katalon", StringConstants.KStore_ERROR_INVALID_CREDENTAILS, e);
                     } else {
-                        return new Status(Status.ERROR, "com.kms.katalon", "Error reloading plugins",
+                        return new Status(silenceMode ? Status.WARNING : Status.ERROR, "com.kms.katalon", "Error reloading plugins",
                                 new Exception(ExceptionsUtil.getStackTraceForThrowable(e)));
                     }
                 }

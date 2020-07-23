@@ -15,8 +15,6 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String DIA_TOOLITEM_RECORD;
 
-    public static String DIA_BTN_SAVE_RECORDING;
-
     public static String DIA_LBL_CAPTURED_OBJECTS;
 
     public static String DIA_LBL_OBJECT_PROPERTIES;

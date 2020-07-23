@@ -1,13 +1,9 @@
 package com.kms.katalon.composer.execution.dialog;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -27,11 +23,7 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
-import com.kms.katalon.execution.launcher.ILauncher;
-import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
-import com.kms.katalon.execution.launcher.result.ILauncherResult;
-import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.webui.configuration.ChromeRunConfiguration;
 import com.kms.katalon.execution.webui.configuration.EdgeChromiumRunConfiguration;
 import com.kms.katalon.execution.webui.configuration.FirefoxRunConfiguration;
@@ -132,63 +124,6 @@ public class ExecuteFirstWebUITestCaseDialog extends BaseQuickStartDialog {
                 });
         firstExecutionJob.setUser(true);
         firstExecutionJob.schedule();
-        firstExecutionJob.addJobChangeListener(new IJobChangeListener() {
-
-            @Override
-            public void sleeping(IJobChangeEvent event) {
-            }
-
-            @Override
-            public void scheduled(IJobChangeEvent event) {
-            }
-
-            @Override
-            public void running(IJobChangeEvent event) {
-            }
-
-            @Override
-            public void done(IJobChangeEvent event) {
-                List<ILauncher> lauchers = LauncherManager.getInstance().getRunningLaunchers();
-                ILauncher firstExecution = lauchers.get(0);
-                Thread waitForExecuteThread = new Thread(() -> {
-                    while (firstExecution.getStatus() != LauncherStatus.DONE
-                            && firstExecution.getStatus() != LauncherStatus.TERMINATED) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            break;
-                        }
-                    }
-                    if (firstExecution.getStatus() == LauncherStatus.DONE) {
-                        UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
-                        currentProfile.setDoneRunFirstTestCase(true);
-                        UserProfileHelper.saveProfile(currentProfile);
-
-                        UISynchronizeService.syncExec(() -> {
-                            ILauncherResult result = firstExecution.getResult();
-                            if (result.getReturnCode() == 0) {
-                                ExecuteFirstTestSuccessfullyDialog congratulationDialog = new ExecuteFirstTestSuccessfullyDialog(
-                                        Display.getCurrent().getActiveShell());
-                                congratulationDialog.open();
-                            } else {
-                                ExecuteFirstTestUnsuccessfullyDialog troubleshotDialog = new ExecuteFirstTestUnsuccessfullyDialog(
-                                        Display.getCurrent().getActiveShell());
-                                troubleshotDialog.open();
-                            }
-                        });
-                    }
-                });
-                waitForExecuteThread.start();
-            }
-
-            @Override
-            public void awake(IJobChangeEvent event) {
-            }
-
-            @Override
-            public void aboutToRun(IJobChangeEvent event) {
-            }
-        });
     }
 
     @Override

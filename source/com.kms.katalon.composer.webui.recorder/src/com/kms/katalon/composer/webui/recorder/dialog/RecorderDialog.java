@@ -89,6 +89,7 @@ import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.DialogUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -1668,6 +1669,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected Point getInitialSize() {
         return MIN_DIALOG_SIZE;
+    }
+    
+    @Override
+    protected Point getInitialLocation(Point initialSize) {
+        return DialogUtil.computeRightLocation(initialSize);
     }
 
     @Override

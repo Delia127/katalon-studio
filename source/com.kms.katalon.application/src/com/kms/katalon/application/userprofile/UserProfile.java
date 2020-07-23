@@ -24,6 +24,10 @@ public class UserProfile {
 
     private boolean doneRunFirstTestCase;
 
+    private boolean doneRunFirstTestCasePass;
+
+    private boolean doneRunFirstTestCaseFail;
+
     public boolean isNewUser() {
         return experienceLevel == UserExperienceLevel.FRESHER;
     }
@@ -110,5 +114,21 @@ public class UserProfile {
 
     public void setDoneRunFirstTestCase(boolean doneRunFirstTestCase) {
         this.doneRunFirstTestCase = doneRunFirstTestCase;
+    }
+
+    public boolean isDoneRunFirstTestCasePass() {
+        return doneRunFirstTestCasePass;
+    }
+
+    public void setDoneRunFirstTestCasePass(boolean doneRunFirstTestCasePass) {
+        this.doneRunFirstTestCasePass = doneRunFirstTestCasePass;
+    }
+
+    public boolean isDoneRunFirstTestCaseFail() {
+        return doneRunFirstTestCaseFail;
+    }
+
+    public void setDoneRunFirstTestCaseFail(boolean doneRunFirstTestCaseFail) {
+        this.doneRunFirstTestCaseFail = doneRunFirstTestCaseFail;
     }
 }
