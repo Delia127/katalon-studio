@@ -78,4 +78,19 @@ public class TestOpsStringConstants {
 
     public static final String LNK_CREATE_PLAN_GUIDE = TestOpsMessageConstants.LNK_CREATE_PLAN_GUIDE;
     
+	public static final String LBL_RELEASES = TestOpsMessageConstants.LBL_RELEASES;
+
+    public static final String LNK_VIEW_ALL_RELEASES = TestOpsMessageConstants.LNK_VIEW_ALL_RELEASES;
+
+    public static final String RELEASE_STATUS = TestOpsMessageConstants.RELEASE_STATUS;
+
+    public static final String RELEASE_NAME = TestOpsMessageConstants.RELEASE_NAME;
+
+    public static final String RELEASE_START_DATE = TestOpsMessageConstants.RELEASE_START_DATE;
+
+    public static final String RELEASE_END_DATE = TestOpsMessageConstants.RELEASE_END_DATE;
+
+    public static final String RELEASE_STATUS_ACTIVE = TestOpsMessageConstants.RELEASE_STATUS_ACTIVE;
+
+    public static final String RELEASE_STATUS_CLOSED = TestOpsMessageConstants.RELEASE_STATUS_CLOSED;
 }

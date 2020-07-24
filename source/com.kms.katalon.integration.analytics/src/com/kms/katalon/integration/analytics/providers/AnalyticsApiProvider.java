@@ -13,8 +13,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -713,14 +716,14 @@ public class AnalyticsApiProvider {
     public static List<AnalyticsRelease> getReleases(Long projectId, String serverUrl, String token)
             throws AnalyticsApiExeception {
         try {
-            AnalyticsReleasePage response = getReleasePage(serverUrl, token, projectId, 0);
+            AnalyticsReleasePage response = getReleasePage(serverUrl, token, projectId, 0, true);
             List<AnalyticsRelease> executions = new ArrayList<>();
             if (!response.isEmpty()) {
                 executions.addAll(Arrays.asList(response.getContent()));
             }
 
             while (!response.isEmpty() && !response.isLast()) {
-                response = getReleasePage(serverUrl, token, projectId, response.getPageable().getPageNumber() + 1);
+                response = getReleasePage(serverUrl, token, projectId, response.getPageable().getPageNumber() + 1, true);
                 executions.addAll(Arrays.asList(response.getContent()));
             }
 
@@ -730,7 +733,17 @@ public class AnalyticsApiProvider {
         }
     }
     
-    private static AnalyticsReleasePage getReleasePage(String serverUrl, String token, Long projectId, Integer page)
+    public static List<AnalyticsRelease> getFirstReleasesPage(Long projectId, String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            AnalyticsReleasePage response = getReleasePage(serverUrl, token, projectId, 0, false);
+            return Arrays.asList(response.getContent());
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+    
+    private static AnalyticsReleasePage getReleasePage(String serverUrl, String token, Long projectId, Integer page, boolean activeOnly)
             throws Exception {
         URI uri = getApiURI(serverUrl, "/api/v1/search");
         URIBuilder builder = new URIBuilder(uri);
@@ -739,9 +752,15 @@ public class AnalyticsApiProvider {
         query.setType("Release");
         query.setGroupBys(new String[] {});
 
+        List<AnalyticsQueryCondition> conditions = new LinkedList<>();
         AnalyticsQueryCondition conditionProject = new AnalyticsQueryCondition("Project.id", "=", projectId.toString());
-        AnalyticsQueryCondition conditionStatus = new AnalyticsQueryCondition("closed", "=", "false");
-        query.setConditions(new AnalyticsQueryCondition[] { conditionProject, conditionStatus });
+        conditions.add(conditionProject);
+        if(activeOnly) {
+            AnalyticsQueryCondition conditionStatus = new AnalyticsQueryCondition("closed", "=", "false");
+            conditions.add(conditionStatus);
+        }
+        
+        query.setConditions(conditions.toArray(new AnalyticsQueryCondition[0]));
         query.setFunctions(new AnalyticsQueryFunction[] {});
 
         AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(page, 30,

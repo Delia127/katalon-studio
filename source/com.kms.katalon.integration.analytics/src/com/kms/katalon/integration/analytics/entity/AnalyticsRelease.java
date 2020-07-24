@@ -63,5 +63,7 @@ public class AnalyticsRelease {
 		this.projectId = projectId;
 		this.closed = closed;
 	}
-	
+	public enum AnalyticsReleaseType {
+	    ACTIVE, CLOSED
+	}
 }

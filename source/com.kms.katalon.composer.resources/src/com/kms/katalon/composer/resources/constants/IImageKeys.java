@@ -878,4 +878,7 @@ public interface IImageKeys {
     public static final String IMG_TESTOPS_PLAN_CANCELED = "testops/plan_cancel.png";
     
     public static final String IMG_TESTOPS_REFRESH_NEW = "testops/refresh_new.png";
+    
+    public static final String IMG_TESTOPS_RELEASES = "testops/releases.png";
+    
 }

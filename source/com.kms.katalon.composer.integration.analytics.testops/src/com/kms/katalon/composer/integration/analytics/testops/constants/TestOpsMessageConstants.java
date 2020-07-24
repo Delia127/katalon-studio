@@ -31,6 +31,22 @@ public class TestOpsMessageConstants extends NLS {
 	public static String LNK_EXECUTION_EMPTY;
 	
 	public static String LNK_ENABLE_INTEGRATION_GUIDE;
+
+    public static String LBL_RELEASES;
+
+    public static String LNK_VIEW_ALL_RELEASES;
+
+    public static String RELEASE_STATUS;
+
+    public static String RELEASE_NAME;
+
+    public static String RELEASE_START_DATE;
+
+    public static String RELEASE_END_DATE;
+
+    public static String RELEASE_STATUS_ACTIVE;
+
+    public static String RELEASE_STATUS_CLOSED;
 	
     public static String LBL_PLANS;
     
