@@ -30,7 +30,7 @@ public class LinkBox extends Composite {
         };
 
         ComponentBuilder.fromGrid(box)
-                .size(120)
+                .size(140)
                 .onClick(clickHandler)
                 .background(ColorUtil.GRAY_LIGHT_COLOR)
                 .hoverBackground(ColorUtil.GRAY_COLOR)
