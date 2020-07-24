@@ -15,6 +15,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
@@ -66,6 +67,8 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
     
     private static boolean isActivated;
+    
+    private static EventHandler openQuickCreateFirstTestCaseHandler = null;
 
     public static boolean checkActivation(boolean isStartup) throws InvocationTargetException, InterruptedException {
         Shell shell = Display.getCurrent().getActiveShell();
@@ -219,38 +222,42 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             firstProject.setType(ProjectType.WEBUI);
             ProjectController.getInstance().updateProject(firstProject);
 
-            EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.PROJECT_OPENED, (event) -> {
-                Thread thread = new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            Thread.sleep(3000); // Wait for workbench initialization
-                        } catch (InterruptedException error) {
-                            // Just skip
+            if (openQuickCreateFirstTestCaseHandler == null) {
+                openQuickCreateFirstTestCaseHandler = (event) -> {
+                    Thread thread = new Thread(new Runnable() {
+                        public void run() {
+                            try {
+                                Thread.sleep(3000); // Wait for workbench initialization
+                            } catch (InterruptedException error) {
+                                // Just skip
+                            }
+
+                            UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+                            if (!currentProfile.isNewUser()
+                                    || currentProfile.isDoneCreateFirstTestCase()
+                                    || currentProfile.getPreferredTestingType() != QuickStartProjectType.WEBUI) {
+                                return;
+                            }
+
+                            UISynchronizeService.syncExec(() -> {
+                                QuickCreateFirstWebUITestCase quickCreateFirstTestCaseDialog = new QuickCreateFirstWebUITestCase(mainShell);
+                                quickCreateFirstTestCaseDialog.open();
+
+                                currentProfile.setDoneCreateFirstTestCase(true);
+                                currentProfile.setPreferredBrowser(quickCreateFirstTestCaseDialog.getPreferredBrowser());
+                                currentProfile.setPreferredSite(quickCreateFirstTestCaseDialog.getPreferredSite());
+                                UserProfileHelper.saveProfile(currentProfile);
+
+                                activeShell(mainShell);
+                                EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.KATALON_RECORD, null);
+                            });
                         }
-
-                        UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
-                        if (!currentProfile.isNewUser()
-                                || currentProfile.isDoneCreateFirstTestCase()
-                                || currentProfile.getPreferredTestingType() != QuickStartProjectType.WEBUI) {
-                            return;
-                        }
-
-                        UISynchronizeService.syncExec(() -> {
-                            QuickCreateFirstWebUITestCase quickCreateFirstTestCaseDialog = new QuickCreateFirstWebUITestCase(mainShell);
-                            quickCreateFirstTestCaseDialog.open();
-
-                            currentProfile.setDoneCreateFirstTestCase(true);
-                            currentProfile.setPreferredBrowser(quickCreateFirstTestCaseDialog.getPreferredBrowser());
-                            currentProfile.setPreferredSite(quickCreateFirstTestCaseDialog.getPreferredSite());
-                            UserProfileHelper.saveProfile(currentProfile);
-
-                            activeShell(mainShell);
-                            EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.KATALON_RECORD, null);
-                        });
-                    }
-                });
-                thread.start();
-            });
+                    });
+                    thread.start();
+                };
+            }
+            EventBrokerSingleton.getInstance().getEventBroker().unsubscribe(openQuickCreateFirstTestCaseHandler);
+            EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.PROJECT_OPENED, openQuickCreateFirstTestCaseHandler);
 
             OpenProjectHandler.doOpenProject(mainShell, firstProject.getLocation(),
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),

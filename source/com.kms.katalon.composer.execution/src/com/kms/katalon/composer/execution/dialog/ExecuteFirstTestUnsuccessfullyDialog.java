@@ -68,7 +68,7 @@ public class ExecuteFirstTestUnsuccessfullyDialog extends BaseQuickStartDialog {
                 .build();
 
         Composite resources = ComponentBuilder.gridContainer(parent, 3).center().gridHorizontalSpacing(20).build();
-        new LinkBox(resources, "Troubleshot", DocumentationMessageConstants.TROUBLESHOOT_WEB_TESTING,
+        new LinkBox(resources, "Troubleshoot", DocumentationMessageConstants.TROUBLESHOOT_WEB_TESTING,
                 IImageKeys.RESOURCES_TROUBLESHOOT);
         new LinkBox(resources, "Chatroom", DocumentationMessageConstants.CHATROOM, IImageKeys.RESOURCES_CHATROOM);
         new LinkBox(resources, "Forum", DocumentationMessageConstants.FORUM, IImageKeys.RESOURCES_FORUM);

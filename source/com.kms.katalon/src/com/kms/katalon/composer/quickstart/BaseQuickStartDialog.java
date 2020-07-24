@@ -100,7 +100,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
                 // .font(FontUtil.FONT_TTNORMS_MEDIUM)
                 .fontSize(FontUtil.SIZE_H3)
                 // .bold()
-                .size(120, 40)
+                .size(140, 40)
                 .gridMarginTop(10)
                 .gridMarginBottom(30)
                 .center()

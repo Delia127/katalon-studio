@@ -37,6 +37,10 @@ public class StyleUtil {
 
             @Override
             public void paintControl(PaintEvent event) {
+                if (ComponentUtil.isDisposed(control)) {
+                    return;
+                }
+
                 GC gc = event.gc;
                 gc.setAntialias(SWT.ON);
                 gc.setAdvanced(true);
@@ -134,11 +138,19 @@ public class StyleUtil {
 
                 @Override
                 public void mouseExit(MouseEvent e) {
+                    if (ComponentUtil.isDisposed(control)) {
+                        return;
+                    }
+
                     setStyleFromProp(control);
                 }
 
                 @Override
                 public void mouseEnter(MouseEvent e) {
+                    if (ComponentUtil.isDisposed(control)) {
+                        return;
+                    }
+
                     setStyleFromHover(control);
                 }
             };
@@ -150,11 +162,19 @@ public class StyleUtil {
 
                 @Override
                 public void mouseUp(MouseEvent e) {
+                    if (ComponentUtil.isDisposed(control)) {
+                        return;
+                    }
+
                     setStyleFromProp(control);
                 }
 
                 @Override
                 public void mouseDown(MouseEvent e) {
+                    if (ComponentUtil.isDisposed(control)) {
+                        return;
+                    }
+
                     setStyleFromActive(control);
                 }
 
@@ -224,10 +244,10 @@ public class StyleUtil {
     }
 
     public static void applyMoueseListenerToChildren(Control control) {
-        applyMoueseListenerToChildren(control, null);
+        applyMouseListenerToChildren(control, null);
     }
 
-    private static void applyMoueseListenerToChildren(Control control, MouseListener mouseListener) {
+    private static void applyMouseListenerToChildren(Control control, MouseListener mouseListener) {
         if (mouseListener == null) {
             mouseListener = (MouseListener) control.getData("mouseListener");
             if (mouseListener == null) {
@@ -241,7 +261,7 @@ public class StyleUtil {
         Control[] children = ((Composite) control).getChildren();
         for (Control child : children) {
             child.addMouseListener(mouseListener);
-            applyMoueseListenerToChildren(child, mouseListener);
+            applyMouseListenerToChildren(child, mouseListener);
         }
     }
 }

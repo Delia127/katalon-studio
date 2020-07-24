@@ -21,6 +21,7 @@ import com.kms.katalon.composer.execution.dialog.ExecuteFirstTestUnsuccessfullyD
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
+import com.kms.katalon.entity.project.QuickStartProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
@@ -100,7 +101,9 @@ public class ExecuteTestCaseJob extends Job {
     
     private void showFirstExecuteGuidingDialog() {
         UserProfile currentProfile1 = UserProfileHelper.getCurrentProfile();
-        if (!currentProfile1.isNewUser()) {
+        boolean isPreferredWebUITesting = currentProfile1.getPreferredTestingType() == QuickStartProjectType.WEBUI;
+        boolean hasDoneFirstRunPassAndFail = currentProfile1.isDoneRunFirstTestCasePass() && currentProfile1.isDoneRunFirstTestCaseFail();
+        if (!currentProfile1.isNewUser() || !isPreferredWebUITesting || hasDoneFirstRunPassAndFail) {
             return;
         }
 

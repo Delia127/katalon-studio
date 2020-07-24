@@ -730,4 +730,8 @@ public class ComponentUtil {
     public static boolean hasRowData(Control control) {
         return control.getLayoutData() instanceof RowData;
     }
+
+    public static boolean isDisposed(Control control) {
+        return control == null || control.isDisposed();
+    }
 }
