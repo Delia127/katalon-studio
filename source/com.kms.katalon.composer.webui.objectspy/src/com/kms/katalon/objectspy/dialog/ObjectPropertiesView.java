@@ -36,6 +36,8 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -58,6 +60,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.dal.fileservice.dataprovider.EntityNameFileServiceDataProvider;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.objectspy.constants.ImageConstants;
@@ -65,6 +68,7 @@ import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.util.listener.EventListener;
 import com.kms.katalon.util.listener.EventManager;
 
@@ -623,7 +627,25 @@ public class ObjectPropertiesView extends Composite
     
 
     private void addControlListeners() {
+        txtName.addVerifyListener(new VerifyListener() {
+
+            @Override
+            public void verifyText(VerifyEvent e) {
+                Text source = (Text) e.widget;
+                String oldS = source.getText();
+                String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+                try {
+                    new EntityNameFileServiceDataProvider().validateName(newS);
+                } catch (Exception invalidName) {
+                    MessageDialog.openWarning(getShell(), "Invalid name", invalidName.getMessage());
+                    e.doit = false;
+                    return;
+                }
+            }
+        });
+
         txtName.addModifyListener(new ModifyListener() {
+
             @Override
             public void modifyText(ModifyEvent e) {
                 String text = txtName.getText();
