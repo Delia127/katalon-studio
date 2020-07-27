@@ -281,7 +281,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         txtProjectDescription.setLeftMargin(PROJECT_DESC_TEXT_LEFT_MARGIN);
         
-        if (initialSampleProject != null) {
+        if (initialSampleProject != null && StringUtils.isNotBlank(initialSampleProject.getSuggestedName())) {
             txtProjectName.setText(initialSampleProject.getSuggestedName());
         }
 
