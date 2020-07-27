@@ -337,6 +337,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String ERROR_MSG_FAIL_TO_IMPORT_SOAPUI;
 
+    public static String ERROR_MSG_FAIL_TO_IMPORT_OPENAPI;
+
     public static String PREF_WARN_CLIENT_CERT;
 
     static {
