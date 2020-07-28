@@ -49,7 +49,6 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: KMS
-Import-Package: com.kms.katalon.dal.fileservice.dataprovider,
 Import-Package: com.kms.katalon.composer.explorer.parts,
  javax.inject,
  org.codehaus.groovy.control
