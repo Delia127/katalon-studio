@@ -95,23 +95,25 @@ public class MobileReadonlyElementPropertiesComposite {
 
         attributesTableViewer.setInput(Collections.emptyList());
         
-        txtObjectName.addVerifyListener(new VerifyListener() {
+		txtObjectName.addVerifyListener(new VerifyListener() {
 
-            @Override
-            public void verifyText(VerifyEvent e) {
-                Text source = (Text) e.widget;
-                String oldS = source.getText();
-                String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
-                try {
-                    new EntityNameFileServiceDataProvider().validateName(newS);
-                } catch (Exception invalidName) {
-                    MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Invalid name",
-                            invalidName.getMessage());
-                    e.doit = false;
-                    return;
-                }
-            }
-        });
+			@Override
+			public void verifyText(VerifyEvent e) {
+				Text source = (Text) e.widget;
+				String oldS = source.getText();
+				String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+				if (editingElement != null) {
+					try {
+						new EntityNameFileServiceDataProvider().validateName(newS);
+					} catch (Exception invalidName) {
+						MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Invalid name",
+								invalidName.getMessage());
+						e.doit = false;
+						return;
+					}
+				}
+			}
+		});
 
     }
 
