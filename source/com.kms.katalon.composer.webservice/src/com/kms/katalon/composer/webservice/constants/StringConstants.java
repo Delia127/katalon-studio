@@ -15,6 +15,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MENU_CONTEXT_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ;
     // ImportWebServicesPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2 = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2;
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3 = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3;
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
 	public static final String MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI;
 	
