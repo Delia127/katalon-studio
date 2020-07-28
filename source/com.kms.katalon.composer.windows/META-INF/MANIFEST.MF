@@ -57,4 +57,5 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.google.gson,
  com.kms.katalon.application
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.kms.katalon.application.utils
+Import-Package: com.kms.katalon.application.utils,
+ com.kms.katalon.dal.fileservice.dataprovider

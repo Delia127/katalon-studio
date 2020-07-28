@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -12,9 +13,12 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -24,6 +28,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
+import com.kms.katalon.dal.fileservice.dataprovider.EntityNameFileServiceDataProvider;
 
 public class MobileReadonlyElementPropertiesComposite {
     private Text txtObjectName;
@@ -89,6 +94,25 @@ public class MobileReadonlyElementPropertiesComposite {
         attributesTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         attributesTableViewer.setInput(Collections.emptyList());
+        
+        txtObjectName.addVerifyListener(new VerifyListener() {
+
+            @Override
+            public void verifyText(VerifyEvent e) {
+                Text source = (Text) e.widget;
+                String oldS = source.getText();
+                String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+                try {
+                    new EntityNameFileServiceDataProvider().validateName(newS);
+                } catch (Exception invalidName) {
+                    MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Invalid name",
+                            invalidName.getMessage());
+                    e.doit = false;
+                    return;
+                }
+            }
+        });
+
     }
 
     private void createColumns(TableViewer viewer, TableColumnLayout tableColumnLayout) {
