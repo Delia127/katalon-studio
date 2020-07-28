@@ -18,7 +18,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 
 public class SelfHealingToolbarComposite extends Composite {
 
-    private Button btnApprove, btnDiscard;
+    private Button btnApprove, btnDiscard, btnConfigure;
 
     private Label lblHealingStatus;
 
@@ -31,6 +31,7 @@ public class SelfHealingToolbarComposite extends Composite {
         configContainer(container);
         createStatusComposite(container);
         Composite buttonsComposite = createButtonsComposite(container);
+        btnConfigure = createConfigureButton(buttonsComposite);
         btnDiscard = createDiscardButton(buttonsComposite);
         btnApprove = createApproveButton(buttonsComposite);
     }
@@ -87,6 +88,12 @@ public class SelfHealingToolbarComposite extends Composite {
         btnDiscard.setText(SmartXPathMessageConstants.BTN_DISCARD_PROPOSED_LOCATORS);
         return btnDiscard;
     }
+    
+    protected Button createConfigureButton(Composite buttonsComposite) {
+        Button btnConfigure = new Button(buttonsComposite, SWT.PUSH);
+        btnConfigure.setText(SmartXPathMessageConstants.BTN_CONFIGURE_SELF_HEALING);
+        return btnConfigure;
+    }
 
     public void setSuccessMessage(String message) {
         lblHealingStatus.setText(message);
@@ -127,5 +134,9 @@ public class SelfHealingToolbarComposite extends Composite {
 
     public void addDiscardListener(SelectionListener listener) {
         btnDiscard.addSelectionListener(listener);
+    }
+
+    public void addConfigureListener(SelectionListener listener) {
+        btnConfigure.addSelectionListener(listener);
     }
 }
