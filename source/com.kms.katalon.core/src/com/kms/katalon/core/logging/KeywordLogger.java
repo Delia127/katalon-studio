@@ -337,6 +337,33 @@ public class KeywordLogger {
         logInfo(message, null);
     }
 
+    public void logInfoHighlight(String message) {
+        int marginX = 1;
+        int paddingX = 3;
+        int innerLength = message.length() + (paddingX * 2);
+        int outerLength = innerLength + 2;
+        int fullLength = outerLength + (marginX * 2);
+        String paddingLine = "\u2502" + StringUtils.leftPad("", innerLength) + "\u2502";
+        String innerSpaces = StringUtils.leftPad("", innerLength, "\u2500");
+        String paddingSpaces = StringUtils.leftPad("", paddingX);
+        
+        logInfo("");
+        logInfoCenter("\u256D" + innerSpaces + "\u256e", fullLength);
+        logInfoCenter(paddingLine, fullLength);
+        logInfoCenter("\u2502" + paddingSpaces + message + paddingSpaces + "\u2502", fullLength);
+        logInfoCenter(paddingLine, fullLength);
+        logInfoCenter("\u2570" + innerSpaces + "\u256f", fullLength);
+        logInfo("");
+    }
+    
+    public void logInfoCenter(String message) {
+        logInfoCenter(message, 80);
+    }
+    
+    public void logInfoCenter(String message, int lineLength) {
+        logInfo(StringUtils.center(message, lineLength), null);
+    }
+
 
     public void logInfo(String message, Map<String, String> attributes) {
         logger.info(message);

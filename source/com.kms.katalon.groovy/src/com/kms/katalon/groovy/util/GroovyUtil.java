@@ -1,5 +1,14 @@
 package com.kms.katalon.groovy.util;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+import static com.kms.katalon.groovy.util.GroovyUtil.getDefaultPackageForTestCase;
+import static com.kms.katalon.groovy.util.GroovyUtil.getGroovyClassName;
+import static com.kms.katalon.groovy.util.GroovyUtil.getGroovyProject;
+import static com.kms.katalon.groovy.util.GroovyUtil.getScriptNameForTestCase;
+import static com.kms.katalon.groovy.util.GroovyUtil.getScriptPackageRelativePathForTestCase;
+import static com.kms.katalon.groovy.util.GroovyUtil.getTestCaseScriptFolder;
+
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,6 +25,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.internal.resources.ModelObjectWriter;
@@ -57,6 +67,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -575,10 +586,15 @@ public class GroovyUtil {
                 return false;
         }
 
-        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName))
+        if (bundleName.startsWith("org.eclipse.core")) {
             return false;
-        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName))
+        }
+        if ("org.eclipse.jdt.core".equalsIgnoreCase(bundleName)) {
             return false;
+        }
+        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName)) {
+            return false;
+        }
 
         for (IClasspathEntry childEntry : entries) {
             if ((childEntry.getPath() != null) && (childEntry.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
@@ -1098,5 +1114,42 @@ public class GroovyUtil {
     public static IFolder getPluginsFolder(ProjectEntity project) {
         IProject groovyProject = getGroovyProject(project);
         return groovyProject.getFolder(PLUGINS_FOLDER_NAME);
+    }
+
+    public static ICompilationUnit getOrCreateGroovyScriptForTestCaseFromPlugin(TestCaseEntity testCase)
+            throws IOException, CoreException {
+        getTestCaseScriptFolder(testCase);
+        IProject groovyProject = getGroovyProject(testCase.getProject());
+
+        String parentRelativeFolder = getScriptPackageRelativePathForTestCase(testCase);
+        IFolder parentFolder = groovyProject.getFolder(parentRelativeFolder);
+        if (!parentFolder.exists()) {
+            parentFolder.getParent().refreshLocal(IResource.DEPTH_ONE, null);
+        }
+        parentFolder.refreshLocal(IResource.DEPTH_ONE, null);
+        String scriptFileName = getScriptNameForTestCase(testCase);
+        IFile scriptFile = null;
+
+        if (scriptFileName == null) {
+            scriptFileName = getGroovyClassName(testCase);
+            scriptFile = parentFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
+            scriptFile.getLocation().toFile().createNewFile();
+
+            FileUtils.writeStringToFile(scriptFile.getLocation().toFile(), getFileContent(GroovyConstants.SCRIPT_IMPORTS_TPL), DF_CHARSET, true);
+            scriptFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        } else {
+            scriptFile = parentFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
+        }
+
+        return JavaCore.createCompilationUnitFrom(scriptFile);
+    }
+    
+    private static String getFileContent(String filePath) {
+        URL url = FileLocator.find(FrameworkUtil.getBundle(GroovyConstants.class), new Path(filePath), null);
+        try {
+            return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream())), "\n");
+        } catch (IOException e) {
+            return StringUtils.EMPTY;
+        }
     }
 }

@@ -29,7 +29,6 @@ Require-Bundle: org.codehaus.groovy,
  org.dom4j,
  com.kms.katalon.logging,
  com.katalon.platform,
- org.eclipse.jdt.ui,
  com.kms.katalon.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: com.kms.katalon.custom.addon.CustomBundleActivator

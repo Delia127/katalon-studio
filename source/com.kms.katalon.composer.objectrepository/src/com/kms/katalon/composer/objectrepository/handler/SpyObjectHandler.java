@@ -63,12 +63,10 @@ public class SpyObjectHandler {
 
     private void openDialogAndAddObject(Shell activeShell, Object[] selectedObjects) {
         try {
-            boolean alreadyOpened = true;
             if (objectSpyDialog == null || objectSpyDialog.isDisposed()) {
                 Shell shell = getShell(activeShell);
                 objectSpyDialog = new NewObjectSpyDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
                 objectSpyDialog.setBlockOnOpen(false);
-                alreadyOpened = false;
             } else {
                 objectSpyDialog.getShell().forceActive();
             }
@@ -76,10 +74,7 @@ public class SpyObjectHandler {
             if (selectedObjects != null) {
                 objectSpyDialog.addObjectsFromObjectRepository(selectedObjects);
             }
-            
-            if (!alreadyOpened) {
-                Trackings.trackOpenSpy("web");
-            }
+   
         } catch (Exception e) {
             if (objectSpyDialog != null) {
                 objectSpyDialog.stop();

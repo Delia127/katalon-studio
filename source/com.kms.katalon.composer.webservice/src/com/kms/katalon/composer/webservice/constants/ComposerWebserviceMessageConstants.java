@@ -296,6 +296,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL;
 
     public static String LINK_CUSTOMIZE_API_METHODS;
+    
+    public static String LINK_SET_REQUEST_TIMEOUT_AND_LIMIT;
 
     public static String METHOD_TABLE_COL_METHOD;
 

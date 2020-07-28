@@ -23,11 +23,9 @@ import org.eclipse.swt.widgets.MenuItem;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateReportHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadReportHandler;
-import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
@@ -36,6 +34,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
@@ -43,6 +42,7 @@ import com.kms.katalon.integration.qtest.entity.QTestReport;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.model.ReportTestCaseLogPair;
 
 public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegrationView {
     private StyledText txtTestLogId;

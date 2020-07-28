@@ -55,6 +55,8 @@ public class ProjectController extends EntityController {
     public static final int NUMBER_OF_RECENT_PROJECTS = 6;
 
     private static Map<String, URLClassLoader> classLoaderLookup = new HashMap<>();
+    
+    private boolean isOpenning = false;
 
     private ProjectController() {
         super();
@@ -71,6 +73,7 @@ public class ProjectController extends EntityController {
         ProjectEntity newProject = getDataProviderSetting().getProjectDataProvider().addNewProject(name, description,
                 DEFAULT_PAGELOAD_TIMEOUT, projectLocation);
 
+        setOpenning(false);
         return newProject;
     }
 
@@ -119,6 +122,7 @@ public class ProjectController extends EntityController {
             }
             return project;
         } finally {
+            setOpenning(false);
             if (monitor != null) {
                 monitor.done();
             }
@@ -197,6 +201,7 @@ public class ProjectController extends EntityController {
             
             System.setProperty(SystemProperties.PROJECT_LOCATION, project.getFolderLocation());
         }
+        setOpenning(false);
         return project;
     }
 
@@ -404,5 +409,13 @@ public class ProjectController extends EntityController {
         String projectLocation = projectEntity.getLocation();
         URLClassLoader classLoader = GroovyUtil.getProjectClasLoader(projectEntity);
         classLoaderLookup.put(projectLocation, classLoader);
+    }
+
+    public boolean isOpenning() {
+        return isOpenning;
+    }
+
+    public void setOpenning(boolean isOpenning) {
+        this.isOpenning = isOpenning;
     }
 }

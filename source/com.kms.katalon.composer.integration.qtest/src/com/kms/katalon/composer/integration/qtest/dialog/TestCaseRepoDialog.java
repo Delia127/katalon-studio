@@ -34,7 +34,6 @@ import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseFolderEntityProvider;
-import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -43,6 +42,7 @@ import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
+import com.kms.katalon.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class TestCaseRepoDialog extends Dialog {

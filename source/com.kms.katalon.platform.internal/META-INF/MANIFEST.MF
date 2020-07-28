@@ -23,7 +23,8 @@ Require-Bundle: com.katalon.platform,
  com.kms.katalon.dal,
  org.apache.commons.io,
  com.kms.katalon.logging,
- net.sf.jopt-simple.jopt-simple
+ net.sf.jopt-simple.jopt-simple,
+ com.kms.katalon.groovy
 Bundle-Activator: com.kms.katalon.platform.internal.InternalPlatformPlugin
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.platform.internal.entity,

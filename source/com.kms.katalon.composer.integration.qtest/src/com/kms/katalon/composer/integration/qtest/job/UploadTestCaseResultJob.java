@@ -19,11 +19,8 @@ import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
 import com.kms.katalon.composer.components.impl.util.StatusUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateReportHandler;
-import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
-import com.kms.katalon.composer.integration.qtest.model.ReportUploadedPreviewPair;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ReportController;
@@ -33,10 +30,13 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
+import com.kms.katalon.integration.qtest.model.ReportTestCaseLogPair;
+import com.kms.katalon.integration.qtest.model.ReportUploadedPreviewPair;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class UploadTestCaseResultJob extends QTestJob {

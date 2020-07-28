@@ -104,6 +104,10 @@ public class GlobalStringConstants {
 
     public static final String REFRESH = GlobalMessageConstants.REFRESH;
 
+    public static final String DEFAULT = GlobalMessageConstants.DEFAULT;
+
+    public static final String RESET_DEFAULT = GlobalMessageConstants.RESET_DEFAULT;
+
     public static final String SEARCH = GlobalMessageConstants.SEARCH;
 
     public static final String BROWSE = GlobalMessageConstants.BROWSE;
@@ -119,6 +123,10 @@ public class GlobalStringConstants {
     public static final String EMPTY = GlobalMessageConstants.EMPTY;
 
     public static final String PROPERTIES = GlobalMessageConstants.PROPERTIES;
+
+    public static final String ENABLE = GlobalMessageConstants.ENABLE;
+
+    public static final String DISABLE = GlobalMessageConstants.DISABLE;
 
     // Dialog Title
     public static final String CONFIRMATION = GlobalMessageConstants.CONFIRMATION;
@@ -193,6 +201,8 @@ public class GlobalStringConstants {
     public static final String VALUE = GlobalMessageConstants.VALUE;
 
     public static final String IMAGE = GlobalMessageConstants.IMAGE;
+
+    public static final String PATH = GlobalMessageConstants.PATH;
 
     public static final String DESCRIPTION = GlobalMessageConstants.DESCRIPTION;
 

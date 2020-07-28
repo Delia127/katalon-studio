@@ -46,6 +46,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
@@ -120,6 +121,8 @@ public class ObjectPropertyView implements EventHandler {
 
 	private static final String RADIO_LBL_XPATH = ObjectspyMessageConstants.DIA_RADIO_LABEL_XPATH;
 
+    private static final String RADIO_LBL_IMAGE = ObjectspyMessageConstants.DIA_RADIO_LABEL_IMAGE;
+
 	private static final String LBL_SELECTION_METHOD = ObjectspyMessageConstants.DIA_LBL_OBJECT_SELECTION_METHOD;
 
 	private static final String LBL_SELECTOR_EDITOR = ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR;
@@ -176,10 +179,14 @@ public class ObjectPropertyView implements EventHandler {
 	private boolean isParentObjectShadowRoot = false;
 
 	private TestObjectPart testObjectPart;
+    
+    private Composite selectorEditorComposite;
 
 	private StyledText txtSelectorEditor;
+	
+	private Composite imageEditorComposite;
 
-	private Button radioAttributes, radioXpath, radioCss;
+	private Button radioAttributes, radioXpath, radioCss, radioImage;
 
 	private Listener layoutParentObjectCompositeListener = new Listener() {
 
@@ -295,7 +302,7 @@ public class ObjectPropertyView implements EventHandler {
 
 		Composite radioSelectionComposite = new Composite(selectionMethodComposite, SWT.NONE);
 		radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-		GridLayout glRadioSelection = new GridLayout(3, false);
+		GridLayout glRadioSelection = new GridLayout(4, false);
 		glRadioSelection.marginHeight = 0;
 		glRadioSelection.marginWidth = 0;
 		glRadioSelection.marginLeft = 10;
@@ -312,6 +319,10 @@ public class ObjectPropertyView implements EventHandler {
 		radioCss = new Button(radioSelectionComposite, SWT.RADIO);
 		radioCss.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		radioCss.setText(RADIO_LBL_CSS);
+
+        radioImage = new Button(radioSelectionComposite, SWT.RADIO);
+        radioImage.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        radioImage.setText(RADIO_LBL_IMAGE);
 	}
 
 	private void createPropertyTableDetails(Composite parent) {
@@ -517,7 +528,7 @@ public class ObjectPropertyView implements EventHandler {
 
 		createObjectPropertiesComposite(compositeObjectDetails);
 		createObjectXpathsComposite(compositeObjectDetails);
-		
+        createImageEditorComposite(compositeObjectDetails);
 
 		return compositeObjectDetails;
 	}
@@ -563,23 +574,52 @@ public class ObjectPropertyView implements EventHandler {
 	}
 
 	private void createSelectorEditor(Composite parent) {
-		Composite c = new Composite(parent, SWT.NONE);
-		c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+	    selectorEditorComposite = new Composite(parent, SWT.NONE);
+	    selectorEditorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout layout = new GridLayout();
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
-		c.setLayout(layout);
+		selectorEditorComposite.setLayout(layout);
 
-		Label lblSelectorEditor = new Label(c, SWT.NONE);
+		Label lblSelectorEditor = new Label(selectorEditorComposite, SWT.NONE);
 		lblSelectorEditor.setText(LBL_SELECTOR_EDITOR);
 		ControlUtils.setFontToBeBold(lblSelectorEditor);
 		lblSelectorEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		txtSelectorEditor = new StyledText(c, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		txtSelectorEditor = new StyledText(selectorEditorComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gdSelectorEditor.heightHint = 100;
 		txtSelectorEditor.setLayoutData(gdSelectorEditor);
 	}
+    
+    private void createImageEditorComposite(Composite parent) {
+        imageEditorComposite = new Composite(parent, SWT.NONE);
+        imageEditorComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        GridLayout glImageLocatorComposite = new GridLayout(3, false);
+        glImageLocatorComposite.marginHeight = 0;
+        glImageLocatorComposite.marginWidth = 0;
+        imageEditorComposite.setLayout(glImageLocatorComposite);
+
+        new Label(imageEditorComposite, SWT.NONE);
+        chkUseRelative = new Button(imageEditorComposite, SWT.CHECK);
+        chkUseRelative.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        chkUseRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);
+
+        Label lbImageInput = new Label(imageEditorComposite, SWT.NONE);
+        lbImageInput.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        lbImageInput.setText(StringConstants.VIEW_LBL_PATH);
+        
+        txtImage = new Text(imageEditorComposite, SWT.BORDER | SWT.READ_ONLY);
+        GridData gdImage = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdImage.widthHint = 335;
+        txtImage.setLayoutData(gdImage);
+        txtImage.setEditable(true);
+
+        btnBrowseImage = new Button(imageEditorComposite, SWT.FLAT);
+        btnBrowseImage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
+        btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
+    }
 
 	private void createSettingsComposite(Composite parent) {
 		compositeSettings = new Composite(parent, SWT.NONE);
@@ -637,23 +677,6 @@ public class ObjectPropertyView implements EventHandler {
 		Composite compositeSettingsRight = new Composite(compositeSettingsDetails, SWT.NONE);
 		compositeSettingsRight.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		compositeSettingsRight.setLayout(new GridLayout(3, false));
-
-		new Label(compositeSettingsRight, SWT.NONE);
-		chkUseRelative = new Button(compositeSettingsRight, SWT.CHECK);
-		chkUseRelative.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-		chkUseRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);
-
-		Label lblImage = new Label(compositeSettingsRight, SWT.NONE);
-		lblImage.setText(StringConstants.VIEW_LBL_IMAGE);
-
-		txtImage = new Text(compositeSettingsRight, SWT.BORDER | SWT.READ_ONLY);
-		txtImage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		txtImage.setEditable(false);
-
-		btnBrowseImage = new Button(compositeSettingsRight, SWT.FLAT);
-		btnBrowseImage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
-		btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
 	}
 
 	private void createCompositeShadowRootParent(Composite compositeSettingsLeft) {
@@ -846,6 +869,14 @@ public class ObjectPropertyView implements EventHandler {
 				setDirty(true);
 			}
 		});
+		radioImage.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testObjectPart.executeOperation(new ChangeSelectorMethodOperation(WebElementSelectorMethod.IMAGE));
+                setDirty(true);
+            }
+        });
 
 		txtSelectorEditor.addModifyListener(new ModifyListener() {
 
@@ -863,9 +894,7 @@ public class ObjectPropertyView implements EventHandler {
 			return;
 		}
 		if (cloneTestObject == null) {
-			txtSelectorEditor.setEnabled(false);
-			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
-			txtSelectorEditor.setText(StringUtils.EMPTY);
+		    disableSelectorEditor();
 			return;
 		}
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
@@ -874,9 +903,7 @@ public class ObjectPropertyView implements EventHandler {
 			TestObject testObject = buildTestObject(cloneTestObject);
 			String textToSet = WebUiCommonHelper.getSelectorValue(testObject);
 			textToSet = (textToSet == null ) ? StringUtils.EMPTY : textToSet;
-			txtSelectorEditor.setText(textToSet);
-			txtSelectorEditor.setEditable(false);
-			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+			enableSelectorEditor(textToSet, false);
 			return;
 		default:
 			break;
@@ -888,20 +915,16 @@ public class ObjectPropertyView implements EventHandler {
 			return;
 		}
 		if (cloneTestObject == null) {
-			txtSelectorEditor.setEnabled(false);
-			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
-			txtSelectorEditor.setText(StringUtils.EMPTY);
+            disableSelectorEditor();
 			return;
 		}
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
 		switch (selectorMethod) {
-		case XPATH:			
+		case XPATH:
 			TestObject testObject = buildTestObject(cloneTestObject);
 			String textToSet = WebUiCommonHelper.getSelectorValue(testObject);
 			textToSet = (textToSet == null ) ? StringUtils.EMPTY : textToSet;
-			txtSelectorEditor.setText(textToSet);
-			txtSelectorEditor.setEditable(true);
-			txtSelectorEditor.setBackground(ColorUtil.getWhiteBackgroundColor());
+			enableSelectorEditor(textToSet, true);
 			break;
 		default:
 			break;
@@ -914,9 +937,7 @@ public class ObjectPropertyView implements EventHandler {
 			return;
 		}
 		if (cloneTestObject == null) {
-			txtSelectorEditor.setEnabled(false);
-			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
-			txtSelectorEditor.setText(StringUtils.EMPTY);
+			disableSelectorEditor();
 			return;
 		}
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
@@ -925,15 +946,45 @@ public class ObjectPropertyView implements EventHandler {
 			TestObject testObject = buildTestObject(cloneTestObject);
 			String textToSet = WebUiCommonHelper.getSelectorValue(testObject);
 			textToSet = (textToSet == null ) ? StringUtils.EMPTY : textToSet;
-			txtSelectorEditor.setText(textToSet);
-			txtSelectorEditor.setEditable(true);
-			txtSelectorEditor.setBackground(ColorUtil.getWhiteBackgroundColor());
+			enableSelectorEditor(textToSet, true);
 			break;
 		default:
 			break;
 			
 		}
 	}
+    
+    private void onWebElementImageChanged() {
+        if (cloneTestObject == null) {
+            return;
+        }
+        
+        WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
+        if (selectorMethod == WebElementSelectorMethod.IMAGE) {
+            TestObject testObject = buildTestObject(cloneTestObject);
+            txtImage.setText(StringUtils.defaultString(testObject.getImagePath()));
+        }
+    }
+    
+    private void enableSelectorEditor() {
+        enableSelectorEditor(StringUtils.EMPTY, true);
+    }
+    
+    private void enableSelectorEditor(String initText, boolean editable) {
+        txtSelectorEditor.setEnabled(true);
+        txtSelectorEditor.setEditable(editable);
+        txtSelectorEditor.setText(initText);
+        txtSelectorEditor.setBackground(editable
+                ? ColorUtil.getWhiteBackgroundColor()
+                : ColorUtil.getDisabledItemBackgroundColor());
+    }
+    
+    private void disableSelectorEditor() {
+        txtSelectorEditor.setEnabled(false);
+        txtSelectorEditor.setEditable(false);
+        txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+        txtSelectorEditor.setText(StringUtils.EMPTY);
+    }
 
 	private void setDirty(final boolean isDirty) {
 		dirtyable.setDirty(isDirty);
@@ -1106,11 +1157,15 @@ public class ObjectPropertyView implements EventHandler {
 		radioAttributes.setSelection(selectorMethod == WebElementSelectorMethod.BASIC);
 		radioCss.setSelection(selectorMethod == WebElementSelectorMethod.CSS);
 		radioXpath.setSelection(selectorMethod == WebElementSelectorMethod.XPATH);
+		radioImage.setSelection(selectorMethod == WebElementSelectorMethod.IMAGE);
 
 		onWebElementPropertyChanged();
 		onWebElementXpathChanged();
 		onWebElementCSSChanged();
-		
+		onWebElementImageChanged();
+
+        showComposite(imageEditorComposite, selectorMethod == WebElementSelectorMethod.IMAGE);
+        showComposite(selectorEditorComposite, selectorMethod != WebElementSelectorMethod.IMAGE);
 		showComposite(propertyTableComposite, selectorMethod == WebElementSelectorMethod.BASIC);
 		showComposite(xpathTableComposite, selectorMethod == WebElementSelectorMethod.XPATH);
 	}
@@ -2216,7 +2271,7 @@ public class ObjectPropertyView implements EventHandler {
 		});
 		
 		testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));
-		
+		testObject.setImagePath(webElement.getImagePath());
 		
 		if(webElement.getSelectorCollection() != null && !webElement.getSelectorCollection().isEmpty()){			
 			for(Entry<WebElementSelectorMethod,String> entry: webElement.getSelectorCollection().entrySet()){

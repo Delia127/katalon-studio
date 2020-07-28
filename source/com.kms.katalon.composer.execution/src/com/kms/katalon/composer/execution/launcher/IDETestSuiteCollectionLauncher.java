@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.execution.launcher;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
+import com.kms.katalon.execution.collector.SelfHealingExecutionReportCollector;
+import com.kms.katalon.execution.collector.SelfHealingExecutionReport;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
@@ -23,10 +26,16 @@ import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher implements IDEObservableLauncher,
         IDEObservableParentLauncher, LauncherListener {
+    
+    private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
     private boolean observed;
 
@@ -58,15 +67,23 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
         TestSuiteCollectionEntity testSuiteCollectionEntity = getExecutedEntity().getEntity();
         getEventBroker().post(EventConstants.TEST_SUITE_COLLECTION_FINISHED, testSuiteCollectionEntity);
 
+        File reportFolder = getReportFolder().getParentFile().getParentFile();
+        boolean canUseSelfHealing = featureService.canUse(KSEFeature.SELF_HEALING);
+        boolean isSelfHealingEnabled = canUseSelfHealing && WebUiExecutionSettingStore.getStore().getSelfHealingEnabled(canUseSelfHealing);
+        SelfHealingExecutionReport selfHealingReport = SelfHealingExecutionReportCollector.getInstance()
+                .collect(isSelfHealingEnabled, reportFolder);
+        
         String executionResult = getExecutionResult();
         ExecutionMode executionMode = getExecutedEntity().getEntity().getExecutionMode();
         if (executionMode == ExecutionMode.PARALLEL) {
             int maxConcurrentInstances = getExecutedEntity().getEntity().getMaxConcurrentInstances();
             Trackings.trackExecuteParallelTestSuiteCollectionInGuiMode(executionResult,
-                    getEndTime().getTime() - getStartTime().getTime(), maxConcurrentInstances);
+                    getEndTime().getTime() - getStartTime().getTime(), maxConcurrentInstances,
+                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
         } else {
             Trackings.trackExecuteSequentialTestSuiteCollectionInGuiMode(executionResult,
-                    getEndTime().getTime() - getStartTime().getTime());
+                    getEndTime().getTime() - getStartTime().getTime(), selfHealingReport.isEnabled(),
+                    selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
         }
     }
 

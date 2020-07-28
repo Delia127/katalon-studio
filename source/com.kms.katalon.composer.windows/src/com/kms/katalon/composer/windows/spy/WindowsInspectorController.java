@@ -32,6 +32,7 @@ import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumStreamHandler;
 import com.kms.katalon.composer.mobile.objectspy.util.Util;
 import com.kms.katalon.composer.windows.element.SnapshotWindowsElement;
 import com.kms.katalon.composer.windows.element.TreeWindowsElement;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.core.windows.driver.WindowsSession;
@@ -144,8 +145,8 @@ public class WindowsInspectorController {
             throws SeleniumException, IOException, URISyntaxException {
         String url = driverConnector.getWinAppDriverUrl();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(driverConnector.getDesiredCapabilities());
-        Proxy proxy = ProxyUtil.getProxy(ProxyPreferences.getSystemProxyInformation(), new URL(url));
-        session = WindowsDriverFactory.startApplication(new URL(url), appFile, desiredCapabilities, proxy, applicationTitle);
+        ProxyInformation proxyInfo = ProxyPreferences.getSystemProxyInformation();
+        session = WindowsDriverFactory.startApplication(new URL(url), appFile, desiredCapabilities, proxyInfo, applicationTitle);
     }
 
     public void resetDriver() {

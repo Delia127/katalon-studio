@@ -76,6 +76,13 @@ public class CoreWebserviceMessageConstants extends NLS {
     public static String KW_LOG_VERIFICATION_STEP_FAILED_BECAUSE_OF_ERROR;
 
     public static String KW_LOG_VERIFICATION_STEP_PASSED;
+
+    // Exception Messages
+    public static String MSG_CONNECTION_TIMEOUT_EXCEPTION;
+
+    public static String MSG_SOCKET_TIMEOUT_EXCEPTION;
+
+    public static String MSG_RESPONSE_SIZE_LIMIT_EXCEPTION;
     
     static {
         // initialize resource bundle
