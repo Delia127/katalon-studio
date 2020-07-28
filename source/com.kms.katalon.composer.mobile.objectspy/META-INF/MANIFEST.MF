@@ -52,7 +52,8 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.tracking,
  com.kms.katalon.groovy,
  com.kms.katalon.custom,
- com.kms.katalon.composer.project
+ com.kms.katalon.composer.project,
+ com.kms.katalon.dal.file
 Bundle-ClassPath: .
 Export-Package: com.kms.katalon.composer.mobile.objectspy.actions,
  com.kms.katalon.composer.mobile.objectspy.components,
@@ -68,6 +69,5 @@ Export-Package: com.kms.katalon.composer.mobile.objectspy.actions,
  com.kms.katalon.composer.mobile.objectspy.util,
  com.kms.katalon.composer.mobile.objectspy.viewer
 Import-Package: com.kms.katalon.composer.handlers,
- com.kms.katalon.composer.mobile.util,
- com.kms.katalon.dal.fileservice.dataprovider
+ com.kms.katalon.composer.mobile.util
 
