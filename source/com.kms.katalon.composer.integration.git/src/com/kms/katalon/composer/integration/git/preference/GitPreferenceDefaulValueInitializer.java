@@ -10,7 +10,7 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 @SuppressWarnings("restriction")
 public class GitPreferenceDefaulValueInitializer extends AbstractPreferenceInitializer {
-    private static final boolean GIT_INTERGRATION_ENABLE_DEFAULT_VALUE = false;
+    private static final boolean GIT_INTERGRATION_ENABLE_DEFAULT_VALUE = true;
 
     @Override
     public void initializeDefaultPreferences() {

@@ -57,6 +57,24 @@ public class ColorUtil {
     private static final String DISABLED_TEXT_COLOR_FOR_DARK_THEME = "#616161";
     
     private static final String SELECTED_ITEM_BLUE_COLOR = "#007AFF";
+    
+    public static final Color PRIMARY_COLOR = getColor("#009AFF");
+    
+    public static final Color PRIMARY_HOVER_COLOR = getColor("#00BAFF");
+    
+    public static final Color PRIMARY_ACTIVE_COLOR = getColor("#007ADF");
+    
+    public static final Color GRAY_LIGHT_COLOR = getColor("#F5F5F5");
+    
+    public static final Color GRAY_COLOR = getColor("#F0F0F0");
+    
+    public static final Color GRAY_DARK_COLOR = getColor("#DDDDDD");
+    
+    public static final Color BLUE_DARK_COLOR = getColor("#09092E");
+    
+    public static final Color GRAY_BADGE_COLOR = BLUE_DARK_COLOR;
+    
+    public static final Color GRAY_BADGE_BACKGROUND = getColor("#EAEAEA");
 
     private static Display display = Display.getCurrent();
 

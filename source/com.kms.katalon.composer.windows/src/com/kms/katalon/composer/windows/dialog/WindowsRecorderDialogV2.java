@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -62,6 +63,7 @@ import com.kms.katalon.composer.windows.socket.WindowsStopRecordingPayload;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
+import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.tracking.service.Trackings;
@@ -508,5 +510,11 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         public ScriptNodeWrapper getScript() {
             return script;
         }
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.OK_ID, GlobalMessageConstants.DIA_SAVE_RECORDING, true);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 }

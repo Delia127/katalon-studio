@@ -160,7 +160,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GLb_kMeZEeiT4f3fp0QbHA" elementId="com.kms.katalon.handledmenuitem.errorLog" label="Error Log" command="_xthpkMebEeiT4f3fp0QbHA"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_4l8VEFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handledmenuitem.service" toBeRendered="false" visible="false" label="Business Support" command="_CeYPQFdcEeiRfOF4k51oXA"/>
         <children xsi:type="menu:DynamicMenuContribution" xmi:id="_JEmWAOi_Eei2Q7mM03p58A" elementId="com.kms.katalon.dynamicmenucontribution.checkForUpdates" label="Check for Updates..." contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.menu.CheckForUpdatesMenuContribution"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_u8IAwKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.handledmenuitem.quickstart" label="Quick Start" tooltip="" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_u8IAwKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.handledmenuitem.quickstart" toBeRendered="false" visible="false" label="Quick Start" tooltip="" enabled="false" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>

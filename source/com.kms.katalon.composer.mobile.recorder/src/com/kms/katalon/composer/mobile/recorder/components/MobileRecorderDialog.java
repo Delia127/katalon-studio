@@ -89,6 +89,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStateme
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 import com.kms.katalon.composer.testcase.model.InputParameterClass;
+import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
@@ -267,7 +268,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+        createButton(parent, IDialogConstants.OK_ID, GlobalMessageConstants.DIA_SAVE_RECORDING, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
@@ -1303,7 +1304,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
     
     private String getDeviceTypeString() {
-        return mobileComposite.getSelectedDriverType().toString();
+        MobileDriverType deviceType = mobileComposite.getSelectedDriverType();
+        return deviceType != null ? deviceType.toString() : null;
     }
 
     @Override

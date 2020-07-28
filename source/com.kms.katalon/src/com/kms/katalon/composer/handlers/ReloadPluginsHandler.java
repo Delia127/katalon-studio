@@ -50,7 +50,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     public void reloadPlugins(boolean silenceMode) {
     	ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-    	if (currentProject == null) {
+    	if (!silenceMode && currentProject == null) {
     		openHelpDialog();
     		return;
     	}
@@ -84,7 +84,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     if (StringUtils.containsIgnoreCase(e.getMessage(), StringConstants.KStore_ERROR_INVALID_CREDENTAILS)) {
                         return new Status(Status.CANCEL, "com.kms.katalon", StringConstants.KStore_ERROR_INVALID_CREDENTAILS, e);
                     } else {
-                        return new Status(Status.ERROR, "com.kms.katalon", "Error reloading plugins",
+                        return new Status(silenceMode ? Status.WARNING : Status.ERROR, "com.kms.katalon", "Error reloading plugins",
                                 new Exception(ExceptionsUtil.getStackTraceForThrowable(e)));
                     }
                 }
@@ -106,9 +106,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                             // wait for Reloading Plugins dialog to close
                             TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
                         } catch (InterruptedException ignored) {}
-                        UISynchronizeService.syncExec(() -> {
-                            openWarningDialog();
-                        });
+                        
+                        if (!silenceMode) {
+                            UISynchronizeService.syncExec(() -> {
+                                openWarningDialog();
+                            });
+                        }
                     });
                     return;
                 }
@@ -121,9 +124,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
                 List<ReloadItem> results = resultHolder[0];
 
-                if (silenceMode && !checkExpire(results)) {
+                if (silenceMode) {
                     return;
                 }
+//                if (silenceMode && !checkExpire(results)) {
+//                    return;
+//                }
 
                 Executors.newSingleThreadExecutor().submit(() -> {
                     try {
@@ -137,7 +143,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             }
         });
 
-        reloadPluginsJob.setUser(true);
+        reloadPluginsJob.setUser(silenceMode);
         reloadPluginsJob.schedule();
     }
 
