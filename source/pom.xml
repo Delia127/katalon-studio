@@ -102,6 +102,7 @@
 		<module>com.katalon.katalon-studio-smart-xpath</module>
 		<module>com.kms.katalon.mockito</module>
 		<module>tests</module>
+		<module>com.kms.katalon.composer.integration.analytics.testops</module>
 	</modules>
 
 	<properties>

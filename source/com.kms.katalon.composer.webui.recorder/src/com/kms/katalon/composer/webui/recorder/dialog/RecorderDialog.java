@@ -61,6 +61,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -73,6 +74,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
 import com.google.common.hash.Hashing;
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
@@ -87,6 +90,7 @@ import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.DialogUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -131,6 +135,7 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.QuickStartProjectType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -1540,7 +1545,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
      */
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+        createButton(parent, IDialogConstants.OK_ID, GlobalMessageConstants.DIA_SAVE_RECORDING, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
@@ -1676,6 +1681,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected Point getInitialSize() {
         return MIN_DIALOG_SIZE;
+    }
+    
+    @Override
+    protected Point getInitialLocation(Point initialSize) {
+        return DialogUtil.computeRightLocation(initialSize);
     }
 
     @Override
@@ -1926,7 +1936,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     protected void setInput() {
         boolean continueRecording = false;
         if (testCaseEntity != null && nodeWrappers.size() > 0) {
-            MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
+            MessageDialog dialog = new MessageDialog(getParentShell(), StringConstants.CONFIRMATION, null,
                     MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
                             testCaseEntity.getName()),
                     MessageDialog.CONFIRM, MessageDialog.OK,
@@ -1938,6 +1948,22 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 continueRecording = false;
             } else {
                 continueRecording = true;
+            }
+
+            Shell shell = getShell();
+            if (shell != null) {
+                shell.getDisplay().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (!shell.getMinimized())
+                        {
+                            shell.setMinimized(true);
+                        }
+                        shell.setMinimized(false);
+                        shell.setActive();
+                    }
+                });
             }
         }
         recordStepsView.addVariables(variables.toArray(new VariableEntity[variables.size()]));
@@ -1980,6 +2006,19 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         elements.addAll(allPages);
         capturedObjectComposite.setInput(elements);
         capturedObjectComposite.refreshTree(null);
+
+        UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+        if (currentProfile.isNewUser() && !currentProfile.isDoneOpenRecorder()
+                && currentProfile.getPreferredTestingType() == QuickStartProjectType.WEBUI) {
+            if (currentProfile.getPreferredBrowser() != null) {
+                txtStartUrl.setText(currentProfile.getPreferredSite());
+                changeBrowser(currentProfile.getPreferredBrowser());
+                startBrowser();
+            }
+
+            currentProfile.setDoneOpenRecorder(true);
+            UserProfileHelper.saveProfile(currentProfile);
+        }
 
         try {
             Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig().toString());

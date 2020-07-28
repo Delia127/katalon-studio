@@ -12,6 +12,7 @@ import org.osgi.framework.ServiceReference;
 
 import com.kms.katalon.execution.console.LauncherOptionParserFactory;
 import com.kms.katalon.execution.handler.EvaluateDriverConnectorContributionsHandler;
+import com.kms.katalon.execution.handler.EvaluateExecutionPropertiesContributionHandler;
 import com.kms.katalon.execution.handler.EvaluateRunConfigurationContributionsHandler;
 import com.kms.katalon.execution.integration.EvaluateReportIntegrationContribution;
 import com.kms.katalon.execution.launcher.LauncherProviderFactory;
@@ -33,7 +34,8 @@ public class ExecutionBundleActivator implements BundleActivator {
         ContextInjectionFactory.make(EvaluateReportIntegrationContribution.class, eclipseContext);
         ContextInjectionFactory.make(EvaluateRunConfigurationContributionsHandler.class, eclipseContext);
         ContextInjectionFactory.make(EvaluateDriverConnectorContributionsHandler.class, eclipseContext);
-
+        ContextInjectionFactory.make(EvaluateExecutionPropertiesContributionHandler.class, eclipseContext);
+        
         context.addServiceListener(new ServiceListener() {
             @Override
             public void serviceChanged(ServiceEvent event) {
