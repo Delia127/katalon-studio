@@ -191,4 +191,16 @@ public class ImageConstants {
     
     // WindowsElementTreeEntity
     public static final Image IMG_16_WINDOWS_ENTITY = ImageManager.getImage(IImageKeys.WINDOWS_ENTITY_16);
+    
+    // TestOps
+    public static final Image IMG_16_TESTOPS_EXECUTIONS = ImageManager.getImage(IImageKeys.IMG_TESTOPS_EXECUTIONS);
+    
+    public static final Image IMG_16_TESTOPS_EXECUTION_PASSED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_EXECUTION_PASSED);
+    
+    public static final Image IMG_16_TESTOPS_EXECUTION_FAILED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_EXECUTION_FAILED);
+    
+    public static final Image IMG_16_KATALON_TESTOPS = ImageManager.getImage(IImageKeys.KATALON_TESTOPS_16);
+    
+    public static final String URL_TESTOPS_EXECUTIONS = ImageManager.getImageURLString(IImageKeys.IMG_TESTOPS_EXECUTIONS);
+    
 }

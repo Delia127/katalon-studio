@@ -303,10 +303,14 @@ public class GlobalStringConstants {
     
     public static final String APP_TEMP_DIR = System.getProperty("java.io.tmpdir") + File.separator + "Katalon";
 
+    public static final String USER_HOME_DIR = System.getProperty("user.home");
+
+    public static final String DEFAULT_PROJECT_LOCATION = USER_HOME_DIR + File.separator + APP_NAME;
+
     public static final String KATALON_HOME_ENV_NAME = "KATALON_HOME";
 
     public static final String KATALON_HOME_DIR = System.getenv(KATALON_HOME_ENV_NAME) != null
-            ? System.getenv(KATALON_HOME_ENV_NAME) : System.getProperty("user.home");
+            ? System.getenv(KATALON_HOME_ENV_NAME) : USER_HOME_DIR;
 
     public static final String APP_USER_DIR_LOCATION = KATALON_HOME_DIR + File.separator + ".katalon";
 
@@ -358,6 +362,8 @@ public class GlobalStringConstants {
     public static final String DIA_OPEN_PROJECT = GlobalMessageConstants.DIA_OPEN_PROJECT;
     
     public static final String DIA_INTRO_PROJECT = GlobalMessageConstants.DIA_INTRO_PROJECT;
+
+    public static final String DIA_SAVE_RECORDING = GlobalMessageConstants.DIA_SAVE_RECORDING;
 
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 

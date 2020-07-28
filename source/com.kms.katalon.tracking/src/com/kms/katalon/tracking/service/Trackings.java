@@ -108,12 +108,60 @@ public class Trackings {
         trackingService.track(trackInfo);
     }
 
-    public static void trackWebSpy() {
-        trackUserAction("spyWeb");
-    }
-
     public static void trackQuickStartAction(String action) {
         trackUserAction("quickStartAction", "userAction", action);
+    }
+
+    public static void trackQuickStartOpen() {
+        trackUserAction("ksu_quick_start_welcome_open");
+    }
+
+    public static void trackQuickStartFirstQuestion(boolean newUser, String projectType) {
+        trackUserAction("ksu_quick_start_welcome_continue", "new_user", newUser, "project_type", projectType);
+    }
+
+    public static void trackQuickStartRecordOpen() {
+        trackUserAction("ksu_quick_start_record_open");
+    }
+
+    public static void trackQuickStartStartRecord(String browser) {
+        trackUserAction("ksu_quick_start_record_record", "browser", browser);
+    }
+
+    public static void trackQuickStartRunOpen() {
+        trackUserAction("ksu_quick_start_run_open");
+    }
+
+    public static void trackQuickStartStartRun(String browser) {
+        trackUserAction("ksu_quick_start_run_run", "browser", browser);
+    }
+
+    public static void trackQuickStartRunPass() {
+        trackUserAction("ksu_quick_start_passed_run_open");
+    }
+
+    public static void trackQuickStartRunFail() {
+        trackUserAction("ksu_quick_start_failed_run_open");
+    }
+
+    public static void trackQuickStartWelcomeBack() {
+        trackUserAction("ksu_quick_start_greeting_old_user_open");
+    }
+
+    public static void trackQuickStartWelcomeBackOpenProject() {
+        trackUserAction("ksu_quick_start_greeting_old_user_open_project");
+    }
+
+    public static void trackQuickStartWelcomeBackCloneProject() {
+        trackUserAction("ksu_quick_start_greeting_old_user_clone_git");
+    }
+
+    public static void trackQuickStartWelcomeBackNewProject() {
+        trackUserAction("ksu_quick_start_greeting_old_user_new_project");
+    }
+
+    public static void trackWebSpy() {
+        trackUserAction("spyWeb");
     }
 
     public static void trackMobileSpy(String deviceType) {
@@ -180,7 +228,7 @@ public class Trackings {
             long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
             boolean isTriggerSelfHealing, String healingInfo) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
-                "runningMode", "runningMode", "console", "driver", driverType, "executionResult",
+                "runningMode", "console", "driver", driverType, "executionResult",
                 result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
                 numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
                 isTriggerSelfHealing
