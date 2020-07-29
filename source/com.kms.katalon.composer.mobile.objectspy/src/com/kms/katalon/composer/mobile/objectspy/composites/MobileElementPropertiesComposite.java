@@ -8,8 +8,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -26,8 +25,6 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,7 +34,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -48,7 +44,6 @@ import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileLocatorFinder;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
-import com.kms.katalon.dal.fileservice.dataprovider.EntityNameFileServiceDataProvider;
 import com.kms.katalon.entity.repository.MobileElementEntity;
 import com.kms.katalon.entity.repository.MobileElementEntity.LocatorStrategy;
 
@@ -190,26 +185,6 @@ public class MobileElementPropertiesComposite extends Composite {
     }
 
     private void registerControlModifyListeners() {
-		txtObjectName.addVerifyListener(new VerifyListener() {
-
-			@Override
-			public void verifyText(VerifyEvent e) {
-				Text source = (Text) e.widget;
-				String oldS = source.getText();
-				String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
-				if (editingElement != null) {
-					try {
-						new EntityNameFileServiceDataProvider().validateName(newS);
-					} catch (Exception invalidName) {
-						MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Invalid name",
-								invalidName.getMessage());
-						e.doit = false;
-						return;
-					}
-				}
-			}
-		});
-		
         txtObjectName.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
