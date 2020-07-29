@@ -424,14 +424,6 @@ public class Trackings {
         trackUserAction("discardSelfHealingProposals", "discardedProposals", discardedProposals);
     }
 
-    public static void trackClickOnSelfHealingInsightsConfigure() {
-        trackUserAction("ksu_self_healing_insights_configure_click");
-    }
-
-    public static void trackClickOnSelfHealingInsightsHelp() {
-        trackUserAction("ksu_self_healing_insights_help_click");
-    }
-
     public static void trackCloseWebRecordByOk(int numberOfTestSteps, String webLocatorConfig) {
         trackUserAction("closeWebRecord", "isCancelled", false, "numberOfTestSteps",
                 String.valueOf(numberOfTestSteps), "webLocatorConfig", webLocatorConfig);

@@ -38,16 +38,11 @@ import com.katalon.plugin.smart_xpath.helpers.FileWatcher;
 import com.katalon.plugin.smart_xpath.part.composites.BrokenTestObjectsTableComposite;
 import com.katalon.plugin.smart_xpath.part.composites.SelfHealingToolbarComposite;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.feature.FeatureServiceConsumer;
-import com.kms.katalon.feature.IFeatureService;
-import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class SelfHealingInsightsPart implements EventHandler {
@@ -125,10 +120,6 @@ public class SelfHealingInsightsPart implements EventHandler {
         toolbarComposite.addApproveListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                if (!canUseSelfHealing()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
-                    return;
-                }   
                 Set<BrokenTestObject> selectedBrokenTestObjects = brokenTestObjectsTableComposite
                         .getSelectedTestObjects();
                 int numSelectedTestObjects = selectedBrokenTestObjects.size();
@@ -156,10 +147,6 @@ public class SelfHealingInsightsPart implements EventHandler {
         toolbarComposite.addDiscardListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                if (!canUseSelfHealing()) {
-                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.SELF_HEALING);
-                    return;
-                }
                 Set<BrokenTestObject> selectedBrokenTestObjects = brokenTestObjectsTableComposite
                         .getSelectedTestObjects();
                 int numSelectedTestObjects = selectedBrokenTestObjects.size();
@@ -189,22 +176,8 @@ public class SelfHealingInsightsPart implements EventHandler {
                 }
             }
         });
-        toolbarComposite.addConfigureListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE, SmartXPathConstants.SELF_HEALING_WEB_UI_PAGE_ID);
-                Trackings.trackClickOnSelfHealingInsightsConfigure();
-            }
-
-        });
 
         return toolbarComposite;
-    }
-
-    private boolean canUseSelfHealing() {
-        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
-        return featureService.canUse(KSEFeature.SELF_HEALING);
     }
 
     private void registerEventListeners() {
