@@ -69,8 +69,6 @@ public class SmartXPathMessageConstants extends NLS {
 
     public static String BTN_DISCARD_PROPOSED_LOCATORS;
 
-    public static String BTN_CONFIGURE_SELF_HEALING;
-
     public static String MSG_RECOVER_BROKEN_TEST_OBJECTS_SUCCEEDED_SINGULAR;
 
     public static String MSG_RECOVER_BROKEN_TEST_OBJECTS_SUCCEEDED_PLURAL;
@@ -94,8 +92,6 @@ public class SmartXPathMessageConstants extends NLS {
     public static String GRP_DEFAULT_LOCATOR_SELECTION_AREA;
 
     public static String SELF_HEALING_DOCUMENT_LINK;
-
-    public static String UNDERSTAND_SELF_HEALING_INSIGHTS_DOCUMENT_LINK;
 
     public static String ERROR_MESSAGE_WHEN_ENTER_WRONG_EXCLUDED_KEYWORD;
 
