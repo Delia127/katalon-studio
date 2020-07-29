@@ -194,6 +194,7 @@ public class SelfHealingInsightsPart implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE, SmartXPathConstants.SELF_HEALING_WEB_UI_PAGE_ID);
+                Trackings.trackClickOnSelfHealingInsightsConfigure();
             }
 
         });
