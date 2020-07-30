@@ -235,6 +235,7 @@ stages:
         pip3 install pyjavaproperties
         python get_version.py $BRANCH
         source ./variable.sh
+        echo ${isRelease}
         echo "##vso[task.setvariable variable=VERSION]${tag}"
         echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
       displayName: Set up
