@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -17,6 +19,7 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
@@ -27,6 +30,7 @@ import com.kms.katalon.composer.testcase.handlers.OpenTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.windows.constant.WindowsRecorderMessagesConstants;
 import com.kms.katalon.composer.windows.dialog.ExportReportToTestCaseSelectionDialog;
 import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialog;
 import com.kms.katalon.composer.windows.dialog.WindowsRecorderDialogV2;
@@ -156,29 +160,38 @@ public class WindowsRecorderProHandler {
         if (recordResult.getScript().getBlock().getAstChildren().isEmpty()) {
             return;
         }
-        if (!recordResult.getWindowsElements().isEmpty()) {
-            AddElementToObjectRepositoryDialog objectRepositoryDialog = new AddElementToObjectRepositoryDialog(
-                    activeShell);
-            if (objectRepositoryDialog.open() != AddElementToObjectRepositoryDialog.OK) {
-                return;
-            }
-            FolderTreeEntity selectedTreeFolder = objectRepositoryDialog.getSelectedFolderTreeEntity();
-            FolderEntity folder = getFolder(selectedTreeFolder);
+		if (!recordResult.getWindowsElements().isEmpty()) {
+			AddElementToObjectRepositoryDialog objectRepositoryDialog = new AddElementToObjectRepositoryDialog(
+					activeShell);
+			if (objectRepositoryDialog.open() != AddElementToObjectRepositoryDialog.OK) {
+				return;
+			}
+			FolderTreeEntity selectedTreeFolder = objectRepositoryDialog.getSelectedFolderTreeEntity();
+			FolderEntity folder = getFolder(selectedTreeFolder);
 
-            CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
-            List<ITreeEntity> selectedTreeEntities = new ArrayList<ITreeEntity>();
-            for (CapturedWindowsElement capturedElement : recordResult.getWindowsElements()) {
-                WindowsElementEntity windowsElement = converter.convert(capturedElement);
-                windowsElement.setParentFolder(folder);
-                windowsElement.setProject(folder.getProject());
-                WindowsElementController.getInstance().updateWindowsElementEntity(windowsElement);
-
-                capturedElement.setScriptId(windowsElement.getIdForDisplay());
-
-                selectedTreeEntities.add(new WindowsElementTreeEntity(windowsElement, selectedTreeFolder));
-            }
-            ExplorerPart.getInstance().setSelectedItems(selectedTreeEntities.toArray());
-        }
+			CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
+			List<ITreeEntity> selectedTreeEntities = new ArrayList<ITreeEntity>();
+			for (CapturedWindowsElement capturedElement : recordResult.getWindowsElements()) {
+				try {
+					WindowsElementEntity windowsElement = converter.convert(capturedElement, folder);
+					WindowsElementController.getInstance().updateWindowsElementEntity(windowsElement);
+					capturedElement.setScriptId(windowsElement.getIdForDisplay());
+					selectedTreeEntities.add(new WindowsElementTreeEntity(windowsElement, selectedTreeFolder));
+				} catch (Exception e) {
+					UISynchronizeService.syncExec(new Runnable() {
+						@Override
+						public void run() {
+							MessageDialog.openError(Display.getCurrent().getActiveShell(),
+									WindowsRecorderMessagesConstants.ERROR,
+									WindowsRecorderMessagesConstants.MSG_ERR_CANNOT_GENERATE_TEST_STEPS);
+							LoggerSingleton.logError(e);
+						}
+					});
+					LoggerSingleton.logError(e);
+				}
+			}
+			ExplorerPart.getInstance().setSelectedItems(selectedTreeEntities.toArray());
+		}
     }
 
     private FolderEntity getFolder(FolderTreeEntity selectedTreeFolder) {
