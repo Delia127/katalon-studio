@@ -7,6 +7,7 @@ import com.katalon.platform.api.controller.Controller;
 import com.katalon.platform.api.controller.FeatureFileController;
 import com.katalon.platform.api.controller.FolderController;
 import com.katalon.platform.api.controller.ReportController;
+import com.katalon.platform.api.controller.RequestController;
 import com.katalon.platform.api.controller.TestCaseController;
 import com.katalon.platform.api.controller.TestExecutionController;
 import com.katalon.platform.api.controller.TestSuiteCollectionController;
@@ -25,6 +26,7 @@ public class ControllerManagerImpl implements ControllerManager {
         lookup.put(FeatureFileController.class.getName(), new FeatureFileControllerImpl());
         lookup.put(TestSuiteCollectionController.class.getName(), new TestSuiteCollectionControllerImpl());
         lookup.put(TestExecutionController.class.getName(), new TestExecutionControllerImpl());
+        lookup.put(RequestController.class.getName(), new RequestControllerImpl());
     }
 
     @SuppressWarnings("unchecked")
