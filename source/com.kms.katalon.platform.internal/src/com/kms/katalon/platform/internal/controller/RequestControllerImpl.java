@@ -17,15 +17,13 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 public class RequestControllerImpl implements com.katalon.platform.api.controller.RequestController {
 
     @Override
-    public HttpResponse send(HttpUriRequest request) throws KeyManagementException, MalformedURLException,
-            URISyntaxException, IOException, GeneralSecurityException {
+    public HttpResponse send(HttpUriRequest request) throws URISyntaxException, IOException, GeneralSecurityException {
         HttpClient httpClient = HttpClientProxyBuilder.create(null).getClientBuilder().build();
         return httpClient.execute(request);
     }
 
     @Override
-    public HttpResponse sendWithProxy(HttpUriRequest request) throws KeyManagementException, MalformedURLException,
-            URISyntaxException, IOException, GeneralSecurityException {
+    public HttpResponse sendWithProxy(HttpUriRequest request) throws URISyntaxException, IOException, GeneralSecurityException {
         ProxyInformation systemProxy = ProxyPreferences.getSystemProxyInformation();
         HttpClient httpClient = HttpClientProxyBuilder.create(systemProxy).getClientBuilder().build();
         return httpClient.execute(request);
