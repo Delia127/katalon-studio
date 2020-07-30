@@ -18,22 +18,24 @@ public class CustomXmlFormatter extends XMLFormatter {
             XmlLogRecord logRecord = (XmlLogRecord) record;
             nestedLevel = logRecord.getNestedLevel();
             attributes = logRecord.getProperties();
+            logRecord.setEscapedJava(false);
 
             Iterator<Entry<String, String>> it = logRecord.getProperties().entrySet().iterator();
             while (it.hasNext()) {
                 Entry<String, String> pair = it.next();
-                pair.setValue(formatString(pair.getValue()));
+                pair.setValue(pair.getValue());
             }
         }
 
         if (record.getMessage() != null) {
-            record.setMessage(formatString(record.getMessage()));
+            record.setMessage(record.getMessage());
         }
 
         String formattedText = super.format(record);
         StringBuilder sbFormattedText = new StringBuilder(formattedText.substring(0, formattedText.length()
                 - "</record>\n".length()));
         sbFormattedText.append("  <nestedLevel>" + nestedLevel + "</nestedLevel>\n");
+        sbFormattedText.append("  <escapedJava>" + ((XmlLogRecord) record).isEscapedJava() + "</escapedJava>\n");
         if (attributes != null) for (String key : attributes.keySet())
             sbFormattedText.append(String.format("  <property name=\"%s\">%s</property>\n", key, attributes.get(key)));
         sbFormattedText.append("</record>");
@@ -41,7 +43,11 @@ public class CustomXmlFormatter extends XMLFormatter {
         return sbFormattedText.toString();
     }
 
+    /**
+     * @deprecated since 7.6.5
+     */
     protected String formatString(String text) {
         return StringEscapeUtils.escapeXml(StringEscapeUtils.escapeJava(text));
     }
+
 }

@@ -240,7 +240,7 @@ public class AnalyticsApiProvider {
             }
 
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(map));
+            StringEntity entity = new StringEntity(gson.toJson(map), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsProject.class);
@@ -307,7 +307,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
 
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
-            StringEntity entity = new StringEntity(gson.toJson(trackingInfo));
+            StringEntity entity = new StringEntity(gson.toJson(trackingInfo), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             executeRequest(httpPost, true, Object.class);
@@ -440,7 +440,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             Gson gson = new GsonBuilder().create();
-            StringEntity entity = new StringEntity(gson.toJson(fileInfoList));
+            StringEntity entity = new StringEntity(gson.toJson(fileInfoList), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
@@ -498,7 +498,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Content-type", "application/json");
 
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(map));
+            StringEntity entity = new StringEntity(gson.toJson(map), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsRunConfiguration.class);
@@ -582,7 +582,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             Gson gson = new GsonBuilder().create();
-            StringEntity entity = new StringEntity(gson.toJson(testRun));
+            StringEntity entity = new StringEntity(gson.toJson(testRun), Charsets.UTF_8);
             httpPost.setEntity(entity);
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
