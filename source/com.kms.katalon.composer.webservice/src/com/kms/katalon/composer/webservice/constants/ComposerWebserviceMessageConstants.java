@@ -106,6 +106,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ;
 
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;
+    
+    public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_OPENAPI3;
 
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN;
 
@@ -116,6 +118,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
 
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
+    
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_OPENAPI3;
 
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN;
 

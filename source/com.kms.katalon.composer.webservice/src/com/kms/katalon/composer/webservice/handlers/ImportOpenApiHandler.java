@@ -7,16 +7,14 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
@@ -28,6 +26,7 @@ import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.openapi.OpenApiImportNode;
 import com.kms.katalon.composer.webservice.openapi.OpenApiImporter;
 import com.kms.katalon.composer.webservice.openapi.OpenApiProjectImportResult;
+import com.kms.katalon.composer.webservice.view.ImportOpenApiDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
@@ -57,14 +56,15 @@ public class ImportOpenApiHandler {
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
         if (featureService.canUse(KSEFeature.IMPORT_OPENAPI)) {
             try {
-                FileDialog fileDialog = new FileDialog(shell, SWT.SYSTEM_MODAL);
-                fileDialog.setFilterPath(Platform.getLocation().toString());
-                String selectedFilePath = fileDialog.open();
-                if (selectedFilePath != null && selectedFilePath.length() > 0) {
-                    FolderEntity parentFolderEntity = (FolderEntity) objectRepositoryTreeRoot.getObject();
-                    OpenApiProjectImportResult projectImportResult = OpenApiImporter.getInstance()
-                            .importServices(selectedFilePath, parentFolderEntity);
-                    saveImportedArtifacts(projectImportResult);
+                ImportOpenApiDialog dialog = new ImportOpenApiDialog(shell);
+                if (dialog.open() == Dialog.OK) {
+                    String selectedFilePath = dialog.getSwaggerSpecLocation();
+                    if (selectedFilePath != null && selectedFilePath.length() > 0) {
+                        FolderEntity parentFolderEntity = (FolderEntity) objectRepositoryTreeRoot.getObject();
+                        OpenApiProjectImportResult projectImportResult = OpenApiImporter.getInstance()
+                                .importServices(selectedFilePath, parentFolderEntity);
+                        saveImportedArtifacts(projectImportResult);
+                    }
                 }
             } catch (Exception e) {
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
