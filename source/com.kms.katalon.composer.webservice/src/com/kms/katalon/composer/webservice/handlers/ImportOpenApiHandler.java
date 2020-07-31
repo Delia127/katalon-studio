@@ -10,6 +10,7 @@ import javax.inject.Named;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
@@ -17,8 +18,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -64,6 +67,10 @@ public class ImportOpenApiHandler {
                         OpenApiProjectImportResult projectImportResult = OpenApiImporter.getInstance()
                                 .importServices(selectedFilePath, parentFolderEntity);
                         saveImportedArtifacts(projectImportResult);
+                        getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                                TreeEntityUtil.getFolderTreeEntity(projectImportResult.getFileEntity()));
+                        getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
+                                TreeEntityUtil.getFolderTreeEntity(projectImportResult.getFileEntity()));
                     }
                 }
             } catch (Exception e) {
@@ -112,5 +119,9 @@ public class ImportOpenApiHandler {
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    private IEventBroker getEventBroker() {
+        return EventBrokerSingleton.getInstance().getEventBroker();
     }
 }

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import com.google.common.base.Preconditions;
 import com.kms.katalon.composer.webservice.constants.HttpMethod;
+import com.kms.katalon.composer.webservice.constants.OpenApiConstants;
 import com.kms.katalon.controller.EntityNameController;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -225,11 +226,6 @@ public final class OpenApiImporter {
         }
     }
 
-    private String parseExample(Object ex) {
-        JSONObject json = new JSONObject(ex.toString());
-        return json.toString(2);
-    }
-
     @SuppressWarnings("rawtypes")
     private List<UrlEncodedBodyParameter> parseUrlEncodedRequestBody(Schema<?> schema) {
         Map<String, Schema> propertyMap = schema.getProperties();
@@ -237,9 +233,8 @@ public final class OpenApiImporter {
         for (Map.Entry<String, Schema> entry : propertyMap.entrySet()) {
             UrlEncodedBodyParameter param = new UrlEncodedBodyParameter();
             param.setName(entry.getKey());
-            String value = entry.getValue().getExample() != null ? entry.getValue().getExample().toString()
-                    : entry.getValue().getType();
-            param.setValue("<" + value + ">");
+            String value = parseJsonValue(entry.getValue()).toString();
+            param.setValue(value);
             params.add(param);
         }
         return params;
@@ -284,15 +279,15 @@ public final class OpenApiImporter {
             String name = param.getName();
             String value = null;
             if (param.getSchema() != null) {
-                value = param.getSchema().getType();
+                value = parseJsonValue(param.getSchema()).toString();
             }
             String description = param.getDescription();
-            if (in.equals("path")) {
+            if (in.equals(OpenApiConstants.PATH_PARAMETER_TYPE)) {
                 holder.addParameter(name, null, description, OpenApiRestParameter.Style.TEMPLATE);
-            } else if (in.equals("query")) {
-                holder.addParameter(name, "<" + value + ">", description, OpenApiRestParameter.Style.QUERY);
-            } else if (in.equals("header")) {
-                holder.addParameter(name, "<" + value + ">", description, OpenApiRestParameter.Style.HEADER);
+            } else if (in.equals(OpenApiConstants.QUERY_PARAMETER_TYPE)) {
+                holder.addParameter(name, value, description, OpenApiRestParameter.Style.QUERY);
+            } else if (in.equals(OpenApiConstants.HEADER_PARAMETER_TYPE)) {
+                holder.addParameter(name, value, description, OpenApiRestParameter.Style.HEADER);
             }
         }
     }
@@ -311,7 +306,7 @@ public final class OpenApiImporter {
     }
 
     private Object parseJsonValue(Schema<?> schema) {
-        Object output = null;
+        Object displayValue = null;
         if (schema.getExample() != null) {
             return schema.getExample();
         }
@@ -319,28 +314,33 @@ public final class OpenApiImporter {
             return schema.getEnum().get(0);
         }
         switch (schema.getType()) {
-        case "integer":
-            output = 0;
+        case OpenApiConstants.INTEGER_DATA_TYPE:
+            displayValue = OpenApiConstants.INT_SAMPLE_VALUE;
             break;
-        case "number":
-            output = 1.1f;
+        case OpenApiConstants.NUMBER_DATA_TYPE:
+            displayValue = OpenApiConstants.NUMBER_SAMPLE_VALUE;
             break;
-        case "string":
-            output = "";
+        case OpenApiConstants.STRING_DATA_TYPE:
+            displayValue = OpenApiConstants.STRING_SAMPLE_VALUE;
             break;
-        case "boolean":
-            output = true;
+        case OpenApiConstants.BOOLEAN_DATA_TYPE:
+            displayValue = OpenApiConstants.BOOLEAN_SAMPLE_VALUE;
             break;
-        case "array":
+        case OpenApiConstants.ARRAY_DATA_TYPE:
             Schema<?> items = ((ArraySchema) schema).getItems();
             List<Object> arr = new ArrayList<>();
             arr.add(parseJsonValue(items));
-            output = arr;
+            displayValue = arr;
             break;
-        case "object":
-            output = parseJsonObject(schema);
+        case OpenApiConstants.OBJECT_DATA_TYPE:
+            displayValue = parseJsonObject(schema);
             break;
         }
-        return output;
+        return displayValue;
+    }
+
+    private String parseExample(Object ex) {
+        JSONObject json = new JSONObject(ex.toString());
+        return json.toString(2);
     }
 }
