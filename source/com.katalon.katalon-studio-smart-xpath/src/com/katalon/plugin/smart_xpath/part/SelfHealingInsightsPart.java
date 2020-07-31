@@ -132,6 +132,9 @@ public class SelfHealingInsightsPart implements EventHandler {
                 Set<BrokenTestObject> selectedBrokenTestObjects = brokenTestObjectsTableComposite
                         .getSelectedTestObjects();
                 int numSelectedTestObjects = selectedBrokenTestObjects.size();
+                if (numSelectedTestObjects <= 0) {
+                    return;
+                }
                 AutoHealingController.autoHealBrokenTestObjects(Display.getCurrent().getActiveShell(),
                         selectedBrokenTestObjects);
 
