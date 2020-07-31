@@ -136,23 +136,23 @@ public class RecordWindowsObjectHandler {
         testCaseCompositePart.save();
     }
 
-    private void saveTestObject(Shell activeShell, WindowsRecorderDialog.RecordActionResult recordResult)
-            throws ControllerException {
-        if (recordResult.getScript().getBlock().getAstChildren().isEmpty()) {
-            return;
-        }
-        if (!recordResult.getWindowsElements().isEmpty()) {
-            AddElementToObjectRepositoryDialog objectRepositoryDialog = new AddElementToObjectRepositoryDialog(
-                    activeShell);
-            if (objectRepositoryDialog.open() != AddElementToObjectRepositoryDialog.OK) {
-                return;
-            }
-            FolderTreeEntity selectedTreeFolder = objectRepositoryDialog.getSelectedFolderTreeEntity();
-            FolderEntity folder = getFolder(selectedTreeFolder);
+	private void saveTestObject(Shell activeShell, WindowsRecorderDialog.RecordActionResult recordResult)
+			throws ControllerException {
+		if (recordResult.getScript().getBlock().getAstChildren().isEmpty()) {
+			return;
+		}
+		if (!recordResult.getWindowsElements().isEmpty()) {
+			AddElementToObjectRepositoryDialog objectRepositoryDialog = new AddElementToObjectRepositoryDialog(
+					activeShell);
+			if (objectRepositoryDialog.open() != AddElementToObjectRepositoryDialog.OK) {
+				return;
+			}
+			FolderTreeEntity selectedTreeFolder = objectRepositoryDialog.getSelectedFolderTreeEntity();
+			FolderEntity folder = getFolder(selectedTreeFolder);
 
-            CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
-            List<ITreeEntity> selectedTreeEntities = new ArrayList<ITreeEntity>();
-            for (CapturedWindowsElement capturedElement : recordResult.getWindowsElements()) {
+			CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
+			List<ITreeEntity> selectedTreeEntities = new ArrayList<ITreeEntity>();
+			for (CapturedWindowsElement capturedElement : recordResult.getWindowsElements()) {
 				try {
 					WindowsElementEntity windowsElement = converter.convert(capturedElement, folder);
 					WindowsElementController.getInstance().updateWindowsElementEntity(windowsElement);
@@ -171,9 +171,9 @@ public class RecordWindowsObjectHandler {
 					LoggerSingleton.logError(e);
 				}
 			}
-            ExplorerPart.getInstance().setSelectedItems(selectedTreeEntities.toArray());
-        }
-    }
+			ExplorerPart.getInstance().setSelectedItems(selectedTreeEntities.toArray());
+		}
+	}
 
     private FolderEntity getFolder(FolderTreeEntity selectedTreeFolder) {
         FolderEntity folder = null;

@@ -58,4 +58,3 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.application,
  com.kms.katalon.dal.file
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.apache.commons.lang
