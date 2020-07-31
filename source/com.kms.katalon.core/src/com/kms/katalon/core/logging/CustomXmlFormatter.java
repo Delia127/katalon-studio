@@ -45,6 +45,6 @@ public class CustomXmlFormatter extends XMLFormatter {
     }
 
     protected String formatString(String text) {
-        return StringEscapeUtils.escapeXml11(text);
+        return StringEscapeUtils.escapeXml(text);
     }
 }
