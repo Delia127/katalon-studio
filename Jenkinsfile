@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     Properties properties = new Properties()
-                    File propertiesFile = new File("${env.WORKSPACE}/source/com.kms.katalon/about.mappings")
+                    File propertiesFile = new File("${env.WORKSPACE}/source/com.kms.katalon.application/about.mappings")
                     properties.load(propertiesFile.newDataInputStream())
                     version = properties.'1'
                     println("Version ${version}.")
