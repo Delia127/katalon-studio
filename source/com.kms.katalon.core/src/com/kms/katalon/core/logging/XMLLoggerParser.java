@@ -60,8 +60,12 @@ public class XMLLoggerParser {
     
     public static final String ESCAPED_NODE_NAME = "escapedJava";
 
-    public static String unescapeString(String text) {
-        return StringEscapeUtils.unescapeJava(StringEscapeUtils.unescapeXml(text));
+    public static String unescapeString(String text, boolean escapedJava) {
+        String unescapeXml = StringEscapeUtils.unescapeXml(text);
+        if (escapedJava) {
+            return StringEscapeUtils.unescapeJava(unescapeXml);
+        }
+        return unescapeXml;
     }
 
     public static String getRecordDate(LogRecord record) {
@@ -202,11 +206,7 @@ public class XMLLoggerParser {
             }
         }
         if (StringUtils.isNotEmpty(message)) {
-            if (record.isEscapedJava()) {
-                record.setMessage(unescapeString(message));
-            } else {
-                record.setMessage(message);
-            }
+            record.setMessage(unescapeString(message, record.isEscapedJava()));
         }
         return record;
     }
@@ -293,16 +293,20 @@ public class XMLLoggerParser {
     private static String readCharacters(XMLStreamReader reader) throws XMLStreamException {
         StringBuilder result = new StringBuilder();
         while (reader.hasNext()) {
-            int eventType = reader.next();
-            switch (eventType) {
-                case XMLStreamReader.CHARACTERS:
-                case XMLStreamReader.CDATA:
-                    result.append(reader.getText());
-                    break;
-                case XMLStreamReader.END_ELEMENT:
-                    return result.toString();
-                default:
-                    break;
+            try {
+                int eventType = reader.next();
+                switch (eventType) {
+                    case XMLStreamReader.CHARACTERS:
+                    case XMLStreamReader.CDATA:
+                        result.append(reader.getText());
+                        break;
+                    case XMLStreamReader.END_ELEMENT:
+                        return result.toString();
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                
             }
         }
         return result.toString();

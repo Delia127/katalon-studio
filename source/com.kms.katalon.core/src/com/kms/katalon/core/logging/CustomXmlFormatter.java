@@ -23,12 +23,12 @@ public class CustomXmlFormatter extends XMLFormatter {
             Iterator<Entry<String, String>> it = logRecord.getProperties().entrySet().iterator();
             while (it.hasNext()) {
                 Entry<String, String> pair = it.next();
-                pair.setValue(pair.getValue());
+                pair.setValue(formatString(pair.getValue()));
             }
         }
 
         if (record.getMessage() != null) {
-            record.setMessage(record.getMessage());
+            record.setMessage(formatString(record.getMessage()));
         }
 
         String formattedText = super.format(record);
@@ -37,17 +37,14 @@ public class CustomXmlFormatter extends XMLFormatter {
         sbFormattedText.append("  <nestedLevel>" + nestedLevel + "</nestedLevel>\n");
         sbFormattedText.append("  <escapedJava>" + ((XmlLogRecord) record).isEscapedJava() + "</escapedJava>\n");
         if (attributes != null) for (String key : attributes.keySet())
-            sbFormattedText.append(String.format("  <property name=\"%s\">%s</property>\n", key, attributes.get(key)));
+            sbFormattedText.append(String.format("  <property name=\"%s\">%s</property>\n", key, 
+                    attributes.get(key)));
         sbFormattedText.append("</record>");
         sbFormattedText.append("\n");
         return sbFormattedText.toString();
     }
 
-    /**
-     * @deprecated since 7.6.5
-     */
     protected String formatString(String text) {
-        return StringEscapeUtils.escapeXml(StringEscapeUtils.escapeJava(text));
+        return StringEscapeUtils.escapeXml11(text);
     }
-
 }
