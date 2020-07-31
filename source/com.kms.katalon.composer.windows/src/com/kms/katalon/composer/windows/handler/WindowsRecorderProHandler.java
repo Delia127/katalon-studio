@@ -160,38 +160,38 @@ public class WindowsRecorderProHandler {
         if (recordResult.getScript().getBlock().getAstChildren().isEmpty()) {
             return;
         }
-		if (!recordResult.getWindowsElements().isEmpty()) {
-			AddElementToObjectRepositoryDialog objectRepositoryDialog = new AddElementToObjectRepositoryDialog(
-					activeShell);
-			if (objectRepositoryDialog.open() != AddElementToObjectRepositoryDialog.OK) {
-				return;
-			}
-			FolderTreeEntity selectedTreeFolder = objectRepositoryDialog.getSelectedFolderTreeEntity();
-			FolderEntity folder = getFolder(selectedTreeFolder);
+        if (!recordResult.getWindowsElements().isEmpty()) {
+            AddElementToObjectRepositoryDialog objectRepositoryDialog = new AddElementToObjectRepositoryDialog(
+                    activeShell);
+            if (objectRepositoryDialog.open() != AddElementToObjectRepositoryDialog.OK) {
+                return;
+            }
+            FolderTreeEntity selectedTreeFolder = objectRepositoryDialog.getSelectedFolderTreeEntity();
+            FolderEntity folder = getFolder(selectedTreeFolder);
 
-			CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
-			List<ITreeEntity> selectedTreeEntities = new ArrayList<ITreeEntity>();
-			for (CapturedWindowsElement capturedElement : recordResult.getWindowsElements()) {
-				try {
-					WindowsElementEntity windowsElement = converter.convert(capturedElement, folder);
-					WindowsElementController.getInstance().updateWindowsElementEntity(windowsElement);
-					capturedElement.setScriptId(windowsElement.getIdForDisplay());
-					selectedTreeEntities.add(new WindowsElementTreeEntity(windowsElement, selectedTreeFolder));
-				} catch (Exception e) {
-					UISynchronizeService.syncExec(new Runnable() {
-						@Override
-						public void run() {
-							MessageDialog.openError(Display.getCurrent().getActiveShell(),
-									WindowsRecorderMessagesConstants.ERROR,
-									WindowsRecorderMessagesConstants.MSG_ERR_CANNOT_GENERATE_TEST_STEPS);
-							LoggerSingleton.logError(e);
-						}
-					});
-					LoggerSingleton.logError(e);
-				}
-			}
-			ExplorerPart.getInstance().setSelectedItems(selectedTreeEntities.toArray());
-		}
+            CapturedWindowsElementConverter converter = new CapturedWindowsElementConverter();
+            List<ITreeEntity> selectedTreeEntities = new ArrayList<ITreeEntity>();
+            for (CapturedWindowsElement capturedElement : recordResult.getWindowsElements()) {
+                try {
+                    WindowsElementEntity windowsElement = converter.convert(capturedElement, folder);
+                    WindowsElementController.getInstance().updateWindowsElementEntity(windowsElement);
+                    capturedElement.setScriptId(windowsElement.getIdForDisplay());
+                    selectedTreeEntities.add(new WindowsElementTreeEntity(windowsElement, selectedTreeFolder));
+                } catch (Exception e) {
+                    UISynchronizeService.syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                                    WindowsRecorderMessagesConstants.ERROR,
+                                    WindowsRecorderMessagesConstants.MSG_ERR_CANNOT_GENERATE_TEST_STEPS);
+                            LoggerSingleton.logError(e);
+                        }
+                    });
+                    LoggerSingleton.logError(e);
+                }
+            }
+            ExplorerPart.getInstance().setSelectedItems(selectedTreeEntities.toArray());
+        }
     }
 
     private FolderEntity getFolder(FolderTreeEntity selectedTreeFolder) {
