@@ -293,20 +293,16 @@ public class XMLLoggerParser {
     private static String readCharacters(XMLStreamReader reader) throws XMLStreamException {
         StringBuilder result = new StringBuilder();
         while (reader.hasNext()) {
-            try {
-                int eventType = reader.next();
-                switch (eventType) {
-                    case XMLStreamReader.CHARACTERS:
-                    case XMLStreamReader.CDATA:
-                        result.append(reader.getText());
-                        break;
-                    case XMLStreamReader.END_ELEMENT:
-                        return result.toString();
-                    default:
-                        break;
-                }
-            } catch (Exception e) {
-                
+            int eventType = reader.next();
+            switch (eventType) {
+                case XMLStreamReader.CHARACTERS:
+                case XMLStreamReader.CDATA:
+                    result.append(reader.getText());
+                    break;
+                case XMLStreamReader.END_ELEMENT:
+                    return result.toString();
+                default:
+                    break;
             }
         }
         return result.toString();
