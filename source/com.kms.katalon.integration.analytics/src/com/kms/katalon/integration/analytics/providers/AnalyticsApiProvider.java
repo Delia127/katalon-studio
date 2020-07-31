@@ -46,6 +46,8 @@ import org.apache.http.util.EntityUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.core.model.KatalonPackage;
@@ -737,4 +739,24 @@ public class AnalyticsApiProvider {
         return response;
     }
     
+    public static AnalyticsProject getDefaultNewUserProject(String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, "/api/v1/projects/first");
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            String response = executeRequest(httpGet, false);
+            JsonParser jp = new JsonParser();
+            JsonElement json = jp.parse(response);
+            if (!json.isJsonArray() || json.getAsJsonArray().size() == 0) {
+                return null;
+            }
+
+            return new Gson().fromJson(json.getAsJsonArray().get(0), AnalyticsProject.class);
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
 }
