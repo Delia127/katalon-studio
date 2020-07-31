@@ -1,4 +1,4 @@
-package com.kms.katalon.objectsly.util.test;
+package com.kms.katalon.objectspy.util.test;
 
 import java.io.File;
 import java.io.IOException;
