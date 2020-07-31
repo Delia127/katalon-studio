@@ -60,8 +60,12 @@ public class XMLLoggerParser {
     
     public static final String ESCAPED_NODE_NAME = "escapedJava";
 
-    public static String unescapeString(String text) {
-        return StringEscapeUtils.unescapeJava(StringEscapeUtils.unescapeXml(text));
+    public static String unescapeString(String text, boolean escapedJava) {
+        String unescapeXml = StringEscapeUtils.unescapeXml(text);
+        if (escapedJava) {
+            return StringEscapeUtils.unescapeJava(unescapeXml);
+        }
+        return unescapeXml;
     }
 
     public static String getRecordDate(LogRecord record) {
@@ -202,11 +206,7 @@ public class XMLLoggerParser {
             }
         }
         if (StringUtils.isNotEmpty(message)) {
-            if (record.isEscapedJava()) {
-                record.setMessage(unescapeString(message));
-            } else {
-                record.setMessage(message);
-            }
+            record.setMessage(unescapeString(message, record.isEscapedJava()));
         }
         return record;
     }
