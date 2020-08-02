@@ -17,10 +17,14 @@ import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
+import com.kms.katalon.application.preference.ProxyPreferences;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.SystemProperties;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -117,6 +121,7 @@ public class Application implements IApplication {
             // hide splash screen
             context.applicationRunning();
             ApplicationRunningMode.set(RunningMode.CONSOLE);
+            System.setProperty(SystemProperties.KATALON_VERSION, VersionUtil.getCurrentVersion().getVersion());
             return KatalonApplicationActivator.getInstance().getApplicationStarters().get(RunningMode.CONSOLE).start(appArgs);
         } catch (Error e) {
             LogUtil.logError(e);
@@ -181,6 +186,8 @@ public class Application implements IApplication {
 
     private int runGUI(String[] arguments) {
         ApplicationRunningMode.set(RunningMode.GUI);
+        System.setProperty(SystemProperties.KATALON_VERSION, VersionUtil.getCurrentVersion().getVersion());
+        System.setProperty(SystemProperties.SYSTEM_PROXY, JsonUtil.toJson(ProxyPreferences.getSystemProxyInformation()));
         return KatalonApplicationActivator.getInstance().getApplicationStarters().get(RunningMode.GUI).start(arguments);
     }
 

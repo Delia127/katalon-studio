@@ -24,7 +24,17 @@ public class BasicWsdlDefinitionLocator implements WsdlDefinitionLocator {
     }
 
     public String getBaseURI() {
-        return wsdlLocation;
+        if (isWeb()) {
+            return wsdlLocation;
+        } else {
+            try {
+                File file = new File(wsdlLocation);
+                return file.toURI().toURL().toString();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 
     public InputSource getBaseInputSource() {
