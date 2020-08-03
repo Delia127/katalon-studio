@@ -13,14 +13,14 @@ import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLa
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ImageUtil;
-import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.execution.collection.provider.TestExecutionConfigurationProvider;
 
 public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabelProvider<ReportItemDescription>
         implements ReportItemDescriptionLabelProvider {

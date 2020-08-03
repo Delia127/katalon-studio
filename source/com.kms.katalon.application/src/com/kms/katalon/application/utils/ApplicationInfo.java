@@ -56,7 +56,7 @@ public class ApplicationInfo {
         aboutMappingsProperties = new Properties();
 
         try {
-            aboutMappingsProperties.load(Platform.getBundle("com.kms.katalon").getResource(ABOUT_MAPPINGS_FILE_NAME)
+            aboutMappingsProperties.load(Platform.getBundle("com.kms.katalon.application").getResource(ABOUT_MAPPINGS_FILE_NAME)
                             .openStream());
         } catch (IOException e) {
             LogUtil.logError(e);

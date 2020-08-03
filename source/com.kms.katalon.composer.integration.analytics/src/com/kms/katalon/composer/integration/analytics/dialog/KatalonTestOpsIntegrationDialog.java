@@ -30,12 +30,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
@@ -310,6 +312,7 @@ public class KatalonTestOpsIntegrationDialog extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 isClose = updateDataStore();
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_RELOAD_DATA, true);
                 okPressed();
             }
         });

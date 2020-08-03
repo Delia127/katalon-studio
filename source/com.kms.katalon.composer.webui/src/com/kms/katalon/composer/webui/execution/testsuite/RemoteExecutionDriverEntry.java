@@ -10,11 +10,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionDriverEntry;
-import com.kms.katalon.composer.execution.util.MapUtil;
 import com.kms.katalon.composer.webui.component.dialogs.RemoteExecutionInputDialog;
 import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.execution.collection.provider.TestExecutionDriverEntry;
+import com.kms.katalon.execution.util.MapUtil;
 import com.kms.katalon.execution.webui.configuration.contributor.RemoteWebRunConfigurationContributor;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWebDriverConnectorType;
 

@@ -81,6 +81,8 @@ public class ObjectPropertiesView extends Composite
 
     private static final String RADIO_LABEL_ATTRIBUTES = ObjectspyMessageConstants.DIA_RADIO_LABEL_ATTRIBUTES;
 
+    private static final String RADIO_LABEL_IMAGE = ObjectspyMessageConstants.DIA_RADIO_LABEL_IMAGE;
+
     private static final String COL_LABEL_CONDITION = ObjectspyMessageConstants.DIA_COL_LABEL_CONDITION;
 
     private Table tProperty, tXpath;
@@ -97,7 +99,7 @@ public class ObjectPropertiesView extends Composite
 
     private Text txtName;
 
-    private Button radioAttributes, radioXpath, radioCss;
+    private Button radioAttributes, radioXpath, radioCss, radioImage;
 
     private ToolItem btnAdd, btnDelete, btnClear;
 
@@ -271,10 +273,13 @@ public class ObjectPropertiesView extends Composite
         radioAttributes.setText(RADIO_LABEL_ATTRIBUTES);        
         selectorButtons.put(SelectorMethod.BASIC, radioAttributes);
 
-
         radioCss = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
         radioCss.setText(RADIO_LABEL_CSS);
         selectorButtons.put(SelectorMethod.CSS, radioCss);
+
+        radioImage = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
+        radioImage.setText(RADIO_LABEL_IMAGE);
+        selectorButtons.put(SelectorMethod.IMAGE, radioImage);
     }
 
     private void createAttributeToolbarButtons(Composite parent) {
@@ -678,6 +683,21 @@ public class ObjectPropertiesView extends Composite
                 webElement.setSelectorMethod(SelectorMethod.CSS);
                 showComposite(propertyTableComposite, false);
                 showComposite(xpathTableComposite, false);       
+                showComposite(compositeAttributeToolbar, false);
+                sendPropertiesChangedEvent();
+            }
+        });
+
+        radioImage.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (webElement == null || !radioImage.getSelection()) {
+                    return;
+                }
+                webElement.setSelectorMethod(SelectorMethod.IMAGE);
+                showComposite(propertyTableComposite, false);
+                showComposite(xpathTableComposite, false);
                 showComposite(compositeAttributeToolbar, false);
                 sendPropertiesChangedEvent();
             }

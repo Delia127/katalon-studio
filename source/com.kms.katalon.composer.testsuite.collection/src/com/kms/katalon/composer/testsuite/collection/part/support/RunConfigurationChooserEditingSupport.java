@@ -17,8 +17,7 @@ public class RunConfigurationChooserEditingSupport extends EditingSupportWithTab
 
     @Override
     protected CellEditor getCellEditorByElement(TestSuiteRunConfiguration element) {
-        return new RunConfigurationSelectionCellEditor((Composite) getViewer().getControl(),
-                element.getConfiguration().getRunConfigurationId(), element.getConfiguration());
+        return new RunConfigurationSelectionCellEditor((Composite) getViewer().getControl(), element.getConfiguration().getRunConfigurationId());
     }
 
     @Override

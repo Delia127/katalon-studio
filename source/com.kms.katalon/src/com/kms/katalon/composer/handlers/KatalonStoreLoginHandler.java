@@ -3,9 +3,9 @@ package com.kms.katalon.composer.handlers;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 
+import com.kms.katalon.activation.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.plugin.models.KStoreClientAuthException;
 
 public class KatalonStoreLoginHandler extends RequireAuthorizationHandler {
 

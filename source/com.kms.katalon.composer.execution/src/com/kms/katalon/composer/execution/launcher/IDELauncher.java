@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.launcher;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 
+import java.io.File;
 import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
@@ -28,6 +29,8 @@ import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.collector.SelfHealingExecutionReportCollector;
+import com.kms.katalon.execution.collector.SelfHealingExecutionReport;
 import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
@@ -166,14 +169,20 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         
 
         if (getStatus() != LauncherStatus.TERMINATED) {
+            File reportFolder = getReportFolder();
+            SelfHealingExecutionReport selfHealingReport = SelfHealingExecutionReportCollector.getInstance()
+                    .collect(runConfig, reportFolder);
+
             if (getExecutedEntity() instanceof TestCaseExecutedEntity) {
                 String resultTestcase = getExecutionResult();
                 Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(), resultTestcase,
-                        getEndTime().getTime() - getStartTime().getTime());
+                        getEndTime().getTime() - getStartTime().getTime(), selfHealingReport.isEnabled(),
+                        selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
             } else if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
                 String resultTestSuite = getExecutionResult();
                 Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(), resultTestSuite,
-                        getEndTime().getTime() - getStartTime().getTime(), getRetryStrategy(), getNumberOfRetry());
+                        getEndTime().getTime() - getStartTime().getTime(), getRetryStrategy(), getNumberOfRetry(),
+                        selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
             }
         }
     }

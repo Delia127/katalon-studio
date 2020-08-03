@@ -116,6 +116,8 @@ public interface IdConstants {
     // Test Object Part content
     public static final String TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testobject";
 
+    public static final String MOBILE_TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".moibletestobject";
+
     public static final String WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".windowstestobject";
 
     public static final String DRAFT_REQUEST_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".draftRequest";
@@ -188,6 +190,8 @@ public interface IdConstants {
 
     public static final String OPEN_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.open";
 
+    public static final String CLONE_PROJECT_COMMAND_ID = "com.kms.katalon.composer.integration.git.command.clone";
+
     // Parameter ID
     public static final String RUN_MODE_PARAMETER_ID = "com.kms.katalon.composer.execution.runMode";
     
@@ -216,6 +220,12 @@ public interface IdConstants {
 
     // Bundle
     public static final String KATALON_GENERAL_BUNDLE_ID = "com.kms.katalon";
+
+    public static final String KATALON_PLATFORM_BUNDLE_ID = "com.katalon.platform";
+
+    public static final String KATALON_INTERNAL_PLATFORM_BUNDLE_ID = "com.kms.katalon.platform.internal";
+
+    public static final String KATALON_INTERNAL_COMPOSER_PLATFORM_BUNDLE_ID = "com.kms.katalon.composer.platform.internal";
 
     public static final String KATALON_LOGGING_BUNDLE_ID = "com.kms.katalon.logging";
 

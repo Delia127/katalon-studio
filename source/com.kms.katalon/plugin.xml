@@ -69,7 +69,7 @@
       <application
             cardinality="singleton-global"
             visible="true">
-         <run class="com.kms.katalon.core.application.Application">
+         <run class="com.kms.katalon.application.Application">
          </run>
       </application>
    </extension>

@@ -6,6 +6,14 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: com.kms.katalon.execution,
- com.kms.katalon.entity
-Export-Package: com.kms.katalon.execution.webservice.contribution
+ com.kms.katalon.entity,
+ com.kms.katalon.logging,
+ com.kms.katalon.core,
+ com.kms.katalon.controller
+Export-Package: com.kms.katalon.execution.webservice.configuration,
+ com.kms.katalon.execution.webservice.configuration.impl,
+ com.kms.katalon.execution.webservice.constants,
+ com.kms.katalon.execution.webservice.contribution,
+ com.kms.katalon.execution.webservice.setting
 Bundle-ActivationPolicy: lazy
+Import-Package: org.osgi.framework

@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Image;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ImageUtil;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
+import com.kms.katalon.execution.collection.provider.TestExecutionItem;
 
 public class TestExecutionItemLabelProvider extends TypeCheckedLabelProvider<TestExecutionItem> {
 
