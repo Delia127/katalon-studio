@@ -863,7 +863,8 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 	}
 	
 	private String getDeviceTypeString() {
-	    return mobileComposite.getSelectedDriverType().toString();
+        MobileDriverType deviceType = mobileComposite.getSelectedDriverType();
+        return deviceType != null ? deviceType.toString() : null;
 	}
 
     @Override
