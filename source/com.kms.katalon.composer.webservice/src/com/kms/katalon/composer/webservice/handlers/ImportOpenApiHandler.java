@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,7 +18,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
-import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -37,6 +34,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.feature.FeatureServiceConsumer;
@@ -47,8 +45,6 @@ public class ImportOpenApiHandler {
 
     private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
-    private FolderTreeEntity objectRepositoryTreeRoot;
-
     @CanExecute
     public boolean canExecute() {
         return (ProjectController.getInstance().getCurrentProject() != null)
@@ -56,16 +52,25 @@ public class ImportOpenApiHandler {
     }
 
     @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
+    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
+            @Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
         if (featureService.canUse(KSEFeature.IMPORT_OPENAPI)) {
             try {
                 ImportOpenApiDialog dialog = new ImportOpenApiDialog(shell);
                 if (dialog.open() == Dialog.OK) {
                     String selectedFilePath = dialog.getSwaggerSpecLocation();
                     if (selectedFilePath != null && selectedFilePath.length() > 0) {
-                        FolderEntity parentFolderEntity = (FolderEntity) objectRepositoryTreeRoot.getObject();
+                        FolderEntity importFolderEntity;
+                        ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
+                        if (parentTreeEntity == null) {
+                            importFolderEntity = FolderController.getInstance()
+                                    .getObjectRepositoryRoot(ProjectController.getInstance().getCurrentProject());
+                        } else {
+                            importFolderEntity = (FolderEntity) parentTreeEntity.getObject();
+                        }
+
                         OpenApiProjectImportResult projectImportResult = OpenApiImporter.getInstance()
-                                .importServices(selectedFilePath, parentFolderEntity);
+                                .importServices(selectedFilePath, importFolderEntity);
                         saveImportedArtifacts(projectImportResult);
                         getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
                                 TreeEntityUtil.getFolderTreeEntity(projectImportResult.getFileEntity()));
@@ -101,27 +106,26 @@ public class ImportOpenApiHandler {
                 Stream.of(importNode.getChildImportNodes()).flatMap(n -> flatten(n)));
     }
 
-    @Inject
-    @Optional
-    private void catchTestDataFolderTreeEntitiesRoot(
-            @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
-        try {
-            for (Object o : treeEntities) {
-                Object entityObject = ((ITreeEntity) o).getObject();
-                if (entityObject instanceof FolderEntity) {
-                    FolderEntity folder = (FolderEntity) entityObject;
-                    if (folder.getFolderType() == FolderType.WEBELEMENT) {
-                        objectRepositoryTreeRoot = (FolderTreeEntity) o;
-                        return;
+    private IEventBroker getEventBroker() {
+        return EventBrokerSingleton.getInstance().getEventBroker();
+    }
+
+    public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
+        if (selectedObjects != null) {
+            for (Object entity : selectedObjects) {
+                if (entity instanceof ITreeEntity) {
+                    Object entityObject = ((ITreeEntity) entity).getObject();
+                    if (entityObject instanceof FolderEntity) {
+                        FolderEntity folder = (FolderEntity) entityObject;
+                        if (folder.getFolderType() == FolderType.WEBELEMENT) {
+                            return (ITreeEntity) entity;
+                        }
+                    } else if (entityObject instanceof WebElementEntity) {
+                        return ((ITreeEntity) entity).getParent();
                     }
                 }
             }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
         }
-    }
-
-    private IEventBroker getEventBroker() {
-        return EventBrokerSingleton.getInstance().getEventBroker();
+        return null;
     }
 }
