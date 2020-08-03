@@ -32,6 +32,10 @@ public class ComposerWindowsMessage {
     public static String BTN_APPLY;
 
     public static String BTN_CANCEL;
+    
+    public static String ERROR;
+    
+    public static String MSG_ERR_CANNOT_GENERATE_TEST_STEPS;
 
 
     static {

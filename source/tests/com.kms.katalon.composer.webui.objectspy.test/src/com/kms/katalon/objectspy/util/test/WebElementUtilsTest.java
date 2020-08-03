@@ -1,4 +1,4 @@
-package com.kms.katalon.objectsly.util.test;
+package com.kms.katalon.objectspy.util.test;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class WebElementUtilsTest {
 
     @Test
     public void canConvertWebElementToTestObjectAndRemoveInvalidCharactersFromName() throws Exception {
-        WebElement webElement = new WebElement("....This@.is!.my?.name....");
+        WebElement webElement = new WebElement("....This@ is! my? name....");
         FolderEntity parentFolder = new FolderEntity();
         ProjectEntity projectEntity = new ProjectEntity();
         File file = getExtensionsDirectory("/test_project");
@@ -52,7 +52,21 @@ public class WebElementUtilsTest {
         parentFolder.setProject(projectEntity);
         parentFolder.setName("parent_folder");
         WebElementEntity entity = WebElementUtils.convertWebElementToTestObject(webElement, null, parentFolder);
-        Assert.assertEquals(entity.getName(), "This.is.my.name");
+        Assert.assertEquals(entity.getName(), "This is my name");
+    }
+
+    @Test
+    public void canConvertWebElementToTestObjectAndRetainCommasAndPeriodsInName() throws Exception {
+        WebElement webElement = new WebElement("....This@....,,,,,is!......,........my?,........name....");
+        FolderEntity parentFolder = new FolderEntity();
+        ProjectEntity projectEntity = new ProjectEntity();
+        File file = getExtensionsDirectory("/test_project");
+        projectEntity.setProjectFile(file);
+        projectEntity.setName("test_project_name");
+        parentFolder.setProject(projectEntity);
+        parentFolder.setName("parent_folder");
+        WebElementEntity entity = WebElementUtils.convertWebElementToTestObject(webElement, null, parentFolder);
+        Assert.assertEquals(entity.getName(), "This....,,,,,is......,........my,........name");
     }
 
     @Test
