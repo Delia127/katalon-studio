@@ -1,6 +1,6 @@
 package com.kms.katalon.core.webservice.constants;
 
-public class WsdlLocatorParams {
+public class DefinitionLoaderParams {
 
 	public static final String CERT_OPTION = "certOption";
 	

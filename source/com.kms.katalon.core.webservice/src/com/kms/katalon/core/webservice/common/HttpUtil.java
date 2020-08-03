@@ -77,7 +77,7 @@ public class HttpUtil {
             SSLClientCertificateSettings clientCertSettings)
             throws KeyManagementException, MalformedURLException, URISyntaxException, IOException,
             GeneralSecurityException, ConnectionTimeoutException, SocketTimeoutException, ResponseSizeLimitException {
-        return sendRequest(request, true, null, RequestObject.DEFAULT_TIMEOUT, RequestObject.DEFAULT_TIMEOUT,
+        return sendRequest(request, true, proxyInformation, RequestObject.DEFAULT_TIMEOUT, RequestObject.DEFAULT_TIMEOUT,
                 RequestObject.DEFAULT_MAX_RESPONSE_SIZE, SSLCertificateOption.BYPASS, null);
     }
 

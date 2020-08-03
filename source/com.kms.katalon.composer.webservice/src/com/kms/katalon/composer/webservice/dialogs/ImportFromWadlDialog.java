@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.webservice.view;
+package com.kms.katalon.composer.webservice.dialogs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -35,8 +35,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.importing.model.RestImportNode;
-import com.kms.katalon.composer.webservice.soapui.SoapUIImporter;
-import com.kms.katalon.composer.webservice.soapui.SoapUIProjectImportResult;
+import com.kms.katalon.composer.webservice.importing.model.RestServiceImportResult;
+import com.kms.katalon.composer.webservice.wadl.WadlImporter;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
@@ -44,26 +44,24 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
+public class ImportFromWadlDialog extends CustomTitleAreaDialog {
 
     private FolderEntity parentFolder;
 
-    private String projectFilePath = ""; //$NON-NLS-1$
-
-    private Text txtProjectFile;
+    private Text txtWadlLocation;
 
     private Button btnBrowseFile;
 
-    public ImportSoapUIRestServicesDialog(Shell shell, FolderEntity parentFolder) {
-        super(shell);
+    private String wadlLocation;
+
+    public ImportFromWadlDialog(Shell parentShell, FolderEntity parentFolder) {
+        super(parentShell);
         this.parentFolder = parentFolder;
     }
 
     @Override
     protected Composite createContentArea(Composite parent) {
-        setMessage(
-                ComposerWebserviceMessageConstants.ImportSoapUIRestServicesDialog_MSG_IMPORT_REST_SERVICES_FROM_SOAPUI_PROJECT,
-                IMessageProvider.INFORMATION);
+        setMessage(ComposerWebserviceMessageConstants.ImportFromWadlDialog_MSG_IMPORT_FROM_WADL, IMessageProvider.INFORMATION);
 
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout(3, false);
@@ -74,13 +72,13 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText(ComposerWebserviceMessageConstants.ImportSoapUIRestServicesDialog_LBL_SOAPUI_PROJECT);
+        label.setText(ComposerWebserviceMessageConstants.ImportFromWadlDialog_LBL_WADL_LOCATION);
         label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
-        txtProjectFile = new Text(composite, SWT.BORDER);
-        GridData gdTxtProjectFile = new GridData(SWT.FILL, SWT.FILL, true, false);
-        gdTxtProjectFile.widthHint = 200;
-        txtProjectFile.setLayoutData(gdTxtProjectFile);
+        txtWadlLocation = new Text(composite, SWT.BORDER);
+        GridData gdTxtWadlLocation = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gdTxtWadlLocation.widthHint = 200;
+        txtWadlLocation.setLayoutData(gdTxtWadlLocation);
 
         btnBrowseFile = new Button(composite, SWT.PUSH);
         btnBrowseFile.setText(StringConstants.BROWSE);
@@ -88,7 +86,7 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
 
         return composite;
     }
-    
+
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         super.createButtonsForButtonBar(parent);
@@ -97,7 +95,7 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
 
     @Override
     protected void registerControlModifyListeners() {
-        txtProjectFile.addModifyListener(new ModifyListener() {
+        txtWadlLocation.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
                 Button btnOk = getButton(IDialogConstants.OK_ID);
@@ -107,7 +105,7 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
                 } else {
                     btnOk.setEnabled(true);
                 }
-                projectFilePath = text;
+                wadlLocation = text;
             }
         });
 
@@ -116,8 +114,8 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
             public void widgetSelected(SelectionEvent e) {
                 FileDialog fileDialog = new FileDialog(getParentShell(), SWT.SINGLE);
                 String filePath = fileDialog.open();
-                txtProjectFile.setText(filePath);
-                projectFilePath = filePath;
+                txtWadlLocation.setText(filePath);
+                wadlLocation = filePath;
             }
         });
     }
@@ -125,8 +123,7 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText(
-                ComposerWebserviceMessageConstants.ImportSoapUIRestServicesDialog_DIA_TITLE_IMPORT_REST_SERVICES_FROM_SOAPUI);
+        shell.setText(ComposerWebserviceMessageConstants.ImportFromWadlDialog_DIA_TITLE_IMPORT_FROM_WADL);
     }
 
     @Override
@@ -134,14 +131,11 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
         try {
             ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
             dialog.run(true, false, new IRunnableWithProgress() {
-
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
-                        monitor.beginTask(
-                                ComposerWebserviceMessageConstants.ImportSoapUIRestServicesDialog_MSG_IMPORTING_FROM_SOAPUI,
-                                SubMonitor.UNKNOWN);
-                        importRestServicesFromSoapUI();
+                        monitor.beginTask(ComposerWebserviceMessageConstants.ImportFromWadlDialog_MSG_IMPORTING_FROM_WADL, SubMonitor.UNKNOWN);
+                        importFromWadl();
                     } catch (Exception e) {
                         LoggerSingleton.logError(e);
                         throw new InvocationTargetException(e);
@@ -153,23 +147,22 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
             super.okPressed();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
-                    ComposerWebserviceMessageConstants.ERROR_MSG_FAIL_TO_IMPORT_SOAPUI);
-        } 
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE, ComposerWebserviceMessageConstants.ImportFromWadlDialog_MSG_FAILED_TO_IMPORT_FROM_WADL);
+        }
     }
 
-    private void importRestServicesFromSoapUI() throws Exception {
-        SoapUIImporter importer = new SoapUIImporter();
-        SoapUIProjectImportResult projectImportResult = importer.importServices(projectFilePath, parentFolder);
-        saveImportedArtifacts(projectImportResult);
+    private void importFromWadl() throws Exception {
+        WadlImporter importer = new WadlImporter();
+        RestServiceImportResult serviceImportResult = importer.importService(wadlLocation, parentFolder);
+        saveImportedArtifacts(serviceImportResult);
         getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
-                TreeEntityUtil.getFolderTreeEntity(projectImportResult.getFileEntity()));
+                TreeEntityUtil.getFolderTreeEntity((FolderEntity) serviceImportResult.getFileEntity()));
         getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
-                TreeEntityUtil.getFolderTreeEntity(projectImportResult.getFileEntity()));
+                TreeEntityUtil.getFolderTreeEntity((FolderEntity) serviceImportResult.getFileEntity()));
     }
 
-    private void saveImportedArtifacts(SoapUIProjectImportResult projectImportResult) throws Exception {
-        List<RestImportNode> importNodes = flatten(projectImportResult).collect(Collectors.toList());
+    private void saveImportedArtifacts(RestServiceImportResult serviceImportResult) throws Exception {
+        List<RestImportNode> importNodes = flatten(serviceImportResult).collect(Collectors.toList());
         for (RestImportNode importNode : importNodes) {
             FileEntity fileEntity = importNode.getFileEntity();
             if (fileEntity != null && fileEntity instanceof FolderEntity) {
@@ -193,6 +186,7 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
     @Override
     protected void setInput() {
         // TODO Auto-generated method stub
+
     }
 
 }

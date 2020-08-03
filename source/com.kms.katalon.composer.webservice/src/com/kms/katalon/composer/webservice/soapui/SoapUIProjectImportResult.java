@@ -1,17 +1,20 @@
 package com.kms.katalon.composer.webservice.soapui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.kms.katalon.composer.webservice.importing.model.RestImportNode;
+import com.kms.katalon.composer.webservice.importing.model.RestServiceImportResult;
 import com.kms.katalon.entity.folder.FolderEntity;
 
-public class SoapUIProjectImportResult extends SoapUIImportNode {
+public class SoapUIProjectImportResult extends RestImportNode {
 
     private FolderEntity projectFolder;
 
-    private List<SoapUIRestServiceImportResult> restServiceImportResults = new ArrayList<>();
+    private List<RestServiceImportResult> restServiceImportResults = new ArrayList<>();
 
     private Set<String> serviceFolderNames = new HashSet<>();
     
@@ -23,23 +26,22 @@ public class SoapUIProjectImportResult extends SoapUIImportNode {
         this.projectFolder = folder;
     }
 
-    @Override
     public FolderEntity getFileEntity() {
         return projectFolder;
     }
 
-    public SoapUIRestServiceImportResult[] getServiceImportResults() {
-        return restServiceImportResults.toArray(new SoapUIRestServiceImportResult[restServiceImportResults.size()]);
+    public List<RestServiceImportResult> getServiceImportResults() {
+        return Collections.unmodifiableList(restServiceImportResults);
     }
 
-    public SoapUIRestServiceImportResult newService(String name) {
+    public RestServiceImportResult newService(String name) {
         if (!isServiceFolderNameAvailable(name)) {
             throw new IllegalArgumentException("Service folder name already exists.");
         }
         serviceFolderNames.add(name);
 
         FolderEntity folder = newFolder(name, projectFolder);
-        SoapUIRestServiceImportResult serviceResult = new SoapUIRestServiceImportResult(this, folder);
+        RestServiceImportResult serviceResult = new RestServiceImportResult(this, folder);
         restServiceImportResults.add(serviceResult);
         return serviceResult;
     }
@@ -74,8 +76,11 @@ public class SoapUIProjectImportResult extends SoapUIImportNode {
         return !serviceFolderNames.contains(folderName);
     }
 
-    @Override
-    public SoapUIImportNode[] getChildImportNodes() {
-        return restServiceImportResults.toArray(new SoapUIImportNode[restServiceImportResults.size()]);
+    public RestImportNode getParentImportNode() {
+        return null;
+    }
+    
+    public List<RestImportNode> getChildImportNodes() {
+        return Collections.unmodifiableList(restServiceImportResults);
     }
 }

@@ -1,13 +1,13 @@
-package com.kms.katalon.composer.webservice.soapui;
+package com.kms.katalon.composer.webservice.importing.model;
 
-public class SoapUIRestParameter {
+public class RestParameterImportResult {
 
     private String name;
-    
+
     private String value;
-    
+
     private Style style;
-    
+
     public String getName() {
         return name;
     }
@@ -48,7 +48,7 @@ public class SoapUIRestParameter {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SoapUIRestParameter other = (SoapUIRestParameter) obj;
+        RestParameterImportResult other = (RestParameterImportResult) obj;
         if (name == null) {
             if (other.name != null)
                 return false;
@@ -59,5 +59,10 @@ public class SoapUIRestParameter {
 
     public static enum Style {
         HEADER, MATRIX, QUERY, TEMPLATE, PLAIN
+    }
+
+    @Override
+    public String toString() {
+        return "RestParameterImportResult [name=" + name + ", value=" + value + ", style=" + style + "]";
     }
 }

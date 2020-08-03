@@ -17,6 +17,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
 	public static final String MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI;
+	public static final String MENU_CONTEXT_WEBSERVICE_REQ_WADL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WADL;
 	
 	// SparserInvalidException
 	public static final String EXC_INVALID_SWAGGER_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_SWAGGER_FILE;	

@@ -1,21 +1,17 @@
-package com.kms.katalon.composer.webservice.soapui;
+package com.kms.katalon.composer.webservice.importing.model;
+
+import java.util.List;
 
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 
-public abstract class SoapUIImportNode {
+public abstract class RestImportNode {
 
-    public FileEntity getFileEntity() {
-        return null;
-    }
+    public abstract FileEntity getFileEntity();
     
-    public SoapUIImportNode getParentImportNode() {
-        return null;
-    }
+    public abstract RestImportNode getParentImportNode();
     
-    public SoapUIImportNode[] getChildImportNodes() {
-        return new SoapUIImportNode[0];             
-    }
+    public abstract List<RestImportNode> getChildImportNodes();
     
     protected FolderEntity newFolder(String name, FolderEntity parentFolder) {
         FolderEntity folder = new FolderEntity();

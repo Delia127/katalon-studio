@@ -1,4 +1,4 @@
-package com.kms.katalon.core.webservice.wsdl.support.wsdl;
+package com.kms.katalon.core.webservice.definition;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -10,12 +10,10 @@ import org.apache.http.client.methods.HttpGet;
 import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.webservice.common.HttpUtil;
-import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
-import com.kms.katalon.core.webservice.constants.WsdlLocatorParams;
+import com.kms.katalon.core.webservice.constants.DefinitionLoaderParams;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 
-@SuppressWarnings("unchecked")
-public class WsdlDefinitionApiLocator extends BaseWsdlDefinitionLocator {
+public class DefinitionApiLoader extends AbstractDefinitionLoader {
 
     private Map<String, String> httpHeaders;
 
@@ -24,40 +22,31 @@ public class WsdlDefinitionApiLocator extends BaseWsdlDefinitionLocator {
     private SSLCertificateOption certificateOption;
 
     private SSLClientCertificateSettings clientCertSettings;
-    
-    public WsdlDefinitionApiLocator(String wsdlLocation, Map<String, Object> params) {
 
-        this.wsdlLocation = wsdlLocation;
-        this.httpHeaders = (Map<String, String>) params.get(WsdlLocatorParams.HTTP_HEADERS);
-        this.proxyInformation = (ProxyInformation) params.get(WsdlLocatorParams.PROXY);
-        this.certificateOption = (SSLCertificateOption) params.get(WsdlLocatorParams.CERT_OPTION);
-        this.clientCertSettings = (SSLClientCertificateSettings) params.get(WsdlLocatorParams.SSL_CLIENT_CERT);
+    @SuppressWarnings("unchecked")
+    public DefinitionApiLoader(String location, Map<String, Object> params) {
+        this.definitionLocation = location;
+        this.httpHeaders = (Map<String, String>) params.get(DefinitionLoaderParams.HTTP_HEADERS);
+        this.proxyInformation = (ProxyInformation) params.get(DefinitionLoaderParams.PROXY);
+        this.certificateOption = (SSLCertificateOption) params.get(DefinitionLoaderParams.CERT_OPTION);
+        this.clientCertSettings = (SSLClientCertificateSettings) params.get(DefinitionLoaderParams.SSL_CLIENT_CERT);
     }
 
     @Override
-    protected boolean isAbsoluteUrl(String url) {
-        url = url.toLowerCase();
-        return url.startsWith(RequestHeaderConstants.HTTP) || url.startsWith(RequestHeaderConstants.HTTPS);
-    }
-
-    @Override
-    protected InputStream load(String url) {
+    public InputStream load() {
         try {
-            HttpGet get = buildGetRequest(url);
-
+            HttpGet get = buildGetRequest(getDefinitionLocation());
             HttpResponse response = HttpUtil.sendRequest(
-                    get, true,
-                    proxyInformation,
-                    certificateOption,
-                    clientCertSettings);
-
+                get,
+                true,
+                proxyInformation,
+                certificateOption,
+                clientCertSettings);
             HttpEntity responseEntity = response.getEntity();
             InputStream is = null;
-            
             if (responseEntity != null) {
                 is = responseEntity.getContent();
             }
-            
             return is;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -74,9 +63,5 @@ public class WsdlDefinitionApiLocator extends BaseWsdlDefinitionLocator {
         if (httpHeaders != null) {
             httpHeaders.entrySet().stream().forEach(e -> get.addHeader(e.getKey(), e.getValue()));
         }
-    }
-
-    @Override
-    public void close() {
     }
 }

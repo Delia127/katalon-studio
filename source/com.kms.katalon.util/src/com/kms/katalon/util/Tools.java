@@ -2,11 +2,8 @@ package com.kms.katalon.util;
 
 import java.io.File;
 
-//Copied from SoapUI
 public class Tools {
-    /**
-     * Joins a relative url to a base url.. needs improvements..
-     */
+
     public static String joinRelativeUrl(String baseUrl, String url) {
         if (baseUrl.indexOf('?') > 0) {
             baseUrl = baseUrl.substring(0, baseUrl.indexOf('?'));
