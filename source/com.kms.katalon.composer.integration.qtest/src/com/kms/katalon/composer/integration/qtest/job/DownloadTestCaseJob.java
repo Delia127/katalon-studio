@@ -287,13 +287,13 @@ public class DownloadTestCaseJob extends QTestJob {
 
         FolderEntity parentFolder = treeItem.getParent().getFolderEntity();
 
-        String dialogDisplayedName = getWrappedName(treeItem.getName());
+        String savedItemName = getWrappedName(treeItem.getId() + " " + treeItem.getName());
 
         if (selectedItem instanceof ModuleDownloadedPreviewTreeNode) {
             ModuleDownloadedPreviewTreeNode moduleTree = (ModuleDownloadedPreviewTreeNode) selectedItem;
             if (moduleTree.getFolderEntity() == null) {
-                monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER,
-                        dialogDisplayedName));
+                monitor.subTask(
+                        MessageFormat.format(StringConstants.JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER, savedItemName));
 
                 FolderEntity existingFolder = FolderController.getInstance().getFolder(
                         parentFolder.getId() + File.separator + treeItem.getName());
@@ -321,7 +321,7 @@ public class DownloadTestCaseJob extends QTestJob {
             TestCaseDownloadedPreviewTreeNode testCaseTree = (TestCaseDownloadedPreviewTreeNode) selectedItem;
 
             QTestTestCase qTestCase = testCaseTree.getTestCase();
-            monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_CREATE_TEST_CASE, dialogDisplayedName));
+            monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_CREATE_TEST_CASE, savedItemName));
 
             TestCaseEntity existingTestCase = TestCaseController.getInstance().getTestCase(
                     parentFolder.getId() + File.separator + treeItem.getName()
@@ -347,7 +347,7 @@ public class DownloadTestCaseJob extends QTestJob {
                                 new Object[] { existingTestCase.getId(), existingTestCase });
             } else {
                 TestCaseEntity newTestCaseEntity = TestCaseController.getInstance().newTestCase(parentFolder,
-                        qTestCase.getName());
+                        savedItemName);
                 EntityTrackingHelper.trackTestCaseCreated();
 
                 addDescriptionForTestCase(qTestProject, qTestCase, newTestCaseEntity);

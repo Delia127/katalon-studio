@@ -43,6 +43,11 @@ public class TestCaseDownloadedPreviewTreeNode implements DownloadedPreviewTreeN
     }
 
     @Override
+    public long getId() {
+        return testCase.getId();
+    }
+
+    @Override
     public String getStatus() {
         try {
             FolderEntity parentFolderEntity = parent.getFolderEntity();
