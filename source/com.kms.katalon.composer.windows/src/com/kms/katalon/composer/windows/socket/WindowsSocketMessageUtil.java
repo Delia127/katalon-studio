@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.windows.socket;
 
+import org.openqa.selenium.remote.DesiredCapabilities;
+
 import com.kms.katalon.composer.windows.socket.WindowsServerSocketMessage.ServerMessageType;
 import com.kms.katalon.core.util.internal.JsonUtil;
 
@@ -15,9 +17,10 @@ public class WindowsSocketMessageUtil {
         return JsonUtil.fromJson(clientRawMessage, WindowsClientSocketMessage.class);
     }
 
-    public static WindowsStartRecordingPayload createStartRecordingPayload(String appPath) {
+    public static WindowsStartRecordingPayload createStartRecordingPayload(String appPath, DesiredCapabilities desiredCapabilities) {
         WindowsStartRecordingPayload message = new WindowsStartRecordingPayload();
         message.setAppPath(appPath);
+        message.setDesiredCapabilities(desiredCapabilities.toJson());
         return message;
     }
 

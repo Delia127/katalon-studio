@@ -296,7 +296,11 @@ public class WindowsRecordedStepsView implements ITestCasePart {
         }
         treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
         treeViewer.refresh();
-        treeViewer.setSelection(new StructuredSelection(getLatestNode()));
+        
+        latestNode = getLatestNode();
+        if (latestNode != null) {
+            treeViewer.setSelection(new StructuredSelection(latestNode));
+        }
 
         latestAction = newAction;
     }
