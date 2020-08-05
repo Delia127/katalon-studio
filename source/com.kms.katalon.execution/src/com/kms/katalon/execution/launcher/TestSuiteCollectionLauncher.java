@@ -93,10 +93,6 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         this.executionMode = executionMode;
         this.reportCollection = reportCollection;
         
-        for (ReportableLauncher subLauncher : subLaunchers) {
-            subLauncher.setRunInTestSuiteCollection(true);
-        }
-        
         addListenerForChildren(subLaunchers);
     }
     
