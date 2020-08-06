@@ -10,9 +10,9 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.execution.console.LauncherOptionParserFactory;
 import com.kms.katalon.execution.handler.EvaluateDriverConnectorContributionsHandler;
+import com.kms.katalon.execution.handler.EvaluateExecutionPropertiesContributionHandler;
 import com.kms.katalon.execution.handler.EvaluateRunConfigurationContributionsHandler;
 import com.kms.katalon.execution.integration.EvaluateReportIntegrationContribution;
 import com.kms.katalon.execution.launcher.LauncherProviderFactory;
@@ -22,13 +22,20 @@ import com.kms.katalon.execution.platform.ExecutionPlatformServiceProvider;
 import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
 
 public class ExecutionBundleActivator implements BundleActivator {
+    private IEventBroker eventBroker;
+    private static ExecutionBundleActivator instance;
+    
+    
+
     @Override
     public void start(BundleContext context) throws Exception {
+        instance = this;
         IEclipseContext eclipseContext = EclipseContextFactory.getServiceContext(context);
         ContextInjectionFactory.make(EvaluateReportIntegrationContribution.class, eclipseContext);
         ContextInjectionFactory.make(EvaluateRunConfigurationContributionsHandler.class, eclipseContext);
         ContextInjectionFactory.make(EvaluateDriverConnectorContributionsHandler.class, eclipseContext);
-
+        ContextInjectionFactory.make(EvaluateExecutionPropertiesContributionHandler.class, eclipseContext);
+        
         context.addServiceListener(new ServiceListener() {
             @Override
             public void serviceChanged(ServiceEvent event) {
@@ -44,7 +51,7 @@ public class ExecutionBundleActivator implements BundleActivator {
         context.addServiceListener(new ServiceListener() {
             @Override
             public void serviceChanged(ServiceEvent event) {
-                if (context.getService(event.getServiceReference()) instanceof PlatformLauncherOptionParserBuilder) {
+                if (context.getService(event.getServiceReference()) instanceof DynamicQueryingTestSuiteExtensionProvider) {
                     ServiceReference<DynamicQueryingTestSuiteExtensionProvider> serviceReference = context
                             .getServiceReference(DynamicQueryingTestSuiteExtensionProvider.class);
                     ExecutionPlatformServiceProvider.getInstance().addService(
@@ -72,14 +79,19 @@ public class ExecutionBundleActivator implements BundleActivator {
     }
 
     private void initHandlersIfNotInitialized(IEclipseContext eclipseContext) {
-        if (EventBrokerSingleton.getInstance().getEventBroker() == null) {
-            IEventBroker eventBroker = eclipseContext.get(IEventBroker.class);
-            EventBrokerSingleton.getInstance().setEventBroker(eventBroker);
-        }
+         eventBroker = eclipseContext.get(IEventBroker.class);
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         // Do nothing here
+    }
+
+    public static ExecutionBundleActivator getInstance() {
+        return instance;
+    }
+
+    public IEventBroker getEventBroker() {
+        return eventBroker;
     }
 }

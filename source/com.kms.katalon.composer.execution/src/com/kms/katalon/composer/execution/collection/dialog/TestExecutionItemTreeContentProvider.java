@@ -4,7 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedTreeContentProvider;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
+import com.kms.katalon.execution.collection.provider.TestExecutionItem;
 
 public class TestExecutionItemTreeContentProvider extends TypeCheckedTreeContentProvider<TestExecutionItem> {
 

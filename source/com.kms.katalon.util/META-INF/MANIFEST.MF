@@ -7,8 +7,16 @@ Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.kms.katalon.util,
  com.kms.katalon.util.collections,
+ com.kms.katalon.util.groovy,
+ com.kms.katalon.util.jdt,
  com.kms.katalon.util.listener
 Require-Bundle: org.apache.commons.lang3,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
- com.google.gson
+ com.google.gson,
+ org.eclipse.core.resources,
+ org.eclipse.jdt.core,
+ org.eclipse.core.runtime,
+ com.kms.katalon.logging,
+ org.codehaus.groovy,
+ com.google.guava

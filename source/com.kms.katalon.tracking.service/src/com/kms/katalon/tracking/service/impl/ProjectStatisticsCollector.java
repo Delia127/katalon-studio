@@ -108,7 +108,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         
         statistics.setLogTestStepsEnabled(getLogTestStepsEnabled());
         
-        statistics.setImageRecognitionEnabled(getImageRecognitionEnabled());
+        statistics.setSelfHealingEnabled(getSelfHealingEnabled());
         
         statistics.setAdditionalTestDataSourceForEnterpriseUser(getAdditionalTestDataSourceForEnterpriseUser());
         
@@ -409,9 +409,10 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         return doLogTestStep;
     }
     
-    private boolean getImageRecognitionEnabled() {
+    private boolean getSelfHealingEnabled() {
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
         WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-        return store.getImageRecognitionEnabled();
+        return store.getSelfHealingEnabled(featureService.canUse(KSEFeature.SELF_HEALING));
     }
     
     private String getAdditionalTestDataSourceForEnterpriseUser() throws IOException {

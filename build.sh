@@ -13,7 +13,7 @@ get_version() {
     python3 get_version.py $branch
     source ./variable.sh
     commitId=`git rev-parse --short HEAD`
-    python3 rewrite_mappings.py "${katalonDir}/source/com.kms.katalon/about.mappings" $commitId $tag
+    python3 rewrite_mappings.py "${katalonDir}/source/com.kms.katalon.application/about.mappings" $commitId $tag
 }
 
 generate_links_file() {

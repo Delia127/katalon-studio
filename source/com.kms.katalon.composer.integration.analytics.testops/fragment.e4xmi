@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_5Q6foLXPEeqRxb6cOpq-hQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_EcubULXREeqRxb6cOpq-hQ" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_4w-wcLXREeqRxb6cOpq-hQ" elementId="com.kms.katalon.composer.integration.analytics.testops.command.open" commandName="Open Executions Command"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_wjwQULXREeqRxb6cOpq-hQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_IxdxgLXSEeqRxb6cOpq-hQ" elementId="com.kms.katalon.composer.integration.analytics.testops.handler.open" contributionURI="bundleclass://com.kms.katalon.composer.integration.analytics.testops/com.kms.katalon.composer.integration.analytics.testops.handlers.OpenTestOpsHandler" command="_4w-wcLXREeqRxb6cOpq-hQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BCFLALwUEeq5EYNs-MT0tw" featurename="addons" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="application:Addon" xmi:id="_KvnnULwUEeq5EYNs-MT0tw" elementId="com.kms.katalon.composer.integration.analytics.testops.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.integration.analytics.testops/com.kms.katalon.composer.integration.analytics.testops.addon.TestOpsContextInjectionAddon"/>
+  </fragments>
+</fragment:ModelFragments>

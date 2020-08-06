@@ -10,8 +10,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionDriverEntry;
-import com.kms.katalon.composer.execution.util.MapUtil;
 import com.kms.katalon.composer.mobile.dialog.AndroidDeviceSelectionDialog;
 import com.kms.katalon.composer.mobile.dialog.IosDeviceSelectionDialog;
 import com.kms.katalon.composer.mobile.dialog.MobileDeviceSelectionDialog;
@@ -19,8 +17,10 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
+import com.kms.katalon.execution.collection.provider.TestExecutionDriverEntry;
 import com.kms.katalon.execution.mobile.configuration.contributor.MobileRunConfigurationContributor;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.execution.util.MapUtil;
 
 public abstract class MobileTestExecutionDriverEntry extends TestExecutionDriverEntry {
     public MobileTestExecutionDriverEntry(final DriverType driverType, final String groupName, final String imageUrl) {

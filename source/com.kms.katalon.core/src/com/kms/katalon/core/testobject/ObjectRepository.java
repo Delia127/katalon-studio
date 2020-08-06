@@ -29,6 +29,7 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.main.ScriptEngine;
+import com.kms.katalon.core.testobject.MobileTestObject.MobileLocatorStrategy;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.testobject.internal.impl.WindowsObjectRepository;
@@ -53,6 +54,8 @@ public class ObjectRepository {
     private static final String WEB_SERVICES_TYPE_NAME = "WebServiceRequestEntity";
 
     private static final String WEB_ELEMENT_TYPE_NAME = "WebElementEntity";
+
+    private static final String MOBILE_ELEMENT_TYPE_NAME = "MobileElementEntity";
 
     private static final String WEBELEMENT_FILE_EXTENSION = ".rs";
 
@@ -225,6 +228,10 @@ public class ObjectRepository {
             if (WEB_SERVICES_TYPE_NAME.equals(elementName)) {
                 return findRequestObject(testObjectId, rootElement, projectDir, variables);
             }
+            
+            if (MOBILE_ELEMENT_TYPE_NAME.equals(elementName)) {
+                return findMobileTestObject(testObjectId, rootElement, projectDir, variables);
+            }
             return null;
         } catch (DocumentException e) {
             logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
@@ -335,6 +342,33 @@ public class ObjectRepository {
         }
 
         return testObject;
+    }
+    
+    private static MobileTestObject findMobileTestObject(String mobileObjectId, Element reqElement, String projectDir,
+            Map<String, Object> variables) {
+        MobileTestObject mobileTestObject = new MobileTestObject(mobileObjectId);
+        String locator = reqElement.elementText("locator");
+        
+        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+        for (Entry<String, Object> entry : variables.entrySet()) {
+            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        try {
+            ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
+            variablesStringMap.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
+        } catch (ClassNotFoundException | ResourceException | ScriptException | IOException e) {
+        }
+        
+        StrSubstitutor strSubstitutor = new StrSubstitutor(variablesStringMap);
+
+        mobileTestObject.setMobileLocator(strSubstitutor.replace(locator));
+
+        String locatorStrategyStr = reqElement.elementText("locatorStrategy");
+
+        MobileLocatorStrategy locatorStrategy = MobileTestObject.MobileLocatorStrategy.valueOf(locatorStrategyStr);
+        mobileTestObject.setMobileLocatorStrategy(locatorStrategy);
+        return mobileTestObject;
     }
 
     @SuppressWarnings("unchecked")

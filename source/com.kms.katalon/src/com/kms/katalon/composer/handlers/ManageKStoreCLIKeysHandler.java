@@ -3,10 +3,10 @@ package com.kms.katalon.composer.handlers;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 
+import com.kms.katalon.activation.plugin.models.KStoreBasicCredentials;
+import com.kms.katalon.activation.plugin.service.KStoreRestClient;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.plugin.models.KStoreBasicCredentials;
-import com.kms.katalon.plugin.service.KStoreRestClient;
 
 public class ManageKStoreCLIKeysHandler extends RequireAuthorizationHandler {
     

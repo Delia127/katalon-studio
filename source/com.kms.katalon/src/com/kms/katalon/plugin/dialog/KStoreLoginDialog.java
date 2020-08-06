@@ -26,6 +26,9 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.activation.plugin.models.KStoreBasicCredentials;
+import com.kms.katalon.activation.plugin.service.KStoreRestClient;
+import com.kms.katalon.activation.plugin.service.KStoreRestClient.AuthenticationResult;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
@@ -35,14 +38,11 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.plugin.models.KStoreBasicCredentials;
-import com.kms.katalon.plugin.service.KStoreRestClient;
-import com.kms.katalon.plugin.service.KStoreRestClient.AuthenticationResult;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.logging.LogUtil;
 
 public class KStoreLoginDialog extends Dialog {
 

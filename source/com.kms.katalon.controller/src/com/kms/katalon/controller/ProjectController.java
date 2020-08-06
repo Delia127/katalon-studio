@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jdt.core.JavaModelException;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -55,6 +56,8 @@ public class ProjectController extends EntityController {
     public static final int NUMBER_OF_RECENT_PROJECTS = 6;
 
     private static Map<String, URLClassLoader> classLoaderLookup = new HashMap<>();
+    
+    private boolean isOpenning = false;
 
     private ProjectController() {
         super();
@@ -68,9 +71,23 @@ public class ProjectController extends EntityController {
     }
 
     public ProjectEntity addNewProject(String name, String description, String projectLocation) throws Exception {
+        return addNewProject(name, description, projectLocation, false, false);
+    }
+
+    public ProjectEntity addNewProject(String name, String description, String projectLocation,
+            boolean generateGitIgnoreFile, boolean generateGradleFile) throws Exception {
         ProjectEntity newProject = getDataProviderSetting().getProjectDataProvider().addNewProject(name, description,
                 DEFAULT_PAGELOAD_TIMEOUT, projectLocation);
 
+        if (generateGitIgnoreFile) {
+            initGitignoreFile(newProject);
+        }
+
+        if (generateGradleFile) {
+            initGradleFile(newProject);
+        }
+
+        setOpenning(false);
         return newProject;
     }
 
@@ -119,6 +136,7 @@ public class ProjectController extends EntityController {
             }
             return project;
         } finally {
+            setOpenning(false);
             if (monitor != null) {
                 monitor.done();
             }
@@ -197,6 +215,7 @@ public class ProjectController extends EntityController {
             
             System.setProperty(SystemProperties.PROJECT_LOCATION, project.getFolderLocation());
         }
+        setOpenning(false);
         return project;
     }
 
@@ -404,5 +423,39 @@ public class ProjectController extends EntityController {
         String projectLocation = projectEntity.getLocation();
         URLClassLoader classLoader = GroovyUtil.getProjectClasLoader(projectEntity);
         classLoaderLookup.put(projectLocation, classLoader);
+    }
+
+    public boolean isOpenning() {
+        return isOpenning;
+    }
+
+    public void setOpenning(boolean isOpenning) {
+        this.isOpenning = isOpenning;
+    }
+    
+    public void initGitignoreFile(ProjectEntity project) throws IOException {
+        Bundle bundle = FrameworkUtil.getBundle(ProjectController.class);
+        URL url = FileLocator.find(bundle,
+                new org.eclipse.core.runtime.Path("/resources/gitignore/gitignore_template"), null);
+        File templateFile = FileUtils.toFile(FileLocator.toFileURL(url));
+
+        File gitignoreFile = new File(project.getFolderLocation(), ".gitignore");
+        if (!gitignoreFile.exists()) {
+            gitignoreFile.createNewFile();
+            FileUtils.copyFile(templateFile, gitignoreFile);
+        }
+    }
+    
+    public void initGradleFile(ProjectEntity project) throws IOException {
+        Bundle bundle = FrameworkUtil.getBundle(ProjectController.class);
+        URL url = FileLocator.find(bundle,
+                new org.eclipse.core.runtime.Path("/resources/gradle/gradle_template"), null);
+        File templateFile = FileUtils.toFile(FileLocator.toFileURL(url));
+
+        File gradleFile = new File(project.getFolderLocation(), "build.gradle");
+        if (!gradleFile.exists()) {
+            gradleFile.createNewFile();
+            FileUtils.copyFile(templateFile, gradleFile);
+        }
     }
 }

@@ -60,6 +60,10 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+    
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI;
+    
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_WADL;
 
     public static String PA_TITLE_HTTP;
 
@@ -294,6 +298,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL;
 
     public static String LINK_CUSTOMIZE_API_METHODS;
+    
+    public static String LINK_SET_REQUEST_TIMEOUT_AND_LIMIT;
 
     public static String METHOD_TABLE_COL_METHOD;
 
@@ -324,6 +330,26 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String FormDataBodyEditor_COL_VALUE;
 
     public static String FormDataBodyEditor_CONTENT_TYPE_AUTO;
+
+    public static String ImportFromWadlDialog_DIA_TITLE_IMPORT_FROM_WADL;
+
+    public static String ImportFromWadlDialog_LBL_WADL_LOCATION;
+
+    public static String ImportFromWadlDialog_MSG_FAILED_TO_IMPORT_FROM_WADL;
+
+    public static String ImportFromWadlDialog_MSG_IMPORT_FROM_WADL;
+
+    public static String ImportFromWadlDialog_MSG_IMPORTING_FROM_WADL;
+
+    public static String ImportSoapUIRestServicesDialog_DIA_TITLE_IMPORT_REST_SERVICES_FROM_SOAPUI;
+
+    public static String ImportSoapUIRestServicesDialog_LBL_SOAPUI_PROJECT;
+
+    public static String ImportSoapUIRestServicesDialog_MSG_IMPORT_REST_SERVICES_FROM_SOAPUI_PROJECT;
+
+    public static String ImportSoapUIRestServicesDialog_MSG_IMPORTING_FROM_SOAPUI;
+
+    public static String ERROR_MSG_FAIL_TO_IMPORT_SOAPUI;
 
     public static String PREF_WARN_CLIENT_CERT;
 

@@ -260,6 +260,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuite);
         executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
         executedEntity.setRerunSetting(rerunSetting);
+        executedEntity.setWebServiceSettings(webServiceSettings);
 
         if (testSuiteQuery.getValue() == null) {
             executedEntity.prepareTestCases();

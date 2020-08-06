@@ -5,6 +5,8 @@ public abstract class SampleProject {
     protected SampleProjectType type;
     
     protected String name;
+    
+    protected String suggestedName;
 
     public SampleProjectType getType() {
         return type;
@@ -20,5 +22,13 @@ public abstract class SampleProject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSuggestedName() {
+        return suggestedName;
+    }
+
+    public void setSuggestedName(String suggestedName) {
+        this.suggestedName = suggestedName;
     }
 }

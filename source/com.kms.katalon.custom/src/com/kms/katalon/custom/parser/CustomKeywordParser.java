@@ -16,19 +16,24 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.annotation.Keyword;
@@ -39,6 +44,8 @@ import com.kms.katalon.custom.factory.PluginTestListenerFactory;
 import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.groovy.MethodNodeUtil;
+import com.kms.katalon.util.jdt.JDTUtil;
 
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
@@ -240,7 +247,7 @@ public class CustomKeywordParser {
                     Set<String> keywords = new LinkedHashSet<String>();
                     keywords.addAll(manifest.getKeywords());
                     for (String keyword : keywords) {
-                        Class clazz = classLoader.loadClass(keyword);
+                        Class<?> clazz = classLoader.loadClass(keyword);
                         if (clazz != null) {
                             for (Method method : clazz.getMethods()) {
                                 for (Annotation annotation : method.getDeclaredAnnotations()) {
@@ -268,17 +275,44 @@ public class CustomKeywordParser {
             String filePath = file.getFullPath().toOSString();
             CustomMethodNodeFactory.getInstance().removeMethodNodes(filePath);
             for (ClassNode classNode : unit.getModuleNode().getClasses()) {
+                collectMethodJavadocs(file, classNode);
                 CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods(),
                         filePath);
             }
         } catch (Exception e) {
-            // do nothing
+            LogUtil.printAndLogError(e);
         }
         if (generateLibFile) {
             generateCustomKeywordLibFile(libFolder);
         }
     }
-
+    
+    private void collectMethodJavadocs(IFile file, ClassNode classNode) {
+        for (MethodNode methodNode : classNode.getMethods()) {
+            String javadoc = findJavadoc(file.getProject(), methodNode);
+            CustomMethodNodeFactory.getInstance().addJavadoc(methodNode, javadoc);
+        }
+    }
+    
+    private String findJavadoc(IProject project, MethodNode methodNode) {
+        try {
+            IMethod method = JDTUtil.findMethod(
+                    project,
+                    methodNode.getDeclaringClass().getName(),
+                    methodNode.getName(),
+                    MethodNodeUtil.getParameterTypes(methodNode));
+            
+            if (method == null) {
+                return "";
+            }
+            
+            return StringUtils.defaultIfBlank(JDTUtil.findJavadoc(method), "");
+        } catch (JavaModelException | IllegalArgumentException | ExecutionException e) {
+            LogUtil.printAndLogError(e);
+            return "";
+        }
+    }
+    
     public void parseCustomKeywordFile(ICompilationUnit file, IFolder libFolder, boolean generateLibFile)
             throws Exception {
         try {

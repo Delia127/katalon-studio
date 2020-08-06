@@ -328,7 +328,7 @@ public class WindowsActionHelper {
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
             WindowsDriver<WebElement> desktopDriver = new WindowsDriver<WebElement>(WindowsDriverFactory
-                    .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxy()),
+                    .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxyInfo()),
                     desiredCapabilities);
             windowsSession.setDesktopDriver(desktopDriver);
         }
@@ -345,7 +345,7 @@ public class WindowsActionHelper {
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
             WindowsDriver<WebElement> desktopDriver = new WindowsDriver<WebElement>(WindowsDriverFactory
-                    .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxy()),
+                    .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxyInfo()),
                     desiredCapabilities);
             windowsSession.setDesktopDriver(desktopDriver);
         }
@@ -398,7 +398,7 @@ public class WindowsActionHelper {
             retryDesiredCapabilities.setCapability("appTopLevelWindow",
                     Integer.toHexString(Integer.parseInt(appTopLevelWindow)));
             WindowsDriver<WebElement> windowsDriver = WindowsDriverFactory.newWindowsDriver(
-                    windowsSession.getRemoteAddressURL(), retryDesiredCapabilities, windowsSession.getProxy());
+                    windowsSession.getRemoteAddressURL(), retryDesiredCapabilities, windowsSession.getProxyInfo());
 
             windowsSession.setApplicationDriver(windowsDriver);
             windowsSession.setDesktopDriver(desktopDriver);
@@ -414,7 +414,7 @@ public class WindowsActionHelper {
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
             WindowsDriver<WebElement> desktopDriver = new WindowsDriver<WebElement>(WindowsDriverFactory
-                    .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxy()),
+                    .getAppiumExecutorForRemoteDriver(windowsSession.getRemoteAddressURL(), windowsSession.getProxyInfo()),
                     desiredCapabilities);
             windowsSession.setDesktopDriver(desktopDriver);
         }
@@ -432,7 +432,7 @@ public class WindowsActionHelper {
             retryDesiredCapabilities.setCapability("appTopLevelWindow",
                     Integer.toHexString(Integer.parseInt(appTopLevelWindow)));
             WindowsDriver<WebElement> windowsDriver = WindowsDriverFactory.newWindowsDriver(
-                    windowsSession.getRemoteAddressURL(), retryDesiredCapabilities, windowsSession.getProxy());
+                    windowsSession.getRemoteAddressURL(), retryDesiredCapabilities, windowsSession.getProxyInfo());
             
             windowsDriver.manage().timeouts().implicitlyWait(getDefaultTimeout(), TimeUnit.SECONDS);
 

@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.editors;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
@@ -11,11 +12,15 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.testcase.components.IContentProposalListener3;
 import com.kms.katalon.composer.testcase.components.KeywordContentProposalAdapter;
 import com.kms.katalon.composer.testcase.model.ContentProposalCheck;
@@ -63,16 +68,29 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
             
             IContentProposalProvider proposalProvider = new IContentProposalProvider() {
                 @Override
-                public IContentProposal[] getProposals(String contents, int position) {
-                    ArrayList<ContentProposal> list = new ArrayList<ContentProposal>();
+                public IContentProposal[] getProposals(String inputText, int position) {
+                    ArrayList<ContentProposal> bestMatches = new ArrayList<ContentProposal>();
+                    ArrayList<ContentProposal> lessMatches = new ArrayList<ContentProposal>();
+                    String inputTextLowerCase = StringUtils.defaultString(inputText).toLowerCase();
+
                     for (int i = 0; i < items.length; i++) {
                         String itemText = getItemText(items[i]);
-                        if (itemText.length() >= contents.length()
-                                && itemText.substring(0, contents.length()).equalsIgnoreCase(contents)) {
-                            list.add(new ContentProposal(itemText, toolTips[i]));
+                        String itemTextLowerCase = itemText.toLowerCase();
+                        boolean isBestMatch = StringUtils.isNotBlank(inputTextLowerCase) && itemTextLowerCase.startsWith(inputTextLowerCase);
+                        if (isBestMatch) {
+                            bestMatches.add(new ContentProposal(itemText, toolTips[i]));
+                            continue;
+                        }
+                        boolean isLessMatch = StringUtils.isBlank(inputTextLowerCase) || itemTextLowerCase.contains(inputTextLowerCase);
+                        if (isLessMatch) {
+                            lessMatches.add(new ContentProposal(itemText, toolTips[i]));
                         }
                     }
-                    return list.toArray(new IContentProposal[list.size()]);
+
+                    ArrayList<ContentProposal> matches = new ArrayList<ContentProposal>();
+                    matches.addAll(bestMatches);
+                    matches.addAll(lessMatches);
+                    return matches.toArray(new IContentProposal[bestMatches.size()]);
                 }
             };
 
@@ -107,8 +125,41 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
                     adapter.setEnabled(!combo.getListVisible());
                 }
             });
+
+            combo.addModifyListener(new ModifyListener() {
+                public void modifyText(ModifyEvent event) {
+                    if (!openProposalPopupWhenBlank(combo)) {
+                        new Thread(() -> {
+                            try {
+                                while (combo.getLocation().x == 0 && combo.getLocation().y == 0) {
+                                    Thread.sleep(100);
+                                }
+                            } catch (Exception e) {
+                                // Just skip
+                            } finally {
+                                UISynchronizeService.syncExec(() -> {
+                                    openProposalPopupWhenBlank(combo);
+                                });
+                            }
+                        }).start();
+                    }
+                }
+            });
         }
         return control;
+    }
+    
+    private boolean openProposalPopupWhenBlank(CCombo combo) {
+        if (StringUtils.isBlank(combo.getText()) && items != null) {
+            Point comboLocation = combo.getLocation();
+            if (comboLocation.x != 0 || comboLocation.y != 0) {
+                adapter.openProposalPopup(false);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     private String getItemText(Object item) {

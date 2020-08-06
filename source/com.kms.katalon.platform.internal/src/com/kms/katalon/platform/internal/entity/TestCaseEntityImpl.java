@@ -1,15 +1,12 @@
 package com.kms.katalon.platform.internal.entity;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.CoreException;
 
 import com.katalon.platform.api.model.Integration;
-import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
@@ -74,14 +71,14 @@ public class TestCaseEntityImpl implements com.katalon.platform.api.model.TestCa
     @Override
     public File getScriptFile() {
         try {
-            GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(source);
+            //GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(source);
 
             String testCaseFilePath = TestCaseController.getInstance().getGroovyScriptFilePath(source);
             if (StringUtils.isNotEmpty(testCaseFilePath)) {
                 return new File(testCaseFilePath);
             }
             return null;
-        } catch (CoreException | IOException e) {
+        } catch (Exception e) {
             return null;
         }
     }

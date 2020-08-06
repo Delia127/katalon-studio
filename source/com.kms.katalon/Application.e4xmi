@@ -80,7 +80,7 @@
     <mainMenu xmi:id="_hQQH6RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu">
       <children xsi:type="menu:Menu" xmi:id="_hQQH6hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file" label="File">
         <children xsi:type="menu:Menu" xmi:id="_4vwU0BsSEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new" label="New"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="__bv3kOBxEeejXLn7_j51hg" elementId="com.kms.katalon.composer.menu.file.importSeleniumIde" label="Import Selenium IDE Scripts (Beta)" command="_2sDjkOBxEeejXLn7_j51hg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="__bv3kOBxEeejXLn7_j51hg" elementId="com.kms.katalon.composer.menu.file.importSeleniumIde" label="Import Selenium IDE Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/selenium_ide_16px.png" command="_2sDjkOBxEeejXLn7_j51hg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_NTAbcKmBEeeKpbJK4Cc3kQ" elementId="com.kms.katalon.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.save" label="Save" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/save_16.png" tooltip="" command="_hQQH4xYMEeSUMbyEN2kbFQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_VvjpYDayEeWjs_ysgU5nDA" elementId="com.kms.katalon.composer.menu.file.save_all" label="Save All" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/save_all_16.png" tooltip="" command="_8qJlUEO4EeSlQuaMBzQJOw"/>
@@ -160,7 +160,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GLb_kMeZEeiT4f3fp0QbHA" elementId="com.kms.katalon.handledmenuitem.errorLog" label="Error Log" command="_xthpkMebEeiT4f3fp0QbHA"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_4l8VEFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handledmenuitem.service" toBeRendered="false" visible="false" label="Business Support" command="_CeYPQFdcEeiRfOF4k51oXA"/>
         <children xsi:type="menu:DynamicMenuContribution" xmi:id="_JEmWAOi_Eei2Q7mM03p58A" elementId="com.kms.katalon.dynamicmenucontribution.checkForUpdates" label="Check for Updates..." contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.menu.CheckForUpdatesMenuContribution"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_u8IAwKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.handledmenuitem.quickstart" label="Quick Start" tooltip="" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_u8IAwKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.handledmenuitem.quickstart" toBeRendered="false" visible="false" label="Quick Start" tooltip="" enabled="false" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
@@ -207,6 +207,7 @@
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0">
           <persistedState key="index" value="2"/>
         </children>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_cGcEYLeOEeqCoL_TXgFZGA" elementId="com.kms.katalon.handledtoolitem.applitools" iconURI="platform:/plugin/com.kms.katalon/resources/icons/applitools_active_32x24.png" command="_RY4gELePEeqCoL_TXgFZGA"/>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_OxkeMMe1Eei46rf775bdjg" elementId="com.kms.katalon.toolcontrol.separator" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.SeparatorToolControl"/>
       <children xsi:type="menu:ToolBar" xmi:id="_echTUMCSEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.toolbar.generic" toBeRendered="false" visible="false">
@@ -277,6 +278,7 @@
   <handlers xmi:id="_0mYYYKLZEemSv8QN3vNGMQ" elementId="com.kms.katalon.handler.quickstart" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenQuickStartDialogHandler" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
   <handlers xmi:id="_Uz26kM7OEemY2ti3wcTZeQ" elementId="com.kms.katalon.handler.killRunningWebdriverProcess" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.KillRunningWebdriverProcessHandler" command="_631dcM7NEemY2ti3wcTZeQ"/>
   <handlers xmi:id="_pvO6wIYJEeqVRobjbvAh2g" elementId="com.kms.katalon.handler.updateEdgeChromium" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateEdgeChromiumWebdriverHandler" command="_kkkMsIYJEeqVRobjbvAh2g"/>
+  <handlers xmi:id="_akn24LePEeqCoL_TXgFZGA" elementId="com.kms.katalon.handler.applitools" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ApplitoolsSettingHandler" command="_RY4gELePEeqCoL_TXgFZGA"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -318,6 +320,7 @@
   <commands xmi:id="_2X2LcKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.command.quickstart" commandName="QuickStart"/>
   <commands xmi:id="_631dcM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.command.killProcessWebDriver" commandName="TerminateRunningWebDrivers"/>
   <commands xmi:id="_kkkMsIYJEeqVRobjbvAh2g" elementId="com.kms.katalon.command.UpdateEdgeChromium" commandName="UpdateEdgeChromium"/>
+  <commands xmi:id="_RY4gELePEeqCoL_TXgFZGA" elementId="com.kms.katalon.command.applitoolsSettings" commandName="Applitools Settings"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

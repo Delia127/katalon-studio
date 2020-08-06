@@ -5,7 +5,6 @@ import org.eclipse.swt.graphics.Image;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.integration.IntegrationLabelDecorator;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -13,6 +12,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 
 public class QTestIntegrationEntityLabelDecorator implements IntegrationLabelDecorator {
 

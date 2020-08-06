@@ -94,6 +94,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -121,6 +122,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.controls.ToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
@@ -211,6 +213,7 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.execution.util.ExecutionProfileStore;
 import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
+import com.kms.katalon.execution.webservice.setting.WebServiceExecutionSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 
@@ -556,6 +559,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         responseComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         populateDataToUI();
+        GroovyEditorUtil.saveEditor(scriptEditorPart);
         updatePartImage();
         registerListeners();
     }
@@ -841,6 +845,24 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     protected abstract void sendRequest(boolean runVerificationScript);
+    
+    protected void configRequest(WebServiceRequestEntity requestEntity) throws IOException {
+        if (LicenseUtil.isNotFreeLicense()) {
+            WebServiceExecutionSettingStore settingStore = WebServiceExecutionSettingStore.getStore();
+            requestEntity.setConnectionTimeout(settingStore.getConnectionTimeout());
+            requestEntity.setSocketTimeout(settingStore.getSocketTimeout());
+        } else {
+            requestEntity.setConnectionTimeout(RequestObject.TIMEOUT_UNSET);
+            requestEntity.setSocketTimeout(RequestObject.TIMEOUT_UNSET);
+        }
+
+        if (LicenseUtil.isNotFreeLicense()) {
+            WebServiceExecutionSettingStore settingStore = WebServiceExecutionSettingStore.getStore();
+            requestEntity.setMaxResponseSize(settingStore.getMaxResponseSize());
+        } else {
+            requestEntity.setMaxResponseSize(RequestObject.MAX_RESPONSE_SIZE_UNSET);
+        }
+    }
 
     protected void deleteTempHarFile() {
         try {
@@ -864,6 +886,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         Map<String, Object> evaluatedVariables = evaluator.evaluate(variableMap, ExecutionProfileStore.getInstance().getSelectedProfile(), null);
 
         return evaluatedVariables;
+    }
+
+    protected Composite createRequestOptionsComposite(Composite parent) {
+        Composite requestOptionsComposite = new Composite(parent, SWT.NONE);
+        RowLayout flParamsComposite = new RowLayout();
+        flParamsComposite.wrap = true;
+        flParamsComposite.spacing = 15;
+        requestOptionsComposite.setLayout(flParamsComposite);
+        return requestOptionsComposite;
     }
 
     protected ToolBar createAddRemoveToolBar(Composite parent, SelectionListener addSelectionListener,
