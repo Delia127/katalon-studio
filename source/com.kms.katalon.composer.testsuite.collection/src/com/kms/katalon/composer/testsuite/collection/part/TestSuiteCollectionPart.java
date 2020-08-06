@@ -12,7 +12,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -72,8 +71,6 @@ import com.kms.katalon.composer.components.impl.editors.DefaultTableColumnViewer
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
-import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -100,15 +97,12 @@ import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEdit
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransfer;
 import com.kms.katalon.composer.testsuite.collection.view.TestSuiteCollectionViewFactory;
-import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
-import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -506,7 +500,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tblclmnNo.setText(StringConstants.NO_);
         tbvcNo.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.NO_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(1, 50));
+        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(0, 50));
 
         TableViewerColumn tbvcId = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnId = tbvcId.getColumn();
@@ -514,7 +508,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcId.setEditingSupport(new TestSuiteIdEditingSupport(this));
         tbvcId.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.ID_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnId, new ColumnWeightData(50, 300));
+        tableLayout.setColumnData(tblclmnId, new ColumnWeightData(0, 300));
 
         TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
@@ -522,7 +516,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
         tbvcRunWith.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
+        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(0, 100));
 
         TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
@@ -530,7 +524,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWithData.setEditingSupport(new RunConfigurationDataEditingSupport(this));
         tbvcRunWithData.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(40, 200));
+        tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(0, 150));
 
         TableViewerColumn tbvcProfile = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnProfile = tbvcProfile.getColumn();
@@ -538,7 +532,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcProfile.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.PROFILE_COLUMN_IDX));
         tbvcProfile.setEditingSupport(new ExecutionProfileEditingSupport(this));
-        tableLayout.setColumnData(tblclmnProfile, new ColumnWeightData(20, 100));
+        tableLayout.setColumnData(tblclmnProfile, new ColumnWeightData(0, 300));
 
         TableViewerColumn tbvcRun = new TableViewerColumn(tableViewer, SWT.NONE);
         tblclmnRun = tbvcRun.getColumn();
@@ -546,7 +540,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRun.setEditingSupport(new RunEnabledEditingSupport(this));
         tbvcRun.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(10, 70));
+        tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(0, 70));
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         DefaultTableColumnViewerEditor.create(tableViewer);
