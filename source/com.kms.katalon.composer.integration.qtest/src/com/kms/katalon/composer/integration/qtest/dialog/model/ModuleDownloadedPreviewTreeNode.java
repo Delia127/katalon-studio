@@ -121,4 +121,9 @@ public class ModuleDownloadedPreviewTreeNode implements DownloadedPreviewTreeNod
     public void setFolderEntity(FolderEntity folderEntity) {
         this.folderEntity = folderEntity;
     }
+
+    @Override
+    public long getId() {
+        return 0;
+    }
 }
