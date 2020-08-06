@@ -68,62 +68,62 @@ import com.kms.katalon.util.CryptoUtil;
 @SuppressWarnings("restriction")
 public class PlanViewerPart {
 
-	private Composite parent;
+    private Composite parent;
 
-	private MPart part;
+    private MPart part;
 
-	private CTableViewer viewer;
+    private CTableViewer viewer;
 
-	private Composite planPart;
+    private Composite planPart;
 
-	private Composite loadingPart;
+    private Composite loadingPart;
 
-	private StackLayout viewerLayout;
+    private StackLayout viewerLayout;
 
-	private Composite errorPart;
+    private Composite errorPart;
 
-	private Composite viewerPart;
+    private Composite viewerPart;
 
     private Composite emptyPart;
-    
+
     private static final String TIME_FORMAT_TEMPLATE = "MMM dd, hh:mm";
-    
+
     private static final String YEAR_FORMAT_TEMPLATE = "yyyy";
 
-	@PostConstruct
-	public void createPartControl(final Composite parent, MCompositePart mpart) {
-		this.parent = parent;
-		this.part = mpart;
+    @PostConstruct
+    public void createPartControl(final Composite parent, MCompositePart mpart) {
+        this.parent = parent;
+        this.part = mpart;
 
-		GridLayout gridLayout = new GridLayout(1, false);
-		parent.setLayout(gridLayout);
-		createHeaderPart();
+        GridLayout gridLayout = new GridLayout(1, false);
+        parent.setLayout(gridLayout);
+        createHeaderPart();
 
-		viewerPart = new Composite(parent, SWT.NONE);
-		viewerLayout = new StackLayout();
-		viewerPart.setLayout(viewerLayout);
-		viewerPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        viewerPart = new Composite(parent, SWT.NONE);
+        viewerLayout = new StackLayout();
+        viewerPart.setLayout(viewerLayout);
+        viewerPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		createErrorpart();
-		createLoadingPart();
+        createErrorpart();
+        createLoadingPart();
         createEmptyPart();
 
-		refresh();
-	}
+        refresh();
+    }
 
-	private void refresh() {
-		viewerLayout.topControl = loadingPart;
-		viewerPart.layout();
-		Thread getExecutionsThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				final List<AnalyticsPlan> plans = getPlan();
-				if(plans == null) {
-				    return;
-				}
-				
-				if (plans.isEmpty()) {
-				    UISynchronizeService.asyncExec(new Runnable() {
+    private void refresh() {
+        viewerLayout.topControl = loadingPart;
+        viewerPart.layout();
+        Thread getExecutionsThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final List<AnalyticsPlan> plans = getPlan();
+                if (plans == null) {
+                    return;
+                }
+
+                if (plans.isEmpty()) {
+                    UISynchronizeService.asyncExec(new Runnable() {
 
                         @Override
                         public void run() {
@@ -131,58 +131,58 @@ public class PlanViewerPart {
                             viewerPart.layout();
                         }
                     });
-				    
-				    return;
-				}
 
-				UISynchronizeService.asyncExec(new Runnable() {
+                    return;
+                }
 
-					@Override
-					public void run() {
-						if (viewer == null) {
-							createPlanPart(plans);
-						} else {
-							viewer.getTable().removeAll();
-							viewer.setInput(plans);
-							viewer.refresh();
-						}
-						viewerLayout.topControl = planPart;
-						viewerPart.layout();
-					}
-				});
-			}
-		});
-		getExecutionsThread.start();
-	}
+                UISynchronizeService.asyncExec(new Runnable() {
 
-	private List<AnalyticsPlan> getPlan() {
-		try {
-			AnalyticsSettingStore settingStore = new AnalyticsSettingStore(
-					ProjectController.getInstance().getCurrentProject().getFolderLocation());
-			AnalyticsProject project = settingStore.getProject();
-			String serverUrl = settingStore.getServerEndpoint();
-			String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-			String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                    @Override
+                    public void run() {
+                        if (viewer == null) {
+                            createPlanPart(plans);
+                        } else {
+                            viewer.getTable().removeAll();
+                            viewer.setInput(plans);
+                            viewer.refresh();
+                        }
+                        viewerLayout.topControl = planPart;
+                        viewerPart.layout();
+                    }
+                });
+            }
+        });
+        getExecutionsThread.start();
+    }
 
-			if (!StringUtils.isBlank(email) && !StringUtils.isBlank(encryptedPassword)) {
-				String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-				AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-				return AnalyticsApiProvider.getPlans(project.getId(), serverUrl, token.getAccess_token());
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			UISynchronizeService.asyncExec(new Runnable() {
+    private List<AnalyticsPlan> getPlan() {
+        try {
+            AnalyticsSettingStore settingStore = new AnalyticsSettingStore(
+                    ProjectController.getInstance().getCurrentProject().getFolderLocation());
+            AnalyticsProject project = settingStore.getProject();
+            String serverUrl = settingStore.getServerEndpoint();
+            String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
 
-				@Override
-				public void run() {
-					viewerLayout.topControl = errorPart;
-					viewerPart.layout();
-				}
-			});
-		}
-		
-		return null;
-	}
+            if (!StringUtils.isBlank(email) && !StringUtils.isBlank(encryptedPassword)) {
+                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                return AnalyticsApiProvider.getPlans(project.getId(), serverUrl, token.getAccess_token());
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            UISynchronizeService.asyncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    viewerLayout.topControl = errorPart;
+                    viewerPart.layout();
+                }
+            });
+        }
+
+        return null;
+    }
 
     private void createEmptyPart() {
         emptyPart = new Composite(viewerPart, SWT.NONE);
@@ -202,59 +202,59 @@ public class PlanViewerPart {
 
     }
 
-	private void createErrorpart() {
-		errorPart = new Composite(viewerPart, SWT.NONE);
-		RowLayout rowLayout = new RowLayout();
-		errorPart.setLayout(rowLayout);
+    private void createErrorpart() {
+        errorPart = new Composite(viewerPart, SWT.NONE);
+        RowLayout rowLayout = new RowLayout();
+        errorPart.setLayout(rowLayout);
 
-		Label lblError = new Label(errorPart, SWT.NONE);
-		lblError.setLayoutData(new RowData());
-		setFontStyle(lblError, 16, SWT.NONE);
-		lblError.setText(TestOpsMessageConstants.MSG_ANALYTICS_CONNECTION_ERROR);
-		lblError.setForeground(new Color(errorPart.getDisplay(), new RGB(228, 84, 108)));
-	}
+        Label lblError = new Label(errorPart, SWT.NONE);
+        lblError.setLayoutData(new RowData());
+        setFontStyle(lblError, 16, SWT.NONE);
+        lblError.setText(TestOpsMessageConstants.MSG_ANALYTICS_CONNECTION_ERROR);
+        lblError.setForeground(new Color(errorPart.getDisplay(), new RGB(228, 84, 108)));
+    }
 
-	private void createLoadingPart() {
-		loadingPart = new Composite(viewerPart, SWT.NONE);
-		RowLayout rowLayout = new RowLayout();
-		loadingPart.setLayout(rowLayout);
+    private void createLoadingPart() {
+        loadingPart = new Composite(viewerPart, SWT.NONE);
+        RowLayout rowLayout = new RowLayout();
+        loadingPart.setLayout(rowLayout);
 
-		Label lblLoading = new Label(loadingPart, SWT.NONE);
-		lblLoading.setLayoutData(new RowData());
-		setFontStyle(lblLoading, 16, SWT.NONE);
-		lblLoading.setText(TestOpsMessageConstants.LBL_LOADING);
-		lblLoading.setForeground(new Color(loadingPart.getDisplay(), new RGB(22, 204, 142)));
+        Label lblLoading = new Label(loadingPart, SWT.NONE);
+        lblLoading.setLayoutData(new RowData());
+        setFontStyle(lblLoading, 16, SWT.NONE);
+        lblLoading.setText(TestOpsMessageConstants.LBL_LOADING);
+        lblLoading.setForeground(new Color(loadingPart.getDisplay(), new RGB(22, 204, 142)));
 
-	}
+    }
 
-	private void createPlanPart(List<AnalyticsPlan> plans) {
-	    AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+    private void createPlanPart(List<AnalyticsPlan> plans) {
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
-	    
-		planPart = new Composite(viewerPart, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
-		planPart.setLayout(gridLayout);
-		viewer = new CTableViewer(planPart, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-		TableLayout tableLayout = new TableLayout();
+
+        planPart = new Composite(viewerPart, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(1, false);
+        planPart.setLayout(gridLayout);
+        viewer = new CTableViewer(planPart, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        TableLayout tableLayout = new TableLayout();
         viewer.getTable().setLayout(tableLayout);
-		viewer.getTable().setHeaderVisible(true);
-		viewer.getTable().setLinesVisible(true);
-		viewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		viewer.getTable().setLayout(new TableLayout());
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		ColumnViewerToolTipSupport.enableFor(viewer);
-		
-		TableViewerColumn colStatus = new TableViewerColumn(viewer, SWT.NONE);
-		colStatus.getColumn().setText(TestOpsStringConstants.PLAN_STATUS);
-		tableLayout.addColumnData(new ColumnWeightData(50));
-		colStatus.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(0) {
+        viewer.getTable().setHeaderVisible(true);
+        viewer.getTable().setLinesVisible(true);
+        viewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        viewer.getTable().setLayout(new TableLayout());
+        viewer.setContentProvider(ArrayContentProvider.getInstance());
+        ColumnViewerToolTipSupport.enableFor(viewer);
+
+        TableViewerColumn colStatus = new TableViewerColumn(viewer, SWT.NONE);
+        colStatus.getColumn().setText(TestOpsStringConstants.PLAN_STATUS);
+        tableLayout.addColumnData(new ColumnWeightData(50));
+        colStatus.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(0) {
 
             @Override
             protected Image getImage(AnalyticsPlan element) {
-                if(element.getLatestJob() == null) {
+                if (element.getLatestJob() == null) {
                     return null;
                 }
-                
+
                 switch (element.getLatestJob().getStatus()) {
                     case SUCCESS:
                         return ImageConstants.IMG_16_TESTOPS_EXECUTION_PASSED;
@@ -264,22 +264,22 @@ public class PlanViewerPart {
                         return ImageConstants.IMG_16_TESTOPS_PLAN_QUEUED;
                     default:
                         break;
-                    }
-                
+                }
+
                 return null;
             }
 
             @Override
             public String getToolTipText(Object element) {
-                if(!(element instanceof AnalyticsPlan)) {
+                if (!(element instanceof AnalyticsPlan)) {
                     return StringUtils.EMPTY;
                 }
-                
-                AnalyticsPlan plan = (AnalyticsPlan)element;
-                if(plan.getLatestJob() == null) {
+
+                AnalyticsPlan plan = (AnalyticsPlan) element;
+                if (plan.getLatestJob() == null) {
                     return StringUtils.EMPTY;
                 }
-                
+
                 switch (plan.getLatestJob().getStatus()) {
                     case SUCCESS:
                         return TestOpsStringConstants.LBL_EXECUTION_STATUS_PASSED;
@@ -291,7 +291,7 @@ public class PlanViewerPart {
                         return StringUtils.EMPTY;
                 }
             }
-            
+
             @Override
             protected String getText(AnalyticsPlan element) {
                 return null;
@@ -301,21 +301,21 @@ public class PlanViewerPart {
             protected Class<AnalyticsPlan> getElementType() {
                 return AnalyticsPlan.class;
             }
-		    
-		});
-		
-		TableViewerColumn colName = new TableViewerColumn(viewer, SWT.NONE);
-		colName.getColumn().setText(TestOpsStringConstants.PLAN_NAME);
-		tableLayout.addColumnData(new ColumnWeightData(350));
-		colName.setLabelProvider(new HyperLinkColumnLabelProvider<AnalyticsPlan>(1) {
+
+        });
+
+        TableViewerColumn colName = new TableViewerColumn(viewer, SWT.NONE);
+        colName.getColumn().setText(TestOpsStringConstants.PLAN_NAME);
+        tableLayout.addColumnData(new ColumnWeightData(350));
+        colName.setLabelProvider(new HyperLinkColumnLabelProvider<AnalyticsPlan>(1) {
 
             @Override
             protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
-                if(!(cell.getElement() instanceof AnalyticsPlan)) {
+                if (!(cell.getElement() instanceof AnalyticsPlan)) {
                     return;
                 }
-                
-                AnalyticsPlan plan = (AnalyticsPlan)cell.getElement();
+
+                AnalyticsPlan plan = (AnalyticsPlan) cell.getElement();
                 String planUrl = getPlanUrl(analyticsSettingStore.getServerEndpoint(),
                         analyticsSettingStore.getTeam().getId(), analyticsSettingStore.getProject().getId(),
                         plan.getId());
@@ -336,13 +336,13 @@ public class PlanViewerPart {
             protected String getText(AnalyticsPlan element) {
                 return element.getName();
             }
-		    
-		});
 
-		TableViewerColumn colTestProject = new TableViewerColumn(viewer, SWT.NONE);
-		colTestProject.getColumn().setText(TestOpsStringConstants.PLAN_TEST_PROJECT);
-		tableLayout.addColumnData(new ColumnWeightData(350));
-		colTestProject.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(2) {
+        });
+
+        TableViewerColumn colTestProject = new TableViewerColumn(viewer, SWT.NONE);
+        colTestProject.getColumn().setText(TestOpsStringConstants.PLAN_TEST_PROJECT);
+        tableLayout.addColumnData(new ColumnWeightData(350));
+        colTestProject.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(2) {
 
             @Override
             protected Class<AnalyticsPlan> getElementType() {
@@ -358,13 +358,13 @@ public class PlanViewerPart {
             protected String getText(AnalyticsPlan element) {
                 return element.getTestProject().getName();
             }
-		    
-		});
 
-		TableViewerColumn colAgent = new TableViewerColumn(viewer, SWT.NONE);
-		colAgent.getColumn().setText(TestOpsStringConstants.PLAN_AGENTS);
-		tableLayout.addColumnData(new ColumnWeightData(100));
-		colAgent.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(3) {
+        });
+
+        TableViewerColumn colAgent = new TableViewerColumn(viewer, SWT.NONE);
+        colAgent.getColumn().setText(TestOpsStringConstants.PLAN_AGENTS);
+        tableLayout.addColumnData(new ColumnWeightData(100));
+        colAgent.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(3) {
 
             @Override
             protected Class<AnalyticsPlan> getElementType() {
@@ -379,12 +379,13 @@ public class PlanViewerPart {
             @Override
             protected String getText(AnalyticsPlan element) {
                 return getAgentNames(element.getAgents());
-            }});
-		
-		TableViewerColumn colLastExec = new TableViewerColumn(viewer, SWT.NONE);
-		colLastExec.getColumn().setText(TestOpsStringConstants.PLAN_LAST_EXECUTION);
-		tableLayout.addColumnData(new ColumnWeightData(100));
-		colLastExec.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(4) {
+            }
+        });
+
+        TableViewerColumn colLastExec = new TableViewerColumn(viewer, SWT.NONE);
+        colLastExec.getColumn().setText(TestOpsStringConstants.PLAN_LAST_EXECUTION);
+        tableLayout.addColumnData(new ColumnWeightData(100));
+        colLastExec.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(4) {
 
             @Override
             protected Class<AnalyticsPlan> getElementType() {
@@ -399,9 +400,10 @@ public class PlanViewerPart {
             @Override
             protected String getText(AnalyticsPlan element) {
                 return getLastExecution(element.getLatestJob());
-            }});
-		
-		TableViewerColumn colLastRun = new TableViewerColumn(viewer, SWT.NONE);
+            }
+        });
+
+        TableViewerColumn colLastRun = new TableViewerColumn(viewer, SWT.NONE);
         colLastRun.getColumn().setText(TestOpsStringConstants.PLAN_LAST_RUN);
         tableLayout.addColumnData(new ColumnWeightData(100));
         colLastRun.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(5) {
@@ -419,8 +421,9 @@ public class PlanViewerPart {
             @Override
             protected String getText(AnalyticsPlan element) {
                 return getLastRun(element.getLatestJob());
-            }});
-		
+            }
+        });
+
         TableViewerColumn colNextRun = new TableViewerColumn(viewer, SWT.NONE);
         colNextRun.getColumn().setText(TestOpsStringConstants.PLAN_NEXT_RUN);
         tableLayout.addColumnData(new ColumnWeightData(100));
@@ -439,124 +442,125 @@ public class PlanViewerPart {
             @Override
             protected String getText(AnalyticsPlan element) {
                 return getNextRun(element.getNextRunScheduler());
-            }});
-        
+            }
+        });
+
         viewer.setInput(plans);
         viewer.refresh();
-	}
+    }
 
-	private void createHeaderPart() {
-		Composite headerComposite = new Composite(parent, SWT.NONE);
-		GridLayout headerLayout = new GridLayout(2, true);
-		headerComposite.setLayout(headerLayout);
-		headerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+    private void createHeaderPart() {
+        Composite headerComposite = new Composite(parent, SWT.NONE);
+        GridLayout headerLayout = new GridLayout(2, true);
+        headerComposite.setLayout(headerLayout);
+        headerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		Label lblExecution = new Label(headerComposite, SWT.NONE);
-		lblExecution.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		lblExecution.setText(TestOpsMessageConstants.LBL_PLANS);
-		setFontStyle(lblExecution, 14, SWT.BOLD);
+        Label lblExecution = new Label(headerComposite, SWT.NONE);
+        lblExecution.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        lblExecution.setText(TestOpsMessageConstants.LBL_PLANS);
+        setFontStyle(lblExecution, 14, SWT.BOLD);
 
-		Composite viewAllComposite = new Composite(headerComposite, SWT.NONE);
-		GridLayout viewAllLayout = new GridLayout(5, false);
-		viewAllLayout.marginWidth = 0;
-		viewAllLayout.marginHeight = 0;
-		viewAllLayout.verticalSpacing = 0;
-		viewAllLayout.horizontalSpacing = 0;
-		viewAllComposite.setLayout(viewAllLayout);
-		viewAllComposite.setLayoutData(new GridData(GridData.END, SWT.CENTER, true, false));
+        Composite viewAllComposite = new Composite(headerComposite, SWT.NONE);
+        GridLayout viewAllLayout = new GridLayout(5, false);
+        viewAllLayout.marginWidth = 0;
+        viewAllLayout.marginHeight = 0;
+        viewAllLayout.verticalSpacing = 0;
+        viewAllLayout.horizontalSpacing = 0;
+        viewAllComposite.setLayout(viewAllLayout);
+        viewAllComposite.setLayoutData(new GridData(GridData.END, SWT.CENTER, true, false));
 
-		ToolBar tbRefresh = new ToolBar(viewAllComposite, SWT.FLAT);
-		tbRefresh.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
-		ToolItem btnRefresh = new ToolItem(tbRefresh, SWT.PUSH);
-		btnRefresh.setToolTipText(StringConstants.REFRESH);
-		btnRefresh.setImage(ImageConstants.IMG_16_REFRESH);
-		btnRefresh.addSelectionListener(new SelectionListener() {
+        ToolBar tbRefresh = new ToolBar(viewAllComposite, SWT.FLAT);
+        tbRefresh.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+        ToolItem btnRefresh = new ToolItem(tbRefresh, SWT.PUSH);
+        btnRefresh.setToolTipText(StringConstants.REFRESH);
+        btnRefresh.setImage(ImageConstants.IMG_16_REFRESH);
+        btnRefresh.addSelectionListener(new SelectionListener() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				refresh();
-			}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                refresh();
+            }
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+        });
 
-		Label lblDelimeter = new Label(viewAllComposite, SWT.NONE);
-		lblDelimeter.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, false));
-		lblDelimeter.setText(" ");
+        Label lblDelimeter = new Label(viewAllComposite, SWT.NONE);
+        lblDelimeter.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, false));
+        lblDelimeter.setText(" ");
 
-		Label imgTestOps = new Label(viewAllComposite, SWT.NONE);
-		imgTestOps.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		imgTestOps.setImage(ImageConstants.IMG_16_KATALON_TESTOPS);
+        Label imgTestOps = new Label(viewAllComposite, SWT.NONE);
+        imgTestOps.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        imgTestOps.setImage(ImageConstants.IMG_16_KATALON_TESTOPS);
 
-		Link lnkViewAll = new Link(viewAllComposite, SWT.NONE);
-		setFontStyle(lnkViewAll, 14, SWT.NONE);
-		String testOpsUrl = getViewAllPlanURL();
-		lnkViewAll.setText(" <a href=\"" + testOpsUrl + "\">" + TestOpsMessageConstants.LNK_VIEW_ALL_PLANS + "</a>");
-		lnkViewAll.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Program.launch(testOpsUrl);
-			}
-		});
+        Link lnkViewAll = new Link(viewAllComposite, SWT.NONE);
+        setFontStyle(lnkViewAll, 14, SWT.NONE);
+        String testOpsUrl = getViewAllPlanURL();
+        lnkViewAll.setText(" <a href=\"" + testOpsUrl + "\">" + TestOpsMessageConstants.LNK_VIEW_ALL_PLANS + "</a>");
+        lnkViewAll.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(testOpsUrl);
+            }
+        });
 
-		Label lblArrow = new Label(viewAllComposite, SWT.NONE);
-		lblArrow.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		lblArrow.setText(">>");
-		setFontStyle(lblArrow, 14, SWT.NONE);
-	}
+        Label lblArrow = new Label(viewAllComposite, SWT.NONE);
+        lblArrow.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        lblArrow.setText(">>");
+        setFontStyle(lblArrow, 14, SWT.NONE);
+    }
 
-	private void setFontStyle(Label label, int fontSize, int style) {
-		FontData[] fontData = label.getFont().getFontData();
-		for (int i = 0; i < fontData.length; ++i) {
-			fontData[i].setHeight(fontSize);
-			fontData[i].setStyle(style);
-		}
-		final Font newFont = new Font(label.getDisplay(), fontData);
-		label.setFont(newFont);
+    private void setFontStyle(Label label, int fontSize, int style) {
+        FontData[] fontData = label.getFont().getFontData();
+        for (int i = 0; i < fontData.length; ++i) {
+            fontData[i].setHeight(fontSize);
+            fontData[i].setStyle(style);
+        }
+        final Font newFont = new Font(label.getDisplay(), fontData);
+        label.setFont(newFont);
 
-		label.addDisposeListener(new DisposeListener() {
+        label.addDisposeListener(new DisposeListener() {
 
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				newFont.dispose();
-			}
-		});
-	}
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                newFont.dispose();
+            }
+        });
+    }
 
-	private void setFontStyle(Link link, int fontSize, int style) {
-		FontData[] fontData = link.getFont().getFontData();
-		for (int i = 0; i < fontData.length; ++i) {
-			fontData[i].setHeight(fontSize);
-			fontData[i].setStyle(style);
-		}
-		final Font newFont = new Font(link.getDisplay(), fontData);
-		link.setFont(newFont);
+    private void setFontStyle(Link link, int fontSize, int style) {
+        FontData[] fontData = link.getFont().getFontData();
+        for (int i = 0; i < fontData.length; ++i) {
+            fontData[i].setHeight(fontSize);
+            fontData[i].setStyle(style);
+        }
+        final Font newFont = new Font(link.getDisplay(), fontData);
+        link.setFont(newFont);
 
-		link.addDisposeListener(new DisposeListener() {
+        link.addDisposeListener(new DisposeListener() {
 
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				newFont.dispose();
-			}
-		});
-	}
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                newFont.dispose();
+            }
+        });
+    }
 
-	private String getViewAllPlanURL() {
-		AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
-				ProjectController.getInstance().getCurrentProject().getFolderLocation());
-		AnalyticsProject project = analyticsSettingStore.getProject();
-		AnalyticsTeam team = analyticsSettingStore.getTeam();
-		String serverUrl = analyticsSettingStore.getServerEndpoint();
-		return String.format("%s/team/%d/project/%d/grid", serverUrl, team.getId(), project.getId());
-	}
+    private String getViewAllPlanURL() {
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        AnalyticsProject project = analyticsSettingStore.getProject();
+        AnalyticsTeam team = analyticsSettingStore.getTeam();
+        String serverUrl = analyticsSettingStore.getServerEndpoint();
+        return String.format("%s/team/%d/project/%d/grid", serverUrl, team.getId(), project.getId());
+    }
 
-	private String getPlanUrl(String serverUrl, long teamId, long projectId, long planId) {
+    private String getPlanUrl(String serverUrl, long teamId, long projectId, long planId) {
         return String.format("%s/team/%d/project/%d/grid/plan/%d/job", serverUrl, teamId, projectId, planId);
     }
-	
-	private String getAgentNames(AnalyticsAgent[] agents) {
+
+    private String getAgentNames(AnalyticsAgent[] agents) {
         String delimiter = ", ";
         StringBuffer names = new StringBuffer();
         for (AnalyticsAgent agent : agents) {
@@ -564,15 +568,15 @@ public class PlanViewerPart {
             names.append(delimiter);
         }
 
-        if(names.length() <= 0) {
+        if (names.length() <= 0) {
             return StringUtils.EMPTY;
         }
 
         names.delete(names.length() - delimiter.length(), names.length() - 1);
         return names.toString();
     }
-	
-	private String getNextRun(AnalyticsRunScheduler scheduler) {
+
+    private String getNextRun(AnalyticsRunScheduler scheduler) {
         if (scheduler == null) {
             return StringUtils.EMPTY;
         }
@@ -683,5 +687,5 @@ public class PlanViewerPart {
         return ZonedDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern(formatTemplate));
     }
-	
+
 }
