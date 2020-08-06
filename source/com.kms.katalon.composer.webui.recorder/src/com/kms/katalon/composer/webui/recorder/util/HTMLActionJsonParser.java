@@ -42,6 +42,10 @@ public class HTMLActionJsonParser {
 
         public static final String MOUSE_CLICK_ACTION_KEY = "click";
 
+        public static final String CONTEXT_MENU_ACTION_KEY = "contextMenu";
+
+        public static final String VERIFY_ELEMENT_TEXT = "VerifyElementText";
+
         public static final String ELEMENT_TYPE_TEXTAREA = "textarea";
 
         public static final String ELEMENT_TYPE_SELECT = "select";
@@ -199,6 +203,13 @@ public class HTMLActionJsonParser {
                         case MOUSE_CLICK_ACTION_DATA_RIGHT_CLICK:
                             return new HTMLActionMapping(HTMLAction.RightClick, "", targetElement);
                     }
+                case VERIFY_ELEMENT_TEXT:
+                    return new HTMLActionMapping(HTMLAction.VerifyElementText, actionData, targetElement);
+                case CONTEXT_MENU_ACTION_KEY:
+                    if (actionData == null) {
+                        return null;
+                    }
+                    return new HTMLActionMapping(HTMLAction.valueOf(actionData), "", targetElement);
                 case DOUBLE_CLICK_ACTION_KEY:
                     return new HTMLActionMapping(HTMLAction.DoubleClick, actionData, targetElement);
                 case SEND_KEYS_ACTION_KEY:                	

@@ -4,6 +4,10 @@ import org.eclipse.osgi.util.NLS;
 
 public class ComposerWebuiRecorderMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webui.recorder.constants.composerWebuiRecorderMessages";
+
+    public static String LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_1;
+
+    public static String LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_2;
     
     public static String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
 

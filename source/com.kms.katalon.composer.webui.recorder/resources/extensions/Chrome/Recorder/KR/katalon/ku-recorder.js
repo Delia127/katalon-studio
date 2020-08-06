@@ -374,6 +374,18 @@ class KURecorder {
     
     }
 
+    getActionFromContextMenu (keyword, selectedElement, data) {
+        var action = {};
+        if (keyword.includes("Text")) {
+            action["actionName"] = keyword;
+            action["actionData"] = data;
+        } else {
+            action["actionName"] = 'contextMenu';
+            action["actionData"] = keyword;
+        }
+        this.rec_sendData(action, selectedElement);
+    }
+
     rec_isElementMouseUpEventRecordable (selectedElement, clickType) {
         if (clickType != 'left') {
             return true;

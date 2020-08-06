@@ -45,6 +45,7 @@ public class UserProfileHelper {
         UserProfile userProfile = new UserProfile();
         userProfile.setEmail(email);
         userProfile.setDoneFirstTimeUseSurvey(false);
+        userProfile.setEnableKURecorderHint(true);
         return userProfile;
     }
 

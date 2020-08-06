@@ -280,6 +280,8 @@ public interface IImageKeys {
 
     public static final String PLAY_24 = "toolbar/play_24.png"; //$NON-NLS-1$
 
+    public static final String KU_RECORDER_16 = "toolbar/ku_recorder_16.png"; //$NON-NLS-1$
+
     public static final String RECORD_WEB_24 = "toolbar/web_oject_record_24.png"; //$NON-NLS-1$
 
     public static final String REDO_24 = "toolbar/redo_24.png"; //$NON-NLS-1$

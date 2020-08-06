@@ -38,6 +38,7 @@ import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -61,8 +62,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Sash;
@@ -268,6 +269,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
+    private UserProfile userProfile;
+
     /**
      * Create the dialog.
      * 
@@ -276,6 +279,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public RecorderDialog(Shell parentShell, TestCaseEntity testCaseEntity, List<? extends ASTNodeWrapper> nodeWrappers,
             List<VariableEntity> variables) {
         super(parentShell);
+        userProfile = UserProfileHelper.getCurrentProfile();
         this.nodeWrappers = nodeWrappers;
         this.variables = variables;
         this.testCaseEntity = testCaseEntity;
@@ -549,6 +553,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         container.setLayout(glMain);
 
         createToolbar(container);
+        createKURecorderHint(container, null);
 
         Composite bodyComposite = new Composite(container, SWT.NONE);
         bodyComposite.setLayout(new FillLayout(SWT.VERTICAL));
@@ -1252,6 +1257,47 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
         });
         tltmStop.setEnabled(false);
+    }
+
+    private void createKURecorderHint(Composite parent, Composite hintComposite) {
+        boolean isEnableKURecorderHint = userProfile.isEnableKURecorderHint();
+        if (isEnableKURecorderHint != (hintComposite == null)) {
+            return;
+        } else if (!isEnableKURecorderHint && hintComposite != null) {
+            hintComposite.dispose();
+            parent.layout();
+        }
+        hintComposite = generateKURecorderHint(parent);
+    }
+
+    private Composite generateKURecorderHint(Composite parent) {
+        Composite hintComposite = new Composite(parent, SWT.NONE);
+        GridData gridData = new GridData();
+        gridData.horizontalAlignment = GridData.BEGINNING;
+        hintComposite.setLayoutData(gridData);
+        GridLayout hintLayout = new GridLayout(4, false);
+        hintComposite.setLayout(hintLayout);
+
+        Label hintLabel1 = new Label(hintComposite, SWT.NONE);
+        hintLabel1.setText(StringConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_1);
+        hintLabel1.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
+        Label KUImage = new Label(hintComposite, SWT.NONE);
+        KUImage.setImage(ImageConstants.IMG_16_KU_RECORDER);
+        Label hintLabel2 = new Label(hintComposite, SWT.NONE);
+        hintLabel2.setText(StringConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_2);
+        hintLabel2.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
+        Link link = new Link(hintComposite, SWT.NONE);
+        link.setText("<a href=\"\">Hide</a>");
+        link.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                userProfile.setEnableKURecorderHint(false);
+                UserProfileHelper.saveProfile(userProfile);
+                createKURecorderHint(parent, hintComposite);
+            }
+        });
+        return hintComposite;
     }
 
     private void createDropdownContent(Dropdown dropdown) {
