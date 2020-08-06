@@ -14,6 +14,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -233,15 +235,18 @@ public class PlanViewerPart {
 		GridLayout gridLayout = new GridLayout(1, false);
 		planPart.setLayout(gridLayout);
 		viewer = new CTableViewer(planPart, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+		TableLayout tableLayout = new TableLayout();
+        viewer.getTable().setLayout(tableLayout);
 		viewer.getTable().setHeaderVisible(true);
 		viewer.getTable().setLinesVisible(true);
 		viewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		viewer.getTable().setLayout(new TableLayout());
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		ColumnViewerToolTipSupport.enableFor(viewer);
 		
 		TableViewerColumn colStatus = new TableViewerColumn(viewer, SWT.NONE);
 		colStatus.getColumn().setText(TestOpsStringConstants.PLAN_STATUS);
-		colStatus.getColumn().setWidth(50);
+		tableLayout.addColumnData(new ColumnWeightData(50));
 		colStatus.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(0) {
 
             @Override
@@ -301,7 +306,7 @@ public class PlanViewerPart {
 		
 		TableViewerColumn colName = new TableViewerColumn(viewer, SWT.NONE);
 		colName.getColumn().setText(TestOpsStringConstants.PLAN_NAME);
-		colName.getColumn().setWidth(350);
+		tableLayout.addColumnData(new ColumnWeightData(350));
 		colName.setLabelProvider(new HyperLinkColumnLabelProvider<AnalyticsPlan>(1) {
 
             @Override
@@ -336,7 +341,7 @@ public class PlanViewerPart {
 
 		TableViewerColumn colTestProject = new TableViewerColumn(viewer, SWT.NONE);
 		colTestProject.getColumn().setText(TestOpsStringConstants.PLAN_TEST_PROJECT);
-		colTestProject.getColumn().setWidth(350);
+		tableLayout.addColumnData(new ColumnWeightData(350));
 		colTestProject.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(2) {
 
             @Override
@@ -358,7 +363,7 @@ public class PlanViewerPart {
 
 		TableViewerColumn colAgent = new TableViewerColumn(viewer, SWT.NONE);
 		colAgent.getColumn().setText(TestOpsStringConstants.PLAN_AGENTS);
-		colAgent.getColumn().setWidth(100);
+		tableLayout.addColumnData(new ColumnWeightData(100));
 		colAgent.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(3) {
 
             @Override
@@ -378,7 +383,7 @@ public class PlanViewerPart {
 		
 		TableViewerColumn colLastExec = new TableViewerColumn(viewer, SWT.NONE);
 		colLastExec.getColumn().setText(TestOpsStringConstants.PLAN_LAST_EXECUTION);
-		colLastExec.getColumn().setWidth(100);
+		tableLayout.addColumnData(new ColumnWeightData(100));
 		colLastExec.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(4) {
 
             @Override
@@ -398,7 +403,7 @@ public class PlanViewerPart {
 		
 		TableViewerColumn colLastRun = new TableViewerColumn(viewer, SWT.NONE);
         colLastRun.getColumn().setText(TestOpsStringConstants.PLAN_LAST_RUN);
-        colLastRun.getColumn().setWidth(100);
+        tableLayout.addColumnData(new ColumnWeightData(100));
         colLastRun.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(5) {
 
             @Override
@@ -418,7 +423,7 @@ public class PlanViewerPart {
 		
         TableViewerColumn colNextRun = new TableViewerColumn(viewer, SWT.NONE);
         colNextRun.getColumn().setText(TestOpsStringConstants.PLAN_NEXT_RUN);
-        colNextRun.getColumn().setWidth(100);
+        tableLayout.addColumnData(new ColumnWeightData(100));
         colNextRun.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(6) {
 
             @Override
@@ -558,6 +563,11 @@ public class PlanViewerPart {
             names.append(agent.getName());
             names.append(delimiter);
         }
+
+        if(names.length() <= 0) {
+            return StringUtils.EMPTY;
+        }
+
         names.delete(names.length() - delimiter.length(), names.length() - 1);
         return names.toString();
     }
