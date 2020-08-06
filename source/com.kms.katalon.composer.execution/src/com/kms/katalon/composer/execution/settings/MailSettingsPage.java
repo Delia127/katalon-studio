@@ -285,36 +285,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             }
         });
 
-//        txtSender.addModifyListener(new ModifyListener() {
-//            @Override
-//            public void modifyText(ModifyEvent arg0) {
-//                setValidationAndEnableSendEmail("sender", validator.isValidEmail(txtSender.getText())); //$NON-NLS-1$
-//            }
-//        });
-//
-//        txtRecipients.addModifyListener(new ModifyListener() {
-//            @Override
-//            public void modifyText(ModifyEvent e) {
-//                setValidationAndEnableSendEmail("recipients", validator.isValidListEmail(txtRecipients.getText())); //$NON-NLS-1$
-//            }
-//        });
-//
-//        txtCc.addModifyListener(new ModifyListener() {
-//            @Override
-//            public void modifyText(ModifyEvent e) {
-//                String text = txtCc.getText();
-//                setValidationAndEnableSendEmail("cc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
-//            }
-//        });
-//
-//        txtBcc.addModifyListener(new ModifyListener() {
-//            @Override
-//            public void modifyText(ModifyEvent e) {
-//                String text = txtBcc.getText();
-//                setValidationAndEnableSendEmail("bcc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
-//            }
-//        });
-
         btnChkAttachment.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -662,18 +632,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 return false;
             }
             return Pattern.matches(EMAIL_TEXT_PATTERN, email.trim());
-        }
-
-        public boolean isValidListEmail(String lstEmail) {
-            if (StringUtils.isBlank(lstEmail)) {
-                return false;
-            }
-            for (String email : lstEmail.trim().split(MailUtil.EMAIL_SEPARATOR)) {
-                if (!Pattern.matches(EMAIL_TEXT_PATTERN, email.trim())) {
-                    return false;
-                }
-            }
-            return true;
         }
     }
 }

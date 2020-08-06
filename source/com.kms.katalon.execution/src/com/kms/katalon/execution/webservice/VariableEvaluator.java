@@ -26,6 +26,7 @@ public class VariableEvaluator {
 
     private static final String TEST_CASE_ID_PREFIX = "Variable-Eval_";
     
+    @SuppressWarnings("unchecked")
     public Map<String, Object> evaluate(Map<String, String> variables, ExecutionProfileEntity executionProfile,
             Map<String, Object> overridingGlobalVariables) throws Exception {
         

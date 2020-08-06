@@ -378,24 +378,25 @@ public class MailUtil {
 
     public static EmailConfig overrideEmailSettings(EmailConfig emailConfig, ExecutionProfileEntity executionProfile,
             Map<String, Object> overridingGlobalVariables) {
+        VariableEvaluator evaluator = new VariableEvaluator();
+        Map<String, Object> evaluatedVariables = new HashMap<>();
         try {
-            VariableEvaluator evaluator = new VariableEvaluator();
-            Map<String, Object> evaluatedVariables = evaluator.evaluate(new HashMap<String, String>(), executionProfile,
+            evaluatedVariables = evaluator.evaluate(new HashMap<String, String>(), executionProfile,
                     overridingGlobalVariables);
-            StrSubstitutor substitutor = new StrSubstitutor(
-                    Collections.<String, Object>unmodifiableMap(evaluatedVariables));
-            emailConfig.setFrom(substitutor.replace(emailConfig.getFrom()));
-            Set<String> tos = new HashSet<>();
-            for (String recipient : emailConfig.getTos()) {
-                tos.add(substitutor.replace(recipient));
-            }
-            emailConfig.setTos(tos);
-            emailConfig.setCc(substitutor.replace(emailConfig.getCc()));
-            emailConfig.setBcc(substitutor.replace(emailConfig.getBcc()));
-            emailConfig.setSubject(substitutor.replace(emailConfig.getSubject()));
-            return emailConfig;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LogUtil.printAndLogError(e);
         }
+        StrSubstitutor substitutor = new StrSubstitutor(
+                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
+        emailConfig.setFrom(substitutor.replace(emailConfig.getFrom()));
+        Set<String> tos = new HashSet<>();
+        for (String recipient : emailConfig.getTos()) {
+            tos.add(substitutor.replace(recipient));
+        }
+        emailConfig.setTos(tos);
+        emailConfig.setCc(substitutor.replace(emailConfig.getCc()));
+        emailConfig.setBcc(substitutor.replace(emailConfig.getBcc()));
+        emailConfig.setSubject(substitutor.replace(emailConfig.getSubject()));
+        return emailConfig;
     }
 }
