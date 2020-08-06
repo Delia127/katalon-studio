@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.dialogs.EncryptedTextDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
@@ -18,7 +17,7 @@ import com.kms.katalon.composer.testcase.ast.editors.CheckpointSelectionMethodCa
 import com.kms.katalon.composer.testcase.ast.editors.ClosureInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ClosureListInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.GlobalVariablePropertyComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.GlobalVariablePropertyComboBoxCellEditorWithContentProposal;
 import com.kms.katalon.composer.testcase.ast.editors.KeyInputComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.KeysInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ListInputCellEditor;
@@ -56,8 +55,10 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressi
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.execution.util.ExecutionProfileStore;
 
 /**
  * Utility class to handle changing value for ast nodes
@@ -240,13 +241,21 @@ public class AstValueUtil {
         return new WindowsTestObjectCellEditor(parent, methodCallExpressionWrapper.getText(), false);
     }
 
-    public static CellEditor getCellEditorForGlobalVariableExpression(Composite parent) {
-        try {
-            return new GlobalVariablePropertyComboBoxCellEditor(parent);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
+    public static CellEditor getCellEditorForGlobalVariableExpression(Composite parent,
+            PropertyExpressionWrapper propertyExpressionWrapper) {
+        List<String> toolTips = new ArrayList<String>();
+        List<GlobalVariableEntity> variables = ExecutionProfileStore.getInstance()
+                .getSelectedProfile()
+                .getGlobalVariableEntities();
+        List<String> variableNames = new ArrayList<String>();
+        for (GlobalVariableEntity variable : variables) {
+            variableNames.add(variable.getName());
+            toolTips.add(variable.getName());
         }
-        return null;
+        return new GlobalVariablePropertyComboBoxCellEditorWithContentProposal(parent, propertyExpressionWrapper,
+                variables.toArray(new GlobalVariableEntity[variables.size()]),
+                variableNames.toArray(new String[variableNames.size()]), toolTips.toArray(new String[toolTips.size()]));
+
     }
 
     public static CellEditor getCellEditorForEncryptedText(Composite parent,
