@@ -240,7 +240,6 @@ public class PlanViewerPart {
         viewer.getTable().setHeaderVisible(true);
         viewer.getTable().setLinesVisible(true);
         viewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        viewer.getTable().setLayout(new TableLayout());
         viewer.setContentProvider(ArrayContentProvider.getInstance());
         ColumnViewerToolTipSupport.enableFor(viewer);
 
