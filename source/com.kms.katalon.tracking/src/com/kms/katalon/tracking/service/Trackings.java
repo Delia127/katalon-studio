@@ -207,12 +207,12 @@ public class Trackings {
 
     public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result,
             long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
-            boolean isTriggerSelfHealing, String healingInfo) {
+            boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
                 "runningMode", "gui", "launchMode", launchMode, "driver", driverType,
                 "executionResult", result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
                 numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
-                isTriggerSelfHealing
+                isTriggerSelfHealing, "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases
         }));
 
         boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
@@ -226,12 +226,12 @@ public class Trackings {
 
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result,
             long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
-            boolean isTriggerSelfHealing, String healingInfo) {
+            boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
                 "runningMode", "console", "driver", driverType, "executionResult",
                 result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun",
                 numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
-                isTriggerSelfHealing
+                isTriggerSelfHealing, "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases
         }));
 
         boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
@@ -244,11 +244,11 @@ public class Trackings {
     }
 
     public static void trackExecuteSequentialTestSuiteCollectionInGuiMode(String result, long duration,
-            boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+            boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
                 "runningMode", "gui", "executionResult", result, "duration",
                 duration, "executionMode", "Sequential", "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
-                isTriggerSelfHealing
+                isTriggerSelfHealing, "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases
         }));
 
         boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
@@ -261,12 +261,12 @@ public class Trackings {
     }
 
     public static void trackExecuteParallelTestSuiteCollectionInGuiMode(String result, long duration,
-            int maxConcurrentInstances, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+            int maxConcurrentInstances, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
                 "runningMode", "gui", "executionResult", result, "duration",
                 duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances,
                 "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
-                isTriggerSelfHealing
+                isTriggerSelfHealing, "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases
         }));
 
         boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
@@ -279,12 +279,12 @@ public class Trackings {
     }
 
     public static void trackExecuteSequentialTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result,
-            long duration, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+            long duration, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
                 "runningMode", "console", "executionResult", result,
                 "duration", duration, "executionMode", "Sequential",
                 "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
-                isTriggerSelfHealing
+                isTriggerSelfHealing, "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases
         }));
 
         boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
@@ -297,12 +297,12 @@ public class Trackings {
     }
 
     public static void trackExecuteParallelTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result,
-            long duration, int maxConcurrentInstances, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo) {
+            long duration, int maxConcurrentInstances, boolean isEnableSelfHealing, boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] {
                 "runningMode", "console", "executionResult", result,
                 "duration", duration, "executionMode", "Parallel", "maxConcurrent", maxConcurrentInstances,
                 "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
-                isTriggerSelfHealing
+                isTriggerSelfHealing, "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases
         }));
 
         boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
