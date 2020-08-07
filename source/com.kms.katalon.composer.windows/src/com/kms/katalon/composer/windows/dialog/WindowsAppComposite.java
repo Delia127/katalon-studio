@@ -73,6 +73,8 @@ public class WindowsAppComposite {
     private boolean showApplicationFile = true;
     
     private boolean showApplicationTitle = true;
+    
+    private boolean showRemoteUrl = true;
 
     public Composite createComposite(Composite parent, int type, WindowsObjectDialog parentDialog) {
         this.parentDialog = parentDialog;
@@ -202,7 +204,9 @@ public class WindowsAppComposite {
                 .getInstance(ProjectController.getInstance().getCurrentProject().getFolderLocation());
         String url = driverConnector.getWinAppDriverUrl();
         String desiredCapabilities = JsonUtil.toJson(driverConnector.getDesiredCapabilities(), false);
-        String text = String.format("%s, %s", url, desiredCapabilities);
+        String text = showRemoteUrl
+                ? String.format("%s, %s", url, desiredCapabilities)
+                : desiredCapabilities;
         lblDriverConnector.setText(text);
         
         String toolTipText = String.format("WinAppDriver URL: %s, Capabilities: %s", url, desiredCapabilities);
@@ -316,5 +320,13 @@ public class WindowsAppComposite {
 
     public void setShowApplicationTitle(boolean showApplicationTitle) {
         this.showApplicationTitle = showApplicationTitle;
+    }
+
+    public boolean isShowRemoteUrl() {
+        return showRemoteUrl;
+    }
+
+    public void setShowRemoteUrl(boolean showRemoteUrl) {
+        this.showRemoteUrl = showRemoteUrl;
     }
 }
