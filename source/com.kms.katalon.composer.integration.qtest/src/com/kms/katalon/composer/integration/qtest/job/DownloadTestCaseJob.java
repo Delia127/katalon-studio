@@ -292,8 +292,8 @@ public class DownloadTestCaseJob extends QTestJob {
         if (selectedItem instanceof ModuleDownloadedPreviewTreeNode) {
             ModuleDownloadedPreviewTreeNode moduleTree = (ModuleDownloadedPreviewTreeNode) selectedItem;
             if (moduleTree.getFolderEntity() == null) {
-                monitor.subTask(
-                        MessageFormat.format(StringConstants.JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER, dialogDisplayedName));
+                monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER,
+                        dialogDisplayedName));
 
                 FolderEntity existingFolder = FolderController.getInstance().getFolder(
                         parentFolder.getId() + File.separator + treeItem.getName());
