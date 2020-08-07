@@ -30,6 +30,7 @@ import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.LauncherProviderFactory;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.execution.util.MailUtil;
 
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
     protected static final String EXECUTION_PROFILE_OPTION = "executionProfile";
@@ -258,7 +259,6 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         TestSuiteEntity testSuite = getTestSuite(project, testSuitePathOption.getValue());
         TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuite);
         executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
-        executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
         executedEntity.setRerunSetting(rerunSetting);
         executedEntity.setWebServiceSettings(webServiceSettings);
 
@@ -285,6 +285,9 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
         runConfig.setExecutionUUID(executionUUIDOption.getValue());
         
+        executedEntity.setEmailConfig(MailUtil.overrideEmailSettings(reportableSetting.getEmailConfig(project),
+                executionProfile, runConfig.getOverridingGlobalVariables()));
+
         Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
         runConfig.setAdditionalInfo(additionalInfo);
         

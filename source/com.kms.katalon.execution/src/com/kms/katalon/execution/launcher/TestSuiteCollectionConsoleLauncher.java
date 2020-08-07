@@ -16,9 +16,11 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
@@ -34,6 +36,7 @@ import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
+import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunable;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
@@ -41,6 +44,7 @@ import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
@@ -61,7 +65,8 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
     public static TestSuiteCollectionConsoleLauncher newInstance(TestSuiteCollectionEntity testSuiteCollection,
             LauncherManager parentManager, Reportable reportable, Rerunable rerunable,
-            Map<String, Object> globalVariables, String executionUUID, Map<String, String> additionalInfo) throws ExecutionException {
+            Map<String, Object> globalVariables, String executionUUID, Map<String, String> additionalInfo)
+            throws ExecutionException, ControllerException {
         TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
         executedEntity.setReportable(reportable);
         if (rerunable != null) {
@@ -88,7 +93,8 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
     public static TestSuiteCollectionLauncher newIDEInstance(TestSuiteCollectionEntity testSuiteCollection,
             LauncherManager parentManager, DefaultReportSetting reportable, DefaultRerunSetting rerunable,
-            Map<String, Object> globalVariables, String executionUUID, Map<String, String> additionalInfo) throws ExecutionException {
+            Map<String, Object> globalVariables, String executionUUID, Map<String, String> additionalInfo)
+            throws ExecutionException, ControllerException {
         TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
         executedEntity.setReportable(reportable);
         executedEntity.setRerunable(rerunable);
@@ -117,9 +123,18 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
     private static List<ReportableLauncher> buildSubLaunchers(TestSuiteCollectionEntity testSuiteCollection,
             TestSuiteCollectionExecutedEntity executedEntity, LauncherManager launcherManager,
             ReportCollectionEntity reportCollection, Map<String, Object> globalVariables, String executionUUID,
-            String executionSessionId, Map<String, String> additionalInfo, boolean isConsole) throws ExecutionException {
+            String executionSessionId, Map<String, String> additionalInfo, boolean isConsole)
+            throws ExecutionException, ControllerException {
         List<ReportableLauncher> tsLaunchers = new ArrayList<>();
         
+        ProjectEntity proj = ProjectController.getInstance().getCurrentProject();
+        String profileName = testSuiteCollection.getProfileName();
+        GlobalVariableController gvController = GlobalVariableController.getInstance();
+        ExecutionProfileEntity execProfile = !StringUtils.isBlank(profileName)
+                ? gvController.getExecutionProfile(profileName, proj) : gvController.getDefaultExecutionProfile(proj);
+        EmailConfig emailConf = MailUtil.overrideEmailSettings(executedEntity.getEmailConfig(proj), execProfile,
+                globalVariables);
+
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
                 continue;
@@ -133,7 +148,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             tsExecutedEntity.setRerunSetting(
                     (DefaultRerunSetting) executedEntity.getRunnable().mergeWith(tsExecutedEntity.getRerunSetting()));
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));
-            tsExecutedEntity.setEmailConfig(executedEntity.getEmailConfig(testSuiteCollection.getProject()));
+            tsExecutedEntity.setEmailConfig(emailConf);
             if (tsExecutedEntity.getTotalTestCases() == 0) {
                 throw new ExecutionException(ExecutionMessageConstants.LAU_MESSAGE_EMPTY_TEST_SUITE);
             }
