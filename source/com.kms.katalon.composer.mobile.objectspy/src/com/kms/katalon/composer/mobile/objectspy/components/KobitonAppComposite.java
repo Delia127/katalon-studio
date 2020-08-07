@@ -175,7 +175,7 @@ public class KobitonAppComposite implements MobileAppComposite {
         return cbbKobitonApps.getText();
     }
 
-    public void updateKobitonDevices() throws InvocationTargetException, InterruptedException {
+    private void updateKobitonDevices() throws InvocationTargetException, InterruptedException {
         final IRunnableWithProgress runnable = new IRunnableWithProgress() {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
@@ -205,6 +205,40 @@ public class KobitonAppComposite implements MobileAppComposite {
             }
         };
         new ProgressMonitorDialogWithThread(Display.getDefault().getActiveShell()).run(true, true, runnable);
+    }
+    
+    private void updateKobitonApps() throws InvocationTargetException, InterruptedException {
+        final IRunnableWithProgress runnable = new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                monitor.beginTask(ComposerMobileObjectspyMessageConstants.DIA_JOB_TASK_LOADING_KOBITON_APPS,
+                        IProgressMonitor.UNKNOWN);
+
+                try {
+                    updateKobitonAppList();
+                } catch (URISyntaxException | IOException | KobitonApiException e) {
+                    throw new InvocationTargetException(e);
+                }
+                final List<String> apps = getAllKobitonAppsName();
+
+                checkMonitorCanceled(monitor);
+
+                UISynchronizeService.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (apps.isEmpty()) {
+                            return;
+                        }
+                        cbbKobitonApps.setItems(apps.toArray(new String[] {}));
+                        cbbKobitonApps.select(Math.max(0, apps.indexOf(cbbKobitonApps.getText())));
+                    }
+                });
+
+                monitor.done();
+            }
+        };
+        new ProgressMonitorDialogWithThread(Display.getDefault().getActiveShell()).run(true, true, runnable);
+    
     }
     
     private void setLinkLabelVisible(boolean visible) {
@@ -303,36 +337,6 @@ public class KobitonAppComposite implements MobileAppComposite {
     @Override
     public void setInput() throws InvocationTargetException, InterruptedException {
         loadDevices();
-        final IRunnableWithProgress runnable = new IRunnableWithProgress() {
-            @Override
-            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask(ComposerMobileObjectspyMessageConstants.DIA_JOB_TASK_LOADING_KOBITON_APPS,
-                        IProgressMonitor.UNKNOWN);
-
-                try {
-                    updateKobitonAppList();
-                } catch (URISyntaxException | IOException | KobitonApiException e) {
-                    throw new InvocationTargetException(e);
-                }
-                final List<String> apps = getAllKobitonAppsName();
-
-                checkMonitorCanceled(monitor);
-
-                UISynchronizeService.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (apps.isEmpty()) {
-                            return;
-                        }
-                        cbbKobitonApps.setItems(apps.toArray(new String[] {}));
-                        cbbKobitonApps.select(Math.max(0, apps.indexOf(cbbKobitonApps.getText())));
-                    }
-                });
-
-                monitor.done();
-            }
-        };
-        new ProgressMonitorDialogWithThread(Display.getDefault().getActiveShell()).run(true, true, runnable);
     }
 
     @Override
@@ -343,6 +347,7 @@ public class KobitonAppComposite implements MobileAppComposite {
     @Override
     public void loadDevices() throws InvocationTargetException, InterruptedException {
         updateKobitonDevices();
+        updateKobitonApps();
     }
 
     @Override

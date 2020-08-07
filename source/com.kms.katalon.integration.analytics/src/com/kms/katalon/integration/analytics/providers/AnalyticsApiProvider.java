@@ -46,6 +46,8 @@ import org.apache.http.util.EntityUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.core.model.KatalonPackage;
@@ -242,7 +244,7 @@ public class AnalyticsApiProvider {
             }
 
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(map));
+            StringEntity entity = new StringEntity(gson.toJson(map), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsProject.class);
@@ -309,7 +311,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
 
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
-            StringEntity entity = new StringEntity(gson.toJson(trackingInfo));
+            StringEntity entity = new StringEntity(gson.toJson(trackingInfo), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             executeRequest(httpPost, true, Object.class);
@@ -442,7 +444,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             Gson gson = new GsonBuilder().create();
-            StringEntity entity = new StringEntity(gson.toJson(fileInfoList));
+            StringEntity entity = new StringEntity(gson.toJson(fileInfoList), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
@@ -500,7 +502,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Content-type", "application/json");
 
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(map));
+            StringEntity entity = new StringEntity(gson.toJson(map), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsRunConfiguration.class);
@@ -584,7 +586,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             Gson gson = new GsonBuilder().create();
-            StringEntity entity = new StringEntity(gson.toJson(testRun));
+            StringEntity entity = new StringEntity(gson.toJson(testRun), Charsets.UTF_8);
             httpPost.setEntity(entity);
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
@@ -739,6 +741,27 @@ public class AnalyticsApiProvider {
         return response;
     }
     
+
+    public static AnalyticsProject getDefaultNewUserProject(String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, "/api/v1/projects/first");
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            String response = executeRequest(httpGet, false);
+            JsonParser jp = new JsonParser();
+            JsonElement json = jp.parse(response);
+            if (!json.isJsonArray() || json.getAsJsonArray().size() == 0) {
+                return null;
+            }
+
+            return new Gson().fromJson(json.getAsJsonArray().get(0), AnalyticsProject.class);
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
     public static List<AnalyticsPlan> getPlans(Long projectId, String serverUrl, String token)
             throws AnalyticsApiExeception {
         try {

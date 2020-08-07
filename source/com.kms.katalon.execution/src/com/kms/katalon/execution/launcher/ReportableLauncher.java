@@ -39,6 +39,7 @@ import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
@@ -75,16 +76,20 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     private TestSuiteLogRecord suiteLogRecord;
     
-    private boolean runInTestSuiteCollection = false;
+    private TestSuiteCollectionEntity testSuiteCollectionEntity;
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
-        this(manager, runConfig, false);
+        this(manager, runConfig, null);
     }
     
-    public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig, boolean runInTestSuiteCollection) {
+    public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig, TestSuiteCollectionEntity testSuiteCollectionEntity) {
         super(manager, runConfig);
         this.setExecutionUUID(runConfig.getExecutionUUID());
-        this.runInTestSuiteCollection = runInTestSuiteCollection;
+        this.testSuiteCollectionEntity = testSuiteCollectionEntity;
+    }
+
+    public void setTestSuiteCollectionEntity(TestSuiteCollectionEntity testSuiteCollectionEntity) {
+        this.testSuiteCollectionEntity = testSuiteCollectionEntity;
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
@@ -316,7 +321,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return;
         }
         
-        if (runInTestSuiteCollection) {
+        if (runInTestSuiteCollection()) {
             if (emailConfig.isSendTestSuiteCollectionReportEnabled() && emailConfig.isSkipInvidiualTestSuiteReport()) {
                 return;
             }
@@ -339,6 +344,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         MailUtil.sendSummaryMailForTestSuite(emailConfig, testSuiteLogRecord, EmailVariableBinding.getVariablesForTestSuiteEmail(testSuiteLogRecord));
 
         writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
+    }
+
+    private boolean runInTestSuiteCollection() {
+        return testSuiteCollectionEntity != null;
     }
 
     protected void updateLastRun(Date startTime) throws Exception {
@@ -444,7 +453,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 if (reportFolder.isRunTestSuite()) {
                     reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), reportFolder);
                 } else {
-                    reportContributorEntry.getValue().uploadTestSuiteCollectionResult(reportFolder);
+                    reportContributorEntry.getValue().uploadTestSuiteCollectionResult(testSuiteCollectionEntity, reportFolder);
                 }
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
@@ -630,14 +639,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     public TestSuiteLogRecord getTestSuiteLogRecord() {
         return suiteLogRecord;
-    }
-
-    public boolean isRunInTestSuiteCollection() {
-        return runInTestSuiteCollection;
-    }
-
-    public void setRunInTestSuiteCollection(boolean runInTestSuiteCollection) {
-        this.runInTestSuiteCollection = runInTestSuiteCollection;
     }
 
     protected String getRetryStrategy() {

@@ -21,6 +21,7 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.LongConsoleOption;
@@ -315,9 +316,37 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
     }
 
     @Override
-    public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
-        // TODO Auto-generated method stub
-        
+    public void uploadTestSuiteCollectionResult(TestSuiteCollectionEntity testSuiteCollectionEntity, ReportFolder reportFolder) throws Exception {
+        for (String reportFullPath : reportFolder.getReportFolders()) {
+            TestSuiteLogRecord suiteLog = LogRecordController.getInstance()
+                    .getTestSuiteLogRecordByFullPath(reportFullPath);
+            
+            if (suiteLog == null) {
+                continue;
+            }
+            
+            TestSuiteEntity testSuiteEntity = getTestSuiteFromLogRecord(suiteLog);
+            if (!isIntegrationActive(testSuiteEntity)) {
+                continue;
+            }
+
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+
+            IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+            for (ILogRecord logRecord : suiteLog.getChildRecords()) {
+                if (!(logRecord instanceof TestCaseLogRecord)) {
+                    continue;
+                }
+
+                uploadTestCaseResult(testSuiteEntity, projectIntegratedEntity, (TestCaseLogRecord) logRecord, suiteLog);
+            }
+        }
+    }
+    
+    public TestSuiteEntity getTestSuiteFromLogRecord(TestSuiteLogRecord suiteLogRecord) throws Exception {
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        String testSuiteId = suiteLogRecord.getId();
+        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteId, projectEntity);
     }
 
     private boolean isUploadByDefault() {

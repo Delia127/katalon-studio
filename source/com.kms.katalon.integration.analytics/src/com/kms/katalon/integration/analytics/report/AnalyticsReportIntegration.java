@@ -1,14 +1,12 @@
 package com.kms.katalon.integration.analytics.report;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.LongConsoleOption;
@@ -84,8 +82,9 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     }
     
     @Override
-    public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
-    	reportService.upload(reportFolder);
+    public void uploadTestSuiteCollectionResult(TestSuiteCollectionEntity testSuiteCollection,
+            ReportFolder reportFolder) throws Exception {
+        reportService.upload(reportFolder);
     }
     
     @Override
@@ -136,4 +135,6 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 //            LogUtil.logError(e);
         }
     }
+
+   
 }
