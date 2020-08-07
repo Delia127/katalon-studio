@@ -12,6 +12,4 @@ public interface DownloadedPreviewTreeNode {
     String getStatus();
 
     String getType();
-
-    long getId();
 }
