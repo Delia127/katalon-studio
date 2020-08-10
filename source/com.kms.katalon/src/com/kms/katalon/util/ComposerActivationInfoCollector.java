@@ -21,6 +21,7 @@ import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
 import com.kms.katalon.activation.dialog.SignupDialog;
 import com.kms.katalon.activation.dialog.SignupSurveyDialog;
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.helper.UserProfileHelper;
 import com.kms.katalon.application.userprofile.UserProfile;
@@ -240,6 +241,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                             }
 
                             UISynchronizeService.syncExec(() -> {
+                                KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
                                 QuickCreateFirstWebUITestCase quickCreateFirstTestCaseDialog = new QuickCreateFirstWebUITestCase(mainShell);
                                 quickCreateFirstTestCaseDialog.open();
 
