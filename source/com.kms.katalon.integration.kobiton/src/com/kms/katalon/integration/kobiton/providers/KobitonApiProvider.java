@@ -59,7 +59,7 @@ public class KobitonApiProvider {
 
     public static HttpClient getHttpClient() throws KobitonApiException {
         try {
-            return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
+            return HttpClientProxyBuilder.create(ProxyPreferences.getSystemProxyInformation()).getClientBuilder().build();
         } catch (GeneralSecurityException | URISyntaxException | IOException e) {
             throw new KobitonApiException(e.getMessage());
         }
@@ -113,7 +113,7 @@ public class KobitonApiProvider {
 
     public static List<KobitonDevice> getKobitonFavoriteDevices(String token)
             throws URISyntaxException, ClientProtocolException, IOException, KobitonApiException {
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpClient httpClient = getHttpClient();
 
         HttpGet httpGet = new HttpGet(getKobitonURI(KobitonStringConstants.KOBITON_API_GET_ALL_DEVICES));
         setHeaderForKobitonGetRequest(token, httpGet);
@@ -138,7 +138,7 @@ public class KobitonApiProvider {
 
     public static List<KobitonApplication> getKobitionApplications(String token)
             throws URISyntaxException, ParseException, IOException, KobitonApiException {
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpClient httpClient = getHttpClient();
         HttpGet httpGet = new HttpGet(getKobitonURI(KobitonStringConstants.KOBITON_API_GET_APPLICATION));
         setHeaderForKobitonGetRequest(token, httpGet);
         HttpResponse httpResponse = httpClient.execute(httpGet);

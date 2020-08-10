@@ -380,6 +380,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                 case PASSED:
                     result.increasePasses();
                     break;
+                case NOT_RUN:
+                    result.increaseSkips();
+                    break;
                 default:
                     break;
             }
