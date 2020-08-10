@@ -131,15 +131,24 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
                     if (!openProposalPopupWhenBlank(combo)) {
                         new Thread(() -> {
                             try {
-                                while (combo.getLocation().x == 0 && combo.getLocation().y == 0) {
-                                    Thread.sleep(100);
-                                }
+                                UISynchronizeService.syncExec(() -> {
+                                    while (combo != null && !combo.isDisposed() && combo.getLocation().x == 0
+                                            && combo.getLocation().y == 0) {
+                                        try {
+                                            Thread.sleep(100);
+                                        } catch (InterruptedException e) {
+                                            break;
+                                        }
+                                    }
+                                });
                             } catch (Exception e) {
                                 // Just skip
                             } finally {
-                                UISynchronizeService.syncExec(() -> {
-                                    openProposalPopupWhenBlank(combo);
-                                });
+                                if (combo != null && !combo.isDisposed()) {
+                                    UISynchronizeService.syncExec(() -> {
+                                        openProposalPopupWhenBlank(combo);
+                                    });
+                                }
                             }
                         }).start();
                     }
