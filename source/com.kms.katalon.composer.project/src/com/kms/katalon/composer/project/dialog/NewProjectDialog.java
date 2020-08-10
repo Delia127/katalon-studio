@@ -624,7 +624,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         super.okPressed();
         
         if (!(selectedSampleProject instanceof SampleRemoteProject)) {
-        	KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
+            KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
         }
     }
 

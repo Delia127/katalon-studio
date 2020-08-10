@@ -50,6 +50,8 @@ public class GroovyConstants {
 
     public static final String FIND_CHECKPOINT_METHOD_NAME = "findCheckpoint";
 
+    public static final String SCRIPT_IMPORTS_TPL = "resources/script_imports.tpl";
+
     public static Map<String, String> DEFAULT_STATIC_METHOD_IMPORTS = new HashMap<>();
 
     public static Map<String, String> DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS = new HashMap<>();

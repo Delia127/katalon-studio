@@ -854,12 +854,16 @@ public interface IImageKeys {
     public static final String IMG_ABOUT_BG_DRANK = "about/background_dark.png";
 
     public static final String KATALON_NOTIFICATION_DOT_24 = "toolbar/noti_blue_dot_32x24.png";
-    
+
+    // Job Progress
+    public static final String JOB_ERROR_16 = "job_error_16.png"; //$NON-NLS-1$
+    public static final String JOB_FAILED_16 = "job_failed_16.png"; //$NON-NLS-1$
+    public static final String JOB_SKIPPED_16 = "job_skipped_16.png"; //$NON-NLS-1$
+
     // TestOps
     public static final String IMG_TESTOPS_EXECUTIONS = "testops/executions.png";
     
     public static final String IMG_TESTOPS_EXECUTION_PASSED = "testops/execution_passed.png";
-    
+
     public static final String IMG_TESTOPS_EXECUTION_FAILED = "testops/execution_failed.png";
-    
 }
