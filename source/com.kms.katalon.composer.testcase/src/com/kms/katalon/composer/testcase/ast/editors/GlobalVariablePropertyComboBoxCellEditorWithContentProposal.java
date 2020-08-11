@@ -1,21 +1,13 @@
 package com.kms.katalon.composer.testcase.ast.editors;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Composite;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.testcase.editors.ComboBoxCellEditorWithContentProposal;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
-import com.kms.katalon.execution.util.ExecutionProfileStore;
 
-public class GlobalVariablePropertyComboBoxCellEditorWithContentProposal extends ComboBoxCellEditorWithContentProposal
-        implements EventHandler {
+public class GlobalVariablePropertyComboBoxCellEditorWithContentProposal extends ComboBoxCellEditorWithContentProposal {
 
     private Object[] items;
 
@@ -28,20 +20,6 @@ public class GlobalVariablePropertyComboBoxCellEditorWithContentProposal extends
         super(parent, displayedItems, toolTips);
         this.items = items;
         this.parentWrapper = parentWrapper;
-        registerEvent();
-    }
-
-    private void loadData() {
-        List<GlobalVariableEntity> variables = ExecutionProfileStore.getInstance()
-                .getSelectedProfile()
-                .getGlobalVariableEntities();
-        this.items = variables.toArray(new GlobalVariableEntity[variables.size()]);
-    }
-
-    private void registerEvent() {
-        EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.PROFILE_SELECTED_PROIFE_CHANGED,
-                this);
-
     }
 
     @Override
@@ -87,12 +65,5 @@ public class GlobalVariablePropertyComboBoxCellEditorWithContentProposal extends
             return ((GlobalVariableEntity) selectedItem).getName();
         }
         return null;
-    }
-
-    @Override
-    public void handleEvent(Event event) {
-        if (EventConstants.PROFILE_SELECTED_PROIFE_CHANGED.equals(event.getTopic())) {
-            loadData();
-        }
     }
 }
