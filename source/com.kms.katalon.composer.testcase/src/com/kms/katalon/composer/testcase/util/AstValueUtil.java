@@ -255,6 +255,10 @@ public class AstValueUtil {
             variables = null;
         }
 
+        if (variables == null) {
+            return null;
+        }
+
         List<GlobalVariableEntity> displayedVariables = new ArrayList<GlobalVariableEntity>();
         List<String> variableNames = new ArrayList<String>();
         for (GlobalVariableEntity variable : variables) {
