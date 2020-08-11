@@ -2656,7 +2656,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 		} catch (IllegalArgumentException exception) {
 			txtUsername.setText("");
 			txtPassword.setText("");
-			ccbAuthType.select(Arrays.asList(ccbAuthType.getItems()).indexOf(BASIC_AUTH));
+			ccbAuthType.select(Arrays.asList(ccbAuthType.getItems()).indexOf(NO_AUTH));
 		}
     }
 
