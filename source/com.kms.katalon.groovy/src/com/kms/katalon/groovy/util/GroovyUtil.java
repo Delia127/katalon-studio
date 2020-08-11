@@ -111,6 +111,10 @@ public class GroovyUtil {
     private static final String KEYWORD_LIB_FOLDER_NAME = "Libs";
 
     private static final String KEYWORD_LIB_OUTPUT_FOLDER_NAME = "lib";
+    
+    private static final String INCLUDE_OUTPUT_FOLDER_NAME = "groovy";
+    
+    private static final String LISTENER_OUTPUT_FOLDER_NAME = "listener";
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
 
@@ -256,7 +260,7 @@ public class GroovyUtil {
             outputParentFolder.create(true, true, null);
         }
 
-        IFolder outputListenerFolder = outputParentFolder.getFolder("listener");
+        IFolder outputListenerFolder = outputParentFolder.getFolder(LISTENER_OUTPUT_FOLDER_NAME);
         if (!outputListenerFolder.exists()) {
             outputListenerFolder.create(true, true, null);
         }
@@ -280,7 +284,7 @@ public class GroovyUtil {
             outputKWLibFolder.clearHistory(null);
         }
 
-        IFolder outputSourceMainGroovy = outputParentFolder.getFolder("groovy");
+        IFolder outputSourceMainGroovy = outputParentFolder.getFolder(INCLUDE_OUTPUT_FOLDER_NAME);
         File outputSourceMainGroovyFolder = new File(outputSourceMainGroovy.getRawLocationURI());
         outputSourceMainGroovyFolder.mkdirs();
         outputSourceMainGroovy.refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -372,6 +376,26 @@ public class GroovyUtil {
 
         javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), monitor);
         GroovyRuntime.addGroovyClasspathContainer(javaProject);
+
+        removeUnusedBinFolder(projectEntity);
+    }
+    
+    private static void removeUnusedBinFolder(ProjectEntity projectEntity) {
+        File binFolder = new File(projectEntity.getFolderLocation(), OUTPUT_FOLDER_NAME);
+        List<String> binFolerNames = Arrays.asList(TEST_CASE_OUTPUT_FOLDER_NAME, 
+                KEYWORD_LIB_OUTPUT_FOLDER_NAME,
+                KEYWORD_OUTPUT_FOLDER_NAME,
+                LISTENER_OUTPUT_FOLDER_NAME,
+                INCLUDE_OUTPUT_FOLDER_NAME);
+
+        if (binFolder.exists() && binFolder.listFiles() != null) {
+            for (File binFile : binFolder.listFiles()) {
+                String fileName = binFile.getName();
+                if (!binFile.isDirectory() || !binFolerNames.contains(fileName)) {
+                    FileUtils.deleteQuietly(binFile);
+                }
+            }
+        }
     }
 
     private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, boolean allowSourceAttachment)
