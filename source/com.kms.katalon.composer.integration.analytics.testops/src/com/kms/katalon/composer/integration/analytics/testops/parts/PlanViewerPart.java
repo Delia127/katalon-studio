@@ -261,6 +261,12 @@ public class PlanViewerPart {
                         return ImageConstants.IMG_16_TESTOPS_EXECUTION_FAILED;
                     case QUEUED:
                         return ImageConstants.IMG_16_TESTOPS_PLAN_QUEUED;
+                    case ERROR:
+                        return ImageConstants.IMG_16_TESTOPS_PLAN_ERROR;
+                    case CANCELED:
+                        return ImageConstants.IMG_16_TESTOPS_PLAN_CANCELED;
+                    case RUNNING:
+                        return ImageConstants.IMG_16_TESTOPS_PLAN_RUNNING;
                     default:
                         break;
                 }
@@ -286,6 +292,14 @@ public class PlanViewerPart {
                         return TestOpsStringConstants.LBL_EXECUTION_STATUS_FAILED;
                     case QUEUED:
                         return TestOpsStringConstants.LBL_PLAN_STATUS_QUEUED;
+                    case CANCELED:
+                        return TestOpsStringConstants.LBL_PLAN_STATUS_CANCELED;
+                    case ERROR:
+                        return TestOpsStringConstants.LBL_PLAN_STATUS_ERROR;
+                    case WAIT_FOR_TRIGGER:
+                        return TestOpsStringConstants.LBL_PLAN_STATUS_WAITTING;
+                    case RUNNING:
+                        return TestOpsStringConstants.LBL_PLAN_STATUS_RUNNING;
                     default:
                         return StringUtils.EMPTY;
                 }

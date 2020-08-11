@@ -70,6 +70,14 @@ public class TestOpsMessageConstants extends NLS {
     
     public static String LBL_PLAN_STATUS_QUEUED;
     
+    public static String LBL_PLAN_STATUS_ERROR;
+    
+    public static String LBL_PLAN_STATUS_CANCELED;
+    
+    public static String LBL_PLAN_STATUS_RUNNING;
+    
+    public static String LBL_PLAN_STATUS_WAITTING;
+    
     public static String LNK_PLAN_EMPTY;
 
     public static String LNK_CREATE_PLAN_GUIDE;

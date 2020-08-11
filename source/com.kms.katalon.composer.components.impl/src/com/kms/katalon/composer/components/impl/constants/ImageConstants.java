@@ -209,4 +209,10 @@ public class ImageConstants {
     
     public static final Image IMG_16_TESTOPS_PLAN_QUEUED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN_QUEUED);
     
+    public static final Image IMG_16_TESTOPS_PLAN_ERROR = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN_ERROR);
+    
+    public static final Image IMG_16_TESTOPS_PLAN_CANCELED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN_CANCELED);
+    
+    public static final Image IMG_16_TESTOPS_PLAN_RUNNING = ImageManager.getImage(IImageKeys.REFRESH_16);
+    
 }
