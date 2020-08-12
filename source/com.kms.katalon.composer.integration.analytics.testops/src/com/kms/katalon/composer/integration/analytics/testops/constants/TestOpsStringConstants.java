@@ -66,6 +66,14 @@ public class TestOpsStringConstants {
     
     public static final String LBL_PLAN_STATUS_QUEUED = TestOpsMessageConstants.LBL_PLAN_STATUS_QUEUED;
     
+    public static final String LBL_PLAN_STATUS_ERROR = TestOpsMessageConstants.LBL_PLAN_STATUS_ERROR;
+    
+    public static final String LBL_PLAN_STATUS_CANCELED = TestOpsMessageConstants.LBL_PLAN_STATUS_CANCELED;
+    
+    public static final String LBL_PLAN_STATUS_RUNNING = TestOpsMessageConstants.LBL_PLAN_STATUS_RUNNING;
+    
+    public static final String LBL_PLAN_STATUS_WAITTING = TestOpsMessageConstants.LBL_PLAN_STATUS_WAITTING;
+    
     public static final String LNK_PLAN_EMPTY = TestOpsMessageConstants.LNK_PLAN_EMPTY;
 
     public static final String LNK_CREATE_PLAN_GUIDE = TestOpsMessageConstants.LNK_CREATE_PLAN_GUIDE;
