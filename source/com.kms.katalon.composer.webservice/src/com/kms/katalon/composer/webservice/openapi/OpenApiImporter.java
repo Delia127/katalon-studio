@@ -96,7 +96,7 @@ public final class OpenApiImporter {
             String resourceName = path.getSummary() != null ? path.getSummary() : pathKey;
             OpenApiRestResourceImportResult resourceImportResult = serviceImportResult
                     .newResource(toValidFileName(resourceName), pathKey);
-            parseMethods(resourceImportResult, path);
+            parseRequests(resourceImportResult, path);
         }
         return projectImportResult;
     }
@@ -127,34 +127,34 @@ public final class OpenApiImporter {
         return fileName.replaceAll("\\W+", "_");
     }
 
-    private void parseMethods(OpenApiRestResourceImportResult resourceImportResult, PathItem pathItem) {
+    private void parseRequests(OpenApiRestResourceImportResult resourceImportResult, PathItem pathItem) {
         if (resourceImportResult == null || pathItem == null) {
             return;
         }
         if (pathItem.getGet() != null) {
-            parseMethod(resourceImportResult, HttpMethod.GET, pathItem.getGet());
+            parseRequest(resourceImportResult, HttpMethod.GET, pathItem.getGet());
         }
         if (pathItem.getPost() != null) {
-            parseMethod(resourceImportResult, HttpMethod.POST, pathItem.getPost());
+            parseRequest(resourceImportResult, HttpMethod.POST, pathItem.getPost());
         }
         if (pathItem.getDelete() != null) {
-            parseMethod(resourceImportResult, HttpMethod.DELETE, pathItem.getDelete());
+            parseRequest(resourceImportResult, HttpMethod.DELETE, pathItem.getDelete());
         }
         if (pathItem.getPut() != null) {
-            parseMethod(resourceImportResult, HttpMethod.PUT, pathItem.getPut());
+            parseRequest(resourceImportResult, HttpMethod.PUT, pathItem.getPut());
         }
         if (pathItem.getOptions() != null) {
-            parseMethod(resourceImportResult, HttpMethod.OPTIONS, pathItem.getOptions());
+            parseRequest(resourceImportResult, HttpMethod.OPTIONS, pathItem.getOptions());
         }
         if (pathItem.getTrace() != null) {
-            parseMethod(resourceImportResult, HttpMethod.TRACE, pathItem.getTrace());
+            parseRequest(resourceImportResult, HttpMethod.TRACE, pathItem.getTrace());
         }
         if (pathItem.getHead() != null) {
-            parseMethod(resourceImportResult, HttpMethod.HEAD, pathItem.getHead());
+            parseRequest(resourceImportResult, HttpMethod.HEAD, pathItem.getHead());
         }
     }
 
-    private void parseMethod(OpenApiRestResourceImportResult resourceImportResult, HttpMethod httpMethod,
+    private void parseRequest(OpenApiRestResourceImportResult resourceImportResult, HttpMethod httpMethod,
             Operation operation) {
         if (operation == null || operation.getDeprecated() != null) {
             return;
@@ -165,13 +165,10 @@ public final class OpenApiImporter {
         } else {
             name = httpMethod.toString();
         }
-        OpenApiRestMethodImportResult methodImportResult = resourceImportResult.newMethod(toValidFileName(name),
-                httpMethod.toString());
-        addParameters(methodImportResult, operation.getParameters());
-        parseRequests(methodImportResult, operation);
-    }
+        OpenApiRestRequestImportResult request = resourceImportResult.newRequest(toValidFileName(name));
+        request.setHttpMethod(httpMethod.toString());
+        addParameters(request, operation.getParameters());
 
-    private void parseRequests(OpenApiRestMethodImportResult methodImportResult, Operation operation) {
         if (operation.getRequestBody() != null && operation.getRequestBody().getContent() != null) {
             Content content = operation.getRequestBody().getContent();
             for (String mediaTypeName : content.keySet()) {
@@ -179,11 +176,8 @@ public final class OpenApiImporter {
                 Schema<?> schema = mediaType.getSchema();
                 if (mediaTypeName.equals(OpenApiRestRequestImportResult.FORM_URLENCODED_CONTENT_TYPE)) {
                     List<UrlEncodedBodyParameter> params = parseUrlEncodedRequestBody(schema);
-                    OpenApiRestRequestImportResult request = methodImportResult
-                            .newRequest(getRequestFileName(methodImportResult, "Request"));
-                    request.setMediaType(mediaTypeName);
-                    request.setHttpMethod(methodImportResult.getHttpMethod());
                     request.setUrlEncodedBodyParameters(params);
+                    request.setMediaType(mediaTypeName);
                 } else if (mediaTypeName.equals(OpenApiRestRequestImportResult.APPLICATION_JSON_CONTENT_TYPE)) {
                     String bodyContent;
                     if (mediaType.getExample() != null) {
@@ -193,18 +187,12 @@ public final class OpenApiImporter {
                     } else {
                         bodyContent = JsonUtil.toJson(parseJsonObject(schema));
                     }
-                    OpenApiRestRequestImportResult request = methodImportResult
-                            .newRequest(getRequestFileName(methodImportResult, "Request"));
                     request.setRequestBodyContent(bodyContent);
                     request.setMediaType(mediaTypeName);
-                    request.setHttpMethod(methodImportResult.getHttpMethod());
                 } else if (mediaTypeName.equals(OpenApiRestRequestImportResult.MULTIPART_FORM_DATA_CONTENT_TYPE)) {
                     List<FormDataBodyParameter> params = parseFormDataRequestBody(schema);
-                    OpenApiRestRequestImportResult request = methodImportResult
-                            .newRequest(getRequestFileName(methodImportResult, "Request"));
-                    request.setMediaType(mediaTypeName);
-                    request.setHttpMethod(methodImportResult.getHttpMethod());
                     request.setFormDataBodyParameters(params);
+                    request.setMediaType(mediaTypeName);
                 } else if (mediaTypeName.equals(OpenApiRestRequestImportResult.MULTIPLE_CONTENT_TYPE)) {
                     String bodyContent;
                     if (schema.getExample() != null) {
@@ -212,17 +200,10 @@ public final class OpenApiImporter {
                     } else {
                         bodyContent = JsonUtil.toJson(parseJsonValue(schema));
                     }
-                    OpenApiRestRequestImportResult request = methodImportResult
-                            .newRequest(getRequestFileName(methodImportResult, "Request"));
                     request.setRequestBodyContent(bodyContent);
                     request.setMediaType(mediaTypeName);
-                    request.setHttpMethod(methodImportResult.getHttpMethod());
                 }
             }
-        } else {
-            OpenApiRestRequestImportResult request = methodImportResult
-                    .newRequest(getRequestFileName(methodImportResult, "Request"));
-            request.setHttpMethod(methodImportResult.getHttpMethod());
         }
     }
 
@@ -261,16 +242,6 @@ public final class OpenApiImporter {
         return params;
     }
 
-    private String getRequestFileName(OpenApiRestMethodImportResult methodImportResult, String requestName) {
-        String suggestion = requestName;
-        int numberSuffix = 0;
-        while (!methodImportResult.isRequestFileNameAvailable(suggestion)) {
-            numberSuffix++;
-            suggestion += " (" + numberSuffix + ")";
-        }
-        return suggestion;
-    }
-
     private void addParameters(OpenApiRestResourceImportNode holder, List<Parameter> restParameters) {
         if (restParameters == null)
             return;
@@ -278,10 +249,16 @@ public final class OpenApiImporter {
             String in = param.getIn();
             String name = param.getName();
             String value = null;
+            String type = null;
             if (param.getSchema() != null) {
                 value = parseJsonValue(param.getSchema()).toString();
+                type = param.getSchema().getType();
             }
-            String description = param.getDescription();
+
+            type = type != null ? "<" + type + "> " : "";
+            String required = param.getRequired() ? "{Required} " : "";
+            String description = type + required + param.getDescription();
+
             if (in.equals(OpenApiConstants.PATH_PARAMETER_TYPE)) {
                 holder.addParameter(name, null, description, OpenApiRestParameter.Style.TEMPLATE);
             } else if (in.equals(OpenApiConstants.QUERY_PARAMETER_TYPE)) {

@@ -38,7 +38,7 @@ public class OpenApiRestRequestImportResult extends OpenApiRestResourceImportNod
 
     private OpenApiRestServiceImportResult serviceImportResult;
 
-    private OpenApiRestMethodImportResult methodImportResult;
+    private OpenApiRestResourceImportResult resourceImportResult;
 
     private String name;
 
@@ -54,8 +54,8 @@ public class OpenApiRestRequestImportResult extends OpenApiRestResourceImportNod
 
     private List<FormDataBodyParameter> formDataBodyParameters;
 
-    public OpenApiRestRequestImportResult(OpenApiRestMethodImportResult methodResult, String name) {
-        this.methodImportResult = methodResult;
+    public OpenApiRestRequestImportResult(OpenApiRestResourceImportResult resourceResult, String name) {
+        this.resourceImportResult = resourceResult;
         this.name = name;
     }
 
@@ -94,7 +94,7 @@ public class OpenApiRestRequestImportResult extends OpenApiRestResourceImportNod
     }
 
     private WebServiceRequestEntity buildRequest() throws Exception {
-        FolderEntity parentFolder = (FolderEntity) methodImportResult.getFileEntity();
+        FolderEntity parentFolder = (FolderEntity) resourceImportResult.getFileEntity();
         WebServiceRequestEntity request = ObjectRepositoryController.getInstance()
                 .newWSTestObjectWithoutSave(parentFolder, name);
         String url = buildRequestUrl();
@@ -221,7 +221,7 @@ public class OpenApiRestRequestImportResult extends OpenApiRestResourceImportNod
     }
 
     private String getResourcePath() {
-        String resourcePath = methodImportResult.getResourceImportResult().getPath();
+        String resourcePath = resourceImportResult.getPath();
         if (StringUtils.isNotBlank(resourcePath)) {
             if (!resourcePath.startsWith("/")) {
                 resourcePath = "/" + resourcePath;
@@ -233,7 +233,7 @@ public class OpenApiRestRequestImportResult extends OpenApiRestResourceImportNod
 
     private OpenApiRestServiceImportResult getServiceImportResult() {
         if (serviceImportResult == null) {
-            OpenApiImportNode importNode = methodImportResult;
+            OpenApiImportNode importNode = resourceImportResult;
             while (!(importNode instanceof OpenApiRestServiceImportResult)) {
                 importNode = importNode.getParentImportNode();
             }

@@ -14,7 +14,7 @@ public class OpenApiRestResourceImportResult extends OpenApiRestResourceImportNo
 
     private FolderEntity resourceFolder;
 
-    private List<OpenApiRestMethodImportResult> methodImportResults = new ArrayList<>();
+    private List<OpenApiRestRequestImportResult> requestImportResults = new ArrayList<>();
 
     public OpenApiRestResourceImportResult(OpenApiRestServiceImportResult serviceImportResult, String path,
             FolderEntity folder) {
@@ -31,15 +31,10 @@ public class OpenApiRestResourceImportResult extends OpenApiRestResourceImportNo
         return path;
     }
 
-    public OpenApiRestMethodImportResult[] getMethodImportResults() {
-        return methodImportResults.toArray(new OpenApiRestMethodImportResult[methodImportResults.size()]);
-    }
-
-    public OpenApiRestMethodImportResult newMethod(String name, String httpMethod) {
-        FolderEntity folder = newFolder(name, resourceFolder);
-        OpenApiRestMethodImportResult methodResult = new OpenApiRestMethodImportResult(this, httpMethod, folder);
-        methodImportResults.add(methodResult);
-        return methodResult;
+    public OpenApiRestRequestImportResult newRequest(String name) {
+        OpenApiRestRequestImportResult requestResult = new OpenApiRestRequestImportResult(this, name);
+        requestImportResults.add(requestResult);
+        return requestResult;
     }
 
     @Override
@@ -55,7 +50,7 @@ public class OpenApiRestResourceImportResult extends OpenApiRestResourceImportNo
     @Override
     public OpenApiImportNode[] getChildImportNodes() {
         List<OpenApiImportNode> childImportNodes = new ArrayList<>();
-        childImportNodes.addAll(methodImportResults);
+        childImportNodes.addAll(requestImportResults);
         return childImportNodes.toArray(new OpenApiImportNode[childImportNodes.size()]);
     }
 }
