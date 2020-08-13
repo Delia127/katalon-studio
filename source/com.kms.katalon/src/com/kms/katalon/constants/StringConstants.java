@@ -187,6 +187,8 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String KStorePluginsDialog_LNK_ERROR = MessageConstants.KStorePluginsDialog_LNK_ERROR;
     
+    public static final String KStorePluginsDialog_LBL_SUCCESS = MessageConstants.KStorePluginsDialog_LBL_SUCCESS;
+    
     public static final String KStorePluginsDialog_LBL_WARNING = MessageConstants.KStorePluginsDialog_LBL_WARNING;
     
     public static final String KStorePluginsDialog_LBL_HELP = MessageConstants.KStorePluginsDialog_LBL_HELP;
