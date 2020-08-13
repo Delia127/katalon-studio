@@ -2648,15 +2648,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         if (authValueArr.length != 2) {
             return;
         }
+        List<String> authTypeList = Arrays.asList(ccbAuthType.getItems());
         try {
             String[] usernamePassword = Base64.basicDecode(authValueArr[1]);
             txtUsername.setText(usernamePassword[0]);
             txtPassword.setText(usernamePassword[1]);
-            ccbAuthType.select(Arrays.asList(ccbAuthType.getItems()).indexOf(BASIC_AUTH));
+            ccbAuthType.select(authTypeList.indexOf(BASIC_AUTH));
         } catch (IllegalArgumentException exception) {
             txtUsername.setText("");
             txtPassword.setText("");
-            ccbAuthType.select(Arrays.asList(ccbAuthType.getItems()).indexOf(NO_AUTH));
+            ccbAuthType.select(authTypeList.indexOf(NO_AUTH));
         }
     }
 
