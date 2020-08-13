@@ -517,7 +517,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
         tbvcRunWith.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnEnviroment, new ColumnPixelData(100));
+        tableLayout.setColumnData(tblclmnEnviroment, new ColumnPixelData(130));
 
         TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
@@ -525,7 +525,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWithData.setEditingSupport(new RunConfigurationDataEditingSupport(this));
         tbvcRunWithData.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnRunWithData, new ColumnPixelData(150));
+        tableLayout.setColumnData(tblclmnRunWithData, new ColumnPixelData(120));
 
         TableViewerColumn tbvcProfile = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnProfile = tbvcProfile.getColumn();
