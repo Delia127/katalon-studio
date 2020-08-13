@@ -30,6 +30,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -500,7 +501,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tblclmnNo.setText(StringConstants.NO_);
         tbvcNo.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.NO_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(0, 50));
+        tableLayout.setColumnData(tblclmnNo, new ColumnPixelData(50));
 
         TableViewerColumn tbvcId = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnId = tbvcId.getColumn();
@@ -508,7 +509,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcId.setEditingSupport(new TestSuiteIdEditingSupport(this));
         tbvcId.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.ID_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnId, new ColumnWeightData(0, 300));
+        tableLayout.setColumnData(tblclmnId, new ColumnPixelData(300));
 
         TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
@@ -516,7 +517,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
         tbvcRunWith.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(0, 100));
+        tableLayout.setColumnData(tblclmnEnviroment, new ColumnPixelData(100));
 
         TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
@@ -524,7 +525,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWithData.setEditingSupport(new RunConfigurationDataEditingSupport(this));
         tbvcRunWithData.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(0, 150));
+        tableLayout.setColumnData(tblclmnRunWithData, new ColumnPixelData(150));
 
         TableViewerColumn tbvcProfile = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnProfile = tbvcProfile.getColumn();
@@ -532,7 +533,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcProfile.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.PROFILE_COLUMN_IDX));
         tbvcProfile.setEditingSupport(new ExecutionProfileEditingSupport(this));
-        tableLayout.setColumnData(tblclmnProfile, new ColumnWeightData(0, 300));
+        tableLayout.setColumnData(tblclmnProfile, new ColumnPixelData(300));
 
         TableViewerColumn tbvcRun = new TableViewerColumn(tableViewer, SWT.NONE);
         tblclmnRun = tbvcRun.getColumn();
@@ -540,7 +541,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRun.setEditingSupport(new RunEnabledEditingSupport(this));
         tbvcRun.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(0, 70));
+        tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(100, 50));
+        
+        testSuiteTableComposite.setLayout(tableLayout);
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         DefaultTableColumnViewerEditor.create(tableViewer);
