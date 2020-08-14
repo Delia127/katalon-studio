@@ -42,6 +42,10 @@ public final class OpenApiImporter {
         return INSTANCE;
     }
 
+    private enum In {
+        BODY, PARAM
+    };
+
     public OpenApiProjectImportResult importServices(String projectFilePath, FolderEntity rootFolder) throws Exception {
         OpenApiProjectImportResult projectImportResult;
 
@@ -198,7 +202,7 @@ public final class OpenApiImporter {
                     if (schema.getExample() != null) {
                         bodyContent = parseExample(schema.getExample());
                     } else {
-                        bodyContent = JsonUtil.toJson(parseJsonValue(schema));
+                        bodyContent = JsonUtil.toJson(parseJsonValue(schema, In.BODY));
                     }
                     request.setRequestBodyContent(bodyContent);
                     request.setMediaType(mediaTypeName);
@@ -214,7 +218,7 @@ public final class OpenApiImporter {
         for (Map.Entry<String, Schema> entry : propertyMap.entrySet()) {
             UrlEncodedBodyParameter param = new UrlEncodedBodyParameter();
             param.setName(entry.getKey());
-            String value = parseJsonValue(entry.getValue()).toString();
+            String value = parseJsonValue(entry.getValue(), In.BODY).toString();
             param.setValue(value);
             params.add(param);
         }
@@ -228,7 +232,7 @@ public final class OpenApiImporter {
         for (Map.Entry<String, Schema> entry : propertyMap.entrySet()) {
             FormDataBodyParameter param = new FormDataBodyParameter();
             param.setName(entry.getKey());
-            param.setValue(JsonUtil.toJson(parseJsonValue(entry.getValue())));
+            param.setValue(JsonUtil.toJson(parseJsonValue(entry.getValue(), In.BODY)));
             String format = entry.getValue().getFormat();
             if (format != null) {
                 if (entry.getValue().getType().equals("string") && format.equals("binary") || format.equals("byte")) {
@@ -251,7 +255,7 @@ public final class OpenApiImporter {
             String value = null;
             String type = null;
             if (param.getSchema() != null) {
-                value = parseJsonValue(param.getSchema()).toString();
+                value = parseJsonValue(param.getSchema(), In.PARAM).toString();
                 type = param.getSchema().getType();
             }
 
@@ -275,14 +279,14 @@ public final class OpenApiImporter {
         Map<String, Object> result = new HashMap<>();
         for (Map.Entry<String, Schema> entry : propertyMap.entrySet()) {
             String name = entry.getKey();
-            Object value = parseJsonValue(entry.getValue());
+            Object value = parseJsonValue(entry.getValue(), In.BODY);
             if (value != null)
                 result.put(name, value);
         }
         return result;
     }
 
-    private Object parseJsonValue(Schema<?> schema) {
+    private Object parseJsonValue(Schema<?> schema, In in) {
         Object displayValue = null;
         if (schema.getExample() != null) {
             return schema.getExample();
@@ -305,9 +309,14 @@ public final class OpenApiImporter {
             break;
         case OpenApiConstants.ARRAY_DATA_TYPE:
             Schema<?> items = ((ArraySchema) schema).getItems();
-            List<Object> arr = new ArrayList<>();
-            arr.add(parseJsonValue(items));
-            displayValue = arr;
+            Object item = parseJsonValue(items, in);
+            if (in == In.PARAM) {
+                displayValue = item;
+            } else {
+                List<Object> arr = new ArrayList<>();
+                arr.add(item);
+                displayValue = arr;
+            }
             break;
         case OpenApiConstants.OBJECT_DATA_TYPE:
             displayValue = parseJsonObject(schema);
