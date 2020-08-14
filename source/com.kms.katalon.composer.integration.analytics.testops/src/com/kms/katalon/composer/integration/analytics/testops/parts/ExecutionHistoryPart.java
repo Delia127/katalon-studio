@@ -233,10 +233,10 @@ public class ExecutionHistoryPart {
 		viewAllComposite.setLayoutData(new GridData(GridData.END, SWT.CENTER, true, false));
 
 		ToolBar toolBar = new ToolBar(viewAllComposite, SWT.FLAT);
-		toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+		toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
 		item.setToolTipText(StringConstants.REFRESH);
-		item.setImage(ImageConstants.IMG_16_REFRESH);
+		item.setImage(ImageConstants.IMG_16_TESTOPS_REFRESH_NEW);
 		item.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -254,11 +254,12 @@ public class ExecutionHistoryPart {
 		lblDelimeter.setText(" ");
 
 		Label imgTestOps = new Label(viewAllComposite, SWT.NONE);
-		imgTestOps.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		imgTestOps.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		imgTestOps.setImage(ImageConstants.IMG_16_KATALON_TESTOPS);
 
 		Link lnkViewAll = new Link(viewAllComposite, SWT.NONE);
-		setFontStyle(lnkViewAll, 14, SWT.NONE);
+		lnkViewAll.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		setFontStyle(lnkViewAll, 11, SWT.NONE);
 		String testOpsUrl = getViewAllExecutionsURL();
 		lnkViewAll
 				.setText(" <a href=\"" + testOpsUrl + "\">" + TestOpsStringConstants.LNK_VIEW_ALL_EXECUTIONS + "</a>");
@@ -272,7 +273,7 @@ public class ExecutionHistoryPart {
 		Label lblArrow = new Label(viewAllComposite, SWT.NONE);
 		lblArrow.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		lblArrow.setText(">>");
-		setFontStyle(lblArrow, 14, SWT.NONE);
+		setFontStyle(lblArrow, 12, SWT.NONE);
 	}
 
 	private void setFontStyle(Label label, int fontSize, int style) {

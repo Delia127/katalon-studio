@@ -312,14 +312,14 @@ public class PlanViewerPart {
 
             @Override
             protected Class<AnalyticsPlan> getElementType() {
-                return AnalyticsPlan.class;
+                return null;
             }
 
         });
 
         TableViewerColumn colName = new TableViewerColumn(viewer, SWT.NONE);
         colName.getColumn().setText(TestOpsStringConstants.PLAN_NAME);
-        tableLayout.addColumnData(new ColumnWeightData(350));
+        tableLayout.addColumnData(new ColumnWeightData(325));
         colName.setLabelProvider(new HyperLinkColumnLabelProvider<AnalyticsPlan>(1) {
 
             @Override
@@ -337,7 +337,7 @@ public class PlanViewerPart {
 
             @Override
             protected Class<AnalyticsPlan> getElementType() {
-                return AnalyticsPlan.class;
+                return null;
             }
 
             @Override
@@ -354,7 +354,7 @@ public class PlanViewerPart {
 
         TableViewerColumn colTestProject = new TableViewerColumn(viewer, SWT.NONE);
         colTestProject.getColumn().setText(TestOpsStringConstants.PLAN_TEST_PROJECT);
-        tableLayout.addColumnData(new ColumnWeightData(350));
+        tableLayout.addColumnData(new ColumnWeightData(325));
         colTestProject.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(2) {
 
             @Override
@@ -376,7 +376,7 @@ public class PlanViewerPart {
 
         TableViewerColumn colAgent = new TableViewerColumn(viewer, SWT.NONE);
         colAgent.getColumn().setText(TestOpsStringConstants.PLAN_AGENTS);
-        tableLayout.addColumnData(new ColumnWeightData(100));
+        tableLayout.addColumnData(new ColumnWeightData(150));
         colAgent.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(3) {
 
             @Override
@@ -397,12 +397,12 @@ public class PlanViewerPart {
 
         TableViewerColumn colLastExec = new TableViewerColumn(viewer, SWT.NONE);
         colLastExec.getColumn().setText(TestOpsStringConstants.PLAN_LAST_EXECUTION);
-        tableLayout.addColumnData(new ColumnWeightData(100));
+        tableLayout.addColumnData(new ColumnWeightData(130));
         colLastExec.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(4) {
 
             @Override
             protected Class<AnalyticsPlan> getElementType() {
-                return AnalyticsPlan.class;
+                return null;
             }
 
             @Override
@@ -418,12 +418,12 @@ public class PlanViewerPart {
 
         TableViewerColumn colLastRun = new TableViewerColumn(viewer, SWT.NONE);
         colLastRun.getColumn().setText(TestOpsStringConstants.PLAN_LAST_RUN);
-        tableLayout.addColumnData(new ColumnWeightData(100));
+        tableLayout.addColumnData(new ColumnWeightData(130));
         colLastRun.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(5) {
 
             @Override
             protected Class<AnalyticsPlan> getElementType() {
-                return AnalyticsPlan.class;
+                return null;
             }
 
             @Override
@@ -439,12 +439,12 @@ public class PlanViewerPart {
 
         TableViewerColumn colNextRun = new TableViewerColumn(viewer, SWT.NONE);
         colNextRun.getColumn().setText(TestOpsStringConstants.PLAN_NEXT_RUN);
-        tableLayout.addColumnData(new ColumnWeightData(100));
+        tableLayout.addColumnData(new ColumnWeightData(130));
         colNextRun.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(6) {
 
             @Override
             protected Class<AnalyticsPlan> getElementType() {
-                return AnalyticsPlan.class;
+                return null;
             }
 
             @Override
@@ -483,10 +483,10 @@ public class PlanViewerPart {
         viewAllComposite.setLayoutData(new GridData(GridData.END, SWT.CENTER, true, false));
 
         ToolBar tbRefresh = new ToolBar(viewAllComposite, SWT.FLAT);
-        tbRefresh.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+        tbRefresh.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
         ToolItem btnRefresh = new ToolItem(tbRefresh, SWT.PUSH);
         btnRefresh.setToolTipText(StringConstants.REFRESH);
-        btnRefresh.setImage(ImageConstants.IMG_16_REFRESH);
+        btnRefresh.setImage(ImageConstants.IMG_16_TESTOPS_REFRESH_NEW);
         btnRefresh.addSelectionListener(new SelectionListener() {
 
             @Override
@@ -504,11 +504,12 @@ public class PlanViewerPart {
         lblDelimeter.setText(" ");
 
         Label imgTestOps = new Label(viewAllComposite, SWT.NONE);
-        imgTestOps.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        imgTestOps.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         imgTestOps.setImage(ImageConstants.IMG_16_KATALON_TESTOPS);
 
         Link lnkViewAll = new Link(viewAllComposite, SWT.NONE);
-        setFontStyle(lnkViewAll, 14, SWT.NONE);
+        lnkViewAll.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        setFontStyle(lnkViewAll, 11, SWT.NONE);
         String testOpsUrl = getViewAllPlanURL();
         lnkViewAll.setText(" <a href=\"" + testOpsUrl + "\">" + TestOpsMessageConstants.LNK_VIEW_ALL_PLANS + "</a>");
         lnkViewAll.addSelectionListener(new SelectionAdapter() {
@@ -521,7 +522,7 @@ public class PlanViewerPart {
         Label lblArrow = new Label(viewAllComposite, SWT.NONE);
         lblArrow.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         lblArrow.setText(">>");
-        setFontStyle(lblArrow, 14, SWT.NONE);
+        setFontStyle(lblArrow, 12, SWT.NONE);
     }
 
     private void setFontStyle(Label label, int fontSize, int style) {
@@ -658,8 +659,9 @@ public class PlanViewerPart {
             return String.format("%s %s %s", prefix, TestOpsStringConstants.TIME_FORMAT_AFEW_SECONDS, suffix).trim();
         }
 
-        long minutes = seconds / 60;
+        long minutes = Math.round(seconds / 60.0);
         long hours = minutes / 60;
+        minutes %= 60;
 
         String formatedHour = getHourFormat(hours, minutes);
         String formatedMinute = getMinuteFormat(minutes, hours > 0);
