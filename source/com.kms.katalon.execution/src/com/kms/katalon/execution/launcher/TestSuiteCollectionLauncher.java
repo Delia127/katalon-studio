@@ -210,7 +210,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         }
     }
     
-    private void uploadReportToIntegratingProduct(TestSuiteCollectionLogRecord suiteLogRecord) {
+    private void uploadReportToIntegratingProduct(TestSuiteCollectionLogRecord collectionLogRecord) {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -221,7 +221,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                     MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
                 LogUtil.logInfo(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
-                reportContributorEntry.getValue().uploadTestSuiteCollectionResult(getTestSuiteCollectionEntity(), suiteLogRecord);
+                reportContributorEntry.getValue().uploadTestSuiteCollectionResult(getTestSuiteCollectionEntity(), collectionLogRecord);
                 LogUtil.logInfo(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 LogUtil.logError(e, MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
