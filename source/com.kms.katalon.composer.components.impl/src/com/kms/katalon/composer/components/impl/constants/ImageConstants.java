@@ -207,7 +207,7 @@ public class ImageConstants {
     
     public static final String URL_TESTOPS_PLAN = ImageManager.getImageURLString(IImageKeys.IMG_TESTOPS_PLAN);
     
-    public static final Image IMG_16_TESTOPS_PLAN_QUEUED = ImageManager.getImage(IImageKeys.REFRESH_16);
+    public static final Image IMG_16_TESTOPS_PLAN_QUEUED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN_QUEUED);
     
     public static final Image IMG_16_TESTOPS_PLAN_ERROR = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN_ERROR);
     
