@@ -667,6 +667,10 @@ public class Trackings {
         trackUserAction("clickOnExceptionLinkInLogViewer", "link", link);
     }
     
+    public static void trackTroubleshootFailedActivation() {
+    	trackAction("troubleshoot-failed-activation", true);
+    }
+    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }
@@ -685,7 +689,9 @@ public class Trackings {
         propertiesObject.addProperty("katalonPackage", katalonPackage.getPackageName());
         
         LicenseType licenseType = ActivationInfoCollector.getLicenseType();
-        propertiesObject.addProperty("licenseType", licenseType.name());
+        if (licenseType != null) {
+        	propertiesObject.addProperty("licenseType", licenseType.name());
+        }
 
         if (properties != null) {
             JsonUtil.mergeJsonObject(createJsonObject(properties), propertiesObject);
