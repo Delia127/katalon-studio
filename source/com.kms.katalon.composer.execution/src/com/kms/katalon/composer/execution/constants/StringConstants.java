@@ -303,6 +303,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_BTN_GEN_COMMAND = ComposerExecutionMessageConstants.DIA_BTN_GEN_COMMAND;
 
+    public static final String DIA_BTN_GEN_TESTOPS_CI_COMMAND = ComposerExecutionMessageConstants.DIA_BTN_GEN_TESTOPS_CI_COMMAND;
+
     public static final String DIA_BTN_COPY_TO_CLIPBOARD = ComposerExecutionMessageConstants.DIA_BTN_COPY_TO_CLIPBOARD;
 
     public static final String DIA_TITLE_GENERATED_COMMAND = ComposerExecutionMessageConstants.DIA_TITLE_GENERATED_COMMAND;
