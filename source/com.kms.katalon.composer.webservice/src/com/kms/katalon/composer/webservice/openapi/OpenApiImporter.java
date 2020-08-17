@@ -160,7 +160,7 @@ public final class OpenApiImporter {
 
     private void parseRequest(OpenApiRestResourceImportResult resourceImportResult, HttpMethod httpMethod,
             Operation operation) {
-        if (operation == null || operation.getDeprecated() != null) {
+        if (operation == null) {
             return;
         }
         String name;
