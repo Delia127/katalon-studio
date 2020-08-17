@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableLayout;
@@ -86,9 +87,11 @@ public class PlanViewerPart {
 
     private Composite emptyPart;
 
-    private static final String TIME_FORMAT_TEMPLATE = "MMM dd, hh:mm";
+    private static final String TIME_FORMAT_TEMPLATE = "MMM dd, HH:mm";
 
     private static final String YEAR_FORMAT_TEMPLATE = "yyyy";
+    
+    private ZonedDateTime timeNow;
 
     @PostConstruct
     public void createPartControl(final Composite parent, MCompositePart mpart) {
@@ -139,6 +142,7 @@ public class PlanViewerPart {
 
                     @Override
                     public void run() {
+                        timeNow = ZonedDateTime.now();
                         if (viewer == null) {
                             createPlanPart(plans);
                         } else {
@@ -234,7 +238,7 @@ public class PlanViewerPart {
         planPart = new Composite(viewerPart, SWT.NONE);
         GridLayout gridLayout = new GridLayout(1, false);
         planPart.setLayout(gridLayout);
-        viewer = new CTableViewer(planPart, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        viewer = new CTableViewer(planPart, SWT.BORDER | SWT.FULL_SELECTION);
         TableLayout tableLayout = new TableLayout();
         viewer.getTable().setLayout(tableLayout);
         viewer.getTable().setHeaderVisible(true);
@@ -277,12 +281,12 @@ public class PlanViewerPart {
             @Override
             public String getToolTipText(Object element) {
                 if (!(element instanceof AnalyticsPlan)) {
-                    return StringUtils.EMPTY;
+                    return null;
                 }
 
                 AnalyticsPlan plan = (AnalyticsPlan) element;
                 if (plan.getLatestJob() == null) {
-                    return StringUtils.EMPTY;
+                    return null;
                 }
 
                 switch (plan.getLatestJob().getStatus()) {
@@ -301,7 +305,7 @@ public class PlanViewerPart {
                     case RUNNING:
                         return TestOpsStringConstants.LBL_PLAN_STATUS_RUNNING;
                     default:
-                        return StringUtils.EMPTY;
+                        return null;
                 }
             }
 
@@ -314,7 +318,12 @@ public class PlanViewerPart {
             protected Class<AnalyticsPlan> getElementType() {
                 return null;
             }
-
+            
+            @Override
+            public boolean useNativeToolTip(Object object) {
+                return false;
+            }
+            
         });
 
         TableViewerColumn colName = new TableViewerColumn(viewer, SWT.NONE);
@@ -349,115 +358,171 @@ public class PlanViewerPart {
             protected String getText(AnalyticsPlan element) {
                 return element.getName();
             }
+            
+            @Override
+            public boolean useNativeToolTip(Object object) {
+                return false;
+            }
+            
+            @Override
+            public String getToolTipText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                AnalyticsPlan plan = (AnalyticsPlan)element;
+                if(StringUtils.isBlank(plan.getName())) {
+                    return null;
+                }
+                
+                return plan.getName();
+            }
 
         });
 
         TableViewerColumn colTestProject = new TableViewerColumn(viewer, SWT.NONE);
         colTestProject.getColumn().setText(TestOpsStringConstants.PLAN_TEST_PROJECT);
         tableLayout.addColumnData(new ColumnWeightData(325));
-        colTestProject.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(2) {
-
+        colTestProject.setLabelProvider(new ColumnLabelProvider() {
             @Override
-            protected Class<AnalyticsPlan> getElementType() {
-                return null;
+            public String getText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                return ((AnalyticsPlan)element).getTestProject().getName();
             }
-
+            
             @Override
-            protected Image getImage(AnalyticsPlan element) {
-                return null;
+            public String getToolTipText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                AnalyticsPlan plan = (AnalyticsPlan)element;
+                if(StringUtils.isBlank(plan.getTestProject().getName())) {
+                    return null;
+                }
+                
+                return plan.getTestProject().getName();
             }
-
-            @Override
-            protected String getText(AnalyticsPlan element) {
-                return element.getTestProject().getName();
-            }
-
         });
 
         TableViewerColumn colAgent = new TableViewerColumn(viewer, SWT.NONE);
         colAgent.getColumn().setText(TestOpsStringConstants.PLAN_AGENTS);
         tableLayout.addColumnData(new ColumnWeightData(150));
-        colAgent.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(3) {
-
+        colAgent.setLabelProvider(new ColumnLabelProvider() {
+            
             @Override
-            protected Class<AnalyticsPlan> getElementType() {
-                return null;
+            public String getText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                return getAgentNames(((AnalyticsPlan)element).getAgents());
             }
-
+            
             @Override
-            protected Image getImage(AnalyticsPlan element) {
-                return null;
-            }
-
-            @Override
-            protected String getText(AnalyticsPlan element) {
-                return getAgentNames(element.getAgents());
+            public String getToolTipText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                String agentName = getAgentNames(((AnalyticsPlan)element).getAgents());
+                if(StringUtils.isBlank(agentName)) {
+                    return null;
+                }
+                
+                return agentName;
             }
         });
 
         TableViewerColumn colLastExec = new TableViewerColumn(viewer, SWT.NONE);
         colLastExec.getColumn().setText(TestOpsStringConstants.PLAN_LAST_EXECUTION);
         tableLayout.addColumnData(new ColumnWeightData(130));
-        colLastExec.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(4) {
-
+        colLastExec.setLabelProvider(new ColumnLabelProvider() {
+            
             @Override
-            protected Class<AnalyticsPlan> getElementType() {
-                return null;
+            public String getText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                return getLastExecution(((AnalyticsPlan)element).getLatestJob());
             }
-
+            
             @Override
-            protected Image getImage(AnalyticsPlan element) {
-                return null;
-            }
-
-            @Override
-            protected String getText(AnalyticsPlan element) {
-                return getLastExecution(element.getLatestJob());
+            public String getToolTipText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                String lastExec = getLastExecution(((AnalyticsPlan)element).getLatestJob());
+                if(StringUtils.isBlank(lastExec)) {
+                    return null;
+                }
+                
+                return lastExec;
             }
         });
 
         TableViewerColumn colLastRun = new TableViewerColumn(viewer, SWT.NONE);
         colLastRun.getColumn().setText(TestOpsStringConstants.PLAN_LAST_RUN);
         tableLayout.addColumnData(new ColumnWeightData(130));
-        colLastRun.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(5) {
-
+        colLastRun.setLabelProvider(new ColumnLabelProvider() {
+            
             @Override
-            protected Class<AnalyticsPlan> getElementType() {
-                return null;
+            public String getText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                return getLastRun(((AnalyticsPlan)element).getLatestJob());
             }
-
+            
             @Override
-            protected Image getImage(AnalyticsPlan element) {
-                return null;
-            }
-
-            @Override
-            protected String getText(AnalyticsPlan element) {
-                return getLastRun(element.getLatestJob());
+            public String getToolTipText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                String lastRun = getLastRun(((AnalyticsPlan)element).getLatestJob());
+                if(StringUtils.isBlank(lastRun)) {
+                    return null;
+                }
+                
+                return lastRun;
             }
         });
 
         TableViewerColumn colNextRun = new TableViewerColumn(viewer, SWT.NONE);
         colNextRun.getColumn().setText(TestOpsStringConstants.PLAN_NEXT_RUN);
         tableLayout.addColumnData(new ColumnWeightData(130));
-        colNextRun.setLabelProvider(new TypeCheckedStyleCellLabelProvider<AnalyticsPlan>(6) {
-
+        colNextRun.setLabelProvider(new ColumnLabelProvider() {
+            
             @Override
-            protected Class<AnalyticsPlan> getElementType() {
-                return null;
+            public String getText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                return getNextRun(((AnalyticsPlan)element).getNextRunScheduler());
             }
-
+            
             @Override
-            protected Image getImage(AnalyticsPlan element) {
-                return null;
-            }
-
-            @Override
-            protected String getText(AnalyticsPlan element) {
-                return getNextRun(element.getNextRunScheduler());
+            public String getToolTipText(Object element) {
+                if(!(element instanceof AnalyticsPlan)) {
+                    return null;
+                }
+                
+                String nextRun = getNextRun(((AnalyticsPlan)element).getNextRunScheduler());
+                if(StringUtils.isBlank(nextRun)) {
+                    return null;
+                }
+                
+                return nextRun;
             }
         });
-
         viewer.setInput(plans);
         viewer.refresh();
     }
@@ -631,19 +696,17 @@ public class PlanViewerPart {
 
     private String getDateTimeFormat(Date time, boolean hasPrefix, boolean hasSuffix, boolean isNextTime) {
         ZonedDateTime dateTime = ZonedDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault());
-        ZonedDateTime now = ZonedDateTime.now();
         if (isSameDayWithLocal(time)) {
             return getRecentTimeFormat(time, hasPrefix, hasSuffix, isNextTime);
         }
-        boolean isSameYear = dateTime.getYear() == now.getYear();
+        boolean isSameYear = dateTime.getYear() == timeNow.getYear();
         return getFullTimeFormat(time, isSameYear);
     }
 
     private boolean isSameDayWithLocal(Date time) {
         ZonedDateTime dateTime = ZonedDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault());
-        ZonedDateTime now = ZonedDateTime.now();
-        return (dateTime.getYear() == now.getYear()) && (dateTime.getMonthValue() == now.getMonthValue())
-                && (dateTime.getDayOfMonth() == now.getDayOfMonth());
+        return (dateTime.getYear() == timeNow.getYear()) && (dateTime.getMonthValue() == timeNow.getMonthValue())
+                && (dateTime.getDayOfMonth() == timeNow.getDayOfMonth());
     }
 
     private String getRecentTimeFormat(Date time, boolean hasPrefix, boolean hasSuffix, boolean isNextTime) {
@@ -662,9 +725,12 @@ public class PlanViewerPart {
         long minutes = Math.round(seconds / 60.0);
         long hours = minutes / 60;
         minutes %= 60;
+        if (hours > 0 && minutes >= 30 ) {
+            hours++;
+        }
 
         String formatedHour = getHourFormat(hours, minutes);
-        String formatedMinute = getMinuteFormat(minutes, hours > 0);
+        String formatedMinute = hours <= 0 ? getMinuteFormat(minutes, hours > 0) : StringUtils.EMPTY;
 
         return String.format("%s %s %s %s", prefix, formatedHour, formatedMinute, suffix).trim();
     }
