@@ -154,7 +154,8 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnTroubleshoot.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	Trackings.trackTroubleshootFailedActivation();
+            	String errorMessage = lblProgressMessage.getText();
+            	Trackings.trackTroubleshootFailedActivation(errorMessage);
                 Program.launch("https://docs.katalon.com/katalon-studio/docs/troubleshoot-activation-problems.html");
             }
         });
