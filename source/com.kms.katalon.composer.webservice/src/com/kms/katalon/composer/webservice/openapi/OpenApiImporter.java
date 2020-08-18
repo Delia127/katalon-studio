@@ -326,6 +326,6 @@ public final class OpenApiImporter {
     }
 
     private String toValidFileName(String fileName) {
-        return fileName.trim().replaceAll("[^A-Za-z-0-9_().\\- ]", "_");
+        return fileName.trim().replaceAll("[^A-Za-z-0-9_().\\- ]+", "_");
     }
 }
