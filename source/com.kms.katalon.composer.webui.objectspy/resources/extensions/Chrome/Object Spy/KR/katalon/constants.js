@@ -34,3 +34,34 @@ var ELEMENT_FLASHING_OUTLINE_STYLE = "2px solid #0F0"
 var ELEMENT_FLASHING_OUTLINE_COLOR_1 = "#FFF";
 var ELEMENT_FLASHING_OUTLINE_COLOR_2 = "#0F0";
 var ELEMENT_FLASHING_OUTLINE_COLOR_3 = "#F00";
+
+// CONTEXT MENU CONSTANTS
+var SEPARATOR = "separator";
+var CAPTURE_OBJECT_ID = "captureObject";
+var CAPTURE_OBJECT_STRING = "Capture Object";
+var MOUSE_OVER_ID = "MouseOver";
+var MOUSE_OVER_STRING = "Mouse Over";
+
+var VERIFY_ELEMENT_TEXT_ID = "VerifyElementText";
+var VERIFY_ELEMENT_TEXT_STRING = "Verify Element Text";
+var VERIFY_ELEMENT_PRESENT_ID = "VerifyElementPresent";
+var VERIFY_ELEMENT_PRESENT_STRING = "Verify Element Present";
+var VERIFY_ELEMENT_NOT_PRESENT_ID = "VerifyElementNotPresent";
+var VERIFY_ELEMENT_NOT_PRESENT_STRING = "Verify Element Not Present";
+var VERIFY_ELEMENT_VISIBLE_ID = "VerifyElementVisible";
+var VERIFY_ELEMENT_VISIBLE_STRING = "Verify Element Visible";
+var VERIFY_ELEMENT_NOT_VISIBLE_ID = "VerifyElementNotVisible";
+var VERIFY_ELEMENT_NOT_VISIBLE_STRING = "Verify Element Not Visible";
+var VERIFY_ELEMENT_CLICKABLE_ID = "VerifyElementClickable";
+var VERIFY_ELEMENT_CLICKABLE_STRING = "Verify Element Clickable";
+var VERIFY_ELEMENT_NOT_CLICKABLE_ID = "VerifyElementNotClickable";
+var VERIFY_ELEMENT_NOT_CLICKABLE_STRING = "Verify Element Not Clickable";
+
+var WAIT_FOR_ELEMENT_PRESENT_ID = "WaitForElementPresent";
+var WAIT_FOR_ELEMENT_PRESENT_STRING = "Wait For Element Present";
+var WAIT_FOR_ELEMENT_NOT_PRESENT_ID = "WaitForElementNotPresent";
+var WAIT_FOR_ELEMENT_NOT_PRESENT_STRING = "Wait For Element Not Present";
+var WAIT_FOR_ELEMENT_VISIBLE_ID = "WaitForElementVisible";
+var WAIT_FOR_ELEMENT_VISIBLE_STRING = "Wait For Element Visible";
+var WAIT_FOR_ELEMENT_NOT_VISIBLE_ID = "WaitForElementNotVisible";
+var WAIT_FOR_ELEMENT_NOT_VISIBLE_STRING = "Wait For Element Not Visible";

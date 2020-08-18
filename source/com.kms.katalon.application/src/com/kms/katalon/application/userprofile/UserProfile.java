@@ -27,6 +27,8 @@ public class UserProfile {
     private boolean doneRunFirstTestCasePass;
 
     private boolean doneRunFirstTestCaseFail;
+    
+    private boolean isEnableKURecorderHint = true;
 
     public boolean isNewUser() {
         return experienceLevel == UserExperienceLevel.FRESHER;
@@ -130,5 +132,13 @@ public class UserProfile {
 
     public void setDoneRunFirstTestCaseFail(boolean doneRunFirstTestCaseFail) {
         this.doneRunFirstTestCaseFail = doneRunFirstTestCaseFail;
+    }
+
+    public boolean isEnableKURecorderHint() {
+        return isEnableKURecorderHint;
+    }
+
+    public void setEnableKURecorderHint(boolean isEnableKURecorderHint) {
+        this.isEnableKURecorderHint = isEnableKURecorderHint;
     }
 }

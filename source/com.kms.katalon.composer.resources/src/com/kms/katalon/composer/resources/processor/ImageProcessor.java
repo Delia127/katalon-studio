@@ -283,6 +283,7 @@ public class ImageProcessor {
     }
 
     private void registerToolbarImages() {
+        ImageManager.registerImage(IImageKeys.KU_RECORDER_16);
         ImageManager.registerImage(IImageKeys.BUG_24);
         ImageManager.registerImage(IImageKeys.GIT_24);
         ImageManager.registerImage(IImageKeys.MOBILE_OBJECT_SPY_24);
