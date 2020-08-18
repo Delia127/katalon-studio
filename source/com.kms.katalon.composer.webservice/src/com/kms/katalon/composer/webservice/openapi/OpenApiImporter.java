@@ -61,7 +61,22 @@ public final class OpenApiImporter {
         SwaggerParseResult result = parser.readLocation(projectFilePath, null, options);
 
         OpenAPI openAPI = result.getOpenAPI();
+        FolderEntity projectImportFolder = getProjectImportFolder(getProjectName(openAPI), rootFolder);
+        projectImportResult = new OpenApiProjectImportResult(projectImportFolder, getBasePath(openAPI));
 
+        Paths paths = openAPI.getPaths();
+        for (String pathKey : paths.keySet()) {
+            PathItem path = paths.get(pathKey);
+            String resourceName = path.getSummary() != null ? path.getSummary() : pathKey;
+            OpenApiRestResourceImportResult resourceImportResult = projectImportResult
+                    .newResource(toValidFileName(resourceName), pathKey);
+            parseRequests(resourceImportResult, path);
+        }
+
+        return projectImportResult;
+    }
+
+    private String getProjectName(OpenAPI openAPI) {
         String name = null;
         Info info = openAPI.getInfo();
         if (info != null) {
@@ -70,8 +85,10 @@ public final class OpenApiImporter {
                 name = title;
             }
         }
-        FolderEntity projectImportFolder = getProjectImportFolder(name, rootFolder);
+        return name;
+    }
 
+    private String getBasePath(OpenAPI openAPI) {
         List<Server> servers = openAPI.getServers();
         String url = "/";
         if (servers != null) {
@@ -91,17 +108,7 @@ public final class OpenApiImporter {
                 }
             }
         }
-        projectImportResult = new OpenApiProjectImportResult(projectImportFolder, url);
-
-        Paths paths = openAPI.getPaths();
-        for (String pathKey : paths.keySet()) {
-            PathItem path = paths.get(pathKey);
-            String resourceName = path.getSummary() != null ? path.getSummary() : pathKey;
-            OpenApiRestResourceImportResult resourceImportResult = projectImportResult
-                    .newResource(toValidFileName(resourceName), pathKey);
-            parseRequests(resourceImportResult, path);
-        }
-        return projectImportResult;
+        return url;
     }
 
     private FolderEntity getProjectImportFolder(String name, FolderEntity parentFolder) throws Exception {
@@ -117,10 +124,6 @@ public final class OpenApiImporter {
         folder.setFolderType(parentFolder.getFolderType());
         folder.setDescription("folder");
         return folder;
-    }
-
-    private String toValidFileName(String fileName) {
-        return fileName.trim().replaceAll("[^A-Za-z-0-9_().\\- ]", "_");
     }
 
     private void parseRequests(OpenApiRestResourceImportResult resourceImportResult, PathItem pathItem) {
@@ -320,5 +323,9 @@ public final class OpenApiImporter {
     private String parseExample(Object ex) {
         JSONObject json = new JSONObject(ex.toString());
         return json.toString(2);
+    }
+
+    private String toValidFileName(String fileName) {
+        return fileName.trim().replaceAll("[^A-Za-z-0-9_().\\- ]", "_");
     }
 }
