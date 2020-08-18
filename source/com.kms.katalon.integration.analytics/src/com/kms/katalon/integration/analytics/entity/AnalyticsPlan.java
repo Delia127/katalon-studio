@@ -20,6 +20,10 @@ public class AnalyticsPlan {
     private AnalyticsPlanTestProject testProject;
 
     private AnalyticsAgent[] agents;
+    
+    private AnalyticsK8sAgent[] k8sAgents;
+    
+    private AnalyticsCircleCIAgent[] circleCIAgents;
 
     private String cloudType;
 
@@ -129,6 +133,22 @@ public class AnalyticsPlan {
 
     public void setNextRunScheduler(AnalyticsRunScheduler nextRunScheduler) {
         this.nextRunScheduler = nextRunScheduler;
+    }
+
+    public AnalyticsK8sAgent[] getK8sAgents() {
+        return k8sAgents;
+    }
+
+    public void setK8sAgents(AnalyticsK8sAgent[] k8sAgents) {
+        this.k8sAgents = k8sAgents;
+    }
+
+    public AnalyticsCircleCIAgent[] getCircleCIAgents() {
+        return circleCIAgents;
+    }
+
+    public void setCircleCIAgents(AnalyticsCircleCIAgent[] circleCIAgents) {
+        this.circleCIAgents = circleCIAgents;
     }
 
 }

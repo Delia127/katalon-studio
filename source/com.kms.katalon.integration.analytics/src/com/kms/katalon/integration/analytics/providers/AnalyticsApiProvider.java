@@ -773,7 +773,7 @@ public class AnalyticsApiProvider {
             AnalyticsQueryCondition conditionProject = new AnalyticsQueryCondition("Project.id", "=",
                     projectId.toString());
             query.setConditions(new AnalyticsQueryCondition[] { conditionProject });
-            AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(0, 30, new String[] { "name,desc" });
+            AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(0, 30, new String[] { "name,asc" });
             query.setPagination(pagination);
 
             builder.setParameter("q", JsonUtil.toJson(query));
