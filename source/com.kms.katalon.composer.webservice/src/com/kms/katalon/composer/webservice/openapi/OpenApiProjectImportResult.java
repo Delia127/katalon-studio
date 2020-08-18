@@ -9,10 +9,13 @@ public class OpenApiProjectImportResult extends OpenApiImportNode {
 
     private FolderEntity projectFolder;
 
-    private List<OpenApiRestServiceImportResult> restServiceImportResults = new ArrayList<>();
+    private String basePath;
 
-    public OpenApiProjectImportResult(FolderEntity folder) {
+    private List<OpenApiRestResourceImportResult> resourceImportResults = new ArrayList<>();
+
+    public OpenApiProjectImportResult(FolderEntity folder, String basePath) {
         this.projectFolder = folder;
+        this.basePath = basePath;
     }
 
     @Override
@@ -20,19 +23,19 @@ public class OpenApiProjectImportResult extends OpenApiImportNode {
         return projectFolder;
     }
 
-    public OpenApiRestServiceImportResult[] getServiceImportResults() {
-        return restServiceImportResults.toArray(new OpenApiRestServiceImportResult[restServiceImportResults.size()]);
+    protected String getBasePath() {
+        return basePath;
     }
 
-    public OpenApiRestServiceImportResult newService(String name) {
+    public OpenApiRestResourceImportResult newResource(String name, String path) {
         FolderEntity folder = newFolder(name, projectFolder);
-        OpenApiRestServiceImportResult serviceResult = new OpenApiRestServiceImportResult(this, folder);
-        restServiceImportResults.add(serviceResult);
-        return serviceResult;
+        OpenApiRestResourceImportResult resourceResult = new OpenApiRestResourceImportResult(this, path, folder);
+        resourceImportResults.add(resourceResult);
+        return resourceResult;
     }
 
     @Override
     public OpenApiImportNode[] getChildImportNodes() {
-        return restServiceImportResults.toArray(new OpenApiImportNode[restServiceImportResults.size()]);
+        return resourceImportResults.toArray(new OpenApiImportNode[resourceImportResults.size()]);
     }
 }

@@ -8,7 +8,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 
 public class OpenApiRestResourceImportResult extends OpenApiRestResourceImportNode {
 
-    private OpenApiRestServiceImportResult serviceImportResult;
+    private OpenApiProjectImportResult projectImportResult;
 
     private String path;
 
@@ -16,15 +16,11 @@ public class OpenApiRestResourceImportResult extends OpenApiRestResourceImportNo
 
     private List<OpenApiRestRequestImportResult> requestImportResults = new ArrayList<>();
 
-    public OpenApiRestResourceImportResult(OpenApiRestServiceImportResult serviceImportResult, String path,
+    public OpenApiRestResourceImportResult(OpenApiProjectImportResult projectImportResult, String path,
             FolderEntity folder) {
-        this.serviceImportResult = serviceImportResult;
+        this.projectImportResult = projectImportResult;
         this.path = path;
         this.resourceFolder = folder;
-    }
-
-    protected OpenApiRestServiceImportResult getServiceImportResult() {
-        return serviceImportResult;
     }
 
     public String getPath() {
@@ -44,7 +40,7 @@ public class OpenApiRestResourceImportResult extends OpenApiRestResourceImportNo
 
     @Override
     public OpenApiImportNode getParentImportNode() {
-        return serviceImportResult;
+        return projectImportResult;
     }
 
     @Override

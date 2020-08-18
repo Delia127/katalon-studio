@@ -36,7 +36,7 @@ public class OpenApiRestRequestImportResult extends OpenApiRestResourceImportNod
 
     static final String FORM_URLENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
 
-    private OpenApiRestServiceImportResult serviceImportResult;
+    private OpenApiProjectImportResult projectImportResult;
 
     private OpenApiRestResourceImportResult resourceImportResult;
 
@@ -215,8 +215,8 @@ public class OpenApiRestRequestImportResult extends OpenApiRestResourceImportNod
     }
 
     private String getBasePath() {
-        OpenApiRestServiceImportResult serviceImportResult = getServiceImportResult();
-        String basePath = serviceImportResult.getBasePath();
+        OpenApiProjectImportResult projectImportResult = getProjectImportResult();
+        String basePath = projectImportResult.getBasePath();
         return basePath;
     }
 
@@ -231,14 +231,14 @@ public class OpenApiRestRequestImportResult extends OpenApiRestResourceImportNod
         return resourcePath;
     }
 
-    private OpenApiRestServiceImportResult getServiceImportResult() {
-        if (serviceImportResult == null) {
+    private OpenApiProjectImportResult getProjectImportResult() {
+        if (projectImportResult == null) {
             OpenApiImportNode importNode = resourceImportResult;
-            while (!(importNode instanceof OpenApiRestServiceImportResult)) {
+            while (!(importNode instanceof OpenApiProjectImportResult)) {
                 importNode = importNode.getParentImportNode();
             }
-            serviceImportResult = (OpenApiRestServiceImportResult) importNode;
+            projectImportResult = (OpenApiProjectImportResult) importNode;
         }
-        return serviceImportResult;
+        return projectImportResult;
     }
 }

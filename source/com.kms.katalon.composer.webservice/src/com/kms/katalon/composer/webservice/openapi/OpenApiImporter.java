@@ -71,7 +71,6 @@ public final class OpenApiImporter {
             }
         }
         FolderEntity projectImportFolder = getProjectImportFolder(name, rootFolder);
-        projectImportResult = new OpenApiProjectImportResult(projectImportFolder);
 
         List<Server> servers = openAPI.getServers();
         String url = "/";
@@ -92,13 +91,13 @@ public final class OpenApiImporter {
                 }
             }
         }
-        OpenApiRestServiceImportResult serviceImportResult = parseService(projectImportResult, url, name);
+        projectImportResult = new OpenApiProjectImportResult(projectImportFolder, url);
 
         Paths paths = openAPI.getPaths();
         for (String pathKey : paths.keySet()) {
             PathItem path = paths.get(pathKey);
             String resourceName = path.getSummary() != null ? path.getSummary() : pathKey;
-            OpenApiRestResourceImportResult resourceImportResult = serviceImportResult
+            OpenApiRestResourceImportResult resourceImportResult = projectImportResult
                     .newResource(toValidFileName(resourceName), pathKey);
             parseRequests(resourceImportResult, path);
         }
@@ -120,15 +119,8 @@ public final class OpenApiImporter {
         return folder;
     }
 
-    private OpenApiRestServiceImportResult parseService(OpenApiProjectImportResult projectImportResult, String url,
-            String name) {
-        OpenApiRestServiceImportResult serviceImportResult = projectImportResult.newService(name);
-        serviceImportResult.setBasePath(url);
-        return serviceImportResult;
-    }
-
     private String toValidFileName(String fileName) {
-        return fileName.replaceAll("\\W+", "_");
+        return fileName.trim().replaceAll("[^A-Za-z-0-9_().\\- ]", "_");
     }
 
     private void parseRequests(OpenApiRestResourceImportResult resourceImportResult, PathItem pathItem) {
