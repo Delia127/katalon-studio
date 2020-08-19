@@ -58,7 +58,9 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsRunScheduler;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsAgent;
+import com.kms.katalon.integration.analytics.entity.AnalyticsCircleCIAgent;
 import com.kms.katalon.integration.analytics.entity.AnalyticsJob;
+import com.kms.katalon.integration.analytics.entity.AnalyticsK8sAgent;
 import com.kms.katalon.integration.analytics.entity.AnalyticsPlan;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
@@ -419,7 +421,7 @@ public class PlanViewerPart {
                     return null;
                 }
                 
-                return getAgentNames(((AnalyticsPlan)element).getAgents());
+                return getAgentNames((AnalyticsPlan)element);
             }
             
             @Override
@@ -428,7 +430,7 @@ public class PlanViewerPart {
                     return null;
                 }
                 
-                String agentName = getAgentNames(((AnalyticsPlan)element).getAgents());
+                String agentName = getAgentNames((AnalyticsPlan)element);
                 if(StringUtils.isBlank(agentName)) {
                     return null;
                 }
@@ -639,10 +641,20 @@ public class PlanViewerPart {
         return String.format("%s/team/%d/project/%d/grid/plan/%d/job", serverUrl, teamId, projectId, planId);
     }
 
-    private String getAgentNames(AnalyticsAgent[] agents) {
+    private String getAgentNames(AnalyticsPlan plan) {
         String delimiter = ", ";
         StringBuffer names = new StringBuffer();
-        for (AnalyticsAgent agent : agents) {
+        for (AnalyticsAgent agent : plan.getAgents()) {
+            names.append(agent.getName());
+            names.append(delimiter);
+        }
+        
+        for (AnalyticsK8sAgent agent : plan.getK8sAgents()) {
+            names.append(agent.getName());
+            names.append(delimiter);
+        }
+        
+        for (AnalyticsCircleCIAgent agent : plan.getCircleCIAgents()) {
             names.append(agent.getName());
             names.append(delimiter);
         }
@@ -713,7 +725,7 @@ public class PlanViewerPart {
         String prefix = hasPrefix ? TestOpsStringConstants.TIME_FORMAT_PREFIX : StringUtils.EMPTY;
         String suffix = hasSuffix ? TestOpsStringConstants.TIME_FORMAT_SUFFIX : StringUtils.EMPTY;
 
-        long seconds = Instant.now().getEpochSecond() - time.toInstant().getEpochSecond();
+        long seconds = timeNow.toInstant().getEpochSecond() - time.toInstant().getEpochSecond();
         if (isNextTime) {
             seconds *= -1;
         }
