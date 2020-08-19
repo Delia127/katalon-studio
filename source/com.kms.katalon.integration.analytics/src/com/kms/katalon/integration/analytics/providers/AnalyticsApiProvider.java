@@ -266,8 +266,7 @@ public class AnalyticsApiProvider {
             
             KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
             if (KatalonPackage.ENGINE.equals(katalonPackage)) {
-                String isFloatingEngine = System.getenv("ECLIPSE_SANDBOX");
-                if ("1.11".equals(isFloatingEngine)) {
+                if (KatalonApplication.isRunningInDevOpsEnvironment()) {
                     katalonPackage = KatalonPackage.FLOATING_ENGINE;
                 }
             }

@@ -25,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
@@ -341,9 +342,10 @@ public class ConsoleMain {
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
+            
+            printLicenseMessage();
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-            
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.RE_EXECUTE_COMPLETED, exitCode));
 
@@ -360,27 +362,6 @@ public class ConsoleMain {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
-    
-    private static String getLicenseFilePath(OptionSet options) {
-        String licenseFile = null;
-        String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
-        if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
-            licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_FROM_OPTIONS, licenseFile));
-        } else if (environmentVariable != null) {
-            licenseFile = environmentVariable;
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_FROM_ENVIRONMENT, licenseFile));
-        } else {
-            licenseFile = readLicenseFromDefaultLocation();
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_DEFAULT_PATH, licenseFile));
-        }
-        return licenseFile;
-    }
-    
-    private static String readLicenseFromDefaultLocation() {
-        File defaultLicenseFile = new File(ApplicationInfo.userDirLocation() + "/license/katalon.lic");
-        return defaultLicenseFile.exists() ? defaultLicenseFile.getAbsolutePath() : "";
-    }
 
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon.activation");
@@ -394,6 +375,14 @@ public class ConsoleMain {
         if (reloadMethod != null) {
             reloadMethod.invoke(handler, apiKey);
         }
+    }
+    
+    private static void printLicenseMessage() {
+    	if (KatalonApplication.isRunningInDevOpsEnvironment()) {
+    		LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_DEVOPS_LICENSE_COMPATIBILITY);
+    	} else {
+    		LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY);
+    	}
     }
     
     private static void installBasicReportPluginIfNotAvailable() throws Exception {

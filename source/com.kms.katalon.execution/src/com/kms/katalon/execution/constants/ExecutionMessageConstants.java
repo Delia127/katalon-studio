@@ -176,6 +176,10 @@ public class ExecutionMessageConstants extends NLS {
 
     // TestSuiteLauncherOptionParser
     public static String CONSOLE_MSG_PROFILE_NOT_FOUND;
+
+	public static String ConsoleMain_MSG_DEVOPS_LICENSE_COMPATIBILITY;
+
+	public static String ConsoleMain_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY;
     
     public static String LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE;
 
