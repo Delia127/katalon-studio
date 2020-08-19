@@ -136,7 +136,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private CTableViewer tableViewer;
 
-    private TableColumn tblclmnRun;
+    private TableColumn tblclmnNo, tblclmnId, tblclmnEnviroment, tblclmnRunWithData, tblclmnProfile, tblclmnRun;
 
     private long lastModified;
 
@@ -497,43 +497,43 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         testSuiteWrapperTable.setHeaderVisible(true);
 
         TableViewerColumn tbvcNo = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tblclmnNo = tbvcNo.getColumn();
+        tblclmnNo = tbvcNo.getColumn();
         tblclmnNo.setText(StringConstants.NO_);
         tbvcNo.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.NO_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnNo, new ColumnPixelData(50));
 
         TableViewerColumn tbvcId = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tblclmnId = tbvcId.getColumn();
+        tblclmnId = tbvcId.getColumn();
         tblclmnId.setText(StringConstants.ID);
         tbvcId.setEditingSupport(new TestSuiteIdEditingSupport(this));
         tbvcId.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.ID_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnId, new ColumnPixelData(300));
+        tableLayout.setColumnData(tblclmnId, new ColumnWeightData(50, 300));
 
         TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
+        tblclmnEnviroment = tbvcRunWith.getColumn();
         tblclmnEnviroment.setText(StringConstants.PA_TABLE_COLUMN_RUN_WITH);
         tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
         tbvcRunWith.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnEnviroment, new ColumnPixelData(130));
+        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
 
         TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
+        tblclmnRunWithData = tbvcRunWithData.getColumn();
         tblclmnRunWithData.setText(ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_RUN_CONFIGURATION_DATA);
         tbvcRunWithData.setEditingSupport(new RunConfigurationDataEditingSupport(this));
         tbvcRunWithData.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnRunWithData, new ColumnPixelData(120));
+        tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(20, 100));
 
         TableViewerColumn tbvcProfile = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tblclmnProfile = tbvcProfile.getColumn();
+        tblclmnProfile = tbvcProfile.getColumn();
         tblclmnProfile.setText(ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_PROFILE);
         tbvcProfile.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.PROFILE_COLUMN_IDX));
         tbvcProfile.setEditingSupport(new ExecutionProfileEditingSupport(this));
-        tableLayout.setColumnData(tblclmnProfile, new ColumnPixelData(300));
+        tableLayout.setColumnData(tblclmnProfile, new ColumnWeightData(40, 200));
 
         TableViewerColumn tbvcRun = new TableViewerColumn(tableViewer, SWT.NONE);
         tblclmnRun = tbvcRun.getColumn();
@@ -541,9 +541,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRun.setEditingSupport(new RunEnabledEditingSupport(this));
         tbvcRun.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(100, 50));
+        tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(10, 70));
         
-        testSuiteTableComposite.setLayout(tableLayout);
+        tblclmnProfile.addListener(SWT.Resize, tableDidMountListener(tableLayout));
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         DefaultTableColumnViewerEditor.create(tableViewer);
@@ -556,6 +556,19 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         ColumnViewerUtil.setTableActivation(tableViewer);
         hookDropTestSuiteEvent();
         hookDragTestSuiteEvent();
+    }
+    
+    private Listener tableDidMountListener(TableColumnLayout tableLayout) {
+        return new Listener() {
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                tableLayout.setColumnData(tblclmnId, new ColumnPixelData(tblclmnId.getWidth()));
+                tableLayout.setColumnData(tblclmnEnviroment, new ColumnPixelData(tblclmnEnviroment.getWidth()));
+                tableLayout.setColumnData(tblclmnRunWithData, new ColumnPixelData(tblclmnRunWithData.getWidth()));
+                tableLayout.setColumnData(tblclmnProfile, new ColumnPixelData(tblclmnProfile.getWidth()));
+                tblclmnProfile.removeListener(SWT.Resize, this);
+            }
+        };
     }
 
     private void hookDragTestSuiteEvent() {
