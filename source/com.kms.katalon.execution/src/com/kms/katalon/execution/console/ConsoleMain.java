@@ -378,11 +378,11 @@ public class ConsoleMain {
     }
     
     private static void printLicenseMessage() {
-    	if (KatalonApplication.isRunningInDevOpsEnvironment()) {
-    		LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_DEVOPS_LICENSE_COMPATIBILITY);
-    	} else {
-    		LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY);
-    	}
+        if (KatalonApplication.isRunningInDevOpsEnvironment()) {
+            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_DEVOPS_LICENSE_COMPATIBILITY);
+        } else {
+            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY);
+        }
     }
     
     private static void installBasicReportPluginIfNotAvailable() throws Exception {
