@@ -35,6 +35,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
@@ -65,6 +66,12 @@ public class DownloadTestCaseJob extends QTestJob {
     private boolean isMergeTestCaseConfimed;
 
     private IQTestCredential credential;
+
+    private static final int MAX_SUFFIX_LENGTH = 7;
+
+    private static final int GROOVY_SCRIPT_FILE_NAME_LENGTH = 19;
+
+    private static final int FILE_SEPAPRATOR_LENGTH = 1;
 
     public DownloadTestCaseJob(UISynchronize sync) {
         super(StringConstants.JOB_TASK_DOWNLOAD_TEST_CASE);
@@ -347,7 +354,7 @@ public class DownloadTestCaseJob extends QTestJob {
                                 new Object[] { existingTestCase.getId(), existingTestCase });
             } else {
                 TestCaseEntity newTestCaseEntity = TestCaseController.getInstance().newTestCase(parentFolder,
-                        qTestCase.getPid() + " " + qTestCase.getName());
+                        toValidTestCaseName(parentFolder, qTestCase.getPid() + " " + qTestCase.getName()));
                 EntityTrackingHelper.trackTestCaseCreated();
 
                 addDescriptionForTestCase(qTestProject, qTestCase, newTestCaseEntity);
@@ -400,6 +407,12 @@ public class DownloadTestCaseJob extends QTestJob {
         parser.parseGroovyAstIntoScript(astNodes);
         FileUtils.writeStringToFile(new File(TestCaseController.getInstance().getGroovyScriptFilePath(testCaseEntity)),
                 parser.getValue());
+    }
 
+    private String toValidTestCaseName(FolderEntity parentFolder, String name) {
+        int taken = parentFolder.getLocation().length() + FILE_SEPAPRATOR_LENGTH + MAX_SUFFIX_LENGTH
+                + FILE_SEPAPRATOR_LENGTH + GROOVY_SCRIPT_FILE_NAME_LENGTH;
+        int available = FileServiceConstant.MAX_FILE_PATH_LENGTH - taken;
+        return name.length() > available ? name.substring(0, available) : name;
     }
 }
