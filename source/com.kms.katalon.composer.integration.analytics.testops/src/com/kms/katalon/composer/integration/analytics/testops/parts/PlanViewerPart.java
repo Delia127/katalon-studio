@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.integration.analytics.testops.parts;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,8 +42,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
@@ -66,7 +63,7 @@ import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.composer.integration.analytics.testops.constants.TestOpsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.testops.constants.TestOpsStringConstants;
-import com.kms.katalon.util.CryptoUtil;
+import com.kms.katalon.composer.integration.analytics.testops.utils.TestOpsUtil;
 
 @SuppressWarnings("restriction")
 public class PlanViewerPart {
@@ -167,11 +164,10 @@ public class PlanViewerPart {
                     ProjectController.getInstance().getCurrentProject().getFolderLocation());
             AnalyticsProject project = settingStore.getProject();
             String serverUrl = settingStore.getServerEndpoint();
-            String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+            String email = settingStore.getEmail();
+            String password = settingStore.getPassword();
 
-            if (!StringUtils.isBlank(email) && !StringUtils.isBlank(encryptedPassword)) {
-                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+            if (!StringUtils.isBlank(email) && !StringUtils.isBlank(password)) {
                 AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                 return AnalyticsApiProvider.getPlans(project.getId(), serverUrl, token.getAccess_token());
             }
@@ -340,7 +336,7 @@ public class PlanViewerPart {
                 }
 
                 AnalyticsPlan plan = (AnalyticsPlan) cell.getElement();
-                String planUrl = getPlanUrl(refineHost(analyticsSettingStore.getServerEndpoint()),
+                String planUrl = getPlanUrl(TestOpsUtil.truncateURL(analyticsSettingStore.getServerEndpoint()),
                         analyticsSettingStore.getTeam().getId(), analyticsSettingStore.getProject().getId(),
                         plan.getId());
                 Program.launch(planUrl);
@@ -633,7 +629,7 @@ public class PlanViewerPart {
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         AnalyticsProject project = analyticsSettingStore.getProject();
         AnalyticsTeam team = analyticsSettingStore.getTeam();
-        String serverUrl = refineHost(analyticsSettingStore.getServerEndpoint());
+        String serverUrl = TestOpsUtil.truncateURL(analyticsSettingStore.getServerEndpoint());
         return String.format("%s/team/%d/project/%d/grid", serverUrl, team.getId(), project.getId());
     }
 
@@ -779,16 +775,6 @@ public class PlanViewerPart {
         }
         return ZonedDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern(formatTemplate));
-    }
-    
-    private String refineHost(String host) {
-        if (host == null) {
-            return null;
-        }
-        if (host.endsWith("/")) {
-            return host.substring(0, host.length() - 1);
-        }
-        return host;
     }
 
 }
