@@ -340,7 +340,7 @@ public class PlanViewerPart {
                 }
 
                 AnalyticsPlan plan = (AnalyticsPlan) cell.getElement();
-                String planUrl = getPlanUrl(analyticsSettingStore.getServerEndpoint(),
+                String planUrl = getPlanUrl(refineHost(analyticsSettingStore.getServerEndpoint()),
                         analyticsSettingStore.getTeam().getId(), analyticsSettingStore.getProject().getId(),
                         plan.getId());
                 Program.launch(planUrl);
@@ -633,7 +633,7 @@ public class PlanViewerPart {
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         AnalyticsProject project = analyticsSettingStore.getProject();
         AnalyticsTeam team = analyticsSettingStore.getTeam();
-        String serverUrl = analyticsSettingStore.getServerEndpoint();
+        String serverUrl = refineHost(analyticsSettingStore.getServerEndpoint());
         return String.format("%s/team/%d/project/%d/grid", serverUrl, team.getId(), project.getId());
     }
 
@@ -779,6 +779,16 @@ public class PlanViewerPart {
         }
         return ZonedDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern(formatTemplate));
+    }
+    
+    private String refineHost(String host) {
+        if (host == null) {
+            return null;
+        }
+        if (host.endsWith("/")) {
+            return host.substring(0, host.length() - 1);
+        }
+        return host;
     }
 
 }
