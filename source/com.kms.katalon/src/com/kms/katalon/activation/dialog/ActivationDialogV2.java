@@ -154,8 +154,9 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnTroubleshoot.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	String errorMessage = lblProgressMessage.getText();
-            	Trackings.trackTroubleshootFailedActivation(errorMessage);
+                String email = txtEmail.getText();
+                String errorMessage = lblProgressMessage.getText();
+                Trackings.trackTroubleshootFailedActivation(email, errorMessage);
                 Program.launch("https://docs.katalon.com/katalon-studio/docs/troubleshoot-activation-problems.html");
             }
         });
@@ -171,9 +172,9 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	btnTroubleshoot.setVisible(false);
-            	getShell().setDefaultButton(btnActivate);
-            	
+                btnTroubleshoot.setVisible(false);
+                getShell().setDefaultButton(btnActivate);
+
                 String serverUrl = txtServerUrl.getText().trim();
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
@@ -407,8 +408,8 @@ public class ActivationDialogV2 extends AbstractDialog {
         lblProgressMessage.getShell().pack();
         ((GridData) parent.getLayoutData()).widthHint = SWT.DEFAULT;
         if (isError) {
-        	btnTroubleshoot.setVisible(true);
-        	getShell().setDefaultButton(btnTroubleshoot);
+            btnTroubleshoot.setVisible(true);
+            getShell().setDefaultButton(btnTroubleshoot);
         }
     }
 

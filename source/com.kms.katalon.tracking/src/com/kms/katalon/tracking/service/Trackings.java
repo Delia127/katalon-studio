@@ -667,8 +667,8 @@ public class Trackings {
         trackUserAction("clickOnExceptionLinkInLogViewer", "link", link);
     }
     
-    public static void trackTroubleshootFailedActivation(String errorMessage) {
-    	trackAction("troubleshoot-failed-activation", true, "errorMessage", errorMessage);
+    public static void trackTroubleshootFailedActivation(String email, String errorMessage) {
+    	trackAction("troubleshoot-failed-activation", true, "email", email, "errorMessage", errorMessage);
     }
     
     private static void trackUserAction(String actionName, Object... properties) {
