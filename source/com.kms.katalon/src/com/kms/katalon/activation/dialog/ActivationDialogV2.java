@@ -63,7 +63,7 @@ public class ActivationDialogV2 extends AbstractDialog {
     
     private char defaultEchoChar = '\u2022';
     
-    private Button btnShowPassword;
+    private Button btnShowPw;
 
     private Label lblProgressMessage;
 
@@ -124,10 +124,10 @@ public class ActivationDialogV2 extends AbstractDialog {
         txtEmail.addModifyListener(modifyListener);
         txtPassword.addModifyListener(modifyListener);
         
-        btnShowPassword.addSelectionListener(new SelectionAdapter() {
+        btnShowPw.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (btnShowPassword.getSelection()) {
+                if (btnShowPw.getSelection()) {
                     txtPassword.setEchoChar('\0');
                 } else {
                     txtPassword.setEchoChar(defaultEchoChar);
@@ -484,8 +484,8 @@ public class ActivationDialogV2 extends AbstractDialog {
         txtPassword.setLayoutData(gdText);
         txtPassword.setEchoChar(defaultEchoChar);
         
-        btnShowPassword = new Button(passwordComposite, SWT.CHECK);
-        btnShowPassword.setText(MessageConstants.ActivationDialogV2_CB_SHOW_PASSWORD);
+        btnShowPw = new Button(passwordComposite, SWT.CHECK);
+        btnShowPw.setText(MessageConstants.ActivationDialogV2_CB_SHOW_PW);
 
         Label lblMachineKey = new Label(contentComposite, SWT.NONE);
         lblMachineKey.setLayoutData(gdLabel);
