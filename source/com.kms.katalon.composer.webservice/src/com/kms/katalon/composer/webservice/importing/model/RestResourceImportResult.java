@@ -44,7 +44,14 @@ public class RestResourceImportResult extends RestResourceImportNode {
     }
 
     public String getPath() {
-        return path;
+        StringBuilder pathBuilder = new StringBuilder();
+        if (parentResourceImportResult != null && parentResourceImportResult.getPath() != null) {
+            pathBuilder.append(parentResourceImportResult.getPath());
+        }
+        if (path != null) {
+            pathBuilder.append(path);
+        }
+        return pathBuilder.toString();
     }
 
     protected RestResourceImportResult getParentResourceImportResult() {
@@ -77,6 +84,11 @@ public class RestResourceImportResult extends RestResourceImportNode {
         childFolderNames.add(name);
         FolderEntity folder = newFolder(name, resourceFolder);
         RestResourceImportResult resourceResult = new RestResourceImportResult(this, path, folder);
+        getParameters().stream().forEach(p -> {
+            RestParameterImportResult pr = resourceResult.addNewParameter(p.getName());
+            pr.setValue(p.getValue());
+            pr.setStyle(p.getStyle());
+        });
         childResourceImportResults.add(resourceResult);
         return resourceResult;
     }
