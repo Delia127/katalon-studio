@@ -254,6 +254,7 @@ stages:
           start-sleep -Seconds 300 # sleep for 5 mins just to allow updates to be processed 
           Remove-Item -Path c:\tmp\chrome.msi –Force
       displayName: Install Chrome
+      condition: eq(variables.RUN_TESTS, 'true')
 
     - checkout: WindowTest
       fetchDepth: 1
