@@ -172,6 +172,7 @@ public class ActivationDialogV2 extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
             	btnTroubleshoot.setVisible(false);
+            	getShell().setDefaultButton(btnActivate);
             	
                 String serverUrl = txtServerUrl.getText().trim();
                 String username = txtEmail.getText();
@@ -407,6 +408,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         ((GridData) parent.getLayoutData()).widthHint = SWT.DEFAULT;
         if (isError) {
         	btnTroubleshoot.setVisible(true);
+        	getShell().setDefaultButton(btnTroubleshoot);
         }
     }
 

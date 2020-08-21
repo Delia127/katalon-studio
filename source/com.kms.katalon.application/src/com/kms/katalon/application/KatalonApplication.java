@@ -91,6 +91,10 @@ public class KatalonApplication {
         String launcherName = props.getProperty("eclipse.launcher.name");
         return launcherName.equalsIgnoreCase("katalonc");
     }
+    
+    public static boolean isRunningInDevOpsEnvironment() {
+    	return "1.11".equals(System.getenv("ECLIPSE_SANDBOX"));
+    }
 
     public static String getMacAddress() {
         String macAdress = "";
