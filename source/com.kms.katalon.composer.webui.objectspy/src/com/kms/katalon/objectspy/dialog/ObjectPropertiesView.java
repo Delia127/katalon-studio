@@ -36,6 +36,8 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -58,6 +60,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.dal.fileservice.dataprovider.EntityNameFileServiceDataProvider;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.objectspy.constants.ImageConstants;
@@ -65,6 +68,7 @@ import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.util.listener.EventListener;
 import com.kms.katalon.util.listener.EventManager;
 
@@ -80,6 +84,8 @@ public class ObjectPropertiesView extends Composite
     private static final String RADIO_LABEL_XPATH = ObjectspyMessageConstants.DIA_RADIO_LABEL_XPATH;
 
     private static final String RADIO_LABEL_ATTRIBUTES = ObjectspyMessageConstants.DIA_RADIO_LABEL_ATTRIBUTES;
+
+    private static final String RADIO_LABEL_IMAGE = ObjectspyMessageConstants.DIA_RADIO_LABEL_IMAGE;
 
     private static final String COL_LABEL_CONDITION = ObjectspyMessageConstants.DIA_COL_LABEL_CONDITION;
 
@@ -97,7 +103,7 @@ public class ObjectPropertiesView extends Composite
 
     private Text txtName;
 
-    private Button radioAttributes, radioXpath, radioCss;
+    private Button radioAttributes, radioXpath, radioCss, radioImage;
 
     private ToolItem btnAdd, btnDelete, btnClear;
 
@@ -271,10 +277,13 @@ public class ObjectPropertiesView extends Composite
         radioAttributes.setText(RADIO_LABEL_ATTRIBUTES);        
         selectorButtons.put(SelectorMethod.BASIC, radioAttributes);
 
-
         radioCss = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
         radioCss.setText(RADIO_LABEL_CSS);
         selectorButtons.put(SelectorMethod.CSS, radioCss);
+
+        radioImage = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
+        radioImage.setText(RADIO_LABEL_IMAGE);
+        selectorButtons.put(SelectorMethod.IMAGE, radioImage);
     }
 
     private void createAttributeToolbarButtons(Composite parent) {
@@ -623,7 +632,25 @@ public class ObjectPropertiesView extends Composite
     
 
     private void addControlListeners() {
+        txtName.addVerifyListener(new VerifyListener() {
+
+            @Override
+            public void verifyText(VerifyEvent e) {
+                Text source = (Text) e.widget;
+                String oldS = source.getText();
+                String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+                try {
+                    new EntityNameFileServiceDataProvider().validateName(newS);
+                } catch (Exception invalidName) {
+                    MessageDialog.openWarning(getShell(), "Invalid name", invalidName.getMessage());
+                    e.doit = false;
+                    return;
+                }
+            }
+        });
+
         txtName.addModifyListener(new ModifyListener() {
+
             @Override
             public void modifyText(ModifyEvent e) {
                 String text = txtName.getText();
@@ -678,6 +705,21 @@ public class ObjectPropertiesView extends Composite
                 webElement.setSelectorMethod(SelectorMethod.CSS);
                 showComposite(propertyTableComposite, false);
                 showComposite(xpathTableComposite, false);       
+                showComposite(compositeAttributeToolbar, false);
+                sendPropertiesChangedEvent();
+            }
+        });
+
+        radioImage.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (webElement == null || !radioImage.getSelection()) {
+                    return;
+                }
+                webElement.setSelectorMethod(SelectorMethod.IMAGE);
+                showComposite(propertyTableComposite, false);
+                showComposite(xpathTableComposite, false);
                 showComposite(compositeAttributeToolbar, false);
                 sendPropertiesChangedEvent();
             }

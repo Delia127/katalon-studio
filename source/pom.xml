@@ -52,6 +52,8 @@
 		<module>com.kms.katalon.composer.webui.recorder</module>
 		<module>com.kms.katalon.composer.webui</module>
 		<module>com.kms.katalon.composer.windows</module>
+		<module>com.kms.katalon.composer.platform.internal</module>
+		<module>com.kms.katalon.misc</module>
 		<module>com.kms.katalon.console</module>
 		<module>com.kms.katalon.constant</module>
 		<module>com.kms.katalon.controller</module>
@@ -73,6 +75,7 @@
 		<module>com.kms.katalon.execution.windows</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
+		<module>com.kms.katalon.feature.engine</module>
 		<module>com.kms.katalon.groovy</module>
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
@@ -99,6 +102,7 @@
 		<module>com.katalon.katalon-studio-smart-xpath</module>
 		<module>com.kms.katalon.mockito</module>
 		<module>tests</module>
+		<module>com.kms.katalon.composer.integration.analytics.testops</module>
 	</modules>
 
 	<properties>
@@ -107,7 +111,7 @@
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<platform.version>1.0.15</platform.version>
+		<platform.version>1.0.16</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>https://download.eclipse.org</eclipse_update_site>

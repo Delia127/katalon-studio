@@ -18,4 +18,5 @@ Require-Bundle: org.apache.commons.lang3,
  org.eclipse.jdt.core,
  org.eclipse.core.runtime,
  com.kms.katalon.logging,
- org.codehaus.groovy
+ org.codehaus.groovy,
+ com.google.guava

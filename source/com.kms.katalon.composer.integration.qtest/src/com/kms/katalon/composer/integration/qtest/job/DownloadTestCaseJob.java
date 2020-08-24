@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Display;
 import com.kms.katalon.application.utils.EntityTrackingHelper;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRootSelectionDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseTreeDownloadedPreviewDialog;
@@ -43,6 +42,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
@@ -347,7 +347,7 @@ public class DownloadTestCaseJob extends QTestJob {
                                 new Object[] { existingTestCase.getId(), existingTestCase });
             } else {
                 TestCaseEntity newTestCaseEntity = TestCaseController.getInstance().newTestCase(parentFolder,
-                        qTestCase.getName());
+                        qTestCase.getPid() + " " + qTestCase.getName());
                 EntityTrackingHelper.trackTestCaseCreated();
 
                 addDescriptionForTestCase(qTestProject, qTestCase, newTestCaseEntity);

@@ -17,9 +17,15 @@
       </page>
        <page
            category="com.kms.katalon.composer.webui.setting.testdesign"
+           class="com.kms.katalon.composer.webservice.settings.WebServiceSettingPage"
+           id="com.kms.katalon.composer.webui.setting.testdesign.webservice"
+           name="Web Service">
+     </page>
+       <page
+           category="com.kms.katalon.composer.webui.setting.testdesign.webservice"
            class="com.kms.katalon.composer.webservice.settings.WebServiceMethodSettingPage"
-           id="com.kms.katalon.composer.webui.setting.testdesign.webservicemethod"
-           name="API/Web Service Method">
+           id="com.kms.katalon.composer.webui.setting.testdesign.webservice.custommethod"
+           name="Custom Method">
      </page>
    </extension>
    <extension

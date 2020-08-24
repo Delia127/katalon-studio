@@ -31,6 +31,7 @@ import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -38,12 +39,15 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.impl.control.PartListenerAdapter;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.debug.CustomSourceLookupService;
 import com.kms.katalon.composer.execution.debug.handler.ToggleBreakpointHandler;
+import com.kms.katalon.composer.execution.dialog.ExecuteFirstWebUITestCaseDialog;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
 import com.kms.katalon.composer.execution.handlers.ExistingExecutionHandler;
 import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
@@ -55,6 +59,8 @@ import com.kms.katalon.composer.testcase.model.ExecuteFromTestStepEntity;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.QuickStartProjectType;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
@@ -122,6 +128,21 @@ public class TestExecutionAddon implements EventHandler {
                         }
                     }
                     executeTestCaseFromTestStep(executeFromTestStepEntity);
+                }
+            }
+        });
+
+        eventBroker.subscribe(EventConstants.FIRST_TEST_CASE_CREATED, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+                TestCaseEntity firstTestCase = (TestCaseEntity) event
+                        .getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+
+                UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+                if (currentProfile.getPreferredTestingType() == QuickStartProjectType.WEBUI) {
+                    ExecuteFirstWebUITestCaseDialog executeFirstTestCaseDialog = new ExecuteFirstWebUITestCaseDialog(
+                            Display.getCurrent().getActiveShell(), firstTestCase);
+                    executeFirstTestCaseDialog.open();
                 }
             }
         });

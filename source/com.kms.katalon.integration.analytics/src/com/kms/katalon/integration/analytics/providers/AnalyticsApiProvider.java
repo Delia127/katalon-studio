@@ -11,11 +11,13 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
@@ -44,10 +46,13 @@ import org.apache.http.util.EntityUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.core.model.KatalonPackage;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
@@ -58,8 +63,12 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsPlan;
+import com.kms.katalon.integration.analytics.entity.AnalyticsPlanPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsRelease;
+import com.kms.katalon.integration.analytics.entity.AnalyticsReleasePage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsRunConfiguration;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeamPage;
@@ -69,7 +78,13 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUser;
+import com.kms.katalon.integration.analytics.entity.AnalyticsExecutionPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsExecutionStage;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.query.AnalyticsQuery;
+import com.kms.katalon.integration.analytics.query.AnalyticsQueryCondition;
+import com.kms.katalon.integration.analytics.query.AnalyticsQueryFunction;
+import com.kms.katalon.integration.analytics.query.AnalyticsQueryPagination;
 import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsApiProvider {
@@ -229,7 +244,7 @@ public class AnalyticsApiProvider {
             }
 
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(map));
+            StringEntity entity = new StringEntity(gson.toJson(map), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsProject.class);
@@ -251,8 +266,7 @@ public class AnalyticsApiProvider {
             
             KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
             if (KatalonPackage.ENGINE.equals(katalonPackage)) {
-                String isFloatingEngine = System.getenv("ECLIPSE_SANDBOX");
-                if ("1.11".equals(isFloatingEngine)) {
+                if (KatalonApplication.isRunningInDevOpsEnvironment()) {
                     katalonPackage = KatalonPackage.FLOATING_ENGINE;
                 }
             }
@@ -296,7 +310,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
 
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
-            StringEntity entity = new StringEntity(gson.toJson(trackingInfo));
+            StringEntity entity = new StringEntity(gson.toJson(trackingInfo), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             executeRequest(httpPost, true, Object.class);
@@ -429,7 +443,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             Gson gson = new GsonBuilder().create();
-            StringEntity entity = new StringEntity(gson.toJson(fileInfoList));
+            StringEntity entity = new StringEntity(gson.toJson(fileInfoList), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
@@ -487,7 +501,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Content-type", "application/json");
 
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(map));
+            StringEntity entity = new StringEntity(gson.toJson(map), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsRunConfiguration.class);
@@ -571,7 +585,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             Gson gson = new GsonBuilder().create();
-            StringEntity entity = new StringEntity(gson.toJson(testRun));
+            StringEntity entity = new StringEntity(gson.toJson(testRun), Charsets.UTF_8);
             httpPost.setEntity(entity);
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
@@ -644,4 +658,131 @@ public class AnalyticsApiProvider {
             throw AnalyticsApiExeception.wrap(e);
         }
     }
+    
+	public static List<AnalyticsExecution> getExecutions(Long projectId, String serverUrl, String token)
+			throws AnalyticsApiExeception {
+		try {
+			AnalyticsExecutionPage response = getExecutionPage(serverUrl, token, projectId, 0);
+			List<AnalyticsExecution> executions = new ArrayList<>();
+			if (!response.isEmpty()) {
+				executions.addAll(Arrays.asList(response.getContent()));
+			}
+
+			return executions.stream().filter(e -> e.getExecutionStage() != AnalyticsExecutionStage.RUNNING)
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			throw AnalyticsApiExeception.wrap(e);
+		}
+	}
+
+	private static AnalyticsExecutionPage getExecutionPage(String serverUrl, String token, Long projectId, Integer page)
+			throws Exception {
+		URI uri = getApiURI(serverUrl, "/api/v1/search");
+		URIBuilder builder = new URIBuilder(uri);
+		AnalyticsQuery query = new AnalyticsQuery();
+		query.setType("Execution");
+
+		AnalyticsQueryCondition conditionProject = new AnalyticsQueryCondition("Project.id", "=", projectId.toString());
+		query.setConditions(new AnalyticsQueryCondition[] { conditionProject });
+
+		AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(page, 30, new String[] { "order,desc" });
+		query.setPagination(pagination);
+
+		builder.setParameter("q", JsonUtil.toJson(query));
+		HttpGet httpGet = new HttpGet(builder.build().toASCIIString());
+		httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+		AnalyticsExecutionPage response = executeRequest(httpGet, AnalyticsExecutionPage.class);
+		return response;
+    }
+    
+    public static List<AnalyticsRelease> getReleases(Long projectId, String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            AnalyticsReleasePage response = getReleasePage(serverUrl, token, projectId, 0);
+            List<AnalyticsRelease> executions = new ArrayList<>();
+            if (!response.isEmpty()) {
+                executions.addAll(Arrays.asList(response.getContent()));
+            }
+
+            while (!response.isEmpty() && !response.isLast()) {
+                response = getReleasePage(serverUrl, token, projectId, response.getPageable().getPageNumber() + 1);
+                executions.addAll(Arrays.asList(response.getContent()));
+            }
+
+            return executions;
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+    
+    private static AnalyticsReleasePage getReleasePage(String serverUrl, String token, Long projectId, Integer page)
+            throws Exception {
+        URI uri = getApiURI(serverUrl, "/api/v1/search");
+        URIBuilder builder = new URIBuilder(uri);
+
+        AnalyticsQuery query = new AnalyticsQuery();
+        query.setType("Release");
+        query.setGroupBys(new String[] {});
+
+        AnalyticsQueryCondition conditionProject = new AnalyticsQueryCondition("Project.id", "=", projectId.toString());
+        AnalyticsQueryCondition conditionStatus = new AnalyticsQueryCondition("closed", "=", "false");
+        query.setConditions(new AnalyticsQueryCondition[] { conditionProject, conditionStatus });
+        query.setFunctions(new AnalyticsQueryFunction[] {});
+
+        AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(page, 30,
+                new String[] { "closed,asc", "name,asc" });
+        query.setPagination(pagination);
+
+        builder.setParameter("q", JsonUtil.toJson(query));
+        HttpGet httpGet = new HttpGet(builder.build().toASCIIString());
+        httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+        AnalyticsReleasePage response = executeRequest(httpGet, AnalyticsReleasePage.class);
+        return response;
+    }
+    
+
+    public static AnalyticsProject getDefaultNewUserProject(String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, "/api/v1/projects/first");
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            String response = executeRequest(httpGet, false);
+            JsonParser jp = new JsonParser();
+            JsonElement json = jp.parse(response);
+            if (!json.isJsonArray() || json.getAsJsonArray().size() == 0) {
+                return null;
+            }
+
+            return new Gson().fromJson(json.getAsJsonArray().get(0), AnalyticsProject.class);
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
+    public static List<AnalyticsPlan> getPlans(Long projectId, String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, "/api/v1/search");
+            URIBuilder builder = new URIBuilder(uri);
+
+            AnalyticsQuery query = new AnalyticsQuery();
+            query.setType("RunConfiguration");
+            AnalyticsQueryCondition conditionProject = new AnalyticsQueryCondition("Project.id", "=",
+                    projectId.toString());
+            query.setConditions(new AnalyticsQueryCondition[] { conditionProject });
+            AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(0, 30, new String[] { "name,asc" });
+            query.setPagination(pagination);
+
+            builder.setParameter("q", JsonUtil.toJson(query));
+            HttpGet httpGet = new HttpGet(builder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            AnalyticsPlanPage response = executeRequest(httpGet, AnalyticsPlanPage.class);
+            return Arrays.asList(response.getContent());
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
 }

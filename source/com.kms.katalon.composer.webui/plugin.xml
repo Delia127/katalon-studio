@@ -137,12 +137,6 @@
      </page>
      <page
            category="com.kms.katalon.composer.webui.setting.testdesign"
-           class="com.kms.katalon.composer.webui.setting.WebLocatorsPerferencePage"
-           id="com.kms.katalon.composer.webui.setting.testdesign.1"
-           name="Web Locators">
-     </page>
-     <page
-           category="com.kms.katalon.composer.webui.setting.testdesign"
            class="com.kms.katalon.composer.testcase.preferences.TestCaseSettingPage"
            id="com.kms.katalon.composer.testcase.settings"
            name="Test Case">

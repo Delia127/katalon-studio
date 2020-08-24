@@ -1,5 +1,14 @@
 package com.kms.katalon.groovy.util;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+import static com.kms.katalon.groovy.util.GroovyUtil.getDefaultPackageForTestCase;
+import static com.kms.katalon.groovy.util.GroovyUtil.getGroovyClassName;
+import static com.kms.katalon.groovy.util.GroovyUtil.getGroovyProject;
+import static com.kms.katalon.groovy.util.GroovyUtil.getScriptNameForTestCase;
+import static com.kms.katalon.groovy.util.GroovyUtil.getScriptPackageRelativePathForTestCase;
+import static com.kms.katalon.groovy.util.GroovyUtil.getTestCaseScriptFolder;
+
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,6 +25,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.internal.resources.ModelObjectWriter;
@@ -57,6 +67,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -100,6 +111,10 @@ public class GroovyUtil {
     private static final String KEYWORD_LIB_FOLDER_NAME = "Libs";
 
     private static final String KEYWORD_LIB_OUTPUT_FOLDER_NAME = "lib";
+    
+    private static final String INCLUDE_OUTPUT_FOLDER_NAME = "groovy";
+    
+    private static final String LISTENER_OUTPUT_FOLDER_NAME = "listener";
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
 
@@ -245,7 +260,7 @@ public class GroovyUtil {
             outputParentFolder.create(true, true, null);
         }
 
-        IFolder outputListenerFolder = outputParentFolder.getFolder("listener");
+        IFolder outputListenerFolder = outputParentFolder.getFolder(LISTENER_OUTPUT_FOLDER_NAME);
         if (!outputListenerFolder.exists()) {
             outputListenerFolder.create(true, true, null);
         }
@@ -269,7 +284,7 @@ public class GroovyUtil {
             outputKWLibFolder.clearHistory(null);
         }
 
-        IFolder outputSourceMainGroovy = outputParentFolder.getFolder("groovy");
+        IFolder outputSourceMainGroovy = outputParentFolder.getFolder(INCLUDE_OUTPUT_FOLDER_NAME);
         File outputSourceMainGroovyFolder = new File(outputSourceMainGroovy.getRawLocationURI());
         outputSourceMainGroovyFolder.mkdirs();
         outputSourceMainGroovy.refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -361,6 +376,26 @@ public class GroovyUtil {
 
         javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), monitor);
         GroovyRuntime.addGroovyClasspathContainer(javaProject);
+
+        removeUnusedBinFolder(projectEntity);
+    }
+    
+    private static void removeUnusedBinFolder(ProjectEntity projectEntity) {
+        File binFolder = new File(projectEntity.getFolderLocation(), OUTPUT_FOLDER_NAME);
+        List<String> binFolerNames = Arrays.asList(TEST_CASE_OUTPUT_FOLDER_NAME, 
+                KEYWORD_LIB_OUTPUT_FOLDER_NAME,
+                KEYWORD_OUTPUT_FOLDER_NAME,
+                LISTENER_OUTPUT_FOLDER_NAME,
+                INCLUDE_OUTPUT_FOLDER_NAME);
+
+        if (binFolder.exists() && binFolder.listFiles() != null) {
+            for (File binFile : binFolder.listFiles()) {
+                String fileName = binFile.getName();
+                if (!binFile.isDirectory() || !binFolerNames.contains(fileName)) {
+                    FileUtils.deleteQuietly(binFile);
+                }
+            }
+        }
     }
 
     private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, boolean allowSourceAttachment)
@@ -375,10 +410,25 @@ public class GroovyUtil {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.netlightbody"), allowSourceAttachment);
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.poi"), allowSourceAttachment);
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.proxyvole"), allowSourceAttachment);
+
+        if (isStartFromEclipseIDE()) {
+            addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.entity"), allowSourceAttachment);
+            addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("org.eclipse.core.commands"), allowSourceAttachment);
+        }
+
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());
             addClassPathOfCoreBundleToJavaProject(entries, coreBundle, allowSourceAttachment);
         }
+    }
+
+    private static boolean isStartFromEclipseIDE() throws IOException {
+        Bundle coreBundle = Platform.getBundle("com.kms.katalon.entity");
+        File customBundleFile = FileLocator.getBundleFile(coreBundle).getAbsoluteFile();
+        if (customBundleFile == null || !customBundleFile.exists()) {
+            return false;
+        }
+        return customBundleFile.isDirectory();
     }
 
     private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, Bundle coreBundle, boolean allowSourceAttachment)
@@ -560,10 +610,15 @@ public class GroovyUtil {
                 return false;
         }
 
-        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName))
+        if (bundleName.startsWith("org.eclipse.core")) {
             return false;
-        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName))
+        }
+        if ("org.eclipse.jdt.core".equalsIgnoreCase(bundleName)) {
             return false;
+        }
+        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName)) {
+            return false;
+        }
 
         for (IClasspathEntry childEntry : entries) {
             if ((childEntry.getPath() != null) && (childEntry.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
@@ -1083,5 +1138,42 @@ public class GroovyUtil {
     public static IFolder getPluginsFolder(ProjectEntity project) {
         IProject groovyProject = getGroovyProject(project);
         return groovyProject.getFolder(PLUGINS_FOLDER_NAME);
+    }
+
+    public static ICompilationUnit getOrCreateGroovyScriptForTestCaseFromPlugin(TestCaseEntity testCase)
+            throws IOException, CoreException {
+        getTestCaseScriptFolder(testCase);
+        IProject groovyProject = getGroovyProject(testCase.getProject());
+
+        String parentRelativeFolder = getScriptPackageRelativePathForTestCase(testCase);
+        IFolder parentFolder = groovyProject.getFolder(parentRelativeFolder);
+        if (!parentFolder.exists()) {
+            parentFolder.getParent().refreshLocal(IResource.DEPTH_ONE, null);
+        }
+        parentFolder.refreshLocal(IResource.DEPTH_ONE, null);
+        String scriptFileName = getScriptNameForTestCase(testCase);
+        IFile scriptFile = null;
+
+        if (scriptFileName == null) {
+            scriptFileName = getGroovyClassName(testCase);
+            scriptFile = parentFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
+            scriptFile.getLocation().toFile().createNewFile();
+
+            FileUtils.writeStringToFile(scriptFile.getLocation().toFile(), getFileContent(GroovyConstants.SCRIPT_IMPORTS_TPL), DF_CHARSET, true);
+            scriptFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        } else {
+            scriptFile = parentFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
+        }
+
+        return JavaCore.createCompilationUnitFrom(scriptFile);
+    }
+    
+    private static String getFileContent(String filePath) {
+        URL url = FileLocator.find(FrameworkUtil.getBundle(GroovyConstants.class), new Path(filePath), null);
+        try {
+            return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream())), "\n");
+        } catch (IOException e) {
+            return StringUtils.EMPTY;
+        }
     }
 }

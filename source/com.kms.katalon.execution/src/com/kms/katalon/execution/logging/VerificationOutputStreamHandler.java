@@ -10,13 +10,13 @@ import java.io.InputStreamReader;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 
 
 public class VerificationOutputStreamHandler extends Thread implements IOutputStream {
     
-    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+    private IEventBroker eventBroker = ExecutionBundleActivator.getInstance().getEventBroker();
     
     private InputStream is;
     

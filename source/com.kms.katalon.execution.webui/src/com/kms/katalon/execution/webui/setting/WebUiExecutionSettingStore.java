@@ -1,17 +1,23 @@
 package com.kms.katalon.execution.webui.setting;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.webui.constants.StringConstants;
 import com.kms.katalon.execution.webui.constants.WebUiExecutionSettingConstants;
@@ -35,14 +41,16 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES = "id,true;name,true;alt,true;checked,true;form,true;href,true;placeholder,true;selected,true;src,true;title,true;type,true;text,true;linked_text,true";
     
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true";
-    
 
-    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
-
-    public static final boolean EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED = false;
+    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "XPATH";
     
     public static final String EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT = TimeUnit.SECONDS.toString();
+    
+    public static final String DEFAULT_METHODS_PRIORITY_ORDER = MessageFormat.format("{0},true;{1},true;{2},true;{3},true", SelectorMethod.XPATH, SelectorMethod.BASIC, SelectorMethod.CSS, SelectorMethod.IMAGE);
 
+    public static final String DEFAULT_EXCLUDE_KEYWORDS = "[\"verifyElementPresent\",\"verifyElementNotPresent\"]";
+    
+    public static final boolean DEFAULT_IS_ENABLE_SELF_HEALING = false;
     
     public static WebUiExecutionSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -55,6 +63,11 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public WebUiExecutionSettingStore(ProjectEntity projectEntity) {
         super(projectEntity.getFolderLocation(),
                 FrameworkUtil.getBundle(WebUiExecutionSettingStore.class).getSymbolicName(), false);
+    }
+
+    public WebUiExecutionSettingStore(String projectEntityDirection, boolean isExternal) {
+        super(projectEntityDirection,
+                FrameworkUtil.getBundle(WebUiExecutionSettingStore.class).getSymbolicName(), isExternal);
     }
 
     public boolean getEnablePageLoadTimeout() throws IOException {
@@ -124,7 +137,12 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
                 getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
                         DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
     }
-    
+
+    public List<Pair<String,Boolean>> getDefaultCapturedTestObjectAttributeLocators() throws IOException{
+         return parseStringBooleanString(
+                 getString(DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES, DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
+    }
+
     // TestObjectXpathLocators - has a getDefault function for resetDefault button
 
     public List<Pair<String, Boolean>> getCapturedTestObjectXpathLocators() throws IOException {
@@ -201,18 +219,6 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         }
         return SelectorMethod.valueOf(str);
     }
-
-    public boolean getImageRecognitionEnabled() {
-        try {
-            return getBoolean(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED);
-        } catch (IOException e) {
-            return EXECUTION_DEFAULT_IMAGE_RECOGNITION_ENABLED;
-        }
-    }
-
-    public void setDefaultImageRecognitionEnabled(boolean selection) throws IOException {
-        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_IMAGE_RECOGNITION_ENABLED, selection);
-    }
     
     public void setUseDelayActionTimeUnit(TimeUnit timeUnit) throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_USE_DELAY_ACTION_TIME_UNIT, timeUnit.toString());
@@ -225,5 +231,60 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         } catch (IOException e) {
             return TimeUnit.valueOf(EXECUTION_DEFAULT_USE_ACTION_DELAY_TIME_UNIT);
         }
+    }
+
+    public void setExcludeKeywordList(List<String> excludeKeywords) throws IOException {
+        String jsonExcludeKeywords = JsonUtil.toJson(excludeKeywords, false);
+        setProperty(WebUiExecutionSettingConstants.WEBUI_EXCLUDE_KEYWORDS, jsonExcludeKeywords);
+    }
+
+    public List<String> getExcludeKeywordList() throws IOException {
+        String jsonExcludeKeywords = getString(WebUiExecutionSettingConstants.WEBUI_EXCLUDE_KEYWORDS, DEFAULT_EXCLUDE_KEYWORDS);
+
+        if (StringUtils.isBlank(jsonExcludeKeywords)) {
+            return new ArrayList<String>();
+        }
+
+        Type excludeKeywordsMapType = new TypeToken<List<String>>() {}.getType();
+        return JsonUtil.fromJson(jsonExcludeKeywords, excludeKeywordsMapType);
+    }
+
+    public void setDefaultExcludeKeywordList() throws IOException {
+        setProperty(WebUiExecutionSettingConstants.WEBUI_EXCLUDE_KEYWORDS, DEFAULT_EXCLUDE_KEYWORDS);
+    }
+
+    public void setMethodsPritorityOrder(List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder) throws IOException{
+        List<Pair<String, Boolean>> convertedList = new ArrayList<>();
+        for (Pair<SelectorMethod, Boolean> element : methodsPriorityOrder) {
+            Pair<String, Boolean> convertedElement = new Pair<String, Boolean>(element.getLeft().toString(), (boolean) element.getRight());
+            convertedList.add(convertedElement);
+        }
+        setProperty(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, flattenStringBooleanList(convertedList));
+    }
+
+    public List<Pair<SelectorMethod, Boolean>> getMethodsPriorityOrder() throws IOException {
+        List<Pair<String, Boolean>> rawMethodsPriorityOrder = parseStringBooleanString(getString(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, DEFAULT_METHODS_PRIORITY_ORDER));
+        List<Pair<SelectorMethod, Boolean>> methodsPriorityOrder = new ArrayList<Pair<SelectorMethod, Boolean>>();
+        rawMethodsPriorityOrder.forEach(rawMethod -> {
+            Pair<SelectorMethod, Boolean> method = Pair.of(SelectorMethod.valueOf(rawMethod.getLeft()), (Boolean) rawMethod.getRight());
+            methodsPriorityOrder.add(method);
+        });
+        return methodsPriorityOrder;
+    }
+
+    public void setDefaultMethodsPriorityOrder() throws IOException {
+        setProperty(WebUiExecutionSettingConstants.WEBUI_METHODS_PRIORITY_ORDER, DEFAULT_METHODS_PRIORITY_ORDER);
+    }
+
+    public boolean getSelfHealingEnabled(boolean defaultValue) {
+        try {
+            return getBoolean(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, defaultValue);
+        } catch (IOException e) {
+            return DEFAULT_IS_ENABLE_SELF_HEALING;
+        }
+    }
+
+    public void setEnableSelfHealing(boolean isEnable) throws IOException{
+        setProperty(WebUiExecutionSettingConstants.WEBUI_SELF_HEALING_ENABLED, isEnable);
     }
 }

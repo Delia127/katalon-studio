@@ -142,6 +142,18 @@ public class DocumentationMessageConstants extends NLS {
 	public static String RUNTIME_ENGINE_INTRODUCTION;
 	
 	public static String ADVANCED_SEARCH;
+    
+    public static String TUTORIALS;
+    
+    public static String FORUM;
+    
+    public static String CHATROOM;
+    
+    public static String KATALON_STORE;
+    
+    public static String TROUBLESHOOT_WEB_TESTING;
+    
+    public static String BUSINESS_EMAIL;
 
     static {
         // initialize resource bundle

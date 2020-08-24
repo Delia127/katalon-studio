@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.qas.api.AuthClientException;
 import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
@@ -34,6 +35,7 @@ import org.qas.qtest.api.services.execution.model.TestSuite;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
@@ -664,10 +666,10 @@ public class QTestIntegrationTestSuiteManager {
      * @param qTestProject
      * @param credentials
      * @return an instance of {@link ArrayList} of {@link QTestRun}
-     * @throws QTestInvalidFormatException
+     * @throws QTestException 
      */
     public static List<QTestRun> getTestRuns(QTestSuite qTestSuite, QTestProject qTestProject,
-            IQTestCredential credentials) throws QTestInvalidFormatException {
+            IQTestCredential credentials) throws QTestException {
         List<QTestRun> qTestRuns = new ArrayList<QTestRun>();
 
         QTestCredentials qTestCredentials = new BasicQTestCredentials(credentials.getToken().getAccessTokenHeader());
@@ -679,7 +681,17 @@ public class QTestIntegrationTestSuiteManager {
                 .withArtifactId(qTestSuite.getId())
                 .withArtifactLevel(ArtifactLevel.TEST_SUITE);
 
-        List<TestRun> testRuns = service.listTestRun(request);
+        List<TestRun> testRuns = new ArrayList<>();
+        try {
+            testRuns = service.listTestRun(request);
+        } catch (AuthClientException e) {
+            if (e.getMessage().contains("Cannot deserialize instance of java.util.ArrayList")) {
+                // qTest version 10.1 or later
+                testRuns = listTestRunsByApi(qTestSuite, qTestProject, credentials);
+            } else {
+                throw e;
+            }
+        }
         for (TestRun testRun : testRuns) {
             QTestRun qTestRun = new QTestRun(testRun.getId(), testRun.getName());
 
@@ -699,6 +711,50 @@ public class QTestIntegrationTestSuiteManager {
         }
 
         return qTestRuns;
+    }
+    
+    public static List<TestRun> listTestRunsByApi(QTestSuite qTestSuite, QTestProject qTestProject,
+            IQTestCredential credentials) throws QTestException {
+        String serverUrl = credentials.getServerUrl();
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(qTestProject.getId()) + "/test-runs?parentId="
+                + Long.toString(qTestSuite.getId()) + "&parentType=test-suite";
+        String serverJsResult = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credentials.getToken());
+        
+        try {
+            JsonObject jsResultObj = new JsonObject(serverJsResult);
+            JsonArray itemsArray = jsResultObj.getJsonArray("items");
+            
+            List<TestRun> testRuns = new ArrayList<>();
+            for (int relIdx = 0; relIdx < itemsArray.length(); relIdx++) {
+                JsonObject relJsObj = itemsArray.getJsonObject(relIdx);
+                TestRun testRun = new TestRun();
+                testRun.setId(relJsObj.getLong(QTestEntity.ID_FIELD));
+                testRun.setName(relJsObj.getString(QTestEntity.NAME_FIELD));
+                testRun.setOrder(relJsObj.getInt("order"));
+                testRun.setPid(relJsObj.getString(QTestEntity.PID_FIELD));
+
+                JsonArray linksArray = relJsObj.getJsonArray("links");
+                List<Link> linkLst = new ArrayList<>();
+                for (int linkIdx = 0; linkIdx < linksArray.length(); linkIdx++) {
+                    JsonObject linkJsObj = linksArray.getJsonObject(linkIdx);
+                    String rel = linkJsObj.getString("rel");
+                    String href = linkJsObj.getString("href");
+                    Link link = new Link();
+                    link.setRelation(rel);
+                    link.setHref(href);
+
+                    linkLst.add(link);
+                }
+                
+                testRun.setLinks(linkLst);
+
+                testRuns.add(testRun);
+            }
+            return testRuns;
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(ex.getMessage());
+        }
+        
     }
 
     /**

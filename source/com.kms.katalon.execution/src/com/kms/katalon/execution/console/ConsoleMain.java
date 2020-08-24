@@ -25,15 +25,16 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.LicenseInfo;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleMainOptionContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -341,9 +342,10 @@ public class ConsoleMain {
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
+            
+            printLicenseMessage();
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-            
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.RE_EXECUTE_COMPLETED, exitCode));
 
@@ -360,32 +362,11 @@ public class ConsoleMain {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
-    
-    private static String getLicenseFilePath(OptionSet options) {
-        String licenseFile = null;
-        String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
-        if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
-            licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_FROM_OPTIONS, licenseFile));
-        } else if (environmentVariable != null) {
-            licenseFile = environmentVariable;
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_FROM_ENVIRONMENT, licenseFile));
-        } else {
-            licenseFile = readLicenseFromDefaultLocation();
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_DEFAULT_PATH, licenseFile));
-        }
-        return licenseFile;
-    }
-    
-    private static String readLicenseFromDefaultLocation() {
-        File defaultLicenseFile = new File(ApplicationInfo.userDirLocation() + "/license/katalon.lic");
-        return defaultLicenseFile.exists() ? defaultLicenseFile.getAbsolutePath() : "";
-    }
 
     private static void reloadPlugins(String apiKey) throws Exception {
-        Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon.activation");
         Class<?> reloadPluginsHandlerClass = katalonBundle
-                .loadClass("com.kms.katalon.composer.handlers.ConsoleModeReloadPluginsHandler");
+                .loadClass("com.kms.katalon.activation.plugin.handler.ConsoleModeReloadPluginsHandler");
         Object handler = reloadPluginsHandlerClass.newInstance();
         Method reloadMethod = Arrays.asList(reloadPluginsHandlerClass.getMethods()).stream()
                 .filter(method -> method.getName().equals("reload"))
@@ -393,6 +374,14 @@ public class ConsoleMain {
                 .orElse(null);
         if (reloadMethod != null) {
             reloadMethod.invoke(handler, apiKey);
+        }
+    }
+    
+    private static void printLicenseMessage() {
+        if (KatalonApplication.isRunningInDevOpsEnvironment()) {
+            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_DEVOPS_LICENSE_COMPATIBILITY);
+        } else {
+            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY);
         }
     }
     
@@ -567,7 +556,7 @@ public class ConsoleMain {
         deleteLibFolders(projectPk);
         boolean allowSourceAttachment = false;
         ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk, allowSourceAttachment);
-        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
+        ExecutionBundleActivator.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
         if (projectEntity == null) {
             throw new InvalidConsoleArgumentException(
                     MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X, projectPk));

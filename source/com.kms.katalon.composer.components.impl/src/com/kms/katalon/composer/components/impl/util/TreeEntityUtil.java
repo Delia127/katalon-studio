@@ -8,9 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.LicenseUtil;
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -26,6 +24,9 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestListenerFolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestListenerTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestOpsFolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestOpsTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestOpsTreeEntity.TestOpsAction;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.UserFileTreeEntity;
@@ -65,7 +66,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
-import com.kms.katalon.license.models.LicenseType;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class TreeEntityUtil {
     public static ITreeEntity[] getChildren(FolderTreeEntity folderTreeEntity) throws Exception {
@@ -551,6 +552,19 @@ public class TreeEntityUtil {
         treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
         treeEntities.add(new TestListenerFolderTreeEntity(folderController.getTestListenerRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
+        
+        // Add TestOps folder
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        if (analyticsSettingStore.isIntegrationEnabled()) {
+            TestOpsFolderTreeEntity testOpsFolder = new TestOpsFolderTreeEntity(null);
+            testOpsFolder.addChild(new TestOpsTreeEntity(StringConstants.TREE_TESTOPS_EXECUTION,
+                    TestOpsAction.OPEN_EXECUTION, ImageConstants.IMG_16_TESTOPS_EXECUTIONS, testOpsFolder));
+            testOpsFolder.addChild(new TestOpsTreeEntity(StringConstants.TREE_TESTOPS_PLANS,
+                    TestOpsAction.OPEN_PLAN, ImageConstants.IMG_16_TESTOPS_PLAN, testOpsFolder));
+            treeEntities.add(testOpsFolder);
+        }
+        
         treeEntities.add(new IncludeTreeRootEntity(folderController.getIncludeRoot(project)));
         
         List<FileEntity> fileEntities = folderController.getRootUserFilesOrFolders(project);
@@ -561,6 +575,7 @@ public class TreeEntityUtil {
                 treeEntities.add(new UserFileTreeEntity((UserFileEntity) fileEntity, null));
             }
         }
+        
         return treeEntities;
     }
 

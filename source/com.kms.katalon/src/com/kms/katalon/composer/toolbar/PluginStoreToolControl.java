@@ -25,6 +25,7 @@ import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectio
 import com.kms.katalon.composer.handlers.DeactivateHandler;
 import com.kms.katalon.composer.handlers.KatalonStoreLoginHandler;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.handlers.KatalonStoreLoginHandler;
 import com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler;
 import com.kms.katalon.composer.handlers.ManagePluginsHandler;
 import com.kms.katalon.composer.handlers.OpenPlanGridExecutionHandler;

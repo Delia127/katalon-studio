@@ -30,6 +30,12 @@ public class ImageConstants {
 
     public static final Image IMG_16_DEBUG = ImageManager.getImage(IImageKeys.DEBUG_PERSPECTIVE_16);
 
+    public static final Image IMG_16_JOBVIEW_ERROR = ImageManager.getImage(IImageKeys.JOB_ERROR_16);
+
+    public static final Image IMG_16_JOBVIEW_FAILED = ImageManager.getImage(IImageKeys.JOB_FAILED_16);
+
+    public static final Image IMG_16_JOBVIEW_SKIPPED = ImageManager.getImage(IImageKeys.JOB_SKIPPED_16);
+
     // LogViewerPart
     public static final Image IMG_16_COLLAPSE_ALL = ImageManager.getImage(IImageKeys.COLLAPSE_16);
 

@@ -11,6 +11,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
+import com.kms.katalon.execution.entity.WebServiceExecutionSettings;
 
 public abstract class ReportableLauncherOptionParser implements LauncherOptionParser {
     protected DefaultReportSetting reportableSetting;
@@ -18,7 +19,9 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
     protected DefaultRerunSetting rerunSetting;
     
     protected InfoOptionContributor infoOptionContributor;
-    
+
+    protected WebServiceExecutionSettings webServiceSettings;
+
     protected StringConsoleOption executionUUIDOption = new StringConsoleOption() {
         @Override
         public String getOption() {
@@ -36,13 +39,14 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
     private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
     
     public ReportableLauncherOptionParser() {
+        webServiceSettings = new WebServiceExecutionSettings();
         reportableSetting = new DefaultReportSetting();
         rerunSetting = new DefaultRerunSetting();
         infoOptionContributor = new InfoOptionContributor();
     }
 
     protected List<ConsoleOptionContributor> getContributors() {
-        return Arrays.asList(reportableSetting, rerunSetting, infoOptionContributor);
+        return Arrays.asList(webServiceSettings, reportableSetting, rerunSetting, infoOptionContributor);
     }
 
     @Override

@@ -71,6 +71,8 @@ public class ImageConstants {
     // WebElementTreeEntity
     public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);
     
+    public static final Image IMG_16_MOBILE_TEST_OBJECT = ImageManager.getImage(IImageKeys.MOBILE_16);
+    
     public static final Image IMG_16_BTN_TEST_OBJECT = ImageManager.getImage(IImageKeys.BTN_TEST_OBJECT_16);
 
     public static final Image IMG_16_CBX_TEST_OBJECT = ImageManager.getImage(IImageKeys.CBX_TEST_OBJECT_16);
@@ -162,6 +164,8 @@ public class ImageConstants {
 
     public static final Image IMG_16_EXPORT_CSV = ImageManager.getImage(IImageKeys.EXPORT_CSV_16);
 
+    public static final Image IMG_16_SETTING = ImageManager.getImage(IImageKeys.SETTING_16);
+
     // CheckpointTreeEntity
     public static final Image IMG_16_CHECKPOINT = ImageManager.getImage(IImageKeys.CHECKPOINT_16);
 
@@ -187,4 +191,29 @@ public class ImageConstants {
     
     // WindowsElementTreeEntity
     public static final Image IMG_16_WINDOWS_ENTITY = ImageManager.getImage(IImageKeys.WINDOWS_ENTITY_16);
+    
+    // TestOps
+    public static final Image IMG_16_TESTOPS_EXECUTIONS = ImageManager.getImage(IImageKeys.IMG_TESTOPS_EXECUTIONS);
+    
+    public static final Image IMG_16_TESTOPS_EXECUTION_PASSED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_EXECUTION_PASSED);
+    
+    public static final Image IMG_16_TESTOPS_EXECUTION_FAILED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_EXECUTION_FAILED);
+    
+    public static final Image IMG_16_KATALON_TESTOPS = ImageManager.getImage(IImageKeys.KATALON_TESTOPS_16);
+    
+    public static final String URL_TESTOPS_EXECUTIONS = ImageManager.getImageURLString(IImageKeys.IMG_TESTOPS_EXECUTIONS);
+    
+    public static final Image IMG_16_TESTOPS_PLAN = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN);
+    
+    public static final String URL_TESTOPS_PLAN = ImageManager.getImageURLString(IImageKeys.IMG_TESTOPS_PLAN);
+    
+    public static final Image IMG_16_TESTOPS_PLAN_QUEUED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN_QUEUED);
+    
+    public static final Image IMG_16_TESTOPS_PLAN_ERROR = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN_ERROR);
+    
+    public static final Image IMG_16_TESTOPS_PLAN_CANCELED = ImageManager.getImage(IImageKeys.IMG_TESTOPS_PLAN_CANCELED);
+    
+    public static final Image IMG_16_TESTOPS_PLAN_RUNNING = ImageManager.getImage(IImageKeys.REFRESH_16);
+    
+    public static final Image IMG_16_TESTOPS_REFRESH_NEW = ImageManager.getImage(IImageKeys.IMG_TESTOPS_REFRESH_NEW);
 }

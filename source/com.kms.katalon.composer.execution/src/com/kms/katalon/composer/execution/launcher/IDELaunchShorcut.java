@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.JavaRuntime;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -72,7 +73,8 @@ public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
         Map<String, String> environmentVariables = new HashMap<>();
         try {
             environmentVariables = runConfiguration.getAdditionalEnvironmentVariables();
-        } catch (IOException | ExecutionException ignored) {
+        } catch (IOException | ExecutionException e) {
+            LoggerSingleton.logError(e);
         }
         if (environmentVariables != null && !environmentVariables.isEmpty()) {
             workingConfig.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, environmentVariables);

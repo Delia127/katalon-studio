@@ -97,21 +97,26 @@ public class WaitForElementAttributeValueKeyword extends AbstractKeyword {
 				KeywordMain.stepFailed(String.format("Object '%s' is not present", testObject.getObjectId()), flowControl)
 				return false
             }
-			
+
             logger.logDebug(String.format("Getting attribute '%s' of object '%s'", attributeName, testObject.getObjectId()))
             FluentWait<WebElement> wait = new FluentWait<WebElement>(foundElement)
                     .withTimeout(Duration.ofSeconds(timeOut))
                     .pollingEvery(Duration.ofMillis(WindowsDriverConstants.DEFAULT_FLUENT_WAIT_POLLING_TIME_OUT))
-
-            Boolean hasAttribute = wait.until(new Function<WebElement, Boolean>(){
-                        @Override
-                        public Boolean apply(WebElement element){
-                            return element.getAttribute(attributeName) == attributeValue
-                        }
-                    })
-            if (hasAttribute){
-                logger.logPassed(String.format("Object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue))
-                return true
+                    .ignoring(WebDriverException.class)
+            try {
+                Boolean hasAttribute = wait.until(new Function<WebElement, Boolean>(){
+                            @Override
+                            public Boolean apply(WebElement element){
+                                return element.getAttribute(attributeName) == attributeValue
+                            }
+                        })
+                if (hasAttribute){
+                    logger.logPassed(String.format("Object '%s' has attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue))
+                    return true
+                }
+            } catch (TimeoutException exception) {
+                KeywordMain.stepFailed(String.format("Object '%s' does not have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue), flowControl)
+                return false
             }
             return false
         }, flowControl, (testObject != null) ? String.format("Unable to wait for object '%s' to have attribute '%s' with value '%s'", testObject.getObjectId(), attributeName, attributeValue)

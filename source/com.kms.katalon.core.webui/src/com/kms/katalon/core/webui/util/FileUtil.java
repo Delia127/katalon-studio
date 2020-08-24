@@ -9,6 +9,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -108,5 +109,16 @@ public class FileUtil {
             File folder = new File(path + ".." + File.separator + EXTENSIONS_FOLDER_NAME);
             return folder;
         }
+    }
+
+    public static String getRelativePath(String path, String baseDir) {
+        String relativePath = new File(baseDir).toPath().relativize(new File(path).toPath()).toString();
+        return FilenameUtils.separatorsToUnix(relativePath);
+    }
+
+    public static boolean isInBaseFolder(String absolutePath, String absoluteBaseDir) {
+        File file = new File(absolutePath);
+        File baseDir = new File(absoluteBaseDir);
+        return file.getAbsolutePath().startsWith(baseDir.getAbsolutePath());
     }
 }

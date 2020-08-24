@@ -180,6 +180,8 @@ public class EventConstants {
 
     public static final String ADD_TEST_CASE_FROM_TEST_CASE = "ADD_TESTCASE_TESTCASE";
 
+    public static final String FIRST_TEST_CASE_CREATED = "FIRST_TEST_CASE_CREATED";
+
     // TestData Events
     public static final String TEST_DATA_NEW = "TESTDATA/NEW";
 
@@ -192,6 +194,10 @@ public class EventConstants {
 
     public static final String TEST_OBJECT_OPEN = "TESTOBJECT/OPEN";
 
+    public static final String MOBILE_TEST_OBJECT_OPEN = "MOBILE_TESTOBJECT/OPEN";
+    
+    public static final String WINDOWS_TEST_OBJECT_OPEN = "WINDOWS_TEST_OBJECT/OPEN";
+    
     public static final String TEST_OBJECT_SAVE = "TESTOBJECT/SAVE";
 
     public static final String TEST_OBJECT_UPDATED = "TESTOBJECT/UPDATED";
@@ -262,6 +268,9 @@ public class EventConstants {
     public static final String JOB_UPDATE_PROGRESS = "JOB/UPDATE_PROGRESS";
 
     public static final String JOB_COMPLETED = "JOB/COMPLETED";
+
+    // Self-healing Insights Events
+    public static final String SEFL_HEALING_INSIGHTS_REFRESH = "SELF_HEALING_INSIGHTS/REFRESH";
 
     // Object Spy Events
     public static final String OBJECT_SPY_RESET_SELECTED_TARGET = "OBJECT_SPY/RESET_SELECTED_TARGET";

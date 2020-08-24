@@ -150,10 +150,10 @@ public class TestNGBuiltinKeywords extends BuiltinKeywords {
             boolean runSuccess = result.wasSuccessful();
             JUnitRunnerResultImpl junitRunnerResult = new JUnitRunnerResultImpl(runSuccess ? 'passed' : 'failed', result)
             if (runSuccess) {
-                logger.logPassed(MessageFormat.format("Running JUnit test classes: ''{0}'' passed", testClasses))
-            } else {
                 KeywordMain.stepFailed(
                     MessageFormat.format("Running TestNG test classes: ''{0}'' failed", testClasses), flowControl)
+            } else {
+                logger.logPassed(MessageFormat.format("Running JUnit test classes: ''{0}'' passed", testClasses));
             }
             return junitRunnerResult
         }, flowControl, "Keyword runJUnitTestClasses was failed");
