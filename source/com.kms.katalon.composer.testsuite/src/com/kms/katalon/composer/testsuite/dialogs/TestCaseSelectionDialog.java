@@ -73,251 +73,247 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 	
 	private ScopedPreferenceStore store;
 
-	/**
-	 * Test Case Selection Dialog for Test Suite
-	 * 
-	 * @param parent
-	 *            parent shell
-	 * @param labelProvider
-	 *            entity label provider
-	 * @param contentProvider
-	 *            tree content provider
-	 * @param entityViewerFilter
-	 *            entity viewer filter
-	 * @param tableViewer
-	 *            test case table viewer
-	 */
-	public TestCaseSelectionDialog(Shell parent, IEntityLabelProvider labelProvider,
-			ITreeContentProvider contentProvider, AlreadyAddedTestCaseViewerFilter entityViewerFilter,
-			TestCaseTableViewer tableViewer) {
-		super(parent, labelProvider, contentProvider, entityViewerFilter);
-		this.tableViewer = tableViewer;
-		this.alreadyAddedTestCasesfilter = entityViewerFilter;
-		setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
-		setAllowMultiple(false);
-		store = PreferenceStoreManager.getPreferenceStore(TestCaseSelectionDialog.class);
-		setDoubleClickSelects(false);
-		updateTestCaseTreeEntities();
-	}
+    /**
+     * Test Case Selection Dialog for Test Suite
+     * 
+     * @param parent
+     * parent shell
+     * @param labelProvider
+     * entity label provider
+     * @param contentProvider
+     * tree content provider
+     * @param entityViewerFilter
+     * entity viewer filter
+     * @param tableViewer
+     * test case table viewer
+     */
+    public TestCaseSelectionDialog(Shell parent, IEntityLabelProvider labelProvider,
+            ITreeContentProvider contentProvider, AlreadyAddedTestCaseViewerFilter entityViewerFilter,
+            TestCaseTableViewer tableViewer) {
+        super(parent, labelProvider, contentProvider, entityViewerFilter);
+        this.tableViewer = tableViewer;
+        this.alreadyAddedTestCasesfilter = entityViewerFilter;
+        setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
+        setAllowMultiple(false);
+        store = PreferenceStoreManager.getPreferenceStore(TestCaseSelectionDialog.class);
+        setDoubleClickSelects(false);
+        updateTestCaseTreeEntities();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.dialogs.SelectionDialog#createButtonsForButtonBar(org.
-	 * eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.SELECT_TYPES_ID, StringConstants.DIA_BTN_ADD_N_CONTINUE, false);
-		super.createButtonsForButtonBar(parent);
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.eclipse.ui.dialogs.SelectionDialog#createButtonsForButtonBar(org.
+     * eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.SELECT_TYPES_ID, StringConstants.DIA_BTN_ADD_N_CONTINUE, false);
+        super.createButtonsForButtonBar(parent);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.Dialog#buttonPressed(int)
-	 */
-	@Override
-	protected void buttonPressed(int buttonId) {
-		if (store != null) {
-			try {
-				store.save();
-			} catch (IOException e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-		if (IDialogConstants.SELECT_TYPES_ID == buttonId) {
-			doAddAndContinue();
-		} else {
-			super.buttonPressed(buttonId);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#buttonPressed(int)
+     */
+    @Override
+    protected void buttonPressed(int buttonId) {
+        if (store != null) {
+            try {
+                store.save();
+            } catch (IOException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        if (IDialogConstants.SELECT_TYPES_ID == buttonId) {
+            doAddAndContinue();
+        } else {
+            super.buttonPressed(buttonId);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.dialogs.SelectionStatusDialog#okPressed()
-	 */
-	@Override
-	protected void okPressed() {
-		computeResult();
-		setReturnCode(OK);
-		try {
-			doAddCheckedEntitiesToTestSuite();
-		} catch (Exception e) {
-		}
-		close();
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.dialogs.SelectionStatusDialog#okPressed()
+     */
+    @Override
+    protected void okPressed() {
+        computeResult();
+        setReturnCode(OK);
+        try {
+            doAddCheckedEntitiesToTestSuite();
+        } catch (Exception e) {
+        }
+        close();
+    }
 
-	/**
-	 * "Add selected test cases" button pressed listener
-	 */
-	private void doAddAndContinue() {
-		computeResult();
+    /**
+     * "Add selected test cases" button pressed listener
+     */
+    private void doAddAndContinue() {
+        computeResult();
 
-		if (getResult() == null || getResult().length == 0) {
-			MessageDialog.openWarning(getParentShell(), StringConstants.WARN_TITLE,
-					StringConstants.DIA_WARN_NO_TEST_CASE_SELECTION);
-			return;
-		}
-		setReturnCode(IDialogConstants.SELECT_TYPES_ID);
-		try {
-			doAddCheckedEntitiesToTestSuite();
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+        if (getResult() == null || getResult().length == 0) {
+            MessageDialog.openWarning(getParentShell(), StringConstants.WARN_TITLE,
+                    StringConstants.DIA_WARN_NO_TEST_CASE_SELECTION);
+            return;
+        }
+        setReturnCode(IDialogConstants.SELECT_TYPES_ID);
+        try {
+            doAddCheckedEntitiesToTestSuite();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.dialogs.ElementTreeSelectionDialog#computeResult()
-	 */
-	@Override
-	protected void computeResult() {
-		ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
-		List<Object> grayedItems = Arrays.asList(treeViewer.getGrayedElements());
-		checkedItems.removeAll(grayedItems);
-		setResult(checkedItems);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.dialogs.ElementTreeSelectionDialog#computeResult()
+     */
+    @Override
+    protected void computeResult() {
+        ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
+        List<Object> grayedItems = Arrays.asList(treeViewer.getGrayedElements());
+        checkedItems.removeAll(grayedItems);
+        setResult(checkedItems);
+    }
 
 	/**
 	 * Update test case table viewer
 	 * 
 	 * @throws Exception
 	 */
-	public void doAddCheckedEntitiesToTestSuite() throws Exception {
-		// add new checked items
-		new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, true, new IRunnableWithProgress() {
-			@Override
-			public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-				doAddCheckedTestCasesToTestSuite(monitor);
-			}
-		});
-		// finally, update test case tree entity list
-		updateTestCaseTreeEntities();
-	}
+    public void doAddCheckedEntitiesToTestSuite() throws Exception {
+        // add new checked items
+        new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, true, new IRunnableWithProgress() {
+            @Override
+            public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                doAddCheckedTestCasesToTestSuite(monitor);
+            }
+        });
+        // finally, update test case tree entity list
+        updateTestCaseTreeEntities();
+    }
 
-	private void doAddCheckedTestCasesToTestSuite(IProgressMonitor monitor) {
-		List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
-		int selectedObjectsSize = selectedObjects.size();
-		monitor.beginTask("", selectedObjectsSize);
-		SubMonitor subMonitor = SubMonitor.convert(monitor);
-		subMonitor.beginTask("", selectedObjectsSize);
-		for (Object object : selectedObjects) {
-			try {
-				SubMonitor subSubMonitor = subMonitor.split(1, SubMonitor.SUPPRESS_NONE);
-				if (!(object instanceof ITreeEntity)) {
-					continue;
-				}
-				ITreeEntity treeEntity = (ITreeEntity) object;
-				if (treeEntity instanceof FolderTreeEntity) {
-					FolderEntity fEntity = (FolderEntity) treeEntity.getObject();
-					doAddTestCasesInCheckedFolderToTestSuite(fEntity);
-				} else if (treeEntity instanceof TestCaseTreeEntity) {
-					TestCaseEntity tcEntity = (TestCaseEntity) treeEntity.getObject();
-					subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite", 1);
-					UISynchronizeService.syncExec(() -> {
-						try {
-							tableViewer.addTestCase(tcEntity);
-						} catch (Exception e) {
-						}
-					});
-					subSubMonitor.done();
-				}
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-		monitor.done();
-	}
+    private void doAddCheckedTestCasesToTestSuite(IProgressMonitor monitor) {
+        List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
+        int selectedObjectsSize = selectedObjects.size();
+        monitor.beginTask("", selectedObjectsSize);
+        SubMonitor subMonitor = SubMonitor.convert(monitor);
+        subMonitor.beginTask("", selectedObjectsSize);
+        for (Object object : selectedObjects) {
+            try {
+                SubMonitor subSubMonitor = subMonitor.split(1, SubMonitor.SUPPRESS_NONE);
+                if (!(object instanceof ITreeEntity)) {
+                    continue;
+                }
+                ITreeEntity treeEntity = (ITreeEntity) object;
+                if (treeEntity instanceof FolderTreeEntity) {
+                    FolderEntity fEntity = (FolderEntity) treeEntity.getObject();
+                    doAddTestCasesInCheckedFolderToTestSuite(fEntity);
+                } else if (treeEntity instanceof TestCaseTreeEntity) {
+                    TestCaseEntity tcEntity = (TestCaseEntity) treeEntity.getObject();
+                    subSubMonitor.beginTask("Adding test case " + tcEntity.getIdForDisplay() + " to test suite", 1);
+                    UISynchronizeService.syncExec(() -> {
+                        try {
+                            tableViewer.addTestCase(tcEntity);
+                        } catch (Exception e) {
+                        }
+                    });
+                    subSubMonitor.done();
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        monitor.done();
+    }
 
-	/**
-	 * Add test case folder into test case table viewer
-	 * 
-	 * @param folderEntity
-	 * @throws Exception
-	 */
-	private void doAddTestCasesInCheckedFolderToTestSuite(FolderEntity folderEntity) throws Exception {
-		if (folderEntity.getFolderType() == FolderType.TESTCASE) {
-			FolderController folderController = FolderController.getInstance();
-			for (Object childObject : folderController.getChildren(folderEntity)) {
-				if (childObject instanceof TestCaseEntity) {
-					tableViewer.addTestCase((TestCaseEntity) childObject);
-				} else if (childObject instanceof FolderEntity) {
-					doAddTestCasesInCheckedFolderToTestSuite((FolderEntity) childObject);
-				}
-			}
-		}
-	}
+    /**
+     * Add test case folder into test case table viewer
+     * 
+     * @param folderEntity
+     * @throws Exception
+     */
+    private void doAddTestCasesInCheckedFolderToTestSuite(FolderEntity folderEntity) throws Exception {
+        if (folderEntity.getFolderType() == FolderType.TESTCASE) {
+            FolderController folderController = FolderController.getInstance();
+            for (Object childObject : folderController.getChildren(folderEntity)) {
+                if (childObject instanceof TestCaseEntity) {
+                    tableViewer.addTestCase((TestCaseEntity) childObject);
+                } else if (childObject instanceof FolderEntity) {
+                    doAddTestCasesInCheckedFolderToTestSuite((FolderEntity) childObject);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Keep track of Test Case list in table viewer
-	 */
-	private void updateTestCaseTreeEntities() {
-		try {
-			tcTreeEntities = new ArrayList<Object>(Arrays.asList(getAddedTestCase(tableViewer.getTestCasesPKs())));
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+    /**
+     * Keep track of Test Case list in table viewer
+     */
+    private void updateTestCaseTreeEntities() {
+        try {
+            tcTreeEntities = new ArrayList<Object>(Arrays.asList(getAddedTestCase(tableViewer.getTestCasesPKs())));
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite parent1 = (Composite) super.createDialogArea(parent);
-		addAlreadyAddedTestCaseFilterControl(parent1);
-		initializeFilterAlreadyAddedTestCasesMode();
-		return parent1;
-	}
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite parent1 = (Composite) super.createDialogArea(parent);
+        addAlreadyAddedTestCaseFilterControl(parent1);
+        initializeFilterAlreadyAddedTestCasesMode();
+        return parent1;
+    }
 
-	private void initializeFilterAlreadyAddedTestCasesMode() {
-		if (store != null) {
-			boolean shouldEnableAlreadyAddedTestCasesControl = store
-					.getBoolean(ENABLE_FILTER_ALREADY_ADDED_TEST_CASES_MODE_PREFERENCE);
-			if (shouldEnableAlreadyAddedTestCasesControl) {
-				chckFilterAlreadyAddedTestCases.setSelection(shouldEnableAlreadyAddedTestCasesControl);
-				UISynchronizeService.syncExec(() -> {
-					alreadyAddedTestCasesfilter.enableAlreadyAddedTestCases();
-					getTreeViewer().refresh();
-				});
-			}
-		}
-	}
+    private void initializeFilterAlreadyAddedTestCasesMode() {
+        if (store != null) {
+            boolean shouldEnableAlreadyAddedTestCasesControl = store
+                    .getBoolean(ENABLE_FILTER_ALREADY_ADDED_TEST_CASES_MODE_PREFERENCE);
+            if (shouldEnableAlreadyAddedTestCasesControl) {
+                chckFilterAlreadyAddedTestCases.setSelection(shouldEnableAlreadyAddedTestCasesControl);
+                UISynchronizeService.syncExec(() -> {
+                    alreadyAddedTestCasesfilter.enableAlreadyAddedTestCases();
+                    getTreeViewer().refresh();
+                });
+            }
+        }
+    }
 
-	private void addAlreadyAddedTestCaseFilterControl(Composite parent1) {
-		chckFilterAlreadyAddedTestCases = new Button(parent1, SWT.CHECK);
-		chckFilterAlreadyAddedTestCases.setText("Hide Test Cases already added to Test Suites");
-		chckFilterAlreadyAddedTestCases.addSelectionListener(new SelectionListener() {
+    private void addAlreadyAddedTestCaseFilterControl(Composite parent1) {
+        chckFilterAlreadyAddedTestCases = new Button(parent1, SWT.CHECK);
+        chckFilterAlreadyAddedTestCases.setText("Hide Test Cases already added to Test Suites");
+        chckFilterAlreadyAddedTestCases.addSelectionListener(new SelectionListener() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
-				if (!featureService.canUse(KSEFeature.FILTER_ALREADY_ADDED_TEST_CASES)) {
-					KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.FILTER_ALREADY_ADDED_TEST_CASES);
-					chckFilterAlreadyAddedTestCases.setSelection(false);
-					return;
-				}
-				boolean filterAlreadyAddedTestCases = chckFilterAlreadyAddedTestCases.getSelection();
-				UISynchronizeService.syncExec(() -> {
-					if (filterAlreadyAddedTestCases) {
-						alreadyAddedTestCasesfilter.enableAlreadyAddedTestCases();
-					} else {
-						alreadyAddedTestCasesfilter.disableAlreadyAddedTestCases();
-					}
-				});
-				store.setValue(ENABLE_FILTER_ALREADY_ADDED_TEST_CASES_MODE_PREFERENCE, filterAlreadyAddedTestCases);
-				getTreeViewer().refresh();
-			}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+                if (!featureService.canUse(KSEFeature.FILTER_ALREADY_ADDED_TEST_CASES)) {
+                    KSEFeatureAccessHandler.handleUnauthorizedAccess(KSEFeature.FILTER_ALREADY_ADDED_TEST_CASES);
+                    chckFilterAlreadyAddedTestCases.setSelection(false);
+                    return;
+                }
+                boolean filterAlreadyAddedTestCases = chckFilterAlreadyAddedTestCases.getSelection();
+                UISynchronizeService.syncExec(() -> {
+                    if (filterAlreadyAddedTestCases) {
+                        alreadyAddedTestCasesfilter.enableAlreadyAddedTestCases();
+                    } else {
+                        alreadyAddedTestCasesfilter.disableAlreadyAddedTestCases();
+                    }
+                });
+                store.setValue(ENABLE_FILTER_ALREADY_ADDED_TEST_CASES_MODE_PREFERENCE, filterAlreadyAddedTestCases);
+                getTreeViewer().refresh();
+            }
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Do nothing
-			}
-		});
-		Label lblInfo = new Label(parent1, SWT.NONE);
-		lblInfo.setText(" * This filter only retrieves data from saved test suites");
-	}
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                // Do nothing
+            }
+        });
+        Label lblInfo = new Label(parent1, SWT.NONE);
+        lblInfo.setText(" * This filter only retrieves data from saved test suites");
+    }
 
 	@Override
 	public TreeViewer createTreeViewer(Composite parent) {

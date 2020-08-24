@@ -351,17 +351,17 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
     @Override
     public void addNewItem() {
         try {
-			ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-			if (currentProject == null) {
-				return;
-			}
-			ITreeEntity[] entities = TreeEntityUtil.getChildren(null,
-					FolderController.getInstance().getTestCaseRoot(currentProject));
-			TestCaseSelectionDialog dialog = new TestCaseSelectionDialog(null, new EntityLabelProvider(),
-					new EntityProvider(), new AlreadyAddedTestCaseViewerFilter(new EntityProvider(), entities), this);
-			dialog.setInput(entities);
-			dialog.open();
-		} catch (Exception ex) {
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            if (currentProject == null) {
+                return;
+            }
+            ITreeEntity[] entities = TreeEntityUtil.getChildren(null,
+                    FolderController.getInstance().getTestCaseRoot(currentProject));
+            TestCaseSelectionDialog dialog = new TestCaseSelectionDialog(null, new EntityLabelProvider(),
+                    new EntityProvider(), new AlreadyAddedTestCaseViewerFilter(new EntityProvider(), entities), this);
+            dialog.setInput(entities);
+            dialog.open();
+        } catch (Exception ex) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_UNABLE_TO_ADD_TEST_CASES);
             LoggerSingleton.logError(ex);
