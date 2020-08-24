@@ -165,27 +165,30 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
         Display.getDefault().syncExec(new Runnable() {
 
             @Override
-            public void run() {
-                try {
-                    if (txtInput.isDisposed())
-                        return;
-                    if (searchString.equals(txtInput.getText()) && getTreeViewer().getInput() != null) {
-                        String broadcastMessage = getSearchMessage();
-                        labelProvider.setSearchString(broadcastMessage);
-                        entityViewerFilter.setSearchString(broadcastMessage);
-                        getTreeViewer().refresh();
-                        if (searchString != null && !searchString.isEmpty()) {
-                            isSearched = true;
-                            getTreeViewer().expandAll();
-                        } else {
-                            isSearched = false;
-                            getTreeViewer().collapseAll();
-                        }
-                        updateStatusSearchLabel();
-                    }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
-                }
+			public void run() {
+				try {
+					if (txtInput.isDisposed())
+						return;
+					if (searchString.equals(txtInput.getText()) && getTreeViewer().getInput() != null) {
+						String broadcastMessage = getSearchMessage();
+						labelProvider.setSearchString(broadcastMessage);
+						entityViewerFilter.setSearchString(broadcastMessage);
+						getTreeViewer().getTree().setRedraw(false);
+						getTreeViewer().refresh();
+						if (searchString != null && !searchString.isEmpty()) {
+							isSearched = true;
+							getTreeViewer().expandAll();
+						} else {
+							isSearched = false;
+							getTreeViewer().collapseAll();
+						}
+						updateStatusSearchLabel();
+					}
+				} catch (Exception e) {
+					LoggerSingleton.logError(e);
+				} finally {
+					getTreeViewer().getTree().setRedraw(true);
+				}
             }
         });
     }

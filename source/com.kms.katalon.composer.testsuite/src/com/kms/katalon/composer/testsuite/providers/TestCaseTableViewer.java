@@ -14,13 +14,14 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.components.viewer.ITableViewerActions;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
-import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.dialogs.TestCaseSelectionDialog;
+import com.kms.katalon.composer.testsuite.filters.AlreadyAddedTestCaseViewerFilter;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartTestCaseView;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -350,17 +351,17 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
     @Override
     public void addNewItem() {
         try {
-            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            if (currentProject == null) {
-                return;
-            }
-
-            TestCaseSelectionDialog dialog = new TestCaseSelectionDialog(null, new EntityLabelProvider(),
-                    new EntityProvider(), new EntityViewerFilter(new EntityProvider()), this);
-            dialog.setInput(TreeEntityUtil.getChildren(null,
-                    FolderController.getInstance().getTestCaseRoot(currentProject)));
-            dialog.open();
-        } catch (Exception ex) {
+			ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+			if (currentProject == null) {
+				return;
+			}
+			ITreeEntity[] entities = TreeEntityUtil.getChildren(null,
+					FolderController.getInstance().getTestCaseRoot(currentProject));
+			TestCaseSelectionDialog dialog = new TestCaseSelectionDialog(null, new EntityLabelProvider(),
+					new EntityProvider(), new AlreadyAddedTestCaseViewerFilter(new EntityProvider(), entities), this);
+			dialog.setInput(entities);
+			dialog.open();
+		} catch (Exception ex) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_UNABLE_TO_ADD_TEST_CASES);
             LoggerSingleton.logError(ex);
