@@ -26,88 +26,90 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
  *
  */
 public class AlreadyAddedTestCaseViewerFilter extends EntityViewerFilter {
-	private boolean needToCheckAlreadyAddedTestCases = false;
-	private AlreadyAddedTestCaseFilter alreadyAddedTestCaseFilter;
-	private ITreeEntity[] treeEntities;
+    private boolean needToCheckAlreadyAddedTestCases = false;
 
-	public AlreadyAddedTestCaseViewerFilter(EntityProvider entityProvider, ITreeEntity[] treeEntities) {
-		super(entityProvider);
-		alreadyAddedTestCaseFilter = new AlreadyAddedTestCaseFilter();
-		this.treeEntities = treeEntities;
-	}
+    private AlreadyAddedTestCaseFilter alreadyAddedTestCaseFilter;
 
-	@Override
-	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		if (element instanceof ITreeEntity) {
-			try {
-				if (needToCheckAlreadyAddedTestCases) {
-					String entityId = getEntityIdForDisplay((ITreeEntity) element);
-					if (alreadyAddedTestCaseFilter.isEntityAlreadyAddedToTestSuites(entityId)) {
-						return false;
-					}
-				}
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-		return super.select(viewer, parentElement, element);
-	}
+    private ITreeEntity[] treeEntities;
 
-	private void setAlreadyAddedTestCasesCondition(boolean val) {
-		needToCheckAlreadyAddedTestCases = val;
-	}
+    public AlreadyAddedTestCaseViewerFilter(EntityProvider entityProvider, ITreeEntity[] treeEntities) {
+        super(entityProvider);
+        alreadyAddedTestCaseFilter = new AlreadyAddedTestCaseFilter();
+        this.treeEntities = treeEntities;
+    }
 
-	/**
-	 * Turn on "Filter already added test cases" and initialize cache if cache
-	 * is empty. During cache initialization, check if elements of the array of
-	 * {@link ITreeEntity} (given via constructor) are added to Test Suites and
-	 * cache the results.
-	 * 
-	 */
-	public void enableAlreadyAddedTestCases() {
-		setAlreadyAddedTestCasesCondition(true);
-		if (!alreadyAddedTestCaseFilter.isResultNotEmpty()) {
-			try {
-				new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, false,
-						new IRunnableWithProgress() {
-							@Override
-							public void run(final IProgressMonitor monitor)
-									throws InvocationTargetException, InterruptedException {
-								initializeAlreadyAddedEntitiesCache(monitor);
-							}
-						});
-			} catch (InvocationTargetException | InterruptedException e1) {
-				LoggerSingleton.logError(e1);
-			}
-		}
-	}
+    @Override
+    public boolean select(Viewer viewer, Object parentElement, Object element) {
+        if (element instanceof ITreeEntity) {
+            try {
+                if (needToCheckAlreadyAddedTestCases) {
+                    String entityId = getEntityIdForDisplay((ITreeEntity) element);
+                    if (alreadyAddedTestCaseFilter.isEntityAlreadyAddedToTestSuites(entityId)) {
+                        return false;
+                    }
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        return super.select(viewer, parentElement, element);
+    }
 
-	/**
-	 * Turn off "Filter already added test cases" mode. Cached results are
-	 * retained
-	 */
-	public void disableAlreadyAddedTestCases() {
-		setAlreadyAddedTestCasesCondition(false);
-	}
+    private void setAlreadyAddedTestCasesCondition(boolean val) {
+        needToCheckAlreadyAddedTestCases = val;
+    }
 
-	private void initializeAlreadyAddedEntitiesCache(IProgressMonitor monitor) {
-		monitor.beginTask("Check if entities are added to any Test Suite", treeEntities.length);
-		alreadyAddedTestCaseFilter.filterElements(treeEntities, monitor);
-		monitor.done();
-	}
+    /**
+     * Turn on "Filter already added test cases" and initialize cache if cache
+     * is empty. During cache initialization, check if elements of the array of
+     * {@link ITreeEntity} (given via constructor) are added to Test Suites and
+     * cache the results.
+     * 
+     */
+    public void enableAlreadyAddedTestCases() {
+        setAlreadyAddedTestCasesCondition(true);
+        if (!alreadyAddedTestCaseFilter.isResultNotEmpty()) {
+            try {
+                new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, false,
+                        new IRunnableWithProgress() {
+                            @Override
+                            public void run(final IProgressMonitor monitor)
+                                    throws InvocationTargetException, InterruptedException {
+                                initializeAlreadyAddedEntitiesCache(monitor);
+                            }
+                        });
+            } catch (InvocationTargetException | InterruptedException e1) {
+                LoggerSingleton.logError(e1);
+            }
+        }
+    }
 
-	private String getEntityIdForDisplay(ITreeEntity entity) throws Exception {
-		String entityId = "";
-		if (entity instanceof FolderTreeEntity) {
-			FolderEntity folderEntity = ((FolderTreeEntity) entity).getObject();
-			if (folderEntity.getFolderType() == FolderType.TESTCASE) {
-				entityId = folderEntity.getIdForDisplay();
-			}
-		}
-		if (entity instanceof TestCaseTreeEntity) {
-			TestCaseEntity tcEntity = ((TestCaseTreeEntity) entity).getObject();
-			entityId = tcEntity.getIdForDisplay();
-		}
-		return entityId;
-	}
+    /**
+     * Turn off "Filter already added test cases" mode. Cached results are
+     * retained
+     */
+    public void disableAlreadyAddedTestCases() {
+        setAlreadyAddedTestCasesCondition(false);
+    }
+
+    private void initializeAlreadyAddedEntitiesCache(IProgressMonitor monitor) {
+        monitor.beginTask("Check if entities are added to any Test Suite", treeEntities.length);
+        alreadyAddedTestCaseFilter.filterElements(treeEntities, monitor);
+        monitor.done();
+    }
+
+    private String getEntityIdForDisplay(ITreeEntity entity) throws Exception {
+        String entityId = "";
+        if (entity instanceof FolderTreeEntity) {
+            FolderEntity folderEntity = ((FolderTreeEntity) entity).getObject();
+            if (folderEntity.getFolderType() == FolderType.TESTCASE) {
+                entityId = folderEntity.getIdForDisplay();
+            }
+        }
+        if (entity instanceof TestCaseTreeEntity) {
+            TestCaseEntity tcEntity = ((TestCaseTreeEntity) entity).getObject();
+            entityId = tcEntity.getIdForDisplay();
+        }
+        return entityId;
+    }
 }
