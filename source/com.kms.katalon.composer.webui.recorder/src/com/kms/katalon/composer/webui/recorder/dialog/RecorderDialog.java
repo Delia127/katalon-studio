@@ -92,6 +92,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.DialogUtil;
+import com.kms.katalon.composer.quickstart.QuickRecordGuidingDialog;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -374,6 +375,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmPauseAndResume.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();
+            
+            QuickRecordGuidingDialog guidingDialog = new QuickRecordGuidingDialog(getParentShell());
+            guidingDialog.open();
+            
             Trackings.trackWebRecord(getSelectedBrowserType().toString(), isInstant, getWebLocatorConfig().toString());
         } catch (final IEAddonNotInstalledException e) {
             stop();
@@ -2053,6 +2058,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         capturedObjectComposite.setInput(elements);
         capturedObjectComposite.refreshTree(null);
 
+        try {
+            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig().toString());
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+
         UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
         if (currentProfile.isNewUser() && !currentProfile.isDoneOpenRecorder()
                 && currentProfile.getPreferredTestingType() == QuickStartProjectType.WEBUI) {
@@ -2064,12 +2075,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
             currentProfile.setDoneOpenRecorder(true);
             UserProfileHelper.saveProfile(currentProfile);
-        }
-
-        try {
-            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig().toString());
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
         }
     }
 

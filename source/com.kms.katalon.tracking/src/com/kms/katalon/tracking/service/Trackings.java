@@ -129,6 +129,10 @@ public class Trackings {
                 useDefaultBrowser);
     }
 
+    public static void trackQuickStartGuidingDialog() {
+        trackUserAction("ksu_quick_start_record_guide");
+    }
+
     public static void trackQuickStartRunOpen() {
         trackUserAction("ksu_quick_start_run_open");
     }

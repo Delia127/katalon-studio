@@ -262,20 +262,28 @@ public class ComponentUtil {
         return ComponentUtil.createCanvas(parent, image, width, height);
     }
 
+    public static Canvas createCanvas(Composite parent) {
+        return createCanvas(parent, null);
+    }
+
     public static Canvas createCanvas(Composite parent, Image image) {
-        return createCanvas(parent, image, image.getBounds().width, image.getBounds().height);
+        int width = image != null ? image.getBounds().width : 0;
+        int height = image != null ? image.getBounds().height : 0;
+        return createCanvas(parent, image, width, height);
     }
 
     public static Canvas createCanvas(Composite parent, Image image, int width, int height) {
         Canvas canvas = new Canvas(parent, SWT.TRANSPARENT);
-        canvas.addPaintListener(new PaintListener() {
-            public void paintControl(PaintEvent event) {
-                GC gc = event.gc;
-                gc.setAntialias(SWT.ON);
-                gc.setAdvanced(true);
-                gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
-            }
-        });
+        if (image != null) {
+            canvas.addPaintListener(new PaintListener() {
+                public void paintControl(PaintEvent event) {
+                    GC gc = event.gc;
+                    gc.setAntialias(SWT.ON);
+                    gc.setAdvanced(true);
+                    gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+                }
+            });
+        }
         setSize(canvas, width, height);
         return canvas;
     }

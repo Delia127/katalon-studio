@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.constants.ComponentConstants;
 import com.kms.katalon.composer.components.util.ComponentUtil.EventHandler;
 
 public class ComponentBuilder<T extends Control> {
@@ -78,6 +79,10 @@ public class ComponentBuilder<T extends Control> {
     public static ComponentBuilder<Canvas> image(Composite parent, String imageKey, int width, int height) {
         Canvas canvas = ComponentUtil.createCanvasImage(parent, imageKey, width, height);
         return new ComponentBuilder<Canvas>(canvas);
+    }
+
+    public static ComponentBuilder<Canvas> canvas(Composite parent) {
+        return new ComponentBuilder<Canvas>(ComponentUtil.createCanvas(parent));
     }
 
     public static ComponentBuilder<Canvas> canvas(Composite parent, Image image) {
@@ -358,6 +363,7 @@ public class ComponentBuilder<T extends Control> {
 
     public ComponentBuilder<T> text(String text) {
         ComponentUtil.setText(control, text);
+        ComponentDataUtil.set(control, ComponentConstants.CONTROL_PROP_TEXT, text);
         return this;
     }
 

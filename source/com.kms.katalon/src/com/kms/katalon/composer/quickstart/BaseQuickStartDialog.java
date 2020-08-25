@@ -95,11 +95,22 @@ public class BaseQuickStartDialog extends AbstractDialog {
             return;
         }
 
+        ComponentBuilder.canvas(parent)
+                .text(getMainButtonText())
+                .fontSize(FontUtil.SIZE_H3)
+                .size(140, 40)
+                .gridMarginTop(10)
+                .gridMarginBottom(30)
+                .center()
+                .primaryButton()
+                .onClick(event -> {
+                    okPressed();
+                })
+                .build();
+
         ComponentBuilder.label(parent)
                 .text(getMainButtonText())
-                // .font(FontUtil.FONT_TTNORMS_MEDIUM)
                 .fontSize(FontUtil.SIZE_H3)
-                // .bold()
                 .size(140, 40)
                 .gridMarginTop(10)
                 .gridMarginBottom(30)
@@ -165,6 +176,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
     @Override
     protected void handleShellCloseEvent() {
         // Do not allow to skip Quick Start dialog
+        okPressed();
     }
 
     @Override
