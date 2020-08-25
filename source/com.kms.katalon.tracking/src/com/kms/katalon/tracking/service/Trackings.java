@@ -400,6 +400,10 @@ public class Trackings {
                 webLocatorConfig);
     }
 
+    public static void trackWebRecordStepByContextMenu(String keyword) {
+        trackUserAction("recordStepByContextMenu", "keyword", keyword);
+    }
+
     public static void trackOpenMobileRecord(String deviceType) {
         trackUserAction("openMobileRecord", "deviceType", deviceType);
     }
