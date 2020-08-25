@@ -124,8 +124,8 @@ public class Trackings {
         trackUserAction("ksu_quick_start_record_open");
     }
 
-    public static void trackQuickStartStartRecord(String browser) {
-        trackUserAction("ksu_quick_start_record_record", "browser", browser);
+    public static void trackQuickStartStartRecord(String browser, String scenario) {
+        trackUserAction("ksu_quick_start_record_record", "browser", browser, "option", scenario);
     }
 
     public static void trackQuickStartRunOpen() {

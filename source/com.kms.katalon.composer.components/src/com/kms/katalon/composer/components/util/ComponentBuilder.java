@@ -361,7 +361,7 @@ public class ComponentBuilder<T extends Control> {
         return this;
     }
 
-    public ComponentBuilder<T> message(String message) {
+    public ComponentBuilder<T> placeholder(String message) {
         ComponentUtil.setMessage(control, message);
         return this;
     }

@@ -14,13 +14,19 @@ import com.kms.katalon.tracking.service.Trackings;
 
 public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
-    private static final String DEFAULT_URL = "https://katalon-demo-cura.herokuapp.com";
+    private static final String DEFAULT_URL = "https://www.amazon.com";
 
     private WebUIDriverType preferredBrowser = WebUIDriverType.CHROME_DRIVER;
 
     private String preferredSite = DEFAULT_URL;
 
     private BrowserSelect browserSelect;
+
+    private String scenario = Math.random() < 0.5f
+            ? "A"
+            : "B";
+
+    private boolean isScenarioA = scenario.equals("A");
 
     public QuickCreateFirstWebUITestCase(Shell parentShell) {
         super(parentShell);
@@ -38,7 +44,7 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
     private void createTitle(Composite parent) {
         ComponentBuilder.label(parent)
-                .text("Create your first Web UI test case")
+                .text("Create your first automated test in a minute with Record")
                 .font(FontUtil.size(FontUtil.BOLD, FontUtil.SIZE_H3))
                 // .center()
                 .build();
@@ -51,19 +57,25 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
                 .gridVerticalSpacing(10)
                 .build();
 
-        ComponentBuilder.label(startRecordComposite).text("Enter your application under test URL:").build();
+        String urlLabelA = isScenarioA
+                ? "Enter your web application URL:"
+                : "Enter your web application URL or try out amazon.com:";
+        ComponentBuilder.label(startRecordComposite).text(urlLabelA).build();
 
         Composite configComposite = ComponentBuilder.gridContainer(startRecordComposite, 3)
                 .gridHorizontalSpacing(10)
                 .build();
 
+        String urlTextA = isScenarioA
+                ? StringUtils.EMPTY
+                : DEFAULT_URL;
         Composite textWrapper = ComponentBuilder.gridContainer(configComposite, 1, SWT.BORDER).build();
-        ComponentBuilder.text(textWrapper)
+        ComponentBuilder.text(textWrapper, SWT.SINGLE)
                 .gridMarginTop(5)
                 .gridMarginLeft(5)
                 .size(350, 22)
-                .text(DEFAULT_URL)
-                .message("Your preferred site")
+                .text(urlTextA)
+                .placeholder("E.g: https://www.amazon.com")
                 .fontSize(FontUtil.SIZE_H5)
                 .onChange((event) -> {
                     Text txtUrl = (Text) event.widget;
@@ -73,7 +85,7 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
         browserSelect = new BrowserSelect(configComposite, SWT.NONE);
 
-        ComponentBuilder.label(configComposite).text("Record").size(100, 30).primaryButton().onClick((event) -> {
+        ComponentBuilder.label(configComposite).text("Start").size(100, 30).primaryButton().onClick((event) -> {
             okPressed();
         }).build();
     }
@@ -85,7 +97,7 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
     @Override
     protected String getTipContent() {
-        return "Click the Record icon on the menu bar for recording tests";
+        return "You can easily maintain your test scripts after Recording via Object Repository and Dual-script interface";
     }
 
     @Override
@@ -111,7 +123,7 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
     @Override
     protected void okPressed() {
-        Trackings.trackQuickStartStartRecord(browserSelect.getInput().name());
+        Trackings.trackQuickStartStartRecord(browserSelect.getInput().name(), scenario);
         super.okPressed();
     }
 }
