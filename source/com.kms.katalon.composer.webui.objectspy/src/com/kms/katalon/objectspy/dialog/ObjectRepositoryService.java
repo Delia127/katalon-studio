@@ -35,11 +35,18 @@ import com.kms.katalon.objectspy.util.WebElementUtils;
 public class ObjectRepositoryService {
 
     /**
-     * Saved user-defined entity structures chosen by users via dialogResult.
+     * This method supports WebRecorder's need to save objects to repository and updating recorded element's references
+     * in test case.
+     * It <b>changes</b> the parent references of non-conflicted elements to a cloned parent to mark which elements are
+     * moved to a new
+     * location. This knowledge is used
+     * by {@link RecordHandler#updateRecordedElementsAfterSavingToObjectRepository} to update the
+     * references of recorded elements in test case (See issue 2405)
+     * 
      * @return SaveActionResult Wrapper of multiple objects necessary for the callers
      * @throws Exception If adding web elements (conflicted or non-conflicted) throws Exception
      */
-    public SaveActionResult saveObject(SaveToObjectRepositoryDialogResult dialogResult) throws Exception {
+    public SaveActionResult saveObjectForWebRecorder(SaveToObjectRepositoryDialogResult dialogResult) throws Exception {
         List<Object[]> testObjectIds = new ArrayList<>();
         Set<ITreeEntity> newSelectionOnExplorer = new HashSet<>();
         for (ConflictWebElementWrapper webPageWrapper : dialogResult.getAllSelectedPages()) {
@@ -52,7 +59,7 @@ public class ObjectRepositoryService {
             clonedWebPage.setTag("cloned");
             for (ConflictWebElementWrapper webElementChildWrapper : webPageWrapper.getChildren()) {
                 if (webElementChildWrapper.isConflicted()) {
-                    addConflictedWebElement(page, (ConflictWebElementWrapper) webElementChildWrapper, dialogResult, testObjectIds);
+                    addConflictedWebElement(clonedWebPage, (ConflictWebElementWrapper) webElementChildWrapper, dialogResult, testObjectIds);
                 } else {
                     WebElement clonedWebElement = webElementChildWrapper.getOriginalWebElement();
                     clonedWebElement.setParent(clonedWebPage);
@@ -66,6 +73,39 @@ public class ObjectRepositoryService {
             savedObjectCount -= dialogResult.getAllSelectedPages().size();
         }
         
+        return new SaveActionResult(testObjectIds, newSelectionOnExplorer, savedObjectCount);
+    }
+    
+    /**
+     * Saved user-defined entity structures chosen by users via dialogResult.
+     * 
+     * @return SaveActionResult Wrapper of multiple objects necessary for the callers
+     * @throws Exception If adding web elements (conflicted or non-conflicted) throws Exception
+     */
+    public SaveActionResult saveObjectForSpyTool(SaveToObjectRepositoryDialogResult dialogResult) throws Exception {
+        List<Object[]> testObjectIds = new ArrayList<>();
+        Set<ITreeEntity> newSelectionOnExplorer = new HashSet<>();
+        for (ConflictWebElementWrapper webPageWrapper : dialogResult.getAllSelectedPages()) {
+            if (!(webPageWrapper.getType() == WebElementType.PAGE)) {
+                continue;
+            }
+            WebPage page = (WebPage) webPageWrapper.getOriginalWebElement();
+            for (ConflictWebElementWrapper webElementChildWrapper : webPageWrapper.getChildren()) {
+                if (webElementChildWrapper.isConflicted()) {
+                    addConflictedWebElement(page, (ConflictWebElementWrapper) webElementChildWrapper, dialogResult,
+                            testObjectIds);
+                } else {
+                    WebElement clonedWebElement = webElementChildWrapper.getOriginalWebElement();
+                    newSelectionOnExplorer = addNonConflictedWebElement(page, clonedWebElement, dialogResult);
+                }
+            }
+        }
+
+        int savedObjectCount = dialogResult.getEntitySavedMap().size();
+        if (!dialogResult.isCreateFolderAsPageNameAllowed()) {
+            savedObjectCount -= dialogResult.getAllSelectedPages().size();
+        }
+
         return new SaveActionResult(testObjectIds, newSelectionOnExplorer, savedObjectCount);
     }
 
@@ -170,6 +210,7 @@ public class ObjectRepositoryService {
         }
 
         FolderEntity conflictedFolderEntity = FolderController.getInstance().getFolder(folderPath);
+        entitySavedMap.put(webPage, conflictedFolderEntity);
         
         if (wrapElement.isConflicted()) {
 
@@ -224,7 +265,6 @@ public class ObjectRepositoryService {
                                 WebElementSelectorMethod.valueOf(entry.getKey().toString()), entry.getValue());
                     });
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
-                    entitySavedMap.put(webPage, conflictedFolderEntity);
                     break;
 
                 default:

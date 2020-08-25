@@ -50,7 +50,6 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.katalon.platform.api.exception.PlatformException;
-import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -89,6 +88,8 @@ import com.kms.katalon.execution.exception.ExtensionRequiredException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.execution.util.ExecutionProfileStore;
+import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
@@ -96,7 +97,6 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionHandler {
@@ -440,6 +440,9 @@ public abstract class AbstractExecutionHandler {
                     // back-up
 
                     final TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity(testSuite);
+                    MailUtil.overrideEmailSettings(
+                            testSuiteExecutedEntity.getEmailConfig(ProjectController.getInstance().getCurrentProject()),
+                            ExecutionProfileStore.getInstance().getSelectedProfile(), null);
                     monitor.subTask("Preparing test cases...");
                     testSuiteExecutedEntity.prepareTestCases();
 

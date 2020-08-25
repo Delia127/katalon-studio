@@ -31,7 +31,8 @@ Require-Bundle: com.kms.katalon.entity,
  com.google.gson,
  com.kms.katalon.application,
  com.google.http-client.google-http-client,
- com.katalon.platform
+ com.katalon.platform,
+ org.eclipse.core.runtime
 Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.constants,
  com.kms.katalon.integration.qtest.credential,
@@ -39,8 +40,9 @@ Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.entity,
  com.kms.katalon.integration.qtest.exception,
  com.kms.katalon.integration.qtest.helper,
+ com.kms.katalon.integration.qtest.model,
+ com.kms.katalon.integration.qtest.report,
  com.kms.katalon.integration.qtest.setting,
- com.kms.katalon.integration.qtest.util,
- com.kms.katalon.integration.qtest.setting
+ com.kms.katalon.integration.qtest.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

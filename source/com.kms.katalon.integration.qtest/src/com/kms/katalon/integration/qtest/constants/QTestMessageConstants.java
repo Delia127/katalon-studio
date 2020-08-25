@@ -26,4 +26,6 @@ public class QTestMessageConstants extends GlobalStringConstants {
     public static final String ONLINE_ACTIVATION_LICENSE_NOT_FOUND_MSG_ERR = "The qTest Username or Activation Code you entered is incorrect. Please try again!";
 
     public static final String ONLINE_ACTIVATION_INTERNAL_SERVER_ERROR_MSG_ERROR = "Could not connect to Katalon License Server. Please try again later!";
+
+    public static final String REPORT_MSG_UPLOAD_SUCCESFULLY = "Test results are uploaded to qTest:{0} - {1} successfully.";
 }

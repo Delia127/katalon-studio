@@ -48,7 +48,7 @@ import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.util.collections.Pair;
 
 public class WebElementUtils {
-    private static final String SCREENSHOT_PATH = "/Screenshots/Targets";
+    private static final String SCREENSHOT_PATH = "/Screenshots/Targets/";
 
     private static final String PAGE_ELEMENT_NAME_PREFIX = "Page_";
 
@@ -69,6 +69,8 @@ public class WebElementUtils {
     private static final String ELEMENT_PAGE_KEY = "page";
     
     private static final String ELEMENT_XPATHS_KEY = "xpaths";
+
+    private static final String ELEMENT_CSS_KEY = "css";
     
     private static final String ELEMENT_USEFUL_NEIGHBOR_TEXT = "neighbor_text";
 
@@ -238,16 +240,14 @@ public class WebElementUtils {
         el.setSelectorMethod(selectorMethod);
         
 		// New TestObject will always have a NoneEmpty SelectorCollection
-		switch (selectorMethod) {
-		case XPATH:
-			if (!xpaths.isEmpty()) {
-				String value = Optional.ofNullable(xpaths.get(0)).orElse(new WebElementXpathEntity("", "")).getValue();
-				el.setSelectorValue(selectorMethod, value);
-			}
-			break;
-		default:
-			break;
-		}
+        
+        String cssSelector = getElementCSS(elementJsonObject);
+        el.setSelectorValue(SelectorMethod.CSS, cssSelector);
+
+        if (!xpaths.isEmpty()) {
+            String value = Optional.ofNullable(xpaths.get(0)).orElse(new WebElementXpathEntity("", "")).getValue();
+            el.setSelectorValue(SelectorMethod.XPATH, value);
+        }
         
         return el;
     }
@@ -270,11 +270,14 @@ public class WebElementUtils {
 	 */
     public static String takeScreenShotForImageBasedObjectRecognition(WebDriver driver, WebElement el) {
         String currentProjectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-        File imageFolder = new File(currentProjectLocation + SCREENSHOT_PATH);
-        imageFolder.mkdirs();
         TestObject testObject = WebElementUtils.buildTestObject(el);
-        By selectorMethod = WebUiCommonHelper.buildLocator(testObject);
-        return Optional.ofNullable(driver.findElement(selectorMethod)).map(element -> {
+        String objectRepositoryFolder = testObject.getObjectId().replace(el.getName(), "");
+        File imageFolder = new File(currentProjectLocation + SCREENSHOT_PATH + objectRepositoryFolder);
+        imageFolder.mkdirs();
+        boolean isValidLocator = testObject.getSelectorMethod() != SelectorMethod.IMAGE;
+        SelectorMethod selectorMethod = isValidLocator ? testObject.getSelectorMethod() : SelectorMethod.XPATH;
+        By findElementBy = WebUiCommonHelper.buildLocator(testObject, selectorMethod);
+        return Optional.ofNullable(driver.findElement(findElementBy)).map(element -> {
             try {
                 return WebUiCommonHelper.saveWebElementScreenshotAndResize(driver, element, el.getName(),
                         imageFolder.getAbsolutePath());
@@ -319,7 +322,7 @@ public class WebElementUtils {
     }
 
     public static String toValidFileName(String fileName) {
-        return fileName.trim().replaceAll("[^A-Za-z0-9_()\\- ]", "");
+        return fileName.trim().replaceAll("[^A-Za-z0-9_()\\-\\. ]", "");
     }
 
     private static WebFrame getParentElement(JsonObject elementJsonObject) throws UnsupportedEncodingException {
@@ -381,6 +384,27 @@ public class WebElementUtils {
             	 }
              }
         }
+    }
+    
+    private static String getElementCSS(JsonObject elementJsonObject) {
+        if (!isElementXpathsSet(elementJsonObject)) {
+            return StringUtils.EMPTY;
+        }
+        String cssSelector = StringUtils.EMPTY;
+        for (Entry<String, JsonElement> entry : elementJsonObject.getAsJsonObject(ELEMENT_XPATHS_KEY).entrySet()) {
+            String xpathFinder = entry.getKey();
+            JsonElement xpath = entry.getValue();
+
+            if (xpath instanceof JsonArray && StringUtils.equals(xpathFinder, ELEMENT_CSS_KEY)) {
+                for (JsonElement jsonElement : xpath.getAsJsonArray()) {
+                    cssSelector = jsonElement.getAsString();
+                    if (!StringUtils.isBlank(cssSelector) && cssSelector.startsWith("css=")) {
+                        return cssSelector.substring("css=".length());
+                    }
+                }
+            }
+        }
+        return StringUtils.EMPTY;
     }
 
     private static boolean isElementAttributesSet(JsonObject elementJsonObject) {
@@ -444,6 +468,7 @@ public class WebElementUtils {
     public static WebElementEntity convertWebElementToTestObject(WebElement element, WebElementEntity refElement,
             FolderEntity parentFolder) throws Exception {
         WebElementEntity newWebElement = new WebElementEntity();
+        newWebElement.setUseRalativeImagePath(true);
         newWebElement.setName(ObjectRepositoryController.getInstance().getAvailableWebElementName(parentFolder,
                 toValidFileName(StringUtils.trim(element.getName()))));
         newWebElement.setParentFolder(parentFolder);

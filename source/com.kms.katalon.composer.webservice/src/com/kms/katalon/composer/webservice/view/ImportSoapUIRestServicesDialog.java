@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
@@ -30,16 +29,18 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.soapui.SoapUIImportNode;
+import com.kms.katalon.composer.webservice.importing.model.RestImportNode;
 import com.kms.katalon.composer.webservice.soapui.SoapUIImporter;
 import com.kms.katalon.composer.webservice.soapui.SoapUIProjectImportResult;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -151,11 +152,14 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
                 }
             });
             super.okPressed();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
-                    ComposerWebserviceMessageConstants.ERROR_MSG_FAIL_TO_IMPORT_SOAPUI);
-        } 
+        } catch (InvocationTargetException e) {
+            Throwable target = e.getTargetException();
+            LoggerSingleton.logError(target);
+            MultiStatusErrorDialog.showErrorDialog(
+                    ComposerWebserviceMessageConstants.ERROR_MSG_FAIL_TO_IMPORT_SOAPUI,
+                    target.getMessage(), ExceptionsUtil.getStackTraceForThrowable(target));
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private void importRestServicesFromSoapUI() throws Exception {
@@ -169,8 +173,8 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
     }
 
     private void saveImportedArtifacts(SoapUIProjectImportResult projectImportResult) throws Exception {
-        List<SoapUIImportNode> importNodes = flatten(projectImportResult).collect(Collectors.toList());
-        for (SoapUIImportNode importNode : importNodes) {
+        List<RestImportNode> importNodes = flatten(projectImportResult).collect(Collectors.toList());
+        for (RestImportNode importNode : importNodes) {
             FileEntity fileEntity = importNode.getFileEntity();
             if (fileEntity != null && fileEntity instanceof FolderEntity) {
                 FolderController.getInstance().saveFolder((FolderEntity) fileEntity);
@@ -181,9 +185,9 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
         }
     }
 
-    private Stream<? extends SoapUIImportNode> flatten(SoapUIImportNode importNode) {
-        return Stream.concat(Stream.of(importNode),
-                Stream.of(importNode.getChildImportNodes()).flatMap(n -> flatten(n)));
+    private Stream<RestImportNode> flatten(RestImportNode importNode) {
+        Stream<RestImportNode> childImportNodes = importNode.getChildImportNodes().stream().flatMap(n -> flatten(n));
+        return Stream.concat(Stream.of(importNode), childImportNodes);
     }
 
     private IEventBroker getEventBroker() {
@@ -193,7 +197,6 @@ public class ImportSoapUIRestServicesDialog extends CustomTitleAreaDialog {
     @Override
     protected void setInput() {
         // TODO Auto-generated method stub
-
     }
 
 }

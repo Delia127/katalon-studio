@@ -290,6 +290,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
      * <ul>
      * <li>Encrypt text for password</li>
      * <li>Group Click and SetText on the same object</li>
+     * <li>Right Click and get actions from context menu on the same object</li>
      * </ul>
      * 
      * @param newAction
@@ -307,6 +308,13 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             }
             if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
                     && newAction.getAction().equals(HTMLAction.SetText) && objectId.equals(targetElement.getName())) {
+                removeTestStep();
+            }
+            String newActionName = newAction.getAction().getName();
+            boolean newActionFromContextMenu = newActionName.contains("Verify") || newActionName.contains("WaitFor")
+                    || newAction.getAction().equals(HTMLAction.MouseOver);
+            if (HTMLAction.RightClick.getMappedKeywordMethod().equals(latestKeywordName) && newActionFromContextMenu
+                    && objectId.equals(targetElement.getName())) {
                 removeTestStep();
             }
         }

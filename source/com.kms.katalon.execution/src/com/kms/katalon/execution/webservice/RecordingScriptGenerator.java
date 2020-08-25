@@ -7,7 +7,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -17,6 +16,7 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.WSVerificationTestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.entity.WSVerificationTestCaseExecutedEntity;
 import com.kms.katalon.execution.launcher.RecordingScriptLauncher;
@@ -28,7 +28,7 @@ public class RecordingScriptGenerator {
 
     private static final String WEBUI_VERIFICATION = "WebUIVerifition_";
 
-    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+    private IEventBroker eventBroker = ExecutionBundleActivator.getInstance().getEventBroker();
 
     private RecordingScriptLauncher launcher;
 

@@ -42,6 +42,30 @@ public class HTMLActionJsonParser {
 
         public static final String MOUSE_CLICK_ACTION_KEY = "click";
 
+        public static final String MOUSE_OVER = "MouseOver";
+
+        public static final String VERIFY_ELEMENT_TEXT = "VerifyElementText";
+
+        public static final String VERIFY_ELEMENT_PRESENT = "VerifyElementPresent";
+
+        public static final String VERIFY_ELEMENT_NOT_PRESENT = "VerifyElementNotPresent";
+
+        public static final String VERIFY_ELEMENT_VISIBLE = "VerifyElementVisible";
+
+        public static final String VERIFY_ELEMENT_NOT_VISIBLE = "VerifyElementNotVisible";
+
+        public static final String VERIFY_ELEMENT_CLICKABLE = "VerifyElementClickable";
+
+        public static final String VERIFY_ELEMENT_NOT_CLICKABLE = "VerifyElementNotClickable";
+
+        public static final String WAIT_FOR_ELEMENT_PRESENT = "WaitForElementPresent";
+
+        public static final String WAIT_FOR_ELEMENT_NOT_PRESENT = "WaitForElementNotPresent";
+
+        public static final String WAIT_FOR_ELEMENT_VISIBLE = "WaitForElementVisible";
+
+        public static final String WAIT_FOR_ELEMENT_NOT_VISIBLE = "WaitForElementNotVisible";
+
         public static final String ELEMENT_TYPE_TEXTAREA = "textarea";
 
         public static final String ELEMENT_TYPE_SELECT = "select";
@@ -199,6 +223,20 @@ public class HTMLActionJsonParser {
                         case MOUSE_CLICK_ACTION_DATA_RIGHT_CLICK:
                             return new HTMLActionMapping(HTMLAction.RightClick, "", targetElement);
                     }
+                case VERIFY_ELEMENT_TEXT:
+                    return new HTMLActionMapping(HTMLAction.VerifyElementText, actionData, targetElement);
+                case VERIFY_ELEMENT_PRESENT:
+                case VERIFY_ELEMENT_NOT_PRESENT:
+                case VERIFY_ELEMENT_VISIBLE:
+                case VERIFY_ELEMENT_NOT_VISIBLE:
+                case VERIFY_ELEMENT_CLICKABLE:
+                case VERIFY_ELEMENT_NOT_CLICKABLE:
+                case WAIT_FOR_ELEMENT_PRESENT:
+                case WAIT_FOR_ELEMENT_NOT_PRESENT:
+                case WAIT_FOR_ELEMENT_VISIBLE:
+                case WAIT_FOR_ELEMENT_NOT_VISIBLE:
+                case MOUSE_OVER:
+                    return new HTMLActionMapping(HTMLAction.valueOf(recordedActionName), "", targetElement);
                 case DOUBLE_CLICK_ACTION_KEY:
                     return new HTMLActionMapping(HTMLAction.DoubleClick, actionData, targetElement);
                 case SEND_KEYS_ACTION_KEY:                	

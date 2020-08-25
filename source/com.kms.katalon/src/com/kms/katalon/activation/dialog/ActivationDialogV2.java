@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -42,7 +41,6 @@ import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
-import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.license.models.License;
 import com.kms.katalon.license.models.LicenseResource;
@@ -62,6 +60,10 @@ public class ActivationDialogV2 extends AbstractDialog {
     private Text txtEmail;
 
     private Text txtPassword;
+    
+    private char defaultEchoChar = '\u2022';
+    
+    private Button btnShowPw;
 
     private Label lblProgressMessage;
 
@@ -121,6 +123,17 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         txtEmail.addModifyListener(modifyListener);
         txtPassword.addModifyListener(modifyListener);
+        
+        btnShowPw.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (btnShowPw.getSelection()) {
+                    txtPassword.setEchoChar('\0');
+                } else {
+                    txtPassword.setEchoChar(defaultEchoChar);
+                }
+            }
+        });
 
         lnkSwitchToSignupDialog.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -461,8 +474,18 @@ public class ActivationDialogV2 extends AbstractDialog {
         lblPassword.setLayoutData(gdLabel);
         lblPassword.setText(StringConstants.PASSSWORD_TITLE);
 
-        txtPassword = new Text(contentComposite, SWT.BORDER | SWT.PASSWORD);
+        Composite passwordComposite = new Composite(contentComposite, SWT.NONE);
+        GridLayout glPasswordComposite = new GridLayout(2, false);
+        glPasswordComposite.marginWidth = 0;
+        passwordComposite.setLayout(glPasswordComposite);
+        passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        
+        txtPassword = new Text(passwordComposite, SWT.BORDER);
         txtPassword.setLayoutData(gdText);
+        txtPassword.setEchoChar(defaultEchoChar);
+        
+        btnShowPw = new Button(passwordComposite, SWT.CHECK);
+        btnShowPw.setText(MessageConstants.ActivationDialogV2_CB_SHOW_PW);
 
         Label lblMachineKey = new Label(contentComposite, SWT.NONE);
         lblMachineKey.setLayoutData(gdLabel);

@@ -15,7 +15,19 @@ public enum HTMLAction implements IHTMLAction {
     Navigate("navigateToUrl", "Navigate to the specified web page"),
     SwitchToWindow("switchToWindowTitle", "Switch to the window with given title"),
     SendKeys("sendKeys", "Send keys to a specific element"),
-    SetEncryptedText("setEncryptedText", "Set encryted text to the given element");
+    SetEncryptedText("setEncryptedText", "Set encryted text to the given element"),
+    MouseOver("mouseOver", "Mouse Over"),
+    VerifyElementText("verifyElementText", "Verify Element Text"),
+    VerifyElementPresent("verifyElementPresent", "Verify Element Present"),
+    VerifyElementNotPresent("verifyElementNotPresent", "Verify Element Not Present"),
+    VerifyElementVisible("verifyElementVisible", "Verify Element Visible"),
+    VerifyElementNotVisible("verifyElementNotVisible", "Verify Element Not Visible"),
+    VerifyElementClickable("verifyElementClickable", "Verify Element Clickable"),
+    VerifyElementNotClickable("verifyElementNotClickable", "Verify Element Not Clickable"),
+    WaitForElementPresent("waitForElementPresent", "Wait For Element Present"),
+    WaitForElementNotPresent("waitForElementNotPresent", "Wait For Element Not Present"),
+    WaitForElementVisible("waitForElementVisible", "Wait For Element Visible"),
+    WaitForElementNotVisible("waitForElementNotVisible", "Wait For Element Not Visible");
 
     private String description;
 

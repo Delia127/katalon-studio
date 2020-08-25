@@ -222,6 +222,7 @@ stages:
       VERSION:
       IS_RELEASE:
       SETUP_SUCCESS:
+      RUN_TESTS:
 
     steps:
 
@@ -235,8 +236,10 @@ stages:
         pip3 install pyjavaproperties
         python get_version.py $BRANCH
         source ./variable.sh
+        echo ${isRelease}
         echo "##vso[task.setvariable variable=VERSION]${tag}"
         echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
+        echo "##vso[task.setvariable variable=RUN_TESTS]${runTests}" 
       displayName: Set up
 
     - task: PowerShell@2
@@ -251,31 +254,32 @@ stages:
           start-sleep -Seconds 300 # sleep for 5 mins just to allow updates to be processed 
           Remove-Item -Path c:\tmp\chrome.msi –Force
       displayName: Install Chrome
+      condition: eq(variables.RUN_TESTS, 'true')
 
     - checkout: WindowTest
       fetchDepth: 1
       clean: true
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.RUN_TESTS, 'true')
 
     - checkout: WebTest
       fetchDepth: 1
       clean: true
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.RUN_TESTS, 'true')
 
     - checkout: BddTest
       fetchDepth: 1
       clean: true
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.RUN_TESTS, 'true')
       
     - checkout: ApiTest
       fetchDepth: 1
       clean: true
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.RUN_TESTS, 'true')
 
     - checkout: MobileTest
       fetchDepth: 1
       clean: true
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.RUN_TESTS, 'true')
       
     - task: S3Download@1
       inputs:
@@ -286,7 +290,7 @@ stages:
         globExpressions: '@(Katalon_Studio_Windows_64|Katalon_Studio_Engine_Windows_64)*.zip'
         targetFolder: '$(TMP_DIR)'
       displayName: Download KSE and KRE
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.RUN_TESTS, 'true')
 
     - bash: |
         set -xe
@@ -294,7 +298,7 @@ stages:
         unzip Katalon_Studio_Windows_64-${VERSION}.zip
         unzip Katalon_Studio_Engine_Windows_64-${VERSION}.zip
       displayName: Extract KSR and KRE
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.RUN_TESTS, 'true')
 
     - bash: |
         set -xe
@@ -321,7 +325,7 @@ stages:
         "$WORK_DIR/katalon/tools/web-test/setup-jacoco.sh" "${WORK_DIR}/katalon" "${WORK_DIR}/web-service-tests" "${TMP_DIR}/${VERSION}/Katalon_Studio_Engine_Windows_64-${VERSION}"
         echo "##vso[task.setvariable variable=SETUP_SUCCESS]true"
       displayName: Set up jacoco
-      condition: eq(variables.IS_RELEASE, 'true')
+      condition: eq(variables.RUN_TESTS, 'true')
 
     - bash: |
         set -xe

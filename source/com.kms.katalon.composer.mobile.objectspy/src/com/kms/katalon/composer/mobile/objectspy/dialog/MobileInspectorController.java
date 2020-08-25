@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.text.StrMatcher;
 import org.json.JSONObject;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -73,6 +74,8 @@ import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvide
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.AndroidMobileCapabilityType;
+import io.appium.java_client.remote.MobileCapabilityType;
 
 public class MobileInspectorController {
 
@@ -261,6 +264,7 @@ public class MobileInspectorController {
         RunConfiguration.setExecutionSetting(
                 ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(kobitonDevice.toDesireCapabilitiesMap());
+        desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         driver = MobileDriverFactory.startRemoteMobileDriver(connector.getRemoteServerUrl(), desiredCapabilities,
                 connector.getMobileDriverType(), kobitonApplication.buildAutomationKey());
     }
@@ -430,7 +434,13 @@ public class MobileInspectorController {
     }
 
     private TreeMobileElement getXCUIObjectRoot() throws ParserConfigurationException, SAXException, IOException {
-        String pageSource = driver.getPageSource();
+        HashMap<String,String> obj = new HashMap<String,String>();
+        obj.put("format", "xml");
+        obj.put("excludedAttributes", "visible");
+        String pageSource = ((JavascriptExecutor) driver).executeScript("mobile: source", obj).toString();
+        if (StringUtils.isEmpty(pageSource)) {
+            pageSource = driver.getPageSource();
+        }
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(pageSource));
@@ -452,7 +462,7 @@ public class MobileInspectorController {
         IosXCUISnapshotMobileElement htmlMobileElementRootNode = new IosXCUISnapshotMobileElement();
 
         htmlMobileElementRootNode.getAttributes().put(IOSProperties.IOS_TYPE, appElement.getTagName());
-        htmlMobileElementRootNode.render(appElement);
+        htmlMobileElementRootNode.render(rootElement);
         return htmlMobileElementRootNode;
     }
 

@@ -87,11 +87,13 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.apache.log4j,
  com.kms.katalon.application,
  io.swagger.parser;bundle-version="2.0.0",
- io.swagger.parser-core;bundle-version="2.0.0"
+ io.swagger.parser-core;bundle-version="2.0.0",
+ com.kms.katalon.execution.webservice
 Export-Package: com.kms.katalon.composer.webservice.constants,
  com.kms.katalon.composer.webservice.util,
  com.kms.katalon.composer.webservice.editor,
  com.kms.katalon.composer.webservice.parser
 Bundle-ClassPath: .,
  resources/lib/xmlbeans-3.1.0.jar,
- resources/lib/su.jar
+ resources/lib/su.jar,
+ resources/lib/wadl.jar

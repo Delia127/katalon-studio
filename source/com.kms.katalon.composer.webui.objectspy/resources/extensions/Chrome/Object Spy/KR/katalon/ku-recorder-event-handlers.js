@@ -502,14 +502,15 @@ KURecorder.addEventHandler('checkPageLoaded', 'readystatechange', function (even
 // © Ming-Hung Hsu, SideeX Team
 KURecorder.addEventHandler('contextMenu', 'contextmenu', function (event) {
     var myPort = browser.runtime.connect();
-    // var tmpText = this.ku_locatorBuilders.buildAll(event.target);
     var tmpVal = getText(event.target);
-    var tmpTitle = normalizeSpaces(event.target.ownerDocument.title);
+    // var tmpText = this.ku_locatorBuilders.buildAll(event.target);
+    // var tmpTitle = normalizeSpaces(event.target.ownerDocument.title);
     var self = this;
-    myPort.onMessage.addListener(function portListener(m) {
-        // KS doesn't handle these kind of things
-        if (m.cmd.includes("Text")) {
-            //self.record(m.cmd, tmpText, tmpVal);
+    myPort.onMessage.addListener ( function portListener (m) {
+        if (m.cmd === 'VerifyElementText') {
+            self.getActionFromContextMenu(m.cmd, event.target, tmpVal);
+        } else if (m.cmd === "MouseOver" || m.cmd.includes("Verify") || m.cmd.includes("WaitFor")) {
+            self.getActionFromContextMenu(m.cmd, event.target);
         } else if (m.cmd.includes("Title")) {
             //self.record(m.cmd, [[tmpTitle]], '');
         } else if (m.cmd.includes("Value")) {

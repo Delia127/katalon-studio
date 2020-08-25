@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Selenium IDE Test
+Bundle-SymbolicName: com.kms.katalon.selenium.ide.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Fragment-Host: com.kms.katalon.selenium.ide;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit;bundle-version="4.12.0",
+ org.eclipse.osgi;bundle-version="3.11.3"
+Import-Package: com.kms.katalon.execution.classpath,
+ com.kms.katalon.selenium.ide.model,
+ com.kms.katalon.selenium.ide.util,
+ org.eclipse.core.runtime;version="3.5.0"

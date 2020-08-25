@@ -101,7 +101,8 @@ public enum InputValueType implements InputValueEditorProvider {
             case Condition:
                 return AstValueUtil.getCellEditorForBooleanExpression(parent, (BooleanExpressionWrapper) astObject);
             case GlobalVariable:
-                return AstValueUtil.getCellEditorForGlobalVariableExpression(parent);
+                return AstValueUtil.getCellEditorForGlobalVariableExpression(parent,
+                        (PropertyExpressionWrapper) astObject);
             case List:
                 return AstValueUtil.getCellEditorForListExpression(parent, (ListExpressionWrapper) astObject);
             case Map:

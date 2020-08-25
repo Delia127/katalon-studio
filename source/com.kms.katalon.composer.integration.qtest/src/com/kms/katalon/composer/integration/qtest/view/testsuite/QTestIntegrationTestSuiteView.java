@@ -40,13 +40,10 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.PreferenceDialogBuilder;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.CreateNewTestSuiteParentDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestSuiteParentCreationOption;
 import com.kms.katalon.composer.integration.qtest.job.UploadTestSuiteJob;
-import com.kms.katalon.composer.integration.qtest.model.TestSuiteQTestSuitePair;
-import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.preference.QTestPreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.integration.qtest.view.testsuite.provider.QTestSuiteTableLabelProvider;
 import com.kms.katalon.composer.testsuite.parts.integration.AbstractTestSuiteIntegrationView;
@@ -55,10 +52,13 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
+import com.kms.katalon.integration.qtest.model.TestSuiteQTestSuitePair;
+import com.kms.katalon.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationView {

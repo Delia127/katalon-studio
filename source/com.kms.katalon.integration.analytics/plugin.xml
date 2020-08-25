@@ -16,5 +16,10 @@
             report="com.kms.katalon.integration.analytics.report.AnalyticsReportIntegration">
       </client>
    </extension>
+   <extension
+         point="com.kms.katalon.execution.executionProperties">
+      <client
+            execution="com.kms.katalon.integration.analytics.ExecutionPropertiesContribution"></client>
+   </extension>
    
 </plugin>

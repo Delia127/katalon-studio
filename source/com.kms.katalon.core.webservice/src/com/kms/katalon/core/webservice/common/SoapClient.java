@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.wsdl.WSDLException;
@@ -18,8 +19,10 @@ import org.apache.http.entity.ByteArrayEntity;
 import com.ibm.wsdl.BindingOperationImpl;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
+import com.kms.katalon.core.webservice.constants.DefinitionLoaderParams;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
-import com.kms.katalon.core.webservice.constants.WsdlLocatorParams;
+import com.kms.katalon.core.webservice.definition.DefinitionLoader;
+import com.kms.katalon.core.webservice.definition.DefinitionLoaderProvider;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WsdlLocatorProvider;
 import com.kms.katalon.core.webservice.wsdl.support.wsdl.WsdlDefinitionLocator;
@@ -93,10 +96,12 @@ public class SoapClient extends BasicRequestor {
 
     private WsdlParser getWsdlParser(RequestObject requestObject) throws IOException, GeneralSecurityException {
         String wsdlLocation = requestObject.getWsdlAddress();
-        Map<String, Object> wsdlLocatorParams = new HashMap<>();
-        wsdlLocatorParams.put(WsdlLocatorParams.PROXY, proxyInformation);
-        wsdlLocatorParams.put(WsdlLocatorParams.HTTP_HEADERS, getHttpHeaderMap(requestObject));
-        WsdlDefinitionLocator wsdlLocator = WsdlLocatorProvider.getLocator(wsdlLocation, wsdlLocatorParams);
+        Map<String, Object> definitionLoaderParams = new HashMap<>();
+        definitionLoaderParams.put(DefinitionLoaderParams.PROXY, proxyInformation);
+        definitionLoaderParams.put(DefinitionLoaderParams.HTTP_HEADERS, getHttpHeaderMap(requestObject));
+        Function<String, DefinitionLoader> loaderGenFunc = url -> DefinitionLoaderProvider.getLoader(url,
+                definitionLoaderParams);
+        WsdlDefinitionLocator wsdlLocator = WsdlLocatorProvider.getLocator(wsdlLocation, loaderGenFunc);
         return new WsdlParser(wsdlLocator);
     }
 

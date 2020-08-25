@@ -22,7 +22,7 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
 
     public static final int EXECUTION_DEFAULT_TIMEOUT_VALUE = 30;
 
-    public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_GENERIC_PROJECT = "Firefox";
+    public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_GENERIC_PROJECT = "Chrome";
     
     public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_WEBSERVICE_PROJECT = "Web Service";
     

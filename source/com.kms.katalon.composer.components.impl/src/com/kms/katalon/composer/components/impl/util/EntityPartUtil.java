@@ -54,6 +54,10 @@ public class EntityPartUtil {
     public static String getTestObjectPartId(String testObjectPk) {
         return IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";
     }
+
+    public static String getMobileTestObjectPartId(String testObjectPk) {
+        return IdConstants.MOBILE_TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";
+    }
     
     public static String getWindowsTestObjectPartId(String windowsTestObjectId) {
         return IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + windowsTestObjectId + ")";
@@ -157,6 +161,16 @@ public class EntityPartUtil {
             String testObjectId = getEntityIdFromPartId(partElementId, IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX);
             if (testObjectId != null) {
                 return ObjectRepositoryController.getInstance().getWebElement(testObjectId);
+            }
+            
+            String mobileTestObjectId = getEntityIdFromPartId(partElementId, IdConstants.MOBILE_TESTOBJECT_CONTENT_PART_ID_PREFIX);
+            if (mobileTestObjectId != null) {
+                return ObjectRepositoryController.getInstance().getWebElement(mobileTestObjectId);
+            }
+            
+            String windowTestObjectId = getEntityIdFromPartId(partElementId, IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX);
+            if (windowTestObjectId != null) {
+                return WindowsElementController.getInstance().getWindowsElementEntity(windowTestObjectId);
             }
 
             String testDataId = getEntityIdFromPartId(partElementId, IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX);

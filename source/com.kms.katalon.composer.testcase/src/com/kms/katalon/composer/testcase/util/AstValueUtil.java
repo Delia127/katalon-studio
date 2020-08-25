@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.dialogs.EncryptedTextDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
@@ -18,7 +17,7 @@ import com.kms.katalon.composer.testcase.ast.editors.CheckpointSelectionMethodCa
 import com.kms.katalon.composer.testcase.ast.editors.ClosureInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ClosureListInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.GlobalVariablePropertyComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.GlobalVariablePropertyComboBoxCellEditorWithContentProposal;
 import com.kms.katalon.composer.testcase.ast.editors.KeyInputComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.KeysInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ListInputCellEditor;
@@ -55,7 +54,11 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionW
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.ITestCasePart;
+import com.kms.katalon.controller.GlobalVariableController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.entity.global.GlobalVariableEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -240,13 +243,35 @@ public class AstValueUtil {
         return new WindowsTestObjectCellEditor(parent, methodCallExpressionWrapper.getText(), false);
     }
 
-    public static CellEditor getCellEditorForGlobalVariableExpression(Composite parent) {
+    public static CellEditor getCellEditorForGlobalVariableExpression(Composite parent,
+            PropertyExpressionWrapper propertyExpressionWrapper) {
+        List<String> toolTips = new ArrayList<String>();
+
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        List<GlobalVariableEntity> variables = null;
         try {
-            return new GlobalVariablePropertyComboBoxCellEditor(parent);
+            variables = GlobalVariableController.getInstance().getAllGlobalVariables(currentProject);
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            variables = null;
         }
-        return null;
+
+        if (variables == null) {
+            return null;
+        }
+
+        List<GlobalVariableEntity> displayedVariables = new ArrayList<GlobalVariableEntity>();
+        List<String> variableNames = new ArrayList<String>();
+        for (GlobalVariableEntity variable : variables) {
+            if (!variableNames.contains(variable.getName())) {
+                variableNames.add(variable.getName());
+                toolTips.add(variable.getName());
+                displayedVariables.add(variable);
+            }
+        }
+
+        return new GlobalVariablePropertyComboBoxCellEditorWithContentProposal(parent, propertyExpressionWrapper,
+                displayedVariables.toArray(new GlobalVariableEntity[displayedVariables.size()]),
+                variableNames.toArray(new String[variableNames.size()]), toolTips.toArray(new String[toolTips.size()]));
     }
 
     public static CellEditor getCellEditorForEncryptedText(Composite parent,

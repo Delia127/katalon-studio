@@ -8,6 +8,8 @@ import com.kms.katalon.composer.resources.image.ImageManager;
 public class ImageConstants {
 
     // RecorderDialog
+    public static final Image IMG_16_KU_RECORDER = ImageManager.getImage(IImageKeys.KU_RECORDER_16);
+
     public static final Image IMG_24_RECORD = ImageManager.getImage(IImageKeys.RECORD_WEB_24);
 
     public static final Image IMG_24_PAUSE_RECORDING = ImageManager.getImage(IImageKeys.PAUSE_RECORDING_24);

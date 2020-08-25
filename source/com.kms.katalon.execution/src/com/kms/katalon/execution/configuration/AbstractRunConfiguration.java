@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-
 import com.google.gson.Gson;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
@@ -30,6 +29,7 @@ import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.collector.ExecutionPropertiesCollector;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.configuration.impl.LocalHostConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
@@ -108,7 +108,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
         return executionSetting;
     }
-
+    
     protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
@@ -248,11 +248,18 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
         propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
-        propertyMap.put(RunConfiguration.ALLOW_IMAGE_RECOGNITION, featureService.canUse(KSEFeature.IMAGE_BASED_OBJECT_DETECTION));
-        
+
 //        initializePluginPresence(IdConstants.KATALON_SMART_XPATH_BUNDLE_ID, propertyMap);
+
+        propertyMap.put(RunConfiguration.ALLOW_USING_SELF_HEALING, featureService.canUse(KSEFeature.SELF_HEALING));
         
-        propertyMap.put(RunConfiguration.ALLOW_USING_SMART_XPATH, featureService.canUse(KSEFeature.SMART_XPATH));
+        propertyMap.put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_TIMEOUT, featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_REQUEST_TIMEOUT));
+        
+        propertyMap.put(RunConfiguration.ALLOW_CUSTOMIZE_REQUEST_RESPONSE_SIZE_LIMIT, featureService.canUse(KSEFeature.CUSTOM_WEB_SERVICE_RESPONSE_SIZE_LIMIT));
+        
+        ExecutionPropertiesCollector.getInstance().getPropertiesContributors().forEach(contributor -> {
+            propertyMap.put(contributor.getKey(), contributor.getExecutionProperties());
+        });
         
         return propertyMap;
     }

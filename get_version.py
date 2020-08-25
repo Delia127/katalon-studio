@@ -5,10 +5,13 @@ from build_utils import write_file, read_file
 
 def get_version(branch):
     p = Properties()
-    p.load(open("source/com.kms.katalon/about.mappings"))
+    p.load(open("source/com.kms.katalon.application/about.mappings"))
 
     version = p['1']
     print("Version", version)
+
+    skip_tests = p['4']
+    print("Skip tests", skip_tests) 
 
     print("Branch", branch)
 
@@ -37,6 +40,8 @@ def get_version(branch):
         s3_location = "release-beta/{0}".format(tag)
     else:
         s3_location = tag
+    
+    run_tests = (is_release is True) & (skip_tests.lower() == 'false')
 
     variableTemplate = Template(
 """
@@ -48,8 +53,9 @@ isBeta=${is_beta}
 withUpdate=${with_update}
 tag=${tag}
 s3Location=${s3_location}
+runTests=${run_tests}
 """)
-    variable = variableTemplate.substitute(version = version, is_release = str(is_release).lower(), is_beta = str(is_beta).lower(), with_update = str(with_update).lower(), tag = tag, s3_location = s3_location)
+    variable = variableTemplate.substitute(version = version, is_release = str(is_release).lower(), is_beta = str(is_beta).lower(), with_update = str(with_update).lower(), tag = tag, s3_location = s3_location, run_tests = str(run_tests).lower())
     write_file(file_path = "variable.sh", text = variable)
     print(read_file(file_path = "variable.sh"))
 

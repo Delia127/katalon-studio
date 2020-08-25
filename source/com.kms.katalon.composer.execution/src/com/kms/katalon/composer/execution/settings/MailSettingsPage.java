@@ -46,8 +46,11 @@ import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageCons
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.setting.ReportFormatType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.util.MailUtil;
@@ -219,13 +222,16 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 emailConfig.setPort(txtPort.getText());
                 emailConfig.setSecurityProtocol(MailSecurityProtocolType.valueOf(comboProtocol.getText()));
                 emailConfig.addRecipients(txtRecipients.getText());
-                emailConfig.setSubject(txtSubject.getText());
                 emailConfig.setCc(txtCc.getText());
                 emailConfig.setBcc(txtBcc.getText());
+                emailConfig.setSubject(txtSubject.getText());
                 emailConfig.setAttachmentOptions(getSelectedAttachmentOptions());
                 try {
+                    ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+                    MailUtil.overrideEmailSettings(emailConfig,
+                            GlobalVariableController.getInstance().getDefaultExecutionProfile(project), null);
                     emailConfig.setHtmTemplateForTestSuite(getSettingStore().getEmailHTMLTemplateForTestSuite());
-                } catch (IOException | URISyntaxException ex) {
+                } catch (ControllerException | IOException | URISyntaxException ex) {
                     LoggerSingleton.logError(ex);
                 }
                 sendTestEmail(emailConfig);
@@ -276,36 +282,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 } else {
                     txtSender.setEnabled(true);
                 }
-            }
-        });
-
-        txtSender.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent arg0) {
-                setValidationAndEnableSendEmail("sender", validator.isValidEmail(txtSender.getText())); //$NON-NLS-1$
-            }
-        });
-
-        txtRecipients.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                setValidationAndEnableSendEmail("recipients", validator.isValidListEmail(txtRecipients.getText())); //$NON-NLS-1$
-            }
-        });
-
-        txtCc.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = txtCc.getText();
-                setValidationAndEnableSendEmail("cc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
-            }
-        });
-
-        txtBcc.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = txtBcc.getText();
-                setValidationAndEnableSendEmail("bcc", StringUtils.isBlank(text) || validator.isValidEmail(text)); //$NON-NLS-1$
             }
         });
 
@@ -637,8 +613,8 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             validation.put("port", false); //$NON-NLS-1$
             validation.put("username", false); //$NON-NLS-1$
             validation.put("password", false); //$NON-NLS-1$
-            validation.put("sender", false); //$NON-NLS-1$
-            validation.put("recipients", false); //$NON-NLS-1$
+            validation.put("sender", true); //$NON-NLS-1$
+            validation.put("recipients", true); //$NON-NLS-1$
             validation.put("cc", true); //$NON-NLS-1$
             validation.put("bcc", true); //$NON-NLS-1$
         }
@@ -656,18 +632,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 return false;
             }
             return Pattern.matches(EMAIL_TEXT_PATTERN, email.trim());
-        }
-
-        public boolean isValidListEmail(String lstEmail) {
-            if (StringUtils.isBlank(lstEmail)) {
-                return false;
-            }
-            for (String email : lstEmail.trim().split(MailUtil.EMAIL_SEPARATOR)) {
-                if (!Pattern.matches(EMAIL_TEXT_PATTERN, email.trim())) {
-                    return false;
-                }
-            }
-            return true;
         }
     }
 }

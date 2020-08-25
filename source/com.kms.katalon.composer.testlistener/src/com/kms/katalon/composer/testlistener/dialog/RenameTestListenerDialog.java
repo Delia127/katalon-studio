@@ -135,7 +135,7 @@ public class RenameTestListenerDialog extends TitleAreaDialog {
 
     @Override
     protected Point getInitialSize() {
-       return new Point(400, 200);
+       return new Point(400, super.getInitialSize().y);
     }
 
     public String getNewName() {

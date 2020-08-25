@@ -105,6 +105,20 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_GRP_POST_EXECUTION_OPTIONS;
 
+    public static String PREF_WEBUI_LBL_DEFAULT_SMART_WAIT;
+
+    public static String PREF_WEBUI_GROUP_LBL_IMAGE_RECOGNITION;
+
+    public static String PREF_WEBUI_LBL_ENABLE_IMAGE_RECOGNITION;
+
+    public static String PREF_WEBSERVICE_GROUP_LBL_HTTP;
+
+    public static String PREF_WEBSERVICE_LBL_CONNECTION_TIMEOUT;
+
+    public static String PREF_WEBSERVICE_LBL_SOCKET_TIMEOUT;
+
+    public static String PREF_WEBSERVICE_LBL_MAX_RESPONSE_SIZE;
+
     public static String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY;
 
     public static String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY;
@@ -392,6 +406,14 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_CHK_FOR_RETRY_IMMEDIATELY;
 
     public static String PA_MSG_DRIVER_OUTDATED;
+    
+    public static String DIA_LBL_TESTOPS_RELEASE;
+    
+    public static String DIA_GRP_KATALON_TESTOPS;
+    
+    public static String DIA_CB_DEFAULT_LASTEST_RELEASE;
+    
+    public static String DIA_CB_TESTOPS_LOADING;
 
     static {
         // initialize resource bundle

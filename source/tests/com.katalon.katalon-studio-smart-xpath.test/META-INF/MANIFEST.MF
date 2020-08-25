@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Self Healing Test
+Bundle-SymbolicName: com.katalon.katalon-studio-smart-xpath.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Fragment-Host: com.katalon.katalon-studio-smart-xpath;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.kms.katalon.dal,
+ com.kms.katalon.mockito,
+ org.junit,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.persistence.eclipselink

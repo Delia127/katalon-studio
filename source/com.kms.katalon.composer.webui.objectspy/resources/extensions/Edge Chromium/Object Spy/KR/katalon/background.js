@@ -295,9 +295,11 @@ function handleServerMessage(message) {
             break;
         case START_INSPECT:
             startAddon(RUN_MODE_OBJECT_SPY, jsonMessage.data, version);
+            createMenus(RUN_MODE_OBJECT_SPY);
             break;
         case START_RECORD:
             startAddon(RUN_MODE_RECORDER, jsonMessage.data, version);
+            createMenus(RUN_MODE_RECORDER);
             break;
         case HIGHLIGHT_OBJECT:
             if (!jsonMessage.data) {
@@ -360,15 +362,48 @@ chrome.runtime.onStartup.addListener(function () {
 });
 
 chrome.runtime.onInstalled.addListener(function (details) {
-    createMenus();
     waitForConnection();    
 });
 
-function createMenus() {
-    browser.contextMenus.create({
-        id: "captureObject",
-        title: "Capture Object",
-        documentUrlPatterns: ["<all_urls>"],
-        contexts: ["all"]
-    });
+function createMenus(mode) {
+    function createContextMenu (id, title, action) {
+        browser.contextMenus.create ({
+            id: id,
+            title: title,
+            documentUrlPatterns: ["<all_urls>"],
+            contexts: ["all"],
+        });
+    }
+
+    function createSeparator () {
+        browser.contextMenus.create ({
+            type: SEPARATOR,
+            documentUrlPatterns: ["<all_urls>"],
+            contexts: ["all"],
+        });
+    }
+
+    if (mode === RUN_MODE_OBJECT_SPY) {
+        createContextMenu(CAPTURE_OBJECT_ID, CAPTURE_OBJECT_STRING);
+    } else if (mode === RUN_MODE_RECORDER) {
+        createContextMenu(MOUSE_OVER_ID, MOUSE_OVER_STRING);
+
+        createSeparator();
+
+        createContextMenu(VERIFY_ELEMENT_TEXT_ID, VERIFY_ELEMENT_TEXT_STRING);
+        createContextMenu(VERIFY_ELEMENT_PRESENT_ID, VERIFY_ELEMENT_PRESENT_STRING);
+        createContextMenu(VERIFY_ELEMENT_NOT_PRESENT_ID, VERIFY_ELEMENT_NOT_PRESENT_STRING);
+        createContextMenu(VERIFY_ELEMENT_VISIBLE_ID, VERIFY_ELEMENT_VISIBLE_STRING);
+        createContextMenu(VERIFY_ELEMENT_NOT_VISIBLE_ID, VERIFY_ELEMENT_NOT_VISIBLE_STRING);
+        createContextMenu(VERIFY_ELEMENT_CLICKABLE_ID, VERIFY_ELEMENT_CLICKABLE_STRING);
+        createContextMenu(VERIFY_ELEMENT_NOT_CLICKABLE_ID, VERIFY_ELEMENT_NOT_CLICKABLE_STRING);
+
+        createSeparator();
+
+        createContextMenu(WAIT_FOR_ELEMENT_PRESENT_ID, WAIT_FOR_ELEMENT_PRESENT_STRING);
+        createContextMenu(WAIT_FOR_ELEMENT_NOT_PRESENT_ID, WAIT_FOR_ELEMENT_NOT_PRESENT_STRING);
+        createContextMenu(WAIT_FOR_ELEMENT_VISIBLE_ID, WAIT_FOR_ELEMENT_VISIBLE_STRING);
+        createContextMenu(WAIT_FOR_ELEMENT_NOT_VISIBLE_ID, WAIT_FOR_ELEMENT_NOT_VISIBLE_STRING);
+    }
+
 }

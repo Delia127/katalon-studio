@@ -2,7 +2,6 @@ package com.kms.katalon.execution.launcher;
 
 import java.io.IOException;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
@@ -13,6 +12,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.launcher.process.LaunchProcessor;
 import com.kms.katalon.execution.launcher.process.RecordingProcess;
+import com.kms.katalon.logging.LogUtil;
 
 public class RecordingScriptLauncher extends ConsoleLauncher {
 
@@ -51,7 +51,7 @@ public class RecordingScriptLauncher extends ConsoleLauncher {
             thread.start();
             return onCreateLaunchProcess(systemProcess);
         } catch (IOException ex) {
-            LoggerSingleton.logError(ex);
+            LogUtil.logError(ex);
             throw new ExecutionException(ex);
         }
     }
