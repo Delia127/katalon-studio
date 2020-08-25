@@ -120,12 +120,13 @@ public class Trackings {
         trackUserAction("ksu_quick_start_welcome_continue", "new_user", newUser, "project_type", projectType);
     }
 
-    public static void trackQuickStartRecordOpen() {
-        trackUserAction("ksu_quick_start_record_open");
+    public static void trackQuickStartRecordOpen(String scenario) {
+        trackUserAction("ksu_quick_start_record_open", "option", scenario);
     }
 
-    public static void trackQuickStartStartRecord(String browser, String scenario) {
-        trackUserAction("ksu_quick_start_record_record", "browser", browser, "option", scenario);
+    public static void trackQuickStartStartRecord(String browser, String scenario, boolean useDefaultBrowser) {
+        trackUserAction("ksu_quick_start_record_record", "browser", browser, "option", scenario, "useDefaultBrowser",
+                useDefaultBrowser);
     }
 
     public static void trackQuickStartRunOpen() {

@@ -39,7 +39,7 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
         createTitle(body);
         createStartRecordComposite(body);
 
-        Trackings.trackQuickStartRecordOpen();
+        Trackings.trackQuickStartRecordOpen(scenario);
     }
 
     private void createTitle(Composite parent) {
@@ -123,7 +123,8 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
     @Override
     protected void okPressed() {
-        Trackings.trackQuickStartStartRecord(browserSelect.getInput().name(), scenario);
+        boolean useDefaultBrowser = StringUtils.equals(DEFAULT_URL, getPreferredSite());
+        Trackings.trackQuickStartStartRecord(browserSelect.getInput().name(), scenario, useDefaultBrowser);
         super.okPressed();
     }
 }
