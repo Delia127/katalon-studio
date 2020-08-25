@@ -512,4 +512,8 @@ public class Trackings {
     public static void trackClickOnTrialNotificationButton() {
         trackUserAction("clickOnTrialNotificationButton");
     }
+
+    public static void trackClickImportOpenApi3() {
+        trackUserAction("clickImportOpenApi3");
+    }
 }

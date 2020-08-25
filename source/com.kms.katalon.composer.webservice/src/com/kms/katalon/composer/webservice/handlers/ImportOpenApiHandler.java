@@ -40,6 +40,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportOpenApiHandler {
 
@@ -54,6 +55,7 @@ public class ImportOpenApiHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
             @Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
+        Trackings.trackClickImportOpenApi3();
         if (featureService.canUse(KSEFeature.IMPORT_OPENAPI)) {
             try {
                 ImportOpenApiDialog dialog = new ImportOpenApiDialog(shell);
