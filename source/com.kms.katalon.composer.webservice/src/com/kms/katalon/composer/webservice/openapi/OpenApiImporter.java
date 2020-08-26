@@ -91,7 +91,7 @@ public final class OpenApiImporter {
     private String getBasePath(OpenAPI openAPI) {
         List<Server> servers = openAPI.getServers();
         String url = "/";
-        if (servers != null) {
+        if (servers != null && !servers.isEmpty()) {
             Server server = servers.get(0);
             url = server.getUrl();
             if (server.getVariables() != null) {
@@ -173,26 +173,28 @@ public final class OpenApiImporter {
             for (String mediaTypeName : content.keySet()) {
                 MediaType mediaType = content.get(mediaTypeName);
                 Schema<?> schema = mediaType.getSchema();
-                if (mediaTypeName.equals(OpenApiRestRequestImportResult.FORM_URLENCODED_CONTENT_TYPE)) {
-                    List<UrlEncodedBodyParameter> params = parseUrlEncodedRequestBody(schema);
-                    request.setUrlEncodedBodyParameters(params);
+                switch (mediaTypeName) {
+                case OpenApiRestRequestImportResult.FORM_URLENCODED_CONTENT_TYPE:
+                    request.setUrlEncodedBodyParameters(parseUrlEncodedRequestBody(schema));
                     request.setMediaType(mediaTypeName);
-                } else if (mediaTypeName.equals(OpenApiRestRequestImportResult.APPLICATION_JSON_CONTENT_TYPE)) {
-                    String bodyContent;
+                    break;
+                case OpenApiRestRequestImportResult.MULTIPART_FORM_DATA_CONTENT_TYPE:
+                    request.setFormDataBodyParameters(parseFormDataRequestBody(schema));
+                    request.setMediaType(mediaTypeName);
+                    break;
+                case OpenApiRestRequestImportResult.APPLICATION_JSON_CONTENT_TYPE:
+                    String jsonBodyContent;
                     if (mediaType.getExample() != null) {
-                        bodyContent = parseExample(mediaType.getExample());
+                        jsonBodyContent = parseExample(mediaType.getExample());
                     } else if (schema.getExample() != null) {
-                        bodyContent = parseExample(schema.getExample());
+                        jsonBodyContent = parseExample(schema.getExample());
                     } else {
-                        bodyContent = JsonUtil.toJson(parseJsonObject(schema));
+                        jsonBodyContent = JsonUtil.toJson(parseJsonObject(schema));
                     }
-                    request.setRequestBodyContent(bodyContent);
+                    request.setRequestBodyContent(jsonBodyContent);
                     request.setMediaType(mediaTypeName);
-                } else if (mediaTypeName.equals(OpenApiRestRequestImportResult.MULTIPART_FORM_DATA_CONTENT_TYPE)) {
-                    List<FormDataBodyParameter> params = parseFormDataRequestBody(schema);
-                    request.setFormDataBodyParameters(params);
-                    request.setMediaType(mediaTypeName);
-                } else if (mediaTypeName.equals(OpenApiRestRequestImportResult.MULTIPLE_CONTENT_TYPE)) {
+                    break;
+                case OpenApiRestRequestImportResult.MULTIPLE_CONTENT_TYPE:
                     String bodyContent;
                     if (schema.getExample() != null) {
                         bodyContent = parseExample(schema.getExample());
@@ -201,6 +203,7 @@ public final class OpenApiImporter {
                     }
                     request.setRequestBodyContent(bodyContent);
                     request.setMediaType(mediaTypeName);
+                    break;
                 }
             }
         }
@@ -242,8 +245,9 @@ public final class OpenApiImporter {
     }
 
     private void addParameters(OpenApiRestResourceImportNode holder, List<Parameter> restParameters) {
-        if (restParameters == null)
+        if (restParameters == null) {
             return;
+        }
         for (Parameter param : restParameters) {
             String in = param.getIn();
             String name = param.getName();
@@ -275,8 +279,9 @@ public final class OpenApiImporter {
         for (Map.Entry<String, Schema> entry : propertyMap.entrySet()) {
             String name = entry.getKey();
             Object value = parseJsonValue(entry.getValue(), In.BODY);
-            if (value != null)
+            if (value != null) {
                 result.put(name, value);
+            }
         }
         return result;
     }

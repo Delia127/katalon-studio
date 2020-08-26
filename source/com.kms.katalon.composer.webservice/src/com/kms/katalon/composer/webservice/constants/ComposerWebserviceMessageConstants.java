@@ -125,6 +125,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN;
 
+    public static String DIA_MSG_FILE_LOCATION_OR_URL;
+
     public static String VIEW_MENU_CONTEXT_INSERT_PROP;
 
     public static String VIEW_MENU_CONTEXT_DEL_PROPS;

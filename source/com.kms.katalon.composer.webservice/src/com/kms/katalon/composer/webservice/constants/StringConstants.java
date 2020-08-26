@@ -71,7 +71,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_OPENAPI3 = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_OPENAPI3;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN= ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN;
- 
+    public static final String DIA_MSG_FILE_LOCATION_OR_URL = ComposerWebserviceMessageConstants.DIA_MSG_FILE_LOCATION_OR_URL;
+
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;
 	public static final String VIEW_COL_VALUE = VALUE;

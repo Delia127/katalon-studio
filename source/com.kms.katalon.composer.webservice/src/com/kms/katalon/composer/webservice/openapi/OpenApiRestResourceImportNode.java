@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public abstract class OpenApiRestResourceImportNode extends OpenApiImportNode {
 
-    protected List<OpenApiRestParameter> parameters = new ArrayList<>();
+    private List<OpenApiRestParameter> parameters = new ArrayList<>();
 
     public OpenApiRestParameter addParameter(String name, String value, String description,
             OpenApiRestParameter.Style style) {

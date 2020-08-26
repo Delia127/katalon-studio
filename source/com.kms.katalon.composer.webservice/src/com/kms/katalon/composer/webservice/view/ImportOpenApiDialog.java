@@ -58,7 +58,7 @@ public class ImportOpenApiDialog extends CustomTitleAreaDialog {
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText("File location or URL: ");
+        label.setText(StringConstants.DIA_MSG_FILE_LOCATION_OR_URL);
 
         Text text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

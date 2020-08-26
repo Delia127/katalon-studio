@@ -12,7 +12,6 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.widgets.Menu;
 
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class ImportOpenApiToolItemHandler {
 
@@ -24,8 +23,7 @@ public class ImportOpenApiToolItemHandler {
 
     @CanExecute
     public boolean canExecute() {
-        return (ProjectController.getInstance().getCurrentProject() != null)
-                && !LauncherManager.getInstance().isAnyLauncherRunning();
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
