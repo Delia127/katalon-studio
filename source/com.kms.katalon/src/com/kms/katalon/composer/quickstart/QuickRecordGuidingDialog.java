@@ -43,4 +43,9 @@ public class QuickRecordGuidingDialog extends BaseQuickStartDialog {
         Trackings.trackQuickStartGuidingDialog();
         return super.close();
     }
+
+    @Override
+    protected boolean canClose() {
+        return true;
+    }
 }

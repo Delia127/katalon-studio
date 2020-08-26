@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
@@ -38,6 +39,11 @@ public class BaseQuickStartDialog extends AbstractDialog {
     protected Point getInitialLocation(Point initialSize) {
         return DialogUtil.computeCenterLocation(initialSize);
     }
+    
+    protected int getTipWidth() {
+        return -1;
+    }
+    
 
     @Override
     public String getDialogTitle() {
@@ -95,19 +101,6 @@ public class BaseQuickStartDialog extends AbstractDialog {
             return;
         }
 
-        ComponentBuilder.canvas(parent)
-                .text(getMainButtonText())
-                .fontSize(FontUtil.SIZE_H3)
-                .size(140, 40)
-                .gridMarginTop(10)
-                .gridMarginBottom(30)
-                .center()
-                .primaryButton()
-                .onClick(event -> {
-                    okPressed();
-                })
-                .build();
-
         ComponentBuilder.label(parent)
                 .text(getMainButtonText())
                 .fontSize(FontUtil.SIZE_H3)
@@ -141,11 +134,15 @@ public class BaseQuickStartDialog extends AbstractDialog {
 
         ComponentBuilder.label(tipsComposite).text("TIPS").bold().size(40, 20).grayBadge().middle().build();
 
-        ComponentBuilder.label(tipsComposite)
+        Label tipLabel = ComponentBuilder.label(tipsComposite)
                 .text(getTipContent())
                 .color(ColorUtil.getColor("#797979"))
                 .middle()
+                .fill()
                 .build();
+        if (getTipWidth() >= 0) {
+            ComponentUtil.setWidth(tipLabel, getTipWidth());
+        }
 
         createMoreTips(tipsComposite);
 
@@ -176,7 +173,13 @@ public class BaseQuickStartDialog extends AbstractDialog {
     @Override
     protected void handleShellCloseEvent() {
         // Do not allow to skip Quick Start dialog
-        okPressed();
+        if (canClose()) {
+            close();
+        }
+    }
+
+    protected boolean canClose() {
+        return true;
     }
 
     @Override

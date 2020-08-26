@@ -8,13 +8,19 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.util.ComponentBuilder;
 import com.kms.katalon.composer.components.util.FontUtil;
-import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
+    @Override
+    protected int getTipWidth() {
+        return 500;
+    }
+
     private static final String DEFAULT_URL = "https://www.amazon.com";
+    
+    private static final String URL_INPUT_PLACEHOLDER = "E.g: https://www.amazon.com";
 
     private WebUIDriverType preferredBrowser = WebUIDriverType.CHROME_DRIVER;
 
@@ -75,7 +81,7 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
                 .gridMarginLeft(5)
                 .size(350, 22)
                 .text(urlTextA)
-                .placeholder("E.g: https://www.amazon.com")
+                .placeholder(URL_INPUT_PLACEHOLDER)
                 .fontSize(FontUtil.SIZE_H5)
                 .onChange((event) -> {
                     Text txtUrl = (Text) event.widget;
@@ -88,6 +94,14 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
         ComponentBuilder.label(configComposite).text("Start").size(100, 30).primaryButton().onClick((event) -> {
             okPressed();
         }).build();
+
+        if (isScenarioA) {
+            ComponentBuilder.label(startRecordComposite)
+                    .text(URL_INPUT_PLACEHOLDER)
+                    .fontStyle(FontUtil.STYLE_ITALIC)
+                    .fontSize(FontUtil.SIZE_H6)
+                    .build();
+        }
     }
 
     @Override
@@ -98,13 +112,6 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
     @Override
     protected String getTipContent() {
         return "You can easily maintain your test scripts after Recording via Object Repository and Dual-script interface";
-    }
-
-    @Override
-    protected void createMoreTips(Composite tipsComposite) {
-        addTip(ComponentBuilder.label(tipsComposite).size(5, 24).build());
-        addTip(ComponentBuilder.image(tipsComposite, IImageKeys.TIP_SPY_BUTTON, 30).size(30, 24).build());
-        addTip(ComponentBuilder.image(tipsComposite, IImageKeys.TIP_RECORD_BUTTON, 35).size(30, 24).build());
     }
 
     @Override
@@ -126,5 +133,10 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
         boolean useDefaultBrowser = StringUtils.equals(DEFAULT_URL, getPreferredSite());
         Trackings.trackQuickStartStartRecord(browserSelect.getInput().name(), scenario, useDefaultBrowser);
         super.okPressed();
+    }
+
+    @Override
+    protected boolean canClose() {
+        return false;
     }
 }

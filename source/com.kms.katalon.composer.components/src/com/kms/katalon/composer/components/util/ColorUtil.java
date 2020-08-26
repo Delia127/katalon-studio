@@ -75,6 +75,10 @@ public class ColorUtil {
     public static final Color GRAY_BADGE_COLOR = BLUE_DARK_COLOR;
     
     public static final Color GRAY_BADGE_BACKGROUND = getColor("#EAEAEA");
+    
+    public static final Color GRAY_BADGE_HOVER_COLOR = getColor("#d5d5d5");
+    
+    public static final Color GRAY_BADGE_ACTIVE_COLOR = getColor("#6b6e72");
 
     private static Display display = Display.getCurrent();
 

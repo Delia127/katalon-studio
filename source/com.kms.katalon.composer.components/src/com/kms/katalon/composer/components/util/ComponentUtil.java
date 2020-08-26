@@ -401,7 +401,7 @@ public class ComponentUtil {
 
     public static void gridAlign(Control control, int align) {
         GridData gridData = getGridData(control);
-        gridData.horizontalAlignment = SWT.CENTER;
+        gridData.horizontalAlignment = align;
         gridData.grabExcessHorizontalSpace = true;
         control.setLayoutData(gridData);
 
@@ -623,27 +623,32 @@ public class ComponentUtil {
         control.setData(key, value);
     }
 
-    public static void applyPrimaryButtonStyle(Control control) {
-        setCursorPointer(control);
-        setBorderRadius(control);
-        setColor(control, ColorUtil.getTextWhiteColor());
-        setBackground(control, ColorUtil.PRIMARY_COLOR);
-        setHoverColor(control, ColorUtil.getTextWhiteColor());
-        setHoverBackground(control, ColorUtil.PRIMARY_HOVER_COLOR);
-        setActiveColor(control, ColorUtil.getTextWhiteColor());
-        setActiveBackground(control, ColorUtil.PRIMARY_ACTIVE_COLOR);
-    }
-
     public static void applyPrimaryBadgeStyle(Control control) {
         setBorderRadius(control);
         setColor(control, ColorUtil.getTextWhiteColor());
         setBackground(control, ColorUtil.PRIMARY_COLOR);
     }
 
+    public static void applyPrimaryButtonStyle(Control control) {
+        setCursorPointer(control);
+        applyPrimaryBadgeStyle(control);
+        setHoverColor(control, ColorUtil.getTextWhiteColor());
+        setHoverBackground(control, ColorUtil.PRIMARY_HOVER_COLOR);
+        setActiveColor(control, ColorUtil.getTextWhiteColor());
+        setActiveBackground(control, ColorUtil.PRIMARY_ACTIVE_COLOR);
+    }
+
     public static void applyGrayBadgeStyle(Control control) {
         setBorderRadius(control);
         setColor(control, ColorUtil.GRAY_BADGE_COLOR);
         setBackground(control, ColorUtil.GRAY_BADGE_BACKGROUND);
+    }
+
+    public static void applyGrayButtonStyle(Control control) {
+        setCursorPointer(control);
+        applyGrayBadgeStyle(control);
+        setHoverBackground(control, ColorUtil.GRAY_BADGE_HOVER_COLOR);
+        setActiveBackground(control, ColorUtil.GRAY_BADGE_ACTIVE_COLOR);
     }
 
     public static void appendGridChild(Composite container, Control child) {

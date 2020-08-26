@@ -47,7 +47,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.debug.CustomSourceLookupService;
 import com.kms.katalon.composer.execution.debug.handler.ToggleBreakpointHandler;
-import com.kms.katalon.composer.execution.dialog.ExecuteFirstWebUITestCaseDialog;
+import com.kms.katalon.composer.execution.dialog.QuickExecuteFirstWebUITestCaseDialog;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
 import com.kms.katalon.composer.execution.handlers.ExistingExecutionHandler;
 import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
@@ -139,8 +139,8 @@ public class TestExecutionAddon implements EventHandler {
                         .getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
 
                 UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
-                if (currentProfile.getPreferredTestingType() == QuickStartProjectType.WEBUI) {
-                    ExecuteFirstWebUITestCaseDialog executeFirstTestCaseDialog = new ExecuteFirstWebUITestCaseDialog(
+                if (currentProfile.isPreferWebUI()) {
+                    QuickExecuteFirstWebUITestCaseDialog executeFirstTestCaseDialog = new QuickExecuteFirstWebUITestCaseDialog(
                             Display.getCurrent().getActiveShell(), firstTestCase);
                     executeFirstTestCaseDialog.open();
                 }

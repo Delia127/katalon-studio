@@ -129,8 +129,24 @@ public class Trackings {
                 useDefaultBrowser);
     }
 
+    public static void trackQuickRecordSurveySend(String answer, String other) {
+        trackUserAction("ksu_quick_start_record_survey_send", "answer", answer, "other", other);
+    }
+
+    public static void trackQuickRecordSurveyClose() {
+        trackUserAction("ksu_quick_start_record_survey_close");
+    }
+
     public static void trackQuickStartGuidingDialog() {
         trackUserAction("ksu_quick_start_record_guide");
+    }
+
+    public static void trackQuickRecordLeave() {
+        trackUserAction("ksu_quick_start_record_leave");
+    }
+
+    public static void trackQuickRecordContinue() {
+        trackUserAction("ksu_quick_start_record_continue");
     }
 
     public static void trackQuickStartRunOpen() {

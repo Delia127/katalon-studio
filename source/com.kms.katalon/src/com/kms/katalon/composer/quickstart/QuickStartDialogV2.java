@@ -74,7 +74,7 @@ public class QuickStartDialogV2 extends BaseQuickStartDialog {
 
         ComponentBuilder.label(parent)
                 .text("Let us help you and your team become automation experts")
-                .fontSize(FontUtil.SIZE_H3)
+                .fontSize(FontUtil.SIZE_H2)
                 .color(ColorUtil.getColor("#636384"))
                 .center()
                 .build();
@@ -132,5 +132,9 @@ public class QuickStartDialogV2 extends BaseQuickStartDialog {
         boolean isNewUser = userLevel == UserExperienceLevel.FRESHER;
         Trackings.trackQuickStartFirstQuestion(isNewUser, projectType.name());
         super.okPressed();
+    }
+
+    protected boolean canClose() {
+        return false;
     }
 }

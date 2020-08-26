@@ -92,7 +92,9 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.DialogUtil;
+import com.kms.katalon.composer.quickstart.QuickConfirmLeavingRecordDialog;
 import com.kms.katalon.composer.quickstart.QuickRecordGuidingDialog;
+import com.kms.katalon.composer.quickstart.QuickSurveyLeavingRecordDialog;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -137,7 +139,6 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.project.QuickStartProjectType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -376,8 +377,27 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             
-            QuickRecordGuidingDialog guidingDialog = new QuickRecordGuidingDialog(getParentShell());
-            guidingDialog.open();
+            Thread guidingThread = new Thread(() -> {
+                try {
+                    Thread.sleep(2000L);
+                } catch (InterruptedException e) {
+                    return;
+                }
+
+                UISynchronizeService.syncExec(() -> {
+                    UserProfile curUser = UserProfileHelper.getCurrentProfile();
+                    boolean shouldShowGuiding = curUser.isNewUser() && curUser.isPreferWebUI()
+                            && !curUser.isDoneQuickRecordGuidingDialog();
+                    if (shouldShowGuiding) {
+                        QuickRecordGuidingDialog guidingDialog = new QuickRecordGuidingDialog(getParentShell());
+                        guidingDialog.open();
+
+                        curUser.setDoneQuickRecordGuidingDialog(true);
+                        UserProfileHelper.saveProfile(curUser);
+                    }
+                });
+            });
+            guidingThread.start();
             
             Trackings.trackWebRecord(getSelectedBrowserType().toString(), isInstant, getWebLocatorConfig().toString());
         } catch (final IEAddonNotInstalledException e) {
@@ -1644,7 +1664,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             isOkPressed = true;
             super.okPressed();
 
-            dispose();
+            if (disposed) {
+                dispose();
+            }
         } catch (Exception exception) {
             LoggerSingleton.logError(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
@@ -1694,10 +1716,25 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     public boolean close() {
-        updateStore();
-        disposed = true;
         try {
             if (!isOkPressed) {
+                UserProfile curUser = UserProfileHelper.getCurrentProfile();
+
+                boolean shouldShowSurvey = curUser.isNewUser() && curUser.isPreferWebUI()
+                        && !curUser.isDoneQuickRecordSurveyDialog() && !curUser.isDoneSaveFirstRecord();
+                if (shouldShowSurvey) {
+                    QuickConfirmLeavingRecordDialog confirmDialog = new QuickConfirmLeavingRecordDialog(null);
+                    if (confirmDialog.open() == Window.OK) {
+                        disposed = false;
+                        return true;
+                    }
+                    QuickSurveyLeavingRecordDialog surveyDialog = new QuickSurveyLeavingRecordDialog(null);
+                    surveyDialog.open();
+                    
+                    curUser.setDoneQuickRecordSurveyDialog(true);
+                    UserProfileHelper.saveProfile(curUser);
+                }
+
                 Trackings.trackCloseWebRecordByCancel(getWebLocatorConfig().toString());
             } else {
                 int stepCount = countAllSteps();
@@ -1706,6 +1743,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
+        updateStore();
+        disposed = true;
         boolean result = super.close();
         return result;
     }
@@ -1723,7 +1762,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void cancelPressed() {
         super.cancelPressed();
-        dispose();
+        if (disposed) {
+            dispose();
+        }
     }
 
     /**
@@ -1742,7 +1783,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void handleShellCloseEvent() {
         super.handleShellCloseEvent();
-        dispose();
+        if (disposed) {
+            dispose();
+        }
     }
 
     private boolean verifyActionMapping(final HTMLActionMapping newAction) {
@@ -2065,8 +2108,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
 
         UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
-        if (currentProfile.isNewUser() && !currentProfile.isDoneOpenRecorder()
-                && currentProfile.getPreferredTestingType() == QuickStartProjectType.WEBUI) {
+        if (currentProfile.isNewUser() && currentProfile.isPreferWebUI() && !currentProfile.isDoneOpenRecorder()) {
             if (currentProfile.getPreferredBrowser() != null) {
                 txtStartUrl.setText(currentProfile.getPreferredSite());
                 changeBrowser(currentProfile.getPreferredBrowser());

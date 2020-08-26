@@ -66,6 +66,14 @@ public class ComponentBuilder<T extends Control> {
         return new ComponentBuilder<Button>(ComponentUtil.createButton(parent, style));
     }
 
+    public static ComponentBuilder<Button> radio(Composite parent) {
+        return new ComponentBuilder<Button>(ComponentUtil.createButton(parent, SWT.RADIO));
+    }
+
+    public static ComponentBuilder<Button> radio(Composite parent, int style) {
+        return new ComponentBuilder<Button>(ComponentUtil.createButton(parent, style | SWT.RADIO));
+    }
+
     public static ComponentBuilder<Canvas> image(Composite parent, String imageKey) {
         Canvas canvas = ComponentUtil.createCanvasImage(parent, imageKey);
         return new ComponentBuilder<Canvas>(canvas);
@@ -468,6 +476,11 @@ public class ComponentBuilder<T extends Control> {
 
     public ComponentBuilder<T> grayBadge() {
         ComponentUtil.applyGrayBadgeStyle(control);
+        return this;
+    }
+
+    public ComponentBuilder<T> grayButton() {
+        ComponentUtil.applyGrayButtonStyle(control);
         return this;
     }
 

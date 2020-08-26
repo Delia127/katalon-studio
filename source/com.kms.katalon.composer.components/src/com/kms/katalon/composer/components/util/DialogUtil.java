@@ -8,28 +8,40 @@ import org.eclipse.swt.widgets.Shell;
 public class DialogUtil {
 
     public static Point computeCenterLocation(Point initialSize) {
-        Rectangle parentBounds = getParentBounds();
+        return computeCenterLocation(initialSize, null);
+    }
+
+    public static Point computeCenterLocation(Point initialSize, Shell parent) {
+        Rectangle parentBounds = getParentBounds(parent);
         int left = (parentBounds.width - initialSize.x) / 2 + parentBounds.x;
         int top = (parentBounds.height - initialSize.y) / 2 + parentBounds.y;
         return new Point(left, top);
     }
 
     public static Point computeLeftLocation(Point initialSize) {
-        Rectangle parentBounds = getParentBounds();
+        return computeLeftLocation(initialSize, null);
+    }
+
+    public static Point computeLeftLocation(Point initialSize, Shell parent) {
+        Rectangle parentBounds = getParentBounds(parent);
         int left = parentBounds.x;
         int top = (parentBounds.height - initialSize.y) / 2 + parentBounds.y;
         return new Point(left, top);
     }
 
     public static Point computeRightLocation(Point initialSize) {
-        Rectangle parentBounds = getParentBounds();
+        return computeRightLocation(initialSize, null);
+    }
+
+    public static Point computeRightLocation(Point initialSize, Shell parent) {
+        Rectangle parentBounds = getParentBounds(parent);
         int left = parentBounds.x + (parentBounds.width - initialSize.x);
         int top = (parentBounds.height - initialSize.y) / 2 + parentBounds.y;
         return new Point(left, top);
     }
 
     public static Rectangle getParentBounds() {
-        return getParentBounds(Display.getCurrent().getActiveShell());
+        return getParentBounds(null);
     }
 
     public static Rectangle getParentBounds(Shell parentShell) {
