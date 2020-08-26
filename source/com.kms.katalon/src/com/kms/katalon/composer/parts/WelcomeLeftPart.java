@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
@@ -43,11 +44,7 @@ public class WelcomeLeftPart extends Composite {
 
     private Label lblVersion;
 
-    private Composite tutComposite;
-
-    private Composite faqComposite;
-
-    private Composite pluginComposite;
+    private Composite licenseComposite, tutComposite, helpCenterComposite, pluginComposite, forumComposite, chatroomComposite, feedbackComposite;
 
 //    private Composite supportComposite;
     
@@ -101,11 +98,18 @@ public class WelcomeLeftPart extends Composite {
                 Program.launch(e.text);
             }
         });
+        
+        Composite outsideLicenseComposite = new Composite(headerComposite, SWT.NONE);
+        outsideLicenseComposite.setLayout(new GridLayout());
+        outsideLicenseComposite.setLayoutData(new RowData());
+       
+        licenseComposite = addMenuItem(outsideLicenseComposite, ImageConstants.IMG_KATALON_SUBSCRIPTION_24, MessageConstants.PA_LBL_LICENSE,
+                MessageConstants.PA_URL_LICENSE, null, ColorUtil.getTextWhiteColor());
     }
 
     private void createQuickHelpMenu() {
         Composite lowerComposite = new Composite(this, SWT.NONE);
-        GridLayout glLowerComposite = new GridLayout();
+        GridLayout glLowerComposite = new GridLayout(2, true);
         glLowerComposite.marginHeight = 0;
         glLowerComposite.marginWidth = 0;
         lowerComposite.setLayout(glLowerComposite);
@@ -115,24 +119,25 @@ public class WelcomeLeftPart extends Composite {
 
         tutComposite = addMenuItem(lowerComposite, ImageConstants.IMG_TUTORIAL, MessageConstants.PA_LBL_TUTORIALS,
                 MessageConstants.PA_LBL_TUTORIALS_URL, null, ColorUtil.getTextWhiteColor());
-        addMenuSeparator(lowerComposite);
 
-        faqComposite = addMenuItem(lowerComposite, ImageConstants.IMG_FAQ, StringConstants.PA_LBL_HELP_CENTER, StringConstants.PA_LBL_HELP_CENTER_URL, null, ColorUtil.getTextWhiteColor());
-
-        addMenuSeparator(lowerComposite);
+        helpCenterComposite = addMenuItem(lowerComposite, ImageConstants.IMG_HELP_CENTER, StringConstants.PA_LBL_HELP_CENTER, StringConstants.PA_LBL_HELP_CENTER_URL, null, ColorUtil.getTextWhiteColor());
 
         pluginComposite = addMenuItem(lowerComposite, ImageConstants.IMG_KATALON_STORE, StringConstants.PA_LBL_PLUGIN_STORE, StringConstants.PA_LBL_PLUGIN_STORE_URL,
-                PLUGIN_STORE_ITEM_BACKGROUND_COLOR, ColorUtil.getTextColor());
+                null, ColorUtil.getTextWhiteColor());
 
-        addMenuSeparator(lowerComposite);
-//        supportComposite =addMenuItem(lowerComposite, ImageConstants.IMG_BUSSINESS_SUPPORT, StringConstants.PA_LBL_BUSINESS_SUPPORT,
-//                StringConstants.URL_KATALON_SUPPORT_SERVICE, null, ColorUtil.getTextWhiteColor());
+        forumComposite = addMenuItem(lowerComposite, ImageConstants.KATALON_FORUM_24, StringConstants.PA_LBL_FORUM, StringConstants.PA_LBL_FORUM_URL,
+                null, ColorUtil.getTextWhiteColor());
+        
+        chatroomComposite = addMenuItem(lowerComposite, ImageConstants.KATALON_CHAT_24, StringConstants.PA_LBL_CHATROOM, StringConstants.PA_LBL_CHATROOM_URL,
+                null, ColorUtil.getTextWhiteColor());
+
+        feedbackComposite = addMenuItem(lowerComposite, ImageConstants.KATALON_FEEDBACK_24, StringConstants.PA_LBL_FEEDBACK, StringConstants.PA_LBL_FEEDBACK_URL,
+                null, ColorUtil.getTextWhiteColor());
     }
 
     private Composite addMenuItem(Composite parent, Image icon, String label, String url, Color backgroundColor, Color foregroundColor) {
         Composite holder = new Composite(parent, SWT.NONE);
         GridData gdHolder = new GridData(SWT.FILL, SWT.FILL, true, false);
-        gdHolder.minimumWidth = 170;
         holder.setLayoutData(gdHolder);
         if (backgroundColor != null) {
             holder.setBackground(backgroundColor);
@@ -145,7 +150,6 @@ public class WelcomeLeftPart extends Composite {
 
         Label menuImage = new Label(holder, SWT.NONE);
         GridData layoutData = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-        layoutData.horizontalIndent = 50;
         menuImage.setLayoutData(layoutData);
         menuImage.setImage(icon);
 
@@ -173,13 +177,6 @@ public class WelcomeLeftPart extends Composite {
         return holder;
     }
 
-    private void addMenuSeparator(Composite parent) {
-        Label separator = new Label(parent, SWT.NONE);
-        separator.setAlignment(SWT.RIGHT);
-        separator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        separator.setImage(ImageConstants.IMG_GRADIENT_LINE_SEPARATOR);
-    }
-
     private void openURL(String url) {
        Program.launch(url);
     }
@@ -194,9 +191,13 @@ public class WelcomeLeftPart extends Composite {
         setBackground(BACKGROUND_COLOR);
         headerComposite.setBackground(BACKGROUND_COLOR);
         lblVersion.setForeground(ColorUtil.getTextWhiteColor());
-        ControlUtils.recursivelySetColor(faqComposite, ColorUtil.getTextWhiteColor(), null);
+        ControlUtils.recursivelySetColor(licenseComposite, ColorUtil.getTextWhiteColor(), null);
+        ControlUtils.recursivelySetColor(helpCenterComposite, ColorUtil.getTextWhiteColor(), null);
         ControlUtils.recursivelySetColor(tutComposite, ColorUtil.getTextWhiteColor(), null);
 //        ControlUtils.recursivelySetColor(supportComposite, ColorUtil.getTextWhiteColor(), null);
-        ControlUtils.recursivelySetColor(pluginComposite, ColorUtil.getTextBlackColor(), PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
+        ControlUtils.recursivelySetColor(pluginComposite, ColorUtil.getTextBlackColor(), null);
+        ControlUtils.recursivelySetColor(forumComposite, ColorUtil.getTextBlackColor(), null);
+        ControlUtils.recursivelySetColor(chatroomComposite, ColorUtil.getTextBlackColor(), null);
+        ControlUtils.recursivelySetColor(feedbackComposite, ColorUtil.getTextBlackColor(), null);
     }
 }

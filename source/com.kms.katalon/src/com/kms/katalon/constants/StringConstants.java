@@ -58,6 +58,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_USER_GUIDE = MessageConstants.PA_LBL_USER_GUIDE;
     
     public static final String PA_LBL_PLUGIN_STORE = MessageConstants.PA_LBL_PLUGIN_STORE;
+
+    public static final String PA_LBL_LICENSE = MessageConstants.PA_LBL_LICENSE;
+
+    public static final String PA_LBL_FEEDBACK = MessageConstants.PA_LBL_FEEDBACK;
+
+    public static final String PA_LBL_CHATROOM = MessageConstants.PA_LBL_CHATROOM;
+
+    public static final String PA_LBL_FORUM = MessageConstants.PA_LBL_FORUM;
+
+    public static final String PA_LBL_LICENSE_URL = MessageConstants.PA_URL_LICENSE;
     
     public static final String PA_LBL_BUSINESS_SUPPORT = MessageConstants.PA_LBL_BUSINESS_SUPPORT;
 
@@ -68,6 +78,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_USER_GUIDE_URL = MessageConstants.PA_URL_USER_GUIDE;
     
     public static final String PA_LBL_PLUGIN_STORE_URL = MessageConstants.PA_URL_PLUGIN_STORE;
+    
+    public static final String PA_LBL_FORUM_URL = MessageConstants.PA_URL_FORUM;
+
+    public static final String PA_LBL_CHATROOM_URL = MessageConstants.PA_URL_CHATROOM;
+
+    public static final String PA_LBL_FEEDBACK_URL = MessageConstants.PA_URL_FEEDBACK;
     
     public static final String URL_KATALON_SUPPORT_SERVICE = MessageConstants.URL_KATALON_SUPPORT_SERVICE;
 

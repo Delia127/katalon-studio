@@ -97,7 +97,11 @@ public class WelcomeRightPart extends Composite implements EventHandler {
     }
 
     private void createControls() {
-        createGettingStatedTabContent();
+        try {
+        new WelcomeOnlineRightPart(gettingStartedContent);
+        } catch (Exception exception) {
+          createGettingStatedTabContent();
+        }
     }
 
     private void createGettingStatedTabContent() {
