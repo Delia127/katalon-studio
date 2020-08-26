@@ -304,13 +304,16 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         String latestKeywordName = latestNode.getKeywordName();
         if (targetElement != null) {
             WebElementPropertyEntity property = targetElement.getProperty("type");
-            if (property != null && "password".equals(property.getValue())) {
-                secureSetTextAction(newAction);
-            }
-            if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
-                    && newAction.getAction().equals(HTMLAction.SetText) && objectId.equals(targetElement.getName())) {
-                removeTestStep();
-                return;
+            if (newAction.getAction().equals(HTMLAction.SetText)) {
+                if (property != null && "password".equals(property.getValue())) {
+                    secureSetTextAction(newAction);
+                    return;
+                }
+                if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
+                        && objectId.equals(targetElement.getName())) {
+                    removeTestStep();
+                    return;
+                }
             }
             String newActionName = newAction.getAction().getName();
             boolean newActionFromContextMenu = newActionName.contains("Verify") || newActionName.contains("WaitFor")
