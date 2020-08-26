@@ -421,6 +421,10 @@ public class Trackings {
                 webLocatorConfig);
     }
 
+    public static void trackWebRecordStepByContextMenu(String keyword) {
+        trackUserAction("recordStepByContextMenu", "keyword", keyword);
+    }
+
     public static void trackOpenMobileRecord(String deviceType) {
         trackUserAction("openMobileRecord", "deviceType", deviceType);
     }
@@ -739,6 +743,10 @@ public class Trackings {
     
     public static void trackClickOnTrialNotificationButton() {
         trackUserAction("clickOnTrialNotificationButton");
+    }
+
+    public static void trackClickImportOpenApi3() {
+        trackUserAction("clickImportOpenApi3");
     }
 
     public static void trackClickImportSeleniumIde() {

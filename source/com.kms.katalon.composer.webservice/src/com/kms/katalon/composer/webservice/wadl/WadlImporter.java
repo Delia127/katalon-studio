@@ -192,7 +192,7 @@ public class WadlImporter extends APIImporter {
 
             initResourceFromWadlResource(newChildResourceImportResult, res);
 
-            addSubResources(newRestResourceImportResult, res);
+            addSubResources(newChildResourceImportResult, res);
         }
     }
 

@@ -74,7 +74,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
             List<ReportableLauncher> tsLaunchers = new ArrayList<>();
             boolean cancelInstallWebDriver = false;
             
-            EmailConfig emailConf = MailUtil.overrideEmailSettings(executedEntity.getEmailConfig(project),
+            MailUtil.overrideEmailSettings(executedEntity.getEmailConfig(project),
                     GlobalVariableController.getInstance().getDefaultExecutionProfile(project), null);
 
             for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollectionEntity.getTestSuiteRunConfigurations()) {
@@ -104,7 +104,10 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     openWarningDialogForEmptyTestSuite(tsExecutedEntity);
                     return Status.CANCEL_STATUS;
                 }
-                tsExecutedEntity.setEmailConfig(emailConf);
+
+                MailUtil.overrideEmailSettings(tsExecutedEntity.getEmailConfig(project),
+                        subLauncher.getRunConfig().getExecutionProfile(), null);
+
                 executedEntity.addTestSuiteExecutedEntity(tsExecutedEntity);
                 tsLaunchers.add(subLauncher);
             }

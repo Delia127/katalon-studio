@@ -12,6 +12,8 @@
     <elements xsi:type="commands:Command" xmi:id="_ldpHAFHtEem8WJsgtrAkhA" elementId="com.kms.katalon.composer.webservice.command.search" commandName="Search"/>
     <elements xsi:type="commands:Command" xmi:id="_INuRkGW0EemMSvVtSyUuvA" elementId="com.kms.katalon.composer.webservice.command.postman" commandName="Import WebService Object Postman"/>
     <elements xsi:type="commands:Command" xmi:id="_VFm3kKupEeq5QYGEPCar_g" elementId="com.kms.katalon.composer.webservice.command.importsoapui" commandName="Import WebService Objects from SoapUI"/>
+    <elements xsi:type="commands:Command" xmi:id="_yxTZ4LqbEeq_Jqz1y7-SOQ" elementId="com.kms.katalon.composer.webservice.command.importopenapi3" commandName="Import OpenAPI 3"/>
+    <elements xsi:type="commands:Command" xmi:id="_kY3JINCeEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.command.importopenapi" commandName="Import OpenAPI"/>
     <elements xsi:type="commands:Command" xmi:id="_B-50ANLbEeqiPIfwppxXbA" elementId="com.kms.katalon.composer.webservice.command.importwadl" commandName="Import WADL"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8gBDELD_EeSrwsGaXHfzzg" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
@@ -24,6 +26,8 @@
     <elements xsi:type="commands:Handler" xmi:id="_q3aoEFHtEem8WJsgtrAkhA" elementId="com.kms.katalon.composer.webservice.handler.search" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SearchHandler" command="_ldpHAFHtEem8WJsgtrAkhA"/>
     <elements xsi:type="commands:Handler" xmi:id="_Q4g3cGW0EemMSvVtSyUuvA" elementId="com.kms.katalon.composer.webservice.handler.postman" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectFromPostmanHandler" command="_INuRkGW0EemMSvVtSyUuvA"/>
     <elements xsi:type="commands:Handler" xmi:id="_cZxBsKupEeq5QYGEPCar_g" elementId="com.kms.katalon.composer.webservice.handler.importsoapui" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportSoapUIRestServicesHandler" command="_VFm3kKupEeq5QYGEPCar_g"/>
+    <elements xsi:type="commands:Handler" xmi:id="_98ff8LqbEeq_Jqz1y7-SOQ" elementId="com.kms.katalon.composer.webservice.handler.importopenapi3" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportOpenApiHandler" command="_yxTZ4LqbEeq_Jqz1y7-SOQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_pTRNoNCeEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.handler.importopenapi" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportOpenApiToolItemHandler" command="_kY3JINCeEeq-4-0rRqJ-rQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_JwxN0NLbEeqiPIfwppxXbA" elementId="com.kms.katalon.composer.webservice.handler.importwadl" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportFromWadlHandler" command="_B-50ANLbEeqiPIfwppxXbA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_O9aygLEAEeSrwsGaXHfzzg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
@@ -45,7 +49,12 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_J6CXcMB2EeilOqZQeGeZMA" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.webservice" positionInList="">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_1s-_kMCGEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newRestRequest" label="New draft REST Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/create_new_request_rest_32x24.png" tooltip="New draft REST Request" command="_ZF6pwMCMEeilOqZQeGeZMA"/>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_mKSw8MCKEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.importRest" label="Import Swagger from File/URL" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/import_rest_32x24.png" tooltip="Import Swagger from File/URL" command="_bvRngLdeEeiB4sxFenOLSA"/>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_cjGgENCZEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.handledtoolitem.importopenapi" label="Import OpenAPI" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/import_rest_32x24.png" tooltip="Import OpenAPI" command="_kY3JINCeEeq-4-0rRqJ-rQ">
+      <menu xmi:id="_haRDUNCZEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.menu.0">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_xJH6INCfEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.handledmenuitem.importopenapi2" label="Import OpenAPI 2 (Swagger)" tooltip="" command="_bvRngLdeEeiB4sxFenOLSA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_HcWEkNCgEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.handledmenuitem.importopenapi3" label="Import OpenAPI 3" tooltip="" command="_yxTZ4LqbEeq_Jqz1y7-SOQ"/>
+      </menu>
+    </elements>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_TiUHANJEEeq6_eVuAIPOyw" elementId="com.kms.katalon.composer.webservice.handledtoolitem.importwadl" label="Import WADL" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/import_wadl_32x24.png" tooltip="Import WADL" command="_B-50ANLbEeqiPIfwppxXbA"/>
     <elements xsi:type="menu:ToolBarSeparator" xmi:id="_BrYucMCLEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.toolbarseparator.0"/>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_Gns3cMCLEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newSoapRequest" label="New draft SOAP Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/create_new_request_soap_32x24.png" tooltip="New draft SOAP Request" command="_mokWcMCMEeilOqZQeGeZMA"/>
@@ -58,6 +67,10 @@
     <elements xsi:type="menu:Menu" xmi:id="_EJZtoMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.menu.apiwebservice" label="API/Web Service">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_JcxEsMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.handledmenuitem.openrest" label="Open Rest" command="_ZF6pwMCMEeilOqZQeGeZMA"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_KSLCsMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.handledmenuitem.opensoap" label="Open SOAP" command="_mokWcMCMEeilOqZQeGeZMA"/>
+      <children xsi:type="menu:Menu" xmi:id="_ikTT4NChEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.menu.importopenapi" label="Import OpenAPI">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_tQslINChEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.handledmenuitem.importopenapi2" label="Import OpenAPI 2 (Swagger)" tooltip="" command="_bvRngLdeEeiB4sxFenOLSA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_9zwHwNChEeq-4-0rRqJ-rQ" elementId="com.kms.katalon.composer.webservice.handledmenuitem.importopenapi3" label="Import OpenAPI 3" command="_yxTZ4LqbEeq_Jqz1y7-SOQ"/>
+      </children>
       <children xsi:type="menu:MenuSeparator" xmi:id="_yX6okNS9EeqWMNpRoTndkA" elementId="com.kms.katalon.composer.webservice.menuseparator.0"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_YjCgQMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.handledmenuitem.importswaggerfromfileurl" label="Import Swagger" command="_bvRngLdeEeiB4sxFenOLSA"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_30u2kNS9EeqWMNpRoTndkA" elementId="com.kms.katalon.composer.webservice.handledmenuitem.importwadl" label="Import WADL" command="_B-50ANLbEeqiPIfwppxXbA"/>

@@ -132,8 +132,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         GlobalVariableController gvController = GlobalVariableController.getInstance();
         ExecutionProfileEntity execProfile = !StringUtils.isBlank(profileName)
                 ? gvController.getExecutionProfile(profileName, proj) : gvController.getDefaultExecutionProfile(proj);
-        EmailConfig emailConf = MailUtil.overrideEmailSettings(executedEntity.getEmailConfig(proj), execProfile,
-                globalVariables);
+        MailUtil.overrideEmailSettings(executedEntity.getEmailConfig(proj), execProfile, globalVariables);
 
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
@@ -148,7 +147,10 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             tsExecutedEntity.setRerunSetting(
                     (DefaultRerunSetting) executedEntity.getRunnable().mergeWith(tsExecutedEntity.getRerunSetting()));
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));
-            tsExecutedEntity.setEmailConfig(emailConf);
+
+            MailUtil.overrideEmailSettings(tsExecutedEntity.getEmailConfig(proj),
+                    subLauncher.getRunConfig().getExecutionProfile(), globalVariables);
+
             if (tsExecutedEntity.getTotalTestCases() == 0) {
                 throw new ExecutionException(ExecutionMessageConstants.LAU_MESSAGE_EMPTY_TEST_SUITE);
             }

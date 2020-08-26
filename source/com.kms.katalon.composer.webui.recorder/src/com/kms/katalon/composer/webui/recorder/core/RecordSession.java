@@ -48,6 +48,16 @@ public class RecordSession extends InspectSession {
     }
     
     @Override
+    protected File getRecordSpyExtensionFile() throws IOException {
+        File chromeExtension = null;
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(RecordSession.class));
+        if (extensionFolder.exists() && extensionFolder.isDirectory()) {
+            chromeExtension = new File(extensionFolder.getAbsolutePath() + getChromeRecordSpyExtensionPath());
+        }
+        return chromeExtension;
+    }
+
+    @Override
     protected String getAddOnName() {
         return RECORDER_ADDON_NAME;
     }
