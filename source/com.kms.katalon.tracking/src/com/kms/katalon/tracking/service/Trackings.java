@@ -724,6 +724,10 @@ public class Trackings {
         trackUserAction("clickOnTrialNotificationButton");
     }
 
+    public static void trackClickImportOpenApi3() {
+        trackUserAction("clickImportOpenApi3");
+    }
+
     public static void trackClickImportSeleniumIde() {
         trackUserAction("clickImportSeleniumIde");
     }

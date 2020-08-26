@@ -58,6 +58,10 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MENU_CONTEXT_WEBSERVICE_REQ;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
+    
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2;
+    
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
     
@@ -104,6 +108,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ;
 
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;
+    
+    public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_OPENAPI3;
 
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN;
 
@@ -114,8 +120,12 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
 
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
+    
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_OPENAPI3;
 
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN;
+
+    public static String DIA_MSG_FILE_LOCATION_OR_URL;
 
     public static String VIEW_MENU_CONTEXT_INSERT_PROP;
 
@@ -350,6 +360,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String ImportSoapUIRestServicesDialog_MSG_IMPORTING_FROM_SOAPUI;
 
     public static String ERROR_MSG_FAIL_TO_IMPORT_SOAPUI;
+
+    public static String ERROR_MSG_FAIL_TO_IMPORT_OPENAPI;
 
     public static String PREF_WARN_CLIENT_CERT;
 

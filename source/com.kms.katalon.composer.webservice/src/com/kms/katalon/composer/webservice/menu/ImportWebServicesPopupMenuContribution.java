@@ -16,6 +16,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.handlers.ImportOpenApiHandler;
 import com.kms.katalon.composer.webservice.handlers.ImportFromWadlHandler;
 import com.kms.katalon.composer.webservice.handlers.ImportSoapUIRestServicesHandler;
 import com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromSwaggerHandler;
@@ -66,6 +67,11 @@ public class ImportWebServicesPopupMenuContribution {
                 swaggerMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportWebServiceRequestObjectsFromSwaggerHandler.class.getName());
                 importMenu.getChildren().add(swaggerMenuItem);
                 
+                MDirectMenuItem openApi3MenuItem = getOpenApi3Menu();
+                openApi3MenuItem
+                        .setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportOpenApiHandler.class.getName());
+                importMenu.getChildren().add(openApi3MenuItem);
+
                 MDirectMenuItem wadlMenuItem = getWadlMenu();
                 wadlMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportFromWadlHandler.class.getName());
                 importMenu.getChildren().add(wadlMenuItem);
@@ -100,7 +106,14 @@ public class ImportWebServicesPopupMenuContribution {
 
     private MDirectMenuItem getSwaggerMenu() {
         MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
-        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER);
+        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2);
+        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
+        return dynamicItem;
+    }
+
+    private MDirectMenuItem getOpenApi3Menu() {
+        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
+        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
