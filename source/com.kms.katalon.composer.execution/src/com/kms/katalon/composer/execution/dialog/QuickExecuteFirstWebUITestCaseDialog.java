@@ -30,7 +30,7 @@ import com.kms.katalon.execution.webui.configuration.FirefoxRunConfiguration;
 import com.kms.katalon.execution.webui.configuration.IERunConfiguration;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class ExecuteFirstWebUITestCaseDialog extends BaseQuickStartDialog {
+public class QuickExecuteFirstWebUITestCaseDialog extends BaseQuickStartDialog {
 
     private TestCaseEntity firstTestCase;
 
@@ -42,7 +42,7 @@ public class ExecuteFirstWebUITestCaseDialog extends BaseQuickStartDialog {
         void call(WebUIDriverType browser);
     }
 
-    public ExecuteFirstWebUITestCaseDialog(Shell parentShell, TestCaseEntity firstTestCase) {
+    public QuickExecuteFirstWebUITestCaseDialog(Shell parentShell, TestCaseEntity firstTestCase) {
         super(parentShell);
         this.firstTestCase = firstTestCase;
     }
@@ -59,8 +59,8 @@ public class ExecuteFirstWebUITestCaseDialog extends BaseQuickStartDialog {
 
     private void createTitle(Composite parent) {
         ComponentBuilder.label(parent)
-                .text("Execute your newly created test case")
-                .font(FontUtil.size(FontUtil.BOLD, FontUtil.SIZE_H3))
+                .text("Run to verify your test script")
+                .font(FontUtil.size(FontUtil.BOLD, FontUtil.SIZE_H2))
 //                .center()
                 .build();
     }
@@ -149,5 +149,10 @@ public class ExecuteFirstWebUITestCaseDialog extends BaseQuickStartDialog {
     protected void okPressed() {
         Trackings.trackQuickStartStartRun(browserSelect.getInput().name());
         super.okPressed();
+    }
+    
+    @Override
+    protected boolean canClose() {
+        return false;
     }
 }

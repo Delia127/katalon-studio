@@ -120,12 +120,33 @@ public class Trackings {
         trackUserAction("ksu_quick_start_welcome_continue", "new_user", newUser, "project_type", projectType);
     }
 
-    public static void trackQuickStartRecordOpen() {
-        trackUserAction("ksu_quick_start_record_open");
+    public static void trackQuickStartRecordOpen(String scenario) {
+        trackUserAction("ksu_quick_start_record_open", "option", scenario);
     }
 
-    public static void trackQuickStartStartRecord(String browser) {
-        trackUserAction("ksu_quick_start_record_record", "browser", browser);
+    public static void trackQuickStartStartRecord(String browser, String scenario, boolean useDefaultBrowser) {
+        trackUserAction("ksu_quick_start_record_record", "browser", browser, "option", scenario, "useDefaultBrowser",
+                useDefaultBrowser);
+    }
+
+    public static void trackQuickRecordSurveySend(String answer, String other) {
+        trackUserAction("ksu_quick_start_record_survey_send", "answer", answer, "other", other);
+    }
+
+    public static void trackQuickRecordSurveyClose() {
+        trackUserAction("ksu_quick_start_record_survey_close");
+    }
+
+    public static void trackQuickStartGuidingDialog() {
+        trackUserAction("ksu_quick_start_record_guide");
+    }
+
+    public static void trackQuickRecordLeave() {
+        trackUserAction("ksu_quick_start_record_leave");
+    }
+
+    public static void trackQuickRecordContinue() {
+        trackUserAction("ksu_quick_start_record_continue");
     }
 
     public static void trackQuickStartRunOpen() {

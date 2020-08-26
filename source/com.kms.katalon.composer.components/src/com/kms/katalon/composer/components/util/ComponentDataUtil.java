@@ -109,7 +109,11 @@ public class ComponentDataUtil {
     }
 
     public static String getText(Control control) {
-        return invokeGet(control, "getText");
+        String text = invokeGet(control, "getText");
+        if (StringUtils.isEmpty(text)) {
+            text = getText(control, ComponentConstants.CONTROL_PROP_TEXT);
+        }
+        return text;
     }
 
     public static void setText(Control control, String text) {

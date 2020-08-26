@@ -22,12 +22,18 @@ public class UserProfile {
 
     private boolean doneOpenRecorder;
 
+    private boolean doneQuickRecordGuidingDialog;
+
+    private boolean doneQuickRecordSurveyDialog;
+
+    private boolean doneSaveFirstRecord;
+
     private boolean doneRunFirstTestCase;
 
     private boolean doneRunFirstTestCasePass;
 
     private boolean doneRunFirstTestCaseFail;
-    
+
     private boolean isEnableKURecorderHint = true;
 
     public boolean isNewUser() {
@@ -60,6 +66,10 @@ public class UserProfile {
 
     public void setPreferredTestingType(QuickStartProjectType preferredTestingType) {
         this.preferredTestingType = preferredTestingType;
+    }
+
+    public boolean isPreferWebUI() {
+        return preferredTestingType == QuickStartProjectType.WEBUI;
     }
 
     public WebUIDriverType getPreferredBrowser() {
@@ -108,6 +118,30 @@ public class UserProfile {
 
     public void setDoneOpenRecorder(boolean doneOpenRecorder) {
         this.doneOpenRecorder = doneOpenRecorder;
+    }
+    
+    public boolean isDoneQuickRecordGuidingDialog() {
+        return doneQuickRecordGuidingDialog;
+    }
+
+    public void setDoneQuickRecordGuidingDialog(boolean doneQuickRecordGuidingDialog) {
+        this.doneQuickRecordGuidingDialog = doneQuickRecordGuidingDialog;
+    }
+
+    public boolean isDoneQuickRecordSurveyDialog() {
+        return doneQuickRecordSurveyDialog;
+    }
+
+    public void setDoneQuickRecordSurveyDialog(boolean doneQuickRecordSurveyDialog) {
+        this.doneQuickRecordSurveyDialog = doneQuickRecordSurveyDialog;
+    }
+
+    public boolean isDoneSaveFirstRecord() {
+        return doneSaveFirstRecord;
+    }
+
+    public void setDoneSaveFirstRecord(boolean doneSaveFirstRecord) {
+        this.doneSaveFirstRecord = doneSaveFirstRecord;
     }
 
     public boolean isDoneRunFirstTestCase() {

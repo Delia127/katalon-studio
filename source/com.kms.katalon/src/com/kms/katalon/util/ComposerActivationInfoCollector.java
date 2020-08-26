@@ -236,7 +236,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                             UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
                             if (!currentProfile.isNewUser()
                                     || currentProfile.isDoneCreateFirstTestCase()
-                                    || currentProfile.getPreferredTestingType() != QuickStartProjectType.WEBUI) {
+                                    || !currentProfile.isPreferWebUI()) {
                                 return;
                             }
 
