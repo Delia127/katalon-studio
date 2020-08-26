@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 
@@ -48,7 +50,10 @@ public class RestResourceImportResult extends RestResourceImportNode {
         if (parentResourceImportResult != null && parentResourceImportResult.getPath() != null) {
             pathBuilder.append(parentResourceImportResult.getPath());
         }
-        if (path != null) {
+        if (StringUtils.isNotBlank(path)) {
+            if (!path.startsWith("/")) {
+                pathBuilder.append("/");
+            }
             pathBuilder.append(path);
         }
         return pathBuilder.toString();
