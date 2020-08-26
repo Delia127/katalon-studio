@@ -253,6 +253,13 @@ stages:
           Remove-Item -Path c:\tmp\chrome.msi –Force
       displayName: Install Chrome
 
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: './variable.sh'
+        artifact: 'variable-file'
+        publishLocation: 'pipeline'
+      displayName: Publish variable file
+
     - checkout: WindowTest
       fetchDepth: 1
       clean: true
