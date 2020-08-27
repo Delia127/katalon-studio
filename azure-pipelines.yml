@@ -255,7 +255,7 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: './variable.sh'
+        targetPath: './katalon/variable.sh'
         artifact: 'variable-file'
         publishLocation: 'pipeline'
       displayName: Publish variable file
