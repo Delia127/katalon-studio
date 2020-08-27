@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.filters;
+package com.kms.katalon.composer.testsuite.test.filters;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.testsuite.filters.AlreadyAddedTestCaseFilter;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
