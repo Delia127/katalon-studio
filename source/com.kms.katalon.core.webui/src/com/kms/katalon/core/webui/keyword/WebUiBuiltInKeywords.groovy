@@ -1,5 +1,6 @@
 package com.kms.katalon.core.webui.keyword;
 
+import org.openqa.selenium.Rectangle
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
 
@@ -2904,7 +2905,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static String takeScreenshot(String fileName) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", fileName)
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", fileName, false, null)
     }
 
     /**
@@ -2917,7 +2918,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static String takeScreenshot(String fileName, FailureHandling flowControl) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", fileName, flowControl)
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", fileName, false, flowControl)
     }
 
     /**
@@ -2928,7 +2929,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static String takeScreenshot(FailureHandling flowControl) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", flowControl)
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", null, false, flowControl)
     }
 
     /**
@@ -2938,7 +2939,363 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static String takeScreenshot() {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot")
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", null, false, null)
+    }
+
+    /**
+     * Take screenshot of current view-port to send to TestOps Vision. The captured image will be saved in '.png' format.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the captured checkpoint
+     * @since 7.7.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeScreenshotAsCheckpoint(String checkpointName, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", checkpointName, true, flowControl)
+    }
+    
+    
+    /**
+     * Take screenshot of current view-port to send to TestOps Vision. Default FailureHandling is used.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @return a String represents path to the captured checkpoint
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeScreenshotAsCheckpoint(String checkpointName) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", checkpointName, true, null)
+    }
+
+    /**
+     * Take screenshot of entire page. This function simulates scroll actions to take numbers of shots then merge them together.
+     * As a result this method will not support pages that using infinity scrolling.
+     * This method uses JavaScript to hide scroll-bar and ignored elements so that JavaScript must be enabled on the test browser.
+     * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
+     * @param ignoredElements List of TestObject that will be hidden using JavaScript. Use <b>Variables</b> to create a list of TestObject or
+     * use Groovy List in <b>Script</b> mode to pass this argument. The list can be null or empty.
+     * <p>Example of using groovy list:</p>
+     * <code>
+     * WebUI.takeFullPageScreenshotAsCheckpoint('fullpage', [findTestObject('EX/EX_Header'), findTestObject('EX/EX_Footer')])
+     * </code>
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the captured file.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshot(String fileName, List<TestObject> ignoredElements, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", fileName, ignoredElements, false, flowControl)
+    }
+
+    
+    /**
+     * Take screenshot of entire page with ignored elements. Default FailureHandling is used.
+     * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
+     * @param ignoredElements List of TestObject that will be hidden using JavaScript. The list can be null or empty.
+     * @return a String represents path to the captured image
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshot(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshot(String fileName, List<TestObject> ignoredElements) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", fileName, ignoredElements, false, null)
+    }
+
+    /**
+     * Take screenshot of entire page. Default FailureHandling is used. No element is going to be ignored.
+     * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshot(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshot(String fileName) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", fileName, null, false, null)
+    }
+    
+    /**
+     * Take screenshot of entire page with ignored elements . Default FailureHandling and default file name are used.
+     * @param ignoredElements List of TestObject that will be hidden using JavaScript. The list can be null or empty.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshot(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshot(List<TestObject> ignoredElement) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", null, ignoredElement, false, null)
+    }
+
+    
+    /**
+     * Take screenshot of entire page with default FailureHandling and default image name.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshot(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshot() {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", null, null, false, null)
+    }
+    
+    /**
+     * Take screenshot of entire page to send to TestOps Vision.
+     * This method is a wrapper method of <i>takeFullPageScreenshot(String fileName, List<TestObject> ignoredElement, FailureHandling flowControl)</i>
+     * for using with TestOps Vision.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @param ignoredElements List of TestObject that will be hidden using JavaScript. The list can be null or empty.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the saved checkpoint image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshot(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshotAsCheckpoint(String checkpointName, List<TestObject> ignoredElements, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", checkpointName, ignoredElements, true, flowControl)
+    }
+    
+    /**
+     * Take screenshot of entire page to send to TestOps Vision. Default FailureHadling is used.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @param ignoredElements List of TestObject that will be hidden using JavaScript. The list can be null or empty.
+     * @return a String represents path to the saved checkpoint image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshotAsCheckpoint(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshotAsCheckpoint(String checkpointName, List<TestObject> ignoredElements) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", checkpointName, ignoredElements, true, null)
+    }
+
+    /**
+     * Take screenshot of entire page to send to TestOps Vision without hiding any web elements.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the saved checkpoint image
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshotAsCheckpoint(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshotAsCheckpoint(String checkpointName, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", checkpointName, null, true, flowControl)
+    }
+
+    /**
+     * Take screenshot of entire page to send to TestOps Vision without hiding any web elements. Default FailureHandling is used.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @return a String represents path to the saved checkpoint image
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshotAsCheckpoint(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshotAsCheckpoint(String checkPointName) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", checkPointName, null, true, null)
+    }
+    
+    /** 
+     * Take screenshot of specific web element.
+     * The TestObject must have CSS selector so that Web Driver can find the element on the page.
+     * If the element doesn't exist then this method will fail.
+     * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
+     * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
+     * This parameter can not be null.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the saved image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeElementScreenshot(String fileName, TestObject to, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeElementScreenshot", fileName, to, false, flowControl)
+    }
+
+    /**
+     * Take screenshot of specific element. Default FailureHandling is used.
+     * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
+     * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
+     * This parameter can not be null.
+     * @return a String represents path to the saved image
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeElementScreenshot(String, TestObject, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeElementScreenshot(String fileName, TestObject to) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeElementScreenshot", fileName, to, false, null)
+    }
+
+    /**
+     * Take screenshot of specific element with default FailureHandling and default file name.
+     * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
+     * This parameter can not be null.
+     * @return a String represents path to the saved image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeElementScreenshot(String, TestObject, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeElementScreenshot(TestObject to) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeElementScreenshot", null, to, false, null)
+    }
+
+    /**
+     * Take screenshot of specific web element to send to TestOps Vision.
+     * The TestObject must have CSS selector so that Web Driver can find the element on the page.
+     * If the element doesn't exist then this method will fail.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
+     * This parameter can not be null.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the saved checkpoint image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeElementScreenshot(String, TestObject, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeElementScreenshotAsCheckpoint(String checkpointName, TestObject to, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeElementScreenshot", checkpointName, to, true, flowControl)
+    }
+
+    /**
+     * Take screenshot of specific web element to check with TestOps Vision. Default FailureHandling is used.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
+     * This parameter can not be null.
+     * @return a String represents path to the saved checkpoint image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeElementScreenshotAsCheckpoint(String, TestObject, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeElementScreenshotAsCheckpoint(String checkpointName, TestObject to) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeElementScreenshot", checkpointName, to, true, null)
+    }
+
+    /**
+     * <p>Take screenshot of specific Rectangle in current view-port. If the rectangle is not located within the view-port, this method will fail.
+     * You have to use Script mode to create the Rectangle object.</p>
+     * <code>
+     * import org.openqa.selenium.Rectangle as Rectangle
+     * WebUI.takeAreaScreenshotAsCheckpoint('screenshot_area_demo.png', new Rectangle(x, y, width, height))
+     * </code>
+     * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
+     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * This cannot be null.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     * 
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeAreaScreenshot(String fileName, Rectangle rect, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeAreaScreenshot", fileName, rect, false, flowControl)
+    }
+    
+    /**
+     * Take screenshot of specific area. Default FailureHandling is used.
+     * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
+     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * This cannot be null.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeAreaScreenshot(String fileName, Rectangle rect) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeAreaScreenshot", fileName, rect, false, null)
+    }
+
+    /**
+     * Take screenshot of specific area with default filename and default FailureHandling
+     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * This cannot be null.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeAreaScreenshot(Rectangle rect) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeAreaScreenshot", null, rect, false, null)
+    }
+
+    /**
+     * <p>Take screenshot of a specific area within current view-port  to send to TestOps Vision.
+     * You have to use Script mode to create the Rectangle object.</p>
+     * <code>
+     * import org.openqa.selenium.Rectangle as Rectangle
+     * WebUI.takeAreaScreenshotAsCheckpoint('screenshot_area_demo.png', new Rectangle(x, y, width, height))
+     * </code>
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * This cannot be null.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the saved checkpoint image.
+     * @since 7.7.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeAreaScreenshotAsCheckpoint(String checkpointName, Rectangle rect, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeAreaScreenshot", checkpointName, rect, true, flowControl)
+    }
+
+    /**
+     * Take screenshot of a specific area within current view-port to send to TestOps Vision. Default FailureHandling is used.
+     * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
+     * Checkpoint will be saved in 'keyes' folder in report folder.
+     * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
+     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * This cannot be null.
+     * @return a String represents path to the saved checkpoint image.
+     * @since 7.7.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeAreaScreenshotAsCheckpoint(String checkpointName, Rectangle rect) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeAreaScreenshot", checkpointName, rect, true, null)
     }
 
     /**
