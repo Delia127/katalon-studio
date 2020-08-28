@@ -513,5 +513,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTIONS);
         ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTION_PASSED);
         ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTION_FAILED);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN_QUEUED);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN_CANCELED);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN_ERROR);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_REFRESH_NEW);
     }
 }

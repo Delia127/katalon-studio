@@ -364,6 +364,25 @@ public class ReportUtil {
         FileUtils.writeStringToFile(new File(logFolder, "execution.uuid"),
         		UUID, StringConstants.DF_CHARSET);
     }
+    
+    private static String getTestSuiteCollectionId(File logFolder) throws IOException {
+        File idFile = getOrCreateTestSuiteCollectionIdFile(logFolder);
+        return FileUtils.readFileToString(idFile, StringConstants.DF_CHARSET);
+    }
+    
+    public static void writeTestSuiteCollectionIdToFile(String testSuiteCollectionId, File logFolder)
+            throws IOException {
+        File idFile = getOrCreateTestSuiteCollectionIdFile(logFolder);
+        FileUtils.writeStringToFile(idFile, testSuiteCollectionId, StringConstants.DF_CHARSET);
+    }
+
+    private static File getOrCreateTestSuiteCollectionIdFile(File logFolder) throws IOException {
+        File idFile = new File(logFolder, "tsc_id.txt");
+        if (!idFile.exists()) {
+            idFile.createNewFile();
+        }
+        return idFile;
+    }
 
     public static void writeCSVReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
         CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"),
@@ -423,7 +442,12 @@ public class ReportUtil {
 
     public static TestSuiteLogRecord generate(String logFolder, IProgressMonitor progressMonitor)
             throws XMLParserException, IOException, XMLStreamException {
-        return new TestSuiteXMLLogParser().readTestSuiteLogFromXMLFiles(logFolder, progressMonitor);
+        TestSuiteLogRecord suiteLogRecord = new TestSuiteXMLLogParser().readTestSuiteLogFromXMLFiles(logFolder, progressMonitor);
+        String testSuiteCollectionId = getTestSuiteCollectionId(new File(logFolder));
+        if (StringUtils.isNotBlank(testSuiteCollectionId)) {
+            suiteLogRecord.setTestSuiteCollectionId(testSuiteCollectionId);
+        }
+        return suiteLogRecord;
     }
 
     public static TestSuiteLogRecord generate(String logFolder)

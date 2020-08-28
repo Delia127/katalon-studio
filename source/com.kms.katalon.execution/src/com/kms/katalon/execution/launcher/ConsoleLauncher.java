@@ -81,7 +81,8 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
             String result = getExecutionResult();
             Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(), runConfig.getName(),
                     result, getEndTime().getTime() - getStartTime().getTime(), getRetryStrategy(), getNumberOfRetry(),
-                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
+                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo(),
+                    getResult().getTotalTestCases(), getResult().getNumPasses());
         }
     }
     

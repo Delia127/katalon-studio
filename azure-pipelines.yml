@@ -256,6 +256,13 @@ stages:
       displayName: Install Chrome
       condition: eq(variables.RUN_TESTS, 'true')
 
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: './variable.sh'
+        artifact: 'variable-file'
+        publishLocation: 'pipeline'
+      displayName: Publish variable file
+
     - checkout: WindowTest
       fetchDepth: 1
       clean: true
