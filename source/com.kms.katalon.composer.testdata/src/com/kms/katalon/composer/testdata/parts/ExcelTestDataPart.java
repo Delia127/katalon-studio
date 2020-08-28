@@ -491,8 +491,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
             int columnNumbers = excelData.getColumnNumbers();
 
             if (columnNumbers > MAX_COLUMN_COUNT) {
-                MessageDialog.openWarning(null, StringConstants.WARN,
-                        MessageFormat.format(StringConstants.PA_FILE_TOO_LARGE, MAX_COLUMN_COUNT));
+                WarnLargeFileUtil.showDialog();
                 columnNumbers = MAX_COLUMN_COUNT;
             }
 
