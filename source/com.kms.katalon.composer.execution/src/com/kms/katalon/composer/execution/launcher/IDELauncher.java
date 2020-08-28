@@ -182,7 +182,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
                 String resultTestSuite = getExecutionResult();
                 Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(), resultTestSuite,
                         getEndTime().getTime() - getStartTime().getTime(), getRetryStrategy(), getNumberOfRetry(),
-                        selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
+                        selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo(), getResult().getTotalTestCases(), getResult().getNumPasses());
             }
         }
     }

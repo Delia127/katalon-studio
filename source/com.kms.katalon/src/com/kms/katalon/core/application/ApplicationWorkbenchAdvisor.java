@@ -81,7 +81,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
     @Override
     public boolean preShutdown() {
-        showFirstTimeUseSurvey();
+//        showFirstTimeUseSurvey();
         return true;
     }
     
