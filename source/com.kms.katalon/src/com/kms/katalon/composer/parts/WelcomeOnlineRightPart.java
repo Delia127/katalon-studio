@@ -24,20 +24,20 @@ public class WelcomeOnlineRightPart extends Composite {
     private boolean shouldSetContent = true;
 
     
-    public WelcomeOnlineRightPart(Composite parent) throws MalformedURLException, IOException {
+    public WelcomeOnlineRightPart(Composite parent, String contentLink) throws MalformedURLException, IOException {
         super(parent, SWT.NONE);
         GridLayout glWrapper = new GridLayout(1, false);
         glWrapper.marginTop = 2;
         glWrapper.marginBottom = 2;
         this.setLayout(glWrapper);
         this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        init();
+        init(contentLink);
     }
     
-    private void init() throws MalformedURLException, IOException {
+    private void init(String contentLink) throws MalformedURLException, IOException {
         @SuppressWarnings("deprecation")
         String content = StringEscapeUtils
-                .escapeEcmaScript(getContentFromHTML("https://raw.githubusercontent.com/katalon-studio/katalon-studio/master/katalon-help.md"));
+                .escapeEcmaScript(getContentFromHTML(contentLink));
         Composite container = new Composite(this, SWT.NONE);
         container.setLayout(new FillLayout());
         container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

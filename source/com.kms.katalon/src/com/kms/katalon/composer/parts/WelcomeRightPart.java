@@ -86,21 +86,21 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         }
     };
 
-    public WelcomeRightPart(Composite parent, int style) {
+    public WelcomeRightPart(Composite parent, int style, String contentLink) {
         super(parent, style);
         gettingStartedContent = this;
         setLayout(new GridLayout());
-        createControls();
+        createControls(contentLink);
         
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
     }
 
-    private void createControls() {
+    private void createControls(String contentLink) {
         try {
-        new WelcomeOnlineRightPart(gettingStartedContent);
+            new WelcomeOnlineRightPart(gettingStartedContent, contentLink);
         } catch (Exception exception) {
-          createGettingStatedTabContent();
+            createGettingStatedTabContent();
         }
     }
 

@@ -24,6 +24,8 @@ public class MessageConstants extends NLS {
     public static String PAGE_RADIO_AUTO_CLEAN_PREV_SESSION;
 
     public static String PA_WELCOME;
+
+    public static String PA_WELCOME_RIGHT_PART_LINK;
     
     public static String PA_QUICKSTART;
 

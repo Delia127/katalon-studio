@@ -24,6 +24,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // WelcomePart
     public static final String PA_WELCOME = MessageConstants.PA_WELCOME;
+
+    public static final String PA_WELCOME_RIGHT_PART_LINK = MessageConstants.PA_WELCOME_RIGHT_PART_LINK;
     
     public static final String PA_QUICKSTART = MessageConstants.PA_QUICKSTART;
 
