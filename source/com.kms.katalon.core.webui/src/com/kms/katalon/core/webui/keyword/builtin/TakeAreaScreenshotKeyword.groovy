@@ -13,6 +13,7 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.NoSuchWindowException
+import org.openqa.selenium.Rectangle
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebDriverException
@@ -51,8 +52,8 @@ import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 import com.kms.katalon.core.webui.util.FileUtil
 
-@Action(value = "takeScreenshot")
-public class TakeScreenshotKeyword extends WebUIAbstractKeyword {
+@Action(value = "takeAreaScreenshot")
+public class TakeAreaScreenshotKeyword extends WebUIAbstractKeyword {
 
     @CompileStatic
     @Override
@@ -68,32 +69,37 @@ public class TakeScreenshotKeyword extends WebUIAbstractKeyword {
         }
 
         String fileName = (String)params[0]
-        boolean isTestOpsVisionCheckPoint = (boolean)params[1]
+        boolean isTestOpsVisionCheckPoint = (boolean)params[2]
         if (!isTestOpsVisionCheckPoint && fileName == null) {
             fileName = defaultFileName()
         }
-        FailureHandling flowControl = params[2] == null ?
-                RunConfiguration.getDefaultFailureHandling() : (FailureHandling)params[2]
-        return takeScreenshot(fileName, isTestOpsVisionCheckPoint, flowControl)
+        Rectangle rect = (Rectangle)params[1]
+        FailureHandling failureHandler = params[3] == null ?
+                RunConfiguration.getDefaultFailureHandling() : (FailureHandling)params[3]
+        return takeScreenshot(fileName, rect, isTestOpsVisionCheckPoint, failureHandler)
     }
 
     private boolean isValidData(Object... params) {
-        if (params.length != 3) {
+        if (params.length != 4) {
             return false
         }
-
+        
         if (params[0] != null && !(params[0] instanceof String)) {
             return false;
         }
-
-        if (params[1] != null && !(params[1] instanceof Boolean)) {
+        
+        if (params[1] != null && !(params[1] instanceof Rectangle)) {
             return false;
         }
-
-        if (params[2] != null && !(params[2] instanceof FailureHandling)) {
+        
+        if (params[2] == null || !(params[2] instanceof Boolean)) {
             return false;
         }
-
+        
+        if (params[3] != null && !(params[3] instanceof FailureHandling)) {
+            return false;
+        }
+        
         return true;
     }
 
@@ -102,9 +108,9 @@ public class TakeScreenshotKeyword extends WebUIAbstractKeyword {
     }
 
     @CompileStatic
-    public String takeScreenshot(String fileName, boolean isTestOpsVisionCheckPoint, FailureHandling flowControl) {
+    public String takeScreenshot(String fileName, Rectangle rect, boolean isTestOpsVisionElement, FailureHandling flowControl) {
         return WebUIKeywordMain.runKeyword({
-            String screenFileName = FileUtil.takesScreenshot(fileName, isTestOpsVisionCheckPoint)
+            String screenFileName = FileUtil.takeAreaScreenshot(fileName, rect, isTestOpsVisionElement)
             if (screenFileName != null) {
                 Map<String, String> attributes = new HashMap<>()
                 attributes.put(StringConstants.XML_LOG_ATTACHMENT_PROPERTY, screenFileName)

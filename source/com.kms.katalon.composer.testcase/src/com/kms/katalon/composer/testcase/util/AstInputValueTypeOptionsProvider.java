@@ -55,7 +55,7 @@ public class AstInputValueTypeOptionsProvider {
 
     private static final InputValueType[] listOptions = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
-            InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Property };
+            InputValueType.TestObject, InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Property };
 
     private static final InputValueType[] mapOptions = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
