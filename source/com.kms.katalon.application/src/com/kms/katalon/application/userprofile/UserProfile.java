@@ -1,5 +1,7 @@
 package com.kms.katalon.application.userprofile;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.QuickStartProjectType;
 
@@ -19,6 +21,8 @@ public class UserProfile {
     private boolean doneQuickStart;
 
     private boolean doneCreateFirstTestCase;
+
+    private String quickCreateFirstTestCaseScenario;
 
     private boolean doneOpenRecorder;
 
@@ -112,6 +116,32 @@ public class UserProfile {
         this.doneCreateFirstTestCase = doneCreateFirstTestCase;
     }
 
+    public String getQuickCreateFirstTestCaseScenario() {
+        return quickCreateFirstTestCaseScenario;
+    }
+
+    public void setQuickCreateFirstTestCaseScenario(String quickCreateFirstTestCaseScenario) {
+        this.quickCreateFirstTestCaseScenario = quickCreateFirstTestCaseScenario;
+    }
+
+    public String getNextQuickCreateFirstTestCaseScenario() {
+        String preConfigScenario = System.getProperty("quickCreateFirstTestCaseScenario");
+        if (!StringUtils.isBlank(preConfigScenario)) {
+            quickCreateFirstTestCaseScenario = preConfigScenario;
+            return preConfigScenario;
+        }
+
+        if (StringUtils.isBlank(quickCreateFirstTestCaseScenario)) {
+            quickCreateFirstTestCaseScenario = Math.random() < 0.5f
+                    ? "A"
+                    : "B";
+        }
+        quickCreateFirstTestCaseScenario = StringUtils.equals(quickCreateFirstTestCaseScenario, "A")
+                ? "B"
+                : "A";
+        return quickCreateFirstTestCaseScenario;
+    }
+
     public boolean isDoneOpenRecorder() {
         return doneOpenRecorder;
     }
@@ -119,7 +149,7 @@ public class UserProfile {
     public void setDoneOpenRecorder(boolean doneOpenRecorder) {
         this.doneOpenRecorder = doneOpenRecorder;
     }
-    
+
     public boolean isDoneQuickRecordGuidingDialog() {
         return doneQuickRecordGuidingDialog;
     }
