@@ -410,9 +410,6 @@ public class DBTestDataPart extends TestDataMainPart {
     private List<Object[]> limitDataForPreview(DBData dbData) {
         List<List<Object>> fetchedData = dbData.getData();
         int rowCount = fetchedData.size();
-        if (rowCount == 0) {
-            return Collections.emptyList();
-        }
 
         List<Object[]> data = new ArrayList<>();
         int columnCount = dbData.getColumnNumbers();
@@ -420,6 +417,10 @@ public class DBTestDataPart extends TestDataMainPart {
         boolean isTooManyRows = rowCount > MAX_ROW_LIMIT;
         boolean isTooManyColumns = columnCount > MAX_COLUMN_COUNT;
         warningIfDataOverSize(isTooManyRows || isTooManyColumns, dbData.getRetrievedDate().toString());
+
+        if (rowCount == 0) {
+            return Collections.emptyList();
+        }
 
         if (isTooManyRows) {
             // get first 500 row for preview only
