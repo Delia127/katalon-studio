@@ -6,6 +6,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.util.ComponentBuilder;
 import com.kms.katalon.composer.components.util.FontUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -19,7 +21,7 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
     }
 
     private static final String DEFAULT_URL = "https://www.amazon.com";
-    
+
     private static final String URL_INPUT_PLACEHOLDER = "E.g: https://www.amazon.com";
 
     private WebUIDriverType preferredBrowser = WebUIDriverType.CHROME_DRIVER;
@@ -28,11 +30,9 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
     private BrowserSelect browserSelect;
 
-    private String scenario = Math.random() < 0.5f
-            ? "A"
-            : "B";
+    private String scenario;
 
-    private boolean isScenarioA = scenario.equals("A");
+    private boolean isScenarioA;
 
     public QuickCreateFirstWebUITestCase(Shell parentShell) {
         super(parentShell);
@@ -40,6 +40,11 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
     @Override
     protected void createContent(Composite container) {
+        UserProfile machineProfile = UserProfileHelper.getMachineProfile();
+        scenario = machineProfile.getNextQuickCreateFirstTestCaseScenario();
+        isScenarioA = StringUtils.equals(scenario, "A");
+        UserProfileHelper.saveProfile(machineProfile);
+
         Composite body = ComponentBuilder.gridContainer(container).gridMargin(50).gridVerticalSpacing(5).build();
 
         createTitle(body);
