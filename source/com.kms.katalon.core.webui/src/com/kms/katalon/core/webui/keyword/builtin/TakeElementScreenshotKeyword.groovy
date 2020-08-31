@@ -109,7 +109,7 @@ public class TakeElementScreenshotKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public String takeScreenshot(String fileName, TestObject element, boolean isTestOpsVisionElement, FailureHandling flowControl) {
         return WebUIKeywordMain.runKeyword({
-            String screenFileName = FileUtil.takeElemnentScreenshot(fileName, element, isTestOpsVisionElement)
+            String screenFileName = FileUtil.takeElementScreenshot(fileName, element, isTestOpsVisionElement)
             if (screenFileName != null) {
                 Map<String, String> attributes = new HashMap<>()
                 attributes.put(StringConstants.XML_LOG_ATTACHMENT_PROPERTY, screenFileName)

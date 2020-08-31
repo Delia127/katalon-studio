@@ -63,7 +63,7 @@ public class FileUtil {
         return savedFileName;
     }
 
-    public static String takeFullPageScreeshot(String fileName, List<TestObject> ignoredElements,
+    public static String takeFullPageScreenshot(String fileName, List<TestObject> ignoredElements,
             boolean isTestOpsVisionCheckPoint) throws IOException {
         if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
             throw new IllegalArgumentException("File name cannot be null or empty");
@@ -78,7 +78,7 @@ public class FileUtil {
         return savedFileName;
     }
 
-    public static String takeElemnentScreenshot(String fileName, TestObject element, boolean isTestOpsVisionCheckPoint)
+    public static String takeElementScreenshot(String fileName, TestObject element, boolean isTestOpsVisionCheckPoint)
             throws IOException, NoSuchElementException {
         if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
             throw new IllegalArgumentException("File name cannot be null or empty");

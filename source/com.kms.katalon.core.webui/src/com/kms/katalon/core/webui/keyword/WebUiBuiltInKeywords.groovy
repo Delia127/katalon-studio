@@ -3035,8 +3035,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static String takeFullPageScreenshot(List<TestObject> ignoredElement) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", null, ignoredElement, false, null)
+    public static String takeFullPageScreenshot(List<TestObject> ignoredElements) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", null, ignoredElements, false, null)
     }
 
     
@@ -3124,12 +3124,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /** 
-     * Take screenshot of specific web element.
+     * Take screenshot of the specific web element.
      * The TestObject must have CSS selector so that Web Driver can find the element on the page.
      * If the element doesn't exist then this method will fail.
      * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
      * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
-     * This parameter can not be null.
+     * This parameter cannot be null.
      * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
      * @return a String represents path to the saved image.
      * @since 7.7.0
@@ -3142,10 +3142,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Take screenshot of specific element. Default FailureHandling is used.
+     * Take screenshot of the specific element. Default FailureHandling is used.
      * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
      * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
-     * This parameter can not be null.
+     * This parameter cannot be null.
      * @return a String represents path to the saved image
      * @since 7.7.0
      * @see WebUiBuiltInKeywords#takeElementScreenshot(String, TestObject, FailureHandling)
@@ -3158,9 +3158,9 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Take screenshot of specific element with default FailureHandling and default file name.
+     * Take screenshot of the specific element with default FailureHandling and default file name.
      * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
-     * This parameter can not be null.
+     * This parameter cannot be null.
      * @return a String represents path to the saved image.
      * @since 7.7.0
      * @see WebUiBuiltInKeywords#takeElementScreenshot(String, TestObject, FailureHandling)
@@ -3173,14 +3173,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Take screenshot of specific web element to send to TestOps Vision.
+     * Take screenshot of the specific web element to send to TestOps Vision.
      * The TestObject must have CSS selector so that Web Driver can find the element on the page.
      * If the element doesn't exist then this method will fail.
      * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
      * Checkpoint will be saved in 'keyes' folder in report folder.
      * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
      * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
-     * This parameter can not be null.
+     * This parameter cannot be null.
      * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
      * @return a String represents path to the saved checkpoint image.
      * @since 7.7.0
@@ -3194,12 +3194,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Take screenshot of specific web element to check with TestOps Vision. Default FailureHandling is used.
+     * Take screenshot of the specific web element to check with TestOps Vision. Default FailureHandling is used.
      * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
      * Checkpoint will be saved in 'keyes' folder in report folder.
      * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
      * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
-     * This parameter can not be null.
+     * This parameter cannot be null.
      * @return a String represents path to the saved checkpoint image.
      * @since 7.7.0
      * @see WebUiBuiltInKeywords#takeElementScreenshotAsCheckpoint(String, TestObject, FailureHandling)
@@ -3212,14 +3212,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * <p>Take screenshot of specific Rectangle in current view-port. If the rectangle is not located within the view-port, this method will fail.
+     * <p>Take screenshot of the specific Rectangle in current view-port. If the rectangle is not located within the view-port, this method will fail.
      * You have to use Script mode to create the Rectangle object.</p>
      * <code>
      * import org.openqa.selenium.Rectangle as Rectangle
      * WebUI.takeAreaScreenshotAsCheckpoint('screenshot_area_demo.png', new Rectangle(x, y, width, height))
      * </code>
      * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
-     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * @param rect The declared rectangle area that will be captured. The declare rectangle must be inside the current view-port, otherwise this step will fail.
      * This cannot be null.
      * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
      * @return a String represents path to the captured image.
@@ -3234,9 +3234,9 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Take screenshot of specific area. Default FailureHandling is used.
+     * Take screenshot of the specific area. Default FailureHandling is used.
      * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
-     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * @param rect The declared rectangle area that will be captured. The declare rectangle must be inside the current view-port, otherwise this step will fail.
      * This cannot be null.
      * @return a String represents path to the captured image.
      * @since 7.7.0
@@ -3248,8 +3248,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Take screenshot of specific area with default filename and default FailureHandling
-     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * Take screenshot of the specific area with default filename and default FailureHandling
+     * @param rect The declared rectangle area that will be captured. The declare rectangle must be inside the current view-port, otherwise this step will fail.
      * This cannot be null.
      * @return a String represents path to the captured image.
      * @since 7.7.0
@@ -3261,7 +3261,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * <p>Take screenshot of a specific area within current view-port  to send to TestOps Vision.
+     * <p>Take screenshot of the specific area within current view-port  to send to TestOps Vision.
      * You have to use Script mode to create the Rectangle object.</p>
      * <code>
      * import org.openqa.selenium.Rectangle as Rectangle
@@ -3270,7 +3270,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
      * Checkpoint will be saved in 'keyes' folder in report folder.
      * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
-     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * @param rect The declared rectangle area that will be captured. The declare rectangle must be inside the current view-port, otherwise this step will fail.
      * This cannot be null.
      * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
      * @return a String represents path to the saved checkpoint image.
@@ -3283,11 +3283,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Take screenshot of a specific area within current view-port to send to TestOps Vision. Default FailureHandling is used.
+     * Take screenshot of the specific area within current view-port to send to TestOps Vision. Default FailureHandling is used.
      * @param checkpointName Name of the checkpoint which will be appended with TestOps Vision prefix to complete the saved file name.
      * Checkpoint will be saved in 'keyes' folder in report folder.
      * Checkpoint's name will be used by TestOps Vision to detect what baseline image this shot is compared with.
-     * @param rect The rectangle defining the area that will be captured from current view-port. Rectangle size must be smaller than current view-port, otherwise this step will fail.
+     * @param rect The declared rectangle area that will be captured. The declare rectangle must be inside the current view-port, otherwise this step will fail.
      * This cannot be null.
      * @return a String represents path to the saved checkpoint image.
      * @since 7.7.0

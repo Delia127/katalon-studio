@@ -110,7 +110,7 @@ public class TakeFullPageScreenshotKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public String takeScreenshot(String fileName, List<TestObject> ignoredElements, boolean isTestOpsVisionElement, FailureHandling flowControl) {
         return WebUIKeywordMain.runKeyword({
-            String screenFileName = FileUtil.takeFullPageScreeshot(fileName, ignoredElements, isTestOpsVisionElement)
+            String screenFileName = FileUtil.takeFullPageScreenshot(fileName, ignoredElements, isTestOpsVisionElement)
             if (screenFileName != null) {
                 Map<String, String> attributes = new HashMap<>()
                 attributes.put(StringConstants.XML_LOG_ATTACHMENT_PROPERTY, screenFileName)
