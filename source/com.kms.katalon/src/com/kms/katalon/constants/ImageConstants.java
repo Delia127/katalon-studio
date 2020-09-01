@@ -9,7 +9,7 @@ public class ImageConstants {
    
     public static final Image IMG_BRANDING = ImageManager.getImage(IImageKeys.KATALON_LOGO_202);
 
-    public static final Image IMG_FAQ = ImageManager.getImage(IImageKeys.FAQ_34);
+    public static final Image IMG_HELP_CENTER = ImageManager.getImage(IImageKeys.HELP_CENTER_24);
 
     public static final Image IMG_USER_GUIDE = ImageManager.getImage(IImageKeys.USER_GUIDE_34);
 
@@ -37,11 +37,11 @@ public class ImageConstants {
     
     public static final Image KATALON_FEEDBACK_24 = ImageManager.getImage(IImageKeys.KATALON_FEEDBACK_24);
     
-    public static final Image IMG_KATALON_STORE = ImageManager.getImage(IImageKeys.KATALON_STORE_34);
+    public static final Image IMG_KATALON_STORE = ImageManager.getImage(IImageKeys.KATALON_STORE);
     
     public static final Image IMG_KATALON_STORE_24 = ImageManager.getImage(IImageKeys.KATALON_STORE_24);
 
-    public static final Image IMG_TUTORIAL = ImageManager.getImage(IImageKeys.TUTORIAL_34);
+    public static final Image IMG_TUTORIAL = ImageManager.getImage(IImageKeys.TUTORIAL_24);
     
     public static final Image IMG_BUSSINESS_SUPPORT = ImageManager.getImage(IImageKeys.BUSINESS_SUPPORT_34);
 
