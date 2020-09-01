@@ -51,6 +51,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_COL_VALUE = VALUE;
     public static final String VIEW_COL_CHKBOX = ComposerObjectRepositoryMessageConstants.VIEW_COL_CHKBOX;
     public static final String VIEW_LBL_IMAGE = IMAGE;
+    public static final String VIEW_LBL_PATH = PATH;
     public static final String VIEW_CHKBOX_LBL_USE_RELATIVE_PATH = ComposerObjectRepositoryMessageConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH;
     public static final String VIEW_BTN_BROWSE = BROWSE;
     public static final String VIEW_BTN_TIP_BROWSE = ComposerObjectRepositoryMessageConstants.VIEW_BTN_TIP_BROWSE;

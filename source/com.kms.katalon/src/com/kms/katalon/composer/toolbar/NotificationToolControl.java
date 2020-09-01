@@ -495,7 +495,7 @@ public class NotificationToolControl {
     }
     
     private static String executeRequest(HttpUriRequest httpRequest, boolean isSilent) throws Exception {
-        HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation(),
+        HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getAuthProxyInformation(),
                 httpRequest.getURI().toURL().toString());
 
         HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();

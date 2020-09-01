@@ -8,216 +8,192 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.katalon.platform.api.model.Entity;
-import com.katalon.platform.api.service.ApplicationManager;
 import com.katalon.plugin.smart_xpath.constant.SmartXPathConstants;
+import com.katalon.plugin.smart_xpath.constant.SmartXPathMessageConstants;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObject;
 import com.katalon.plugin.smart_xpath.entity.BrokenTestObjects;
-import com.katalon.plugin.smart_xpath.util.StringUtils;
+import com.katalon.plugin.smart_xpath.logger.LoggerSingleton;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 
 public class AutoHealingController {
-	public static Set<BrokenTestObject> autoHealBrokenTestObjects(Shell shell, Set<BrokenTestObject> approvedAutoHealingEntities) {
-		final Set<BrokenTestObject> approvedButCannotBeHealedEntities = new HashSet<>();
-		approvedButCannotBeHealedEntities.clear();
-		try {
-			new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
-				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Auto healing broken test objects ... ", 1);
-					approvedButCannotBeHealedEntities.addAll(autoHealBrokenTestObjects(approvedAutoHealingEntities));
-				}
-			});
-		} catch (Exception ex) {
-			ex.printStackTrace(System.out);
-		}
-		return approvedButCannotBeHealedEntities;
-	}
 
-	private static Set<BrokenTestObject> autoHealBrokenTestObjects(Set<BrokenTestObject> approvedAutoHealingEntities) {
-		Entity currentProject = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-		Set<BrokenTestObject> approvedButCannotBeHealedEntities = new HashSet<>();
-		if (currentProject != null) {
-			String currentProjectDir = currentProject.getFolderLocation();
-			for (BrokenTestObject brokenTestObject : approvedAutoHealingEntities) {
-				try {
-					String pathToThisTestObject = StringUtils
-							.getStandardPath(currentProjectDir + "/" + brokenTestObject.getTestObjectId() + ".rs");
-					DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-					Document doc = docBuilder.parse(pathToThisTestObject);
-					// Update the first XPATH value in selectorCollection (i.e
-					// default XPath value)
-					XPath xPathToBrokenXPath = XPathFactory.newInstance().newXPath();
-					Node nodeBrokenXPath = (Node) xPathToBrokenXPath
-							.compile("//selectorCollection//key[text()='XPATH'][1]/following::value[1]")
-							.evaluate(doc, XPathConstants.NODE);
-					nodeBrokenXPath.setTextContent(brokenTestObject.getProposedXPath());
+    public static String getDataFilePath(ProjectEntity project) {
+        return getDataFilePath(project.getFolderLocation());
+    }
 
-					Transformer tf = TransformerFactory.newInstance().newTransformer();
-					tf.setOutputProperty(OutputKeys.INDENT, "yes");
-					tf.setOutputProperty(OutputKeys.METHOD, "xml");
-					tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+    public static String getDataFilePath(Entity project) {
+        return getDataFilePath(project.getFolderLocation());
+    }
 
-					DOMSource domSource = new DOMSource(doc);
-					StreamResult sr = new StreamResult(pathToThisTestObject);
-					tf.transform(domSource, sr);
-					System.out.println("Updated " + brokenTestObject.getTestObjectId());
-				} catch (IOException e1) {
-					System.out.println(brokenTestObject.getTestObjectId() + " cannot be found in your project ! Skipping this object ...");
-					approvedButCannotBeHealedEntities.add(brokenTestObject);
-				} catch(XPathExpressionException e2){
-					System.out.println(brokenTestObject.getTestObjectId() + ".rs has been changed in a way that we can't find and update XPath field ! Skipping this object ...");
-					approvedButCannotBeHealedEntities.add(brokenTestObject);
-				} catch(Exception e3){
-					e3.printStackTrace(System.out);
-					System.out.println("Unexpected error occurs ! Skipping this object ... ");
-					approvedButCannotBeHealedEntities.add(brokenTestObject);
-				}
-			}
-		}
-		return approvedButCannotBeHealedEntities;
-	}
+    public static String getDataFilePath(String projectDir) {
+        if (StringUtils.isBlank(projectDir)) {
+            return null;
+        }
+        String rawBrokenTestObjectsPath = FilenameUtils.concat(projectDir,
+                SmartXPathConstants.SELF_HEALING_DATA_FILE_PATH);
+        return FilenameUtils.separatorsToSystem(rawBrokenTestObjectsPath);
+    }
 
-	public static Set<BrokenTestObject> readUnapprovedBrokenTestObjects() {
-		try {
-			Gson gson = new Gson();
-			Entity projectEntity = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-			if (projectEntity != null) {
-				String projectDir = projectEntity.getFolderLocation();
-				String jsonAutoHealingDir = StringUtils
-						.getStandardPath(projectDir + SmartXPathConstants.WAITING_FOR_APPROVAL_FILE_SUFFIX);
-				JsonReader reader = new JsonReader(
-						new InputStreamReader(new FileInputStream(jsonAutoHealingDir), StandardCharsets.UTF_8));
-				BrokenTestObjects brokenTestObjects = gson.fromJson(reader, BrokenTestObjects.class);
-				Set<BrokenTestObject> unapprovedBrokenTestObjects = brokenTestObjects.getBrokenTestObjects();
-				// Remove potential threats
-				unapprovedBrokenTestObjects.removeAll(Collections.singleton(null));
-				return unapprovedBrokenTestObjects;
-			} else {
-				System.out.println("Current project directory is not detected, no project is open");
-			}
-		} catch (FileNotFoundException e) {
-			System.out.println(SmartXPathConstants.WAITING_FOR_APPROVAL_FILE_SUFFIX
-					+ "is not detected, no broken test objects are loaded");
-			e.printStackTrace(System.out);
-		}
-		return null;
-	}
+    public static Set<BrokenTestObject> autoHealBrokenTestObjects(Shell shell,
+            Set<BrokenTestObject> brokenTestObjects) {
+        final Set<BrokenTestObject> approvedButCannotBeHealedEntities = new HashSet<>();
+        approvedButCannotBeHealedEntities.clear();
+        try {
+            new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask("Healing broken test objects ... ", brokenTestObjects.size());
 
-	/**
-	 * Set content of the file to a BrokenTestObjects entity which consists of a
-	 * list of BrokenTestObjects
-	 */
-	public static void writeToFilesWithBrokenObjects(Set<BrokenTestObject> brokenTestObjectsToUpdate, String filePath) {
-		try {
-			BrokenTestObjects brokenTestObjects = new BrokenTestObjects();
-			brokenTestObjects.setBrokenTestObjects(brokenTestObjectsToUpdate);
-			File file = new File(filePath);
-			if (file.exists()) {
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.enable(SerializationFeature.INDENT_OUTPUT);
-				brokenTestObjectsToUpdate.stream().forEach(a -> System.out.println(a.getApproved()));
-				mapper.writeValue(file, brokenTestObjects);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace(System.out);
-		} catch (IOException e) {
-			e.printStackTrace(System.out);
-		}
-	}
+                    for (BrokenTestObject brokenTestObject : brokenTestObjects) {
+                        healBrokenTestObject(brokenTestObject);
+                        monitor.worked(1);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace(System.out);
+        }
+        return approvedButCannotBeHealedEntities;
+    }
 
-	private static File createSmartXPathFile(Entity projectEntity, String fileName) {
-		try {
-			String smartXPathDir = StringUtils
-					.getStandardPath(projectEntity.getFolderLocation() + SmartXPathConstants.SMART_XPATH_FOLDER_SUFFIX);
-			boolean smartXPathFolderExists = new File(smartXPathDir).isDirectory();
-			boolean createdSmartXPathFolder = new File(smartXPathDir).mkdirs();
-			boolean createdAutoHealingJsonFile = false;
-			if (createdSmartXPathFolder || smartXPathFolderExists) {
-				String fnAutoHealing = StringUtils.getStandardPath(smartXPathDir + "/" + fileName + ".json");
-				File autoHealingFile = new File(fnAutoHealing);
-				createdAutoHealingJsonFile = autoHealingFile.createNewFile();
-				if (createdAutoHealingJsonFile) {
-					BrokenTestObjects emptyBrokenTestObjects = new BrokenTestObjects();
-					ObjectMapper mapper = new ObjectMapper();
-					mapper.enable(SerializationFeature.INDENT_OUTPUT);
-					mapper.writeValue(autoHealingFile, emptyBrokenTestObjects);
-					return autoHealingFile;
-				}
-			} else {
-				System.out.println("/" + SmartXPathConstants.SMART_XPATH_FOLDER_SUFFIX
-						+ " folder does not exist, no file is created");
-			}
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-		}
-		return null;
-	}
+    public static void healBrokenTestObject(BrokenTestObject brokenTestObject) {
+        try {
+            String testObjectId = brokenTestObject.getTestObjectId();
+            WebElementEntity testObject = ObjectRepositoryController.getInstance()
+                    .getWebElementByDisplayPk(testObjectId);
 
-	public static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath) {
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			File file = new File(filePath);
-			if (file.exists()) {
-				mapper.enable(SerializationFeature.INDENT_OUTPUT);
-				mapper.writeValue(file, brokenTestObjects);
-			}
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-		}
-	}
+            WebElementSelectorMethod newSelectorMethod = WebElementSelectorMethod
+                    .valueOf(brokenTestObject.getProposedLocatorMethod().name());
+            testObject.setSelectorMethod(newSelectorMethod);
+            testObject.setSelectorValue(newSelectorMethod, brokenTestObject.getProposedLocator());
 
-	public static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			File file = new File(filePath);
-			if (file.exists()) {
-				return mapper.readValue(file, BrokenTestObjects.class);
-			}
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-		}
-		return null;
-	}
+            ObjectRepositoryController.getInstance().updateTestObject(testObject);
 
-	@SuppressWarnings("unused")
-	private static boolean removeFile(File fileToRemove) {
-		try {
-			return Files.deleteIfExists(fileToRemove.toPath());
-		} catch (IOException e) {
-			e.printStackTrace(System.out);
-		}
-		return false;
-	}
+            IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { testObjectId, testObject });
+        } catch (ControllerException exception) {
+            LoggerSingleton.logError(exception);
+        }
+    }
 
-	public static void createXPathFilesIfNecessary(Entity projectEntity) {
-		createSmartXPathFile(projectEntity, "waiting-for-approval");
-		createSmartXPathFile(projectEntity, "approved");
-	}
+    public static Set<BrokenTestObject> readUnapprovedBrokenTestObjects(ProjectEntity project) {
+        try {
+            if (project == null) {
+                return null;
+            }
+
+            String projectDir = project.getFolderLocation();
+            File selfHealingFile = createBrokenTestObjectsFile(projectDir);
+            JsonReader reader = new JsonReader(
+                    new InputStreamReader(new FileInputStream(selfHealingFile), StandardCharsets.UTF_8));
+
+            BrokenTestObjects brokenTestObjects = new Gson().fromJson(reader, BrokenTestObjects.class);
+            if (brokenTestObjects == null) {
+                return Collections.emptySet();
+            }
+            Set<BrokenTestObject> unapprovedBrokenTestObjects = brokenTestObjects.getBrokenTestObjects();
+            unapprovedBrokenTestObjects.removeAll(Collections.singleton(null));
+
+            return unapprovedBrokenTestObjects;
+        } catch (FileNotFoundException e) {
+            System.out.println(SmartXPathConstants.SELF_HEALING_DATA_FILE_PATH
+                    + " is not detected, no broken test objects are loaded");
+            e.printStackTrace(System.out);
+        }
+        return null;
+    }
+
+    private static File createBrokenTestObjectsFile(String projectDir) {
+        String rawSelfHealingDir = FilenameUtils.concat(projectDir,
+                SmartXPathConstants.SELF_HEALING_FOLDER_PATH);
+
+        String selfHealingDir = FilenameUtils.separatorsToSystem(rawSelfHealingDir);
+
+        File selfHealingDirectory = new File(selfHealingDir);
+        if (!selfHealingDirectory.exists()) {
+            selfHealingDirectory.mkdirs();
+            if (!selfHealingDirectory.exists()) {
+                LoggerSingleton.logError(MessageFormat
+                        .format(SmartXPathMessageConstants.MSG_CANNOT_CREATE_SELF_HEALING_FOLDER, selfHealingDir));
+                return null;
+            }
+        }
+
+        File autoHealingFile = new File(getDataFilePath(projectDir));
+
+        if (!autoHealingFile.exists()) {
+            try {
+                if (autoHealingFile.createNewFile()) {
+                    BrokenTestObjects emptyBrokenTestObjects = new BrokenTestObjects();
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                    mapper.writeValue(autoHealingFile, emptyBrokenTestObjects);
+                    return autoHealingFile;
+                }
+            } catch (IOException exception) {
+                LoggerSingleton.logError(exception);
+                return null;
+            }
+        }
+        return autoHealingFile;
+    }
+
+    public static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, ProjectEntity project) {
+        if (project == null) {
+            return;
+        }
+        try {
+            createBrokenTestObjectsFile(project.getFolderLocation());
+            ObjectMapper mapper = new ObjectMapper();
+            File file = new File(getDataFilePath(project));
+            if (file.exists()) {
+                mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                mapper.writeValue(file, brokenTestObjects);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean removeFile(File fileToRemove) {
+        try {
+            return Files.deleteIfExists(fileToRemove.toPath());
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
+        return false;
+    }
+
+    public static void createXPathFilesIfNecessary(Entity projectEntity) {
+        if (projectEntity == null) {
+            return;
+        }
+        String location = projectEntity.getFolderLocation();
+        createBrokenTestObjectsFile(location);
+    }
 }

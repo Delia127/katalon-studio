@@ -82,8 +82,4 @@ public class WsdlImporter {
 
         return entity;
     }
-
-    public interface WebServiceRequestEntityCreator {
-        WebServiceRequestEntity create();
-    }
 }

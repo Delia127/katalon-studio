@@ -36,8 +36,8 @@ public class WSDLParserUtil {
 
                             monitor.worked(1);
 
-                            List<WebServiceRequestEntity> imports = importer.getImportedEtities(requestMethod);
-                            newWSTestObjects.addAll(imports);
+                            List<WebServiceRequestEntity> importedRequestEntities = importer.getImportedEtities(requestMethod);
+                            newWSTestObjects.addAll(importedRequestEntities);
 
                             monitor.worked(1);
                         } catch (Exception ex) {

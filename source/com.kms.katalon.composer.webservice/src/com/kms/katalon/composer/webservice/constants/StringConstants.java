@@ -15,7 +15,11 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MENU_CONTEXT_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ;
     // ImportWebServicesPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2 = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2;
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3 = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3;
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+	public static final String MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI;
+	public static final String MENU_CONTEXT_WEBSERVICE_REQ_WADL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WADL;
 	
 	// SparserInvalidException
 	public static final String EXC_INVALID_SWAGGER_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_SWAGGER_FILE;	
@@ -42,6 +46,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_URL = ComposerWebserviceMessageConstants.PA_LBL_URL;
     public static final String PA_LBL_REQ_METHOD = ComposerWebserviceMessageConstants.PA_LBL_REQ_METHOD;
     public static final String LINK_CUSTOMIZE_API_METHODS = ComposerWebserviceMessageConstants.LINK_CUSTOMIZE_API_METHODS;
+    public static final String LINK_SET_REQUEST_TIMEOUT_AND_LIMIT = ComposerWebserviceMessageConstants.LINK_SET_REQUEST_TIMEOUT_AND_LIMIT;
 
 	// SoapRequestObjectPart
     public static final String PA_TITLE_SOAP = ComposerWebserviceMessageConstants.PA_TITLE_SOAP;
@@ -58,13 +63,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
     
     // ImportWebService
-    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;   
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER; 
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_OPENAPI3 = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_OPENAPI3;   
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN;   
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
+    public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_OPENAPI3 = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_OPENAPI3;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN= ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN;
- 
+    public static final String DIA_MSG_FILE_LOCATION_OR_URL = ComposerWebserviceMessageConstants.DIA_MSG_FILE_LOCATION_OR_URL;
+
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;
 	public static final String VIEW_COL_VALUE = VALUE;
@@ -115,4 +123,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DiaEditWSMethod_MSG_DUPLICATED_METHOD_NAME = ComposerWebserviceMessageConstants.DiaEditWSMethod_MSG_DUPLICATED_METHOD_NAME;
     public static final String DiaEditWSMethod_TITLE_ADD_NEW = ComposerWebserviceMessageConstants.DiaEditWSMethod_TITLE_ADD_NEW;
     public static final String DiaEditWSMethod_TITLE_EDIT = ComposerWebserviceMessageConstants.DiaEditWSMethod_TITLE_EDIT;
+    
+    // Execution Setting page
+    public static final String EXECUTION_WEB_SERVICE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.webservice";
 }

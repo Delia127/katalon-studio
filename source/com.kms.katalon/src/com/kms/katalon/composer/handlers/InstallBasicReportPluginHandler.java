@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.FileLocator;
@@ -14,6 +15,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
@@ -22,6 +24,10 @@ import org.osgi.service.event.EventHandler;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kms.katalon.activation.plugin.models.KStorePlugin;
+import com.kms.katalon.activation.plugin.models.Plugin;
+import com.kms.katalon.activation.plugin.service.LocalRepository;
+import com.kms.katalon.activation.plugin.util.PluginFactory;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
@@ -37,18 +43,17 @@ import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.Plugin;
-import com.kms.katalon.plugin.service.LocalRepository;
-import com.kms.katalon.plugin.util.PluginFactory;
 
 public class InstallBasicReportPluginHandler {
     
     private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
+    @Inject
+    private IEventBroker eventBroker;
+    
     @PostConstruct
     private void registerEventHandler() {
-        EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.WORKSPACE_PLUGIN_LOADED,
+        eventBroker.subscribe(EventConstants.WORKSPACE_PLUGIN_LOADED,
                 new EventHandler() {
                     @Override
                     public void handleEvent(Event event) {
@@ -98,7 +103,7 @@ public class InstallBasicReportPluginHandler {
     }
 
     private KStorePlugin getPlugin() throws IOException {
-        Bundle bundle = FrameworkUtil.getBundle(LocalRepository.class);
+        Bundle bundle = FrameworkUtil.getBundle(InstallBasicReportPluginHandler.class);
         Path pluginFolderPath = new Path("/resources/basic-report");
         URL pluginFolderUrl = FileLocator.find(bundle, pluginFolderPath, null);
         File pluginFolder = FileUtils.toFile(FileLocator.toFileURL(pluginFolderUrl));
@@ -130,6 +135,6 @@ public class InstallBasicReportPluginHandler {
 
     private boolean isBasicReportPluginInstalled() {
         List<Plugin> plugins = PluginFactory.getInstance().getPlugins();
-        return plugins.stream().filter(p -> p.getName().equals("Basic Report")).findFirst().isPresent();
+        return plugins.stream().filter(p -> p.getName().equals("katalon-studio-report-plugin.jar")).findFirst().isPresent();
     }
 }

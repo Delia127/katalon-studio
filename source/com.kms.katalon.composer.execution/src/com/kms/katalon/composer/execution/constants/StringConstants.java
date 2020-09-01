@@ -32,7 +32,15 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_MESSAGE = MESSAGE;
 
     public static final String DIA_TITLE_LOG_PROPERTIES = ComposerExecutionMessageConstants.DIA_TITLE_LOG_PROPERTIES;
-
+    
+    public static final String DIA_LBL_TESTOPS_RELEASE = ComposerExecutionMessageConstants.DIA_LBL_TESTOPS_RELEASE;
+    
+    public static final String DIA_GRP_KATALON_TESTOPS = ComposerExecutionMessageConstants.DIA_GRP_KATALON_TESTOPS;
+    
+    public static final String DIA_CB_DEFAULT_LASTEST_RELEASE = ComposerExecutionMessageConstants.DIA_CB_DEFAULT_LASTEST_RELEASE;
+    
+    public static final String DIA_CB_TESTOPS_LOADING = ComposerExecutionMessageConstants.DIA_CB_TESTOPS_LOADING;
+    
     // ExecuteHandler
     public static final String ERROR_TITLE = ERROR;
 
@@ -125,6 +133,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LOG_RESUME = ComposerExecutionMessageConstants.PA_LOG_RESUME;
 
     public static final String PA_LOG_PAUSE = ComposerExecutionMessageConstants.PA_LOG_PAUSE;
+    
+    public static final String PA_MSG_DRIVER_OUTDATED = ComposerExecutionMessageConstants.PA_MSG_DRIVER_OUTDATED;
 
     // LogExceptionNavigator
     public static final String WARN_TITLE = WARN;
@@ -304,7 +314,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_FAILED_EXECUTIONS;
 
     public static final String DIA_CHK_APPLY_PROXY = ComposerExecutionMessageConstants.DIA_CHK_APPLY_PROXY;
-    
+
+    public static final String DIA_CHK_OVERRIDE_PLATFORM = ComposerExecutionMessageConstants.DIA_CHK_OVERRIDE_PLATFORM;
+
     public static final String DIA_CHK_FOR_RETRY_ALL_EXECUTIONS = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_ALL_EXECUTIONS;
     
     public static final String DIA_CHK_FOR_RETRY_IMMEDIATELY = ComposerExecutionMessageConstants.DIA_CHK_FOR_RETRY_IMMEDIATELY;

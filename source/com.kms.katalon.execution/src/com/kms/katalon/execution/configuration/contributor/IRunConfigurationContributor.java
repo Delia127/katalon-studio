@@ -9,6 +9,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
@@ -30,7 +31,7 @@ public interface IRunConfigurationContributor extends ConsoleOptionContributor {
     public int getPreferredOrder();
 
     /**
-     * Find the correct run configuration
+     * Find the default run configuration
      * 
      * @param projectDir project directory
      * @return the correct run configuration
@@ -40,6 +41,22 @@ public interface IRunConfigurationContributor extends ConsoleOptionContributor {
      */
     public IRunConfiguration getRunConfiguration(String projectDir)
             throws IOException, ExecutionException, InterruptedException;
+    
+
+    /**
+     * Find the correct run configuration by the given driverConnector
+     * 
+     * @param projectDir
+     * @param driverConnector
+     * @return
+     * @throws IOException
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    public default IRunConfiguration getRunConfiguration(String projectDir, IDriverConnector driverConnector)
+            throws IOException, ExecutionException, InterruptedException {
+        return null;
+    }
 
     /**
      * Find the correct run configuration

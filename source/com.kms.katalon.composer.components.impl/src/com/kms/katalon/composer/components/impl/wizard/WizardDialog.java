@@ -199,7 +199,7 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
 
     }
 
-    protected final void nextPressed() {
+    protected void nextPressed() {
         Map<String, Object> pageSharedData = wizardManager.getCurrentPage().storeControlStates();
         if (pageSharedData != null) {
             sharedData.putAll(pageSharedData);

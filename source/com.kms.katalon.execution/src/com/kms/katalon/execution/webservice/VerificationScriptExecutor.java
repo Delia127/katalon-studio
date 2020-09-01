@@ -2,13 +2,13 @@ package com.kms.katalon.execution.webservice;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.WSVerificationTestCaseEntity;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.configuration.WSVerificationRunConfiguration;
 import com.kms.katalon.execution.entity.WSVerificationTestCaseExecutedEntity;
 import com.kms.katalon.execution.launcher.VerificationScriptLauncher;
@@ -22,7 +22,7 @@ public class VerificationScriptExecutor {
     
     private String executorId = String.valueOf(System.currentTimeMillis()); //unique id for each executor instance
     
-    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+    private IEventBroker eventBroker = ExecutionBundleActivator.getInstance().getEventBroker();
     
     private VerificationScriptLauncher launcher;
     

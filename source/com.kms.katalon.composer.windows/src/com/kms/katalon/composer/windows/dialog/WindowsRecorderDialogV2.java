@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -62,8 +64,11 @@ import com.kms.katalon.composer.windows.socket.WindowsStopRecordingPayload;
 import com.kms.katalon.composer.windows.spy.WindowsElementPropertiesComposite;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.composer.windows.spy.WindowsRecordedStepsView;
+import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.execution.windows.WindowsDriverConnector;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsObjectDialog {
@@ -90,6 +95,8 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
 
     private RecordActionResult recordActionResult;
 
+    private boolean okPressed = false;
+
     public WindowsRecorderDialogV2(Shell parentShell) {
         super(parentShell);
         socketServer.start();
@@ -102,8 +109,20 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     }
 
     @Override
+    public int open() {
+        Trackings.trackOpenWindowsNativeRecord();
+        return super.open();
+    }
+    
+    @Override
     public boolean close() {
         socketServer.close();
+        if (okPressed) {
+            int recordedActionCount = stepView.getNodes().size();
+            Trackings.trackCloseWindowsNativeRecordByOk(recordedActionCount);
+        } else {
+            Trackings.trackCloseWindowsNativeRecordByCancel();
+        }
         return super.close();
     }
 
@@ -112,11 +131,9 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         recordActionResult = new RecordActionResult(stepView.getWrapper(),
                 capturedObjectsTableViewer.getCapturedElements());
 
-        int recordedActionCount = stepView.getNodes().size();
-
+        okPressed  = true;
+        
         super.okPressed();
-
-        Trackings.trackCloseRecord("windows", "ok", recordedActionCount);
     }
 
     @Override
@@ -332,7 +349,8 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         appsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         appsComposite.setLayout(new FillLayout());
 
-        mobileComposite.setShowConfiguration(false);
+        mobileComposite.setShowConfiguration(true);
+        mobileComposite.setShowRemoteUrl(false);
         mobileComposite.setShowApplicationTitle(false);
         mobileComposite.createComposite(appsComposite, SWT.NONE, this);
     }
@@ -358,9 +376,15 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
     }
 
     private void startRecording() throws Exception {
+        Trackings.trackWindowsNativeRecord();
         startNativeRecorderDriver();
+
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        final WindowsDriverConnector driverConnector = WindowsDriverConnector.getInstance(projectDir);
+        DesiredCapabilities desiredCapabilities = new DesiredCapabilities(driverConnector.getDesiredCapabilities());
+        
         WindowsStartRecordingPayload message = WindowsSocketMessageUtil
-                .createStartRecordingPayload(mobileComposite.getAppFile());
+                .createStartRecordingPayload(mobileComposite.getAppFile(), desiredCapabilities);
         String data = JsonUtil.toJson(message);
         socketServer.sendMessage(WindowsSocketMessageUtil.createServerMessage(ServerMessageType.START_RECORDING, data));
     }
@@ -495,5 +519,11 @@ public class WindowsRecorderDialogV2 extends AbstractDialog implements WindowsOb
         public ScriptNodeWrapper getScript() {
             return script;
         }
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.OK_ID, GlobalMessageConstants.DIA_SAVE_RECORDING, true);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 }

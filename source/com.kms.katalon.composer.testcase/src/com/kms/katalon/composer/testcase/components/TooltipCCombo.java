@@ -384,7 +384,9 @@ public class TooltipCCombo extends CCombo {
                 return;
             }
             if (index < 0 || index >= textLookup.size()) {
-                this.tooltip.hide();
+                if (this.tooltip != null) {
+                    this.tooltip.hide();
+                }
                 previousSelectionIdx = -1;
                 return;
             }

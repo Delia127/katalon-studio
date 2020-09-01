@@ -1,12 +1,16 @@
 package com.kms.katalon.controller;
 
+import static com.kms.katalon.groovy.util.GroovyUtil.getOrCreateGroovyScriptForTestCaseFromPlugin;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.controller.constants.StringConstants;
@@ -32,6 +36,21 @@ public class TestCaseController extends EntityController {
             _instance = new TestCaseController();
         }
         return (TestCaseController) _instance;
+    }
+    
+    /**
+     * Get Groovy Script for Test Case. Create if does not exist.
+     * @param testCase
+     * @param imports Initial imports for a Test Case
+     * @throws IOException
+     * @throws CoreException
+     */
+    public void getOrCreateGroovyScriptForTestCase(TestCaseEntity testCase) throws ControllerException {
+        try {
+            getOrCreateGroovyScriptForTestCaseFromPlugin(testCase);
+        } catch (IOException | CoreException e) {
+            throw new ControllerException(e);
+        }
     }
 
     /**

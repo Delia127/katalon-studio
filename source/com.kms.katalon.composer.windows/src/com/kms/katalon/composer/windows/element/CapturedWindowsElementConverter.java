@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.composer.mobile.objectspy.element.Converter;
+import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 
@@ -31,6 +35,15 @@ public class CapturedWindowsElementConverter implements Converter<CapturedWindow
         windowsElementEntity.setProperties(properties);
         return windowsElementEntity;
     }
+
+	public WindowsElementEntity convert(CapturedWindowsElement capturedElement, FolderEntity folder) throws Exception {
+		WindowsElementEntity windowsElement = convert(capturedElement);
+		windowsElement.setName(ObjectRepositoryController.getInstance().getAvailableWebElementName(folder,
+				ObjectRepositoryController.toValidFileName(StringUtils.trim(windowsElement.getName()))));
+		windowsElement.setParentFolder(folder);
+		windowsElement.setProject(folder.getProject());
+		return windowsElement;
+	}
 
     @Override
     public CapturedWindowsElement revert(WindowsElementEntity windowsElement) {

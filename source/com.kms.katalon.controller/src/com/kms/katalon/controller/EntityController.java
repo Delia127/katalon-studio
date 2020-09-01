@@ -1,5 +1,6 @@
 package com.kms.katalon.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.osgi.framework.BundleContext;
@@ -27,7 +28,9 @@ public abstract class EntityController {
     }
     
     public static String toValidFileName(String fileName) {
-        return fileName.replaceAll("[^A-Za-z-0-9_().\\- ]", "");
+        fileName = StringUtils.stripStart(fileName, ".");
+        fileName = StringUtils.stripEnd(fileName, ".");
+        return fileName.replaceAll("[^A-Za-z-0-9_().\\- ,]", "");
     }
     
     public static String toXmlString(Object entity) throws Exception {

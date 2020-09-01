@@ -13,6 +13,7 @@ import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -24,6 +25,7 @@ import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
+import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public abstract class MobileRunConfigurationContributor implements IRunConfigurationContributor {
@@ -65,6 +67,34 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
         }
         MobileRunConfiguration runConfiguration = getMobileRunConfiguration(projectDir);
         runConfiguration.setDevice(device);
+        return runConfiguration;
+    }
+    
+    @Override
+    public IRunConfiguration getRunConfiguration(String projectDir, IDriverConnector driverConnector)
+            throws IOException, ExecutionException, InterruptedException {
+        if (!(driverConnector instanceof MobileDriverConnector)) {
+            throw new ExecutionException("Invalid driver connector");
+        }
+        MobileDriverConnector mobileDriverConnector = (MobileDriverConnector) driverConnector;
+        deviceName = StringUtils.isNotBlank(deviceName) ? deviceName
+                : mobileDriverConnector.getDefaultDeviceId();
+        if (StringUtils.isBlank(deviceName)) {
+            throw new ExecutionException(StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
+        }
+        MobileDeviceInfo device = null;
+        try {
+            device = MobileDeviceProvider.getDevice(getMobileDriverType(), deviceName);
+        } catch (MobileSetupException e) {
+            throw new ExecutionException(e.getMessage());
+        }
+        if (device == null) {
+            throw new ExecutionException(
+                    MessageFormat.format(StringConstants.MOBILE_ERR_CANNOT_FIND_DEVICE_WITH_NAME_X, deviceName));
+        }
+        MobileRunConfiguration runConfiguration = getMobileRunConfiguration(projectDir);
+        runConfiguration.setDevice(device);
+        mobileDriverConnector.setDevice(device);
         return runConfiguration;
     }
 

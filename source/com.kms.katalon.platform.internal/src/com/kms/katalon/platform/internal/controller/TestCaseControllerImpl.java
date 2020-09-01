@@ -1,9 +1,13 @@
 package com.kms.katalon.platform.internal.controller;
 
+import static com.kms.katalon.groovy.util.GroovyUtil.getOrCreateGroovyScriptForTestCaseFromPlugin;
+
+import java.io.IOException;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.core.runtime.CoreException;
 
 import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.model.Integration;
@@ -72,6 +76,7 @@ public class TestCaseControllerImpl implements com.katalon.platform.api.controll
             testCase.setProject(currentProject);
             testCase.setTag(newDescription.getTag());
 
+            testCaseController.getOrCreateGroovyScriptForTestCase(testCase);
             return new TestCaseEntityImpl(testCaseController.saveNewTestCase(testCase));
         } catch (ControllerException e) {
             throw new ResourceException(ExceptionUtils.getMessage(e));

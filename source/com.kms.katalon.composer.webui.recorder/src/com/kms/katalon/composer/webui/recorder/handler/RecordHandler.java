@@ -17,7 +17,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -35,6 +37,8 @@ import org.openqa.selenium.Keys;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
@@ -103,8 +107,9 @@ public class RecordHandler {
         Shell shell = null;
         Shell activeShell = Display.getCurrent().getActiveShell();
         if (activeShell == null) {
-            return;
+            activeShell = new Shell();
         }
+
         try {
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
@@ -144,8 +149,12 @@ public class RecordHandler {
                     || recordDialog.getScriptWrapper().getBlock().getAstChildren().isEmpty()) {
                 return;
             }
+            
+            TestCaseEntity newTestCase = testCaseEntity == null
+                    ? createNewTestCase()
+                    : testCaseEntity;
             if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
-                testCaseCompositePart = createNewTestCase();
+                testCaseCompositePart = getTestCasePartByTestCase(newTestCase);
                 shouldOverride = false;
             } else if (!wrapper.isEmpty()) {
                 MessageDialog dialog = new MessageDialog(activeShell, StringConstants.CONFIRMATION, null,
@@ -158,7 +167,7 @@ public class RecordHandler {
             }
             updateRecordedElementsAfterSavingToObjectRepository(recordedElements,
                     folderSelectionResult != null ? folderSelectionResult.getEntitySavedMap() : Collections.emptyMap());
-            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedElements,
+            doGenerateTestScripts(newTestCase, testCaseCompositePart, folderSelectionResult, recordedElements,
                     recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
             MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
@@ -176,7 +185,7 @@ public class RecordHandler {
      * via entitySavedMap. Cloned WebPages will be created in recordedElements
      * and references of their children are removed from the original WebPages
      * 
-     * @see com.kms.katalon.objectspy.dialog.ObjectRepositoryService#saveObject(SaveToObjectRepositoryDialogResult)
+     * @see com.kms.katalon.objectspy.dialog.ObjectRepositoryService#saveObjectForWebRecorder(SaveToObjectRepositoryDialogResult)
      * @param recordedElements The list of WebPages and their children of a test case
      * @param entitySavedMap A map of physical folders indexed by WebPage and WebEntity
      */
@@ -219,7 +228,7 @@ public class RecordHandler {
         return shell;
     }
 
-    private TestCaseCompositePart createNewTestCase() throws Exception {
+    private TestCaseEntity createNewTestCase() throws Exception {
         TestCaseEntity testCase = NewTestCaseHandler.doCreateNewTestCase(
                 new FolderTreeEntity(FolderController.getInstance()
                         .getTestCaseRoot(ProjectController.getInstance().getCurrentProject()), null),
@@ -228,10 +237,10 @@ public class RecordHandler {
             return null;
         }
 
-        return getTestCasePartByTestCase(testCase);
+        return testCase;
     }
 
-    private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
+    private void doGenerateTestScripts(final TestCaseEntity newTestCase, final TestCaseCompositePart testCaseCompositePart,
             final SaveToObjectRepositoryDialogResult folderSelectionResult, final List<WebPage> recordedElements,
             final ScriptNodeWrapper wrapper, final VariableEntity[] variables, final boolean shouldOverride) {
         if (testCaseCompositePart == null) {
@@ -302,6 +311,18 @@ public class RecordHandler {
                 }
             }
         };
+        
+        job.addJobChangeListener(new JobChangeAdapter() {
+            @Override
+            public void done(IJobChangeEvent event) {
+                UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+                if (newTestCase != null && currentProfile.isNewUser() && !currentProfile.isDoneRunFirstTestCase()) {
+                    currentProfile.setDoneSaveFirstRecord(true);
+                    UserProfileHelper.saveProfile(currentProfile);
+                    eventBroker.post(EventConstants.FIRST_TEST_CASE_CREATED, newTestCase);
+                }
+            }
+        });
 
         job.setUser(true);
         job.schedule();
@@ -320,6 +341,9 @@ public class RecordHandler {
     }
 
     private TestCaseCompositePart getTestCasePartByTestCase(TestCaseEntity testCase) throws Exception {
+        if (testCase == null) {
+            return null;
+        }
         MPart selectedPart = (MPart) modelService.find(EntityPartUtil.getTestCaseCompositePartId(testCase.getId()),
                 application);
         if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {

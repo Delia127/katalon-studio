@@ -21,12 +21,12 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore
 Export-Package: com.kms.katalon.core.webui.common,
+ com.kms.katalon.core.webui.common.internal,
  com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
  com.kms.katalon.core.webui.driver.firefox,
  com.kms.katalon.core.webui.keyword,
  com.kms.katalon.core.webui.util
 Bundle-ClassPath: .,
- resources/lib/repackaged-sikuli-api-1.0.2-standalone.jar
-
-
+ resources/lib/repackaged-sikuli-api-1.0.2-standalone.jar,
+ resources/lib/selenium-shutterbug-1.1.jar

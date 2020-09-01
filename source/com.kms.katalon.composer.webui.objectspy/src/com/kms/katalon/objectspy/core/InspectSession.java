@@ -35,6 +35,8 @@ import org.osgi.framework.FrameworkUtil;
 import com.google.gson.Gson;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.handlers.UpdateChromeWebdriverHandler;
+import com.kms.katalon.composer.handlers.UpdateEdgeChromiumWebdriverHandler;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
@@ -57,6 +59,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.selenium.driver.CFirefoxDriver;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class InspectSession implements Runnable {
 
@@ -259,7 +262,15 @@ public class InspectSession implements Runnable {
                 }
             }
         } catch (WebDriverException e) {
-            showErrorMessageDialog(e.getMessage());
+            if (failedDueToOutdatedChromeDriver(e.getMessage())) {
+                Trackings.trackFailedToSpyRecordDueToOutdatedChromeDriver();
+                updateChromeDriver();
+            } else if (failedDueToOutdatedEdgeChromiumDriver(e.getMessage())) {
+                Trackings.trackFailedToSpyRecordDueToOutdatedEdgeChromiumDriver();
+                updateEdgeChromiumDriver();
+            } else {
+                showErrorMessageDialog(e.getMessage());
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             showErrorMessageDialog(e.getMessage());
@@ -267,6 +278,47 @@ public class InspectSession implements Runnable {
             dispose();
         }
     }
+
+    private boolean failedDueToOutdatedEdgeChromiumDriver(String message) {
+        return message.contains("This version of MSEdgeDriver only supports MSEdge version");
+    }
+
+    private boolean failedDueToOutdatedChromeDriver(String message) {
+        return message.contains("This version of ChromeDriver only supports Chrome version");
+    }
+
+    private void updateChromeDriver() {
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                boolean upgrade = MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
+                        StringConstants.ERROR_TITLE, StringConstants.DIA_MSG_DRIVER_OUTDATED_CHROME_DRIVER);
+                if (upgrade) {
+                    new UpdateChromeWebdriverHandler().execute(Display.getCurrent().getActiveShell());
+                }
+            }
+        });
+    }
+    
+    private void updateEdgeChromiumDriver() {
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                boolean upgrade = MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
+                        StringConstants.ERROR_TITLE, StringConstants.DIA_MSG_DRIVER_OUTDATED_EDGE_CHROMIUM_DRIVER);
+                if (upgrade) {
+                    new UpdateEdgeChromiumWebdriverHandler().execute(Display.getCurrent().getActiveShell());
+                }
+            }
+        });
+    }
+
+//    private String extractMessageUpdateWebDriverIfNeeded(WebDriverException e) {
+//        if (e.getMessage().contains("This version of ChromeDriver only supports Chrome version")) {
+//            return "It seems like your Chrome Webdriver is not up to date with your Chrome browser. Please go to Tools > Update webdrivers to upgrade and try again";
+//        }
+//        return e.getMessage();
+//    }
 
     protected void handleForFirefoxAddon() throws InterruptedException {
         LoggerSingleton.logInfo("Connecting Firefox Recorder with socket server...");

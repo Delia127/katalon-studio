@@ -1,20 +1,30 @@
 package com.kms.katalon.composer.execution.jobs;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.composer.execution.dialog.ExecuteFirstTestSuccessfullyDialog;
+import com.kms.katalon.composer.execution.dialog.ExecuteFirstTestUnsuccessfullyDialog;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.entity.project.QuickStartProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
@@ -22,7 +32,8 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
-import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.execution.launcher.result.ILauncherResult;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
 public class ExecuteTestCaseJob extends Job {
     protected final UISynchronize sync;
@@ -85,8 +96,71 @@ public class ExecuteTestCaseJob extends Job {
             return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
+            showFirstExecuteGuidingDialog();
 //            UsageInfoCollector
 //                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+        }
+    }
+    
+    private void showFirstExecuteGuidingDialog() {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject == null || currentProject.getType() != ProjectType.WEBUI) {
+            return;
+        }
+
+        UserProfile currentProfile1 = UserProfileHelper.getCurrentProfile();
+        boolean isPreferredWebUITesting = currentProfile1.isPreferWebUI();
+        boolean hasDoneFirstRunPassAndFail = currentProfile1.isDoneRunFirstTestCasePass() && currentProfile1.isDoneRunFirstTestCaseFail();
+        if (!currentProfile1.isNewUser() || !isPreferredWebUITesting || hasDoneFirstRunPassAndFail) {
+            return;
+        }
+
+        List<ILauncher> lauchers = LauncherManager.getInstance().getRunningLaunchers();
+        ILauncher firstExecution = lauchers.get(0);
+        if (firstExecution != null) {
+            Thread waitForExecuteThread = new Thread(() -> {
+                while (firstExecution.getStatus() != LauncherStatus.DONE
+                        && firstExecution.getStatus() != LauncherStatus.TERMINATED) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+                if (firstExecution.getStatus() == LauncherStatus.DONE) {
+                    UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+                    currentProfile.setDoneRunFirstTestCase(true);
+                    UserProfileHelper.saveProfile(currentProfile);
+
+                    UISynchronizeService.syncExec(() -> {
+                        ILauncherResult result = firstExecution.getResult();
+                        if (result.getReturnCode() == 0) { // Success
+                            if (currentProfile.isDoneRunFirstTestCasePass()) {
+                                return;
+                            }
+
+                            currentProfile.setDoneRunFirstTestCasePass(true);
+                            UserProfileHelper.saveProfile(currentProfile);
+
+                            ExecuteFirstTestSuccessfullyDialog congratulationDialog = new ExecuteFirstTestSuccessfullyDialog(
+                                    Display.getCurrent().getActiveShell());
+                            congratulationDialog.open();
+                        } else {
+                            if (currentProfile.isDoneRunFirstTestCaseFail()) {
+                                return;
+                            }
+
+                            currentProfile.setDoneRunFirstTestCaseFail(true);
+                            UserProfileHelper.saveProfile(currentProfile);
+
+                            ExecuteFirstTestUnsuccessfullyDialog troubleshotDialog = new ExecuteFirstTestUnsuccessfullyDialog(
+                                    Display.getCurrent().getActiveShell());
+                            troubleshotDialog.open();
+                        }
+                    });
+                }
+            });
+            waitForExecuteThread.start();
         }
     }
     

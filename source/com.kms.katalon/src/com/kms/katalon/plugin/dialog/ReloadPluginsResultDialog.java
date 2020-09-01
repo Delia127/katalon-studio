@@ -34,21 +34,23 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.activation.plugin.models.KStoreBasicCredentials;
+import com.kms.katalon.activation.plugin.models.KStoreClientException;
+import com.kms.katalon.activation.plugin.models.KStorePlugin;
+import com.kms.katalon.activation.plugin.models.Plugin;
+import com.kms.katalon.activation.plugin.models.ReloadItem;
+import com.kms.katalon.activation.plugin.service.KStoreRestClient;
+import com.kms.katalon.activation.plugin.store.PluginPreferenceStore;
+import com.kms.katalon.application.helper.LicenseHelperFactory;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.plugin.models.KStoreBasicCredentials;
-import com.kms.katalon.plugin.models.KStoreClientException;
-import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.Plugin;
-import com.kms.katalon.plugin.models.ReloadItem;
-import com.kms.katalon.plugin.service.KStoreRestClient;
-import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
 public class ReloadPluginsResultDialog extends Dialog {
     
@@ -56,9 +58,13 @@ public class ReloadPluginsResultDialog extends Dialog {
     
     private static final int CLMN_REVIEW_IDX = 3;
     
+    private static final int KRE_CLMN_REVIEW_IDX = 2;
+    
     private static final int CLMN_PURCHASE_IDX = 4;
     
     private static final int CLMN_ERROR_IDX = 5;
+    
+    private static final int KRE_CLMN_ERROR_IDX = 3;
 
     private List<ReloadItem> results;
     
@@ -74,7 +80,9 @@ public class ReloadPluginsResultDialog extends Dialog {
     }
 
     @Override
-    protected Control createDialogArea(Composite parent) { 
+    protected Control createDialogArea(Composite parent) {
+        boolean isKRELicense = LicenseHelperFactory.get().isNotFreeLicense();
+
         Composite body = new Composite(parent, SWT.BORDER);
         body.setLayout(new GridLayout(1, false));
         GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -86,7 +94,7 @@ public class ReloadPluginsResultDialog extends Dialog {
         lblWarning.setLayoutData(gdWarning);
         lblWarning.setText(StringConstants.KStorePluginsDialog_LBL_WARNING);
         ControlUtils.setFontStyle(lblWarning, SWT.ITALIC, -1);
-        boolean visible = shouldShowExpiryWarningMessage();
+        boolean visible = !isKRELicense && shouldShowExpiryWarningMessage();
         gdWarning.exclude = !visible;
         lblWarning.setVisible(visible);
         lblWarning.setForeground(ColorUtil.getWarningForegroudColor());
@@ -106,48 +114,51 @@ public class ReloadPluginsResultDialog extends Dialog {
         tableColumnPluginName.setText(StringConstants.KStorePluginsDialog_COL_PLUGIN);
         tableViewerColumnPluginName.setLabelProvider(new PluginNameColumnLabelProvider(CLMN_PLUGIN_NAME_IDX));
         
-        TableViewerColumn tableViewerColumnLicense = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
-        TableColumn tableColumnLicense = tableViewerColumnLicense.getColumn();
-        tableColumnLicense.setText(StringConstants.KStorePluginsDialog_COL_LICENSE);
-        tableViewerColumnLicense.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                ReloadItem item = (ReloadItem) element;
-                Plugin plugin = item.getPlugin();
-                if (plugin.isOnline()) {
-                    KStorePlugin onlinePlugin = plugin.getOnlinePlugin();
-                    if (onlinePlugin.isFree()) {
-                        return StringConstants.KStorePluginsDialog_LICENSE_FREE;
-                    }
-                    
-                    if (onlinePlugin.isExpired()) {
-                        return StringConstants.KStorePluginsDialog_LICENSE_EXPIRED;
-                    }
-                    
-                    if (onlinePlugin.isPaid()) {
-                        return StringConstants.KStorePluginsDialog_LICENSE_PAID;
-                    }
-                    
-                    if (onlinePlugin.isTrial()) {
-                        return StringConstants.KStorePluginsDialog_LICENSE_TRIAL;
-                    }
-                } 
-                return StringUtils.EMPTY;
-            }
-            
-            @Override
-            public Color getForeground(Object element) {
-                ReloadItem item = (ReloadItem) element;
-                Plugin plugin = item.getPlugin();
-                if (plugin.isOnline()) {
-                    Color colorWarning = new Color(Display.getCurrent(), 255, 165, 0); //orange
-                    if (checkExpire(plugin.getOnlinePlugin())) {
-                        return colorWarning;
-                    }
+        TableColumn tableColumnLicense = null;
+        if (!isKRELicense) {
+            TableViewerColumn tableViewerColumnLicense = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
+            tableColumnLicense = tableViewerColumnLicense.getColumn();
+            tableColumnLicense.setText(StringConstants.KStorePluginsDialog_COL_LICENSE);
+            tableViewerColumnLicense.setLabelProvider(new ColumnLabelProvider() {
+                @Override
+                public String getText(Object element) {
+                    ReloadItem item = (ReloadItem) element;
+                    Plugin plugin = item.getPlugin();
+                    if (plugin.isOnline()) {
+                        KStorePlugin onlinePlugin = plugin.getOnlinePlugin();
+                        if (onlinePlugin.isFree()) {
+                            return StringConstants.KStorePluginsDialog_LICENSE_FREE;
+                        }
+                        
+                        if (onlinePlugin.isExpired()) {
+                            return StringConstants.KStorePluginsDialog_LICENSE_EXPIRED;
+                        }
+                        
+                        if (onlinePlugin.isPaid()) {
+                            return StringConstants.KStorePluginsDialog_LICENSE_PAID;
+                        }
+                        
+                        if (onlinePlugin.isTrial()) {
+                            return StringConstants.KStorePluginsDialog_LICENSE_TRIAL;
+                        }
+                    } 
+                    return StringUtils.EMPTY;
                 }
-                return super.getForeground(element);
-            }
-        });
+                
+                @Override
+                public Color getForeground(Object element) {
+                    ReloadItem item = (ReloadItem) element;
+                    Plugin plugin = item.getPlugin();
+                    if (plugin.isOnline()) {
+                        Color colorWarning = new Color(Display.getCurrent(), 255, 165, 0); //orange
+                        if (checkExpire(plugin.getOnlinePlugin())) {
+                            return colorWarning;
+                        }
+                    }
+                    return super.getForeground(element);
+                }
+            });
+        }
       
         TableViewerColumn tableViewerColumnVersion = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
         TableColumn tableColumnVersion = tableViewerColumnVersion.getColumn();
@@ -167,23 +178,35 @@ public class ReloadPluginsResultDialog extends Dialog {
         
         TableViewerColumn tableViewerColumnReview = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
         TableColumn tableColumnReview = tableViewerColumnReview.getColumn();
-        tableViewerColumnReview.setLabelProvider(new ReviewColumnLabelProvider(CLMN_REVIEW_IDX));
-        
-        TableViewerColumn tableViewerColumnPurchase = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
-        TableColumn tableColumnPurchase = tableViewerColumnPurchase.getColumn();
-        tableViewerColumnPurchase.setLabelProvider(new PurchaseColumnLabelProvider(CLMN_PURCHASE_IDX));
+        tableViewerColumnReview.setLabelProvider(new ReviewColumnLabelProvider(!isKRELicense
+                ? CLMN_REVIEW_IDX
+                : KRE_CLMN_REVIEW_IDX));
+
+        TableColumn tableColumnPurchase = null;
+        if (!isKRELicense) {
+            TableViewerColumn tableViewerColumnPurchase = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
+            tableColumnPurchase = tableViewerColumnPurchase.getColumn();
+            tableViewerColumnPurchase.setLabelProvider(new PurchaseColumnLabelProvider(CLMN_PURCHASE_IDX));
+        }
         
         TableViewerColumn tableViewerColumnError = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
-        TableColumn tableColumnError = tableViewerColumnError.getColumn();
-        tableViewerColumnError.setLabelProvider(new ErrorColumnLabelProvider(CLMN_ERROR_IDX));
-        
+        TableColumn tableColumnStatus = tableViewerColumnError.getColumn();
+        tableColumnStatus.setText(GlobalStringConstants.STATUS);
+        tableViewerColumnError.setLabelProvider(new ErrorColumnLabelProvider(!isKRELicense
+                ? CLMN_ERROR_IDX
+                : KRE_CLMN_ERROR_IDX));
+
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableColumnPluginName, new ColumnWeightData(30, 40));
-        tableLayout.setColumnData(tableColumnLicense, new ColumnWeightData(20, 10));
+        if (tableColumnLicense != null) {
+            tableLayout.setColumnData(tableColumnLicense, new ColumnWeightData(15, 10));
+        }
         tableLayout.setColumnData(tableColumnVersion, new ColumnWeightData(10, 20));
         tableLayout.setColumnData(tableColumnReview, new ColumnWeightData(15, 30));
-        tableLayout.setColumnData(tableColumnPurchase, new ColumnWeightData(15, 30));
-        tableLayout.setColumnData(tableColumnError, new ColumnWeightData(10, 20));
+        if (tableColumnPurchase != null) {
+            tableLayout.setColumnData(tableColumnPurchase, new ColumnWeightData(15, 40));
+        }
+        tableLayout.setColumnData(tableColumnStatus, new ColumnWeightData(10, 60));
         tableComposite.setLayout(tableLayout);
         
         pluginTableViewer.setInput(results);
@@ -404,20 +427,23 @@ public class ReloadPluginsResultDialog extends Dialog {
             if (element.getException() != null) {
                 return StringConstants.KStorePluginsDialog_LNK_ERROR;
             }
-            return StringUtils.EMPTY;
+            return StringConstants.KStorePluginsDialog_LBL_SUCCESS;
         }
         
         @Override
         public void update(ViewerCell cell) {
             super.update(cell);
 
-            cell.setStyleRanges(new StyleRange[] { getHyperLinkStyleRange(cell) });
+            cell.setStyleRanges(new StyleRange[] { getStyleRange(cell) });
         }
         
-        private StyleRange getHyperLinkStyleRange(ViewerCell cell) {
+        private StyleRange getStyleRange(ViewerCell cell) {
+            boolean isError = !StringUtils.equals(cell.getText(), StringConstants.KStorePluginsDialog_LBL_SUCCESS);
             StyleRange hyperLinkStyle = new StyleRange();
-            hyperLinkStyle.foreground = cell.getItem().getDisplay().getSystemColor(SWT.COLOR_RED);
-            hyperLinkStyle.underline = true;
+            hyperLinkStyle.foreground = isError
+                    ? cell.getItem().getDisplay().getSystemColor(SWT.COLOR_RED)
+                    : cell.getItem().getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN);
+            hyperLinkStyle.underline = isError;
             hyperLinkStyle.start = 0;
             hyperLinkStyle.length = cell.getText().length();
             return hyperLinkStyle;

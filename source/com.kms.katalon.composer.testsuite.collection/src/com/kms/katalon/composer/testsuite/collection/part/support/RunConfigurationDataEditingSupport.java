@@ -6,11 +6,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.execution.util.MapUtil;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
+import com.kms.katalon.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.execution.collection.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.execution.util.MapUtil;
 
 public class RunConfigurationDataEditingSupport extends EditingSupportWithTableProvider {
 

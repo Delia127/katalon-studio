@@ -14,7 +14,6 @@ import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.extension.LauncherOptionParserDescription;
 import com.katalon.platform.api.model.TestCaseEntity;
 import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -33,6 +32,8 @@ import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
 import com.kms.katalon.execution.util.ConsoleAdapter;
+import com.kms.katalon.execution.util.MailUtil;
+import com.kms.katalon.logging.LogUtil;
 
 public class LauncherOptionParserPlatformBuilderImpl implements PlatformLauncherOptionParserBuilder {
 	
@@ -119,6 +120,10 @@ public class LauncherOptionParserPlatformBuilderImpl implements PlatformLauncher
 				}
 				runConfig.setExecutionProfile(executionProfile);
 				runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
+				
+				executedEntity.setEmailConfig(MailUtil.overrideEmailSettings(reportableSetting.getEmailConfig(project),
+		                executionProfile, runConfig.getOverridingGlobalVariables()));
+				
 				runConfig.build(clonedTestSuite, executedEntity);
 				return new ConsoleLauncher(manager, runConfig);
 			} catch (Exception e) {
@@ -143,7 +148,7 @@ public class LauncherOptionParserPlatformBuilderImpl implements PlatformLauncher
 						try {
 							return testCaseController.getTestCase(currentProject, b);
 						} catch (ResourceException e) {
-							LoggerSingleton.logError(e);
+							LogUtil.logError(e);
 						}
 						return null;
 					}).filter(c -> (c != null)).collect(Collectors.toList());

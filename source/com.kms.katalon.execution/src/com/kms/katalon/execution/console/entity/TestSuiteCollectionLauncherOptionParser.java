@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.kms.katalon.controller.TestSuiteCollectionController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -79,7 +80,7 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
 
     @Override
     public IConsoleLauncher getConsoleLauncher(ProjectEntity projectEntity, LauncherManager manager)
-            throws ExecutionException, InvalidConsoleArgumentException {
+            throws ExecutionException, InvalidConsoleArgumentException, ControllerException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
                 testSuiteCollectionOption.getValue());
         if (browserTypeOption.getValue() != null) {
@@ -96,7 +97,7 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
 
     @Override
     public ILauncher getIDELauncher(ProjectEntity projectEntity, LauncherManager manager)
-            throws ExecutionException, InvalidConsoleArgumentException {
+            throws ExecutionException, InvalidConsoleArgumentException, ControllerException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
                 testSuiteCollectionOption.getValue());
         Map<String, Object> globalVariables = super.getOverridingGlobalVariables();

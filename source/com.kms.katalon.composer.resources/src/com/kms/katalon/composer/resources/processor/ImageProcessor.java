@@ -11,6 +11,7 @@ public class ImageProcessor {
     public void run() {
         registerIntroImages();
         registerWelcomeImages();
+        registerQuickStartImages();
         registerDialogImages();
         registerExecutionImages();
         registerLogImages();
@@ -26,6 +27,8 @@ public class ImageProcessor {
         registerWalkthroughImages();
         registerResultTabImages();
         registerAboutDialogImages();
+        registerJobImages();
+        registerTestOpsImages();
     }
     
     private void registerWalkthroughImages(){
@@ -165,6 +168,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.MAP_ALL_16);
         ImageManager.registerImage(IImageKeys.RECENT_16);
         ImageManager.registerImage(IImageKeys.EXPORT_CSV_16);
+        ImageManager.registerImage(IImageKeys.SETTING_16);
 
         // Sub-toolbar disabled icons
         ImageManager.registerImage(IImageKeys.CLEAR_DISABLED_16);
@@ -279,6 +283,7 @@ public class ImageProcessor {
     }
 
     private void registerToolbarImages() {
+        ImageManager.registerImage(IImageKeys.KU_RECORDER_16);
         ImageManager.registerImage(IImageKeys.BUG_24);
         ImageManager.registerImage(IImageKeys.GIT_24);
         ImageManager.registerImage(IImageKeys.MOBILE_OBJECT_SPY_24);
@@ -443,6 +448,26 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.SCRIPT_BULLET);
     }
 
+    private void registerQuickStartImages() {
+        ImageManager.registerImage(IImageKeys.LOGO_74);
+        ImageManager.registerImage(IImageKeys.TIP_SPY_BUTTON);
+        ImageManager.registerImage(IImageKeys.TIP_RECORD_BUTTON);
+        ImageManager.registerImage(IImageKeys.TIP_RUN_BUTTON);
+        ImageManager.registerImage(IImageKeys.TIP_DEBUG_BUTTON);
+        ImageManager.registerImage(IImageKeys.RIGHT_ARROW);
+        ImageManager.registerImage(IImageKeys.RESOURCES_TUTORIALS);
+        ImageManager.registerImage(IImageKeys.RESOURCES_FORUM);
+        ImageManager.registerImage(IImageKeys.RESOURCES_CHATROOM);
+        ImageManager.registerImage(IImageKeys.RESOURCES_PLUGINS);
+        ImageManager.registerImage(IImageKeys.RESOURCES_BUSINESS);
+        ImageManager.registerImage(IImageKeys.RESOURCES_TROUBLESHOOT);
+        ImageManager.registerImage(IImageKeys.WELCOME_BACK_OPEN_PROJECT);
+        ImageManager.registerImage(IImageKeys.WELCOME_BACK_CLONE_PROJECT);
+        ImageManager.registerImage(IImageKeys.WELCOME_BACK_CREATE_PROJECT);
+        ImageManager.registerImage(IImageKeys.INVESTIGATE_LOG_VIEWER);
+        ImageManager.registerImage(IImageKeys.INVESTIGATE_CONSOLE);
+    }
+
     private void registerIntroImages() {
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_1);
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_2);
@@ -476,5 +501,22 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.LOGO_KSE);
         ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_DRANK);
         ImageManager.registerImage(IImageKeys.IMG_ABOUT_BG_LIGHT);
+    }
+
+    private void registerJobImages() {
+        ImageManager.registerImage(IImageKeys.JOB_ERROR_16);
+        ImageManager.registerImage(IImageKeys.JOB_FAILED_16);
+        ImageManager.registerImage(IImageKeys.JOB_SKIPPED_16);
+    }
+    
+    private void registerTestOpsImages() {
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTIONS);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTION_PASSED);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_EXECUTION_FAILED);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN_QUEUED);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN_CANCELED);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN_ERROR);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_REFRESH_NEW);
     }
 }

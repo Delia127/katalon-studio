@@ -39,6 +39,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE = ComposerWebuiRecorderMessageConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE;
     public static final String DIA_ITEM_MOVE_UP = ComposerWebuiRecorderMessageConstants.DIA_ITEM_MOVE_UP;
     public static final String DIA_ITEM_MOVE_DOWN = ComposerWebuiRecorderMessageConstants.DIA_ITEM_MOVE_DOWN;
+    public static final String LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_1 = ComposerWebuiRecorderMessageConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_1;
+    public static final String LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_2 = ComposerWebuiRecorderMessageConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_2;
 
 	// RecordHandler
     public static final String HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS = ComposerWebuiRecorderMessageConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS;

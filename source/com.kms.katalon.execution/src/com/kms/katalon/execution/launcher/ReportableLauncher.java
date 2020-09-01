@@ -24,7 +24,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
 import com.kms.katalon.application.utils.VersionUtil;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
@@ -39,15 +38,15 @@ import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.entity.report.ReportItemDescription;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.IExecutedEntity;
-import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunable;
@@ -75,16 +74,24 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     private TestSuiteLogRecord suiteLogRecord;
     
-    private boolean runInTestSuiteCollection = false;
+    private TestSuiteCollectionEntity testSuiteCollectionEntity;
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
-        this(manager, runConfig, false);
+        this(manager, runConfig, null);
     }
     
-    public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig, boolean runInTestSuiteCollection) {
+    public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig, TestSuiteCollectionEntity testSuiteCollectionEntity) {
         super(manager, runConfig);
         this.setExecutionUUID(runConfig.getExecutionUUID());
-        this.runInTestSuiteCollection = runInTestSuiteCollection;
+        this.testSuiteCollectionEntity = testSuiteCollectionEntity;
+    }
+    
+    public TestSuiteCollectionEntity getTestSuiteCollectionEntity() {
+        return testSuiteCollectionEntity;
+    }
+
+    public void setTestSuiteCollectionEntity(TestSuiteCollectionEntity testSuiteCollectionEntity) {
+        this.testSuiteCollectionEntity = testSuiteCollectionEntity;
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
@@ -125,6 +132,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return;
         }
         
+        waitForLoggingFinished();
+        
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -134,10 +143,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             suiteLogRecord = prepareReport();
             
-            if (runTestSuite) {
-            	ReportFolder reportFolder = new ReportFolder(suiteLogRecord.getLogFolder());
-            	uploadReportToIntegratingProduct(reportFolder);
-            }
+            uploadReportToIntegratingProduct(suiteLogRecord);
 
             sendReport(suiteLogRecord);
 
@@ -146,14 +152,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             LogUtil.printAndLogError(e);
         }
 
-        waitForLoggingFinished();
-
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_FINISHED_EVENT);
         
         if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
             TestSuiteExecutedEntity executedEntity = (TestSuiteExecutedEntity) getExecutedEntity();
             TestSuiteEntity testSuite = (TestSuiteEntity) executedEntity.getEntity();
-            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.TEST_SUITE_FINISHED, testSuite);
+            ExecutionBundleActivator.getInstance().getEventBroker().post(EventConstants.TEST_SUITE_FINISHED, testSuite);
         }
 
         if (needToRerun()) {
@@ -184,6 +188,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
+                if (isRunningInTestSuiteCollection()) {
+                    rerunLauncher.setTestSuiteCollectionEntity(getTestSuiteCollectionEntity());
+                }
                 rerunLauncher.getManager().addLauncher(rerunLauncher);
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE,
@@ -261,18 +268,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         return "";
     }
 
-    protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {
-    	String projectFolder = reportEntity.getProject().getFolderLocation();
-    	List<String> paths = new ArrayList<>();
-    	for (ReportItemDescription reportItemDescription : reports) {
-            String path = projectFolder + File.separator + reportItemDescription.getReportLocation();
-            paths.add(path);
-        }
-    	paths.add(reportCollectionFile);
-    	ReportFolder reportFolder = new ReportFolder(paths);
-    	uploadReportToIntegratingProduct(reportFolder);
-    }
-
     public boolean needToRerun() {
         if (getResult().getNumErrors() + getResult().getNumFailures() > 0 && getExecutedEntity() instanceof Rerunable) {
             Rerunable rerun = (Rerunable) getExecutedEntity();
@@ -316,25 +311,21 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return;
         }
         
-        if (runInTestSuiteCollection) {
-            if (!emailConfig.isSendTestSuiteCollectionReportEnabled()) {
-                return;
-            }
-
-            if (emailConfig.isSkipInvidiualTestSuiteReport()) {
-                return;
-            }
-        } else {
-            if (!emailConfig.isSendTestSuiteReportEnabled()) {
-                return;
-            }
-
-            if (emailConfig.isSendReportTestFailedOnly() && testSuiteLogRecord.getStatus() != null
-                    && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
+        if (isRunningInTestSuiteCollection()) {
+            if (emailConfig.isSendTestSuiteCollectionReportEnabled() && emailConfig.isSkipInvidiualTestSuiteReport()) {
                 return;
             }
         }
         
+        if (!emailConfig.isSendTestSuiteReportEnabled()) {
+            return;
+        }
+
+        if (emailConfig.isSendReportTestFailedOnly() && testSuiteLogRecord.getStatus() != null
+                && testSuiteLogRecord.getTotalFailedTestCases() <= 0) {
+            return;
+        }
+
         setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
         writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
                 Arrays.toString(emailConfig.getTos())));
@@ -345,12 +336,19 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
     }
 
+    private boolean isRunningInTestSuiteCollection() {
+        return testSuiteCollectionEntity != null;
+    }
+
     protected void updateLastRun(Date startTime) throws Exception {
     }
 
     protected TestSuiteLogRecord prepareReport() {
         try {
             File reportFolder = getReportFolder();
+            if (isRunningInTestSuiteCollection()) {
+                ReportUtil.writeTestSuiteCollectionIdToFile(testSuiteCollectionEntity.getIdForDisplay(), reportFolder);
+            }
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_GENERATE_REPORT);
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
 
@@ -427,7 +425,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    protected void uploadReportToIntegratingProduct(ReportFolder reportFolder) {
+    private void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLogRecord) {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -445,11 +443,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
-                if (reportFolder.isRunTestSuite()) {
-                    reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), reportFolder);
-                } else {
-                    reportContributorEntry.getValue().uploadTestSuiteCollectionResult(reportFolder);
-                }
+                reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), suiteLogRecord);
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
@@ -583,7 +577,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (executedEntity instanceof TestSuiteExecutedEntity) {
             TestSuiteExecutionContextImpl executionContext = getTestSuiteExecutionContext();
             TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);
-            EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
+            ExecutionBundleActivator.getInstance().getEventBroker().post(eventName, eventObject);
         }
         return null;
     }
@@ -634,14 +628,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     public TestSuiteLogRecord getTestSuiteLogRecord() {
         return suiteLogRecord;
-    }
-
-    public boolean isRunInTestSuiteCollection() {
-        return runInTestSuiteCollection;
-    }
-
-    public void setRunInTestSuiteCollection(boolean runInTestSuiteCollection) {
-        this.runInTestSuiteCollection = runInTestSuiteCollection;
     }
 
     protected String getRetryStrategy() {

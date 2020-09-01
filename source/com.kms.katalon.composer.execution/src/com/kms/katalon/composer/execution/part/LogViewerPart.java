@@ -170,6 +170,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     // For log table viewer
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
             btnShowWarningLogs, btnShowNotRunLogs;
+    
+    private boolean userDecidedOnUpdateWebDriverOrNot = false;
 
     // For log tree viewer
     private ToolItem tltmFilterFailedLogs;
@@ -637,40 +639,48 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         }
     }
 
-    private StringBuilder insertRootCauseToTop(StringBuilder messageBuilder, XmlLogRecord result,
-            List<StyleRange> styleRanges) {
+    private StringBuilder insertRootCauseToTop(StringBuilder messageBuilder, XmlLogRecord result, List<StyleRange> styleRanges) {
         StringBuilder causedByStrBuilder = new StringBuilder();
         String causedBy = getCausedBySentence(result.getMessage());
-        if (!StringUtils.isEmpty(causedBy.trim())) {
-            causedByStrBuilder.append("=============== ROOT CAUSE =====================" + "\n");
-            causedByStrBuilder.append(causedBy + "\n");
-            if (Arrays.asList(commonSeleniumExceptions)
-                    .stream()
-                    .filter(commonException -> causedBy.contains(commonException))
-                    .findAny()
-                    .isPresent()) {
-                String testObject = getTestObject(result.getMessage());
-                causedByStrBuilder.append("At object: " + testObject + "\n");
-            }
-            causedByStrBuilder.append("\nFor trouble shooting, please visit: ");
-            String visitDocs = "https://docs.katalon.com/katalon-studio/docs/troubleshoot-common-execution-exceptions-web-test.html";
-            StyleRange range = new StyleRange();
-            range.start = causedByStrBuilder.length();
-            range.length = visitDocs.length();
-            range.underline = true;
-            range.data = visitDocs;
-            range.foreground = ColorUtil.getHyperlinkTextColor();
-            range.underlineStyle = SWT.UNDERLINE_LINK;
-            causedByStrBuilder.append(visitDocs + "\n");
-            styleRanges.add(range);
-
-            causedByStrBuilder.append("================================================" + "\n\n");
+        causedByStrBuilder.append("=============== ROOT CAUSE =====================" + "\n");
+        causedByStrBuilder.append(causedBy + "\n");
+        if (Arrays.asList(commonSeleniumExceptions)
+                .stream()
+                .filter(commonException -> causedBy.contains(commonException))
+                .findAny()
+                .isPresent()) {
+            String testObject = getTestObject(result.getMessage());
+            causedByStrBuilder.append("At object: " + testObject + "\n");
         }
+        causedByStrBuilder.append("\nFor trouble shooting, please visit: ");
+        String visitDocs = "https://docs.katalon.com/katalon-studio/docs/troubleshoot-common-execution-exceptions-web-test.html";
+        StyleRange range = new StyleRange();
+        range.start = causedByStrBuilder.length();
+        range.length = visitDocs.length();
+        range.underline = true;
+        range.data = visitDocs;
+        range.foreground = ColorUtil.getHyperlinkTextColor();
+        range.underlineStyle = SWT.UNDERLINE_LINK;
+        causedByStrBuilder.append(visitDocs + "\n");
+        styleRanges.add(range);
+        
+        causedByStrBuilder.append("================================================" + "\n\n");
         messageBuilder.append(result.getMessage());
         return causedByStrBuilder;
     }
+    
+    private boolean failedDueToOutdatedChromeDriver(String message) {
+        return message.contains("This version of ChromeDriver only supports Chrome version");
+    }
+
+    private boolean failureDueToOutdatedEdgeChromium(String message) {
+        return message.contains("This version of MSEdgeDriver only supports MSEdge version");
+    }
 
     private String getCausedBySentence(String msg) {
+        if (failedDueToOutdatedChromeDriver(msg) || failureDueToOutdatedEdgeChromium(msg)) {
+            return StringConstants.PA_MSG_DRIVER_OUTDATED;
+        }
         String causedBy = "";
         try {
             causedBy = msg.substring(msg.indexOf("Caused by:"));

@@ -165,6 +165,10 @@ public class EmailConfig {
         return tos.toArray(new String[tos.size()]);
     }
 
+    public void setTos(Set<String> tos) {
+        this.tos = tos;
+    }
+
     public String getSubject() {
         return subject;
     }

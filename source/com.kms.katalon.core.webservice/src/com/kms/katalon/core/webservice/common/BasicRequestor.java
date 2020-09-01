@@ -59,13 +59,16 @@ public abstract class BasicRequestor implements Requestor {
                 httpRequest,
                 requestObject.isFollowRedirects(),
                 proxyInformation,
+                requestObject.getConnectionTimeout(),
+                requestObject.getSocketTimeout(),
+                requestObject.getMaxResponseSize(),
                 getSslCertificateOption(),
                 getSSLSettings());
         long waitingTime = System.currentTimeMillis() - startTime;
 
         ResponseObject responseObject = toResponseObject(httpResponse);
         responseObject.setWaitingTime(waitingTime);
-
+         
         return responseObject;
     }
 
@@ -103,7 +106,7 @@ public abstract class BasicRequestor implements Requestor {
 
         if (!complexAuthAttributes.isEmpty()) {
             headers.removeAll(complexAuthAttributes);
-            String authorizationValue = generateAuthorizationHeader(getRequestUrl(request), complexAuthAttributes);
+            String authorizationValue = generateAuthorizationHeader(getRequestUrl(request), complexAuthAttributes, request);
             if (!authorizationValue.isEmpty()) {
                 headers.add(new TestObjectProperty(RequestHeaderConstants.AUTHORIZATION, ConditionType.EQUALS,
                         authorizationValue));
@@ -118,7 +121,7 @@ public abstract class BasicRequestor implements Requestor {
                 : request.getWsdlAddress();
     }
 
-    private static String generateAuthorizationHeader(String requestUrl, List<TestObjectProperty> complexAuthAttributes)
+    private static String generateAuthorizationHeader(String requestUrl, List<TestObjectProperty> complexAuthAttributes, RequestObject request)
             throws GeneralSecurityException, IOException {
         Map<String, String> map = complexAuthAttributes.stream()
                 .collect(Collectors.toMap(TestObjectProperty::getName, TestObjectProperty::getValue));
@@ -128,7 +131,10 @@ public abstract class BasicRequestor implements Requestor {
         }
 
         if (RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0.equals(authType)) {
-            return createOAuth1AuthorizationHeaderValue(requestUrl, map);
+            if(StringUtils.equals(request.getServiceType(), RequestHeaderConstants.SOAP)){
+                return createOAuth1AuthorizationHeaderValue(requestUrl, map, RequestHeaderConstants.POST);
+            }
+            return createOAuth1AuthorizationHeaderValue(requestUrl, map, request.getRestRequestMethod());
         }
 
         // Other authorization type will be handled here
@@ -136,7 +142,7 @@ public abstract class BasicRequestor implements Requestor {
         return StringUtils.EMPTY;
     }
 
-    public static String createOAuth1AuthorizationHeaderValue(String requestUrl, Map<String, String> map)
+    public static String createOAuth1AuthorizationHeaderValue(String requestUrl, Map<String, String> map, String requestMethod)
             throws GeneralSecurityException, IOException {
         OAuthParameters params = new OAuthParameters();
         params.consumerKey = map.getOrDefault(RequestHeaderConstants.AUTHORIZATION_OAUTH_CONSUMER_KEY,
@@ -165,7 +171,7 @@ public abstract class BasicRequestor implements Requestor {
         if (StringUtils.isNotBlank(realm)) {
             params.realm = realm;
         }
-        params.computeSignature(RequestHeaderConstants.GET, new GenericUrl(requestUrl));
+        params.computeSignature(requestMethod, new GenericUrl(requestUrl));
         return params.getAuthorizationHeader();
     }
 
@@ -257,7 +263,7 @@ public abstract class BasicRequestor implements Requestor {
             return null;
         }
     }
-
+    
     protected Map<String, List<String>> getResponseHeaderFields(HttpResponse httpResponse) {
         Map<String, List<String>> headerFields = new HashMap<>();
         Header[] headers = httpResponse.getAllHeaders();

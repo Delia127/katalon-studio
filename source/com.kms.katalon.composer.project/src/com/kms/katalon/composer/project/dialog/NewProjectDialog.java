@@ -47,6 +47,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.application.KatalonApplicationActivator;
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.KSEFeatureAccessHandler;
@@ -61,18 +63,20 @@ import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.util.internal.NamingUtil;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.entity.project.QuickStartProjectType;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewProjectDialog extends TitleAreaDialog {
-    private static final String DEFAULT_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
-            + StringConstants.APP_NAME;
+    private static final String DEFAULT_PROJECT_LOCATION = GlobalStringConstants.DEFAULT_PROJECT_LOCATION;
 
     private static final int PROJECT_DESC_TEXT_LEFT_MARGIN = 5;
 
@@ -276,6 +280,10 @@ public class NewProjectDialog extends TitleAreaDialog {
         graphicContext.dispose();
 
         txtProjectDescription.setLeftMargin(PROJECT_DESC_TEXT_LEFT_MARGIN);
+        
+        if (initialSampleProject != null && StringUtils.isNotBlank(initialSampleProject.getSuggestedName())) {
+            txtProjectName.setText(initialSampleProject.getSuggestedName());
+        }
 
         if (project != null) {
             txtProjectName.setText(project.getName());
@@ -616,7 +624,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         super.okPressed();
         
         if (!(selectedSampleProject instanceof SampleRemoteProject)) {
-        	KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
+            KatalonApplicationActivator.getTestOpsConfiguration().testOpsQuickIntergration();
         }
     }
 
@@ -633,6 +641,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         projectEntity.setDescription(projectDescription);
         projectEntity.setType(projectType);
 
+        ProjectController.getInstance().setOpenning(true);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.GIT_CLONE_REMOTE_PROJECT,
                 new Object[] { sampleRemoteProject, projectEntity, false });
     }
@@ -661,6 +670,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
             TimeUnit.SECONDS.sleep(1);
 
+            ProjectController.getInstance().setOpenning(true);
             eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -678,6 +688,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             boolean generateGitignoreFile = cbGenerateGitignoreFile.isEnabled() && cbGenerateGitignoreFile.getSelection();
             boolean generateGradleFile = cbGenerateGradleFile.isEnabled() && cbGenerateGradleFile.getSelection();
 
+            ProjectController.getInstance().setOpenning(true);
             ProjectEntity newProject = createNewProject(projectName, projectLocation, projectDescription,
                     generateGitignoreFile, generateGradleFile);
             if (newProject == null) {
@@ -710,16 +721,10 @@ public class NewProjectDialog extends TitleAreaDialog {
             boolean generateGitignoreFile, boolean generateGradleFile)
             throws Exception {
         try {
-            ProjectEntity newProject = ProjectController.getInstance().addNewProject(projectName, projectDescription,
-                    projectLocation);
+            ProjectController projectController = ProjectController.getInstance();
+            ProjectEntity newProject = projectController.addNewProject(projectName, projectDescription,
+                    projectLocation, generateGitignoreFile, generateGradleFile);
             // EntityTrackingHelper.trackProjectCreated();
-            if (generateGitignoreFile) {
-                initGitignoreFile(newProject);
-            }
-            
-            if (generateGradleFile) {
-                initGradleFile(newProject);
-            }
             return newProject;
         } catch (MarshalException ex) {
             if (!(ex.getLinkedException() instanceof FileNotFoundException)) {
@@ -730,32 +735,6 @@ public class NewProjectDialog extends TitleAreaDialog {
                     StringConstants.HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID);
         }
         return null;
-    }
-    
-    public static void initGitignoreFile(ProjectEntity project) throws IOException {
-        Bundle bundle = FrameworkUtil.getBundle(NewProjectDialog.class);
-        URL url = FileLocator.find(bundle,
-                new org.eclipse.core.runtime.Path("/resources/gitignore/gitignore_template"), null);
-        File templateFile = FileUtils.toFile(FileLocator.toFileURL(url));
-
-        File gitignoreFile = new File(project.getFolderLocation(), ".gitignore");
-        if (!gitignoreFile.exists()) {
-            gitignoreFile.createNewFile();
-            FileUtils.copyFile(templateFile, gitignoreFile);
-        }
-    }
-    
-    public static void initGradleFile(ProjectEntity project) throws IOException {
-        Bundle bundle = FrameworkUtil.getBundle(NewProjectDialog.class);
-        URL url = FileLocator.find(bundle,
-                new org.eclipse.core.runtime.Path("/resources/gradle/gradle_template"), null);
-        File templateFile = FileUtils.toFile(FileLocator.toFileURL(url));
-
-        File gradleFile = new File(project.getFolderLocation(), "build.gradle");
-        if (!gradleFile.exists()) {
-            gradleFile.createNewFile();
-            FileUtils.copyFile(templateFile, gradleFile);
-        }
     }
 
     private void updateProjectType(ProjectEntity project, ProjectType type) throws Exception {

@@ -275,7 +275,8 @@ public class TestCaseFileServiceManager {
                 + GroovyUtil.getScriptPackageRelativePathForTestCase(testCaseEntity) + File.separator
                 + GroovyUtil.getGroovyClassName(testCaseEntity);
         // Check for test case script path
-        if (testCaseScriptLocation.length() > FileServiceConstant.MAX_FILE_PATH_LENGTH) {
+        if (testCaseScriptLocation.length() > FileServiceConstant.MAX_FILE_PATH_LENGTH
+                && !new File(testCaseScriptLocation).exists()) {
             throw new FilePathTooLongException(testCaseScriptLocation.length(),
                     FileServiceConstant.MAX_FILE_PATH_LENGTH);
         }

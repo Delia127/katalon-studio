@@ -38,6 +38,7 @@ import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -62,6 +63,7 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Sash;
@@ -73,6 +75,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
 import com.google.common.hash.Hashing;
+import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
@@ -87,6 +91,10 @@ import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.DialogUtil;
+import com.kms.katalon.composer.quickstart.QuickConfirmLeavingRecordDialog;
+import com.kms.katalon.composer.quickstart.QuickRecordGuidingDialog;
+import com.kms.katalon.composer.quickstart.QuickSurveyLeavingRecordDialog;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -263,6 +271,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
 
+    private UserProfile userProfile;
+
     /**
      * Create the dialog.
      * 
@@ -271,6 +281,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public RecorderDialog(Shell parentShell, TestCaseEntity testCaseEntity, List<? extends ASTNodeWrapper> nodeWrappers,
             List<VariableEntity> variables) {
         super(parentShell);
+        userProfile = UserProfileHelper.getCurrentProfile();
         this.nodeWrappers = nodeWrappers;
         this.variables = variables;
         this.testCaseEntity = testCaseEntity;
@@ -324,6 +335,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         startBrowser(false);
     }
 
+    private HTMLActionMapping addNavigateActionAfterOpeningBrowserOnIEDriver() {
+        if (!isNavigationAdded && isUsingIE) {
+            HTMLActionMapping navigateHTML = new HTMLActionMapping(HTMLAction.Navigate, txtStartUrl.getText(), null);
+            addNewActionMapping(navigateHTML);
+            isNavigationAdded = true;
+            return navigateHTML;
+        }
+        return null;
+    }
+
     private void startBrowser(boolean isInstant) {
         if (!BrowserUtil.isBrowserInstalled(getSelectedBrowserType())) {
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
@@ -348,13 +369,37 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
             if (!isPauseRecording) {
                 recordStepsView.addSimpleKeyword("openBrowser", true);
+                addNavigateActionAfterOpeningBrowserOnIEDriver();
             }
 
             isNavigationAdded = false;
             tltmPauseAndResume.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();
-            Trackings.trackWebRecord(getSelectedBrowserType(), isInstant, getWebLocatorConfig());
+            
+            Thread guidingThread = new Thread(() -> {
+                try {
+                    Thread.sleep(2000L);
+                } catch (InterruptedException e) {
+                    return;
+                }
+
+                UISynchronizeService.syncExec(() -> {
+                    UserProfile curUser = UserProfileHelper.getCurrentProfile();
+                    boolean shouldShowGuiding = curUser.isNewUser() && curUser.isPreferWebUI()
+                            && !curUser.isDoneQuickRecordGuidingDialog();
+                    if (shouldShowGuiding) {
+                        QuickRecordGuidingDialog guidingDialog = new QuickRecordGuidingDialog(getParentShell());
+                        guidingDialog.open();
+
+                        curUser.setDoneQuickRecordGuidingDialog(true);
+                        UserProfileHelper.saveProfile(curUser);
+                    }
+                });
+            });
+            guidingThread.start();
+            
+            Trackings.trackWebRecord(getSelectedBrowserType().toString(), isInstant, getWebLocatorConfig().toString());
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -544,6 +589,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         container.setLayout(glMain);
 
         createToolbar(container);
+        createKURecorderHint(container, null);
 
         Composite bodyComposite = new Composite(container, SWT.NONE);
         bodyComposite.setLayout(new FillLayout(SWT.VERTICAL));
@@ -916,12 +962,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getNodeWrappersFromFirstSelected()) {
             block.addChild(node.clone());
         }
-        Trackings.trackRecordRunSteps("from");
+        Trackings.trackWebRecordRunSteps("from");
         executeSelectedSteps(cloneScript);
     }
 
     private void runAllSteps() {
-        Trackings.trackRecordRunSteps("all");
+        Trackings.trackWebRecordRunSteps("all");
         executeSelectedSteps(recordStepsView.getWrapper());
     }
 
@@ -933,7 +979,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getSelectedNodeWrappers()) {
             block.addChild(node.clone());
         }
-        Trackings.trackRecordRunSteps("selected");
+        Trackings.trackWebRecordRunSteps("selected");
         executeSelectedSteps(cloneScript);
     }
 
@@ -1249,11 +1295,53 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmStop.setEnabled(false);
     }
 
+    private void createKURecorderHint(Composite parent, Composite hintComposite) {
+        boolean isEnableKURecorderHint = userProfile.isEnableKURecorderHint();
+        if (isEnableKURecorderHint != (hintComposite == null)) {
+            return;
+        } else if (!isEnableKURecorderHint && hintComposite != null) {
+            hintComposite.dispose();
+            parent.layout();
+        }
+        hintComposite = generateKURecorderHint(parent);
+    }
+
+    private Composite generateKURecorderHint(Composite parent) {
+        Composite hintComposite = new Composite(parent, SWT.NONE);
+        GridData gridData = new GridData();
+        gridData.horizontalAlignment = GridData.BEGINNING;
+        hintComposite.setLayoutData(gridData);
+        GridLayout hintLayout = new GridLayout(4, false);
+        hintComposite.setLayout(hintLayout);
+
+        Label hintLabel1 = new Label(hintComposite, SWT.NONE);
+        hintLabel1.setText(StringConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_1);
+        hintLabel1.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
+        Label KUImage = new Label(hintComposite, SWT.NONE);
+        KUImage.setImage(ImageConstants.IMG_16_KU_RECORDER);
+        Label hintLabel2 = new Label(hintComposite, SWT.NONE);
+        hintLabel2.setText(StringConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_2);
+        hintLabel2.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
+        Link link = new Link(hintComposite, SWT.NONE);
+        link.setText("<a href=\"\">Hide</a>");
+        link.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                userProfile.setEnableKURecorderHint(false);
+                UserProfileHelper.saveProfile(userProfile);
+                createKURecorderHint(parent, hintComposite);
+            }
+        });
+        return hintComposite;
+    }
+
     private void createDropdownContent(Dropdown dropdown) {
         DropdownGroup newBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_NEW_BROWSERS,
                 ImageManager.getImage(IImageKeys.NEW_BROWSER_16));
-        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
+
         addNewBrowserItem(newBrowser, WebUIDriverType.CHROME_DRIVER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
         addNewBrowserItem(newBrowser, WebUIDriverType.EDGE_CHROMIUM_DRIVER);
 
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
@@ -1528,7 +1616,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
      */
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+        createButton(parent, IDialogConstants.OK_ID, GlobalMessageConstants.DIA_SAVE_RECORDING, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
@@ -1569,17 +1657,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void okPressed() {
         Shell shell = getShell();
-        int stepCount = countAllSteps();
-        isOkPressed = true;
         try {
             if (!addElementToObjectRepository(shell)) {
                 return;
             }
+            isOkPressed = true;
             super.okPressed();
 
-            dispose();
-
-            Trackings.trackCloseWebRecord("ok", stepCount, getWebLocatorConfig());
+            if (disposed) {
+                dispose();
+            }
         } catch (Exception exception) {
             LoggerSingleton.logError(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
@@ -1608,7 +1695,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
 
         ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
-        refeshExplorer(objectRepositoryService.saveObject(targetFolderSelectionResult),
+        refeshExplorer(objectRepositoryService.saveObjectForWebRecorder(targetFolderSelectionResult),
                 addToObjectRepositoryDialog.getSelectedParentFolderResult());
 
         return true;
@@ -1629,16 +1716,36 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     public boolean close() {
+        try {
+            if (!isOkPressed) {
+                UserProfile curUser = UserProfileHelper.getCurrentProfile();
+
+                boolean shouldShowSurvey = curUser.isNewUser() && curUser.isPreferWebUI()
+                        && !curUser.isDoneQuickRecordSurveyDialog() && !curUser.isDoneSaveFirstRecord();
+                if (shouldShowSurvey) {
+                    QuickConfirmLeavingRecordDialog confirmDialog = new QuickConfirmLeavingRecordDialog(null);
+                    if (confirmDialog.open() == Window.OK) {
+                        disposed = false;
+                        return true;
+                    }
+                    QuickSurveyLeavingRecordDialog surveyDialog = new QuickSurveyLeavingRecordDialog(null);
+                    surveyDialog.open();
+                    
+                    curUser.setDoneQuickRecordSurveyDialog(true);
+                    UserProfileHelper.saveProfile(curUser);
+                }
+
+                Trackings.trackCloseWebRecordByCancel(getWebLocatorConfig().toString());
+            } else {
+                int stepCount = countAllSteps();
+                Trackings.trackCloseWebRecordByOk(stepCount, getWebLocatorConfig().toString());
+            }
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
         updateStore();
         disposed = true;
         boolean result = super.close();
-        if (!isOkPressed) {
-            try {
-                Trackings.trackCloseWebRecord("cancel", 0, getWebLocatorConfig());
-            } catch (IOException e) {
-                LoggerSingleton.logError(e);
-            }
-        }
         return result;
     }
 
@@ -1655,7 +1762,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void cancelPressed() {
         super.cancelPressed();
-        dispose();
+        if (disposed) {
+            dispose();
+        }
     }
 
     /**
@@ -1665,11 +1774,18 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     protected Point getInitialSize() {
         return MIN_DIALOG_SIZE;
     }
+    
+    @Override
+    protected Point getInitialLocation(Point initialSize) {
+        return DialogUtil.computeRightLocation(initialSize);
+    }
 
     @Override
     protected void handleShellCloseEvent() {
         super.handleShellCloseEvent();
-        dispose();
+        if (disposed) {
+            dispose();
+        }
     }
 
     private boolean verifyActionMapping(final HTMLActionMapping newAction) {
@@ -1912,9 +2028,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     protected void setInput() {
-        Boolean continueRecording = null;
+        boolean continueRecording = false;
         if (testCaseEntity != null && nodeWrappers.size() > 0) {
-            MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
+            MessageDialog dialog = new MessageDialog(getParentShell(), StringConstants.CONFIRMATION, null,
                     MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
                             testCaseEntity.getName()),
                     MessageDialog.CONFIRM, MessageDialog.OK,
@@ -1926,6 +2042,22 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 continueRecording = false;
             } else {
                 continueRecording = true;
+            }
+
+            Shell shell = getShell();
+            if (shell != null) {
+                shell.getDisplay().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (!shell.getMinimized())
+                        {
+                            shell.setMinimized(true);
+                        }
+                        shell.setMinimized(false);
+                        shell.setActive();
+                    }
+                });
             }
         }
         recordStepsView.addVariables(variables.toArray(new VariableEntity[variables.size()]));
@@ -1970,9 +2102,21 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         capturedObjectComposite.refreshTree(null);
 
         try {
-            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig());
+            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig().toString());
         } catch (IOException e) {
             LoggerSingleton.logError(e);
+        }
+
+        UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+        if (currentProfile.isNewUser() && currentProfile.isPreferWebUI() && !currentProfile.isDoneOpenRecorder()) {
+            if (currentProfile.getPreferredBrowser() != null) {
+                txtStartUrl.setText(currentProfile.getPreferredSite());
+                changeBrowser(currentProfile.getPreferredBrowser());
+                startBrowser();
+            }
+
+            currentProfile.setDoneOpenRecorder(true);
+            UserProfileHelper.saveProfile(currentProfile);
         }
     }
 

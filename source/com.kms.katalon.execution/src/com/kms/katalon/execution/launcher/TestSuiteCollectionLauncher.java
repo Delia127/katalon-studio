@@ -9,13 +9,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
 import com.kms.katalon.application.utils.VersionUtil;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
@@ -25,9 +27,12 @@ import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
+import com.kms.katalon.execution.addon.ExecutionBundleActivator;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
+import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutionContextImpl;
 import com.kms.katalon.execution.handler.OrganizationHandler;
@@ -68,8 +73,6 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     private ExecutionMode executionMode;
 
     private ReportCollectionEntity reportCollection;
-    
-    private ReportableLauncher reportLauncher;
 
     private Date startTime;
 
@@ -92,9 +95,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         this.executedEntity = executedEntity;
         this.executionMode = executionMode;
         this.reportCollection = reportCollection;
-        
         for (ReportableLauncher subLauncher : subLaunchers) {
-            subLauncher.setRunInTestSuiteCollection(true);
+            subLauncher.setTestSuiteCollectionEntity(getTestSuiteCollectionEntity());
         }
         
         addListenerForChildren(subLaunchers);
@@ -105,7 +107,6 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             childLauncher.addListener(this);
             childLauncher.setParentLauncher(this);
         }
-        reportLauncher = subLaunchers.get(0);
     }
 
     @Override
@@ -168,9 +169,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                 sendReportEmail(reportCollection, logRecord);
                 
                 setStatus(LauncherStatus.UPLOAD_REPORT);
-                reportLauncher.uploadReportTestSuiteCollection(
-                        reportCollection.getReportItemDescriptions(),
-                        reportCollection.getParentFolder().getLocation());
+                uploadReportToIntegratingProduct(logRecord);
                 setStatus(LauncherStatus.DONE);
                 postExecution();
             }
@@ -208,6 +207,26 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         } catch(Exception e) {
             LogUtil.printAndLogError(e);
             return null;
+        }
+    }
+    
+    private void uploadReportToIntegratingProduct(TestSuiteCollectionLogRecord collectionLogRecord) {
+        if (!(getExecutedEntity() instanceof Reportable)) {
+            return;
+        }
+        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
+                .getInstance().getIntegrationContributorMap().entrySet()) {
+            String integratingProductName = reportContributorEntry.getKey();
+            setStatus(LauncherStatus.UPLOAD_REPORT,
+                    MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
+            try {
+                LogUtil.logInfo(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
+                reportContributorEntry.getValue().uploadTestSuiteCollectionResult(getTestSuiteCollectionEntity(), collectionLogRecord);
+                LogUtil.logInfo(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
+            } catch (Exception e) {
+                LogUtil.logError(e, MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
+                        integratingProductName, ExceptionUtils.getStackTrace(e)));
+            }
         }
     }
     
@@ -380,6 +399,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                 case PASSED:
                     result.increasePasses();
                     break;
+                case NOT_RUN:
+                    result.increaseSkips();
+                    break;
                 default:
                     break;
             }
@@ -404,7 +426,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                 .build();
         TestSuiteCollectionExecutionEvent eventObject = new TestSuiteCollectionExecutionEvent(eventName,
                 executionContext);
-        EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
+        ExecutionBundleActivator.getInstance().getEventBroker().post(eventName, eventObject);
 
         return eventObject;
     }
@@ -413,7 +435,10 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         return Collections.unmodifiableList(subLaunchers);
     }
     
-
+    private TestSuiteCollectionEntity getTestSuiteCollectionEntity() {
+        return getExecutedEntity().getEntity();
+    }
+    
     public TestSuiteCollectionExecutedEntity getExecutedEntity() {
         return executedEntity;
     }

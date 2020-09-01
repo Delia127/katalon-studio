@@ -385,7 +385,7 @@ public class DBTestDataPart extends TestDataMainPart {
                 setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_STATUS_PARTIALLY_LOADED_ON, retrievedDate),
                         ColorUtil.getWarningForegroudColor());
                 MessageDialog.openWarning(null, StringConstants.WARN_TITLE, MessageFormat.format(
-                        StringConstants.DIA_MSG_DATA_IS_TOO_LARGE_FOR_PREVIEW, MAX_COLUMN_COUNT, MAX_ROW_LIMIT));
+                        StringConstants.PA_FILE_TOO_LARGE, MAX_COLUMN_COUNT, MAX_ROW_LIMIT));
             }
         });
     }

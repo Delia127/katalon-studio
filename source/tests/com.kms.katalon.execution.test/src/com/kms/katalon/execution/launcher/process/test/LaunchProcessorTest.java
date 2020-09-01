@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.kms.katalon.controller.ProjectController;
@@ -47,6 +48,7 @@ public class LaunchProcessorTest {
     }
 
     @Test
+    @Ignore
     public void testLaunchingScriptFileWithAdditionalEnvironmentVariablesAndVMArguments() throws CoreException, InterruptedException, IOException, ControllerException {
         Map<String, String> environmentVariables = new HashMap<String, String>() {
             {

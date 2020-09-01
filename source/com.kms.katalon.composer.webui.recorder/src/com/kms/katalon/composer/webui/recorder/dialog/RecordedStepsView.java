@@ -81,6 +81,7 @@ import com.kms.katalon.feature.KSEFeature;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.ObjectSpyEvent;
 import com.kms.katalon.objectspy.element.WebElement;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
 import com.kms.katalon.util.listener.EventListener;
 
@@ -290,6 +291,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
      * <ul>
      * <li>Encrypt text for password</li>
      * <li>Group Click and SetText on the same object</li>
+     * <li>Right Click and get actions from context menu on the same object</li>
      * </ul>
      * 
      * @param newAction
@@ -302,12 +304,25 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         String latestKeywordName = latestNode.getKeywordName();
         if (targetElement != null) {
             WebElementPropertyEntity property = targetElement.getProperty("type");
-            if (property != null && "password".equals(property.getValue())) {
-                secureSetTextAction(newAction);
+            if (newAction.getAction().equals(HTMLAction.SetText)) {
+                if (property != null && "password".equals(property.getValue())) {
+                    secureSetTextAction(newAction);
+                    return;
+                }
+                if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
+                        && objectId.equals(targetElement.getName())) {
+                    removeTestStep();
+                    return;
+                }
             }
-            if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
-                    && newAction.getAction().equals(HTMLAction.SetText) && objectId.equals(targetElement.getName())) {
+            String newActionName = newAction.getAction().getName();
+            boolean newActionFromContextMenu = newActionName.contains("Verify") || newActionName.contains("WaitFor")
+                    || newAction.getAction().equals(HTMLAction.MouseOver);
+            if (HTMLAction.RightClick.getMappedKeywordMethod().equals(latestKeywordName) && newActionFromContextMenu
+                    && objectId.equals(targetElement.getName())) {
                 removeTestStep();
+                Trackings.trackWebRecordStepByContextMenu(newActionName);
+                return;
             }
         }
     }

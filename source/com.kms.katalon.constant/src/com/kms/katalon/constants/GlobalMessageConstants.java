@@ -31,6 +31,10 @@ public class GlobalMessageConstants extends NLS {
 
     public static String REFRESH;
 
+    public static String DEFAULT;
+
+    public static String RESET_DEFAULT;
+
     public static String SEARCH;
 
     public static String FORMAT;
@@ -54,6 +58,10 @@ public class GlobalMessageConstants extends NLS {
     public static String EMPTY;
 
     public static String PROPERTIES;
+
+    public static String ENABLE;
+
+    public static String DISABLE;
 
     public static String CONFIRMATION;
 
@@ -126,6 +134,8 @@ public class GlobalMessageConstants extends NLS {
     public static String VALUE;
 
     public static String IMAGE;
+
+    public static String PATH;
 
     public static String DESCRIPTION;
 
@@ -234,6 +244,8 @@ public class GlobalMessageConstants extends NLS {
     public static String DIA_YES;
 
     public static String DIA_NO;
+
+    public static String DIA_SAVE_RECORDING;
 
     public static String CREATED_DATE;
 

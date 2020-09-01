@@ -45,7 +45,7 @@ public class ProjectToolbarHandler {
                 ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
                 MUIElement genericToolbar = modelService.find(ToolbarProcessor.KATALON_MAIN_GENERIC_TOOLBAR_ID, application);
                 MUIElement webserviceToolbar = modelService.find(ToolbarProcessor.KATALON_MAIN_WEBSERVICE_TOOLBAR_ID, application);
-                setToolTipExecution();          
+                setToolTipExecution();        
                 if (currentProject.getType() == ProjectType.WEBSERVICE) {
                     if (genericToolbar != null) {
                         genericToolbar.setVisible(false);

@@ -8,6 +8,7 @@ import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.osgi.framework.FrameworkUtil;
@@ -15,6 +16,9 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.handlers.ImportOpenApiHandler;
+import com.kms.katalon.composer.webservice.handlers.ImportFromWadlHandler;
+import com.kms.katalon.composer.webservice.handlers.ImportSoapUIRestServicesHandler;
 import com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromSwaggerHandler;
 import com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromWSDLHandler;
 import com.kms.katalon.constants.IdConstants;
@@ -58,14 +62,31 @@ public class ImportWebServicesPopupMenuContribution {
                     && FolderType.WEBELEMENT.equals(((FolderTreeEntity) selectedObject).getObject().getFolderType())) {
 
                 MMenu importMenu = getImportMenu();
+                
                 MDirectMenuItem swaggerMenuItem = getSwaggerMenu();
-
                 swaggerMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportWebServiceRequestObjectsFromSwaggerHandler.class.getName());
                 importMenu.getChildren().add(swaggerMenuItem);
+                
+                MDirectMenuItem openApi3MenuItem = getOpenApi3Menu();
+                openApi3MenuItem
+                        .setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportOpenApiHandler.class.getName());
+                importMenu.getChildren().add(openApi3MenuItem);
+
+                MDirectMenuItem wadlMenuItem = getWadlMenu();
+                wadlMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportFromWadlHandler.class.getName());
+                importMenu.getChildren().add(wadlMenuItem);
+                
+                importMenu.getChildren().add(MMenuFactory.INSTANCE.createMenuSeparator());
                 
                 MDirectMenuItem wsdlMenuItem = getWSDLMenu();
                 wsdlMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportWebServiceRequestObjectsFromWSDLHandler.class.getName());
                 importMenu.getChildren().add(wsdlMenuItem);
+                
+                importMenu.getChildren().add(MMenuFactory.INSTANCE.createMenuSeparator());
+                
+                MDirectMenuItem soapUIMenuItem = getSoapUIMenu();
+                soapUIMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportSoapUIRestServicesHandler.class.getName());
+                importMenu.getChildren().add(soapUIMenuItem);
                 
                 if (importMenu.getChildren().size() > 0) {
                     menuItems.add(0, importMenu);
@@ -85,7 +106,21 @@ public class ImportWebServicesPopupMenuContribution {
 
     private MDirectMenuItem getSwaggerMenu() {
         MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
-        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER);
+        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2);
+        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
+        return dynamicItem;
+    }
+
+    private MDirectMenuItem getOpenApi3Menu() {
+        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
+        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3);
+        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
+        return dynamicItem;
+    }
+    
+    private MDirectMenuItem getWadlMenu() {
+        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
+        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_WADL);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
@@ -96,5 +131,11 @@ public class ImportWebServicesPopupMenuContribution {
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
-
+    
+    private MDirectMenuItem getSoapUIMenu() {
+        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
+        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI);
+        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
+        return dynamicItem;
+    }
 }

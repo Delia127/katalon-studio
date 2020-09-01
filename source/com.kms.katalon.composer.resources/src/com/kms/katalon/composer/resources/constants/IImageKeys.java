@@ -130,6 +130,41 @@ public interface IImageKeys {
     public static final String GITHUB_LOGO_55 = "welcome/github_logo_55.png"; //$NON-NLS-1$
     // End Welcome
 
+    // Quick Start
+    public static final String LOGO_74 = "quick_start/logo_74.png"; //$NON-NLS-1$
+
+    public static final String TIP_RECORD_BUTTON = "quick_start/tip_record_button.png"; //$NON-NLS-1$
+
+    public static final String TIP_SPY_BUTTON = "quick_start/tip_spy_button.png"; //$NON-NLS-1$
+
+    public static final String TIP_DEBUG_BUTTON = "quick_start/tip_debug_button.png"; //$NON-NLS-1$
+
+    public static final String TIP_RUN_BUTTON = "quick_start/tip_run_button.png"; //$NON-NLS-1$
+
+    public static final String RIGHT_ARROW = "quick_start/right_arrow.png"; //$NON-NLS-1$
+
+    public static final String RESOURCES_TUTORIALS = "quick_start/resources_tutorials.png"; //$NON-NLS-1$
+
+    public static final String RESOURCES_FORUM = "quick_start/resources_forum.png"; //$NON-NLS-1$
+
+    public static final String RESOURCES_CHATROOM = "quick_start/resources_chatroom.png"; //$NON-NLS-1$
+
+    public static final String RESOURCES_PLUGINS = "quick_start/resources_plugins.png"; //$NON-NLS-1$
+
+    public static final String RESOURCES_BUSINESS = "quick_start/resources_business.png"; //$NON-NLS-1$
+
+    public static final String RESOURCES_TROUBLESHOOT = "quick_start/resources_troubleshoot.png"; //$NON-NLS-1$
+
+    public static final String WELCOME_BACK_OPEN_PROJECT = "quick_start/welcome_back_open_project.png"; //$NON-NLS-1$
+
+    public static final String WELCOME_BACK_CLONE_PROJECT = "quick_start/welcome_back_clone_project.png"; //$NON-NLS-1$
+
+    public static final String WELCOME_BACK_CREATE_PROJECT = "quick_start/welcome_back_create_project.png"; //$NON-NLS-1$
+
+    public static final String INVESTIGATE_LOG_VIEWER = "quick_start/investigate_log_viewer.png"; //$NON-NLS-1$
+
+    public static final String INVESTIGATE_CONSOLE = "quick_start/investigate_console.png"; //$NON-NLS-1$
+
     // For Dialog
     public static final String ERROR_20 = "dialog/error_20.png"; //$NON-NLS-1$
 
@@ -244,6 +279,8 @@ public interface IImageKeys {
     public static final String NEW_WS_TEST_OBJECT_24 = "toolbar/new_ws_test_object_24.png"; //$NON-NLS-1$
 
     public static final String PLAY_24 = "toolbar/play_24.png"; //$NON-NLS-1$
+
+    public static final String KU_RECORDER_16 = "toolbar/ku_recorder_16.png"; //$NON-NLS-1$
 
     public static final String RECORD_WEB_24 = "toolbar/web_oject_record_24.png"; //$NON-NLS-1$
 
@@ -554,6 +591,8 @@ public interface IImageKeys {
 
     public static final String EXPORT_CSV_16 = "export_csv_16.png"; //$NON-NLS-1$
 
+    public static final String SETTING_16 = "gear_16.png"; //$NON-NLS-1$
+
     // Sub-toolbar disabled icons
     public static final String CLEAR_DISABLED_16 = "clear_disabled_16.png"; //$NON-NLS-1$
 
@@ -817,4 +856,26 @@ public interface IImageKeys {
     public static final String IMG_ABOUT_BG_DRANK = "about/background_dark.png";
 
     public static final String KATALON_NOTIFICATION_DOT_24 = "toolbar/noti_blue_dot_32x24.png";
+
+    // Job Progress
+    public static final String JOB_ERROR_16 = "job_error_16.png"; //$NON-NLS-1$
+    public static final String JOB_FAILED_16 = "job_failed_16.png"; //$NON-NLS-1$
+    public static final String JOB_SKIPPED_16 = "job_skipped_16.png"; //$NON-NLS-1$
+
+    // TestOps
+    public static final String IMG_TESTOPS_EXECUTIONS = "testops/executions.png";
+    
+    public static final String IMG_TESTOPS_EXECUTION_PASSED = "testops/execution_passed.png";
+
+    public static final String IMG_TESTOPS_EXECUTION_FAILED = "testops/execution_failed.png";
+    
+    public static final String IMG_TESTOPS_PLAN = "testops/plan.png";
+    
+    public static final String IMG_TESTOPS_PLAN_QUEUED = "testops/plan_queued.png";
+    
+    public static final String IMG_TESTOPS_PLAN_ERROR = "testops/plan_error.png";
+    
+    public static final String IMG_TESTOPS_PLAN_CANCELED = "testops/plan_cancel.png";
+    
+    public static final String IMG_TESTOPS_REFRESH_NEW = "testops/refresh_new.png";
 }
