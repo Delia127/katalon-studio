@@ -64,14 +64,14 @@ public class FileUtil {
     }
 
     public static String takeFullPageScreenshot(String fileName, List<TestObject> ignoredElements,
-            boolean isTestOpsVisionCheckPoint) throws IOException {
+            boolean isTestOpsVisionCheckPoint) throws Exception {
         if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
             throw new IllegalArgumentException("File name cannot be null or empty");
         }
         String savedFileName = isTestOpsVisionCheckPoint ? TestOpsUtil.replaceTestOpsVisionFileName(fileName)
                 : fileName;
         WebDriver driver = DriverFactory.getWebDriver();
-        Map<String, String> states = hideElements(driver, ignoredElements);
+        Map<TestObject, String> states = hideElements(driver, ignoredElements);
         File savedFile = new File(savedFileName);
         Shutterbug.shootPage(driver, Capture.FULL_SCROLL).withName(Files.getNameWithoutExtension(savedFileName)).save(savedFile.getParent());
         restoreElements(driver, states);
@@ -79,7 +79,7 @@ public class FileUtil {
     }
 
     public static String takeElementScreenshot(String fileName, TestObject element, boolean isTestOpsVisionCheckPoint)
-            throws IOException, NoSuchElementException {
+            throws Exception {
         if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
             throw new IllegalArgumentException("File name cannot be null or empty");
         }
@@ -90,8 +90,7 @@ public class FileUtil {
         String savedFileName = isTestOpsVisionCheckPoint ? TestOpsUtil.replaceTestOpsVisionFileName(fileName)
                 : fileName;
         WebDriver driver = DriverFactory.getWebDriver();
-        WebElement capturedElement = driver
-                .findElement(By.cssSelector(WebUiCommonHelper.getSelectorValue(element, SelectorMethod.CSS)));
+        WebElement capturedElement = WebUiCommonHelper.findWebElement(element, 0);
         File savedFile = new File(savedFileName);
         Shutterbug.shootElement(driver, capturedElement).withName(Files.getNameWithoutExtension(savedFileName)).save(savedFile.getParent());
         return savedFileName;
@@ -119,33 +118,33 @@ public class FileUtil {
         return savedFileName;
     }
 
-    private static Map<String, String> hideElements(WebDriver driver, List<TestObject> testObjects) {
+    private static Map<TestObject, String> hideElements(WebDriver driver, List<TestObject> testObjects) throws Exception {
         if (testObjects == null || driver == null) {
             return null;
         }
 
-        Map<String, String> preState = new HashMap<>();
-        testObjects.stream().map(o -> WebUiCommonHelper.getSelectorValue(o, SelectorMethod.CSS)).filter(selector -> {
-            return driver.findElement(By.cssSelector(selector)) != null;
-        }).collect(Collectors.toList()).forEach(e -> {
-            JavascriptExecutor jsx = (JavascriptExecutor) driver;
-            String state = jsx.executeScript("return document.querySelector('" + e + "').style.visibility").toString();
-            jsx.executeScript("document.querySelector('" + e + "').style.visibility = 'hidden'");
-            preState.put(e, state);
-        });
+        Map<TestObject, String> preState = new HashMap<>();
+        JavascriptExecutor jsx = (JavascriptExecutor)driver;
+        for (TestObject to : testObjects) {
+            WebElement e = WebUiCommonHelper.findWebElement(to, 0);
+            String state = jsx.executeScript("return arguments[0].style.visibility", e).toString();
+            preState.put(to, state);
+            jsx.executeScript("arguments[0].style.visibility = 'hidden'", e);
+        }
+        
         return preState;
     }
 
-    private static void restoreElements(WebDriver driver, Map<String, String> states) {
+    private static void restoreElements(WebDriver driver, Map<TestObject, String> states) throws Exception {
         if (states == null || driver == null) {
             return;
         }
-
-        states.keySet().forEach(key -> {
-            JavascriptExecutor jsx = (JavascriptExecutor) driver;
-            jsx.executeScript(
-                    String.format("document.querySelector('%s').style.visibility = '%s'", key, states.get(key)));
-        });
+        
+        JavascriptExecutor jsx = (JavascriptExecutor) driver;
+        for (TestObject to : states.keySet()) {
+            WebElement e = WebUiCommonHelper.findWebElement(to, 0);
+            jsx.executeScript("arguments[0].style.visibility = '" + states.get(to) + "'", e);
+        }
     }
 
     public static File extractScreenFiles() throws Exception {
