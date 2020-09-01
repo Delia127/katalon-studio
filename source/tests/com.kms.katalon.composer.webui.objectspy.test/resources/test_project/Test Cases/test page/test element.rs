@@ -6,16 +6,16 @@
    <elementGuidId>76a8617c-2ee9-48e8-bb93-caf3c2884548</elementGuidId>
    <selectorCollection>
       <entry>
+         <key>CSS</key>
+         <value>test/css</value>
+      </entry>
+      <entry>
          <key>XPATH</key>
          <value>test/xpath</value>
       </entry>
       <entry>
          <key>BASIC</key>
          <value>basic/selector</value>
-      </entry>
-      <entry>
-         <key>CSS</key>
-         <value>test/css</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>

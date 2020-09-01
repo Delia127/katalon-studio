@@ -71,7 +71,7 @@ public class ObjectRepositoryServiceTest {
         SaveToObjectRepositoryDialogResult saveToObjRepoResult = new SaveToObjectRepositoryDialogResult(true,
                 selectedPages, selectedParentFolder, ConflictOptions.MERGE_CHANGE_TO_EXISTING_OBJECT, 1);
 
-        service.saveObject(saveToObjRepoResult);
+        service.saveObjectForWebRecorder(saveToObjRepoResult);
 
         WebElementEntity actual = ObjectRepositoryController.getInstance()
                 .getWebElementByDisplayPk("Test Cases/test page/test element");
@@ -109,7 +109,7 @@ public class ObjectRepositoryServiceTest {
         SaveToObjectRepositoryDialogResult saveToObjRepoResult = new SaveToObjectRepositoryDialogResult(true,
                 selectedPages, selectedParentFolder, ConflictOptions.MERGE_CHANGE_TO_EXISTING_OBJECT, 1);
 
-        SaveActionResult saveActionResult = service.saveObject(saveToObjRepoResult);
+        SaveActionResult saveActionResult = service.saveObjectForWebRecorder(saveToObjRepoResult);
 
         // save action result must contain two objects: parent's page and element. Parent's element is used in
         // RecordHandler#addRecordedElements
@@ -141,7 +141,7 @@ public class ObjectRepositoryServiceTest {
         SaveToObjectRepositoryDialogResult saveToObjRepoResult = new SaveToObjectRepositoryDialogResult(true,
                 selectedPages, selectedParentFolder, ConflictOptions.REPLACE_EXISTING_OBJECT, 1);
 
-        service.saveObject(saveToObjRepoResult);
+        service.saveObjectForWebRecorder(saveToObjRepoResult);
 
         WebElementEntity actual = ObjectRepositoryController.getInstance()
                 .getWebElementByDisplayPk("Test Cases/test page/test element 2");
@@ -174,7 +174,7 @@ public class ObjectRepositoryServiceTest {
         SaveToObjectRepositoryDialogResult saveToObjRepoResult = new SaveToObjectRepositoryDialogResult(true,
                 selectedPages, selectedParentFolder, ConflictOptions.REPLACE_EXISTING_OBJECT, 1);
 
-        SaveActionResult saveActionResult = service.saveObject(saveToObjRepoResult);
+        SaveActionResult saveActionResult = service.saveObjectForWebRecorder(saveToObjRepoResult);
 
         // save action result must contain two objects: parent's page and element. Parent's element is used in
         // RecordHandler#addRecordedElements
@@ -206,7 +206,7 @@ public class ObjectRepositoryServiceTest {
         SaveToObjectRepositoryDialogResult saveToObjRepoResult = new SaveToObjectRepositoryDialogResult(true,
                 selectedPages, selectedParentFolder, ConflictOptions.CREATE_NEW_OBJECT, 1);
 
-        service.saveObject(saveToObjRepoResult);
+        service.saveObjectForWebRecorder(saveToObjRepoResult);
 
         WebElementEntity actual = ObjectRepositoryController.getInstance()
                 .getWebElementByDisplayPk("Test Cases/test page/test element 3 (1)");
@@ -242,7 +242,7 @@ public class ObjectRepositoryServiceTest {
         SaveToObjectRepositoryDialogResult saveToObjRepoResult = new SaveToObjectRepositoryDialogResult(true,
                 selectedPages, selectedParentFolder, ConflictOptions.CREATE_NEW_OBJECT, 1);
 
-        SaveActionResult saveActionResult = service.saveObject(saveToObjRepoResult);
+        SaveActionResult saveActionResult = service.saveObjectForWebRecorder(saveToObjRepoResult);
 
         // save action result must contain two objects: parent's page and element. Parent's element is used in
         // RecordHandler#addRecordedElements
