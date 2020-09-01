@@ -154,7 +154,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private StyledText txtTestSuiteId, txtHostName, txtOS, txtPlatform, txtStartTime, txtEndTime, txtRunTime,
             txtKatalonVersion;
 
-    private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted, txtTCErrors;
+    private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted, txtTCErrors, txtTCSkipped;
 
     private TestSuiteLogRecord testSuiteLogRecord;
 
@@ -565,8 +565,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             txtTCPasses.setText(Integer.toString(testSuiteLogRecord.getTotalPassedTestCases()));
             txtTCFailures.setText(Integer.toString(testSuiteLogRecord.getTotalFailedTestCases()));
             txtTCErrors.setText(Integer.toString(testSuiteLogRecord.getTotalErrorTestCases()));
+            txtTCSkipped.setText(Integer.toString(testSuiteLogRecord.getTotalSkippedTestCases()));
             txtTCIncompleted.setText(Integer.toString(testSuiteLogRecord.getTotalIncompleteTestCases()));
-
+            
             txtStartTime.setText(DateUtil.getDateTimeFormatted(testSuiteLogRecord.getStartTime()));
             txtEndTime.setText(DateUtil.getDateTimeFormatted(testSuiteLogRecord.getEndTime()));
 
@@ -1250,6 +1251,17 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         txtTCErrors = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtTCErrors.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         txtTCErrors.setForeground(ColorUtil.getErrorLogBackgroundColor());
+        
+        Label lblSkipped = new Label(compositeSummaryDetails, SWT.NONE);
+        lblSkipped.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+        lblSkipped.setText("Skipped");
+        setLabelToBeBold(lblSkipped);
+        lblSkipped.setForeground(ColorUtil.getErrorLogBackgroundColor());
+        lblSkipped.setBackground(ColorUtil.getWhiteBackgroundColor());
+
+        txtTCSkipped = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
+        txtTCSkipped.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+        txtTCSkipped.setForeground(ColorUtil.getErrorLogBackgroundColor());
 
         Label lblIncompleted = new Label(compositeSummaryDetails, SWT.NONE);
         lblIncompleted.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));

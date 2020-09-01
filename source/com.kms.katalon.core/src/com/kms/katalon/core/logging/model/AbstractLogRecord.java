@@ -141,6 +141,13 @@ public abstract class AbstractLogRecord implements ILogRecord {
                     setMessage(logRecord.getMessage());
                     return testStatus;
                 }
+
+                if (logRecord.getName().endsWith("skipThisTestCase()")
+                        || logRecord.getStatus().getStatusValue() == TestStatusValue.SKIPPED) {
+                    testStatus.setStatusValue(TestStatusValue.SKIPPED);
+                    setMessage(logRecord.getMessage());
+                    return testStatus;
+                }
             }
         }
 
