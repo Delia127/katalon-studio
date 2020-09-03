@@ -7,4 +7,5 @@ Bundle-Vendor: KMS
 Fragment-Host: com.kms.katalon.composer.webui.objectspy;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit;bundle-version="4.12.0",
- com.kms.katalon.dal
+ com.kms.katalon.dal,
+ org.eclipse.persistence.eclipselink

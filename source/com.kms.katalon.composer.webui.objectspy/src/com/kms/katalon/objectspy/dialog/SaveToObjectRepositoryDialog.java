@@ -599,7 +599,7 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         return flatPages;
     }
 
-    public class SaveToObjectRepositoryDialogResult {
+    public static class SaveToObjectRepositoryDialogResult {
 
         private final boolean createFolderAsPageNameAllowed;
 
