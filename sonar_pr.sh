@@ -5,7 +5,9 @@ building() {
 
     ulimit -c unlimited
 
-    cd $katalonDir/source/com.kms.katalon.repo && $katalonDir/source/mvnw ${mavenOpts} p2:site 
+    cd $katalonDir/source/com.kms.katalon.repo && $katalonDir/source/mvnw ${mavenOpts} p2:site
+
+    rm -rf /tmp/9999.log
     
     cd $katalonDir/source/com.kms.katalon.repo && nohup $katalonDir/source/mvnw ${mavenOpts} -Djetty.port=9999 jetty:run > /tmp/9999.log &
     until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
@@ -13,6 +15,8 @@ building() {
         cat /tmp/9999.log
         sleep 5
     done
+
+    rm -rf /tmp/33333.log
 
     cd $katalonDir/source/com.kms.katalon.p2site && nohup $katalonDir/source/mvnw ${mavenOpts} -Djetty.port=33333 jetty:run > /tmp/33333.log &           
     until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
