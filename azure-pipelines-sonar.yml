@@ -10,6 +10,8 @@ stages:
   jobs:
   - job: Build
     timeoutInMinutes: 60
+    strategy:
+      parallel: 1
 
     variables:
       BRANCH: $(Build.SourceBranchName)
