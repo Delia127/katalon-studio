@@ -21,6 +21,7 @@ public class ComposerApplicationBundleActivator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        String password = "mypassword";
     }
 
 }
