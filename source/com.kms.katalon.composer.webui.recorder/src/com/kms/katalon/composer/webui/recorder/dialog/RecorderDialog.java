@@ -589,7 +589,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         container.setLayout(glMain);
 
         createToolbar(container);
-        createKURecorderHint(container, null);
+        createKURecorderHint(container);
 
         Composite bodyComposite = new Composite(container, SWT.NONE);
         bodyComposite.setLayout(new FillLayout(SWT.VERTICAL));
@@ -1295,18 +1295,19 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmStop.setEnabled(false);
     }
 
-    private void createKURecorderHint(Composite parent, Composite hintComposite) {
-        boolean isEnableKURecorderHint = userProfile.isEnableKURecorderHint();
-        if (isEnableKURecorderHint != (hintComposite == null)) {
-            return;
-        } else if (!isEnableKURecorderHint && hintComposite != null) {
-            hintComposite.dispose();
-            parent.layout();
-        }
-        hintComposite = generateKURecorderHint(parent);
+    private void hideKURecorderHintComposite(Composite hintComposite) {
+        userProfile.setEnableKURecorderHint(false);
+        UserProfileHelper.saveProfile(userProfile);
+        Composite parent = hintComposite.getParent();
+        hintComposite.dispose();
+        parent.layout();
     }
 
-    private Composite generateKURecorderHint(Composite parent) {
+    private Composite createKURecorderHint(Composite parent) {
+        boolean isEnableKURecorderHint = userProfile.isEnableKURecorderHint();
+        if (!isEnableKURecorderHint) {
+            return null;
+        }
         Composite hintComposite = new Composite(parent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.BEGINNING;
@@ -1328,9 +1329,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                userProfile.setEnableKURecorderHint(false);
-                UserProfileHelper.saveProfile(userProfile);
-                createKURecorderHint(parent, hintComposite);
+                hideKURecorderHintComposite(hintComposite);
             }
         });
         return hintComposite;
