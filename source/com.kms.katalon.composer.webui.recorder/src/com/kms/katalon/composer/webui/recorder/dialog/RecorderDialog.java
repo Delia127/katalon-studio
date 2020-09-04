@@ -1261,13 +1261,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void createKURecorderHint(Composite parent, Composite hintComposite) {
         boolean isEnableKURecorderHint = userProfile.isEnableKURecorderHint();
-        if (isEnableKURecorderHint != (hintComposite == null)) {
-            return;
-        } else if (!isEnableKURecorderHint && hintComposite != null) {
-            hintComposite.dispose();
-            parent.layout();
-        }
-        hintComposite = generateKURecorderHint(parent);
+		if (isEnableKURecorderHint != (hintComposite == null)) {
+			return;
+		} else if (!isEnableKURecorderHint && hintComposite != null) {
+			hintComposite.dispose();
+			parent.layout();
+		} else {
+			hintComposite = generateKURecorderHint(parent);
+		}
     }
 
     private Composite generateKURecorderHint(Composite parent) {
