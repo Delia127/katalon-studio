@@ -1259,20 +1259,20 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmStop.setEnabled(false);
     }
 
-	private void hideKURecorderHintComposite(Composite hintComposite) {
-		userProfile.setEnableKURecorderHint(false);
-		UserProfileHelper.saveProfile(userProfile);
-		Composite parent = hintComposite.getParent();
-		hintComposite.dispose();
-		parent.layout();
-	}
+    private void hideKURecorderHintComposite(Composite hintComposite) {
+        userProfile.setEnableKURecorderHint(false);
+        UserProfileHelper.saveProfile(userProfile);
+        Composite parent = hintComposite.getParent();
+        hintComposite.dispose();
+        parent.layout();
+    }
 
     private Composite createKURecorderHint(Composite parent) {
-		boolean isEnableKURecorderHint = userProfile.isEnableKURecorderHint();
-		if (!isEnableKURecorderHint) {
-			return null;
-		}
-		Composite hintComposite = new Composite(parent, SWT.NONE);
+        boolean isEnableKURecorderHint = userProfile.isEnableKURecorderHint();
+        if (!isEnableKURecorderHint) {
+            return null;
+        }
+        Composite hintComposite = new Composite(parent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.BEGINNING;
         hintComposite.setLayoutData(gridData);
@@ -1290,13 +1290,13 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         Link link = new Link(hintComposite, SWT.NONE);
         link.setText("<a href=\"\">Hide</a>");
         link.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
-		link.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				hideKURecorderHintComposite(hintComposite);
-			}
-		});
-		return hintComposite;
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                hideKURecorderHintComposite(hintComposite);
+            }
+        });
+        return hintComposite;
     }
 
     private void createDropdownContent(Dropdown dropdown) {
