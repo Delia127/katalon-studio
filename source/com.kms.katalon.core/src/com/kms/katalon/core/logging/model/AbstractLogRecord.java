@@ -125,7 +125,7 @@ public abstract class AbstractLogRecord implements ILogRecord {
 
             if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED
                     || logRecordStatusValue == TestStatusValue.INCOMPLETE
-                    || logRecordStatusValue == TestStatusValue.PASSED) {
+                    || logRecordStatusValue == TestStatusValue.PASSED || logRecordStatusValue == TestStatusValue.SKIPPED) {
                 testStatus.setStatusValue(logRecordStatusValue);
                 setMessage(messageRecord.getMessage());
                 return testStatus;
@@ -138,13 +138,6 @@ public abstract class AbstractLogRecord implements ILogRecord {
                 if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED
                         || logRecordStatusValue == TestStatusValue.INCOMPLETE) {
                     testStatus.setStatusValue(logRecordStatusValue);
-                    setMessage(logRecord.getMessage());
-                    return testStatus;
-                }
-
-                if (logRecord.getName().endsWith("skipThisTestCase()")
-                        || logRecord.getStatus().getStatusValue() == TestStatusValue.SKIPPED) {
-                    testStatus.setStatusValue(TestStatusValue.SKIPPED);
                     setMessage(logRecord.getMessage());
                     return testStatus;
                 }

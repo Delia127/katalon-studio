@@ -17,7 +17,8 @@ public enum LogLevel {
     INCOMPLETE(10100),
     NOT_RUN(9909),
     RUN_DATA(20000),
-    DEBUG(10009);
+    DEBUG(10009),
+    SKIPPED(20001);
     
     private final int value;
     private Level level;
@@ -52,6 +53,7 @@ public enum LogLevel {
 	    resultLogs.add(FAILED);
 	    resultLogs.add(ERROR);
 	    resultLogs.add(INCOMPLETE);
+	    resultLogs.add(SKIPPED);
 	    
 	    return resultLogs;
 	}
