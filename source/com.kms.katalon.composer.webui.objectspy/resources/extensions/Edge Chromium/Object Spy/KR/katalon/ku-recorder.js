@@ -427,9 +427,8 @@ class KURecorder {
 
     processOnClickTarget (selectedElement, clickType, currentURL) {
         this.checkForNavigateAction(currentURL);
-        if (clickType === "right" && selectedElement.tagName === "INPUT" && selectedElement.type === "text") {
-            selectedElement.disabled = true;
-            selectedElement.disabled = false;
+        if (clickType === "right" && selectedElement.tagName === "INPUT") {
+            selectedElement.blur();
         }
         var action = {};
         action["actionName"] = 'click';
