@@ -5,7 +5,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
@@ -23,6 +22,8 @@ public class BaseQuickStartDialog extends AbstractDialog {
         void call(Object option);
     }
 
+    protected Composite container;
+
     protected Composite tipsComposite;
 
     public BaseQuickStartDialog(Shell parentShell) {
@@ -39,11 +40,6 @@ public class BaseQuickStartDialog extends AbstractDialog {
     protected Point getInitialLocation(Point initialSize) {
         return DialogUtil.computeCenterLocation(initialSize);
     }
-    
-    protected int getTipWidth() {
-        return -1;
-    }
-    
 
     @Override
     public String getDialogTitle() {
@@ -67,7 +63,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
         beginConstruction(parent);
 
         Point margin = getContainerMargin();
-        Composite container = ComponentBuilder.gridContainer(parent).gridMargin(margin.y, margin.x).build();
+        container = ComponentBuilder.gridContainer(parent).gridMargin(margin.y, margin.x).build();
 
         createContent(container);
         createButtons(container);
@@ -120,7 +116,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
             return;
         }
 
-        Composite tipsCompositeWrapper = ComponentBuilder.gridContainer(parent).fill().build();
+        Composite tipsCompositeWrapper = ComponentBuilder.gridContainer(parent).fill().width(0).build();
 
         StyleContext.setFontSize(FontUtil.SIZE_H5);
         StyleContext.setBackground(ColorUtil.getColor("#F5F5F5"));
@@ -134,15 +130,12 @@ public class BaseQuickStartDialog extends AbstractDialog {
 
         ComponentBuilder.label(tipsComposite).text("TIPS").bold().size(40, 20).grayBadge().middle().build();
 
-        Label tipLabel = ComponentBuilder.label(tipsComposite)
+        ComponentBuilder.label(tipsComposite)
                 .text(getTipContent())
                 .color(ColorUtil.getColor("#797979"))
+                .fillHorizontal()
                 .middle()
-                .fill()
                 .build();
-        if (getTipWidth() >= 0) {
-            ComponentUtil.setWidth(tipLabel, getTipWidth());
-        }
 
         createMoreTips(tipsComposite);
 
@@ -184,6 +177,11 @@ public class BaseQuickStartDialog extends AbstractDialog {
 
     @Override
     protected void registerControlModifyListeners() {
+    }
+
+    @Override
+    protected void adjustLayout() {
+        ComponentUtil.adjustChildrenWidth(container);
     }
 
     @Override

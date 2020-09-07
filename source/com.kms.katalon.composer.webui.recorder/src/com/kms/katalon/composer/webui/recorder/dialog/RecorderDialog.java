@@ -389,7 +389,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                     boolean shouldShowGuiding = curUser.isNewUser() && curUser.isPreferWebUI()
                             && !curUser.isDoneQuickRecordGuidingDialog();
                     if (shouldShowGuiding) {
-                        QuickRecordGuidingDialog guidingDialog = new QuickRecordGuidingDialog(getParentShell());
+                        QuickRecordGuidingDialog guidingDialog = new QuickRecordGuidingDialog(null);
                         guidingDialog.open();
 
                         curUser.setDoneQuickRecordGuidingDialog(true);
