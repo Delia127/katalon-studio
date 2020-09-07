@@ -3026,6 +3026,21 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
+     * Take screenshot of entire page. No element is going to be ignored.
+     * @param fileName Absolute path to the captured file. If fileName if null, default file will be used.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshot(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshot(String fileName, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", fileName, null, false, flowControl)
+    }
+    
+    /**
      * Take screenshot of entire page with ignored elements . Default FailureHandling and default file name are used.
      * @param ignoredElements List of TestObject that will be hidden using JavaScript. The list can be null or empty.
      * @return a String represents path to the captured image.
@@ -3039,6 +3054,21 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", null, ignoredElements, false, null)
     }
 
+    /**
+     * Take screenshot of entire page with ignored elements . Default file name is used.
+     * @param ignoredElements List of TestObject that will be hidden using JavaScript. The list can be null or empty.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshot(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshot(List<TestObject> ignoredElements, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", null, ignoredElements, false, flowControl)
+    }
+    
     
     /**
      * Take screenshot of entire page with default FailureHandling and default image name.
@@ -3051,6 +3081,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static String takeFullPageScreenshot() {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", null, null, false, null)
+    }
+    
+    /**
+     * Take screenshot of entire page with default image name.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeFullPageScreenshot(String, List, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeFullPageScreenshot(FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeFullPageScreenshot", null, null, false, flowControl)
     }
     
     /**
@@ -3173,6 +3217,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Take screenshot of the specific element with default file name.
+     * @param to TestObject got from WebSpy and <i>findTestObject(String to)</i> function. If TestObject is manually created, CSS selector is required.
+     * This parameter cannot be null.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the saved image.
+     * @since 7.7.0
+     * @see WebUiBuiltInKeywords#takeElementScreenshot(String, TestObject, FailureHandling)
+     * @see WebUiBuiltInKeywords#takeScreenshotAsCheckpoint(String, FailureHandling)
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeElementScreenshot(TestObject to, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeElementScreenshot", null, to, false, flowControl)
+    }
+    
+    /**
      * Take screenshot of the specific web element to send to TestOps Vision.
      * The TestObject must have CSS selector so that Web Driver can find the element on the page.
      * If the element doesn't exist then this method will fail.
@@ -3258,6 +3318,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static String takeAreaScreenshot(Rectangle rect) {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeAreaScreenshot", null, rect, false, null)
+    }
+    
+    /**
+     * Take screenshot of the specific area with default filename
+     * @param rect The declared rectangle area that will be captured. The declare rectangle must be inside the current view-port, otherwise this step will fail.
+     * This cannot be null.
+     * @param flowControl the FailureHandling defines how the test case is run in case this step failed. If it is null, default value will be used.
+     * @return a String represents path to the captured image.
+     * @since 7.7.0
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeAreaScreenshot(Rectangle rect, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeAreaScreenshot", null, rect, false, flowControl)
     }
 
     /**

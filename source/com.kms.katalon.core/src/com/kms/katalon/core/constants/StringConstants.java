@@ -516,4 +516,8 @@ public class StringConstants {
 	public static final String SELF_HEALING_REPORT_VISIT_INSIGHT_PART = CoreMessageConstants.SELF_HEALING_REPORT_VISIT_INSIGHT_PART;
 	
 	public static final String SELF_HEALING_REFER_TO_DOCUMENT = CoreMessageConstants.SELF_HEALING_REFER_TO_DOCUMENT;
+
+    // Screenshot keyword
+    public static final String UTIL_EXC_FILE_PATH_INVALID = CoreMessageConstants.UTIL_EXC_FILE_PATH_INVALID;
+    public static final String UTIL_EXC_FILE_NOT_NULL = CoreMessageConstants.UTIL_EXC_FILE_NOT_NULL;
 }

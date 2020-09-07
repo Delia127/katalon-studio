@@ -1,27 +1,24 @@
 package com.kms.katalon.core.webui.util;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
-
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.TakesScreenshot;
@@ -30,15 +27,15 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.core.exception.StepFailedException;
-import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.internal.TestOpsUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
+import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
-
+import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.assertthat.selenium_shutterbug.core.Capture;
 import com.assertthat.selenium_shutterbug.core.Shutterbug;
-import com.google.common.io.Files;
 
 public class FileUtil {
 
@@ -49,60 +46,66 @@ public class FileUtil {
     private static final String AUTHENTICATION_FOLDER = "resources/authentication";
 
     private static final String EXTENSIONS_FOLDER_NAME = "resources/extensions";
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(FileUtil.class);
 
     public static String takesScreenshot(String fileName, boolean isTestOpsVisionCheckPoint)
-            throws IOException, WebDriverException, StepFailedException {
+            throws Exception {
+        if(!isTestOpsVisionCheckPoint) {
+            takeDefaultScreenshot(fileName);
+            return fileName;
+        }
+        
         if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
-            throw new IllegalArgumentException("File name cannot be null or empty");
+            throw new IllegalArgumentException(StringConstants.KW_SCREENSHOT_EXCEPTION_FILENAME_NULL_EMPTY);
         }
         String savedFileName = isTestOpsVisionCheckPoint ? TestOpsUtil.replaceTestOpsVisionFileName(fileName)
                 : fileName;
-        File savedFile = new File(savedFileName);
-        WebDriver driver = DriverFactory.getWebDriver();
-        Shutterbug.shootPage(driver, Capture.VIEWPORT).withName(Files.getNameWithoutExtension(savedFileName)).save(savedFile.getParent());
+        BufferedImage image = takeViewportScreenshot();
+        saveImage(image, savedFileName);
         return savedFileName;
     }
-
+    
     public static String takeFullPageScreenshot(String fileName, List<TestObject> ignoredElements,
             boolean isTestOpsVisionCheckPoint) throws Exception {
         if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
-            throw new IllegalArgumentException("File name cannot be null or empty");
+            throw new IllegalArgumentException(StringConstants.KW_SCREENSHOT_EXCEPTION_FILENAME_NULL_EMPTY);
         }
         String savedFileName = isTestOpsVisionCheckPoint ? TestOpsUtil.replaceTestOpsVisionFileName(fileName)
                 : fileName;
         WebDriver driver = DriverFactory.getWebDriver();
-        Map<TestObject, String> states = hideElements(driver, ignoredElements);
-        File savedFile = new File(savedFileName);
-        Shutterbug.shootPage(driver, Capture.FULL_SCROLL).withName(Files.getNameWithoutExtension(savedFileName)).save(savedFile.getParent());
+        Map<WebElement, String> states = hideElements(driver, ignoredElements);
+        BufferedImage image = Shutterbug.shootPage(driver, Capture.FULL_SCROLL).getImage();
         restoreElements(driver, states);
+        saveImage(image, savedFileName);
         return savedFileName;
     }
 
     public static String takeElementScreenshot(String fileName, TestObject element, boolean isTestOpsVisionCheckPoint)
             throws Exception {
         if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
-            throw new IllegalArgumentException("File name cannot be null or empty");
+            throw new IllegalArgumentException(StringConstants.KW_SCREENSHOT_EXCEPTION_FILENAME_NULL_EMPTY);
         }
         if (element == null) {
-            throw new IllegalArgumentException("Captured element cannot be null");
+            throw new IllegalArgumentException(StringConstants.KW_SCREENSHOT_EXCEPTION_ELEMENT_NULL);
         }
 
         String savedFileName = isTestOpsVisionCheckPoint ? TestOpsUtil.replaceTestOpsVisionFileName(fileName)
                 : fileName;
         WebDriver driver = DriverFactory.getWebDriver();
         WebElement capturedElement = WebUiCommonHelper.findWebElement(element, 0);
-        File savedFile = new File(savedFileName);
-        Shutterbug.shootElement(driver, capturedElement).withName(Files.getNameWithoutExtension(savedFileName)).save(savedFile.getParent());
+        BufferedImage image = Shutterbug.shootElement(driver, capturedElement).getImage();
+        saveImage(image, savedFileName);
         return savedFileName;
     }
 
     public static String takeAreaScreenshot(String fileName, Rectangle rect, boolean isTestOpsVisionCheckPoint)
             throws IOException, IllegalArgumentException {
         if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
-            throw new IllegalArgumentException("File name cannot be null or empty");
+            throw new IllegalArgumentException(StringConstants.KW_SCREENSHOT_EXCEPTION_FILENAME_NULL_EMPTY);
         }
         if (rect == null) {
-            throw new IllegalArgumentException("Captured area cannot be null");
+            throw new IllegalArgumentException(StringConstants.KW_SCREENSHOT_EXCEPTION_AREA_NULL);
         }
 
         String savedFileName = isTestOpsVisionCheckPoint ? TestOpsUtil.replaceTestOpsVisionFileName(fileName)
@@ -110,40 +113,45 @@ public class FileUtil {
         WebDriver driver = DriverFactory.getWebDriver();
         BufferedImage image = Shutterbug.shootPage(driver, Capture.VIEWPORT).getImage();
         if ((rect.x + rect.width) > image.getWidth() || (rect.y + rect.height) > image.getHeight()) {
-            throw new IllegalArgumentException("Captured area is larger than actual viewport");
+            throw new IllegalArgumentException(StringConstants.KW_SCREENSHOT_EXCEPTION_AREA_LARGER);
         }
 
-        ImageIO.write(image.getSubimage(rect.x, rect.y, rect.width, rect.height), TestOpsUtil.DEFAULT_IMAGE_EXTENSION,
-                TestOpsUtil.ensureDirectory(new File(savedFileName), true));
+        saveImage(image.getSubimage(rect.x, rect.y, rect.width, rect.height), savedFileName);
         return savedFileName;
     }
 
-    private static Map<TestObject, String> hideElements(WebDriver driver, List<TestObject> testObjects) throws Exception {
+    private static Map<WebElement, String> hideElements(WebDriver driver, List<TestObject> testObjects) throws Exception {
         if (testObjects == null || driver == null) {
             return null;
         }
 
-        Map<TestObject, String> preState = new HashMap<>();
+        Map<WebElement, String> preState = new HashMap<>();
         JavascriptExecutor jsx = (JavascriptExecutor)driver;
+        int counter = 0;
         for (TestObject to : testObjects) {
-            WebElement e = WebUiCommonHelper.findWebElement(to, 0);
-            String state = jsx.executeScript("return arguments[0].style.visibility", e).toString();
-            preState.put(to, state);
-            jsx.executeScript("arguments[0].style.visibility = 'hidden'", e);
+            try {
+                WebElement element = WebUiCommonHelper.findWebElement(to, 0);
+                String state = jsx.executeScript("return arguments[0].style.visibility", element).toString();
+                preState.put(element, state);
+                jsx.executeScript("arguments[0].style.visibility = 'hidden'", element);
+                ++counter;
+            } catch (Exception e) {
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCREENSHOT_FULLPAGE_FAIL_HIDE_OBJECT, to.getObjectId()));
+            }
         }
         
+        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCREENSHOT_FULLPAGE_HIDDEN_COUNTER, counter));
         return preState;
     }
 
-    private static void restoreElements(WebDriver driver, Map<TestObject, String> states) throws Exception {
+    private static void restoreElements(WebDriver driver, Map<WebElement, String> states) throws Exception {
         if (states == null || driver == null) {
             return;
         }
         
         JavascriptExecutor jsx = (JavascriptExecutor) driver;
-        for (TestObject to : states.keySet()) {
-            WebElement e = WebUiCommonHelper.findWebElement(to, 0);
-            jsx.executeScript("arguments[0].style.visibility = '" + states.get(to) + "'", e);
+        for (WebElement e : states.keySet()) {
+            jsx.executeScript("arguments[0].style.visibility = '" + states.get(e) + "'", e);
         }
     }
 
@@ -235,5 +243,35 @@ public class FileUtil {
         File baseDir = new File(absoluteBaseDir);
         return file.getAbsolutePath().startsWith(baseDir.getAbsolutePath());
     }
-
+    
+    private static BufferedImage takeViewportScreenshot() throws Exception {
+        WebDriver driver = DriverFactory.getWebDriver();
+        BufferedImage image = Shutterbug.shootPage(driver, Capture.VIEWPORT).getImage();
+        if (WebUIDriverType.IOS_DRIVER.getName().equals(DriverFactory.getExecutedBrowser().getName())) {
+            return removeBrowserAndOSStatusBar(driver, image);
+        }
+        return image;
+    }
+    
+    private static BufferedImage removeBrowserAndOSStatusBar(WebDriver driver, BufferedImage image) {
+        int viewportWidth = WebUiCommonHelper.getViewportWidth(driver) * 2;
+        int viewportHeight = WebUiCommonHelper.getViewportHeight(driver) * 2;
+        int imageWidth = image.getWidth();
+        int imageHeight = image.getHeight();
+        if (viewportHeight != image.getHeight() || viewportWidth != image.getWidth()) {
+            return image.getSubimage(imageWidth - viewportWidth, imageHeight - viewportHeight, viewportWidth, viewportHeight);
+        }
+        return image;
+    }
+    
+    private static void saveImage(BufferedImage image, String fileName) throws IOException, SecurityException {
+        File file = new File(fileName);
+        TestOpsUtil.ensureDirectory(file, true);
+        ImageIO.write(image, TestOpsUtil.DEFAULT_IMAGE_EXTENSION, file);
+    }
+    
+    private static void takeDefaultScreenshot(String fileName) throws WebDriverException, StepFailedException, IOException {
+        FileUtils.copyFile(((TakesScreenshot) DriverFactory.getWebDriver()).getScreenshotAs(OutputType.FILE),
+                new File(fileName), false);
+    }
 }
