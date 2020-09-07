@@ -8,7 +8,7 @@ public interface TestOpsFeatureActivator {
 
     String connect(String serverUrl, String email, String password) throws Exception;
     
-    Map<String, String> getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
+    Map<String, String> getLicense(String serverUrl, String token, String username, Long organizationId, String sessionId, String hostname,
             String machineId) throws Exception;
     
     void releaseLicense(String serverUrl, String machineId, String ksVersion, String sessionId,

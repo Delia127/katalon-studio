@@ -223,14 +223,18 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_LBL_MAIL_RECIPIENTS;
 
-    public static String DIA_GRP_OTHER_OPTIONS;
+    public static String DIA_GRP_AUTHENTICATION;
+
+    public static String DIA_GRP_EXECUTION_CONFIGURATIONS;
 
     public static String DIA_CHK_DISPLAY_CONSOLE_LOG;
 
     public static String DIA_CHK_KEEP_CONSOLE_LOG;
 
     public static String DIA_LBL_UPDATE_EXECUTION_STATUS;
-    
+
+    public static String DIA_LBL_ORGANIZATION;
+
     public static String DIA_LBL_APIKEY;
 
     public static String DIA_LBL_SECONDS;
