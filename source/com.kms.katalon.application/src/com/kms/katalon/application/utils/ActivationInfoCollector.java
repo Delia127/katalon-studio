@@ -132,7 +132,7 @@ public class ActivationInfoCollector {
                     if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(encryptedPassword)) {
                         String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
                         String machineId = MachineUtil.getMachineId();
-                        LicenseResource licenseResource = activate(email, password, machineId, errorMessage);
+                        LicenseResource licenseResource = activate(email, password, null, machineId, errorMessage);
 
                         if (licenseResource != null) {
                             license = licenseResource.getLicense();
@@ -200,11 +200,11 @@ public class ActivationInfoCollector {
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PUBLIC_KEY, publicKey, true);
     }
     
-    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, StringBuilder errorMessage) {
+    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, Long organizationId, StringBuilder errorMessage) {
         activated = false;
         try {
             String machineId = MachineUtil.getMachineId();
-            LicenseResource licenseResource = activate(null, apiKey, machineId, errorMessage);
+            LicenseResource licenseResource = activate(null, apiKey, organizationId, machineId, errorMessage);
 
             if (licenseResource != null) {
                 License license = licenseResource.getLicense();
@@ -256,7 +256,7 @@ public class ActivationInfoCollector {
 
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
             String machineId = MachineUtil.getMachineId();
-            LicenseResource licenseResource = ActivationInfoCollector.activate(username, password, machineId, errorMessage);
+            LicenseResource licenseResource = ActivationInfoCollector.activate(username, password, null, machineId, errorMessage);
             
             if (licenseResource != null) {
                 License license = licenseResource.getLicense();
@@ -354,10 +354,10 @@ public class ActivationInfoCollector {
         KatalonApplicationActivator.getFeatureActivator().deactivate(serverUrl, token, machineId, orgId);
     }
 
-    public static LicenseResource activate(String serverUrl, String userName, String password, String machineId,
+    public static LicenseResource activate(String serverUrl, String userName, String password, Long organizationId, String machineId,
             StringBuilder errorMessage) {
         ApplicationInfo.setTestOpsServer(serverUrl);
-        return activate(userName, password, machineId, errorMessage);
+        return activate(userName, password, organizationId, machineId, errorMessage);
     }
 
     public static void sendTrackingForActivate(String userName, String machineId, boolean isActivatedSuccess, StringBuilder errorMessage) {
@@ -372,12 +372,12 @@ public class ActivationInfoCollector {
         sendTracking.start();
     }
 
-    public static LicenseResource activate(String userName, String password, String machineId, StringBuilder errorMessage) {
+    public static LicenseResource activate(String userName, String password, Long organizationId, String machineId, StringBuilder errorMessage) {
         License license;
         ActivationInfoCollector.publicKey = null;
         if (!StringUtils.isBlank(password) && !StringUtils.isBlank(machineId)) {
             try {
-                Map<String, String> respond = getLicenseFromTestOps(userName, password, machineId);
+                Map<String, String> respond = getLicenseFromTestOps(userName, password, organizationId, machineId);
                 String jwtCode = respond.get("license");
                 String message = respond.get("errorMessage");
                 String publicKey = respond.get("publicKey");
@@ -487,11 +487,11 @@ public class ActivationInfoCollector {
         return null;
     }
 
-    private static Map<String, String> getLicenseFromTestOps(String userName, String password, String machineId) throws Exception {
+    private static Map<String, String> getLicenseFromTestOps(String userName, String password, Long organizationId, String machineId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
         String hostname = getHostname();
-        Map<String, String> licenseInfor = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName,
+        Map<String, String> licenseInfor = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, userName, organizationId,
                 KatalonApplication.USER_SESSION_ID, hostname, machineId);
         return licenseInfor;
     }

@@ -59,6 +59,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsKREOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
@@ -159,12 +160,25 @@ public class AnalyticsApiProvider {
 
     public static List<AnalyticsOrganization> getOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
         try {
-            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_ORGANIZATIONS_LIST);
             URIBuilder uriBuilder = new URIBuilder(uri);
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
-            AnalyticsOrganizationPage organizationPage = executeRequest(httpGet, AnalyticsOrganizationPage.class);
-            return organizationPage.getOrganizations();
+            AnalyticsOrganization[] organizations = executeRequest(httpGet, AnalyticsOrganization[].class);
+            return Arrays.asList(organizations);
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
+    public static List<AnalyticsOrganization> getKREOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_ORGANIZATIONS_LIST);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            AnalyticsKREOrganization[] organizations = executeRequest(httpGet, AnalyticsKREOrganization[].class);
+            return Arrays.asList(organizations).stream().filter(element -> element.isKreLicense()).collect(Collectors.toList());
         } catch (Exception e) {
             throw AnalyticsApiExeception.wrap(e);
         }
@@ -253,7 +267,7 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String username, String sessionId,
+    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String username, Long organizationId, String sessionId,
             String hostname, String machineKey, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
@@ -261,6 +275,7 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("machineKey", machineKey + "");
             uriBuilder.setParameter("ksVersion", VersionUtil.getCurrentVersion().getVersion());
             uriBuilder.setParameter("email", username);
+            uriBuilder.setParameter("organizationId", organizationId + "");
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
             

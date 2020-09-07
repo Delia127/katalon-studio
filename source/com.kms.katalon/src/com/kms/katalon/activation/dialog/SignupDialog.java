@@ -354,7 +354,7 @@ public class SignupDialog extends AbstractDialog {
         setSyncMessage(MessageConstants.SignupDialog_MSG_ACTIVATING_NEW_ACCOUNT, false);
         StringBuilder errorMessageBuilder = new StringBuilder();
         String machineId = MachineUtil.getMachineId();
-        ActivationInfoCollector.activate(authenticationInfo.getEmail(), authenticationInfo.getPassword(), machineId,
+        ActivationInfoCollector.activate(authenticationInfo.getEmail(), authenticationInfo.getPassword(), null, machineId,
                 errorMessageBuilder);
         if (errorMessageBuilder.length() > 0) {
             throw new ActivationErrorException(errorMessageBuilder.toString());
