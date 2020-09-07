@@ -3,6 +3,7 @@ package com.kms.katalon.composer.execution.launcher;
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
@@ -31,7 +32,9 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.SelfHealingExecutionReportCollector;
 import com.kms.katalon.execution.collector.SelfHealingExecutionReport;
+import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
@@ -44,6 +47,7 @@ import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
+import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
@@ -175,7 +179,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
 
             if (getExecutedEntity() instanceof TestCaseExecutedEntity) {
                 String resultTestcase = getExecutionResult();
-                Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(), resultTestcase,
+                Trackings.trackExecuteTestCase(mode.toString(), getDriverName(runConfig), resultTestcase,
                         getEndTime().getTime() - getStartTime().getTime(), selfHealingReport.isEnabled(),
                         selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
             } else if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
@@ -185,6 +189,24 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
                         selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo(), getResult().getTotalTestCases(), getResult().getNumPasses());
             }
         }
+    }
+    
+    private String getDriverName(IRunConfiguration runConfig) {
+        if (runConfig instanceof CustomRunConfiguration) {
+            IDriverConnector driver = runConfig.getDriverConnectors().get("Remote");
+            boolean isRemoteDriver = driver != null;
+            return isRemoteDriver
+                    ? MessageFormat.format("Custom - {0} - {1}", super.getName(),
+                            driver.getSystemProperties().get("remoteWebDriverType"))
+                    : MessageFormat.format("Custom - {0}", super.getName());
+        }
+        
+        if (runConfig instanceof RemoteWebRunConfiguration) {
+            return MessageFormat.format("Remote - {0}",
+                    ((RemoteWebRunConfiguration) runConfig).getRemoteWebDriverConnectorType().name());
+        }
+
+        return runConfig.getName();
     }
 
     protected String getExecutionResult() {
