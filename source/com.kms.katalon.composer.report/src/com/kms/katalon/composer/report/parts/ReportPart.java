@@ -676,7 +676,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         btnFilterTestCaseIncomplete.setText("Incomplete");
         btnFilterTestCaseIncomplete.setImage(ImageConstants.IMG_16_INCOMPLETE);
         btnFilterTestCaseIncomplete.setSelection(true);
-        
+
         btnFilterTestCaseSkipped = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
         btnFilterTestCaseSkipped.setText("Skipped");
         btnFilterTestCaseSkipped.setImage(ImageConstants.IMG_16_SKIPPED);

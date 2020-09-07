@@ -129,7 +129,7 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
     public boolean isSkippedShown() {
         return showSkipped;
     }
-    
+
     public void showSkipped(boolean showSkipped) {
         this.showSkipped = showSkipped;
     }
