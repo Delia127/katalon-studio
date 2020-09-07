@@ -614,6 +614,22 @@ public class ComponentUtil {
     public static void setData(Control control, String key, Object value) {
         control.setData(key, value);
     }
+    
+    public static void show(Control control) {
+        control.setVisible(true);
+        Object layoutData = getLayoutData(control);
+        if (layoutData instanceof GridData) {
+            ((GridData) layoutData).exclude = false;
+        }
+    }
+    
+    public static void hide(Control control) {
+        control.setVisible(false);
+        Object layoutData = getLayoutData(control);
+        if (layoutData instanceof GridData) {
+            ((GridData) layoutData).exclude = true;
+        }
+    }
 
     public static void applyPrimaryButtonStyle(Control control) {
         setCursorPointer(control);
