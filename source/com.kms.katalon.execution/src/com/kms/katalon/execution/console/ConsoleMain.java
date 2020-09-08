@@ -518,8 +518,8 @@ public class ConsoleMain {
                 progressDelay = Integer.valueOf(progressDelayString);
             } catch (NumberFormatException e) {
                 LogUtil.printErrorLine(
-                        MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_Z,
-                                progressDelayString, SHOW_STATUS_DELAY_OPTION, "integer"));
+                        MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER,
+                                progressDelayString, SHOW_STATUS_DELAY_OPTION));
             }
         }
         waitForExecutionToFinish(progressDelay);
@@ -608,8 +608,7 @@ public class ConsoleMain {
                 orgIdValue = Long.valueOf(organizationId);
             }
         } catch (NumberFormatException e) {
-            LogUtil.printErrorLine(MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_Z,
-                    orgIdValue, KATALON_ORGANIZATION_ID_OPTION, "Long"));
+            LogUtil.printErrorLine(String.format(StringConstants.MNG_PRT_ORGANIZATION_ID_IS_INVALID));
         }
         return orgIdValue;
     }
