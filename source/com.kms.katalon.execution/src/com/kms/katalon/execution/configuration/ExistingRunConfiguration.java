@@ -73,4 +73,9 @@ public class ExistingRunConfiguration extends AbstractRunConfiguration {
         return new ExistingRunConfiguration(projectDir, sessionId, remoteUrl, driverName);
     }
 
+    @Override
+    public String getReportDriverName() {
+        return driverName;
+    }
+
 }
