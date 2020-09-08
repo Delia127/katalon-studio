@@ -275,7 +275,7 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("machineKey", machineKey + "");
             uriBuilder.setParameter("ksVersion", VersionUtil.getCurrentVersion().getVersion());
             uriBuilder.setParameter("email", username);
-            uriBuilder.setParameter("organizationId", organizationId + "");
+            uriBuilder.setParameter("organizationId", organizationId == null ? "" : Long.toString(organizationId));
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
             

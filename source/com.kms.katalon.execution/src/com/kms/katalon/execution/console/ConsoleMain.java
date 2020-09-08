@@ -189,14 +189,15 @@ public class ConsoleMain {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_SECOND_OPTION));
             }
 
-            Long organizationId = null;
+            String organizationId = null;
             if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
-                organizationId = Long.valueOf((String) options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+                organizationId = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
             }
 
             if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
-                organizationId = Long.valueOf((String) options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
+                organizationId = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
             }
+            Long orgIdValue = parseOrganizationId(organizationId);
 
             String apiKeyOnPremiseValue = null;
             if (options.has(KATALON_API_KEY_ON_PREMISE_OPTION)) {
@@ -246,7 +247,7 @@ public class ConsoleMain {
                     }
 
                     StringBuilder errorMessage = new StringBuilder();
-                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, organizationId, errorMessage);
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, orgIdValue, errorMessage);
 
                     String error = errorMessage.toString();
                     if (StringUtils.isNotBlank(error)) {
@@ -267,7 +268,7 @@ public class ConsoleMain {
                             LocalInformationUtil.printLicenseServerInfo(server, apiKey);
 
                             errorMessage = new StringBuilder();
-                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, organizationId, errorMessage);
+                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, orgIdValue, errorMessage);
                             error = errorMessage.toString();
                             if (StringUtils.isNotBlank(error)) {
                                 LogUtil.printErrorLine(error);
@@ -331,7 +332,6 @@ public class ConsoleMain {
 
             Map<String, String> localStore = new HashMap<>();
             localStore.put(KATALON_API_KEY_OPTION, apiKeyValue);
-            localStore.put(KATALON_ORGANIZATION_ID_OPTION, Long.toString(organizationId));
             localStore.put("lastActivateErrorMessage", ActivationInfoCollector.DEFAULT_REASON);
             ActivationInfoCollector.scheduleCheckLicense(() -> {
                 String lastActivateErrorMessage = localStore.get("lastActivateErrorMessage");
@@ -340,8 +340,7 @@ public class ConsoleMain {
             }, () -> {
                 StringBuilder errorMessage = new StringBuilder();
                 String apiKey = localStore.get(KATALON_API_KEY_OPTION);
-                String orgId = localStore.get(KATALON_ORGANIZATION_ID_OPTION);
-                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, Long.valueOf(orgId), errorMessage);
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, orgIdValue, errorMessage);
 
                 String error = errorMessage.toString();
                 if (StringUtils.isNotBlank(error)) {
@@ -599,6 +598,18 @@ public class ConsoleMain {
             } catch (IOException e) {
                 LogUtil.printAndLogError(e, MessageFormat.format(ExecutionMessageConstants.RE_ERROR_DELETE_FOLDERS, libFolderName));
             }
+        }
+    }
+
+    private static Long parseOrganizationId(String organizationId) throws InvalidConsoleArgumentException {
+        Long orgIdValue = null;
+        try {
+            if (organizationId != null) {
+                orgIdValue = Long.valueOf(organizationId);
+            }
+            return orgIdValue;
+        } catch (NumberFormatException e) {
+            throw new InvalidConsoleArgumentException(String.format(StringConstants.MNG_PRT_ORGANIZATION_ID_IS_INVALID));
         }
     }
 }
