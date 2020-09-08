@@ -299,6 +299,11 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         }
         return nameStringBuilder.toString();
     }
+    
+    @Override
+    public String getReportDriverName() {
+        return getName();
+    }
 
     public IHostConfiguration getHostConfiguration() {
         return hostConfiguration;
