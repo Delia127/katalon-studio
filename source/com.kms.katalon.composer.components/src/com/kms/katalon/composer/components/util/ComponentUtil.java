@@ -448,7 +448,7 @@ public class ComponentUtil {
         gridFillVertical(control);
     }
 
-    public static int getMaxWidthChildren(Composite parent) {
+    public static int findMaxWidthInChildren(Composite parent) {
         if (parent == null) {
             return 0;
         }
