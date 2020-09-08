@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.swing.plaf.ComponentUI;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +40,6 @@ import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -63,7 +64,6 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Sash;
@@ -91,7 +91,11 @@ import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.ComponentBuilder;
+import com.kms.katalon.composer.components.util.ComponentUtil;
 import com.kms.katalon.composer.components.util.DialogUtil;
+import com.kms.katalon.composer.components.util.FontUtil;
+import com.kms.katalon.composer.components.util.StyleContext;
 import com.kms.katalon.composer.quickstart.QuickConfirmLeavingRecordDialog;
 import com.kms.katalon.composer.quickstart.QuickRecordGuidingDialog;
 import com.kms.katalon.composer.quickstart.QuickSurveyLeavingRecordDialog;
@@ -724,7 +728,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 hSashForm.setWeights(sashFormWeights);
                 hSashForm.setSashWidth(sashWidth);
                 getShell().setSize(shellSize.x + widthDiff, shellSize.y);
-                tltmCapturedObjects.getParent().layout(true);
+                tltmCapturedObjects.getParent().requestLayout();
             }
         });
     }
@@ -1295,44 +1299,41 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmStop.setEnabled(false);
     }
 
-    private void hideKURecorderHintComposite(Composite hintComposite) {
-        userProfile.setEnableKURecorderHint(false);
-        UserProfileHelper.saveProfile(userProfile);
-        Composite parent = hintComposite.getParent();
-        hintComposite.dispose();
-        parent.layout();
-    }
-
     private Composite createKURecorderHint(Composite parent) {
         boolean isEnableKURecorderHint = userProfile.isEnableKURecorderHint();
         if (!isEnableKURecorderHint) {
             return null;
         }
-        Composite hintComposite = new Composite(parent, SWT.NONE);
-        GridData gridData = new GridData();
-        gridData.horizontalAlignment = GridData.BEGINNING;
-        hintComposite.setLayoutData(gridData);
-        GridLayout hintLayout = new GridLayout(4, false);
-        hintComposite.setLayout(hintLayout);
+        StyleContext.begin();
+        StyleContext.setFont(FontUtil.ITALIC);
 
-        Label hintLabel1 = new Label(hintComposite, SWT.NONE);
-        hintLabel1.setText(StringConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_1);
-        hintLabel1.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
-        Label KUImage = new Label(hintComposite, SWT.NONE);
-        KUImage.setImage(ImageConstants.IMG_16_KU_RECORDER);
-        Label hintLabel2 = new Label(hintComposite, SWT.NONE);
-        hintLabel2.setText(StringConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_2);
-        hintLabel2.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
-        Link link = new Link(hintComposite, SWT.NONE);
-        link.setText("<a href=\"\">Hide</a>");
-        link.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
-        link.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                hideKURecorderHintComposite(hintComposite);
-            }
-        });
+        Composite hintComposite = ComponentBuilder.gridContainer(parent, 4).gridMarginX(5).build();
+
+        ComponentBuilder.label(hintComposite)
+                .text(StringConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_1)
+                .build();
+
+        ComponentBuilder.label(hintComposite).image(ImageConstants.IMG_16_KU_RECORDER).build();
+
+        ComponentBuilder.label(hintComposite)
+                .text(StringConstants.LBL_HINT_KATALON_RECORDEDER_CONTEXT_MENU_2)
+                .build();
+
+        ComponentBuilder.link(hintComposite).text("<a href=\"\">Hide</a>").onClick(event -> {
+            hideKURecorderHintComposite(hintComposite);
+        }).build();
+
+        StyleContext.prevFont();
+        StyleContext.end();
         return hintComposite;
+    }
+
+    private void hideKURecorderHintComposite(Composite hintComposite) {
+        userProfile.setEnableKURecorderHint(false);
+        UserProfileHelper.saveProfile(userProfile);
+        Composite parent = hintComposite.getParent();
+        ComponentUtil.hide(hintComposite);
+        parent.layout();
     }
 
     private void createDropdownContent(Dropdown dropdown) {
