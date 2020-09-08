@@ -419,6 +419,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     public static String DIA_CB_TESTOPS_LOADING;
 
+	public static String KATALON_STUDIO_ONLINE_LICENSE_DOCUMENT;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);

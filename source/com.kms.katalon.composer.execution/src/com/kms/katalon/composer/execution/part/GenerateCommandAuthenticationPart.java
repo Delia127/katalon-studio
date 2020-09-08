@@ -47,6 +47,8 @@ import com.kms.katalon.util.CryptoUtil;
 public class GenerateCommandAuthenticationPart extends Composite {
 
     private Text txtAPIKey;
+    
+    private static final String KATALON_STUDIO_ONLINE_LICENSE_DOCUMENT = StringConstants.KATALON_STUDIO_ONLINE_LICENSE_DOCUMENT;
 
     private ComboViewer cbOrganizations;
 
@@ -120,14 +122,14 @@ public class GenerateCommandAuthenticationPart extends Composite {
 
     private void fetchDataForComboBoxOrganizations() {
         AnalyticsOrganization[] organizations = getKREOrganizations();
-        if (organizations.length >= 0) {
+        if (organizations != null) {
             ccbOrganizations.setEnabled(true);
+            cbOrganizations.setInput(organizations);
         }
-        cbOrganizations.setInput(organizations);
     }
 
     private void createHelpComposite(Composite parent) {
-        HelpComposite btnHelp = new HelpComposite(parent, "");
+        HelpComposite btnHelp = new HelpComposite(parent, KATALON_STUDIO_ONLINE_LICENSE_DOCUMENT);
         btnHelp.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
     }
 
@@ -228,9 +230,6 @@ public class GenerateCommandAuthenticationPart extends Composite {
 
             LogUtil.logInfo(organizations.size() + " KRE organization(s) fetched");
             if (organizations.size() >= 1) {
-                AnalyticsOrganization defaultOrganization = new AnalyticsOrganization();
-                defaultOrganization.setName("<Default organization>");
-                organizations.add(0, defaultOrganization);
                 return organizations.toArray(new AnalyticsOrganization[organizations.size()]);
             }
         } catch (Exception e) {
