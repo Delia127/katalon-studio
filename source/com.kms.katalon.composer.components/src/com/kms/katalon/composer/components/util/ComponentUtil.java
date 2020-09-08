@@ -523,17 +523,6 @@ public class ComponentUtil {
         setHeight(control, height);
     }
 
-    public static void sameWidth(Control control, int width) {
-        Object layoutData = getLayoutData(control);
-        if (layoutData instanceof GridData) {
-            ((GridData) layoutData).widthHint = width;
-        }
-        if (layoutData instanceof RowData) {
-            ((RowData) layoutData).width = width;
-        }
-        control.setLayoutData(layoutData);
-    }
-
     public static void setRowSpacing(Composite container, int spacing) {
         RowLayout rowLayout = getRowLayout(container);
         rowLayout.spacing = spacing;
