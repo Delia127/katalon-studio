@@ -197,7 +197,7 @@ public class ConsoleMain {
             if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
                 organizationId = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
             }
-            Long orgIdValue = verifyOrganizationId(organizationId);
+            Long orgIdValue = parseOrganizationId(organizationId);
 
             String apiKeyOnPremiseValue = null;
             if (options.has(KATALON_API_KEY_ON_PREMISE_OPTION)) {
@@ -601,7 +601,7 @@ public class ConsoleMain {
         }
     }
 
-    private static Long verifyOrganizationId(String organizationId) throws InvalidConsoleArgumentException {
+    private static Long parseOrganizationId(String organizationId) throws InvalidConsoleArgumentException {
         Long orgIdValue = null;
         try {
             if (organizationId != null) {
