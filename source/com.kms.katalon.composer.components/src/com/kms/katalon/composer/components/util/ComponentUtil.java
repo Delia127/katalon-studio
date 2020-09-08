@@ -429,13 +429,67 @@ public class ComponentUtil {
         control.setLayoutData(layoutData);
     }
 
-    public static void gridFill(Control control) {
+    public static void gridFillHorizontal(Control control) {
         GridData gridData = getGridData(control);
         gridData.horizontalAlignment = SWT.FILL;
-        gridData.verticalAlignment = SWT.FILL;
         gridData.grabExcessHorizontalSpace = true;
+        control.setLayoutData(gridData);
+    }
+
+    public static void gridFillVertical(Control control) {
+        GridData gridData = getGridData(control);
+        gridData.verticalAlignment = SWT.FILL;
         gridData.grabExcessVerticalSpace = true;
         control.setLayoutData(gridData);
+    }
+
+    public static void gridFill(Control control) {
+        gridFillHorizontal(control);
+        gridFillVertical(control);
+    }
+
+    public static int findMaxWidthInChildren(Composite parent) {
+        if (parent == null) {
+            return 0;
+        }
+        return findMaxWidthInChildren(parent.getChildren());
+    }
+
+    public static int findMaxWidthInChildren(Control[] children) {
+        int maxWidth = 0;
+        for (Control child : children) {
+            maxWidth = Math.max(ComponentDataUtil.getWidth(child), maxWidth);
+        }
+        return maxWidth;
+    }
+
+    public static void setChildrenWidth(Composite parent, int width) {
+        if (parent == null) {
+            return;
+        }
+        setChildrenWidth(parent.getChildren(), width);
+    }
+
+    public static void setChildrenWidth(Control[] children, int width) {
+        for (Control child : children) {
+            setWidth(child, width);
+        }
+        Control firstChild = children[0];
+        if (firstChild != null) {
+            firstChild.getShell().pack();
+        }
+    }
+
+    public static void adjustChildrenWidth(Composite parent) {
+        if (parent == null) {
+            return;
+        }
+        adjustChildrenWidth(parent.getChildren());
+    }
+
+    public static void adjustChildrenWidth(Control[] children) {
+        int maxWidth = findMaxWidthInChildren(children);
+        setChildrenWidth(children, maxWidth);
     }
 
     public static void setWidth(Control control, int width) {

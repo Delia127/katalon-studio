@@ -55,8 +55,16 @@ public abstract class AbstractDialog extends Dialog {
     @Override
     public void create() {
         super.create();
+        adjustLayout();
         setInput();
         registerControlModifyListeners();
+    }
+
+    /**
+     * Used to adjust the layout after creating all components.
+     */
+    protected void adjustLayout() {
+        
     }
 
     /**

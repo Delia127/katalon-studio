@@ -4,10 +4,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.util.ComponentBuilder;
+import com.kms.katalon.composer.components.util.ComponentUtil;
 import com.kms.katalon.composer.components.util.FontUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class QuickRecordGuidingDialog extends BaseQuickStartDialog {
+
+    private Composite body;
 
     public QuickRecordGuidingDialog(Shell parentShell) {
         super(parentShell);
@@ -15,7 +18,7 @@ public class QuickRecordGuidingDialog extends BaseQuickStartDialog {
 
     @Override
     protected void createContent(Composite container) {
-        Composite body = ComponentBuilder.gridContainer(container).gridMargin(30).gridVerticalSpacing(10).build();
+        body = ComponentBuilder.gridContainer(container).gridMargin(30).gridVerticalSpacing(10).build();
 
         createGuidings(body);
     }
@@ -30,7 +33,13 @@ public class QuickRecordGuidingDialog extends BaseQuickStartDialog {
         ComponentBuilder.label(parent).text(step1).build();
 
         String step2 = "2. Once you're done, click [Save Script]. All your interactions will be stored as scripts to a new test case.";
-        ComponentBuilder.label(parent).text(step2).width(500).build().requestLayout();
+        ComponentBuilder.label(parent).text(step2).width(0).build().requestLayout();
+    }
+    
+    @Override
+    protected void adjustLayout() {
+        super.adjustLayout();
+        ComponentUtil.adjustChildrenWidth(body);
     }
 
     @Override

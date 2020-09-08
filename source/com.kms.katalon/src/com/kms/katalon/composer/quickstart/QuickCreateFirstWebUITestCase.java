@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.quickstart;
 
+import java.text.MessageFormat;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -14,11 +16,6 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
-
-    @Override
-    protected int getTipWidth() {
-        return 500;
-    }
 
     private static final String DEFAULT_URL = "https://www.amazon.com";
 
@@ -135,6 +132,9 @@ public class QuickCreateFirstWebUITestCase extends BaseQuickStartDialog {
 
     @Override
     protected void okPressed() {
+        if (StringUtils.isBlank(preferredSite)) {
+            return;
+        }
         boolean useDefaultBrowser = StringUtils.equals(DEFAULT_URL, getPreferredSite());
         Trackings.trackQuickStartStartRecord(browserSelect.getInput().name(), scenario, useDefaultBrowser);
         super.okPressed();
