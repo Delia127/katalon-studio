@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerExecutionMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.execution.constants.composerExecutionMessages";
 
+    public static String DEFAULT_ORGANIZATION;
+
     public static String CUSTOM_RUN_MENU_LABEL;
 
     public static String INVALID_TYPE_MESSAGE;
