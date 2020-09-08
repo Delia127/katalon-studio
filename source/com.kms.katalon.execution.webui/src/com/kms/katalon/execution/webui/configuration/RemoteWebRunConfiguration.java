@@ -56,9 +56,10 @@ public class RemoteWebRunConfiguration extends AbstractRunConfiguration {
 
     @Override
     public String getName() {
-        return super.getName();
+        String remoteServerUrl = ((RemoteWebDriverConnector) remoteDriverConnector).getRemoteServerUrl();
+        return super.getName() + " - " + StringUtils.defaultIfEmpty(remoteServerUrl, "<empty server URL>");
     }
-    
+
     @Override
     public String getReportDriverName() {
         return MessageFormat.format("Remote - {0}", getRemoteWebDriverConnectorType().name());

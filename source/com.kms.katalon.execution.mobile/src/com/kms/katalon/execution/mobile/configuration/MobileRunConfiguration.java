@@ -30,6 +30,11 @@ public abstract class MobileRunConfiguration extends AbstractRunConfiguration {
 
     @Override
     public String getName() {
+        return super.getName() + " - " + mobileDriverConnector.getDeviceId();
+    }
+
+    @Override
+    public String getReportDriverName() {
         return super.getName();
     }
 
