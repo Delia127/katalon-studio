@@ -601,15 +601,15 @@ public class ConsoleMain {
         }
     }
 
-    private static Long verifyOrganizationId(String organizationId) {
+    private static Long verifyOrganizationId(String organizationId) throws InvalidConsoleArgumentException {
         Long orgIdValue = null;
         try {
             if (organizationId != null) {
                 orgIdValue = Long.valueOf(organizationId);
             }
+            return orgIdValue;
         } catch (NumberFormatException e) {
-            LogUtil.printErrorLine(String.format(StringConstants.MNG_PRT_ORGANIZATION_ID_IS_INVALID));
+            throw new InvalidConsoleArgumentException(String.format(StringConstants.MNG_PRT_ORGANIZATION_ID_IS_INVALID));
         }
-        return orgIdValue;
     }
 }
