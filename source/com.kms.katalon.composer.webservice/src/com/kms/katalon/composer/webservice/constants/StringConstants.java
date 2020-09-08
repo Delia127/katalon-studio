@@ -15,6 +15,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MENU_CONTEXT_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ;
     // ImportWebServicesPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2 = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI2;
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3 = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_OPENAPI3;
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
 	public static final String MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SOAPUI;
 	public static final String MENU_CONTEXT_WEBSERVICE_REQ_WADL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WADL;
@@ -61,13 +63,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
     
     // ImportWebService
-    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;   
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER; 
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_OPENAPI3 = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_OPENAPI3;   
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN;   
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
+    public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_OPENAPI3 = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_OPENAPI3;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN= ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN;
- 
+    public static final String DIA_MSG_FILE_LOCATION_OR_URL = ComposerWebserviceMessageConstants.DIA_MSG_FILE_LOCATION_OR_URL;
+
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;
 	public static final String VIEW_COL_VALUE = VALUE;

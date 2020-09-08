@@ -311,6 +311,11 @@ public class CoreMessageConstants extends NLS {
 
 	public static String SELF_HEALING_REFER_TO_DOCUMENT;
 
+    // Screenshot keyword
+    public static String UTIL_EXC_FILE_PATH_INVALID;
+
+    public static String UTIL_EXC_FILE_NOT_NULL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreMessageConstants.class);

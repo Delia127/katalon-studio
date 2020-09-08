@@ -54,11 +54,13 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionW
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.ITestCasePart;
+import com.kms.katalon.controller.GlobalVariableController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
-import com.kms.katalon.execution.util.ExecutionProfileStore;
 
 /**
  * Utility class to handle changing value for ast nodes
@@ -244,18 +246,32 @@ public class AstValueUtil {
     public static CellEditor getCellEditorForGlobalVariableExpression(Composite parent,
             PropertyExpressionWrapper propertyExpressionWrapper) {
         List<String> toolTips = new ArrayList<String>();
-        List<GlobalVariableEntity> variables = ExecutionProfileStore.getInstance()
-                .getSelectedProfile()
-                .getGlobalVariableEntities();
+
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        List<GlobalVariableEntity> variables = null;
+        try {
+            variables = GlobalVariableController.getInstance().getAllGlobalVariables(currentProject);
+        } catch (Exception e) {
+            variables = null;
+        }
+
+        if (variables == null) {
+            return null;
+        }
+
+        List<GlobalVariableEntity> displayedVariables = new ArrayList<GlobalVariableEntity>();
         List<String> variableNames = new ArrayList<String>();
         for (GlobalVariableEntity variable : variables) {
-            variableNames.add(variable.getName());
-            toolTips.add(variable.getName());
+            if (!variableNames.contains(variable.getName())) {
+                variableNames.add(variable.getName());
+                toolTips.add(variable.getName());
+                displayedVariables.add(variable);
+            }
         }
-        return new GlobalVariablePropertyComboBoxCellEditorWithContentProposal(parent, propertyExpressionWrapper,
-                variables.toArray(new GlobalVariableEntity[variables.size()]),
-                variableNames.toArray(new String[variableNames.size()]), toolTips.toArray(new String[toolTips.size()]));
 
+        return new GlobalVariablePropertyComboBoxCellEditorWithContentProposal(parent, propertyExpressionWrapper,
+                displayedVariables.toArray(new GlobalVariableEntity[displayedVariables.size()]),
+                variableNames.toArray(new String[variableNames.size()]), toolTips.toArray(new String[toolTips.size()]));
     }
 
     public static CellEditor getCellEditorForEncryptedText(Composite parent,

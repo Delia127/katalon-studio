@@ -210,6 +210,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.util.ExecutionProfileStore;
 import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.execution.webservice.setting.WebServiceExecutionSettingStore;
@@ -882,7 +883,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
 
         VariableEvaluator evaluator = new VariableEvaluator();
-        Map<String, Object> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
+        Map<String, Object> evaluatedVariables = evaluator.evaluate(variableMap, ExecutionProfileStore.getInstance().getSelectedProfile(), null);
 
         return evaluatedVariables;
     }
@@ -2648,11 +2649,17 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         if (authValueArr.length != 2) {
             return;
         }
-
-        String[] usernamePassword = Base64.basicDecode(authValueArr[1]);
-        txtUsername.setText(usernamePassword[0]);
-        txtPassword.setText(usernamePassword[1]);
-        ccbAuthType.select(Arrays.asList(ccbAuthType.getItems()).indexOf(BASIC_AUTH));
+        List<String> authTypeList = Arrays.asList(ccbAuthType.getItems());
+        try {
+            String[] usernamePassword = Base64.basicDecode(authValueArr[1]);
+            txtUsername.setText(usernamePassword[0]);
+            txtPassword.setText(usernamePassword[1]);
+            ccbAuthType.select(authTypeList.indexOf(BASIC_AUTH));
+        } catch (IllegalArgumentException exception) {
+            txtUsername.setText("");
+            txtPassword.setText("");
+            ccbAuthType.select(authTypeList.indexOf(NO_AUTH));
+        }
     }
 
     protected boolean isSOAP() {

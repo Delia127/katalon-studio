@@ -14,6 +14,8 @@ public class ComponentConstants {
 
     public static final String CONTROL_PROP_IMAGE = "control.prop.image";
 
+    public static final String CONTROL_PROP_TEXT = "control.prop.text";
+
     public static final String CONTROL_STATE_BACKGROUND = "control.state.background";
 
     public static final String CONTROL_STATE_COLOR = "control.state.color";

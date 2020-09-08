@@ -251,7 +251,7 @@ public class KeywordContentProposalAdapter {
         Assert.isNotNull(controlContentAdapter);
         this.control = control;
         this.controlContentAdapter = controlContentAdapter;
-//        tooltip = new BuiltinKeywordNodeTooltip(control);
+        tooltip = new BuiltinKeywordNodeTooltip(control);
         
         // The rest of these may be null
         this.proposalProvider = proposalProvider;
@@ -1912,6 +1912,10 @@ public class KeywordContentProposalAdapter {
         }
 
         private void showKeywordTooltip() {
+            if (this.proposalTable == null || this.proposalTable.isDisposed()) {
+                return;
+            }
+
             int selectionIndex = this.proposalTable.getSelectionIndex();
 
             if (!isProposalPopupOpen() || selectionIndex < 0) {

@@ -560,6 +560,8 @@ public class TreeEntityUtil {
             TestOpsFolderTreeEntity testOpsFolder = new TestOpsFolderTreeEntity(null);
             testOpsFolder.addChild(new TestOpsTreeEntity(StringConstants.TREE_TESTOPS_EXECUTION,
                     TestOpsAction.OPEN_EXECUTION, ImageConstants.IMG_16_TESTOPS_EXECUTIONS, testOpsFolder));
+            testOpsFolder.addChild(new TestOpsTreeEntity(StringConstants.TREE_TESTOPS_PLANS,
+                    TestOpsAction.OPEN_PLAN, ImageConstants.IMG_16_TESTOPS_PLAN, testOpsFolder));
             treeEntities.add(testOpsFolder);
         }
         

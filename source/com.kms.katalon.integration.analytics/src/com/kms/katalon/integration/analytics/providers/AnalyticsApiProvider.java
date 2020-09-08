@@ -46,6 +46,8 @@ import org.apache.http.util.EntityUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.core.model.KatalonPackage;
@@ -57,10 +59,13 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsKREOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsPlan;
+import com.kms.katalon.integration.analytics.entity.AnalyticsPlanPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsRelease;
@@ -155,12 +160,25 @@ public class AnalyticsApiProvider {
 
     public static List<AnalyticsOrganization> getOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
         try {
-            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_ORGANIZATIONS_LIST);
             URIBuilder uriBuilder = new URIBuilder(uri);
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
-            AnalyticsOrganizationPage organizationPage = executeRequest(httpGet, AnalyticsOrganizationPage.class);
-            return organizationPage.getOrganizations();
+            AnalyticsOrganization[] organizations = executeRequest(httpGet, AnalyticsOrganization[].class);
+            return Arrays.asList(organizations);
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
+    public static List<AnalyticsOrganization> getKREOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_ORGANIZATIONS_LIST);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            AnalyticsKREOrganization[] organizations = executeRequest(httpGet, AnalyticsKREOrganization[].class);
+            return Arrays.asList(organizations).stream().filter(element -> element.isKreLicense()).collect(Collectors.toList());
         } catch (Exception e) {
             throw AnalyticsApiExeception.wrap(e);
         }
@@ -240,7 +258,7 @@ public class AnalyticsApiProvider {
             }
 
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(map));
+            StringEntity entity = new StringEntity(gson.toJson(map), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsProject.class);
@@ -249,7 +267,7 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String username, String sessionId,
+    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String username, Long organizationId, String sessionId,
             String hostname, String machineKey, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
@@ -257,13 +275,13 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("machineKey", machineKey + "");
             uriBuilder.setParameter("ksVersion", VersionUtil.getCurrentVersion().getVersion());
             uriBuilder.setParameter("email", username);
+            uriBuilder.setParameter("organizationId", organizationId + "");
             uriBuilder.setParameter("sessionId", sessionId);
             uriBuilder.setParameter("hostname", hostname);
             
             KatalonPackage katalonPackage = KatalonApplication.getKatalonPackage();
             if (KatalonPackage.ENGINE.equals(katalonPackage)) {
-                String isFloatingEngine = System.getenv("ECLIPSE_SANDBOX");
-                if ("1.11".equals(isFloatingEngine)) {
+                if (KatalonApplication.isRunningInDevOpsEnvironment()) {
                     katalonPackage = KatalonPackage.FLOATING_ENGINE;
                 }
             }
@@ -307,7 +325,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
 
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
-            StringEntity entity = new StringEntity(gson.toJson(trackingInfo));
+            StringEntity entity = new StringEntity(gson.toJson(trackingInfo), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             executeRequest(httpPost, true, Object.class);
@@ -440,7 +458,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             Gson gson = new GsonBuilder().create();
-            StringEntity entity = new StringEntity(gson.toJson(fileInfoList));
+            StringEntity entity = new StringEntity(gson.toJson(fileInfoList), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
@@ -498,7 +516,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Content-type", "application/json");
 
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(map));
+            StringEntity entity = new StringEntity(gson.toJson(map), Charsets.UTF_8);
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsRunConfiguration.class);
@@ -582,7 +600,7 @@ public class AnalyticsApiProvider {
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             Gson gson = new GsonBuilder().create();
-            StringEntity entity = new StringEntity(gson.toJson(testRun));
+            StringEntity entity = new StringEntity(gson.toJson(testRun), Charsets.UTF_8);
             httpPost.setEntity(entity);
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
@@ -737,4 +755,49 @@ public class AnalyticsApiProvider {
         return response;
     }
     
+
+    public static AnalyticsProject getDefaultNewUserProject(String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, "/api/v1/projects/first");
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            String response = executeRequest(httpGet, false);
+            JsonParser jp = new JsonParser();
+            JsonElement json = jp.parse(response);
+            if (!json.isJsonArray() || json.getAsJsonArray().size() == 0) {
+                return null;
+            }
+
+            return new Gson().fromJson(json.getAsJsonArray().get(0), AnalyticsProject.class);
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
+    public static List<AnalyticsPlan> getPlans(Long projectId, String serverUrl, String token)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, "/api/v1/search");
+            URIBuilder builder = new URIBuilder(uri);
+
+            AnalyticsQuery query = new AnalyticsQuery();
+            query.setType("RunConfiguration");
+            AnalyticsQueryCondition conditionProject = new AnalyticsQueryCondition("Project.id", "=",
+                    projectId.toString());
+            query.setConditions(new AnalyticsQueryCondition[] { conditionProject });
+            AnalyticsQueryPagination pagination = new AnalyticsQueryPagination(0, 30, new String[] { "name,asc" });
+            query.setPagination(pagination);
+
+            builder.setParameter("q", JsonUtil.toJson(query));
+            HttpGet httpGet = new HttpGet(builder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            AnalyticsPlanPage response = executeRequest(httpGet, AnalyticsPlanPage.class);
+            return Arrays.asList(response.getContent());
+        } catch (Exception e) {
+            throw AnalyticsApiExeception.wrap(e);
+        }
+    }
+
 }

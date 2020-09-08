@@ -32,7 +32,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_MESSAGE = MESSAGE;
 
     public static final String DIA_TITLE_LOG_PROPERTIES = ComposerExecutionMessageConstants.DIA_TITLE_LOG_PROPERTIES;
-    
+
+    public static final String DIA_LBL_ORGANIZATION = ComposerExecutionMessageConstants.DIA_LBL_ORGANIZATION;
+
     public static final String DIA_LBL_TESTOPS_RELEASE = ComposerExecutionMessageConstants.DIA_LBL_TESTOPS_RELEASE;
     
     public static final String DIA_GRP_KATALON_TESTOPS = ComposerExecutionMessageConstants.DIA_GRP_KATALON_TESTOPS;
@@ -279,7 +281,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_LBL_MAIL_RECIPIENTS = ComposerExecutionMessageConstants.DIA_LBL_MAIL_RECIPIENTS;
 
-    public static final String DIA_GRP_OTHER_OPTIONS = ComposerExecutionMessageConstants.DIA_GRP_OTHER_OPTIONS;
+    public static final String DIA_GRP_AUTHENTICATION = ComposerExecutionMessageConstants.DIA_GRP_AUTHENTICATION;
+
+    public static final String DIA_GRP_EXECUTION_CONFIGURATIONS = ComposerExecutionMessageConstants.DIA_GRP_EXECUTION_CONFIGURATIONS;
 
     public static final String DIA_CHK_DISPLAY_CONSOLE_LOG = ComposerExecutionMessageConstants.DIA_CHK_DISPLAY_CONSOLE_LOG;
 

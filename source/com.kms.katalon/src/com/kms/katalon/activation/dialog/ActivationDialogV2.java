@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -42,11 +41,11 @@ import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
-import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.license.models.License;
 import com.kms.katalon.license.models.LicenseResource;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ActivationDialogV2 extends AbstractDialog {
 
@@ -62,10 +61,16 @@ public class ActivationDialogV2 extends AbstractDialog {
     private Text txtEmail;
 
     private Text txtPassword;
+    
+    private char defaultEchoChar = '\u2022';
+    
+    private Button btnShowPw;
 
     private Label lblProgressMessage;
 
     private Link lnkSwitchToSignupDialog;
+    
+    private Button btnTroubleshoot;
 
     private Button btnActivate;
 
@@ -93,8 +98,6 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Link lnkAgreeTerm;
     
-    private Link lnkTroubleshoot;
-
     private Composite organizationComposite;
     
     private boolean isExpanded;
@@ -121,6 +124,17 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         txtEmail.addModifyListener(modifyListener);
         txtPassword.addModifyListener(modifyListener);
+        
+        btnShowPw.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (btnShowPw.getSelection()) {
+                    txtPassword.setEchoChar('\0');
+                } else {
+                    txtPassword.setEchoChar(defaultEchoChar);
+                }
+            }
+        });
 
         lnkSwitchToSignupDialog.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -150,10 +164,13 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
         
-        lnkTroubleshoot.addSelectionListener(new SelectionAdapter() {
+        btnTroubleshoot.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Program.launch(e.text);
+                String email = txtEmail.getText();
+                String errorMessage = lblProgressMessage.getText();
+                Trackings.trackTroubleshootFailedActivation(email, errorMessage);
+                Program.launch("https://docs.katalon.com/katalon-studio/docs/troubleshoot-activation-problems.html");
             }
         });
         
@@ -168,6 +185,9 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                btnTroubleshoot.setVisible(false);
+                getShell().setDefaultButton(btnActivate);
+
                 String serverUrl = txtServerUrl.getText().trim();
                 String username = txtEmail.getText();
                 String password = txtPassword.getText();
@@ -193,7 +213,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                             }
 
                             LogUtil.logInfo("Activating credentials...");
-                            licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
+                            licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, null, machineId, errorMessage);
                             if (licenseResource != null) {
                                 license = licenseResource.getLicense();
                                 if (license != null) {
@@ -400,6 +420,10 @@ public class ActivationDialogV2 extends AbstractDialog {
         ((GridData) parent.getLayoutData()).widthHint = parent.getSize().x;
         lblProgressMessage.getShell().pack();
         ((GridData) parent.getLayoutData()).widthHint = SWT.DEFAULT;
+        if (isError) {
+            btnTroubleshoot.setVisible(true);
+            getShell().setDefaultButton(btnTroubleshoot);
+        }
     }
 
     @Override
@@ -461,8 +485,18 @@ public class ActivationDialogV2 extends AbstractDialog {
         lblPassword.setLayoutData(gdLabel);
         lblPassword.setText(StringConstants.PASSSWORD_TITLE);
 
-        txtPassword = new Text(contentComposite, SWT.BORDER | SWT.PASSWORD);
+        Composite passwordComposite = new Composite(contentComposite, SWT.NONE);
+        GridLayout glPasswordComposite = new GridLayout(2, false);
+        glPasswordComposite.marginWidth = 0;
+        passwordComposite.setLayout(glPasswordComposite);
+        passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        
+        txtPassword = new Text(passwordComposite, SWT.BORDER);
         txtPassword.setLayoutData(gdText);
+        txtPassword.setEchoChar(defaultEchoChar);
+        
+        btnShowPw = new Button(passwordComposite, SWT.CHECK);
+        btnShowPw.setText(MessageConstants.ActivationDialogV2_CB_SHOW_PW);
 
         Label lblMachineKey = new Label(contentComposite, SWT.NONE);
         lblMachineKey.setLayoutData(gdLabel);
@@ -475,7 +509,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         Composite activateComposite = new Composite(contentComposite, SWT.NONE);
         activateComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        GridLayout gdLogInComposite = new GridLayout(2, false);
+        GridLayout gdLogInComposite = new GridLayout(3, false);
         gdLogInComposite.marginHeight = 0;
         gdLogInComposite.marginWidth = 0;
         activateComposite.setLayout(gdLogInComposite);
@@ -483,6 +517,11 @@ public class ActivationDialogV2 extends AbstractDialog {
         lblProgressMessage = new Label(activateComposite, SWT.WRAP);
         GridData gdStatus = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         lblProgressMessage.setLayoutData(gdStatus);
+        
+        btnTroubleshoot = new Button(activateComposite, SWT.NONE);
+        btnTroubleshoot.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+        btnTroubleshoot.setText(MessageConstants.ActivationDialogV2_BTN_TROUBLESHOOT);
+        btnTroubleshoot.setVisible(false);
 
         GridData gdBtnActivate = new GridData(SWT.RIGHT, SWT.TOP, false, false);
         gdBtnActivate.widthHint = 100;
@@ -585,9 +624,6 @@ public class ActivationDialogV2 extends AbstractDialog {
         Composite bottomRightComposite = new Composite(bottomBar, SWT.NONE);
         bottomRightComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         bottomRightComposite.setLayout(new GridLayout(1, false));
-        
-        lnkTroubleshoot = new Link(bottomRightComposite, SWT.WRAP);
-        lnkTroubleshoot.setText(MessageConstants.ActivationDialogV2_LBL_TROUBLESHOOT);
         
         Composite linkBar = new Composite(buttonBar, SWT.NONE);
         linkBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

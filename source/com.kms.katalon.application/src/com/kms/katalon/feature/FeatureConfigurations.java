@@ -49,7 +49,9 @@ public class FeatureConfigurations implements IFeatureService {
             put(KSEFeature.RERUN_IMMEDIATELY, Boolean.TRUE);
             put(KSEFeature.TEST_SUITE_COLLECTION_EXECUTION_EMAIL, Boolean.TRUE);
             put(KSEFeature.WINDOWS_NATIVE_RECORDER, Boolean.TRUE);
-            put(KSEFeature.IMPORT_SELENIUM_IDE_V3, Boolean.TRUE);
+            put(KSEFeature.IMPORT_OPENAPI, Boolean.TRUE);
+            put(KSEFeature.IMPORT_SELENIUM_IDE_V3, Boolean.FALSE);
+            put(KSEFeature.FILTER_ALREADY_ADDED_TEST_CASES, Boolean.TRUE);
             put(KSEFeature.APPLITOOLS_PLUGIN, Boolean.TRUE);
         }
     };

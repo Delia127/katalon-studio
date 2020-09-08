@@ -6,12 +6,12 @@ import java.util.Map;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.WSVerificationTestCaseEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.VariableEvaluationRunConfiguration;
 import com.kms.katalon.execution.entity.WSVerificationTestCaseExecutedEntity;
-import com.kms.katalon.execution.util.ExecutionProfileStore;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 import groovy.lang.GroovyObject;
@@ -26,14 +26,17 @@ public class VariableEvaluator {
 
     private static final String TEST_CASE_ID_PREFIX = "Variable-Eval_";
     
-    public Map<String, Object> evaluate(String testObjectId, Map<String, String> variables) throws Exception {
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> evaluate(Map<String, String> variables, ExecutionProfileEntity executionProfile,
+            Map<String, Object> overridingGlobalVariables) throws Exception {
         
         Map<String, Object> evaluatedVariables = new HashMap<>();
         
         WSVerificationTestCaseEntity testCaseEntity = createTestCaseEntity();
 
         VariableEvaluationRunConfiguration runConfig = new VariableEvaluationRunConfiguration();
-        runConfig.setExecutionProfile(ExecutionProfileStore.getInstance().getSelectedProfile());
+        runConfig.setExecutionProfile(executionProfile);
+        runConfig.setOverridingGlobalVariables(overridingGlobalVariables);
         runConfig.build(testCaseEntity, new WSVerificationTestCaseExecutedEntity(testCaseEntity));
         
         String evaluationScript = generateEvaluationScript(variables, runConfig);

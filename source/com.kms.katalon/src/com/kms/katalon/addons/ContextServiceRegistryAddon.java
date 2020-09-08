@@ -26,7 +26,7 @@ public class ContextServiceRegistryAddon {
         ContextInjectionFactory.make(ProjectToolbarHandler.class, context);
 //        ContextInjectionFactory.make(ShowInAppSurveyDialogHandler.class, context);
         ContextInjectionFactory.make(ActiveEventLogPartHandler.class, context);
-//        ContextInjectionFactory.make(InstallBasicReportPluginHandler.class, context);
+        ContextInjectionFactory.make(InstallBasicReportPluginHandler.class, context);
         ContextInjectionFactory.make(InstallComposerArtifactBundleHandler.class, context);
         ContextInjectionFactory.make(InstallSmartXPathBundleHandler.class, context);
     }

@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
@@ -30,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -40,6 +40,7 @@ import com.kms.katalon.composer.webservice.wadl.WadlImporter;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -145,9 +146,14 @@ public class ImportFromWadlDialog extends CustomTitleAreaDialog {
                 }
             });
             super.okPressed();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE, ComposerWebserviceMessageConstants.ImportFromWadlDialog_MSG_FAILED_TO_IMPORT_FROM_WADL);
+        } catch (InvocationTargetException e) {
+            Throwable target = e.getTargetException();
+            LoggerSingleton.logError(target);
+            MultiStatusErrorDialog.showErrorDialog(
+                    ComposerWebserviceMessageConstants.ImportFromWadlDialog_MSG_FAILED_TO_IMPORT_FROM_WADL,
+                    target.getMessage(), ExceptionsUtil.getStackTraceForThrowable(target));
+        } catch (InterruptedException ignored) {
+            
         }
     }
 

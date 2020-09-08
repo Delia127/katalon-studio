@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.constants.ComponentConstants;
 import com.kms.katalon.composer.components.util.ComponentUtil.EventHandler;
 
 public class ComponentBuilder<T extends Control> {
@@ -65,6 +66,14 @@ public class ComponentBuilder<T extends Control> {
         return new ComponentBuilder<Button>(ComponentUtil.createButton(parent, style));
     }
 
+    public static ComponentBuilder<Button> radio(Composite parent) {
+        return new ComponentBuilder<Button>(ComponentUtil.createButton(parent, SWT.RADIO));
+    }
+
+    public static ComponentBuilder<Button> radio(Composite parent, int style) {
+        return new ComponentBuilder<Button>(ComponentUtil.createButton(parent, style | SWT.RADIO));
+    }
+
     public static ComponentBuilder<Canvas> image(Composite parent, String imageKey) {
         Canvas canvas = ComponentUtil.createCanvasImage(parent, imageKey);
         return new ComponentBuilder<Canvas>(canvas);
@@ -78,6 +87,10 @@ public class ComponentBuilder<T extends Control> {
     public static ComponentBuilder<Canvas> image(Composite parent, String imageKey, int width, int height) {
         Canvas canvas = ComponentUtil.createCanvasImage(parent, imageKey, width, height);
         return new ComponentBuilder<Canvas>(canvas);
+    }
+
+    public static ComponentBuilder<Canvas> canvas(Composite parent) {
+        return new ComponentBuilder<Canvas>(ComponentUtil.createCanvas(parent));
     }
 
     public static ComponentBuilder<Canvas> canvas(Composite parent, Image image) {
@@ -358,10 +371,11 @@ public class ComponentBuilder<T extends Control> {
 
     public ComponentBuilder<T> text(String text) {
         ComponentUtil.setText(control, text);
+        ComponentDataUtil.set(control, ComponentConstants.CONTROL_PROP_TEXT, text);
         return this;
     }
 
-    public ComponentBuilder<T> message(String message) {
+    public ComponentBuilder<T> placeholder(String message) {
         ComponentUtil.setMessage(control, message);
         return this;
     }
@@ -462,6 +476,11 @@ public class ComponentBuilder<T extends Control> {
 
     public ComponentBuilder<T> grayBadge() {
         ComponentUtil.applyGrayBadgeStyle(control);
+        return this;
+    }
+
+    public ComponentBuilder<T> grayButton() {
+        ComponentUtil.applyGrayButtonStyle(control);
         return this;
     }
 

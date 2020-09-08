@@ -25,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
@@ -188,6 +189,15 @@ public class ConsoleMain {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_SECOND_OPTION));
             }
 
+            Long organizationId = null;
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                organizationId = Long.valueOf((String) options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+            }
+
+            if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
+                organizationId = Long.valueOf((String) options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
+            }
+
             String apiKeyOnPremiseValue = null;
             if (options.has(KATALON_API_KEY_ON_PREMISE_OPTION)) {
                 apiKeyOnPremiseValue = String.valueOf(options.valueOf(KATALON_API_KEY_ON_PREMISE_OPTION));
@@ -236,7 +246,7 @@ public class ConsoleMain {
                     }
 
                     StringBuilder errorMessage = new StringBuilder();
-                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, organizationId, errorMessage);
 
                     String error = errorMessage.toString();
                     if (StringUtils.isNotBlank(error)) {
@@ -257,7 +267,7 @@ public class ConsoleMain {
                             LocalInformationUtil.printLicenseServerInfo(server, apiKey);
 
                             errorMessage = new StringBuilder();
-                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, organizationId, errorMessage);
                             error = errorMessage.toString();
                             if (StringUtils.isNotBlank(error)) {
                                 LogUtil.printErrorLine(error);
@@ -321,6 +331,7 @@ public class ConsoleMain {
 
             Map<String, String> localStore = new HashMap<>();
             localStore.put(KATALON_API_KEY_OPTION, apiKeyValue);
+            localStore.put(KATALON_ORGANIZATION_ID_OPTION, Long.toString(organizationId));
             localStore.put("lastActivateErrorMessage", ActivationInfoCollector.DEFAULT_REASON);
             ActivationInfoCollector.scheduleCheckLicense(() -> {
                 String lastActivateErrorMessage = localStore.get("lastActivateErrorMessage");
@@ -329,7 +340,8 @@ public class ConsoleMain {
             }, () -> {
                 StringBuilder errorMessage = new StringBuilder();
                 String apiKey = localStore.get(KATALON_API_KEY_OPTION);
-                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                String orgId = localStore.get(KATALON_ORGANIZATION_ID_OPTION);
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, Long.valueOf(orgId), errorMessage);
 
                 String error = errorMessage.toString();
                 if (StringUtils.isNotBlank(error)) {
@@ -341,9 +353,10 @@ public class ConsoleMain {
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
+            
+            printLicenseMessage();
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-            
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.RE_EXECUTE_COMPLETED, exitCode));
 
@@ -360,27 +373,6 @@ public class ConsoleMain {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
-    
-    private static String getLicenseFilePath(OptionSet options) {
-        String licenseFile = null;
-        String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
-        if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
-            licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_FROM_OPTIONS, licenseFile));
-        } else if (environmentVariable != null) {
-            licenseFile = environmentVariable;
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_FROM_ENVIRONMENT, licenseFile));
-        } else {
-            licenseFile = readLicenseFromDefaultLocation();
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_DEFAULT_PATH, licenseFile));
-        }
-        return licenseFile;
-    }
-    
-    private static String readLicenseFromDefaultLocation() {
-        File defaultLicenseFile = new File(ApplicationInfo.userDirLocation() + "/license/katalon.lic");
-        return defaultLicenseFile.exists() ? defaultLicenseFile.getAbsolutePath() : "";
-    }
 
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon.activation");
@@ -393,6 +385,14 @@ public class ConsoleMain {
                 .orElse(null);
         if (reloadMethod != null) {
             reloadMethod.invoke(handler, apiKey);
+        }
+    }
+    
+    private static void printLicenseMessage() {
+        if (KatalonApplication.isRunningInDevOpsEnvironment()) {
+            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_DEVOPS_LICENSE_COMPATIBILITY);
+        } else {
+            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY);
         }
     }
     

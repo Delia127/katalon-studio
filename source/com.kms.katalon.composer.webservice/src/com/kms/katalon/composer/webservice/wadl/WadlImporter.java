@@ -174,7 +174,8 @@ public class WadlImporter extends APIImporter {
                 path = "";
             }
 
-            String name = getFirstTitle(res.getDocArray(), path);
+            String title = getFirstTitle(res.getDocArray(), path);
+            String name = getResourceFolderName(newRestResourceImportResult, title);
 
             RestResourceImportResult newChildResourceImportResult = null;
 
@@ -191,7 +192,7 @@ public class WadlImporter extends APIImporter {
 
             initResourceFromWadlResource(newChildResourceImportResult, res);
 
-            addSubResources(newRestResourceImportResult, res);
+            addSubResources(newChildResourceImportResult, res);
         }
     }
 

@@ -18,7 +18,9 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 
 public class SelfHealingToolbarComposite extends Composite {
 
-    private Button btnApprove, btnDiscard;
+    private String documentationUrl = SmartXPathMessageConstants.UNDERSTAND_SELF_HEALING_INSIGHTS_DOCUMENT_LINK;
+
+    private Button btnApprove, btnDiscard, btnConfigure;
 
     private Label lblHealingStatus;
 
@@ -31,6 +33,8 @@ public class SelfHealingToolbarComposite extends Composite {
         configContainer(container);
         createStatusComposite(container);
         Composite buttonsComposite = createButtonsComposite(container);
+        createHelpButton(buttonsComposite);
+        btnConfigure = createConfigureButton(buttonsComposite);
         btnDiscard = createDiscardButton(buttonsComposite);
         btnApprove = createApproveButton(buttonsComposite);
     }
@@ -87,6 +91,22 @@ public class SelfHealingToolbarComposite extends Composite {
         btnDiscard.setText(SmartXPathMessageConstants.BTN_DISCARD_PROPOSED_LOCATORS);
         return btnDiscard;
     }
+    
+    protected Button createConfigureButton(Composite buttonsComposite) {
+        Button btnConfigure = new Button(buttonsComposite, SWT.PUSH);
+        btnConfigure.setText(SmartXPathMessageConstants.BTN_CONFIGURE_SELF_HEALING);
+        return btnConfigure;
+    }
+    
+    protected Composite createHelpButton(Composite buttonsComposite) {
+        Composite helpComposite = new Composite(buttonsComposite, SWT.NONE);
+        GridLayout helpLayout = new GridLayout();
+        helpLayout.marginWidth = 0;
+        helpLayout.marginHeight = 2;
+        helpComposite.setLayout(helpLayout);
+        helpComposite.setData(new GridData());
+        return new HelpSelfHealingInsightsComposite(helpComposite, documentationUrl);
+    }
 
     public void setSuccessMessage(String message) {
         lblHealingStatus.setText(message);
@@ -127,5 +147,9 @@ public class SelfHealingToolbarComposite extends Composite {
 
     public void addDiscardListener(SelectionListener listener) {
         btnDiscard.addSelectionListener(listener);
+    }
+
+    public void addConfigureListener(SelectionListener listener) {
+        btnConfigure.addSelectionListener(listener);
     }
 }
