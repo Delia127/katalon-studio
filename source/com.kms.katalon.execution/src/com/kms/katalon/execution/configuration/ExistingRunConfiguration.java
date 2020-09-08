@@ -75,8 +75,7 @@ public class ExistingRunConfiguration extends AbstractRunConfiguration {
 
     @Override
     public String getReportDriverName() {
-        // TODO Auto-generated method stub
-        return null;
+        return driverName;
     }
 
 }
