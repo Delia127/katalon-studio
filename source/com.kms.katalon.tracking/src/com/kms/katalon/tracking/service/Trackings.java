@@ -349,7 +349,15 @@ public class Trackings {
         String action = "open" + StringUtils.capitalize(objectType);
         trackUserAction(action);
     }
-    
+
+    public static void trackOpenTestCase(String defaultOpenView) {
+        trackUserAction("openTestCase", "defaultOpenView", defaultOpenView);
+    }
+
+    public static void trackOpenSetDefaultTestCaseView() {
+        trackOpenObject("SetDefaultTestCaseViewFromTestCase");
+    }
+
     public static void trackSaveObject(String objectType) {
         String action = "save" + StringUtils.capitalize(objectType);
         trackUserAction(action);

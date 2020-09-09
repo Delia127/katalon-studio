@@ -136,6 +136,9 @@ import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class TestStepManualComposite {
+
+    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+
     private ITestCasePart parentPart;
 
     private Composite compositeManual;
@@ -145,7 +148,7 @@ public class TestStepManualComposite {
     private Tree childTableTree;
 
     private ToolItem tltmAddWSKeywordStep, tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent, tltmAddTestSuite,
-            tltmEditTag;
+            tltmEditTag, tltmSetDefaultView;
 
     private Label spacer;
 
@@ -339,6 +342,18 @@ public class TestStepManualComposite {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     parentTestCaseCompositePart.getTabFolder().setSelection(5);
+                }
+            });
+
+            tltmSetDefaultView = new ToolItem(toolbar, SWT.NONE);
+            tltmSetDefaultView.setText(StringConstants.PA_BTN_SET_DEFAULT_VIEW);
+            tltmSetDefaultView.setImage(ImageConstants.IMG_16_SETTING);
+            tltmSetDefaultView.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    eventBroker.post(EventConstants.KATALON_PREFERENCES,
+                            "com.kms.katalon.composer.preferences.GeneralPreferencePage/com.kms.katalon.composer.testcase.preference");
+                    Trackings.trackOpenSetDefaultTestCaseView();
                 }
             });
         }
