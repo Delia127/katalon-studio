@@ -83,6 +83,7 @@ import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupp
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.constants.TestCasePreferenceConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
 import com.kms.katalon.composer.testcase.dialogs.TestSuiteSelectionDialog;
@@ -351,8 +352,7 @@ public class TestStepManualComposite {
             tltmSetDefaultView.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    eventBroker.post(EventConstants.KATALON_PREFERENCES,
-                            "com.kms.katalon.composer.preferences.GeneralPreferencePage/com.kms.katalon.composer.testcase.preference");
+                    eventBroker.post(EventConstants.KATALON_PREFERENCES, TestCasePreferenceConstants.PREFERENCE_TEST_CASE_PART_ID);
                     Trackings.trackOpenSetDefaultTestCaseView();
                 }
             });
