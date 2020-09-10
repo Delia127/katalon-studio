@@ -127,6 +127,7 @@ public class GenerateCommandAuthenticationPart extends Composite {
         if (organizations != null) {
             ccbOrganizations.setEnabled(true);
             cbOrganizations.setInput(organizations);
+            ccbOrganizations.select(0);
         }
     }
 
