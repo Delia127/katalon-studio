@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Text;
 
 import com.google.common.base.Strings;
 import com.kms.katalon.application.KatalonApplicationActivator;
-import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpComposite;
@@ -39,7 +38,6 @@ import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
-import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
@@ -62,14 +60,15 @@ public class GenerateCommandAuthenticationPart extends Composite {
 
     private AnalyticsOrganization selectedOrganization = null;
 
+    private String serverUrl = null;
+
     public GenerateCommandAuthenticationPart(Composite parent) {
         super(parent, SWT.NONE);
         this.setLayout(new GridLayout());
         this.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         createAuthenticationPart();
-        fetchDataForComboBoxOrganizations();
-        getApiKey();
+        fetchTestOpsData();
     }
 
     private void createAuthenticationPart() {
@@ -122,15 +121,6 @@ public class GenerateCommandAuthenticationPart extends Composite {
         createHelpComposite(grpAuthenContainer);
     }
 
-    private void fetchDataForComboBoxOrganizations() {
-        AnalyticsOrganization[] organizations = getKREOrganizations();
-        if (organizations != null) {
-            ccbOrganizations.setEnabled(true);
-            cbOrganizations.setInput(organizations);
-            ccbOrganizations.select(0);
-        }
-    }
-
     private void createHelpComposite(Composite parent) {
         HelpComposite btnHelp = new HelpComposite(parent, KATALON_STUDIO_ONLINE_LICENSE_DOCUMENT);
         btnHelp.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -172,35 +162,82 @@ public class GenerateCommandAuthenticationPart extends Composite {
         });
     }
 
-    private void getApiKey() {
-        Thread getApiKey = new Thread(() -> {
-            AnalyticsApiKey apiKey = null;
+    private void fetchTestOpsData() {
+        Thread fetchTestOpsData = new Thread(() -> {
             try {
-                String serverUrl = ApplicationInfo.getTestOpsServer();
-                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
-                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                    AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                    List<AnalyticsApiKey> apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token.getAccess_token());
-                    if (!apiKeys.isEmpty()) {
-                        apiKey = apiKeys.get(0);
+                String token = getToken();
+                String apiKey = getApiKey(token);
+                AnalyticsOrganization[] organizations = getKREOrganizations(token);
+                UISynchronizeService.asyncExec(() -> {
+                    if (!txtAPIKey.isDisposed() && apiKey != null) {
+                        txtAPIKey.setText(apiKey);
                     }
-                }
-            } catch (Exception ex) {
-                LoggerSingleton.logError(ex);
-            } finally {
-                if (apiKey != null) {
-                    String key = apiKey.getKey();
-                    UISynchronizeService.asyncExec(() -> {
-                        if (!txtAPIKey.isDisposed()) {
-                            txtAPIKey.setText(key);
-                        }
-                    });
-                }
+                    if (!ccbOrganizations.isDisposed() && organizations != null) {
+                        ccbOrganizations.setEnabled(true);
+                        cbOrganizations.setInput(organizations);
+                        ccbOrganizations.select(0);
+                    }
+                });
+            } catch (Exception exception) {
+                LoggerSingleton.logError(exception);
             }
         });
-        getApiKey.start();
+        fetchTestOpsData.start();
+    }
+
+    private String getToken() throws Exception {
+        String token = null;
+        serverUrl = ApplicationInfo.getTestOpsServer();
+        String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        String encryptedPw = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+
+        LogUtil.logInfo("Retrievinng token using credentials...");
+        if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPw) && !Strings.isNullOrEmpty(serverUrl)) {
+            String pw = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPw));
+            token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, pw);
+        }
+        return token;
+    }
+
+    private String getApiKey(String token) {
+        AnalyticsApiKey apiKey = null;
+        try {
+            LogUtil.logInfo("Fetching API Key using token...");
+            if (!Strings.isNullOrEmpty(serverUrl)) {
+                List<AnalyticsApiKey> apiKeys;
+                apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token);
+                if (!apiKeys.isEmpty()) {
+                    apiKey = apiKeys.get(0);
+                    LogUtil.logInfo("Fetched API Key successfully");
+                    return apiKey.getKey();
+                }
+            }
+        } catch (Exception exception) {
+            LoggerSingleton.logError(exception);
+        }
+        return null;
+    }
+
+    private AnalyticsOrganization[] getKREOrganizations(String token) {
+        try {
+            LogUtil.logInfo("Fetching organizations using token...");
+            if (!Strings.isNullOrEmpty(serverUrl)) {
+                List<AnalyticsOrganization> fetchedOrganizations = new ArrayList<>();
+                fetchedOrganizations.addAll(AnalyticsApiProvider.getKREOrganizations(serverUrl, token));
+
+                LogUtil.logInfo(fetchedOrganizations.size() + " KRE organization(s) fetched");
+
+                if (!fetchedOrganizations.isEmpty()) {
+                    AnalyticsOrganization defaultOrganization = new AnalyticsOrganization();
+                    defaultOrganization.setName(DEFAULT_ORGANIZATION);
+                    fetchedOrganizations.add(0, defaultOrganization);
+                    return fetchedOrganizations.toArray(new AnalyticsOrganization[fetchedOrganizations.size()]);
+                }
+            }
+        } catch (Exception exception) {
+            LoggerSingleton.logError(exception);
+        }
+        return null;
     }
 
     public Map<String, String> getConsoleArgsMap() {
@@ -213,35 +250,6 @@ public class GenerateCommandAuthenticationPart extends Composite {
             args.put(ARG_ORG_ID_KEY, selectedOrganization.getId().toString());
         }
         return args;
-    }
-
-    private AnalyticsOrganization[] getKREOrganizations() {
-        try {
-            String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-            String encryptedPw = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-
-            String pw = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPw));
-            String serverUrl = ApplicationInfo.getTestOpsServer();
-
-            LogUtil.logInfo("Retrievinng token using credentials...");
-            String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, email, pw);
-
-            LogUtil.logInfo("Fetching organizations using token...");
-
-            List<AnalyticsOrganization> organizations = new ArrayList<>();
-            organizations.addAll(AnalyticsApiProvider.getKREOrganizations(serverUrl, token));
-
-            LogUtil.logInfo(organizations.size() + " KRE organization(s) fetched");
-            if (organizations.size() >= 1) {
-                AnalyticsOrganization defaultOrganization = new AnalyticsOrganization();
-                defaultOrganization.setName(DEFAULT_ORGANIZATION);
-                organizations.add(0, defaultOrganization);
-                return organizations.toArray(new AnalyticsOrganization[organizations.size()]);
-            }
-        } catch (Exception e) {
-            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
-        }
-        return null;
     }
 
     private String wrapArgumentValue(String value) {
