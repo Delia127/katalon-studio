@@ -352,8 +352,6 @@ public class ConsoleMain {
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
-            
-            printLicenseMessage();
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
@@ -386,15 +384,7 @@ public class ConsoleMain {
             reloadMethod.invoke(handler, apiKey);
         }
     }
-    
-    private static void printLicenseMessage() {
-        if (KatalonApplication.isRunningInDevOpsEnvironment()) {
-            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_DEVOPS_LICENSE_COMPATIBILITY);
-        } else {
-            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY);
-        }
-    }
-    
+
     private static void installBasicReportPluginIfNotAvailable() throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> installBasicReportPluginHandlerClass = katalonBundle
