@@ -58,10 +58,6 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
         return getTotalTestCasesWithTestStatusValue(TestStatusValue.INCOMPLETE);
     }
     
-    public int getTotalSkippedTestCases() {
-        return getTotalTestCasesWithTestStatusValue(TestStatusValue.SKIPPED);
-    }
-    
     public TestStatusValue getSummaryStatus() {
         if (getTotalIncompleteTestCases() > 0) {
             return TestStatusValue.INCOMPLETE;

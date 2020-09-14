@@ -363,7 +363,6 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.LOG_INFO_16);
         ImageManager.registerImage(IImageKeys.LOG_NOT_RUN_16);
         ImageManager.registerImage(IImageKeys.LOG_PASSED_16);
-        ImageManager.registerImage(IImageKeys.LOG_SKIPPED_16);
         ImageManager.registerImage(IImageKeys.LOG_WARNING_16);
     }
 
