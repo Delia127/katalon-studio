@@ -43,6 +43,10 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String DIA_CB_TESTOPS_LOADING = ComposerExecutionMessageConstants.DIA_CB_TESTOPS_LOADING;
     
+    public static final String DIA_CB_DEFAULT_PROJECT = ComposerExecutionMessageConstants.DIA_CB_DEFAULT_PROJECT;
+    
+    public static final String DIA_LBL_TESTOPS_PROJECT = ComposerExecutionMessageConstants.DIA_LBL_TESTOPS_PROJECT;
+    
     // ExecuteHandler
     public static final String ERROR_TITLE = ERROR;
 

@@ -52,6 +52,8 @@ public class IntegrationAnalyticsMessages extends NLS {
     public static String STORE_CODE_ERROR_NO_FILE_NAME;
 
     public static String STORE_CODE_ERROR_NO_NAME;
+    
+    public static String MSG_EXCEPTION_NO_CONSOLE_OPTION;
 
     static {
         // initialize resource bundle
