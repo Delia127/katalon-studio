@@ -203,6 +203,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String PA_BTN_EDIT_TAG;
 
+    public static String PA_BTN_SET_DEFAULT_VIEW;
+
     public static String PA_BTN_TIP_RECENT;
 
     public static String PA_COL_INDEX;

@@ -83,6 +83,7 @@ import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupp
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.constants.TestCasePreferenceConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
 import com.kms.katalon.composer.testcase.dialogs.TestSuiteSelectionDialog;
@@ -136,6 +137,9 @@ import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class TestStepManualComposite {
+
+    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+
     private ITestCasePart parentPart;
 
     private Composite compositeManual;
@@ -145,7 +149,7 @@ public class TestStepManualComposite {
     private Tree childTableTree;
 
     private ToolItem tltmAddWSKeywordStep, tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent, tltmAddTestSuite,
-            tltmEditTag;
+            tltmEditTag, tltmSetDefaultView;
 
     private Label spacer;
 
@@ -339,6 +343,17 @@ public class TestStepManualComposite {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     parentTestCaseCompositePart.getTabFolder().setSelection(5);
+                }
+            });
+
+            tltmSetDefaultView = new ToolItem(toolbar, SWT.NONE);
+            tltmSetDefaultView.setText(StringConstants.PA_BTN_SET_DEFAULT_VIEW);
+            tltmSetDefaultView.setImage(ImageConstants.IMG_16_SETTING);
+            tltmSetDefaultView.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    eventBroker.post(EventConstants.KATALON_PREFERENCES, TestCasePreferenceConstants.PREFERENCE_TEST_CASE_PART_ID);
+                    Trackings.trackOpenSetDefaultTestCaseView();
                 }
             });
         }
