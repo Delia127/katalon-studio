@@ -43,8 +43,6 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
                         return ImageConstants.IMG_16_PASSED;
                     case INCOMPLETE:
                         return ImageConstants.IMG_16_INCOMPLETE;
-                    case SKIPPED:
-                        return ImageConstants.IMG_16_SKIPPED;
                     default:
                         break;
                 }

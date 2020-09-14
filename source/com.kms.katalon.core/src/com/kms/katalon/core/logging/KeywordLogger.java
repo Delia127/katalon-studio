@@ -495,9 +495,4 @@ public class KeywordLogger {
             this.nestedLevel = nestedLevel;
         }
     }
-
-    public void logSkipped(String message) {
-        logger.warn("SKIPPED {}", message);
-        xmlKeywordLogger.logSkipped(message);
-    }
 }
