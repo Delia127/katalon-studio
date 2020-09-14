@@ -158,18 +158,20 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static List<AnalyticsOrganization> getOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+    public static List<AnalyticsOrganization> getOrganizations(String serverUrl, String accessToken)
+            throws AnalyticsApiExeception {
         try {
-            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_ORGANIZATIONS_LIST);
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
             URIBuilder uriBuilder = new URIBuilder(uri);
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
-            AnalyticsOrganization[] organizations = executeRequest(httpGet, AnalyticsOrganization[].class);
-            return Arrays.asList(organizations);
+            AnalyticsOrganizationPage organizationPage = executeRequest(httpGet, AnalyticsOrganizationPage.class);
+            return organizationPage.getOrganizations();
         } catch (Exception e) {
-            throw AnalyticsApiExeception.wrap(e);
+            throw new AnalyticsApiExeception(e);
         }
     }
+        
 
     public static List<AnalyticsOrganization> getKREOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
         try {
