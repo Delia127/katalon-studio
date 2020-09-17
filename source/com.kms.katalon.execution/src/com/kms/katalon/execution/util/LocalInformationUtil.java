@@ -14,9 +14,11 @@ import javax.management.ReflectionException;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.ProxyPreferenceConstants;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.SystemInformationUtil;
@@ -110,6 +112,7 @@ public class LocalInformationUtil {
         LogUtil.logInfo("INFO: Total memory: " + getTotalMemoryInMegabyte());
         LogUtil.logInfo("INFO: Free memory: " + getFreeMemoryInMegabyte());
         LogUtil.logInfo("INFO: Machine ID: " + MachineUtil.getMachineId());
+        LogUtil.logInfo("INFO: " + printLicenseMessage());
         LogUtil.logInfo("\n");
     }
 
@@ -183,4 +186,13 @@ public class LocalInformationUtil {
     private static String getStoreUrlArgument() {
         return System.getProperty(STORE_URL_PROPERTY_KEY);
     }
+
+    private static String printLicenseMessage() {
+        if (KatalonApplication.isRunningInDevOpsEnvironment()) {
+            return ExecutionMessageConstants.LocalInformationUtil_MSG_DEVOPS_LICENSE_COMPATIBILITY;
+        } else {
+            return ExecutionMessageConstants.LocalInformationUtil_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY;
+        }
+    }
+    
 }

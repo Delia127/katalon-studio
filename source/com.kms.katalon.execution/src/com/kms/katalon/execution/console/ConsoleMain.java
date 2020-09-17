@@ -25,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
@@ -188,6 +189,16 @@ public class ConsoleMain {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_SECOND_OPTION));
             }
 
+            String organizationId = null;
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                organizationId = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+            }
+
+            if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
+                organizationId = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
+            }
+            Long orgIdValue = parseOrganizationId(organizationId);
+
             String apiKeyOnPremiseValue = null;
             if (options.has(KATALON_API_KEY_ON_PREMISE_OPTION)) {
                 apiKeyOnPremiseValue = String.valueOf(options.valueOf(KATALON_API_KEY_ON_PREMISE_OPTION));
@@ -236,7 +247,7 @@ public class ConsoleMain {
                     }
 
                     StringBuilder errorMessage = new StringBuilder();
-                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, orgIdValue, errorMessage);
 
                     String error = errorMessage.toString();
                     if (StringUtils.isNotBlank(error)) {
@@ -257,7 +268,7 @@ public class ConsoleMain {
                             LocalInformationUtil.printLicenseServerInfo(server, apiKey);
 
                             errorMessage = new StringBuilder();
-                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, orgIdValue, errorMessage);
                             error = errorMessage.toString();
                             if (StringUtils.isNotBlank(error)) {
                                 LogUtil.printErrorLine(error);
@@ -329,7 +340,7 @@ public class ConsoleMain {
             }, () -> {
                 StringBuilder errorMessage = new StringBuilder();
                 String apiKey = localStore.get(KATALON_API_KEY_OPTION);
-                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, orgIdValue, errorMessage);
 
                 String error = errorMessage.toString();
                 if (StringUtils.isNotBlank(error)) {
@@ -343,7 +354,6 @@ public class ConsoleMain {
             waitForExecutionToFinish(options);
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-            
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.RE_EXECUTE_COMPLETED, exitCode));
 
@@ -360,27 +370,6 @@ public class ConsoleMain {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
-    
-    private static String getLicenseFilePath(OptionSet options) {
-        String licenseFile = null;
-        String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
-        if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
-            licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_FROM_OPTIONS, licenseFile));
-        } else if (environmentVariable != null) {
-            licenseFile = environmentVariable;
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_FROM_ENVIRONMENT, licenseFile));
-        } else {
-            licenseFile = readLicenseFromDefaultLocation();
-            LogUtil.logInfo(MessageFormat.format(ExecutionMessageConstants.ACTIVATE_LICENSE_FILE_DEFAULT_PATH, licenseFile));
-        }
-        return licenseFile;
-    }
-    
-    private static String readLicenseFromDefaultLocation() {
-        File defaultLicenseFile = new File(ApplicationInfo.userDirLocation() + "/license/katalon.lic");
-        return defaultLicenseFile.exists() ? defaultLicenseFile.getAbsolutePath() : "";
-    }
 
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon.activation");
@@ -395,7 +384,7 @@ public class ConsoleMain {
             reloadMethod.invoke(handler, apiKey);
         }
     }
-    
+
     private static void installBasicReportPluginIfNotAvailable() throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> installBasicReportPluginHandlerClass = katalonBundle
@@ -599,6 +588,18 @@ public class ConsoleMain {
             } catch (IOException e) {
                 LogUtil.printAndLogError(e, MessageFormat.format(ExecutionMessageConstants.RE_ERROR_DELETE_FOLDERS, libFolderName));
             }
+        }
+    }
+
+    private static Long parseOrganizationId(String organizationId) throws InvalidConsoleArgumentException {
+        Long orgIdValue = null;
+        try {
+            if (organizationId != null) {
+                orgIdValue = Long.valueOf(organizationId);
+            }
+            return orgIdValue;
+        } catch (NumberFormatException e) {
+            throw new InvalidConsoleArgumentException(String.format(StringConstants.MNG_PRT_ORGANIZATION_ID_IS_INVALID));
         }
     }
 }

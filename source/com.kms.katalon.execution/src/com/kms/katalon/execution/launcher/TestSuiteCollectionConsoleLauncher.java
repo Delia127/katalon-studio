@@ -144,6 +144,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
+            tsExecutedEntity.setInCollection(true);
             tsExecutedEntity.setRerunSetting(
                     (DefaultRerunSetting) executedEntity.getRunnable().mergeWith(tsExecutedEntity.getRerunSetting()));
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));
@@ -243,11 +244,13 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             int maxConcurrentInstances = getExecutedEntity().getEntity().getMaxConcurrentInstances();
             Trackings.trackExecuteParallelTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(),
                     executionResult, endTime.getTime() - startTime.getTime(), maxConcurrentInstances,
-                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
+                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo(),
+                    getResult().getTotalTestCases(), getResult().getNumPasses());
         } else {
             Trackings.trackExecuteSequentialTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(),
                     executionResult, endTime.getTime() - startTime.getTime(), selfHealingReport.isEnabled(),
-                    selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
+                    selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo(),
+                    getResult().getTotalTestCases(), getResult().getNumPasses());
         }
     }
     

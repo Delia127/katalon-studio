@@ -246,7 +246,7 @@ public class ActivationDialog extends Dialog {
             public void run() {
                 StringBuilder errorMessage = new StringBuilder();
                 String machineId = MachineUtil.getMachineId();
-                LicenseResource licenseResource = ActivationInfoCollector.activate(username, password, machineId,
+                LicenseResource licenseResource = ActivationInfoCollector.activate(username, password, null, machineId,
                         errorMessage);
                 License license = licenseResource.getLicense();
                 lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));

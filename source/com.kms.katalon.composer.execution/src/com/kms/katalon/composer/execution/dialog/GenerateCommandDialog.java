@@ -3,7 +3,6 @@ package com.kms.katalon.composer.execution.dialog;
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,8 +24,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -44,7 +41,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -56,7 +52,6 @@ import com.kms.katalon.application.utils.ApplicationProxyUtil;
 import com.kms.katalon.application.utils.LicenseUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -67,6 +62,7 @@ import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageCons
 import com.kms.katalon.composer.execution.constants.GenerateCommandPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.composer.execution.part.GenerateCommandAuthenticationPart;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
@@ -106,14 +102,12 @@ import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting.RetryStrategyValue;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.integration.analytics.entity.AnalyticsApiKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsRelease;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportIntegration;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
-import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -140,8 +134,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Combo cbTestOpsRelease;
 
     private Text txtStatusDelay;
-    
-    private Text txtAPIKey;
 
     private Button btnBrowseTestSuite;
     
@@ -172,8 +164,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY = DefaultRerunSetting.RETRY_OPTION;
 
     private static final String ARG_RETRY_STRATEGY = DefaultRerunSetting.RETRY_STRATEGY;
-    
-    private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
     
     private static final String ARG_ANALYTICS_RELEASE_ID = AnalyticsReportIntegration.TESTOPS_RELEASE_ID_CONSOLE_OPTION_NAME;
 
@@ -206,10 +196,12 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Label lblTestSuite;
     
     private Label lblRelease;
-
+    
     private AnalyticsSettingStore analyticsSettingStore;
     
     private TestSuiteRetryUiPart retryUiProvider;
+    
+    private GenerateCommandAuthenticationPart authenticationProvider;
 
     private TestSuiteEntity testSuite;
     
@@ -254,6 +246,9 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         createTestSuitePart(main);
         createPlatformPart(main);
+
+        authenticationProvider = new GenerateCommandAuthenticationPart(main);
+        createExecutionConfigurationsPart(main);    
         
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
@@ -261,7 +256,6 @@ public class GenerateCommandDialog extends AbstractDialog {
             createTestOpsPart(main);
         }
         
-        createOptionsPart(main);
         getConfigurationAnalytics();
         
         return main;
@@ -449,7 +443,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         btnChangeRunConfigurationData.setText(StringConstants.EDIT);
     }
 
-    private void createOptionsPart(Composite parent) {
+
+    private void createExecutionConfigurationsPart(Composite parent) {
         Composite optionsContainer = new Composite(parent, SWT.NONE);
         optionsContainer.setLayout(new GridLayout());
         optionsContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -457,7 +452,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         Group grpOptionsContainer = new Group(optionsContainer, SWT.NONE);
         grpOptionsContainer.setLayout(new GridLayout(3, false));
         grpOptionsContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        grpOptionsContainer.setText(StringConstants.DIA_GRP_OTHER_OPTIONS);
+        grpOptionsContainer.setText(StringConstants.DIA_GRP_EXECUTION_CONFIGURATIONS);
 
         Composite retryComposite = new Composite(grpOptionsContainer, SWT.NONE);
         retryComposite.setLayout(new GridLayout(1, false));
@@ -476,59 +471,12 @@ public class GenerateCommandDialog extends AbstractDialog {
         Label lblSeconds = new Label(grpOptionsContainer, SWT.NONE);
         lblSeconds.setText(StringConstants.DIA_LBL_SECONDS);
         
-        Label lblAPIKey = new Label(grpOptionsContainer, SWT.NONE);
-        lblAPIKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-        lblAPIKey.setText(StringConstants.DIA_LBL_APIKEY);
-        
-        txtAPIKey = new Text(grpOptionsContainer, SWT.BORDER);
-        GridData gdTxtAPIKey = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
-        gdTxtAPIKey.widthHint = 600;
-        txtAPIKey.setLayoutData(gdTxtAPIKey);
-        
-        createNoticesComposite(grpOptionsContainer);
-
         // Apply Proxy
         chkApplyProxy = new Button(grpOptionsContainer, SWT.CHECK);
         chkApplyProxy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
         chkApplyProxy.setText(StringConstants.DIA_CHK_APPLY_PROXY);
     }
-    
-    private void createNoticesComposite(Composite parent) {
-        Composite noticesComposite = new Composite(parent, SWT.NONE);
-        noticesComposite.setLayout(new GridLayout(1, false));
-        noticesComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
-        
-        Link lblApiKeyUsage = new Link(noticesComposite, SWT.WRAP);
-        lblApiKeyUsage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        ControlUtils.setFontStyle(lblApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
-        lblApiKeyUsage.setText(StringConstants.DIA_LBL_API_KEY_USAGE);
-        lblApiKeyUsage.addSelectionListener(new SelectionAdapter()  {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    Program.launch(DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
-                } catch (Exception ex) {
-                    LogUtil.logError(ex);
-                }
-            }
-        });
-        
-        Link lblConsoleModeRequirement = new Link(noticesComposite, SWT.WRAP);
-        lblConsoleModeRequirement.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        ControlUtils.setFontStyle(lblConsoleModeRequirement, SWT.BOLD | SWT.ITALIC, -1);
-        lblConsoleModeRequirement.setText(StringConstants.MSG_CONSOLE_MODE_REQUIREMENT);
-        lblConsoleModeRequirement.addSelectionListener(new SelectionAdapter()  {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    Program.launch(DocumentationMessageConstants.RUNTIME_ENGINE_INTRODUCTION);
-                } catch (Exception ex) {
-                    LogUtil.logError(ex);
-                }
-            }
-        });
-    }
-    
+
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, GENERATE_PROPERTY_ID, StringConstants.DIA_BTN_GEN_PROPERTY_FILE, false);
@@ -706,9 +654,14 @@ public class GenerateCommandDialog extends AbstractDialog {
 
             @Override
             public void verifyText(VerifyEvent e) {
-                // Number input only
-                if (!isNumeric(e.text)) {
-                    e.doit = false;
+                String string = e.text;
+                char[] chars = new char[string.length()];
+                string.getChars(0, chars.length, chars, 0);
+                for (int i = 0; i < chars.length; i++) {
+                    if (!('0' <= chars[i] && chars[i] <= '9')) {
+                        e.doit = false;
+                        return;
+                    }
                 }
             }
         };
@@ -1054,11 +1007,8 @@ public class GenerateCommandDialog extends AbstractDialog {
                 }
             }
         }
-        
 
-        if (!StringUtils.isEmpty(txtAPIKey.getText())) {
-            args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
-        }
+        args.putAll(authenticationProvider.getConsoleArgsMap());
 
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
@@ -1255,7 +1205,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             txtCommand.setLayoutData(gdCommand);
             txtCommand.setText(getCommand());
 
-            createNoticesComposite(main);
+            authenticationProvider.createNoticesComposite(main);
             return main;
         }
 
@@ -1338,39 +1288,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     
     private void getConfigurationAnalytics() {
         analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
-        getApiKey();
         getRelases();
-    }
-    
-    private void getApiKey() {
-        Thread getApiKey = new Thread(() -> {
-            AnalyticsApiKey apiKey = null;
-            try {
-                String serverUrl = ApplicationInfo.getTestOpsServer();
-                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                if (!Strings.isNullOrEmpty(email) && !Strings.isNullOrEmpty(encryptedPassword)) {
-                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                    AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                    List<AnalyticsApiKey> apiKeys = AnalyticsApiProvider.getApiKeys(serverUrl, token.getAccess_token());
-                    if (!apiKeys.isEmpty()) {
-                        apiKey = apiKeys.get(0);
-                    }
-                }
-            } catch (Exception ex) {
-                LoggerSingleton.logError(ex);
-            } finally {
-                if (apiKey != null) {
-                    String key = apiKey.getKey();
-                    UISynchronizeService.asyncExec(() -> {
-                        if (!txtAPIKey.isDisposed()) {
-                            txtAPIKey.setText(key);
-                        }
-                    });
-                }
-            }
-        });
-        getApiKey.start();
     }
     
     private void getRelases() {

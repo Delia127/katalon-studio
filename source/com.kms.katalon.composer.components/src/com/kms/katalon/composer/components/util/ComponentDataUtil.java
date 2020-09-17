@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.components.util;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -8,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TypedListener;
@@ -44,21 +46,47 @@ public class ComponentDataUtil {
         return control.getData(key) != null;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T invokeGet(Control control, String getterMethodName) {
         if (control == null || control.isDisposed()) {
             return null;
         }
+        return invokeGet(control, getterMethodName, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T invokeGet(Object object, String getterMethodName, T defaultValue) {
         try {
-            Method getter = control.getClass().getMethod(getterMethodName);
+            Method getter = object.getClass().getMethod(getterMethodName);
             if (getter != null) {
-                return (T) getter.invoke(control);
+                return (T) getter.invoke(object);
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException exception) {
             // Just skip
         }
         return null;
+    }
+
+    public static <T> T getField(Object object, String fieldName) {
+        return getField(object, fieldName, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getField(Object object, String fieldName, T defaultValue) {
+        try {
+            Field field = object.getClass().getDeclaredField(fieldName);
+            if (field == null) {
+                return defaultValue;
+            }
+            if (!field.isAccessible()) {
+                field.setAccessible(true);
+            }
+            return (T) field.get(object);
+        } catch (SecurityException | IllegalAccessException | IllegalArgumentException
+                | NoSuchFieldException exception) {
+            // Just skip
+        }
+        return defaultValue;
     }
 
     public static <T> void invokeSet(Control control, String setterMethodName, T data, Class<?> type) {
@@ -100,6 +128,21 @@ public class ComponentDataUtil {
         return get(control, key, defaultValue);
     }
 
+    public static int getWidth(Control control) {
+        if (control == null) {
+            return 0;
+        }
+
+        Object layoutData = control.getLayoutData();
+        if (layoutData == null || !(layoutData instanceof GridData)) {
+            return control.getSize().x;
+        }
+
+        GridData gridData = (GridData) control.getLayoutData();
+        int widthHint = gridData.widthHint;
+        return widthHint >= 0 ? widthHint : getField(gridData, "cacheWidth", 0);
+    }
+
     public static Color getColor(Control control, String key) {
         return get(control, key, null);
     }
@@ -109,7 +152,11 @@ public class ComponentDataUtil {
     }
 
     public static String getText(Control control) {
-        return invokeGet(control, "getText");
+        String text = invokeGet(control, "getText");
+        if (StringUtils.isEmpty(text)) {
+            text = getText(control, ComponentConstants.CONTROL_PROP_TEXT);
+        }
+        return text;
     }
 
     public static void setText(Control control, String text) {

@@ -8,8 +8,10 @@ import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 
-public interface IRunConfiguration {	
+public interface IRunConfiguration {
     public String getName();
+
+    public String getReportDriverName();
     
     public String getProjectFolderLocation();
     

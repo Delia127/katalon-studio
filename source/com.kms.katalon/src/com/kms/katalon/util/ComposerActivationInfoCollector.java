@@ -24,6 +24,7 @@ import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.helper.UserProfileHelper;
+import com.kms.katalon.application.userprofile.UserExperienceLevel;
 import com.kms.katalon.application.userprofile.UserProfile;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
@@ -171,6 +172,15 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static void showQuickStartDialogV2ForTheFirstTime() {
+        boolean isSkipQuickStart = StringUtils.equals(System.getProperty("skipQuickStart"), Boolean.TRUE.toString())
+                || StringUtils.equals(System.getenv("skipQuickStart"), Boolean.TRUE.toString());
+        if (isSkipQuickStart) {
+            UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
+            currentProfile.setExperienceLevel(UserExperienceLevel.EXPERIENCED);
+            UserProfileHelper.saveProfile(currentProfile);
+            return;
+        }
+
         // Prevent to open recent project when the user is in the Quick Start flow
         ProjectController.getInstance().setOpenning(true);
 
@@ -236,7 +246,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                             UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
                             if (!currentProfile.isNewUser()
                                     || currentProfile.isDoneCreateFirstTestCase()
-                                    || currentProfile.getPreferredTestingType() != QuickStartProjectType.WEBUI) {
+                                    || !currentProfile.isPreferWebUI()) {
                                 return;
                             }
 

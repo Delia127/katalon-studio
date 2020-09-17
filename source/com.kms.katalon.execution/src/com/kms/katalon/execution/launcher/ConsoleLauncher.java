@@ -77,11 +77,13 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
             File reportFolder = getReportFolder();
             SelfHealingExecutionReport selfHealingReport = SelfHealingExecutionReportCollector.getInstance()
                     .collect(runConfig, reportFolder);
-            
+
+            boolean isInTestSuiteCollection = ((TestSuiteExecutedEntity) getExecutedEntity()).isInCollection();
             String result = getExecutionResult();
-            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(), runConfig.getName(),
+            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(), runConfig.getReportDriverName(),
                     result, getEndTime().getTime() - getStartTime().getTime(), getRetryStrategy(), getNumberOfRetry(),
-                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
+                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo(),
+                    getResult().getTotalTestCases(), getResult().getNumPasses(), isInTestSuiteCollection);
         }
     }
     

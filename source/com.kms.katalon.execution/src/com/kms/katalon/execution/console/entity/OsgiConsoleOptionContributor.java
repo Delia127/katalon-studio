@@ -12,6 +12,8 @@ public class OsgiConsoleOptionContributor implements ConsoleOptionContributor {
 
     public static final String API_KEY_OPTION = "apiKey";
 
+    public static final String ORG_ID_KEY_OPTION = "orgID";
+
     public static final String API_KEY_ON_PREMISE_OPTION = "apiKeyOnPremise";
 
     public static final String ANALYTICS_PROJECT_ID = "analyticsProjectId";

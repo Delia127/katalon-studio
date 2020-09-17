@@ -317,6 +317,8 @@ public class RecordHandler {
             public void done(IJobChangeEvent event) {
                 UserProfile currentProfile = UserProfileHelper.getCurrentProfile();
                 if (newTestCase != null && currentProfile.isNewUser() && !currentProfile.isDoneRunFirstTestCase()) {
+                    currentProfile.setDoneSaveFirstRecord(true);
+                    UserProfileHelper.saveProfile(currentProfile);
                     eventBroker.post(EventConstants.FIRST_TEST_CASE_CREATED, newTestCase);
                 }
             }

@@ -109,7 +109,7 @@ public class ExecuteTestCaseJob extends Job {
         }
 
         UserProfile currentProfile1 = UserProfileHelper.getCurrentProfile();
-        boolean isPreferredWebUITesting = currentProfile1.getPreferredTestingType() == QuickStartProjectType.WEBUI;
+        boolean isPreferredWebUITesting = currentProfile1.isPreferWebUI();
         boolean hasDoneFirstRunPassAndFail = currentProfile1.isDoneRunFirstTestCasePass() && currentProfile1.isDoneRunFirstTestCaseFail();
         if (!currentProfile1.isNewUser() || !isPreferredWebUITesting || hasDoneFirstRunPassAndFail) {
             return;

@@ -9,23 +9,23 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.kms.katalon.controller.LogRecordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.LongConsoleOption;
 import com.kms.katalon.execution.console.entity.StringConsoleOption;
-import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
@@ -292,32 +292,32 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
      * uploads the given test log of the given test suite to qTest server.
      */
     @Override
-    public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
-        for (String reportFullpath : reportFolder.getReportFolders()) {
-            TestSuiteLogRecord suiteLog = LogRecordController.getInstance()
-                    .getTestSuiteLogRecordByFullPath(reportFullpath);
+    public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLogRecord) throws Exception {
+        if (!isIntegrationActive(testSuite) || suiteLogRecord == null) {
+            return;
+        }
 
-            if (!isIntegrationActive(testSuite) || suiteLog == null) {
-                return;
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+        for (ILogRecord logRecord : suiteLogRecord.getChildRecords()) {
+            if (!(logRecord instanceof TestCaseLogRecord)) {
+                continue;
             }
 
-            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-
-            IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
-            for (ILogRecord logRecord : suiteLog.getChildRecords()) {
-                if (!(logRecord instanceof TestCaseLogRecord)) {
-                    continue;
-                }
-
-                uploadTestCaseResult(testSuite, projectIntegratedEntity, (TestCaseLogRecord) logRecord, suiteLog);
-            }
+            uploadTestCaseResult(testSuite, projectIntegratedEntity, (TestCaseLogRecord) logRecord, suiteLogRecord);
         }
     }
 
     @Override
-    public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
-        // TODO Auto-generated method stub
-        
+    public void uploadTestSuiteCollectionResult(TestSuiteCollectionEntity testSuiteCollectionEntity,
+            TestSuiteCollectionLogRecord collectionLogRecord) throws Exception {
+    }
+
+    public TestSuiteEntity getTestSuiteFromLogRecord(TestSuiteLogRecord suiteLogRecord) throws Exception {
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        String testSuiteId = suiteLogRecord.getId();
+        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteId, projectEntity);
     }
 
     private boolean isUploadByDefault() {

@@ -51,6 +51,16 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     private DefaultRerunSetting rerunSetting;
 
+    private boolean isInCollection;
+
+    public boolean isInCollection() {
+        return isInCollection;
+    }
+
+    public void setInCollection(boolean isInCollection) {
+        this.isInCollection = isInCollection;
+    }
+
     public EmailSettings getEmailSettings() {
         return emailSettings;
     }

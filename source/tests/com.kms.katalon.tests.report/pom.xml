@@ -139,6 +139,18 @@
 		</dependency>
 		<dependency>
 			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.composer.testsuite</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
+			<artifactId>com.kms.katalon.composer.testsuite.test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.core.webui</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
@@ -198,7 +210,7 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+        <dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.composer.webui.objectspy</artifactId>
 			<version>${project.version}</version>

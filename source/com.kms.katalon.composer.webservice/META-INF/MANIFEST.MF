@@ -86,6 +86,8 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.google.guava,
  org.apache.log4j,
  com.kms.katalon.application,
+ io.swagger.parser,
+ io.swagger.parser-core,
  com.kms.katalon.execution.webservice
 Export-Package: com.kms.katalon.composer.webservice.constants,
  com.kms.katalon.composer.webservice.util,

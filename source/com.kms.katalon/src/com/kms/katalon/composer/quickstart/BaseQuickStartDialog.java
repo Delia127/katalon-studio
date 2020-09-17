@@ -22,6 +22,8 @@ public class BaseQuickStartDialog extends AbstractDialog {
         void call(Object option);
     }
 
+    protected Composite container;
+
     protected Composite tipsComposite;
 
     public BaseQuickStartDialog(Shell parentShell) {
@@ -61,7 +63,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
         beginConstruction(parent);
 
         Point margin = getContainerMargin();
-        Composite container = ComponentBuilder.gridContainer(parent).gridMargin(margin.y, margin.x).build();
+        container = ComponentBuilder.gridContainer(parent).gridMargin(margin.y, margin.x).build();
 
         createContent(container);
         createButtons(container);
@@ -97,9 +99,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
 
         ComponentBuilder.label(parent)
                 .text(getMainButtonText())
-                // .font(FontUtil.FONT_TTNORMS_MEDIUM)
                 .fontSize(FontUtil.SIZE_H3)
-                // .bold()
                 .size(140, 40)
                 .gridMarginTop(10)
                 .gridMarginBottom(30)
@@ -116,7 +116,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
             return;
         }
 
-        Composite tipsCompositeWrapper = ComponentBuilder.gridContainer(parent).fill().build();
+        Composite tipsCompositeWrapper = ComponentBuilder.gridContainer(parent).fill().width(0).build();
 
         StyleContext.setFontSize(FontUtil.SIZE_H5);
         StyleContext.setBackground(ColorUtil.getColor("#F5F5F5"));
@@ -133,6 +133,7 @@ public class BaseQuickStartDialog extends AbstractDialog {
         ComponentBuilder.label(tipsComposite)
                 .text(getTipContent())
                 .color(ColorUtil.getColor("#797979"))
+                .fillHorizontal()
                 .middle()
                 .build();
 
@@ -165,10 +166,22 @@ public class BaseQuickStartDialog extends AbstractDialog {
     @Override
     protected void handleShellCloseEvent() {
         // Do not allow to skip Quick Start dialog
+        if (canClose()) {
+            close();
+        }
+    }
+
+    protected boolean canClose() {
+        return true;
     }
 
     @Override
     protected void registerControlModifyListeners() {
+    }
+
+    @Override
+    protected void adjustLayout() {
+        ComponentUtil.adjustChildrenWidth(container);
     }
 
     @Override
