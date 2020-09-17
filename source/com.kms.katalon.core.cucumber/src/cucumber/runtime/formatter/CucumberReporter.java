@@ -174,7 +174,9 @@ public class CucumberReporter implements Formatter {
 			currentElementMap = createBackground(event.testCase);
 
 			// For Katalon report
-			currentElementMap.put(bddTestrunUUIDPropName, uuid);
+			if (currentElementMap != null) {
+				currentElementMap.put(bddTestrunUUIDPropName, uuid);
+			}
 
 			currentElementsList.add(currentElementMap);
 		} else {
