@@ -33,6 +33,8 @@ public class ExecutionMessageConstants extends NLS {
 
     public static String MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER;
 
+    public static String MNG_PRT_ORGANIZATION_ID_IS_INVALID;
+
     public static String MNG_PRT_TEST_SUITE_X_NOT_FOUND;
 
     public static String MNG_PRT_INVALID_BROWSER_X;
@@ -176,6 +178,10 @@ public class ExecutionMessageConstants extends NLS {
 
     // TestSuiteLauncherOptionParser
     public static String CONSOLE_MSG_PROFILE_NOT_FOUND;
+
+    public static String LocalInformationUtil_MSG_DEVOPS_LICENSE_COMPATIBILITY;
+
+    public static String LocalInformationUtil_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY;
     
     public static String LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE;
 

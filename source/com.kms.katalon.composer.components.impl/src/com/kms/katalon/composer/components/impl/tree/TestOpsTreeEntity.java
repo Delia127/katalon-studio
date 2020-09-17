@@ -130,7 +130,7 @@ public class TestOpsTreeEntity implements ITreeEntity{
 	}
 
 	public enum TestOpsAction {
-		OPEN_EXECUTION
+        OPEN_EXECUTION, OPEN_PLAN
 	}
 
 	@Override

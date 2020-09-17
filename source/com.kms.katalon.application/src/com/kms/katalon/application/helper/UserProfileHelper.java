@@ -33,6 +33,11 @@ public class UserProfileHelper {
         return getOrCreateProfile(currentUserEmail);
     }
 
+    public static UserProfile getMachineProfile() {
+        String machineId = MachineUtil.getMachineId();
+        return getOrCreateProfile(machineId);
+    }
+
     public static UserProfile getOrCreateProfile(String email) {
         UserProfile userProfile = getProfile(email);
         if (userProfile == null) {

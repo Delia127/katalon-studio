@@ -1,14 +1,14 @@
 package com.kms.katalon.integration.analytics.report;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.LongConsoleOption;
@@ -79,13 +79,27 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     }
 
     @Override
-    public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
-        reportService.upload(reportFolder);
+    public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLogRecord) throws Exception {
+        String collectionId = suiteLogRecord.getTestSuiteCollectionId();
+        if (StringUtils.isNotBlank(collectionId)) {
+            return;
+        } else {
+            ReportFolder reportFolder = new ReportFolder(suiteLogRecord.getLogFolder());
+            reportService.upload(reportFolder);
+        }
     }
     
     @Override
-    public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
-    	reportService.upload(reportFolder);
+    public void uploadTestSuiteCollectionResult(TestSuiteCollectionEntity testSuiteCollection,
+            TestSuiteCollectionLogRecord collectionLogRecord) throws Exception {
+        List<TestSuiteLogRecord> suiteLogRecords = collectionLogRecord.getTestSuiteRecords();
+        List<String> paths = new ArrayList<>();
+        for (TestSuiteLogRecord suiteLogRecord : suiteLogRecords) {
+            paths.add(suiteLogRecord.getLogFolder());
+        }
+        paths.add(collectionLogRecord.getReportLocation() + "/" + collectionLogRecord.getTestSuiteCollectionId());
+        ReportFolder reportFolder = new ReportFolder(paths);
+        reportService.upload(reportFolder);
     }
     
     @Override
@@ -136,4 +150,6 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 //            LogUtil.logError(e);
         }
     }
+
+   
 }

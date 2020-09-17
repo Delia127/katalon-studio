@@ -17,8 +17,13 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>${tycho.version}</version>
+				<configuration>
+					<argLine>${os-jvm-flags} ${tycho.testArgLine} -DrunUnitTests</argLine>
+					<useUIHarness>true</useUIHarness>
+					<product>com.kms.katalon.product</product>
+					<application>com.kms.katalon.application</application>
+				</configuration>
 			</plugin>
-			
 			<plugin>
 			   <groupId>org.eclipse.tycho</groupId>
 			   <artifactId>target-platform-configuration</artifactId>

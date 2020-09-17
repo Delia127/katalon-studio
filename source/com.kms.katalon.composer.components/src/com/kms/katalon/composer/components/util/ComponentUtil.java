@@ -262,20 +262,28 @@ public class ComponentUtil {
         return ComponentUtil.createCanvas(parent, image, width, height);
     }
 
+    public static Canvas createCanvas(Composite parent) {
+        return createCanvas(parent, null);
+    }
+
     public static Canvas createCanvas(Composite parent, Image image) {
-        return createCanvas(parent, image, image.getBounds().width, image.getBounds().height);
+        int width = image != null ? image.getBounds().width : 0;
+        int height = image != null ? image.getBounds().height : 0;
+        return createCanvas(parent, image, width, height);
     }
 
     public static Canvas createCanvas(Composite parent, Image image, int width, int height) {
         Canvas canvas = new Canvas(parent, SWT.TRANSPARENT);
-        canvas.addPaintListener(new PaintListener() {
-            public void paintControl(PaintEvent event) {
-                GC gc = event.gc;
-                gc.setAntialias(SWT.ON);
-                gc.setAdvanced(true);
-                gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
-            }
-        });
+        if (image != null) {
+            canvas.addPaintListener(new PaintListener() {
+                public void paintControl(PaintEvent event) {
+                    GC gc = event.gc;
+                    gc.setAntialias(SWT.ON);
+                    gc.setAdvanced(true);
+                    gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+                }
+            });
+        }
         setSize(canvas, width, height);
         return canvas;
     }
@@ -393,7 +401,7 @@ public class ComponentUtil {
 
     public static void gridAlign(Control control, int align) {
         GridData gridData = getGridData(control);
-        gridData.horizontalAlignment = SWT.CENTER;
+        gridData.horizontalAlignment = align;
         gridData.grabExcessHorizontalSpace = true;
         control.setLayoutData(gridData);
 
@@ -421,13 +429,67 @@ public class ComponentUtil {
         control.setLayoutData(layoutData);
     }
 
-    public static void gridFill(Control control) {
+    public static void gridFillHorizontal(Control control) {
         GridData gridData = getGridData(control);
         gridData.horizontalAlignment = SWT.FILL;
-        gridData.verticalAlignment = SWT.FILL;
         gridData.grabExcessHorizontalSpace = true;
+        control.setLayoutData(gridData);
+    }
+
+    public static void gridFillVertical(Control control) {
+        GridData gridData = getGridData(control);
+        gridData.verticalAlignment = SWT.FILL;
         gridData.grabExcessVerticalSpace = true;
         control.setLayoutData(gridData);
+    }
+
+    public static void gridFill(Control control) {
+        gridFillHorizontal(control);
+        gridFillVertical(control);
+    }
+
+    public static int findMaxWidthInChildren(Composite parent) {
+        if (parent == null) {
+            return 0;
+        }
+        return findMaxWidthInChildren(parent.getChildren());
+    }
+
+    public static int findMaxWidthInChildren(Control[] children) {
+        int maxWidth = 0;
+        for (Control child : children) {
+            maxWidth = Math.max(ComponentDataUtil.getWidth(child), maxWidth);
+        }
+        return maxWidth;
+    }
+
+    public static void setChildrenWidth(Composite parent, int width) {
+        if (parent == null) {
+            return;
+        }
+        setChildrenWidth(parent.getChildren(), width);
+    }
+
+    public static void setChildrenWidth(Control[] children, int width) {
+        for (Control child : children) {
+            setWidth(child, width);
+        }
+        Control firstChild = children[0];
+        if (firstChild != null) {
+            firstChild.getShell().pack();
+        }
+    }
+
+    public static void adjustChildrenWidth(Composite parent) {
+        if (parent == null) {
+            return;
+        }
+        adjustChildrenWidth(parent.getChildren());
+    }
+
+    public static void adjustChildrenWidth(Control[] children) {
+        int maxWidth = findMaxWidthInChildren(children);
+        setChildrenWidth(children, maxWidth);
     }
 
     public static void setWidth(Control control, int width) {
@@ -614,16 +676,21 @@ public class ComponentUtil {
     public static void setData(Control control, String key, Object value) {
         control.setData(key, value);
     }
-
-    public static void applyPrimaryButtonStyle(Control control) {
-        setCursorPointer(control);
-        setBorderRadius(control);
-        setColor(control, ColorUtil.getTextWhiteColor());
-        setBackground(control, ColorUtil.PRIMARY_COLOR);
-        setHoverColor(control, ColorUtil.getTextWhiteColor());
-        setHoverBackground(control, ColorUtil.PRIMARY_HOVER_COLOR);
-        setActiveColor(control, ColorUtil.getTextWhiteColor());
-        setActiveBackground(control, ColorUtil.PRIMARY_ACTIVE_COLOR);
+    
+    public static void show(Control control) {
+        control.setVisible(true);
+        Object layoutData = getLayoutData(control);
+        if (layoutData instanceof GridData) {
+            ((GridData) layoutData).exclude = false;
+        }
+    }
+    
+    public static void hide(Control control) {
+        control.setVisible(false);
+        Object layoutData = getLayoutData(control);
+        if (layoutData instanceof GridData) {
+            ((GridData) layoutData).exclude = true;
+        }
     }
 
     public static void applyPrimaryBadgeStyle(Control control) {
@@ -632,10 +699,26 @@ public class ComponentUtil {
         setBackground(control, ColorUtil.PRIMARY_COLOR);
     }
 
+    public static void applyPrimaryButtonStyle(Control control) {
+        setCursorPointer(control);
+        applyPrimaryBadgeStyle(control);
+        setHoverColor(control, ColorUtil.getTextWhiteColor());
+        setHoverBackground(control, ColorUtil.PRIMARY_HOVER_COLOR);
+        setActiveColor(control, ColorUtil.getTextWhiteColor());
+        setActiveBackground(control, ColorUtil.PRIMARY_ACTIVE_COLOR);
+    }
+
     public static void applyGrayBadgeStyle(Control control) {
         setBorderRadius(control);
         setColor(control, ColorUtil.GRAY_BADGE_COLOR);
         setBackground(control, ColorUtil.GRAY_BADGE_BACKGROUND);
+    }
+
+    public static void applyGrayButtonStyle(Control control) {
+        setCursorPointer(control);
+        applyGrayBadgeStyle(control);
+        setHoverBackground(control, ColorUtil.GRAY_BADGE_HOVER_COLOR);
+        setActiveBackground(control, ColorUtil.GRAY_BADGE_ACTIVE_COLOR);
     }
 
     public static void appendGridChild(Composite container, Control child) {

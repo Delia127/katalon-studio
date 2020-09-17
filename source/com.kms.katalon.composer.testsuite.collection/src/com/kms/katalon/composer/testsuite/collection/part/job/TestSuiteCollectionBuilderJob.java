@@ -152,6 +152,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     .getRunConfiguration(configuration.getRunConfigurationId(), projectDir, configuration);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
+            executedEntity.setInCollection(true);
             executedEntity.prepareTestCases();
             runConfig.setExecutionSessionId(executionSessionId);
             runConfig.build(testSuiteEntity, executedEntity);

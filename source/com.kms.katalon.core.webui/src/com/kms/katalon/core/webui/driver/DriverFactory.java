@@ -95,6 +95,12 @@ import okhttp3.Route;
 
 public class DriverFactory {
 
+    private static final int DEFAULT_CONNECT_TIMEOUT_IN_SECONDS = 120;
+
+    private static final int DEFAULT_READ_TIMEOUT_IN_SECONDS = 10800;
+
+    private static final int DEFAULT_WRITE_TIMEOUT_IN_SECONDS = 0;
+
     private static final String SMART_WAIT_ADDON_CHROME_RELATIVE_PATH = File.separator + "Chrome" + File.separator + "Smart Wait";
 
     private static final String SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH = File.separator + "Firefox" + File.separator + "smartwait.xpi";
@@ -512,9 +518,10 @@ public class DriverFactory {
     }
 
     private static Factory getClientFactoryForRemoteDriverExecutor(ProxyInformation proxyInfo, URL url) throws URISyntaxException, IOException {
-        okhttp3.OkHttpClient.Builder client = new okhttp3.OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS);
+        okhttp3.OkHttpClient.Builder client = new okhttp3.OkHttpClient.Builder()
+                .connectTimeout(DEFAULT_CONNECT_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
+                .readTimeout(DEFAULT_READ_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
+                .writeTimeout(DEFAULT_WRITE_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
 
         if (StringUtils.isNotBlank(url.getUserInfo())) {
             String[] userInfo = url.getUserInfo().split(":");

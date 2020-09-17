@@ -20,6 +20,8 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     private String logFolder;
 
     private Map<String, String> runData;
+    
+    private String testSuiteCollectionId;
 
     public TestSuiteLogRecord(String name, String logFolder) {
         super(name);
@@ -154,5 +156,13 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
             return getJUnitMessage() + stackTrace;
         }
         return stackTrace;
+    }
+
+    public String getTestSuiteCollectionId() {
+        return testSuiteCollectionId;
+    }
+
+    public void setTestSuiteCollectionId(String testSuiteCollectionId) {
+        this.testSuiteCollectionId = testSuiteCollectionId;
     }
 }

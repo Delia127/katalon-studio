@@ -79,11 +79,13 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
             int maxConcurrentInstances = getExecutedEntity().getEntity().getMaxConcurrentInstances();
             Trackings.trackExecuteParallelTestSuiteCollectionInGuiMode(executionResult,
                     getEndTime().getTime() - getStartTime().getTime(), maxConcurrentInstances,
-                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
+                    selfHealingReport.isEnabled(), selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo(),
+                    getResult().getTotalTestCases(), getResult().getNumPasses());
         } else {
             Trackings.trackExecuteSequentialTestSuiteCollectionInGuiMode(executionResult,
                     getEndTime().getTime() - getStartTime().getTime(), selfHealingReport.isEnabled(),
-                    selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo());
+                    selfHealingReport.isTriggered(), selfHealingReport.getHealingInfo(),
+                    getResult().getTotalTestCases(), getResult().getNumPasses());
         }
     }
 

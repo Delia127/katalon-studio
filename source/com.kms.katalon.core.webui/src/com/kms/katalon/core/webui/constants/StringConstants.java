@@ -548,4 +548,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT = CoreWebuiMessageConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT;
 	public static final String KW_LOG_INFO_SELECT_SMART_XPATH = CoreWebuiMessageConstants.KW_LOG_INFO_SELECT_SMART_XPATH;
 	public static final String KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS = CoreWebuiMessageConstants.KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS;	
+
+    // Screenshot keyword
+    public static final String KW_LOG_INFO_SCREENSHOT_FULLPAGE_FAIL_HIDE_OBJECT = CoreWebuiMessageConstants.KW_LOG_INFO_SCREENSHOT_FULLPAGE_FAIL_HIDE_OBJECT;
+    public static final String KW_LOG_INFO_SCREENSHOT_FULLPAGE_HIDDEN_COUNTER = CoreWebuiMessageConstants.KW_LOG_INFO_SCREENSHOT_FULLPAGE_HIDDEN_COUNTER;
+    public static final String KW_SCREENSHOT_EXCEPTION_FILENAME_NULL_EMPTY = CoreWebuiMessageConstants.KW_SCREENSHOT_EXCEPTION_FILENAME_NULL_EMPTY;
+    public static final String KW_SCREENSHOT_EXCEPTION_ELEMENT_NULL = CoreWebuiMessageConstants.KW_SCREENSHOT_EXCEPTION_ELEMENT_NULL;
+    public static final String KW_SCREENSHOT_EXCEPTION_AREA_NULL = CoreWebuiMessageConstants.KW_SCREENSHOT_EXCEPTION_AREA_NULL;
+    public static final String KW_SCREENSHOT_EXCEPTION_AREA_LARGER = CoreWebuiMessageConstants.KW_SCREENSHOT_EXCEPTION_AREA_LARGER;
 }

@@ -2,6 +2,7 @@ package com.kms.katalon.execution.webui.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -57,6 +58,11 @@ public class RemoteWebRunConfiguration extends AbstractRunConfiguration {
     public String getName() {
         String remoteServerUrl = ((RemoteWebDriverConnector) remoteDriverConnector).getRemoteServerUrl();
         return super.getName() + " - " + StringUtils.defaultIfEmpty(remoteServerUrl, "<empty server URL>");
+    }
+
+    @Override
+    public String getReportDriverName() {
+        return MessageFormat.format("Remote - {0}", getRemoteWebDriverConnectorType().name());
     }
 
     public String getRemoteServerUrl() {

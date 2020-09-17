@@ -2,6 +2,7 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -89,6 +90,16 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
         for (IDriverConnector driverConnector : driverConnectors.values()) {
             driverConnector.setParentFolderPath(configFolder.getAbsolutePath());
         }
+    }
+    
+    @Override
+    public String getReportDriverName() {
+        IDriverConnector driver = getDriverConnectors().get("Remote");
+        boolean isRemoteDriver = driver != null;
+        return isRemoteDriver
+                ? MessageFormat.format("Custom - {0} - {1}", super.getName(),
+                        driver.getSystemProperties().get("remoteWebDriverType"))
+                : MessageFormat.format("Custom - {0}", super.getName());
     }
 
     public void save() throws IOException {

@@ -18,7 +18,6 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -391,17 +390,6 @@ public class CSVTestDataPart extends TestDataMainPart {
         return sourceUrl;
     }
 
-    private void warnFileToLarge() {
-        sync.asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                MessageDialog.openWarning(null, StringConstants.WARN,
-                        MessageFormat.format(StringConstants.PA_FILE_TOO_LARGE, MAX_COLUMN_COUNT));
-
-            }
-        });
-    }
-
     private void loadCSVDataToTable() {
         try {
             tableViewer.getTable().setRedraw(false);
@@ -413,7 +401,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
                 int columnNumbers = csvData.getColumnNumbers();
                 if (columnNumbers > MAX_COLUMN_COUNT) {
-                    warnFileToLarge();
+                    sync.asyncExec(() -> WarnLargeFileUtil.showDialog());
                     columnNumbers = MAX_COLUMN_COUNT;
                 }
 

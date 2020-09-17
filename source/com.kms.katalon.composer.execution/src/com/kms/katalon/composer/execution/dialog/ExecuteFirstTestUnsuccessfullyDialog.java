@@ -83,4 +83,9 @@ public class ExecuteFirstTestUnsuccessfullyDialog extends BaseQuickStartDialog {
 //    protected String getTipContent() {
 //        return "Find the above resources in Help > Katalon help";
 //    }
+    
+    @Override
+    protected boolean canClose() {
+        return true;
+    }
 }

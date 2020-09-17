@@ -44,6 +44,12 @@ import okhttp3.Route;
 
 public class WindowsDriverFactory {
 
+    private static final int DEFAULT_CONNECT_TIMEOUT_IN_SECONDS = 120;
+
+    private static final int DEFAULT_READ_TIMEOUT_IN_SECONDS = 10800;
+
+    private static final int DEFAULT_WRITE_TIMEOUT_IN_SECONDS = 0;
+
     private static KeywordLogger logger = KeywordLogger.getInstance(WindowsDriverFactory.class);
 
     public static final String DESIRED_CAPABILITIES_PROPERTY = "desiredCapabilities";
@@ -200,10 +206,12 @@ public class WindowsDriverFactory {
         return executor;
     }
 
-    private static Factory getClientFactoryForRemoteDriverExecutor(ProxyInformation proxyInfo, URL url) throws URISyntaxException, IOException {
-        okhttp3.OkHttpClient.Builder client = new okhttp3.OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS);
+    private static Factory getClientFactoryForRemoteDriverExecutor(ProxyInformation proxyInfo, URL url)
+            throws URISyntaxException, IOException {
+        okhttp3.OkHttpClient.Builder client = new okhttp3.OkHttpClient.Builder()
+                .connectTimeout(DEFAULT_CONNECT_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
+                .readTimeout(DEFAULT_READ_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
+                .writeTimeout(DEFAULT_WRITE_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
 
         if (StringUtils.isNotBlank(url.getUserInfo())) {
             String[] userInfo = url.getUserInfo().split(":");

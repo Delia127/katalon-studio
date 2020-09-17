@@ -32,6 +32,7 @@ import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
 import com.kms.katalon.execution.util.ConsoleAdapter;
+import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
 
 public class LauncherOptionParserPlatformBuilderImpl implements PlatformLauncherOptionParserBuilder {
@@ -119,6 +120,10 @@ public class LauncherOptionParserPlatformBuilderImpl implements PlatformLauncher
 				}
 				runConfig.setExecutionProfile(executionProfile);
 				runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
+				
+				executedEntity.setEmailConfig(MailUtil.overrideEmailSettings(reportableSetting.getEmailConfig(project),
+		                executionProfile, runConfig.getOverridingGlobalVariables()));
+				
 				runConfig.build(clonedTestSuite, executedEntity);
 				return new ConsoleLauncher(manager, runConfig);
 			} catch (Exception e) {

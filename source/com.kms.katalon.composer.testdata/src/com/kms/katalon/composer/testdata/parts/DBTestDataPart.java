@@ -25,7 +25,6 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -384,8 +383,7 @@ public class DBTestDataPart extends TestDataMainPart {
                 }
                 setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_STATUS_PARTIALLY_LOADED_ON, retrievedDate),
                         ColorUtil.getWarningForegroudColor());
-                MessageDialog.openWarning(null, StringConstants.WARN_TITLE, MessageFormat.format(
-                        StringConstants.PA_FILE_TOO_LARGE, MAX_COLUMN_COUNT, MAX_ROW_LIMIT));
+                WarnLargeFileUtil.showDialog();
             }
         });
     }
@@ -412,9 +410,6 @@ public class DBTestDataPart extends TestDataMainPart {
     private List<Object[]> limitDataForPreview(DBData dbData) {
         List<List<Object>> fetchedData = dbData.getData();
         int rowCount = fetchedData.size();
-        if (rowCount == 0) {
-            return Collections.emptyList();
-        }
 
         List<Object[]> data = new ArrayList<>();
         int columnCount = dbData.getColumnNumbers();
@@ -422,6 +417,10 @@ public class DBTestDataPart extends TestDataMainPart {
         boolean isTooManyRows = rowCount > MAX_ROW_LIMIT;
         boolean isTooManyColumns = columnCount > MAX_COLUMN_COUNT;
         warningIfDataOverSize(isTooManyRows || isTooManyColumns, dbData.getRetrievedDate().toString());
+
+        if (rowCount == 0) {
+            return Collections.emptyList();
+        }
 
         if (isTooManyRows) {
             // get first 500 row for preview only

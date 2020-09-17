@@ -32,7 +32,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_MESSAGE = MESSAGE;
 
     public static final String DIA_TITLE_LOG_PROPERTIES = ComposerExecutionMessageConstants.DIA_TITLE_LOG_PROPERTIES;
-    
+
+    public static final String DIA_LBL_ORGANIZATION = ComposerExecutionMessageConstants.DIA_LBL_ORGANIZATION;
+
     public static final String DIA_LBL_TESTOPS_RELEASE = ComposerExecutionMessageConstants.DIA_LBL_TESTOPS_RELEASE;
     
     public static final String DIA_GRP_KATALON_TESTOPS = ComposerExecutionMessageConstants.DIA_GRP_KATALON_TESTOPS;
@@ -279,7 +281,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_LBL_MAIL_RECIPIENTS = ComposerExecutionMessageConstants.DIA_LBL_MAIL_RECIPIENTS;
 
-    public static final String DIA_GRP_OTHER_OPTIONS = ComposerExecutionMessageConstants.DIA_GRP_OTHER_OPTIONS;
+    public static final String DIA_GRP_AUTHENTICATION = ComposerExecutionMessageConstants.DIA_GRP_AUTHENTICATION;
+
+    public static final String DIA_GRP_EXECUTION_CONFIGURATIONS = ComposerExecutionMessageConstants.DIA_GRP_EXECUTION_CONFIGURATIONS;
 
     public static final String DIA_CHK_DISPLAY_CONSOLE_LOG = ComposerExecutionMessageConstants.DIA_CHK_DISPLAY_CONSOLE_LOG;
 
@@ -360,4 +364,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE = ComposerExecutionMessageConstants.DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
     
     public static final String REPORT_MSG_MUST_ENTER_API_KEY = ComposerExecutionMessageConstants.REPORT_MSG_MUST_ENTER_API_KEY;
+    
+    public static final String DEFAULT_ORGANIZATION = ComposerExecutionMessageConstants.DEFAULT_ORGANIZATION;
+
+	public static final String KATALON_STUDIO_ONLINE_LICENSE_DOCUMENT = ComposerExecutionMessageConstants.KATALON_STUDIO_ONLINE_LICENSE_DOCUMENT;
 }

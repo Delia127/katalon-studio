@@ -47,9 +47,9 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
     }
 
     @Override
-    public Map<String, String> getLicense(String serverUrl, String token, String username, String sessionId, String hostname,
+    public Map<String, String> getLicense(String serverUrl, String token, String username, Long organizationId, String sessionId, String hostname,
             String machineId) throws Exception {
-        AnalyticsLicenseKey analyticsLicenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, username, sessionId,
+        AnalyticsLicenseKey analyticsLicenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, username, organizationId, sessionId,
                 hostname, machineId, token);
         if (analyticsLicenseKey.getValue() != null) {
             Map<String, String> respond = new HashMap<String, String>();
