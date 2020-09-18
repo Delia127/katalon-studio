@@ -1,8 +1,10 @@
 package com.kms.katalon.integration.analytics.report;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -28,7 +30,11 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     
     public static final String TESTOPS_RELEASE_ID_CONSOLE_OPTION_NAME = "testOpsReleaseId";
     
+    public static final String TESTOPS_PROJECT_ID_CONSOLE_OPTION_NAME = "testOpsProjectId";
+    
     private static Long TESTOPS_RELEASE_ID = null;
+    
+    private static Long TESTOPS_PROJECT_ID = null;
     
     public static final LongConsoleOption TESTOPS_RELEASE_ID_CONSOLE_OPTION = new LongConsoleOption() {
         
@@ -43,12 +49,38 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
         }
     };
     
+    private static final LongConsoleOption TESTOPS_PROJECT_ID_CONSOLE_OPTION = new LongConsoleOption() {
+        
+        @Override
+        public String getOption() {
+            return TESTOPS_PROJECT_ID_CONSOLE_OPTION_NAME;
+        }
+        
+        @Override 
+        public Long getValue() {
+            return TESTOPS_PROJECT_ID;
+        }
+    };
+    
     private AnalyticsReportService reportService = new AnalyticsReportService();
 
+    public static LongConsoleOption getConsoleOption(String optionName) throws NoSuchElementException {
+        switch (optionName) {
+            case TESTOPS_PROJECT_ID_CONSOLE_OPTION_NAME:
+                return TESTOPS_PROJECT_ID_CONSOLE_OPTION;
+            case TESTOPS_RELEASE_ID_CONSOLE_OPTION_NAME:
+                return TESTOPS_RELEASE_ID_CONSOLE_OPTION;
+            default:
+                throw new NoSuchElementException(
+                        MessageFormat.format(IntegrationAnalyticsMessages.MSG_EXCEPTION_NO_CONSOLE_OPTION, optionName));
+        }
+    }
+    
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> integrationCommandList = new ArrayList<ConsoleOption<?>>();
         integrationCommandList.add(TESTOPS_RELEASE_ID_CONSOLE_OPTION);
+        integrationCommandList.add(TESTOPS_PROJECT_ID_CONSOLE_OPTION);
         return integrationCommandList;
     }
 
@@ -64,7 +96,16 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
             } catch (Exception e) {
                 LogUtil.logError(e);
             }
-            
+            return;
+        }
+        
+        if(consoleOption == TESTOPS_PROJECT_ID_CONSOLE_OPTION) {
+            try {
+                TESTOPS_PROJECT_ID = Long.parseLong(argumentValue.trim());
+            } catch (Exception e) {
+                LogUtil.logError(e);
+            }
+            return;
         }
     }
 
