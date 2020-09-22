@@ -80,6 +80,7 @@ public class JsSuiteModel extends JsModel {
 		int totalFail = 0;
 		int totalErr = 0;
 		int totalInComplete = 0;
+		int totalSkipped = 0;
         for (ILogRecord testLogEntity : suiteLog.getChildRecords()) {
             if (!(testLogEntity instanceof TestCaseLogRecord)) {
                 continue;
