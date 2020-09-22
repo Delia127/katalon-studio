@@ -225,12 +225,14 @@ public class Trackings {
 
     public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result,
             long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
-            boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases) {
+            boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases,
+            boolean isInCollection) {
         List<Object> properties = new ArrayList<Object>(Arrays.asList(
                 new Object[] { "runningMode", "gui", "launchMode", launchMode, "driver", driverType, "executionResult",
                         result, "duration", duration, "retryStrategy", retryStrategy, "numberOfRerun", numberOfRetry,
                         "enable_self_healing", isEnableSelfHealing, "trigger_self_healing", isTriggerSelfHealing,
-                        "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases }));
+                        "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases, "isInCollection",
+                        isInCollection }));
 
         boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
         if (hasAnySuccessfulSelfHealed) {
@@ -243,11 +245,13 @@ public class Trackings {
 
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result,
             long duration, String retryStrategy, int numberOfRetry, boolean isEnableSelfHealing,
-            boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases) {
-        List<Object> properties = new ArrayList<Object>(Arrays.asList(new Object[] { "runningMode", "console", "driver",
-                driverType, "executionResult", result, "duration", duration, "retryStrategy", retryStrategy,
-                "numberOfRerun", numberOfRetry, "enable_self_healing", isEnableSelfHealing, "trigger_self_healing",
-                isTriggerSelfHealing, "total_test_cases", totalTestCases, "passed_test_cases", passedTestCases }));
+            boolean isTriggerSelfHealing, String healingInfo, int totalTestCases, int passedTestCases,
+            boolean isInCollection) {
+        List<Object> properties = new ArrayList<Object>(Arrays.asList(
+                new Object[] { "runningMode", "console", "driver", driverType, "executionResult", result, "duration",
+                        duration, "retryStrategy", retryStrategy, "numberOfRerun", numberOfRetry, "enable_self_healing",
+                        isEnableSelfHealing, "trigger_self_healing", isTriggerSelfHealing, "total_test_cases",
+                        totalTestCases, "passed_test_cases", passedTestCases, "isInCollection", isInCollection }));
 
         boolean hasAnySuccessfulSelfHealed = StringUtils.isNotBlank(healingInfo);
         if (hasAnySuccessfulSelfHealed) {
@@ -360,6 +364,14 @@ public class Trackings {
     public static void trackOpenObject(String objectType) {
         String action = "open" + StringUtils.capitalize(objectType);
         trackUserAction(action);
+    }
+
+    public static void trackOpenTestCase(String defaultOpenView) {
+        trackUserAction("openTestCase", "defaultOpenView", defaultOpenView);
+    }
+
+    public static void trackOpenSetDefaultTestCaseView() {
+        trackOpenObject("SetDefaultTestCaseViewFromTestCase");
     }
 
     public static void trackSaveObject(String objectType) {

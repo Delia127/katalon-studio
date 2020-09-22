@@ -1,12 +1,16 @@
 package com.kms.katalon.core.util.internal;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 
 import org.apache.commons.io.FilenameUtils;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.StringConstants;
 
 public class TestOpsUtil {
 
@@ -45,16 +49,22 @@ public class TestOpsUtil {
      * @param file File whose parent need to be created.
      * @param isFile <b>true</b> if the path in <b><i>file</i></b> file. <b>false</b> if path is directory.
      * @return File whose path has been created.
+     * @throws IOException 
      */
-    public static File ensureDirectory(File file, boolean isFile) {
+    public static File ensureDirectory(File file, boolean isFile) throws IOException, SecurityException {
         if (file == null) {
-            return file;
+            throw new IOException(StringConstants.UTIL_EXC_FILE_NOT_NULL);
         }
 
         if (file.exists()) {
             return file;
         }
-
+        
+        if (!isValidFile(file)) {
+            throw new IOException(
+                    MessageFormat.format(StringConstants.UTIL_EXC_FILE_PATH_INVALID, file.getAbsolutePath()));
+        }
+        
         if (isFile) {
             File parent = file.getParentFile();
             if (parent == null || parent.exists()) {
@@ -74,5 +84,14 @@ public class TestOpsUtil {
         }
         return fileName;
     }
-
+    
+    
+    private static boolean isValidFile(File file) {
+        try {
+            Paths.get(file.getAbsolutePath());
+            return true;
+        } catch (InvalidPathException e) {
+            return false;
+        }
+    }
 }

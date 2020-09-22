@@ -154,7 +154,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private StyledText txtTestSuiteId, txtHostName, txtOS, txtPlatform, txtStartTime, txtEndTime, txtRunTime,
             txtKatalonVersion;
 
-    private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted, txtTCErrors, txtTCSkipped;
+    private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted, txtTCErrors;
 
     private TestSuiteLogRecord testSuiteLogRecord;
 
@@ -167,7 +167,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private ReportTestCaseTableViewerFilter testCaseTableFilter;
 
     private Button btnFilterTestCasePassed, btnFilterTestCaseFailed, btnFilterTestCaseError,
-            btnFilterTestCaseIncomplete, btnFilterTestCaseSkipped;
+            btnFilterTestCaseIncomplete;
 
     private ToolItem btnShowHideTestCaseDetails;
 
@@ -396,16 +396,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
             }
         });
-        
-        btnFilterTestCaseSkipped.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                testCaseTableFilter.showSkipped(btnFilterTestCaseSkipped.getSelection());
-                testCaseTableViewer.refresh();
-                testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
-            }
-        });
 
         txtTestCaseSearch.addKeyListener(new KeyAdapter() {
 
@@ -575,9 +565,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             txtTCPasses.setText(Integer.toString(testSuiteLogRecord.getTotalPassedTestCases()));
             txtTCFailures.setText(Integer.toString(testSuiteLogRecord.getTotalFailedTestCases()));
             txtTCErrors.setText(Integer.toString(testSuiteLogRecord.getTotalErrorTestCases()));
-            txtTCSkipped.setText(Integer.toString(testSuiteLogRecord.getTotalSkippedTestCases()));
             txtTCIncompleted.setText(Integer.toString(testSuiteLogRecord.getTotalIncompleteTestCases()));
-            
+
             txtStartTime.setText(DateUtil.getDateTimeFormatted(testSuiteLogRecord.getStartTime()));
             txtEndTime.setText(DateUtil.getDateTimeFormatted(testSuiteLogRecord.getEndTime()));
 
@@ -655,7 +644,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         compositeTestCaseFilterSelection = new Composite(compositeTestCaseFilter, SWT.NONE);
         compositeTestCaseFilterSelection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeTestCaseFilterSelection.setLayout(new GridLayout(7, false));
+        compositeTestCaseFilterSelection.setLayout(new GridLayout(6, false));
 
         btnFilterTestCasePassed = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
         btnFilterTestCasePassed.setText("Passed");
@@ -676,11 +665,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         btnFilterTestCaseIncomplete.setText("Incomplete");
         btnFilterTestCaseIncomplete.setImage(ImageConstants.IMG_16_INCOMPLETE);
         btnFilterTestCaseIncomplete.setSelection(true);
-
-        btnFilterTestCaseSkipped = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
-        btnFilterTestCaseSkipped.setText("Skipped");
-        btnFilterTestCaseSkipped.setImage(ImageConstants.IMG_16_SKIPPED);
-        btnFilterTestCaseSkipped.setSelection(true);
 
         Label spacer = new Label(compositeTestCaseFilterSelection, SWT.NONE);
         spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -1043,7 +1027,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         testCaseTableFilter.showFailed(btnFilterTestCaseFailed.getSelection());
         testCaseTableFilter.showError(btnFilterTestCaseError.getSelection());
         testCaseTableFilter.showIncomplete(btnFilterTestCaseIncomplete.getSelection());
-        testCaseTableFilter.showSkipped(btnFilterTestCaseSkipped.getSelection());
 
         testCaseTableViewer.addFilter(testCaseTableFilter);
     }
@@ -1267,17 +1250,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         txtTCErrors = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtTCErrors.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         txtTCErrors.setForeground(ColorUtil.getErrorLogBackgroundColor());
-        
-        Label lblSkipped = new Label(compositeSummaryDetails, SWT.NONE);
-        lblSkipped.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblSkipped.setText("Skipped");
-        setLabelToBeBold(lblSkipped);
-        lblSkipped.setForeground(ColorUtil.getErrorLogBackgroundColor());
-        lblSkipped.setBackground(ColorUtil.getWhiteBackgroundColor());
-
-        txtTCSkipped = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
-        txtTCSkipped.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-        txtTCSkipped.setForeground(ColorUtil.getErrorLogBackgroundColor());
 
         Label lblIncompleted = new Label(compositeSummaryDetails, SWT.NONE);
         lblIncompleted.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));

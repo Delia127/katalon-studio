@@ -22,6 +22,8 @@ public class AnalyticsStringConstants {
 
     public static final String ANALYTICS_USERS_ME = "/api/v1/users/me";
 
+    public static final String ANALYTICS_ORGANIZATIONS_LIST = "/api/v1/organizations/list";
+
     public static final String ANALYTICS_API_ORGANIZATION = "/api/v1/organizations";
 
     public static final String ANALYTICS_API_ORGANIZATION_ITEM = "/api/v1/organizations/%d";

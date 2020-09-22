@@ -1,0 +1,55 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+      - release-*
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    timeoutInMinutes: 60
+    strategy:
+      parallel: 1
+
+    variables:
+      BRANCH: $(Build.SourceBranchName)
+      COMMIT_ID: $(Build.SourceVersion)
+      PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
+      PR_KEY: $(System.PullRequest.PullRequestNumber)
+      PR_TARGET_BRANCH: $(System.PullRequest.TargetBranch)
+      # COMMIT_ID: $(System.PullRequest.SourceCommitId)
+      KATALON_DIR: $(Build.Repository.LocalPath)
+      TMP_DIR: $(Build.ArtifactStagingDirectory)
+      MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+      MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+      VERSION: 
+      TAG:
+      S3_LOCATION:
+      WITH_UPDATE:
+      IS_RELEASE:
+
+    pool:
+      vmImage: 'macOS-latest'
+
+    steps:
+    - checkout: self
+      fetchDepth: 1
+      clean: true
+      condition: startsWith(variables['PR_SOURCE_BRANCH'], 'STUDIO')
+
+    - task: Cache@2
+      inputs:
+        key: 'maven | "$(Agent.OS)" | **/pom.xml, !**/target/**'
+        restoreKeys: |
+          maven | "$(Agent.OS)"
+          maven
+        path: $(MAVEN_CACHE_FOLDER)
+      displayName: Cache Maven Local Repo
+      condition: startsWith(variables['PR_SOURCE_BRANCH'], 'STUDIO')
+
+    - bash: |
+        ./sonar_pr.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}" "${PR_SOURCE_BRANCH}" "${PR_KEY}" "$(PR_TARGET_BRANCH)"
+      displayName: Build
+      condition: startsWith(variables['PR_SOURCE_BRANCH'], 'STUDIO')

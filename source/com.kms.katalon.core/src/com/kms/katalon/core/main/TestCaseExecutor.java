@@ -245,16 +245,13 @@ public class TestCaseExecutor {
             return testCaseResult;
         } finally {
             testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
-            testCaseContext.setMessage(testCaseResult.getMessage());
+        	testCaseContext.setMessage(testCaseResult.getMessage());
 
             if (testCaseContext.isMainTestCase()) {
                 eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_CASE, new Object[] { testCaseContext });
             }
 
             if (testCaseContext.isMainTestCase()) {
-                if (testCaseContext.isSkipped()) {
-                    logger.logSkipped(testCaseResult.getMessage());
-                }
                 logger.endTest(testCase.getTestCaseId(), null);
             } else {
                 logger.endCalledTest(testCase.getTestCaseId(), null);

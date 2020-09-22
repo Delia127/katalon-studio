@@ -43,13 +43,13 @@ public interface IImageKeys {
     // End Intro
 
     // Welcome
-    public static final String FAQ_34 = "welcome/faqs_34.png"; //$NON-NLS-1$
+    public static final String HELP_CENTER_24 = "welcome/help_center_24.png"; //$NON-NLS-1$
 
     public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
         
-    public static final String KATALON_STORE_34 = "welcome/katalon_store_34.png"; //$NON-NLS-1$
+    public static final String KATALON_STORE = "welcome/katalon_store_24.png"; //$NON-NLS-1$
 
-    public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
+    public static final String TUTORIAL_24 = "welcome/tutorial_24.png"; //$NON-NLS-1$
     
     public static final String BUSINESS_SUPPORT_34 ="welcome/business_support_34.png";
 
@@ -243,8 +243,6 @@ public interface IImageKeys {
     public static final String LOG_NOT_RUN_16 = "log/log_not_run_16.png"; //$NON-NLS-1$
 
     public static final String LOG_PASSED_16 = "log/log_passed_16.png"; //$NON-NLS-1$
-    
-    public static final String LOG_SKIPPED_16 = "log/log_skipped_16.png"; //$NON-NLS-1$
 
     public static final String LOG_WARNING_16 = "log/log_warning_16.png"; //$NON-NLS-1$
     // End Log
