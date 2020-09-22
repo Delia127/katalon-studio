@@ -38,8 +38,8 @@ public class EmailVariableBindingTest {
 		assertEquals(bindings.get("totalError"), "0");
 		assertEquals(bindings.get("duration"),DateUtil.getElapsedTime(1000, 2000));
 	}
-	
-	private TestSuiteCollectionLogRecord createTestLogRecord(){
+
+    private TestSuiteCollectionLogRecord createTestLogRecord() {
         TestSuiteCollectionLogRecord logRecord = new TestSuiteCollectionLogRecord();
         logRecord.setTestSuiteCollectionId("S1");
         logRecord.setStartTime(1000);
@@ -49,12 +49,12 @@ public class EmailVariableBindingTest {
         logRecord.setTotalPassedTestCases("1");
         logRecord.setTotalFailedTestCases("0");
         logRecord.setTotalSkippedTestCases("0");
-		logRecord.setTotalErrorTestCases("0");
-		
-		List<TestSuiteLogRecord> testSuiteRecords = new ArrayList<>();
-		TestSuiteLogRecord test = new TestSuiteLogRecord("logRecord", "logFolder");
-		testSuiteRecords.add(test);
-		logRecord.setTestSuiteRecords(testSuiteRecords);
-		return logRecord;
-	}
+        logRecord.setTotalErrorTestCases("0");
+
+        List<TestSuiteLogRecord> testSuiteRecords = new ArrayList<>();
+        TestSuiteLogRecord test = new TestSuiteLogRecord("logRecord", "logFolder");
+        testSuiteRecords.add(test);
+        logRecord.setTestSuiteRecords(testSuiteRecords);
+        return logRecord;
+    }
 }
