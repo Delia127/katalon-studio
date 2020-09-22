@@ -363,7 +363,6 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.LOG_INFO_16);
         ImageManager.registerImage(IImageKeys.LOG_NOT_RUN_16);
         ImageManager.registerImage(IImageKeys.LOG_PASSED_16);
-        ImageManager.registerImage(IImageKeys.LOG_SKIPPED_16);
         ImageManager.registerImage(IImageKeys.LOG_WARNING_16);
     }
 
@@ -404,10 +403,10 @@ public class ImageProcessor {
     }
 
     private void registerWelcomeImages() {
-        ImageManager.registerImage(IImageKeys.FAQ_34);
+        ImageManager.registerImage(IImageKeys.HELP_CENTER_24);
         ImageManager.registerImage(IImageKeys.USER_GUIDE_34);
-        ImageManager.registerImage(IImageKeys.KATALON_STORE_34);
-        ImageManager.registerImage(IImageKeys.TUTORIAL_34);
+        ImageManager.registerImage(IImageKeys.KATALON_STORE);
+        ImageManager.registerImage(IImageKeys.TUTORIAL_24);
         ImageManager.registerImage(IImageKeys.BUSINESS_SUPPORT_34);
         ImageManager.registerImage(IImageKeys.KATALON_LOGO_202);
         ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_29);

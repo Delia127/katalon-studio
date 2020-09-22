@@ -268,6 +268,16 @@ public class ComponentBuilder<T extends Control> {
         return this;
     }
 
+    public ComponentBuilder<T> fillHorizontal() {
+        ComponentUtil.gridFillHorizontal(control);
+        return this;
+    }
+
+    public ComponentBuilder<T> fillVertical() {
+        ComponentUtil.gridFillVertical(control);
+        return this;
+    }
+
     public ComponentBuilder<T> fill() {
         ComponentUtil.gridFill(control);
         return this;

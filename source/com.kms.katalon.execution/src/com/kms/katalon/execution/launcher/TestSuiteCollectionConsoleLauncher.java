@@ -144,6 +144,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
+            tsExecutedEntity.setInCollection(true);
             tsExecutedEntity.setRerunSetting(
                     (DefaultRerunSetting) executedEntity.getRunnable().mergeWith(tsExecutedEntity.getRerunSetting()));
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));

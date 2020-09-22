@@ -189,6 +189,16 @@ public class ConsoleMain {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_SECOND_OPTION));
             }
 
+            String organizationId = null;
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                organizationId = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+            }
+
+            if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
+                organizationId = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
+            }
+            Long orgIdValue = parseOrganizationId(organizationId);
+
             String apiKeyOnPremiseValue = null;
             if (options.has(KATALON_API_KEY_ON_PREMISE_OPTION)) {
                 apiKeyOnPremiseValue = String.valueOf(options.valueOf(KATALON_API_KEY_ON_PREMISE_OPTION));
@@ -237,7 +247,7 @@ public class ConsoleMain {
                     }
 
                     StringBuilder errorMessage = new StringBuilder();
-                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, errorMessage);
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, orgIdValue, errorMessage);
 
                     String error = errorMessage.toString();
                     if (StringUtils.isNotBlank(error)) {
@@ -258,7 +268,7 @@ public class ConsoleMain {
                             LocalInformationUtil.printLicenseServerInfo(server, apiKey);
 
                             errorMessage = new StringBuilder();
-                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                            isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, orgIdValue, errorMessage);
                             error = errorMessage.toString();
                             if (StringUtils.isNotBlank(error)) {
                                 LogUtil.printErrorLine(error);
@@ -330,7 +340,7 @@ public class ConsoleMain {
             }, () -> {
                 StringBuilder errorMessage = new StringBuilder();
                 String apiKey = localStore.get(KATALON_API_KEY_OPTION);
-                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, errorMessage);
+                ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKey, orgIdValue, errorMessage);
 
                 String error = errorMessage.toString();
                 if (StringUtils.isNotBlank(error)) {
@@ -342,8 +352,6 @@ public class ConsoleMain {
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
-            
-            printLicenseMessage();
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
@@ -376,15 +384,7 @@ public class ConsoleMain {
             reloadMethod.invoke(handler, apiKey);
         }
     }
-    
-    private static void printLicenseMessage() {
-        if (KatalonApplication.isRunningInDevOpsEnvironment()) {
-            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_DEVOPS_LICENSE_COMPATIBILITY);
-        } else {
-            LogUtil.printOutputLine(ExecutionMessageConstants.ConsoleMain_MSG_NON_DEVOPS_LICENSE_COMPATIBLITY);
-        }
-    }
-    
+
     private static void installBasicReportPluginIfNotAvailable() throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> installBasicReportPluginHandlerClass = katalonBundle
@@ -588,6 +588,18 @@ public class ConsoleMain {
             } catch (IOException e) {
                 LogUtil.printAndLogError(e, MessageFormat.format(ExecutionMessageConstants.RE_ERROR_DELETE_FOLDERS, libFolderName));
             }
+        }
+    }
+
+    private static Long parseOrganizationId(String organizationId) throws InvalidConsoleArgumentException {
+        Long orgIdValue = null;
+        try {
+            if (organizationId != null) {
+                orgIdValue = Long.valueOf(organizationId);
+            }
+            return orgIdValue;
+        } catch (NumberFormatException e) {
+            throw new InvalidConsoleArgumentException(String.format(StringConstants.MNG_PRT_ORGANIZATION_ID_IS_INVALID));
         }
     }
 }

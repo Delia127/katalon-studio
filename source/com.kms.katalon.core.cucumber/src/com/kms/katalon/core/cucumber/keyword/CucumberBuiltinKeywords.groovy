@@ -19,6 +19,7 @@ import com.kms.katalon.core.model.RunningMode
 import com.kms.katalon.core.util.internal.PathUtil
 
 import cucumber.api.cli.Main;
+import cucumber.runtime.formatter.CucumberReporter
 import groovy.transform.CompileStatic
 
 public class CucumberBuiltinKeywords extends BuiltinKeywords {
@@ -68,7 +69,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "--plugin",
                 "junit:"+ reportDir + "/cucumber.xml",
                 "--plugin",
-                CucumberReporter.class.getName()
+                CucumberReporter.class.getName() + ":" + reportDir + "/k-cucumber.json"
             ]
             if (runningMode == RunningMode.CONSOLE) {
                 argv = argv + ["--monochrome"]
@@ -130,7 +131,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "--plugin",
                 "junit:"+ reportDir + "/cucumber.xml",
                 "--plugin",
-                CucumberReporter.class.getName()
+                CucumberReporter.class.getName() + ":" + reportDir + "/k-cucumber.json"
             ]
             if (tags != null) {
                 for (String tag in tags) {
@@ -285,7 +286,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "--plugin",
                 "junit:"+ reportDir + "/cucumber.xml",
                 "--plugin",
-                CucumberReporter.class.getName()
+                CucumberReporter.class.getName() + ":" + reportDir + "/k-cucumber.json"
             ]
             if (tags != null) {
                 for (String tag in tags) {

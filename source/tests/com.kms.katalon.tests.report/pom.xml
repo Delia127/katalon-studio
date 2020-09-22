@@ -210,7 +210,7 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+        <dependency>
 			<groupId>com.kms</groupId>
 			<artifactId>com.kms.katalon.composer.webui.objectspy</artifactId>
 			<version>${project.version}</version>

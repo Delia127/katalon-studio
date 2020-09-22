@@ -65,22 +65,21 @@ public class JsSuiteModel extends JsModel {
 	}
 
 	/**
-     * @return total failures & errors & incomplete
-     **/
-    private int[] initStatus() {
+	 * @return total failures & errors & incomplete
+	 **/
+	private int[] initStatus() {
 
-        status = new JsModel();
+		status = new JsModel();
 
-        // Status (0: index of STATUSES['FAIL', 'PASS', 'NOT_RUN'], 1: startMillis, 2: elapsed, 3: message (if any))
-        TestStatusValue suiteStat = TestStatusValue.PASSED;
-        long suiteStartTime = suiteLog.getStartTime();
-        long suiteEndTime = suiteLog.getEndTime();
-        long elapsedTime = suiteEndTime - suiteStartTime;
-        String lastErrMsg = "";
-        int totalFail = 0;
-        int totalErr = 0;
-        int totalInComplete = 0;
-        int totalSkipped = 0;
+		// Status (0: index of STATUSES['FAIL', 'PASS', 'NOT_RUN'], 1: startMillis, 2: elapsed, 3: message (if any))
+		TestStatusValue suiteStat = TestStatusValue.PASSED;
+		long suiteStartTime = suiteLog.getStartTime();
+		long suiteEndTime = suiteLog.getEndTime();
+		long elapsedTime = suiteEndTime - suiteStartTime;
+		String lastErrMsg = "";
+		int totalFail = 0;
+		int totalErr = 0;
+		int totalInComplete = 0;
         for (ILogRecord testLogEntity : suiteLog.getChildRecords()) {
             if (!(testLogEntity instanceof TestCaseLogRecord)) {
                 continue;

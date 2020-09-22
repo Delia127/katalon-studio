@@ -115,8 +115,14 @@ public class AnalyticsReportService implements AnalyticsComponent {
         AnalyticsSettingStore settingStore = getSettingStore();
         String serverUrl = settingStore.getServerEndpoint();
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        AnalyticsProject analyticsProject = isManually ? settingStore.getManualProject() : settingStore.getProject();
-        Long projectId = analyticsProject.getId();
+        Long projectId = AnalyticsReportIntegration
+                .getConsoleOption(AnalyticsReportIntegration.TESTOPS_PROJECT_ID_CONSOLE_OPTION_NAME).getValue();
+        if(projectId == null) {
+            AnalyticsProject analyticsProject = isManually ? settingStore.getManualProject() : settingStore.getProject();
+            projectId = analyticsProject.getId();
+        } else {
+            LogUtil.logInfo("TestOps project is overridden to " + projectId);
+        }
         List<Path> files = scanFiles(reportFolder);
         long timestamp = System.currentTimeMillis();
         Path reportLocation = Paths.get(FolderController.getInstance().getReportRoot(project).getLocation());
@@ -222,7 +228,12 @@ public class AnalyticsReportService implements AnalyticsComponent {
             AnalyticsTokenInfo token = getKAToken();
             if (token != null) {
                 String serverUrl = getSettingStore().getServerEndpoint();
-                long projectId = getSettingStore().getProject().getId();
+                // get overidden testops project if existing
+                Long projectId = AnalyticsReportIntegration
+                        .getConsoleOption(AnalyticsReportIntegration.TESTOPS_PROJECT_ID_CONSOLE_OPTION_NAME).getValue();
+                if(projectId == null) {
+                    projectId = getSettingStore().getProject().getId();
+                }
                 AnalyticsApiProvider.updateTestRunResult(serverUrl, projectId, token.getAccess_token(), testRun);
             } else {
                 LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
@@ -247,5 +258,5 @@ public class AnalyticsReportService implements AnalyticsComponent {
 //            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
         }
     }
-
+    
 }

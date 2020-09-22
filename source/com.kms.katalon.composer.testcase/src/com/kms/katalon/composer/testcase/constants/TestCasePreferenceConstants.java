@@ -26,4 +26,6 @@ public interface TestCasePreferenceConstants extends PreferenceConstants {
     String MANUAL_ALLOW_LINE_WRAPPING = MANUAL + "allow_line_wrapping";
 
     String MANUAL_MAXIMUM_LINE_WIDTH = MANUAL + "maximum_line_width";
+
+    String PREFERENCE_TEST_CASE_PART_ID = "com.kms.katalon.composer.preferences.GeneralPreferencePage/com.kms.katalon.composer.testcase.preference";
 }

@@ -116,6 +116,6 @@ public class TakeElementScreenshotKeyword extends WebUIAbstractKeyword {
                 logger.logPassed("Taking screenshot successfully", attributes)
             }
             return screenFileName;
-        }, flowControl, true, StringConstants.KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT)
+        }, flowControl, false, StringConstants.KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT)
     }
 }

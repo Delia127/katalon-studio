@@ -1095,6 +1095,19 @@ public class CoreWebuiMessageConstants extends NLS {
 
 	public static String KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS;
 
+    // Screenshot keyword
+    public static String KW_LOG_INFO_SCREENSHOT_FULLPAGE_FAIL_HIDE_OBJECT;
+
+    public static String KW_LOG_INFO_SCREENSHOT_FULLPAGE_HIDDEN_COUNTER;
+
+    public static String KW_SCREENSHOT_EXCEPTION_FILENAME_NULL_EMPTY;
+
+    public static String KW_SCREENSHOT_EXCEPTION_ELEMENT_NULL;
+
+    public static String KW_SCREENSHOT_EXCEPTION_AREA_NULL;
+
+    public static String KW_SCREENSHOT_EXCEPTION_AREA_LARGER;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebuiMessageConstants.class);

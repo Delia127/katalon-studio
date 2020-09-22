@@ -36,6 +36,7 @@ public class SubIDELauncher extends IDELauncher implements SubLauncher {
 
     protected void postExecutionComplete() {
         updateReport();
+        sendTrackingEvent();
     }
 
     @Override

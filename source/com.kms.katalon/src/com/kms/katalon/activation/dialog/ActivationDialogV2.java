@@ -213,7 +213,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                             }
 
                             LogUtil.logInfo("Activating credentials...");
-                            licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, machineId, errorMessage);
+                            licenseResource = ActivationInfoCollector.activate(serverUrl, username, password, null, machineId, errorMessage);
                             if (licenseResource != null) {
                                 license = licenseResource.getLicense();
                                 if (license != null) {
