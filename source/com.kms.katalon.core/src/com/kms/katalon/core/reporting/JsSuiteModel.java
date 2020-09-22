@@ -98,12 +98,16 @@ public class JsSuiteModel extends JsModel {
                 suiteStat = TestStatusValue.INCOMPLETE;
                 lastErrMsg = testLogEntity.getMessage();
                 totalInComplete++;
-            } else if (testStatus != null && (testStatus.getStatusValue() == TestStatusValue.SKIPPED)) {
-                suiteStat = TestStatusValue.SKIPPED;
+            } else if (testStatus != null && (testStatus.getStatusValue() == TestStatusValue.SKIPPED)) {                
                 lastErrMsg = testLogEntity.getMessage();
                 totalSkipped++;
             }
         }
+        // Only marks a suite as skipped if all of its test cases are skipped
+        if(totalSkipped == suiteLog.getChildRecords().length) {
+            suiteStat = TestStatusValue.SKIPPED;
+        }
+        
         String statValue = suiteStat.ordinal() + "";
         status.props.add(new JsModelProperty("status", statValue, null));
         status.props.add(new JsModelProperty("suiteStartTime", suiteStartTime + "", null));
@@ -128,8 +132,8 @@ public class JsSuiteModel extends JsModel {
         }
         sum = new JsModel();
         sum.props.add(new JsModelProperty("total", String.valueOf(totalChildCount), null));
-        sum.props.add(new JsModelProperty("passes", String.valueOf(totalChildCount
-                - (totalFailsErrorsIncompletes[0] + totalFailsErrorsIncompletes[1] + totalFailsErrorsIncompletes[2])),
+        sum.props.add(new JsModelProperty("passes", String.valueOf(totalChildCount - (totalFailsErrorsIncompletes[0]
+                + totalFailsErrorsIncompletes[1] + totalFailsErrorsIncompletes[2] + totalFailsErrorsIncompletes[3])),
                 null));
         sum.props.add(new JsModelProperty("fails", String.valueOf(totalFailsErrorsIncompletes[0]), null));
         sum.props.add(new JsModelProperty("errors", String.valueOf(totalFailsErrorsIncompletes[1]), null));
