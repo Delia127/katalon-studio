@@ -40,14 +40,15 @@ public class EmailVariableBindingTest {
 	}
 	
 	private TestSuiteCollectionLogRecord createTestLogRecord(){
-		TestSuiteCollectionLogRecord logRecord = new TestSuiteCollectionLogRecord();
-		logRecord.setTestSuiteCollectionId("S1");
-		logRecord.setStartTime(1000);
-		logRecord.setEndTime(2000);
-		logRecord.setReportLocation("testLocation");
-		logRecord.setTotalTestCases("1");
-		logRecord.setTotalPassedTestCases("1");
-		logRecord.setTotalFailedTestCases("0");
+        TestSuiteCollectionLogRecord logRecord = new TestSuiteCollectionLogRecord();
+        logRecord.setTestSuiteCollectionId("S1");
+        logRecord.setStartTime(1000);
+        logRecord.setEndTime(2000);
+        logRecord.setReportLocation("testLocation");
+        logRecord.setTotalTestCases("1");
+        logRecord.setTotalPassedTestCases("1");
+        logRecord.setTotalFailedTestCases("0");
+        logRecord.setTotalSkippedTestCases("0");
 		logRecord.setTotalErrorTestCases("0");
 		
 		List<TestSuiteLogRecord> testSuiteRecords = new ArrayList<>();
