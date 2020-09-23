@@ -798,6 +798,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         TestCaseEntity testCase = (TestCaseEntity) ((Object[]) object)[1];
                         changeOriginalTestCase(testCase);
                         updatePart(testCase);
+                        initDefaultSelectedPart();
                     }
                 }
             } catch (Exception e) {
