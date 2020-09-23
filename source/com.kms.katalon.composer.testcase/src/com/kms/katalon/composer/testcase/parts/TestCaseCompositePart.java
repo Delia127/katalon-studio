@@ -935,7 +935,6 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 partService.activate(editorPart);
                 initComponent();
                 partStack.setSelectedElement(getChildManualPart());
-                setScriptContentToManual();
                 childTestCaseEditorPart.getEditor().addPropertyListener(getChildPropertyListner());
                 updateDirty();
             }
