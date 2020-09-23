@@ -194,6 +194,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             suiteCollectionLogRecord.setEndTime(endTime != null ? endTime.getTime() : 0L);
             suiteCollectionLogRecord.setTotalPassedTestCases(String.valueOf(result.getNumPasses()));
             suiteCollectionLogRecord.setTotalFailedTestCases(String.valueOf(result.getNumFailures()));
+            suiteCollectionLogRecord.setTotalSkippedTestCases(String.valueOf(result.getNumSkips()));
             suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
             suiteCollectionLogRecord.setTotalTestCases(String.valueOf(result.getExecutedTestCases()));
             suiteCollectionLogRecord.setReportLocation(
