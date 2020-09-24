@@ -20,16 +20,20 @@ public class SystemLogger extends PrintStream {
     
     private boolean shouldIgnoreErrorMessage = false;
 
+    private File logFile;
+
     SystemLogger(OutputStream os, LogMode defaultMode) {
         super(os, true);
         logMode = defaultMode;
         locked = false;
+        logFile = getLogFile();
     }
 
     SystemLogger(OutputStream os, LogMode defaultMode, String encode) throws UnsupportedEncodingException {
         super(os, true, encode);
         logMode = defaultMode;
         locked = false;
+        logFile = getLogFile();
     }
 
     void changeMode(LogMode mode) {
@@ -82,7 +86,6 @@ public class SystemLogger extends PrintStream {
 
                     break;
                 case LOG:
-                    File logFile = getLogFile();
                     FileUtils.writeByteArrayToFile(logFile, ArrayUtils.subarray(buf, off, len), true);
                     break;
             }
