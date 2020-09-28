@@ -1,5 +1,5 @@
 0=${buildNumber}
-1=7.7.5
+1=7.8.0
 2=${build.profile}
 3=internal
 4=true
