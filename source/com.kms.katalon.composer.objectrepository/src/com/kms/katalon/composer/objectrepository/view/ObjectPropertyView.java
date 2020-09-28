@@ -340,7 +340,6 @@ public class ObjectPropertyView implements EventHandler {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
-		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);
 
 		TableViewerColumn treeViewerColumnName = new TableViewerColumn(propertyTableViewer, SWT.NONE);
@@ -410,7 +409,6 @@ public class ObjectPropertyView implements EventHandler {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);
 		
 		TableViewerColumn treeViewerColumnName = new TableViewerColumn(xpathTableViewer, SWT.NONE);
@@ -535,7 +533,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void createObjectPropertiesComposite(Composite parent) {
 		propertyTableComposite = new Composite(parent, SWT.NONE);
-		propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
 		glCompositeTable.marginHeight = 0;
@@ -555,7 +553,7 @@ public class ObjectPropertyView implements EventHandler {
 	private void createObjectXpathsComposite(Composite parent) {
 		
 		xpathTableComposite = new Composite(parent, SWT.NONE);
-		xpathTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		xpathTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
 		glCompositeTable.marginHeight = 0;
@@ -1042,7 +1040,6 @@ public class ObjectPropertyView implements EventHandler {
 		Composite testObjectDetailsComposite = createTestObjectDetailsComposite(mainComposite);
 
 		mainComposite.setContent(testObjectDetailsComposite);
-		mainComposite.setMinSize(testObjectDetailsComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		mainComposite.setExpandVertical(true);
 		mainComposite.setExpandHorizontal(true);
 
