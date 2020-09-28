@@ -171,14 +171,8 @@ public class AnalyticsReportService implements AnalyticsComponent {
     private List<Path> scanFiles(ReportFolder reportFolder) {
         List<Path> files = new ArrayList<>();
         for (String path : reportFolder.getReportFolders()) {
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_RP_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_BASIC_REPORT_FILE_EXTENSION_PATTERN));
             addToList(files, scanHarFiles(path));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_ALL_REPORT_FILE_PATTERN));
         }
         return files;
     }
