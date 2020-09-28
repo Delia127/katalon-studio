@@ -28,6 +28,7 @@ import com.kms.katalon.composer.components.impl.control.ScrollableComposite;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.application.LifeCycleManager;
 
 public class WelcomePart {
@@ -128,7 +129,7 @@ public class WelcomePart {
 
         addSpacer(rightComposite);
 
-        startPageContent = new WelcomeRightPart(rightComposite, SWT.NONE);
+        startPageContent = new WelcomeRightPart(rightComposite, SWT.NONE, StringConstants.PA_WELCOME_RIGHT_PART_LINK);
         GridData gdStartPageContent = new GridData(SWT.FILL, SWT.FILL, true, true);
         gdStartPageContent.minimumWidth = 600;
         startPageContent.setLayoutData(gdStartPageContent);

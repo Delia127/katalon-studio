@@ -115,8 +115,14 @@ public class AnalyticsReportService implements AnalyticsComponent {
         AnalyticsSettingStore settingStore = getSettingStore();
         String serverUrl = settingStore.getServerEndpoint();
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        AnalyticsProject analyticsProject = isManually ? settingStore.getManualProject() : settingStore.getProject();
-        Long projectId = analyticsProject.getId();
+        Long projectId = AnalyticsReportIntegration
+                .getConsoleOption(AnalyticsReportIntegration.TESTOPS_PROJECT_ID_CONSOLE_OPTION_NAME).getValue();
+        if(projectId == null) {
+            AnalyticsProject analyticsProject = isManually ? settingStore.getManualProject() : settingStore.getProject();
+            projectId = analyticsProject.getId();
+        } else {
+            LogUtil.logInfo("TestOps project is overridden to " + projectId);
+        }
         List<Path> files = scanFiles(reportFolder);
         long timestamp = System.currentTimeMillis();
         Path reportLocation = Paths.get(FolderController.getInstance().getReportRoot(project).getLocation());
@@ -165,14 +171,8 @@ public class AnalyticsReportService implements AnalyticsComponent {
     private List<Path> scanFiles(ReportFolder reportFolder) {
         List<Path> files = new ArrayList<>();
         for (String path : reportFolder.getReportFolders()) {
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_RP_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_BASIC_REPORT_FILE_EXTENSION_PATTERN));
             addToList(files, scanHarFiles(path));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_ALL_REPORT_FILE_PATTERN));
         }
         return files;
     }
@@ -222,7 +222,12 @@ public class AnalyticsReportService implements AnalyticsComponent {
             AnalyticsTokenInfo token = getKAToken();
             if (token != null) {
                 String serverUrl = getSettingStore().getServerEndpoint();
-                long projectId = getSettingStore().getProject().getId();
+                // get overidden testops project if existing
+                Long projectId = AnalyticsReportIntegration
+                        .getConsoleOption(AnalyticsReportIntegration.TESTOPS_PROJECT_ID_CONSOLE_OPTION_NAME).getValue();
+                if(projectId == null) {
+                    projectId = getSettingStore().getProject().getId();
+                }
                 AnalyticsApiProvider.updateTestRunResult(serverUrl, projectId, token.getAccess_token(), testRun);
             } else {
                 LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
@@ -247,5 +252,5 @@ public class AnalyticsReportService implements AnalyticsComponent {
 //            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
         }
     }
-
+    
 }

@@ -798,6 +798,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         TestCaseEntity testCase = (TestCaseEntity) ((Object[]) object)[1];
                         changeOriginalTestCase(testCase);
                         updatePart(testCase);
+                        initDefaultSelectedPart();
                     }
                 }
             } catch (Exception e) {
@@ -934,7 +935,6 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 partService.activate(editorPart);
                 initComponent();
                 partStack.setSelectedElement(getChildManualPart());
-                setScriptContentToManual();
                 childTestCaseEditorPart.getEditor().addPropertyListener(getChildPropertyListner());
                 updateDirty();
             }

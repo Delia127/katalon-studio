@@ -25,6 +25,8 @@ public class MessageConstants extends NLS {
 
     public static String PA_WELCOME;
 
+    public static String PA_WELCOME_RIGHT_PART_LINK;
+
     public static String PA_QUICKSTART;
 
     public static String PA_WELCOME_TO_KATALON;
@@ -79,9 +81,25 @@ public class MessageConstants extends NLS {
 
     public static String PA_TOOLTIP_ARTICLES;
 
+    public static String PA_LBL_LICENSE;
+    
+    public static String PA_URL_LICENSE;
+
     public static String PA_URL_USER_GUIDE;
 
     public static String PA_URL_PLUGIN_STORE;
+    
+    public static String PA_URL_CHATROOM;
+
+    public static String PA_URL_FEEDBACK;
+    
+    public static String PA_URL_FORUM;
+
+    public static String PA_LBL_FORUM;
+
+    public static String PA_LBL_CHATROOM;
+
+    public static String PA_LBL_FEEDBACK;
 
     public static String PA_LBL_RECENT_PROJECT;
 

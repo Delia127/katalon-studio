@@ -420,6 +420,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_CB_DEFAULT_LASTEST_RELEASE;
     
     public static String DIA_CB_TESTOPS_LOADING;
+    
+    public static String DIA_CB_DEFAULT_PROJECT;
+    
+    public static String DIA_LBL_TESTOPS_PROJECT;
 
 	public static String KATALON_STUDIO_ONLINE_LICENSE_DOCUMENT;
 

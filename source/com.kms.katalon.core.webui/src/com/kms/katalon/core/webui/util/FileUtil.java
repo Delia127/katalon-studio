@@ -56,11 +56,10 @@ public class FileUtil {
             return fileName;
         }
         
-        if (isTestOpsVisionCheckPoint && StringUtils.isBlank(fileName)) {
+        if (StringUtils.isBlank(fileName)) {
             throw new IllegalArgumentException(StringConstants.KW_SCREENSHOT_EXCEPTION_FILENAME_NULL_EMPTY);
         }
-        String savedFileName = isTestOpsVisionCheckPoint ? TestOpsUtil.replaceTestOpsVisionFileName(fileName)
-                : fileName;
+        String savedFileName = TestOpsUtil.replaceTestOpsVisionFileName(fileName);
         BufferedImage image = takeViewportScreenshot();
         saveImage(image, savedFileName);
         return savedFileName;
