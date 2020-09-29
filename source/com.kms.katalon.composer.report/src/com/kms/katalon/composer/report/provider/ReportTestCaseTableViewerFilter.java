@@ -14,6 +14,7 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
     public static final int ERROR      = 1 << 3;
     public static final int INCOMPLETE = 1 << 4;
     public static final int WARNING    = 1 << 5;
+    public static final int SKIPPED    = 1 << 6;
 
     private boolean showInfo;
     private boolean showPassed;
@@ -21,6 +22,7 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
     private boolean showError;
     private boolean showIncomplete;
     private boolean showWarning;
+    private boolean showSkipped;
 
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -52,20 +54,22 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
         if (logRecord.getStatus() == null) {
             return INFO;
         }
-        
+
         switch (logRecord.getStatus().getStatusValue()) {
-        case INCOMPLETE:
-            return INCOMPLETE;
-        case ERROR:
-            return ERROR;
-        case FAILED:
-            return FAILED;
-        case PASSED:
-            return PASSED;
-        case WARNING:
-            return WARNING;
-        default:
-            return INFO;
+            case INCOMPLETE:
+                return INCOMPLETE;
+            case ERROR:
+                return ERROR;
+            case FAILED:
+                return FAILED;
+            case PASSED:
+                return PASSED;
+            case SKIPPED:
+                return SKIPPED;
+            case WARNING:
+                return WARNING;
+            default:
+                return INFO;
         }
     }
 
@@ -74,15 +78,12 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
         int filterPassed = (showPassed) ? PASSED : 0;
         int filterFailed = (showFailed) ? FAILED : 0;
         int filterError = (showError) ? ERROR : 0;
+        int filterSkipped = (showSkipped) ? SKIPPED : 0;
         int filterIncomplete = (showIncomplete) ? INCOMPLETE : 0;
         int filterWarning = (showWarning) ? WARNING : 0;
 
-        return (filterInfo & INFO) 
-                | (filterPassed & PASSED) 
-                | (filterFailed & FAILED) 
-                | (filterError & ERROR)
-                | (filterIncomplete & INCOMPLETE)
-                | (filterWarning & WARNING);
+        return (filterInfo & INFO) | (filterPassed & PASSED) | (filterFailed & FAILED) | (filterError & ERROR)
+                | (filterIncomplete & INCOMPLETE) | (filterSkipped & SKIPPED) | (filterWarning & WARNING);
     }
 
     public boolean isInfoShown() {
@@ -127,6 +128,14 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
     
     public boolean isWarningShown() {
         return showWarning;
+    }
+    
+    public boolean isSkippedShown() {   
+        return showSkipped; 
+    }   
+
+    public void showSkipped(boolean showSkipped) {  
+        this.showSkipped = showSkipped; 
     }
     
     public void showWarning(boolean showWarning) {

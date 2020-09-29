@@ -160,7 +160,8 @@ public class ReportUtil {
         String totalTests = suiteLogEntity.getTotalTestCases() + "";
         String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
         String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
-        String duration = ((float)(suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
+        String totalSkipped = suiteLogEntity.getTotalSkippedTestCases() + "";
+        String duration = ((float) (suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
 
         JUnitProperties properties = factory.createProperties();
         List<JUnitProperty> propertyList = properties.getProperty();
@@ -187,6 +188,8 @@ public class ReportUtil {
         ts.setErrors(totalError);
         // failures: The total number of tests in the suite that failed
         ts.setFailures(totalFailure);
+        // skipped: The total number of tests in the suite that is skipped by users
+        ts.setSkipped(totalSkipped);
 
         Arrays.asList(suiteLogEntity.getChildRecords()).stream().forEach(item -> {
             JUnitTestCase tc = factory.createTestCase();
