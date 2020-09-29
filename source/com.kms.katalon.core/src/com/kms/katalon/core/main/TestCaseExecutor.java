@@ -252,6 +252,9 @@ public class TestCaseExecutor {
             }
 
             if (testCaseContext.isMainTestCase()) {
+                if (testCaseContext.isSkipped()) {
+                    logger.logSkipped(testCaseResult.getMessage());
+                }
                 logger.endTest(testCase.getTestCaseId(), null);
             } else {
                 logger.endCalledTest(testCase.getTestCaseId(), null);
