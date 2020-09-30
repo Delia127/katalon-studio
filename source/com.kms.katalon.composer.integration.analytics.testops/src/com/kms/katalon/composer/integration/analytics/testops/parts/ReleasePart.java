@@ -4,12 +4,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -23,7 +23,6 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -42,7 +41,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
-import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
@@ -62,11 +60,9 @@ public class ReleasePart {
 
     private Composite parent;
 
-    private MPart part;
-
     private CTableViewer viewer;
 
-    private Composite releasePart;
+    private Composite releaseCompositePart;
 
     private Composite loadingPart;
 
@@ -83,7 +79,6 @@ public class ReleasePart {
     @PostConstruct
     public void createPartControl(final Composite parent, MCompositePart mpart) {
         this.parent = parent;
-        this.part = mpart;
 
         GridLayout gridLayout = new GridLayout(1, false);
         parent.setLayout(gridLayout);
@@ -112,11 +107,12 @@ public class ReleasePart {
         Thread getExecutionsThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                final List<AnalyticsRelease> releases = getReleases();
-                if (releases == null) {
+                final Optional<List<AnalyticsRelease>> optReleases = getReleases();
+                if (!optReleases.isPresent()) {
                     return;
                 }
 
+                List<AnalyticsRelease> releases = optReleases.get();
                 if (releases.isEmpty()) {
                     UISynchronizeService.asyncExec(new Runnable() {
 
@@ -141,7 +137,7 @@ public class ReleasePart {
                             viewer.setInput(releases);
                             viewer.refresh();
                         }
-                        viewerLayout.topControl = releasePart;
+                        viewerLayout.topControl = releaseCompositePart;
                         viewerPart.layout();
                     }
                 });
@@ -194,11 +190,11 @@ public class ReleasePart {
     }
     
     private void createReleasePart() {
-        releasePart = new Composite(viewerPart, SWT.NONE);
+        releaseCompositePart = new Composite(viewerPart, SWT.NONE);
         GridLayout gridLayout = new GridLayout(1, false);
-        releasePart.setLayout(gridLayout);
+        releaseCompositePart.setLayout(gridLayout);
         TableLayout tableLayout = new TableLayout();
-        viewer = new CTableViewer(releasePart, SWT.BORDER | SWT.FULL_SELECTION);
+        viewer = new CTableViewer(releaseCompositePart, SWT.BORDER | SWT.FULL_SELECTION);
         viewer.getTable().setLayout(tableLayout);
         viewer.getTable().setHeaderVisible(true);
         viewer.getTable().setLinesVisible(true);
@@ -237,9 +233,6 @@ public class ReleasePart {
             
             @Override
             public String getToolTipText(Object element) {
-                if(!(element instanceof AnalyticsRelease)) {
-                    return StringUtils.EMPTY;
-                }
                 return ((AnalyticsRelease)element).isClosed() ? TestOpsStringConstants.RELEASE_STATUS_CLOSED
                         : TestOpsStringConstants.RELEASE_STATUS_ACTIVE;
             }
@@ -273,9 +266,6 @@ public class ReleasePart {
             
             @Override
             public String getToolTipText(Object element) {
-                if(!(element instanceof AnalyticsRelease)) {
-                    return StringUtils.EMPTY;
-                }
                 return ((AnalyticsRelease)element).getName();
             }
         });
@@ -307,9 +297,6 @@ public class ReleasePart {
             
             @Override
             public String getToolTipText(Object element) {
-                if(!(element instanceof AnalyticsRelease)) {
-                    return StringUtils.EMPTY;
-                }
                 AnalyticsRelease release = (AnalyticsRelease) element;
                 if(release.getStartTime() == null) {
                     return StringUtils.EMPTY;
@@ -347,9 +334,6 @@ public class ReleasePart {
             
             @Override
             public String getToolTipText(Object element) {
-                if(!(element instanceof AnalyticsRelease)) {
-                    return StringUtils.EMPTY;
-                }
                 AnalyticsRelease release = (AnalyticsRelease) element;
                 if(release.getEndTime() == null) {
                     return StringUtils.EMPTY;
@@ -395,18 +379,15 @@ public class ReleasePart {
         ToolBar toolBar = new ToolBar(viewAllComposite, SWT.FLAT);
         toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
         ToolItem item = new ToolItem(toolBar, SWT.PUSH);
-        item.setToolTipText(StringConstants.REFRESH);
+        item.setToolTipText(TestOpsStringConstants.REFRESH);
         item.setImage(ImageConstants.IMG_16_TESTOPS_REFRESH_NEW);
-        item.addSelectionListener(new SelectionListener() {
+        item.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 refresh();
             }
 
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
         });
 
         Label lblDelimeter = new Label(viewAllComposite, SWT.NONE);
@@ -435,7 +416,7 @@ public class ReleasePart {
         setFontStyle(lblArrow, 12, SWT.NONE);
     }
     
-    private List<AnalyticsRelease> getReleases() {
+    private Optional<List<AnalyticsRelease>> getReleases() {
         try {
             AnalyticsProject project = settingStore.getProject();
             String serverUrl = settingStore.getServerEndpoint();
@@ -444,7 +425,8 @@ public class ReleasePart {
 
             if (!StringUtils.isBlank(email) && !StringUtils.isBlank(password)) {
                 AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                return AnalyticsApiProvider.getFirstReleasesPage(project.getId(), serverUrl, token.getAccess_token());
+                return Optional.ofNullable(
+                        AnalyticsApiProvider.getFirstReleasesPage(project.getId(), serverUrl, token.getAccess_token()));
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -458,7 +440,7 @@ public class ReleasePart {
             });
         }
 
-        return null;
+        return Optional.empty();
     }
     
     private void setFontStyle(Label label, int fontSize, int style) {

@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.integration.analytics.testops.constants;
 
+import com.kms.katalon.constants.GlobalStringConstants;
+
 public class TestOpsStringConstants {
 	
 	public static final String LBL_EXECUTIONS = TestOpsMessageConstants.LBL_EXECUTIONS;
@@ -93,4 +95,6 @@ public class TestOpsStringConstants {
     public static final String RELEASE_STATUS_ACTIVE = TestOpsMessageConstants.RELEASE_STATUS_ACTIVE;
 
     public static final String RELEASE_STATUS_CLOSED = TestOpsMessageConstants.RELEASE_STATUS_CLOSED;
+    
+    public static final String REFRESH = GlobalStringConstants.REFRESH;
 }
