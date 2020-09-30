@@ -151,4 +151,6 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String TREE_TESTOPS_PLANS = ComposerComponentsImplMessageConstants.TREE_TESTOPS_PLANS;
     
+    public static final String TREE_TESTOPS_RELEASES = ComposerComponentsImplMessageConstants.TREE_TESTOPS_RELEASES;
+    
 }

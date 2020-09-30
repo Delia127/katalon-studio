@@ -187,6 +187,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String TREE_TESTOPS_EXECUTION;
     
     public static String TREE_TESTOPS_PLANS;
+    
+    public static String TREE_TESTOPS_RELEASES;
 
     static {
         // initialize resource bundle

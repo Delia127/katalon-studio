@@ -216,4 +216,9 @@ public class ImageConstants {
     public static final Image IMG_16_TESTOPS_PLAN_RUNNING = ImageManager.getImage(IImageKeys.REFRESH_16);
     
     public static final Image IMG_16_TESTOPS_REFRESH_NEW = ImageManager.getImage(IImageKeys.IMG_TESTOPS_REFRESH_NEW);
+    
+    public static final Image IMG_16_TESTOPS_RELEASES = ImageManager.getImage(IImageKeys.IMG_TESTOPS_RELEASES);
+    
+    public static final String URL_TESTOPS_RELEASES = ImageManager.getImageURLString(IImageKeys.IMG_TESTOPS_RELEASES);
+    
 }

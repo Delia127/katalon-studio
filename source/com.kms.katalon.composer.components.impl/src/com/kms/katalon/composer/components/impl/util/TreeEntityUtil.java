@@ -562,6 +562,8 @@ public class TreeEntityUtil {
                     TestOpsAction.OPEN_EXECUTION, ImageConstants.IMG_16_TESTOPS_EXECUTIONS, testOpsFolder));
             testOpsFolder.addChild(new TestOpsTreeEntity(StringConstants.TREE_TESTOPS_PLANS,
                     TestOpsAction.OPEN_PLAN, ImageConstants.IMG_16_TESTOPS_PLAN, testOpsFolder));
+            testOpsFolder.addChild(new TestOpsTreeEntity(StringConstants.TREE_TESTOPS_RELEASES,
+                    TestOpsAction.OPEN_RELEASE, ImageConstants.IMG_16_TESTOPS_RELEASES, testOpsFolder));
             treeEntities.add(testOpsFolder);
         }
         

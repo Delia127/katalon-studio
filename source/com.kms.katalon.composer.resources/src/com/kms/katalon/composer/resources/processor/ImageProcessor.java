@@ -518,5 +518,6 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN_CANCELED);
         ImageManager.registerImage(IImageKeys.IMG_TESTOPS_PLAN_ERROR);
         ImageManager.registerImage(IImageKeys.IMG_TESTOPS_REFRESH_NEW);
+        ImageManager.registerImage(IImageKeys.IMG_TESTOPS_RELEASES);
     }
 }
