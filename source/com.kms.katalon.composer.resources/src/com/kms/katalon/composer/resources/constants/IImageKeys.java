@@ -242,6 +242,8 @@ public interface IImageKeys {
 
     public static final String LOG_NOT_RUN_16 = "log/log_not_run_16.png"; //$NON-NLS-1$
 
+    public static final String LOG_SKIPPED_16 = "log/log_skipped_16.png"; //$NON-NLS-1$
+
     public static final String LOG_PASSED_16 = "log/log_passed_16.png"; //$NON-NLS-1$
 
     public static final String LOG_WARNING_16 = "log/log_warning_16.png"; //$NON-NLS-1$
