@@ -94,9 +94,6 @@ stages:
           maven
         path: $(MAVEN_CACHE_FOLDER)
       displayName: Cache Maven Local Repo
-    
-    - task: whitesource.ws-bolt.bolt.wss.WhiteSource Bolt@20
-      displayName: 'WhiteSource Bolt'
       
     - bash: |
         ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
