@@ -117,7 +117,7 @@ import com.kms.katalon.util.CryptoUtil;
 public class GenerateCommandDialog extends AbstractDialog {
 
     private enum GenerateCommandMode {
-        CONSOLE_COMMAND, PROPERTIES_FILE
+        CONSOLE_COMMAND, PROPERTIES_FILE, TESTOPS_CI_COMMAND
     };
 
     private static final String KATALON_EXECUTABLE_LINUX = "./katalonc";
@@ -129,6 +129,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final int GENERATE_PROPERTY_ID = 22;
 
     private static final int GENERATE_COMMAND_ID = 23;
+    
+    private static final int GENERATE_TESTOPS_CI_COMMAND_ID = 25;
 
     private Text txtTestSuite;
     
@@ -171,6 +173,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_ANALYTICS_PROJECT_ID = AnalyticsReportIntegration.TESTOPS_PROJECT_ID_CONSOLE_OPTION_NAME;
 
     private static final String ARG_API_KEY_ON_PREMISE = OsgiConsoleOptionContributor.API_KEY_ON_PREMISE_OPTION;
+    
+    private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
 
     private Group grpPlatform;
 
@@ -500,6 +504,10 @@ public class GenerateCommandDialog extends AbstractDialog {
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, GENERATE_PROPERTY_ID, StringConstants.DIA_BTN_GEN_PROPERTY_FILE, false);
         createButton(parent, GENERATE_COMMAND_ID, StringConstants.DIA_BTN_GEN_COMMAND, isValidInput());
+        if (analyticsSettingStore.isIntegrationEnabled()) {
+            createButton(parent, GENERATE_TESTOPS_CI_COMMAND_ID, StringConstants.DIA_BTN_GEN_TESTOPS_CI_COMMAND, isValidInput());
+        }
+        
         createButton(parent, IDialogConstants.CLOSE_ID, IDialogConstants.CLOSE_LABEL, false);
     }
 
@@ -764,6 +772,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         boolean isValidInput = isValidInput();
         getButton(GENERATE_COMMAND_ID).setEnabled(isValidInput);
         getButton(GENERATE_PROPERTY_ID).setEnabled(isValidInput);
+        if (analyticsSettingStore.isIntegrationEnabled()) {
+            getButton(GENERATE_TESTOPS_CI_COMMAND_ID).setEnabled(isValidInput);
+        }
     }
 
     private void onRunConfigurationChanged(RunConfigurationDescription configurationDescription) {
@@ -912,6 +923,9 @@ public class GenerateCommandDialog extends AbstractDialog {
             case GENERATE_COMMAND_ID:
                 generateCommandPressed();
                 break;
+            case GENERATE_TESTOPS_CI_COMMAND_ID:
+                generateTestOpsCICommandPressed();
+                break;
         }
     }
 
@@ -946,6 +960,19 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
     }
 
+    private void generateTestOpsCICommandPressed() {
+        try {
+            
+            GeneratedCommandDialog generatedCommandDialog = new GeneratedCommandDialog(getShell(), generateTestOpsCICommand());
+            generatedCommandDialog.open();
+
+            Trackings.trackGenerateCmd();
+        } catch (Exception e) {
+            logError(e);
+            MessageDialog.openWarning(getShell(), StringConstants.WARN_TITLE, e.getMessage());
+        }
+    }
+    
     private void savePropertyFile(String fileLocation) throws Exception {
         if (isBlank(fileLocation)) {
             throw new Exception(StringConstants.DIA_MSG_PLS_SPECIFY_FILE_LOCATION);
@@ -992,6 +1019,23 @@ public class GenerateCommandDialog extends AbstractDialog {
         return commandBuilder.toString();
     }
 
+    private String generateTestOpsCICommand() throws Exception {
+        Map<String, String> consoleAgrsMap = getUserConsoleAgrsMap(GenerateCommandMode.TESTOPS_CI_COMMAND);
+        StringBuilder commandBuilder = new StringBuilder();
+        
+        for (String key : consoleAgrsMap.keySet()) {
+            commandBuilder.append(" ");
+            commandBuilder.append(wrapArgName(key));
+            String value = consoleAgrsMap.get(key);
+            if (isNotEmpty(value)) {
+                commandBuilder.append(ConsoleMain.ARGUMENT_SPLITTER);
+                commandBuilder.append(value);
+            }
+        }
+        
+        return commandBuilder.toString();
+    }
+    
     private Map<String, String> getUserConsoleAgrsMap(GenerateCommandMode generateCommandMode)
             throws ExecutionException {
         Map<String, String> args = new LinkedHashMap<String, String>();
@@ -999,7 +1043,9 @@ public class GenerateCommandDialog extends AbstractDialog {
             args.put(ARG_RUN_MODE, Application.RUN_MODE_OPTION_CONSOLE);
         }
 
-        args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
+        if(generateCommandMode != GenerateCommandMode.TESTOPS_CI_COMMAND) {
+            args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
+        }
 
         if (!StringUtils.equals(txtStatusDelay.getText(), defaultStatusDelay)) {
             args.put(ARG_STATUS_DELAY, txtStatusDelay.getText());
@@ -1028,6 +1074,10 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
 
         args.putAll(authenticationProvider.getConsoleArgsMap());
+        
+        if (generateCommandMode == GenerateCommandMode.TESTOPS_CI_COMMAND && args.containsKey(ARG_API_KEY)) {
+            args.remove(ARG_API_KEY);
+        }
 
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());

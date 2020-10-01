@@ -245,6 +245,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_BTN_GEN_COMMAND;
 
+    public static String DIA_BTN_GEN_TESTOPS_CI_COMMAND;
+
     public static String DIA_BTN_COPY_TO_CLIPBOARD;
 
     public static String DIA_TITLE_GENERATED_COMMAND;
