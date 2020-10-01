@@ -400,7 +400,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                 case PASSED:
                     result.increasePasses();
                     break;
-                case NOT_RUN:
+                case SKIPPED:
                     result.increaseSkips();
                     break;
                 default:
