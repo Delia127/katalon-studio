@@ -27,6 +27,8 @@ public class ImageConstants {
     public static final Image IMG_16_INFO = ImageManager.getImage(IImageKeys.LOG_INFO_16);
 
     public static final Image IMG_16_NOT_RUN = ImageManager.getImage(IImageKeys.LOG_NOT_RUN_16);
+    
+    public static final Image IMG_16_SKIPPED = ImageManager.getImage(IImageKeys.LOG_SKIPPED_16);
 
     public static final Image IMG_16_WARNING = ImageManager.getImage(IImageKeys.LOG_WARNING_16);
 
