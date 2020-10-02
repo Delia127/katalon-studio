@@ -30,10 +30,14 @@ public class ExplorerGettingStartView {
     private Link lnkNewProject;
 
     private Composite compositeRecentProjects;
+    
+    private Composite compositeSampleProjects;
 
     private Composite container;
 
     private GridData gdCompositeRecentParent;
+    
+    private GridData gdCompositeSampleParent;
 
     public Composite createControl(Composite parent) {
         container = new Composite(parent, SWT.NONE);
@@ -68,7 +72,7 @@ public class ExplorerGettingStartView {
         compositeRecentParent.setLayoutData(gdCompositeRecentParent);
 
         Label lblRecent = new Label(compositeRecentParent, SWT.NONE);
-        lblRecent.setText("RECENT");
+        lblRecent.setText("RECENT PROJECTS");
         ControlUtils.setFontToBeBold(lblRecent);
         
         compositeRecentProjects = new Composite(compositeRecentParent, SWT.NONE);
@@ -80,6 +84,29 @@ public class ExplorerGettingStartView {
         compositeRecentProjects.setLayout(glCompositeRecentProjects);
 
         setLayoutForRecentComposite();
+        
+        Composite compositeSampleParent = new Composite(container, SWT.NONE);
+        GridLayout glCompositeSampleParent = new GridLayout();
+        glCompositeSampleParent.marginWidth = 0;
+        glCompositeSampleParent.marginHeight = 0;
+        compositeSampleParent.setLayout(glCompositeSampleParent);
+        gdCompositeSampleParent = new GridData(SWT.LEFT, SWT.TOP, false, false);
+        gdCompositeSampleParent.verticalIndent = 10;
+        compositeSampleParent.setLayoutData(gdCompositeSampleParent);
+
+        Label lblSample = new Label(compositeSampleParent, SWT.NONE);
+        lblSample.setText("SAMPLE PROJECTS");
+        ControlUtils.setFontToBeBold(lblSample);
+        
+        compositeSampleProjects = new Composite(compositeSampleParent, SWT.NONE);
+        GridLayout glCompositeSampleProjects = new GridLayout();
+        glCompositeSampleProjects.marginTop = 0;
+        glCompositeSampleProjects.marginLeft = 5;
+        glCompositeSampleProjects.marginRight = 0;
+        glCompositeSampleProjects.marginBottom = 0;
+        compositeSampleProjects.setLayout(glCompositeSampleProjects);
+
+        setLayoutForSampleComposite();
 
         registerControlListeners();
         return container;
@@ -101,10 +128,45 @@ public class ExplorerGettingStartView {
             createRecentProjectComposite();
         }
     }
+    
+    private void setLayoutForSampleComposite() {
+        gdCompositeSampleParent.heightHint = -1;
+        createSampleProjectComposite();
+    }
 
     private void createRecentProjectComposite() {
         for (ProjectEntity project : getRecentProjects()) {
             Composite compositeItemProject = new Composite(compositeRecentProjects, SWT.NONE);
+            GridLayout glCompositeItemProject = new GridLayout(2, false);
+            glCompositeItemProject.marginWidth = 0;
+            glCompositeItemProject.marginHeight = 0;
+            compositeItemProject.setLayout(glCompositeItemProject);
+
+            Link lnkProject = new Link(compositeItemProject, SWT.NONE);
+            lnkProject.setText(String.format("<a>%s</a>", project.getName()));
+            lnkProject.setToolTipText(project.getFolderLocation());
+            lnkProject.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    try {
+                        new CommandCaller().call(new ProjectParameterizedCommandBuilder().createRecentProjectParameterizedCommand(project));
+                    } catch (CommandException ex) {
+                        LoggerSingleton.logError(ex);
+                    }
+                }
+            });
+
+            StyledText txtProjectLocation = new StyledText(compositeItemProject, SWT.NONE);
+            txtProjectLocation.setText(String.format("(%s)", project.getFolderLocation()));
+            StyledString styledString = new StyledString()
+                    .append(String.format("(%s)", project.getFolderLocation()), StyledString.DECORATIONS_STYLER);
+            txtProjectLocation.setStyleRanges(styledString.getStyleRanges());
+        }
+    }
+    
+    private void createSampleProjectComposite() {
+        for (ProjectEntity project : getRecentProjects()) {
+            Composite compositeItemProject = new Composite(compositeSampleProjects, SWT.NONE);
             GridLayout glCompositeItemProject = new GridLayout(2, false);
             glCompositeItemProject.marginWidth = 0;
             glCompositeItemProject.marginHeight = 0;
