@@ -20,6 +20,9 @@ import com.kms.katalon.composer.components.impl.command.ProjectParameterizedComm
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.project.menu.SampleProjectParameterizedCommandBuilder;
+import com.kms.katalon.composer.project.sample.SampleRemoteProject;
+import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -165,7 +168,7 @@ public class ExplorerGettingStartView {
     }
     
     private void createSampleProjectComposite() {
-        for (ProjectEntity project : getRecentProjects()) {
+        for (SampleRemoteProject project : getSampleProjects()) {
             Composite compositeItemProject = new Composite(compositeSampleProjects, SWT.NONE);
             GridLayout glCompositeItemProject = new GridLayout(2, false);
             glCompositeItemProject.marginWidth = 0;
@@ -174,23 +177,16 @@ public class ExplorerGettingStartView {
 
             Link lnkProject = new Link(compositeItemProject, SWT.NONE);
             lnkProject.setText(String.format("<a>%s</a>", project.getName()));
-            lnkProject.setToolTipText(project.getFolderLocation());
             lnkProject.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     try {
-                        new CommandCaller().call(new ProjectParameterizedCommandBuilder().createRecentProjectParameterizedCommand(project));
+                        new CommandCaller().call(new SampleProjectParameterizedCommandBuilder().createRemoteProjectParameterizedCommand(project));
                     } catch (CommandException ex) {
                         LoggerSingleton.logError(ex);
                     }
                 }
             });
-
-            StyledText txtProjectLocation = new StyledText(compositeItemProject, SWT.NONE);
-            txtProjectLocation.setText(String.format("(%s)", project.getFolderLocation()));
-            StyledString styledString = new StyledString()
-                    .append(String.format("(%s)", project.getFolderLocation()), StyledString.DECORATIONS_STYLER);
-            txtProjectLocation.setStyleRanges(styledString.getStyleRanges());
         }
     }
 
@@ -201,6 +197,10 @@ public class ExplorerGettingStartView {
             LoggerSingleton.logError(e);
             return Collections.emptyList();
         }
+    }
+    
+    private List<SampleRemoteProject> getSampleProjects() {
+        return SampleRemoteProjectProvider.getCachedProjects();
     }
 
     private void registerControlListeners() {
