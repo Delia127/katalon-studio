@@ -7,11 +7,15 @@ import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
@@ -20,7 +24,9 @@ import com.kms.katalon.composer.components.impl.command.ProjectParameterizedComm
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.project.constants.ImageConstants;
 import com.kms.katalon.composer.project.menu.SampleProjectParameterizedCommandBuilder;
+import com.kms.katalon.composer.project.sample.SampleProjectType;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.constants.IdConstants;
@@ -174,19 +180,42 @@ public class ExplorerGettingStartView {
             glCompositeItemProject.marginWidth = 0;
             glCompositeItemProject.marginHeight = 0;
             compositeItemProject.setLayout(glCompositeItemProject);
+            compositeItemProject.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_HAND));
+            
+            Label projectImage = new Label(compositeItemProject, SWT.NONE);
+            GridData layoutData = new GridData(SWT.LEFT, SWT.CENTER, false, true);
+            projectImage.setLayoutData(layoutData);
+            projectImage.setImage(getIconImageForProject(project.getType()));
 
-            Link lnkProject = new Link(compositeItemProject, SWT.NONE);
-            lnkProject.setText(String.format("<a>%s</a>", project.getName()));
-            lnkProject.addSelectionListener(new SelectionAdapter() {
+            Label projectName = new Label(compositeItemProject, SWT.NONE);
+            projectName.setText(project.getName());
+            GridData layoutData1 = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+            projectName.setLayoutData(layoutData1);
+            
+            MouseAdapter mouseAdapter = new MouseAdapter() {
                 @Override
-                public void widgetSelected(SelectionEvent e) {
+                public void mouseUp(MouseEvent e) {
                     try {
                         new CommandCaller().call(new SampleProjectParameterizedCommandBuilder().createRemoteProjectParameterizedCommand(project));
                     } catch (CommandException ex) {
                         LoggerSingleton.logError(ex);
                     }
                 }
-            });
+            };
+            compositeItemProject.addMouseListener(mouseAdapter);
+            projectImage.addMouseListener(mouseAdapter);
+            projectName.addMouseListener(mouseAdapter);
+        }
+    }
+    
+    public Image getIconImageForProject(SampleProjectType projectType) {
+        switch (projectType) {
+            case MOBILE:
+                return ImageConstants.SAMPLE_MOBILE_16;
+            case WS:
+                return ImageConstants.SAMPLE_WS_16;
+            default:
+                return ImageConstants.SAMPLE_WEB_16;
         }
     }
 

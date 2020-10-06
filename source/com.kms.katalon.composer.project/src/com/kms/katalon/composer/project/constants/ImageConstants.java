@@ -20,6 +20,12 @@ public class ImageConstants {
     public static final URL URL_SAMPLE_MOBILE_16 = ImageManager.getImageURL(IImageKeys.SAMPLE_MOBILE_16);
 
     public static final URL URL_SAMPLE_WS_16 = ImageManager.getImageURL(IImageKeys.SAMPLE_WEB_SERVICE_16);
+    
+    public static final Image SAMPLE_WEB_16 = ImageManager.getImage(IImageKeys.SAMPLE_WEB_UI_16);
+
+    public static final Image SAMPLE_MOBILE_16 = ImageManager.getImage(IImageKeys.SAMPLE_MOBILE_16);
+
+    public static final Image SAMPLE_WS_16 = ImageManager.getImage(IImageKeys.SAMPLE_WEB_SERVICE_16);
 
     public static final Image IMG_PROJECT_16 = ImageManager.getImage(IImageKeys.PROJECT_16);
 
