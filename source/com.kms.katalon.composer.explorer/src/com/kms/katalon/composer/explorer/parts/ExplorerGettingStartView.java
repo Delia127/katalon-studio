@@ -24,6 +24,8 @@ import com.kms.katalon.composer.components.impl.command.ProjectParameterizedComm
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ComponentBuilder;
+import com.kms.katalon.composer.components.util.FontUtil;
 import com.kms.katalon.composer.project.constants.ImageConstants;
 import com.kms.katalon.composer.project.menu.SampleProjectParameterizedCommandBuilder;
 import com.kms.katalon.composer.project.sample.SampleProjectType;
@@ -35,8 +37,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public class ExplorerGettingStartView {
 
     private Link lnkOpenProject;
-
-    private Link lnkNewProject;
 
     private Composite compositeRecentProjects;
     
@@ -65,8 +65,15 @@ public class ExplorerGettingStartView {
         glCompositeProject.marginBottom = 0;
         compositeProjects.setLayout(glCompositeProject);
 
-        lnkNewProject = new Link(compositeProjects, SWT.NONE);
-        lnkNewProject.setText(String.format("<a>%s</a>", "New Project"));
+        ComponentBuilder.label(compositeProjects)
+        .text("New Project")
+        .fontSize(FontUtil.SIZE_H4)
+        .size(120, 20)
+        .primaryButton()
+        .onClick(event -> {
+            okPressed();
+        })
+        .build();
 
         lnkOpenProject = new Link(compositeProjects, SWT.NONE);
         lnkOpenProject.setText(String.format("<a>%s</a>", "Open Project..."));
@@ -233,17 +240,7 @@ public class ExplorerGettingStartView {
     }
 
     private void registerControlListeners() {
-        lnkNewProject.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    new CommandCaller().call(IdConstants.NEW_PROJECT_COMMAND_ID);
-                } catch (CommandException ex) {
-                    LoggerSingleton.logError(ex);
-                }
-            }
-        });
-
+        
         lnkOpenProject.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -254,5 +251,13 @@ public class ExplorerGettingStartView {
                 }
             }
         });
+    }
+    
+    private void okPressed() {
+        try {
+            new CommandCaller().call(IdConstants.NEW_PROJECT_COMMAND_ID);
+        } catch (CommandException ex) {
+            LoggerSingleton.logError(ex);
+        }
     }
 }
