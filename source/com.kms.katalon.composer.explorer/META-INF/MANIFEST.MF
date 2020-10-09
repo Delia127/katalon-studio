@@ -50,6 +50,7 @@ Require-Bundle: com.kms.katalon.composer.components,
  org.eclipse.jdt.core,
  com.kms.katalon.application,
  com.kms.katalon.dal.file,
- com.kms.katalon.execution
+ com.kms.katalon.execution,
+ com.kms.katalon.composer.project
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"
