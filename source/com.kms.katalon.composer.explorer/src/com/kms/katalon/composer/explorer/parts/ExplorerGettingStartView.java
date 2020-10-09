@@ -36,8 +36,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 
 public class ExplorerGettingStartView {
 
-    private Link lnkOpenProject;
-
     private Composite compositeRecentProjects;
     
     private Composite compositeSampleProjects;
@@ -63,21 +61,29 @@ public class ExplorerGettingStartView {
         glCompositeProject.marginLeft = 5;
         glCompositeProject.marginRight = 0;
         glCompositeProject.marginBottom = 0;
+        glCompositeProject.verticalSpacing = 7;
         compositeProjects.setLayout(glCompositeProject);
 
         ComponentBuilder.label(compositeProjects)
         .text("New Project")
         .fontSize(FontUtil.SIZE_H4)
-        .size(120, 20)
+        .size(100, 30)
         .primaryButton()
         .onClick(event -> {
-            okPressed();
+            onNewProjectClicked();
         })
         .build();
 
-        lnkOpenProject = new Link(compositeProjects, SWT.NONE);
-        lnkOpenProject.setText(String.format("<a>%s</a>", "Open Project..."));
-        
+        ComponentBuilder.label(compositeProjects)
+        .text("Open Project")
+        .fontSize(FontUtil.SIZE_H4)
+        .size(100, 30)
+        .grayButton()
+        .onClick(event -> {
+            onOpenProjectClicked();
+        })
+        .build();
+       
         Composite compositeRecentParent = new Composite(container, SWT.NONE);
         GridLayout glCompositeRecentParent = new GridLayout();
         glCompositeRecentParent.marginWidth = 0;
@@ -124,7 +130,6 @@ public class ExplorerGettingStartView {
 
         setLayoutForSampleComposite();
 
-        registerControlListeners();
         return container;
     }
 
@@ -222,7 +227,7 @@ public class ExplorerGettingStartView {
             case WS:
                 return ImageConstants.SAMPLE_WS_16;
             default:
-                return ImageConstants.SAMPLE_WEB_16;
+                return ImageConstants.WEB_ICON;
         }
     }
 
@@ -239,23 +244,17 @@ public class ExplorerGettingStartView {
         return SampleRemoteProjectProvider.getCachedProjects();
     }
 
-    private void registerControlListeners() {
-        
-        lnkOpenProject.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    new CommandCaller().call(IdConstants.OPEN_PROJECT_COMMAND_ID);
-                } catch (CommandException ex) {
-                    LoggerSingleton.logError(ex);
-                }
-            }
-        });
-    }
-    
-    private void okPressed() {
+    private void onNewProjectClicked() {
         try {
             new CommandCaller().call(IdConstants.NEW_PROJECT_COMMAND_ID);
+        } catch (CommandException ex) {
+            LoggerSingleton.logError(ex);
+        }
+    }
+    
+    private void onOpenProjectClicked() {
+        try {
+            new CommandCaller().call(IdConstants.OPEN_PROJECT_COMMAND_ID);
         } catch (CommandException ex) {
             LoggerSingleton.logError(ex);
         }
