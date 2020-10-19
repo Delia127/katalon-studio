@@ -63,12 +63,22 @@ public class ExplorerGettingStartView {
         glCompositeProject.marginBottom = 0;
         glCompositeProject.verticalSpacing = 7;
         compositeProjects.setLayout(glCompositeProject);
+        
+        ComponentBuilder.label(compositeProjects)
+        .text("Clone Git Project")
+        .fontSize(FontUtil.SIZE_H4)
+        .size(100, 30)
+        .grayButton()
+        .onClick(event -> {
+            onCloneProjectClicked();
+        })
+        .build();
 
         ComponentBuilder.label(compositeProjects)
         .text("New Project")
         .fontSize(FontUtil.SIZE_H4)
         .size(100, 30)
-        .primaryButton()
+        .grayButton()
         .onClick(event -> {
             onNewProjectClicked();
         })
@@ -255,6 +265,14 @@ public class ExplorerGettingStartView {
     private void onOpenProjectClicked() {
         try {
             new CommandCaller().call(IdConstants.OPEN_PROJECT_COMMAND_ID);
+        } catch (CommandException ex) {
+            LoggerSingleton.logError(ex);
+        }
+    }
+
+    private void onCloneProjectClicked() {
+        try {
+            new CommandCaller().call("com.kms.katalon.composer.integration.git.command.clone");
         } catch (CommandException ex) {
             LoggerSingleton.logError(ex);
         }
