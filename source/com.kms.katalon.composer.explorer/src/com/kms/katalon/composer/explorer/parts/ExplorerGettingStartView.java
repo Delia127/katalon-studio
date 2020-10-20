@@ -63,22 +63,12 @@ public class ExplorerGettingStartView {
         glCompositeProject.marginBottom = 0;
         glCompositeProject.verticalSpacing = 7;
         compositeProjects.setLayout(glCompositeProject);
-        
-        ComponentBuilder.label(compositeProjects)
-        .text("Clone Git Project")
-        .fontSize(FontUtil.SIZE_H4)
-        .size(100, 30)
-        .grayButton()
-        .onClick(event -> {
-            onCloneProjectClicked();
-        })
-        .build();
 
         ComponentBuilder.label(compositeProjects)
         .text("New Project")
         .fontSize(FontUtil.SIZE_H4)
         .size(100, 30)
-        .grayButton()
+        .primaryButton()
         .onClick(event -> {
             onNewProjectClicked();
         })
@@ -93,7 +83,17 @@ public class ExplorerGettingStartView {
             onOpenProjectClicked();
         })
         .build();
-       
+
+        ComponentBuilder.label(compositeProjects)
+        .text("Clone Git Project")
+        .fontSize(FontUtil.SIZE_H4)
+        .size(100, 30)
+        .grayButton()
+        .onClick(event -> {
+            onCloneProjectClicked();
+        })
+        .build();
+
         Composite compositeRecentParent = new Composite(container, SWT.NONE);
         GridLayout glCompositeRecentParent = new GridLayout();
         glCompositeRecentParent.marginWidth = 0;
